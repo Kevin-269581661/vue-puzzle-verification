@@ -1,0 +1,138 @@
+[
+    {
+        "value": "100",
+        "label": "APP分类",
+        "children": [
+            {
+                "value": "100",
+                "label": "APP分类"
+            }
+        ]
+    },
+    {
+        "value": "101",
+        "label": "APP安装",
+        "children": [
+            {
+                "value": "1",
+                "label": "便捷生活"
+            },
+            {
+                "value": "2",
+                "label": "房屋地产"
+            },
+            {
+                "value": "3",
+                "label": "人才招聘"
+            },
+            {
+                "value": "4",
+                "label": "交通导航"
+            },
+            {
+                "value": "5",
+                "label": "个人工具"
+            },
+            {
+                "value": "6",
+                "label": "旅游出行"
+            },
+            {
+                "value": "7",
+                "label": "健康医疗"
+            },
+            {
+                "value": "8",
+                "label": "美食外卖"
+            },
+            {
+                "value": "9",
+                "label": "电子商务"
+            },
+            {
+                "value": "10",
+                "label": "金融理财"
+            },
+            {
+                "value": "11",
+                "label": "社交网络"
+            },
+            {
+                "value": "12",
+                "label": "电子阅读"
+            },
+            {
+                "value": "13",
+                "label": "实用工具"
+            },
+            {
+                "value": "14",
+                "label": "学习教育"
+            },
+            {
+                "value": "15",
+                "label": "办公管理"
+            },
+            {
+                "value": "16",
+                "label": "通讯聊天"
+            },
+            {
+                "value": "17",
+                "label": "综合资讯"
+            },
+            {
+                "value": "18",
+                "label": "汽车服务"
+            },
+            {
+                "value": "19",
+                "label": "视频服务"
+            },
+            {
+                "value": "20",
+                "label": "音乐音频"
+            },
+            {
+                "value": "21",
+                "label": "游戏服务"
+            },
+            {
+                "value": "22",
+                "label": "女性亲子"
+            },
+            {
+                "value": "23",
+                "label": "拍摄美化"
+            },
+            {
+                "value": "24",
+                "label": "智能设备"
+            },
+            {
+                "value": "25",
+                "label": "应用分发"
+            }
+        ]
+    },
+    {
+        "value": "31",
+        "label": "通用零售",
+        "children": [
+            {
+                "value": "31",
+                "label": "通用零售"
+            }
+        ]
+    },
+    {
+        "value": "38",
+        "label": "服装鞋包",
+        "children": [
+            {
+                "value": "38",
+                "label": "服装鞋包"
+            }
+        ]
+    }
+]

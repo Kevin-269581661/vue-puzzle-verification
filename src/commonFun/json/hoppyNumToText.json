@@ -1,0 +1,398 @@
+[
+    {
+        "value": 31,
+        "label": "通用零售",
+        "children": [
+            {
+                "value": 10,
+                "label": "用户爱好"
+            },
+            {
+                "value": 401,
+                "label": "服装品牌"
+            },
+            {
+                "value": 402,
+                "label": "鞋子品牌"
+            },
+            {
+                "value": 403,
+                "label": "箱包品牌"
+            },
+            {
+                "value": 404,
+                "label": "配饰品牌"
+            },
+            {
+                "value": 405,
+                "label": "个护美容品牌"
+            },
+            {
+                "value": 406,
+                "label": "家电品牌"
+            }
+        ]
+    },
+    {
+        "value": 32,
+        "label": "餐饮行业",
+        "children": [
+            {
+                "value": 101,
+                "label": "兴趣偏好"
+            },
+            {
+                "value": 102,
+                "label": "菜品偏好"
+            },
+            {
+                "value": 103,
+                "label": "口味偏好"
+            },
+            {
+                "value": 104,
+                "label": "菜系选择"
+            },
+            {
+                "value": 105,
+                "label": "休闲小食偏好"
+            },
+            {
+                "value": 106,
+                "label": "就餐目的"
+            },
+            {
+                "value": 107,
+                "label": "关注餐饮品牌"
+            },
+            {
+                "value": 108,
+                "label": "关注餐饮商家"
+            },
+            {
+                "value": 109,
+                "label": "茶品偏好"
+            },
+            {
+                "value": 110,
+                "label": "酒水偏好"
+            }
+        ]
+    },
+    {
+        "value": 33,
+        "label": "电影行业",
+        "children": [
+            {
+                "value": 801,
+                "label": "关注影片"
+            },
+            {
+                "value": 802,
+                "label": "关注影星"
+            },
+            {
+                "value": 803,
+                "label": "关注导演"
+            },
+            {
+                "value": 804,
+                "label": "影片类型"
+            },
+            {
+                "value": 805,
+                "label": "制片国家和地区"
+            }
+        ]
+    },
+    {
+        "value": 34,
+        "label": "汽车行业",
+        "children": [
+            {
+                "value": 1001,
+                "label": "购车阶段"
+            },
+            {
+                "value": 1002,
+                "label": "汽车档次偏好"
+            },
+            {
+                "value": 1003,
+                "label": "二手车需求"
+            },
+            {
+                "value": 1004,
+                "label": "车贷需求"
+            },
+            {
+                "value": 1005,
+                "label": "汽车品牌"
+            },
+            {
+                "value": 1006,
+                "label": "车型偏好"
+            },
+            {
+                "value": 1007,
+                "label": "预算分布"
+            },
+            {
+                "value": 1008,
+                "label": "关注车系"
+            },
+            {
+                "value": 1009,
+                "label": "汽车车型"
+            }
+        ]
+    },
+    {
+        "value": 35,
+        "label": "酒店行业",
+        "children": [
+            {
+                "value": 301,
+                "label": "酒店类型偏好"
+            },
+            {
+                "value": 302,
+                "label": "酒店星级偏好"
+            },
+            {
+                "value": 303,
+                "label": "酒店增值需求"
+            },
+            {
+                "value": 304,
+                "label": "酒店网站"
+            },
+            {
+                "value": 305,
+                "label": "关注国内景点"
+            }
+        ]
+    },
+    {
+        "value": 36,
+        "label": "母婴亲子",
+        "children": [
+            {
+                "value": 1101,
+                "label": "母婴品类"
+            },
+            {
+                "value": 1102,
+                "label": "奶粉类型偏好"
+            },
+            {
+                "value": 1103,
+                "label": "纸尿裤品类偏好"
+            },
+            {
+                "value": 1104,
+                "label": "宝宝家电品类偏好"
+            },
+            {
+                "value": 1105,
+                "label": "童车童床品类偏好"
+            },
+            {
+                "value": 1106,
+                "label": "妈妈用品偏好"
+            },
+            {
+                "value": 1107,
+                "label": "活跃母婴社区"
+            },
+            {
+                "value": 1108,
+                "label": "母婴亲子品牌"
+            }
+        ]
+    },
+    {
+        "value": 37,
+        "label": "美妆护肤",
+        "children": [
+            {
+                "value": 1201,
+                "label": "个护品类"
+            },
+            {
+                "value": 1202,
+                "label": "护肤品品类偏好"
+            },
+            {
+                "value": 1203,
+                "label": "彩妆品类偏好"
+            },
+            {
+                "value": 1204,
+                "label": "个人护理品类偏好"
+            },
+            {
+                "value": 1205,
+                "label": "香水品类偏好"
+            },
+            {
+                "value": 1206,
+                "label": "美妆护肤品品牌"
+            }
+        ]
+    },
+    {
+        "value": 38,
+        "label": "服装鞋包",
+        "children": [
+            {
+                "value": 1301,
+                "label": "服装鞋包品类"
+            },
+            {
+                "value": 1302,
+                "label": "服装品类偏好"
+            },
+            {
+                "value": 1303,
+                "label": "服装品牌"
+            },
+            {
+                "value": 1304,
+                "label": "鞋子品牌"
+            },
+            {
+                "value": 1305,
+                "label": "箱包品类偏好"
+            },
+            {
+                "value": 1306,
+                "label": "箱包品牌"
+            },
+            {
+                "value": 1307,
+                "label": "饰品品类偏好"
+            },
+            {
+                "value": 1308,
+                "label": "配饰品牌"
+            }
+        ]
+    },
+    {
+        "value": 100,
+        "label": "APP分类",
+        "children": [
+            {
+                "value": 100,
+                "label": "APP分类"
+            }
+        ]
+    },
+    {
+        "value": 101,
+        "label": "APP安装",
+        "children": [
+            {
+                "value": 1,
+                "label": "便捷生活"
+            },
+            {
+                "value": 2,
+                "label": "房屋地产"
+            },
+            {
+                "value": 3,
+                "label": "人才招聘"
+            },
+            {
+                "value": 4,
+                "label": "交通导航"
+            },
+            {
+                "value": 5,
+                "label": "个人工具"
+            },
+            {
+                "value": 6,
+                "label": "旅游出行"
+            },
+            {
+                "value": 7,
+                "label": "健康医疗"
+            },
+            {
+                "value": 8,
+                "label": "美食外卖"
+            },
+            {
+                "value": 9,
+                "label": "电子商务"
+            },
+            {
+                "value": 10,
+                "label": "金融理财"
+            },
+            {
+                "value": 11,
+                "label": "社交网络"
+            },
+            {
+                "value": 12,
+                "label": "电子阅读"
+            },
+            {
+                "value": 13,
+                "label": "实用工具"
+            },
+            {
+                "value": 14,
+                "label": "学习教育"
+            },
+            {
+                "value": 15,
+                "label": "办公管理"
+            },
+            {
+                "value": 16,
+                "label": "通讯聊天"
+            },
+            {
+                "value": 17,
+                "label": "综合资讯"
+            },
+            {
+                "value": 18,
+                "label": "汽车服务"
+            },
+            {
+                "value": 19,
+                "label": "视频服务"
+            },
+            {
+                "value": 20,
+                "label": "音乐音频"
+            },
+            {
+                "value": 21,
+                "label": "游戏服务"
+            },
+            {
+                "value": 22,
+                "label": "女性亲子"
+            },
+            {
+                "value": 23,
+                "label": "拍摄美化"
+            },
+            {
+                "value": 24,
+                "label": "智能设备"
+            },
+            {
+                "value": 25,
+                "label": "应用分发"
+            }
+        ]
+    }
+]

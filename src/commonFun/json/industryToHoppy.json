@@ -1,0 +1,114 @@
+[
+    {
+        "industry": 1,
+        "hoppy": "31, 100, 101"
+    },
+    {
+        "industry": 13,
+        "hoppy": "31, 32"
+    },
+    {
+        "industry": 21,
+        "hoppy": "31, 32, 33"
+    },
+    {
+        "industry": 34,
+        "hoppy": "33, 34, 35, 38"
+    },
+    {
+        "industry": 37,
+        "hoppy": "31, 32, 35"
+    },
+    {
+        "industry": 45,
+        "hoppy": "31, 34, 35"
+    },
+    {
+        "industry": 47,
+        "hoppy": "35, 34, 33"
+    },
+    {
+        "industry": 55,
+        "hoppy": "37, 38, 33, 36"
+    },
+    {
+        "industry": 70,
+        "hoppy": "31, 32, 34, 38, 37"
+    },
+    {
+        "industry": 73,
+        "hoppy": "33, 100, 101"
+    },
+    {
+        "industry": 90,
+        "hoppy": "33, 35, 100, 101"
+    },
+    {
+        "industry": 103,
+        "hoppy": "31, 32, 36, 38"
+    },
+    {
+        "industry": 109,
+        "hoppy": "38, 37, 36"
+    },
+    {
+        "industry": 124,
+        "hoppy": "32, 33, 35, 38"
+    },
+    {
+        "industry": 136,
+        "hoppy": "32, 33, 35"
+    },
+    {
+        "industry": 147,
+        "hoppy": "32, 36, 38"
+    },
+    {
+        "industry": 157,
+        "hoppy": "35, 34, 33"
+    },
+    {
+        "industry": 164,
+        "hoppy": "31, 33, 35"
+    },
+    {
+        "industry": 169,
+        "hoppy": "100, 101, 33"
+    },
+    {
+        "industry": 180,
+        "hoppy": "31, 32, 34, 35"
+    },
+    {
+        "industry": 192,
+        "hoppy": "37, 38, 34, 33"
+    },
+    {
+        "industry": 198,
+        "hoppy": "31, 33, 34"
+    },
+    {
+        "industry": 200,
+        "hoppy": "38, 35, 34"
+    },
+    {
+        "industry": 208,
+        "hoppy": "100, 101, 33 "
+    },
+    {
+        "industry": 221,
+        "hoppy": "100, 101, 33"
+    },
+    {
+        "industry": 231,
+        "hoppy": "100, 101, 33"
+    },
+    {
+        "industry": 247,
+        "hoppy": "31, 34, 35"
+    },
+    {
+        "industry": 252,
+        "hoppy": "33, 35, 32"
+    }
+]

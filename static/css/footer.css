@@ -1,0 +1,30 @@
+/*尾部*/
+/*.ad_index_footer {
+    text-align: center;
+    font-size: 14px;
+    color: #8A8A8A;
+    margin-bottom: 16px;
+    position: relative;
+
+}*/
+
+.ad_index_footer {
+  font-size: 14px;
+  color: #8A8A8A;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 50px;
+  width: 100%;
+  text-align: center;
+}
+
+.ad_index_footer a{
+  color: #8A8A8A;
+}
+
+.ad_index_footer img {
+  position: relative;
+  top: 2px;
+  background: #8A8A8A;
+}

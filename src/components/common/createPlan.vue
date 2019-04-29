@@ -790,9 +790,10 @@
             <el-button v-if="active === 0" type="default" @click="exportEmpty()">导空点</el-button>
 
             <el-button style="margin-top: 12px;padding: 12px" @click="next"
-                       v-if="active == 0 || active == 1 || active == 2 "
-                       type="primary">{{(active == 0 || active == 1) ? '下一步' : '创建方案'}}
+                       v-if="active == 0 || active == 1" type="primary">下一步
             </el-button>
+            <el-button style="margin-top: 12px;padding: 12px" @click="next"
+                       v-if="active == 2" type="primary">创建方案 </el-button>
 
             <!-- <p v-if="active === 0" style="color: #666;font-size: 14px;margin-top:10px;">备注：导空点功能目前导出的为最近一年的空点</p> -->
 
@@ -822,7 +823,7 @@
                 <li v-for="item in beOccupiedAdsData">
                     <p>
                         <span style="color: #333">占点方案：</span>
-                        <sapn v-if="sessionData.uType === 'MD'"><span style="font-weight: bold">{{item.beOccupieApName}}</span> 方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）</sapn>
+                        <span v-if="sessionData.uType === 'MD'"><span style="font-weight: bold">{{item.beOccupieApName}}</span> 方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）</span>
                         <span v-else>******</span>
                     </p>
                     <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
@@ -1462,10 +1463,10 @@
             },
             // 获取权限下的城市列表 saleManageLevel
             getCityList(){
-                if (this.saleManageLevel == 1) {
-                    this.cityOther = true
-                    this.cityOptions = areaArr.province()
-                } else {
+                // if (this.saleManageLevel == 1) {
+                //     this.cityOther = true
+                //     this.cityOptions = areaArr.province()
+                // } else {
                     this.cityOther = false
                     let params = {
                         uid: this.sessionData.uID,
@@ -1499,7 +1500,7 @@
                             }
                         }
                     })
-                }
+                // }
             },
             // 下一步
             next() {
@@ -2542,7 +2543,7 @@
                             }
                             this.loading = false
                         } else {
-                            this.$message.error('点位获取异常')
+                            this.$message.warning(res.data.MSG)
                             this.loading = false
                         }
                         this.searchBtnAbled = false

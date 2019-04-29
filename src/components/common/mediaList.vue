@@ -177,7 +177,7 @@
                             </template>
                         </el-table-column>
                         <el-table-column
-                            v-if="role != 'OP' && !showImportBtn"
+                            v-if="showNewBtn"
                             label="操作"
                             min-width="7.4%"
                         >

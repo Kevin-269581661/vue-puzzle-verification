@@ -710,17 +710,16 @@
         <div class="content_bottom_btn">
             <el-button @click="prev" v-if="active == 2" type="default">上一步</el-button>
             <el-button @click="goBack" v-if="active == 1" type="default">取消</el-button>
-            <el-button @click="clearData" v-if="active === 0" type="default">取消</el-button>
+            <!--<el-button @click="clearData" v-if="active === 0" type="default">取消</el-button>-->
             <el-button style="margin-top: 12px;padding: 12px" @click="next"
-                       v-if="active == 0 || active == 1 || active == 2 "
-                       type="primary">{{(active == 0 || active == 1) ? '下一步' : '创建方案'}}
+                       v-if="active == 0 || active == 1" type="primary">下一步
             </el-button>
+            <el-button style="margin-top: 12px;padding: 12px" @click="next"
+                       v-if="active == 2" type="primary">创建方案 </el-button>
             <el-button style="padding: 12px" @click="next('workInSync')" v-if="active == 2">协同选点</el-button>
             <div class="finishBtn" v-if="active == 3">
                 <el-button type="primary" @click="continueCreate">继续创建</el-button>
-                <el-button type="default" @click="ToDetail">
-                    查看方案
-                </el-button>
+                <el-button type="default" @click="ToDetail">查看方案</el-button>
                 <el-button @click="downLoadFanan()" type="success">导出方案</el-button>
             </div>
         </div>
@@ -742,7 +741,7 @@
                 <li v-for="item in beOccupiedAdsData">
                     <p>
                         <span style="color: #333">占点方案：</span>
-                        <sapn v-if="sessionData.uType === 'MD'"><span style="font-weight: bold">{{item.beOccupieApName}}</span> 方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）</sapn>
+                        <span v-if="sessionData.uType === 'MD'"><span style="font-weight: bold">{{item.beOccupieApName}}</span> 方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）</span>
                         <span v-else style="font-weight: bold">******</span>
                     </p>
                     <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>

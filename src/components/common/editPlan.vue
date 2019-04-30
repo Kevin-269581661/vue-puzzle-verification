@@ -1947,7 +1947,8 @@
                         }
                         this.loading = false
                     } else {
-                        this.$message.error('点位获取异常')
+                        this.$message.warning(res.data.MSG)
+                        this.loading = false
                     }
                     this.searchBtnAbled = false
                 })

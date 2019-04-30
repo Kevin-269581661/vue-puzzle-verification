@@ -1,27 +1,27 @@
 <template>
     <div>
         <el-row class="row_style">
-        <el-col v-for="item of link" :key="item.link" :span="24/link.length" class="col_style">
-            <div :style="item.children?'margin:24px;':'margin:20px;'">
-                <h2 style="cursor:pointer;" @click="toLink(item.link)">
-                    <img :src="item.imgurl" alt="" class="img_box"><br>
-                    <a href="" class="link_big">{{item.title}}</a>
-                </h2>
-                <!--<span class="desc" :style="item.children?'min-height: 44px;':''">{{item.desc}}</span>-->
-            </div>
-            <template v-if="item.children">
-                <el-row class="chil_row">
-                    <el-col :span="12" v-for="(data, index) of item.children" :key="index" class="link_chil">
-                        <span v-if="data.title === '--'" style="color: rgba(0,0,0,0.45)">{{data.title}}</span>
-                        <span v-else-if="data.title === '地图选点'" class="link_chil_map" @click="showMapModel">{{data.title}}</span>
-                        <a v-else :href="data.link" class="link">{{data.title}}</a>
-                    </el-col>
-                </el-row>
-            </template>
-        </el-col>
-    </el-row>
-    <!-- 地图选点选择条件弹出框 -->
-    <el-dialog
+            <el-col v-for="item of link" :key="item.link" :span="24/link.length" class="col_style">
+                <div :style="item.children?'margin:24px;':'margin:20px;'">
+                    <h2 style="cursor:pointer;" @click="toLink(item.link)">
+                        <img :src="item.imgurl" alt="" class="img_box"><br>
+                        <a href="" class="link_big">{{item.title}}</a>
+                    </h2>
+                    <!--<span class="desc" :style="item.children?'min-height: 44px;':''">{{item.desc}}</span>-->
+                </div>
+                <template v-if="item.children">
+                    <el-row class="chil_row">
+                        <el-col :span="12" v-for="(data, index) of item.children" :key="index" class="link_chil">
+                            <span v-if="data.title === '--'" style="color: rgba(0,0,0,0.45)">{{data.title}}</span>
+                            <span v-else-if="data.title === '地图选点'" class="link_chil_map" @click="showMapModel">{{data.title}}</span>
+                            <a v-else :href="data.link" class="link">{{data.title}}</a>
+                        </el-col>
+                    </el-row>
+                </template>
+            </el-col>
+        </el-row>
+        <!-- 地图选点选择条件弹出框 -->
+        <el-dialog
             title="地图选点"
             :visible.sync="mapDialogVisible"
             :close-on-click-modal="false"
@@ -41,7 +41,8 @@
                 </li>
                 <li>
                     <span>投放城市：</span>
-                    <el-select v-model="mapCity" filterable :loading="citySelectLoading" placeholder="请选择" @change="changeCity">
+                    <el-select v-model="mapCity" filterable :loading="citySelectLoading" placeholder="请选择"
+                               @change="changeCity">
                         <el-option
                             v-for="(item,index) in cityList"
                             :key="index"
@@ -57,20 +58,20 @@
             </div>
         </el-dialog>
         <!-- 销售确认已提交地图点位框 -->
-         <el-dialog
+        <el-dialog
             title="提示"
             :visible.sync="confirmVisible"
             :close-on-click-modal="false"
             width="30%">
-           <div>
-               是否已提交地图点位？
-           </div>
+            <div>
+                是否已提交地图点位？
+            </div>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="confirmVisible = false">取 消</el-button>
                 <el-button type="primary" @click="getMapAdsAndGotoPlan">确 定</el-button>
             </div>
         </el-dialog>
-</div>
+    </div>
 </template>
 
 <script>

@@ -1482,20 +1482,20 @@
                         } else if(res.data.SysCode === 100200 || res.data.MSG === '该用户暂未分配公司！'){
                             this.$message.warning('该用户暂未分配公司!')
                         } else {
-                            if(res.data !== '' && res.data !== null){
-                                    let resData = res.data
-                                    let cityList = []
-                                    for (let j = 0; j < resData.length; j++) {
-                                        let cityObj = {
-                                            label: resData[j].rName,
-                                            value: resData[j].rID,
-                                        }
-                                        cityList.push(cityObj);
+                            if (res.data !== '' && res.data !== null) {
+                                let resData = res.data
+                                let cityList = []
+                                for (let j = 0; j < resData.length; j++) {
+                                    let cityObj = {
+                                        label: resData[j].rName,
+                                        value: resData[j].rID,
                                     }
-                                    this.throwCity = cityList
-                                    console.log('cityList',cityList)
-                                    this.cityOptions = areaArr.province()
-                            }else{
+                                    cityList.push(cityObj);
+                                }
+                                this.throwCity = cityList
+                                console.log('cityList', cityList)
+                                this.cityOptions = areaArr.province()
+                            } else {
                                 this.$message.warning('城市数据获取异常')
                             }
                         }
@@ -2326,7 +2326,6 @@
                 // 选择公司后过滤联系人列表customer
                 let customerList = this.customer
                 let ownerList = []   // 联系人
-                let BrandList = []  // 公司品牌
                 for (let j = 0; j < customerList.length; j++) {
                     if (customerList[j].cID == val) {
                         let owner = {

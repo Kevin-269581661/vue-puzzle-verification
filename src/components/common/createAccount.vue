@@ -434,7 +434,7 @@
                     email: actFrom.email,
                     puid: "",
                     asrID: actFrom.company,
-                    authorCity: actFrom.roleCity?actFrom.roleCity.join(','):'',
+                    authorCity: actFrom.roleCity?this.sortCity(actFrom.roleCity):'',
                     saleManageLevel: actFrom.saleManageLevel ? actFrom.saleManageLevel : 0,
                     mediaManageLevel: actFrom.mediaManageLevel ? actFrom.mediaManageLevel : 0,
                 };
@@ -445,6 +445,13 @@
                     account.uID = actFrom.uID;
                 }
                 return account;
+            },
+            sortCity(arr){
+                arr.sort((a, b) =>{
+                    return a - b;
+                });
+                console.log('arr---', arr);
+                return arr.join(',');
             },
             // 修改账户信息接口
             postEditInfo() {

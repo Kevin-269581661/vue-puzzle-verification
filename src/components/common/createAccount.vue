@@ -49,7 +49,7 @@
                                     </el-select>
                                 </el-form-item>
                                 <el-form-item label="权限城市:" prop="roleCity" v-if="accountForm.saleManageLevel">
-                                    <el-select v-model="accountForm.roleCity" placeholder="请选择权限城市" multiple size="small" filterable>
+                                    <el-select v-model="accountForm.roleCity" placeholder="请选择权限城市" multiple size="small" filterable @change="changeCity">
                                         <el-option v-for="item in roleCityArr" :key="item.value" :value="item.value" :label="item.label"></el-option>
                                     </el-select>
                                 </el-form-item>
@@ -404,6 +404,11 @@
             },
             //根据登录用户的权限设置创建新帐号的上级
             submitForm(formName) {
+
+                if(this.accountForm.saleManageLevel && (!this.accountForm.roleCity.length)){
+                    Message.warning('当前是想创建全国销售,请选择权限城市');
+                    return;
+                }
                 console.log("item", formName);
                 this.$refs[formName].validate(valid => {
                     if (valid) {
@@ -602,6 +607,10 @@
                             };
                             result.push(obj);
                         }
+                        result.unshift({
+                            label: '全国',
+                            value: '0'
+                        });
                         this.roleCityArr = result;
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
@@ -609,6 +618,12 @@
                         Message.warning(res.data.MSG);
                     }
                 });
+            },
+            // 权限城市勾选
+            changeCity(val){
+                if(val.includes('0')){
+                    this.accountForm.roleCity = ['0'];
+                }
             },
             loginTimeout() {
                 Message.warning("登录超时,请重新登录");

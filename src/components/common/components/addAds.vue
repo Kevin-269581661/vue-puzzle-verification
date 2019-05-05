@@ -784,9 +784,11 @@
                             this.planList = []
                         }
                         this.loading = false
+                    } else {
+                        this.$message.warning(res.data.MSG)
+                        this.loading = false
                     }
                 })
-
             },
             // 接口数据转成table
             setTableDataADDoor(ADSdata){

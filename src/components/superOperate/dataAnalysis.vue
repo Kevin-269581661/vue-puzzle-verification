@@ -2714,7 +2714,7 @@
                     }
                     this.allDataLoading = false
                 }).catch(err => {
-                    this.$message.warning('数据获取异常!')
+                    console.log('概况相关汇总数据接口error')
                     this.allDataLoading = false
                 });
             },
@@ -5297,7 +5297,7 @@
                         this.pointDataLoading = false          // 点位使用概况loading
                     }
                 }).catch(err=>{
-                    this.$message.warning('数据获取异常!')
+                   console.log('点位使用概况error')
                 })
             },
             // 点位使用概况 - 自然天/自然月 选择

@@ -81,7 +81,7 @@
                                         +
                                     </el-button>
                                 </div>
-                                <el-select v-else v-model="planForm.throwCity" size="small" multiple placeholder="请选择" @remove-tag="removeCity">
+                                <el-select v-else v-model="planForm.throwCity" size="small" filterable multiple placeholder="请选择" @remove-tag="removeCity">
                                     <el-option
                                         v-for="item in throwCity"
                                         :key="item.value"
@@ -1488,7 +1488,7 @@
                                 for (let j = 0; j < resData.length; j++) {
                                     let cityObj = {
                                         label: resData[j].rName,
-                                        value: resData[j].rID,
+                                        value: resData[j].rID.toString(),
                                     }
                                     cityList.push(cityObj);
                                 }

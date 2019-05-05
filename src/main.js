@@ -61,6 +61,7 @@ Vue.prototype.qadnUrl = 'https://www.qinlinad.com'
 // Vue.prototype.qadnUrl = 'https://beta.qinlinad.com'
 Vue.use(ElementUI);
 
+console.log('test');
 
 
 /* eslint-disable no-new */

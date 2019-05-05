@@ -605,7 +605,7 @@
                         for(let data of resinfo){
                             let obj = {
                                 label: data.rName,
-                                value: data.rID
+                                value: data.rID.toString()
                             };
                             result.push(obj);
                         }

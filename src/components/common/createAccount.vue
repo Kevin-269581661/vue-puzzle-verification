@@ -404,8 +404,7 @@
             },
             //根据登录用户的权限设置创建新帐号的上级
             submitForm(formName) {
-
-                if(this.accountForm.saleManageLevel && (!this.accountForm.roleCity.length)){
+                if(this.isSale && this.accountForm.saleManageLevel && (!this.accountForm.roleCity.length)){
                     Message.warning('当前是想创建全国销售,请选择权限城市');
                     return;
                 }

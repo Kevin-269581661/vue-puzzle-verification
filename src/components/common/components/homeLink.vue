@@ -214,7 +214,7 @@ export default {
                         this.confirmVisible = false
                         let indexData = {
                             dateInput: this.dateInput,
-                            rid: this.mapCity,
+                            rid: this.mapCity.toString(),
                             city: this.mapCityName,
                         }
                         sessionStorage.setItem('indexData', JSON.stringify(indexData));

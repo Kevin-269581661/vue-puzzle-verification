@@ -5,7 +5,7 @@
                 <div :style="item.children?'margin:24px;':'margin:20px;'">
                     <h2 style="cursor:pointer;" @click="toLink(item.link)">
                         <img :src="item.imgurl" alt="" class="img_box"><br>
-                        <a href="" class="link_big">{{item.title}}</a>
+                        <span class="link_big">{{item.title}}</span>
                     </h2>
                     <!--<span class="desc" :style="item.children?'min-height: 44px;':''">{{item.desc}}</span>-->
                 </div>

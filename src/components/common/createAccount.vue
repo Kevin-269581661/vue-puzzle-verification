@@ -282,7 +282,7 @@
         mounted() {
             this.getSession();
             this.getCompany();
-            this.getRoleCity();
+            // this.getRoleCity();
             this.getInitEditInfo();
         },
         methods: {
@@ -349,6 +349,9 @@
                     this.isMedia = false;
                     this.isSale = false;
                     this.isSM = false;
+                }
+                if(this.isSale){
+                    this.getRoleCity();
                 }
             },
             // 选择公司

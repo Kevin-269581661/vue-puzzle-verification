@@ -1461,9 +1461,9 @@
                 }
                 this.planForm.throwCity.push(this.indexData.rid)
             },
-            // 获取权限下的城市列表 saleManageLevel
+            // 获取权限下的城市列表
             getCityList(){
-                // if (this.saleManageLevel == 1) {
+                // if (this.saleManageLevel == 1 && this.sessionData.authorCity == '0') {
                 //     this.cityOther = true
                 //     this.cityOptions = areaArr.province()
                 // } else {

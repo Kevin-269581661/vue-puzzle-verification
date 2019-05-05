@@ -1392,7 +1392,8 @@
             messageFun(mesType,mes){
                 this.$message({
                     message: mes,
-                    type: mesType
+                    type: mesType,
+                    showClose: true,
                 })
             },
             // 登录超时

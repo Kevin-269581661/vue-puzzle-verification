@@ -153,7 +153,10 @@
   color: #108EE9;
 
 }
-
+/*提示框*/
+.el-message{
+    top: 64px;
+}
 /*1366*/
 @media screen and (min-width: 1366px) {
   .ad_index_container {

@@ -65,7 +65,7 @@
                                 <router-link :to="{path:'/superOperate/questionAndAnswer'}" id="qna">操作说明</router-link>
                             </li>
                             <li>
-                                <router-link :to="{path:'/superOperate/compact'}" id="compact">合同下载</router-link>
+                                <router-link :to="{path:'/superOperate/compact'}" id="compact">文件下载</router-link>
                             </li>
                         </ul>
                     </a>

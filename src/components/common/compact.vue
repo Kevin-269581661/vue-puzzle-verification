@@ -106,7 +106,7 @@
                 <div class="table_wrap">
                     <el-row>
                         <el-col :span="7">
-                            <h2 class="h2_style">pdf模版</h2>
+                            <h2 class="h2_style">文档下载</h2>
                             <div class="button_box">
                                 <el-button plain>
                                     <img src="../../assets/images/pdf.png" alt="">

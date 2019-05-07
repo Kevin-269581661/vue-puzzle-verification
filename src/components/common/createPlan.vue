@@ -1250,7 +1250,6 @@
                 planList: [],               //step2可选点位列表
                 IsAll: false,               //当前是否为全选状态
                 sessionData: '',            // 登录用户的数据
-                // shopListCity: [],        // 购物车的城市列表
                 FAData: {apID:''},          // 创建方后台返回的数据
                 timeout: null,
                 BDData: {uid: '0', realName: ''},
@@ -1274,7 +1273,6 @@
                 loadSign: true,                  // table滚轮
                 shopMedia_ADNum: {resNum: 0, mediaNum: 0, ADNum: 0},
                 ADloading: '',                   // 创建方案、提交选点和报价单时的loading
-                // computeAuotation: '',         // 计算报价单时的loading
                 areaCity: [],
                 activeCityData: {},             // 城市切换的数据，默认为this.city[0]
                 loadScroll: true,               // 搜索后不执行滚动加载
@@ -1480,7 +1478,7 @@
                         if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                             this.loginTimeout()       // 登录超时
                         } else if(res.data.SysCode === 100200 || res.data.MSG === '该用户暂未分配公司！'){
-                            this.$message.warning('该用户暂未分配公司!')
+                            this.messageFun('warning','该用户暂未分配公司')
                         } else {
                             if (res.data !== '' && res.data !== null) {
                                 let resData = res.data
@@ -1496,7 +1494,7 @@
                                 console.log('cityList', cityList)
                                 this.cityOptions = areaArr.province()
                             } else {
-                                this.$message.warning('城市数据获取异常')
+                                this.messageFun('warning','城市数据获取异常')
                             }
                         }
                     })
@@ -1515,10 +1513,7 @@
                         this.creatTab()                 // 报价单tab
                         this.getBand()                  // 获取公司品牌
                     } else {
-                        this.$message({
-                            message: '请选择点位',
-                            type: 'warning'
-                        });
+                        this.messageFun('warning','请选择点位')
                     }
                 } else if (this.active === 2) {
                     this.isCityPrice = false
@@ -1533,7 +1528,7 @@
                         });
                         this.creatAdPlan()    // 创建方案 当前价格大于系统支持的最大价格
                     } else {
-                        this.$message.error('单城市总价格大于系统支持的最大价格（2000万）')
+                        this.messageFun('warning','单城市总价格大于系统支持的最大价格（2000万）')
                     }
 
                 }
@@ -1561,7 +1556,7 @@
                     if(this.emptyRange.length){
                         this.dateRangeEmpty();
                     }else{
-                        Message.warning('请先选择日期');
+                        this.messageFun('warning','请先选择日期')
                     }
                 }
             },
@@ -1592,12 +1587,12 @@
                             let filename = returnobj.city.join('-')+'-'+ info.startTime+'~'+info.endTime+'空位表';
                             sheetExcel.toDownload(allHead, returnobj.arr, filename);
                         }else{
-                            Message.warning('此城市没有点位');
+                            this.messageFun('warning','此城市没有点位')
                         }
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{
-                        Message.warning(res.data.MSG);
+                        this.messageFun('warning',res.data.MSG)
                     }
                     loadingPoint.close();
                 }).catch(err =>{
@@ -1664,7 +1659,7 @@
                 if(this.planForm.throwCity.length){
                     this.showEmptyPoint = true;
                 }else{
-                    this.$message.warning('请先选择投放城市');
+                    this.messageFun('warning','请先选择投放城市')
                 }
             },
             /*step1*/
@@ -1724,12 +1719,12 @@
                             let filename = returnobj.filename+'-'+ date[0].substring(0, 10)+'~'+date[date.length-1].substring(11)+'空位表';
                             sheetExcel.toDownload(allHead, returnobj.arr, filename);
                         }else{
-                            Message.warning('此城市没有点位');
+                            this.messageFun('warning','此城市没有点位')
                         }
                         loadingPoint.close();
                     });
                 }else{
-                    this.$message.warning('请先选择投放城市');
+                    this.messageFun('warning','请先选择投放城市')
                 }
             },
             // 处理数据
@@ -1852,7 +1847,7 @@
                         }else if(res.data.SysCode == 100302){
                             this.loginTimeout();
                         }else{
-                            Message.warning(res.data.MSG);
+                            this.messageFun('warning',res.data.MSG)
                         }
                     }).catch(res =>{
                         console.log(res);
@@ -2123,7 +2118,7 @@
                     console.log('downUrl-----', this.downUrl);
                     this.showEmpty = true;
                 }else{
-                    this.$message.warning('请先选择投放城市');
+                    this.messageFun('warning','请先选择投放城市')
                 }
             },
             // 复制空位导出链接
@@ -2136,15 +2131,12 @@
                 oInput.select();                // 选择对象
                 document.execCommand("Copy"); // 执行浏览器复制命令
                 oInput.style.display = 'none';
-                this.$message({
-                    message: '复制成功',
-                    type: 'success'
-                });
+                this.messageFun('success','复制成功')
             },
             // step1投放城市权限是全国时spliceCity、showInput、handleInputConfirm
             spliceCity(tag) { // step1方案创建,删除选择城市
                 if(this.indexData.city.includes(tag)){
-                    this.$message.warning(tag + '为地图选择所在城市，不可删除')
+                    this.messageFun('warning',tag + '为地图选择所在城市，不可删除')
                     return
                 }
                 this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
@@ -2171,7 +2163,7 @@
             removeCity(val){
                 console.log('非全国，移除城市val',val,this.planForm.throwCity)
                 if (this.indexData.rid == val) {
-                    this.$message.warning(this.indexData.city + '为选择的地图点位所在城市，不可删除')
+                    this.messageFun('warning',this.indexData.city + '为选择的地图点位所在城市，不可删除')
                     this.planForm.throwCity.push(val)
                     this.$refs['planThrowCity'].clearValidate()
                 }
@@ -2208,10 +2200,7 @@
                                         this.selectedOptions = [];
                                         break
                                     } else {
-                                        Message({
-                                            message: '不可以选择重复的城市！',
-                                            type: 'warning'
-                                        })
+                                        this.messageFun('warning','不可以选择重复的城市')
                                     }
                                 }
                             }
@@ -2255,12 +2244,11 @@
                                 let results = [res.data];
                                 clearTimeout(this.timeout)
                                 this.timeout = setTimeout(() => {
-                                    // this.$message.success('')
                                     callback(results);
                                 }, 1000 * Math.random());
                             } else {
                                 this.BDData.uid = '0'
-                                this.$message.warning(res.data.MSG)
+                                this.messageFun('warning',res.data.MSG)
                             }
                         }
 
@@ -2542,7 +2530,7 @@
                             }
                             this.loading = false
                         } else {
-                            this.$message.warning(res.data.MSG)
+                            this.messageFun('warning',res.data.MSG)
                             this.loading = false
                         }
                         this.searchBtnAbled = false
@@ -2674,7 +2662,7 @@
                         this.getAdList()
                         this.beforeDate = this.dateInput
                     }else if(!this.dateInput){
-                        this.$message.warning('搜索时间不能为空!')
+                        this.messageFun('warning','搜索时间不能为空')
                         this.searchBtnAbled = false
                     }else{
                         this.searchBtnAbled = false
@@ -2732,10 +2720,7 @@
                     }else{
                         if (res.data === '' || res.data === null ||  res.data.length <= 0){
                             this.planList = []
-                            this.$message({
-                                message: '暂无该小区被占信息',
-                                type: 'warning'
-                            })
+                            this.messageFun('warning','暂无该小区被占信息')
                         }else{
                             let arr = []
                             for(let key of dataArr){
@@ -2809,10 +2794,7 @@
                         if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                             this.loginTimeout()       // 登陆超时
                         } else {
-                            Message({
-                                message: res.data.MSG + ',请尝试重新点击',
-                                type: 'warning'
-                            })
+                            this.messageFun('warning',res.data.MSG + ',请尝试重新点击')
                         }
                     }
                 }).catch(err => {
@@ -2826,20 +2808,19 @@
                     if (valid) {
                         IsBoolean = true
                     } else {
-                        console.log('error submit!!')
                         return false;
                     }
                 })
 
                 if(IsBoolean){
                     if(Number(this.oneKeyPointData.TotalPoint) < Number(this.oneKeyPointData.pointNumByRes)){
-                        this.$message.warning('每小区选择的个数不能大于点位总量')
+                        this.messageFun('warning','每小区选择的个数不能大于点位总量')
                     }else{
                         this.oneKeySelectPoint()
                     }
 
                 }else{
-                    this.$message.warning('信息填写有误')
+                    this.messageFun('warning','信息填写有误')
                 }
 
             },
@@ -2949,20 +2930,19 @@
                         this.computeMedia_AD()
                         this.judgeByselect()
                         if (this.oneKeyPointData.TotalPoint == res.data.length) {
-                            this.$message.success('成功选择了' + res.data.length + '面')
+                            this.messageFun('success','成功选择了' + res.data.length + '面')
                         } else {
-                            this.$message.warning('满足条件的点位不足' + this.oneKeyPointData.TotalPoint + '面,成功选择了' + res.data.length + '面')
+                            this.messageFun('warning','满足条件的点位不足' + this.oneKeyPointData.TotalPoint + '面,成功选择了' + res.data.length + '面')
                         }
 
                     }else{
-                        this.$message.warning('选择失败')
+                        this.messageFun('warning','选择失败')
                     }
                     oneKeyPointLoading.close()
                 })
                 let timer = setTimeout(()=>{
                     if(!IsXhr){
-                        // console.log('取消一键选点')
-                        this.$message.warning('点位选择异常')
+                        this.messageFun('warning','点位选择异常')
                         oneKeyPointLoading.close()
                     }else{
                         // console.log('一键选点已成功')
@@ -3110,7 +3090,7 @@
                     this.setPageNoAndTableData()
                     this.getAdList()
                 }else{
-                    this.$message.warning('被占查询状态下，无效切换!')
+                    this.messageFun('warning','被占查询状态下，无效切换!')
                 }
             },
             // 媒体等级过滤
@@ -3143,7 +3123,7 @@
             // 住户数量过滤
             tableHeaderFilter_h() {
                 if (this.houseNum[0] == '' || this.houseNum[1] == '') {
-                    this.$message.warning('数据区间填写有误')
+                    this.messageFun('warning','数据区间填写有误')
                 } else {
                     let tagName = '住户数量:' + this.houseNum[0] + "-" + this.houseNum[1]
                     this.isHaveThisTag('houseNum', tagName)
@@ -3157,7 +3137,7 @@
             // 楼盘价格过滤
             tableHeaderFilter_p() {
                 if (this.buildPrice[0] == '' || this.buildPrice[1] == '') {
-                    this.$message.warning('数据区间填写有误')
+                    this.messageFun('warning','数据区间填写有误')
                 } else {
                     let tagName = '楼盘价格:' + this.buildPrice[0] + "-" + this.buildPrice[1]
                     this.isHaveThisTag('buildPrice', tagName)
@@ -3171,7 +3151,7 @@
             // 年份过滤
             tableHeaderFilterByLiveYear() {
                 if (this.liveYear[0] == '' || this.liveYear[1] == '') {
-                    this.$message.warning('数据区间填写有误!')
+                    this.messageFun('warning','数据区间填写有误')
                 } else {
                     let tagName = '入住年份:' + this.liveYear[0] + "-" + this.liveYear[1]
                     this.isHaveThisTag('liveYear', tagName)
@@ -3197,7 +3177,7 @@
             //人流量过滤
             tableHeaderFilterByPeopleFlow() {
                 if (this.peopleFlow[0] == '' || this.peopleFlow[1] == '') {
-                    this.$message.warning('数据区间填写有误!')
+                    this.messageFun('warning','数据区间填写有误')
                 } else {
                     let tagName = '人流量:' + this.peopleFlow[0] + "-" + this.peopleFlow[1]
                     this.isHaveThisTag('peopleFlow', tagName)
@@ -3211,7 +3191,7 @@
             // 车流量过滤
             tableHeaderFilterByCarFlow() {
                 if (this.carFlow[0] == '' || this.carFlow[1] == '') {
-                    this.$message.warning('数据区间填写有误!')
+                    this.messageFun('warning','数据区间填写有误')
                 } else {
                     let tagName = '车流量:' + this.carFlow[0] + "-" + this.carFlow[1]
                     this.isHaveThisTag('carFlow', tagName)
@@ -3225,7 +3205,7 @@
             // 车位数过滤
             tableHeaderFilterByParkSpaceNum(){
                 if(this.parkSpaceNum[0] == '' || this.parkSpaceNum[1]){
-                    this.$message.warning('数据区间填写有误!')
+                    this.messageFun('warning','数据区间填写有误')
                 }else{
                     let tagName = '车位数:' + this.parkSpaceNum[0] + "-" + this.parkSpaceNum[1]
                     this.isHaveThisTag('parkSpaceNum',tagName)
@@ -3508,20 +3488,14 @@
                         if(this.mapADList.length > 0){
                             this.setShopDataByMapAD()
                         } else {
-                            Message({
-                                message: '数据为空',
-                                type: 'warning'
-                            })
+                            this.messageFun('warning','数据为空')
                             this.getMapLoading.close()
                         }
                     } else if(res.data.code == '100302' || res.data.MSG === "登陆超时"){
                         this.loginTimeout()
                     } else {
                         this.getMapLoading.close()
-                        Message({
-                            message: '数据获取异常',
-                            type: 'warning'
-                        })
+                        this.messageFun('warning','数据获取异常')
                     }
                 })
             },
@@ -3622,10 +3596,7 @@
                 if(this.getMapLoading){
                     this.getMapLoading.close()
                 }
-                Message({
-                    message: '成功获取到' + tempArr.length + '条数据',
-                    type: 'success'
-                })
+                this.messageFun('success','成功获取到' + tempArr.length + '条数据')
                 this.computeMedia_AD('mapAD')
                 this.judgeByselect()
             },
@@ -3714,13 +3685,13 @@
                     }
                 }
                 if (num > 0) {
-                    this.$message.success('成功移除' + num + '条数据')
+                    this.messageFun('success','成功移除' + num + '条数据')
                     this.shopingList = arr
                     this.computeMedia_AD()
                     this.resetPlanList()
                     this.judgeByselect()
                 } else {
-                    this.$message.warning('暂无同行回避点位')
+                    this.messageFun('warning','暂无同行回避点位')
                 }
             },
             // 清空购物车
@@ -3734,22 +3705,13 @@
                         this.shopingList = []
                         this.allCheckboxUpdata()
                         this.computeMedia_AD()
-                        this.$message({
-                            type: 'success',
-                            message: '删除成功!'
-                        })
+                        this.messageFun('success','删除成功')
                         this.resetPlanList()      // 重置planList的勾选
                     }).catch(() => {
-                        this.$message({
-                            type: 'info',
-                            message: '已取消删除'
-                        })
+                        this.messageFun('info','已取消删除')
                     })
                 }else{
-                    this.$message({
-                        type: 'warning',
-                        message: '无数据可删除'
-                    });
+                    this.messageFun('warning','无数据可删除')
                 }
 
             },
@@ -3902,7 +3864,7 @@
                     }
                 }
             },
-            // 购物车行被点击 beOccupiedAdsData
+            // 购物车行被点击
             shopRowClick(row, event, column){
                 console.log('购物车行被点击row',row,column)
                 if(row.connData.connectResName !== '' || row.connData.commentWorkRes !=='' || row.connData.connectMedia !==''){
@@ -4194,59 +4156,6 @@
                 this.quotation = quotationArr
                 console.log('创建报价单', this.quotation)
                 this.quotationObj = {quotation:this.quotation,isDetail:false}
-                // let quotationArr = []
-                // for (let i = 0; i < this.city.length; i++) {
-                //     let quotationObj = {
-                //         city: this.city[i].rName,
-                //         rid: this.city[i].rid,
-                //         priceMsg:{
-                //             adDoor:{
-                //                 schedules: [],                // 排期
-                //                 GMDate: 0,                   // 赠送面.天
-                //                 LevelGMDate: {A: 0, B: 0, C: 0},     // 赠送面.天
-                //                 discount: '100',            // 广告费折扣
-                //                 advertyPrice: 0,            // 广告费
-                //                 ADNumber: 0,                // 广告画数量
-                //                 makeDiscount: '100',        // 制作费折扣
-                //                 MPrice: 100.00,             // 制作费单价
-                //                 reaPrice: 0,                // 广告费每次修改前的价格
-                //                 oldPrice: 0,                //  广告费初始价格
-                //                 MReaPrice: 0,              // 制作费原价
-                //                 makePrice: 0,           // 制作费
-                //                 ADPrice: 0,             // 刊例价(面/周)
-                //                 tfl: 0,                    //投放量
-                //                 cash: 0,               // 现金结算
-                //                 zyzh: 0,                   // 资源置换
-                //                 other: 0,                  // 其他费用
-                //                 total: 0,
-                //                 remark: '',                 //备注信息
-                //             },
-                //             roadGate:{
-                //                 schedules: [],                // 排期
-                //                 GMDate: 0,                   // 赠送面.天
-                //                 discount: '100',           // 广告费折扣
-                //                 advertyPrice: 0,             // 广告费
-                //                 ADNumber: 0,                 // 广告画数量
-                //                 makeDiscount: '100',      // 制作费折扣
-                //                 MPrice: 300.00,                // 制作费单价
-                //                 reaPrice: 0,                // 广告费每次修改前的价格
-                //                 oldPrice: 0,                 //  广告费初始价格
-                //                 MReaPrice: 0,              // 制作费原价
-                //                 makePrice: 0,              // 制作费
-                //                 ADPrice: 0,                // 刊例价(面/周)
-                //                 tfl: 0,                    //投放量
-                //                 cash: 0,                   // 现金结算
-                //                 zyzh: 0,                   // 资源置换
-                //                 other: 0,                  // 其他费用
-                //                 total: 0,
-                //             },
-                //         },
-                //     }
-                //     quotationArr.push(quotationObj)
-                // }
-                // this.quotation = quotationArr
-                // console.log('创建报价单', this.quotation)
-                // this.quotationObj = {quotation:this.quotation,isDetail:false}
             },
             //计算总价格
             computeTotal() {
@@ -4373,7 +4282,7 @@
                         sessionStorage.setItem('cityArea', JSON.stringify(cityArea));
                     }else{
                         this.ADloading.close()
-                        this.$message.error('方案创建失败')
+                        this.messageFun('warning','方案创建失败')
                     }
                 })
             },
@@ -4435,24 +4344,14 @@
                         this.loginTimeout()
                     } else {
                         if (res.data === '' || res.data === null) {
-                            this.$message({
-                                message: '提交选点失败',
-                                type: 'warning'
-                            })
+                            this.messageFun('warning','提交选点失败')
                         } else {
                             this.ADloading.close()
                             this.active = 3
                             if(this.apMinTime <= this.dateTime){
-                                Message({
-                                    message: '该方案的投放期已经开始，建议立即发布该方案！',
-                                    type: 'warning',
-                                    duration: 5000
-                                })
+                                this.messageFun('warning','该方案的投放期已经开始，建议立即发布该方案！')
                             }else{
-                                Message({
-                                    message: '投放城市的报价信息提交成功！',
-                                    type: 'success'
-                                })
+                                this.messageFun('success','投放城市的报价信息提交成功')
                             }
                         }
                     }
@@ -4473,11 +4372,6 @@
                     console.log('生成协同选点aiCode', res)
                     this.apAicode = res.data.aiCode         // 协同选点 aiCode
                     this.shareADUrl = this.qadnUrl + '/shareADList?apid=' + this.FAData.apID + '&aicode=' + res.data.aiCode
-                    // if (urlPath.indexOf('www') !== -1) {
-                    //     this.shareADUrl = 'https://www.qinlinad.com/shareADList?apid=' + this.FAData.apID + '&aicode=' + res.data.aiCode
-                    // } else {
-                    //     this.shareADUrl = 'https://beta.qinlinad.com/shareADList?apid=' + this.FAData.apID + '&aicode=' + res.data.aiCode
-                    // }
                     this.active = 3
                 })
             },
@@ -4500,10 +4394,7 @@
                 oInput.select();                // 选择对象
                 document.execCommand("Copy"); // 执行浏览器复制命令
                 oInput.style.display = 'none';
-                this.$message({
-                    message: '复制成功',
-                    type: 'success'
-                });
+                this.messageFun('success','复制成功')
             },
             // 公用方法
             // 时间戳转换成日期格式 2018-06-18 10:33:24
@@ -4516,6 +4407,14 @@
                 let m = date.getMinutes() + ':';
                 let s = date.getSeconds();
                 return Y + M + D + h + m + s;
+            },
+            // 操作提示统一方法
+            messageFun(mesType,mes){
+                this.$message({
+                    message: mes,
+                    type: mesType,
+                    showClose: true,
+                })
             },
             // 登录超时
             loginTimeout() {
@@ -4553,6 +4452,7 @@
     }
     .adsTable{
         position: relative;
+        margin-top: 5px;
     }
     .myCheckbox{
         position: absolute;
@@ -4961,18 +4861,6 @@
         z-index: 998;
     }
 
-    /*.cart_box {*/
-        /*color: #fff;*/
-        /*background: #108EE9;*/
-        /*border-radius: 50%;*/
-        /*display: inline-block;*/
-        /*width: 50px;*/
-        /*height: 50px;*/
-        /*vertial-align: middle;*/
-        /*text-align: center;*/
-        /*line-height: 50px;*/
-    /*}*/
-
     /deep/ .shopcar .el-badge__content.is-fixed {
         position: absolute;
         top: 10px;
@@ -5097,7 +4985,7 @@
         width: 100%;
         height:36px;
         line-height: 36px;
-        margin: 5px 0;
+        margin: 5px 0 0;
         background:rgb(241,241,241);
     }
     .filter-condition /deep/ .el-tag{
@@ -5227,12 +5115,6 @@
         cursor: pointer;
         color: #1890ff;
     }
-
-    /*.car-del {*/
-        /*text-align: center;*/
-        /*cursor: pointer;*/
-        /*color: #1890ff;*/
-    /*}*/
 
     /deep/ .car-list .el-table__expanded-cell[class*=cell] {
         padding: 0 46px;
@@ -5369,10 +5251,6 @@
     /*确认报价单修改框*/
     /deep/ .el-dialog__body {
         padding: 2px 20px 8px 20px;
-    }
-
-    /deep/ .step3 .el-input {
-        /*width: 348px;*/
     }
 
     /deep/ .step3 .el-input__inner, /deep/ .step3 .el-textarea__inner {

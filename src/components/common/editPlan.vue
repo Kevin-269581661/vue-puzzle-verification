@@ -1373,7 +1373,7 @@
                         }else if(res.data.SysCode == 100302){
                             this.loginTimeout();
                         }else{
-                            Message.warning(res.data.MSG);
+                            this.messageFun('warning',res.data.MSG)
                         }
                     }).catch(res =>{
                         console.log(res);
@@ -1449,7 +1449,7 @@
                     }
                 }
                 console.log('this.shopingList----', this.shopingList);
-                Message.success('成功导入'+arr.length+'条数据');
+                this.messageFun('success','成功导入'+arr.length+'条数据')
                 this.isImport = false;
                 this.computeMedia_AD();
                 this.judgeByselect();
@@ -1725,7 +1725,7 @@
                         if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                             this.loginTimeout()       // 登录超时
                         } else {
-                            Message.warning('选点信息提交失败')
+                            this.messageFun('warning','选点信息提交失败！')
                         }
                         this.ADloading.close()
                     }
@@ -1789,13 +1789,13 @@
                         this.PushADBFun(res.data.Data)
                     }else if(res.data.SysCode == 300500){
                         this.ADloading.close()
-                        this.$message.warning(res.data.MSG)
+                        this.messageFun('warning',res.data.MSG)
                     }else if(res.data.SysCode == 100302 || res.data.MSG === '登陆超时'){
                         this.ADloading.close()
                         this.loginTimeout()
                     }else{
                         this.ADloading.close()
-                        this.$message.warning('价格信息提交失败')
+                        this.messageFun('warning','价格信息提交失败')
                     }
                 })
             },
@@ -1868,27 +1868,16 @@
                         this.loginTimeout()
                     } else {
                         if (res.data === '' || res.data === null) {
-                            this.$message({
-                                message: '提交选点失败',
-                                type: 'warning'
-                            })
+                            this.messageFun('warning','提交选点失败')
                         } else {
-                            // this.ADloading.close()
                             this.active = 3
                             if (this.workInSync) {
                                 this.CreateShareADSFun()
                             }
                             if(this.apMinTime <= this.dateTime){
-                                Message({
-                                    message: '该方案的投放期已经开始，建议立即发布该方案！',
-                                    type: 'warning',
-                                    duration: 5000
-                                })
+                                this.messageFun('warning','该方案的投放期已经开始，建议立即发布该方案！')
                             }else{
-                                Message({
-                                    message: '投放城市的报价信息提交成功！',
-                                    type: 'success'
-                                })
+                                this.messageFun('success','投放城市的报价信息提交成功')
                             }
                         }
                     }
@@ -1947,7 +1936,7 @@
                         }
                         this.loading = false
                     } else {
-                        this.$message.warning(res.data.MSG)
+                        this.messageFun('warning',res.data.MSG)
                         this.loading = false
                     }
                     this.searchBtnAbled = false
@@ -2073,7 +2062,7 @@
                         this.getAdList()
                         this.beforeDate = this.dateInput
                     }else if(!this.dateInput){
-                        this.$message.warning('搜索时间不能为空!')
+                        this.messageFun('warning','搜索时间不能为空!')
                         this.searchBtnAbled = false
                     }else{
                         this.searchBtnAbled = false
@@ -2144,10 +2133,7 @@
                         if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                             this.loginTimeout()       // 登陆超时
                         } else {
-                            Message({
-                                message: res.data.MSG + ',请尝试重新点击',
-                                type: 'warning'
-                            })
+                            this.messageFun('warning',res.data.MSG + ',请尝试重新点击')
                         }
                     }
                 }).catch(err => {
@@ -2169,13 +2155,13 @@
                 if(IsBoolean){
                     console.log('一键选点',this.oneKeyPointData)
                     if(Number(this.oneKeyPointData.TotalPoint) < Number(this.oneKeyPointData.pointNumByRes)){
-                        this.$message.warning('每小区选择的个数不能大于点位总量')
+                        this.messageFun('warning','每小区选择的个数不能大于点位总量')
                     }else{
                         this.oneKeySelectPoint()
                     }
 
                 }else{
-                    this.$message.warning('信息填写有误')
+                    this.messageFun('warning','信息填写有误')
                 }
 
             },
@@ -2287,20 +2273,20 @@
                         this.computeMedia_AD()
                         this.judgeByselect()
                         if(this.oneKeyPointData.TotalPoint == res.data.length){
-                            this.$message.success('成功选择了'+ res.data.length +'面')
+                            this.messageFun('success','成功选择了'+ res.data.length +'面')
                         }else{
-                            this.$message.warning('满足条件的点位不足'+this.oneKeyPointData.TotalPoint+'面,成功选择了'+ res.data.length +'面')
+                            this.messageFun('warning','满足条件的点位不足'+this.oneKeyPointData.TotalPoint+'面,成功选择了'+ res.data.length +'面')
                         }
 
                     }else{
-                        this.$message.warning('选择失败')
+                        this.messageFun('warning','选择失败')
                     }
                     oneKeyPointLoading.close()
                 })
                 let timer = setTimeout(()=>{
                     if(!IsXhr){
                         // console.log('取消一键选点')
-                        this.$message.warning('点位选择异常')
+                        this.messageFun('warning','点位选择异常')
                         oneKeyPointLoading.close()
                     }else{
                         // console.log('一键选点已成功')
@@ -2509,7 +2495,7 @@
                     this.setPageNoAndTableData()
                     this.getAdList()
                 }else{
-                    this.$message.warning('被占查询状态下，无效切换!')
+                    this.messageFun('warning','被占查询状态下，无效切换!')
                 }
             },
             // 媒体等级过滤
@@ -2542,7 +2528,7 @@
             // 住户数量过滤
             tableHeaderFilter_h() {
                 if (this.houseNum[0] == '' || this.houseNum[1] == '') {
-                    this.$message.warning('数据区间填写有误')
+                    this.messageFun('warning','数据区间填写有误!')
                 } else {
                     let tagName = '住户数量:' + this.houseNum[0] + "-" + this.houseNum[1]
                     this.isHaveThisTag('houseNum', tagName)
@@ -2556,7 +2542,7 @@
             // 楼盘价格过滤
             tableHeaderFilter_p() {
                 if (this.buildPrice[0] == '' || this.buildPrice[1] == '') {
-                    this.$message.warning('数据区间填写有误')
+                    this.messageFun('warning','数据区间填写有误!')
                 } else {
                     let tagName = '楼盘价格:' + this.buildPrice[0] + "-" + this.buildPrice[1]
                     this.isHaveThisTag('buildPrice', tagName)
@@ -2570,7 +2556,7 @@
             // 年份过滤
             tableHeaderFilterByLiveYear() {
                 if (this.liveYear[0] == '' || this.liveYear[1] == '') {
-                    this.$message.warning('数据区间填写有误!')
+                    this.messageFun('warning','数据区间填写有误!')
                 } else {
                     let tagName = '入住年份:' + this.liveYear[0] + "-" + this.liveYear[1]
                     this.isHaveThisTag('liveYear', tagName)
@@ -2596,7 +2582,7 @@
             //人流量过滤
             tableHeaderFilterByPeopleFlow() {
                 if (this.peopleFlow[0] == '' || this.peopleFlow[1] == '') {
-                    this.$message.warning('数据区间填写有误!')
+                    this.messageFun('warning','数据区间填写有误!')
                 } else {
                     let tagName = '人流量:' + this.peopleFlow[0] + "-" + this.peopleFlow[1]
                     this.isHaveThisTag('peopleFlow', tagName)
@@ -2610,7 +2596,7 @@
             // 车流量过滤
             tableHeaderFilterByCarFlow() {
                 if (this.carFlow[0] == '' || this.carFlow[1] == '') {
-                    this.$message.warning('数据区间填写有误!')
+                    this.messageFun('warning','数据区间填写有误!')
                 } else {
                     let tagName = '车流量:' + this.carFlow[0] + "-" + this.carFlow[1]
                     this.isHaveThisTag('carFlow', tagName)
@@ -2624,7 +2610,7 @@
             // 车位数过滤
             tableHeaderFilterByParkSpaceNum(){
                 if(this.parkSpaceNum[0] == '' || this.parkSpaceNum[1]){
-                    this.$message.warning('数据区间填写有误!')
+                    this.messageFun('warning','数据区间填写有误!')
                 }else{
                     let tagName = '车位数:' + this.parkSpaceNum[0] + "-" + this.parkSpaceNum[1]
                     this.isHaveThisTag('parkSpaceNum',tagName)
@@ -3002,10 +2988,7 @@
                     if (this.shopingList.length !== 0) {
                         this.getFA_remark()         // 获取原投放城市详情的备注信息，再去this.creatTab()、 this.getShopingCityName() 、this.computeCityDiffAsIdNum() 、this.quotationFun()
                     } else {
-                        this.$message({
-                            message: '请选择点位',
-                            type: 'warning'
-                        })
+                        this.messageFun('warning','请选择点位')
                     }
                 } else if (this.active === 2) {
                     this.isCityPrice = false
@@ -3022,7 +3005,7 @@
                         })
                         this.SetADBFun()    // 创建方案
                     }else{
-                        this.$message.error('单城市总价格大于系统支持的最大价格（2000万）')
+                        this.messageFun('warning','单城市总价格大于系统支持的最大价格（2000万）')
                     }
                 }
                 if (this.active > 3) {
@@ -3064,10 +3047,7 @@
                 oInput.select();                // 选择对象
                 document.execCommand("Copy"); // 执行浏览器复制命令
                 oInput.style.display = 'none';
-                this.$message({
-                    message: '复制成功',
-                    type: 'success'
-                })
+                this.messageFun('success','复制成功')
             },
             // step3 获取方案的各投放城市的原备注信息
             getFA_remark() {
@@ -3456,11 +3436,8 @@
             // 购物车- 获取协同选点的数据
             getShareADList() {
                 if (this.shareADSData.aiCode !== undefined && this.shareADSData.aiCode !== null) {
-                    let time = timeFormat.toDateTime(this.shareADSData.aisTime, ".") || ''// this.formatTime(this.shareADSData.aisTime)
-                    Message({
-                        message: '未更新选点，上次提交时间为' + time, // 未更新选点
-                        type: 'warning'
-                    })
+                    let time = timeFormat.toDateTime(this.shareADSData.aisTime, ".") || ''
+                    this.messageFun('warning','未更新选点，上次提交时间为' + time)
                 } else {
                     let ShareLoading = this.$loading({
                         lock: true,
@@ -3483,19 +3460,14 @@
                                     this.shareADSData = res.data
                                     this.compareShopData_shareData()
                                 } else {
-                                    Message({
-                                        message: '暂无数据可获取', // 未更新选点
-                                        type: 'warning'
-                                    })
+                                    // 未更新选点
+                                    this.messageFun('warning','暂无数据可获取')
                                 }
                                 ShareLoading.close()
                             })
                         } else {
                             ShareLoading.close()
-                            Message({
-                                message: '暂无数据可获取', // 未更新选点
-                                type: 'warning'
-                            })
+                            this.messageFun('warning','暂无数据可获取')
                         }
                     })
                 }
@@ -3531,10 +3503,7 @@
                     }
                 }
                 let time = timeFormat.toDateTime(this.shareADSData.aisTime, "-") //this.shareADSData.aisTime
-                this.$message({
-                    type: 'success',
-                    message: '更新选点共' + shareNum + '面(带小红点),上次提交时间:' + time
-                })
+                this.messageFun('success','更新选点共' + shareNum + '面(带小红点),上次提交时间:' + time)
             },
             // 购物车-获取地图选择的点位列表
             getMapADList() {
@@ -3553,20 +3522,14 @@
                         if(this.mapADList.length > 0){
                             this.setShopDataByMapAD()
                         } else {
-                            Message({
-                                message: '数据为空',
-                                type: 'warning'
-                            })
+                            this.messageFun('warning','数据为空')
                             this.getMapLoading.close()
                         }
                     } else if(res.data.code == '100302' || res.data.MSG === "登陆超时"){
                         this.loginTimeout()
                     } else {
                         this.getMapLoading.close()
-                        Message({
-                            message: '数据获取异常',
-                            type: 'warning'
-                        })
+                        this.messageFun('warning','数据获取异常')
                     }
                 })
             },
@@ -3662,10 +3625,7 @@
                     this.shopingList = tempArr
                 }
                 this.getMapLoading.close()
-                Message({
-                    message: '成功获取到' + tempArr.length + '条数据',
-                    type: 'success'
-                })
+                this.messageFun('success','成功获取到' + tempArr.length + '条数据')
                 this.computeMedia_AD('mapAD')
                 this.judgeByselect()
             },
@@ -3745,13 +3705,13 @@
                     }
                 }
                 if (num > 0) {
-                    this.$message.success('成功移除' + num + '条数据')
+                    this.messageFun('success','成功移除' + num + '条数据')
                     this.shopingList = arr
                     this.computeMedia_AD()
                     this.resetPlanList()
                     this.judgeByselect()
                 } else {
-                    this.$message.warning('暂无同行回避点位')
+                    this.messageFun('warning','暂无同行回避点位!')
                 }
             },
             // 更换排期
@@ -3836,7 +3796,7 @@
                     }
                 }
                 if(arr.length <= 0){
-                    this.$message.warning('请选择新的排期！')
+                    this.messageFun('warning','请选择新的排期!')
                     return
                 }
                 let params = {
@@ -3849,17 +3809,11 @@
                         this.loginTimeout()
                     } else {
                         if (res.data === '' || res.data === null) {
-                            this.$message({
-                                message: '更换排期失败',
-                                type: 'warning'
-                            })
+                            this.messageFun('warning','更换排期失败')
                         } else {
                             let adsData = res.data
                             if(adsData.errorList.length <= 0 && adsData.successList.length > 0){
-                                Message({
-                                    message: '更换排期成功！',
-                                    type: 'success'
-                                })
+                                this.messageFun('success','更换排期成功')
                                 this.setSuccessScheduled(adsData.successList)
                             }else{
                                 if(adsData.successList.length > 0){
@@ -4052,23 +4006,14 @@
                         this.shopingList = []
                         this.allCheckboxUpdata()
                         this.computeMedia_AD()
-                        this.$message({
-                            type: 'success',
-                            message: '删除成功!'
-                        })
+                        this.messageFun('success','删除成功')
                         this.ADLockNum = 0
                         this.resetPlanList()      // 重置planList的勾选
                     }).catch(() => {
-                        this.$message({
-                            type: 'info',
-                            message: '已取消删除'
-                        });
+                        this.messageFun('info','已取消删除')
                     });
                 }else{
-                    this.$message({
-                        type: 'warning',
-                        message: '无数据可删除'
-                    });
+                    this.messageFun('warning','无数据可删除')
                 }
 
             },
@@ -4092,22 +4037,13 @@
                         }
                     }
                     if (haveADLock) {
-                        this.$message({
-                            type: 'success',
-                            message: '移除成功!'
-                        });
+                        this.messageFun('success','移除成功')
                         this.computeMedia_AD()
                     } else {
-                        this.$message({
-                            type: 'warning',
-                            message: '暂无被占点位'
-                        });
+                        this.messageFun('warning','暂无被占点位')
                     }
                 }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '取消成功'
-                    });
+                    this.messageFun('info','取消成功')
                 })
                 this.ADLockNum = 0
                 this.resetPlanList()
@@ -4133,28 +4069,16 @@
                                 }
                             }
                             this.computeMedia_AD()
-                            this.$message({
-                                type: 'success',
-                                message: '删除成功!'
-                            })
+                            this.messageFun('success','删除成功')
                         }).catch(() => {
-                            this.$message({
-                                type: 'info',
-                                message: '已取消删除'
-                            });
+                            this.messageFun('info','已取消删除')
                         });
                         this.resetPlanList()
                     }else{
-                        this.$message({
-                            message: '没有客户选点信息！',
-                            type: 'warning',
-                        })
+                        this.messageFun('warning','没有客户选点信息')
                     }
                 }else{
-                    this.$message({
-                        message: '请先获取客户选择的点位，再移除非客户选择的点位',
-                        type: 'warning',
-                    })
+                    this.messageFun('warning','请先获取客户选择的点位，再移除非客户选择的点位')
                 }
 
             },
@@ -4356,7 +4280,7 @@
                         this.computeMedia_AD()            // 统计购物车媒体数和面数
                         this.FanganInfoByApid()           //获取方案详情
                     } else {
-                        Message.warning(res.data.MSG)
+                        this.messageFun('warning',res.data.MSG)
                     }
                 }).catch(res => {
                     console.log(res);
@@ -4402,7 +4326,7 @@
                         }
                         this.getAdList()    // 获取选点列表
                     } else {
-                        Message.warning(res.data.MSG);
+                        this.messageFun('warning',res.data.MSG)
                     }
                 })
             },
@@ -4493,7 +4417,7 @@
             shopingBeforeClose() {
                 for (let j = 0; j < this.shopingList.length; j++) {
                     if (this.shopingList[j].lState !== undefined && this.shopingList[j].lState.length > 0) {
-                        Message.warning('请先删除完被占点位再进行其它操作');
+                        this.messageFun('warning','请先删除完被占点位再进行其它操作')
                         break;
                     }
                     if (j >= this.shopingList.length - 1) {
@@ -4560,10 +4484,7 @@
                     }else{
                         this.planList = []
                         if (res.data === '' || res.data === null || res.data.length <= 0){
-                            this.$message({
-                                message: '暂无该小区被占信息',
-                                type: 'warning'
-                            })
+                            this.messageFun('warning','暂无该小区被占信息')
                         }else{
                             let arr = []
                             for(let key of dataArr){
@@ -4603,6 +4524,14 @@
                     this.searchBtnAbled = false
                 })
             },
+            // 操作提示统一方法
+            messageFun(mesType,mes){
+                this.$message({
+                    message: mes,
+                    type: mesType,
+                    showClose: true,
+                })
+            },
             // 登录超时
             loginTimeout() {
                 this.$message({
@@ -4636,6 +4565,7 @@
     }
     .adsTable{
         position: relative;
+        margin-top: 5px;
     }
     .myCheckbox{
         position: absolute;
@@ -5202,7 +5132,7 @@
         width: 100%;
         height:36px;
         line-height: 36px;
-        margin: 5px 0;
+        margin: 5px 0 0;
         background:rgb(241,241,241);
     }
     .filter-condition /deep/ .el-tag{

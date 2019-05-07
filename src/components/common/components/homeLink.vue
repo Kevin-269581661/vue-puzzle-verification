@@ -25,7 +25,7 @@
             title="地图选点"
             :visible.sync="mapDialogVisible"
             :close-on-click-modal="false"
-            width="30%">
+            width="420px">
             <ul class="map_ul">
                 <li>
                     <span>投放时间：</span>

@@ -282,7 +282,7 @@
         mounted() {
             this.getSession();
             this.getCompany();
-            this.getRoleCity();
+            // this.getRoleCity();
             this.getInitEditInfo();
         },
         methods: {
@@ -349,6 +349,9 @@
                     this.isMedia = false;
                     this.isSale = false;
                     this.isSM = false;
+                }
+                if(this.isSale){
+                    this.getRoleCity();
                 }
             },
             // 选择公司
@@ -602,7 +605,7 @@
                         for(let data of resinfo){
                             let obj = {
                                 label: data.rName,
-                                value: data.rID
+                                value: data.rID.toString()
                             };
                             result.push(obj);
                         }

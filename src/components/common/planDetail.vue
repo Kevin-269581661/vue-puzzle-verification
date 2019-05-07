@@ -825,4 +825,7 @@ export default {
 /deep/ .el-tabs--border-card>.el-tabs__header .el-tabs__item{
     border: none;
 }
+/deep/ .el-tabs__item:focus.is-active.is-focus:not(:active){
+    box-shadow: none;
+}
 </style>

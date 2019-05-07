@@ -506,7 +506,6 @@ export default {
         },
         //日期排序
         sortData(a, b) {
-            // return a.apcTime < b.apcTime;
             return dateFormat.toDate(a.apcTime, '') - dateFormat.toDate(b.apcTime, '');
         },
         // 新建方案
@@ -524,7 +523,6 @@ export default {
             result = result + dateFormat.toDate(date, "");
             result = result + rid.toString().substring(0, 4);
             result = result + "00" + Math.round(Math.random() * 10);
-            // console.log(result);
             return result;
         },
         // 发布

@@ -312,7 +312,6 @@
                                 if(res.data.SysCode == 100200){
                                     Message.success(res.data.MSG);
                                     this.isShowNew = false;
-                                    // this.currPage = 1;
                                     this.reset();
                                 }else if(res.data.SysCode == 100302){
                                     this.loginTimeout();
@@ -359,7 +358,6 @@
             },
             //日期排序
             sortData(a, b) {
-                // return a.createTime < b.createTime;
                 return dateFormat.toDate(a.createTime, '') - dateFormat.toDate(b.createTime, '');                            
             },
             // 时间格式化

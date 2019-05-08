@@ -282,7 +282,6 @@
         mounted() {
             this.getSession();
             this.getCompany();
-            // this.getRoleCity();
             this.getInitEditInfo();
         },
         methods: {
@@ -411,7 +410,6 @@
                     Message.warning('当前是想创建全国销售,请选择权限城市');
                     return;
                 }
-                console.log("item", formName);
                 this.$refs[formName].validate(valid => {
                     if (valid) {
                         if (this.isEdit) {
@@ -457,7 +455,6 @@
                 arr.sort((a, b) =>{
                     return a - b;
                 });
-                console.log('arr---', arr);
                 return arr.join(',');
             },
             // 修改账户信息接口
@@ -538,7 +535,7 @@
             },
             // 获取修改账户初始信息
             getInitEditInfo() {
-                let inputPath = this.$route.fullPath; //this.$route.path
+                let inputPath = this.$route.fullPath;
                 if (inputPath.indexOf("edit=y") !== -1) {
                     let userId = sessionStorage.getItem('userId');
                     let sess = this.sessionData;

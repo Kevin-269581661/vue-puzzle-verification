@@ -248,7 +248,6 @@ export default {
             this.isShow = false;
 
             // 真实数据
-            // let uid = JSON.parse(sessionStorage.getItem("session_data")).uID;
             let apid = sessionStorage.getItem("plan_apid");
             let info = {
                 uid: this.sessionData.uID,
@@ -263,7 +262,6 @@ export default {
                     if (res.data.SysCode == 200200) {
                         let info = res.data.data;
                         console.log('info---apTotal', info.apTotal);
-                        // info.apcTime = ;
                         this.planDetail = {
                             adcID: info.adcID,
                             apID: info.apID,
@@ -295,7 +293,6 @@ export default {
                             },
                         };
                         console.log('this.plandetail---', this.planDetail);
-                        // this.planDetail = info;
                         // 选点排期
                         this.getSetPoint();
                     } else if(res.data.SysCode == 100302){
@@ -314,7 +311,6 @@ export default {
                 return;
             }
             // 真实数据
-            // let uid = JSON.parse(sessionStorage.getItem("session_data")).uID;
             let apid = sessionStorage.getItem("plan_apid");
             let info = {
                 uid: this.sessionData.uID,
@@ -417,7 +413,6 @@ export default {
         },
         // 价格加上逗号
         priceFormat(price) {
-            // console.log('price', price);
             return commaFormat.init(price);
         },
         // 返回

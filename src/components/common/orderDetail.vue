@@ -2935,7 +2935,6 @@ export default {
 }
 
 /deep/ .el-dialog {
-  /* width: 42%; */
   width: 87%;
 }
 
@@ -2957,10 +2956,6 @@ export default {
     height: 34px;
     margin-left: 2px;
 }
-
-/*/deep/ .el-button + .el-button {
-    margin-left: 0;
-}*/
 
 /deep/ .date-select.el-input__inner {
     width: 237px;
@@ -3164,7 +3159,6 @@ export default {
 }
 
 /deep/ .el-dialog .inline_dialog /deep/ .el-input {
-    /* width: 100%; */
     width: auto;
 }
 
@@ -3189,7 +3183,6 @@ export default {
 
 .car-title h4 {
     font-size: 14px;
-    /*font-weight: bold;*/
     display: inline-block;
 }
 
@@ -3234,7 +3227,6 @@ export default {
 @media all and (min-width: 1900px) {
     .plan-title .handleBtn {
         position: absolute;
-        /*right: 135px;*/
         top: 30px;
     }
 

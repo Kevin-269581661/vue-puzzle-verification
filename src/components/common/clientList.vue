@@ -31,9 +31,6 @@
 						</span>
                         <span v-if="sessionData.uType !='BD'">
 							<div class="block">
-								<!-- <el-select v-model="cityWord" placeholder="请选择城市">
-                                    <el-option v-for="item of filtCity" :key="item" :label="item" :value="item"></el-option>
-                                </el-select> -->
                                 <el-select v-model="searchInfo.company" placeholder="请选择公司">
                                     <el-option v-for="item of companyArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                                 </el-select>
@@ -238,20 +235,6 @@ export default {
                 this.showNewBtn = false;
             }
         },
-        // 获取城市数据
-        // getCityData(){
-        //     let info = {
-        //         uid: this.sessionData.uID,
-        //         token: this.sessionData.token,
-        //         requestCityData: 1
-        //     };
-        //     api.getApi(this.Advertisement+'/GetCustomer', info).then(res =>{
-        //         console.log(res.data);
-        //         if(res.data){
-        //             this.filtCity = res.data;
-        //         }
-        //     });
-        // },
         // 搜索数据格式化
         searchFormat(){
             let session = this.sessionData;
@@ -261,10 +244,6 @@ export default {
                 pageNo: this.currPage,
                 pageSize: this.pageSize
             };
-            // let range = this.date;
-            // let select = this.select;
-            // let keyword = this.keyword;
-            // let cityWord = this.cityWord;
             let { date, select, keyword, company } = this.searchInfo;
             if(date){
                 info.beginTime = date[0];
@@ -326,10 +305,6 @@ export default {
         },
         // 搜索(优化)
         search(){
-            // let range = this.date;
-            // let select = this.select;
-            // let keyword = this.keyword;
-            // let cityWord = this.cityWord;
             let { date, select, keyword, company } = this.searchInfo;            
             this.isSearch = false;
             let timer = setTimeout(()=>{
@@ -400,7 +375,6 @@ export default {
         },
         //日期排序
         sortData(a, b) {
-            // return a.joinTime < b.joinTime;
             return dateFormat.toDate(a.joinTime, '') - dateFormat.toDate(b.joinTime, '');            
         },
         loginTimeout(){

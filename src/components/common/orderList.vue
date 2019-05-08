@@ -467,7 +467,7 @@ export default {
                 this.isSearch = true;
                 clearTimeout(timer);
             }, 1000);
-            if(keyword || rangeDate || company || cityWord || (status>=0) ){
+            if(keyword || rangeDate || company || cityWord || (status>0 || status===0) ){
                 this.currentOrder = [];
                 this.loading = true;
                 this.loading_point = false;

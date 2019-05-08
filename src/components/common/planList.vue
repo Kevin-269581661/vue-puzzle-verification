@@ -263,7 +263,6 @@ export default {
             isDisable: true,
             //加载中
             loading: true,
-            // loading: false,
             Info: {},
             currentItem: {},
             // 解锁还是预锁
@@ -350,7 +349,6 @@ export default {
             }else{
                 api.getApi(this.UCAPI + '/ShowAscr', info).then(res =>{
                     console.log(res);
-                    // companyData
                     if(!res.data.SysCode){
                         let result = [];
                         for(let data of res.data){
@@ -443,16 +441,12 @@ export default {
                             value: data.rName
                         });
                     }
-
                     this.filterCityData = result;
-                    console.log('fdasfdlasjfla----', this.filterCityData);
-
                 } else if (res.data.SysCode == 100302) {
                     this.loginTimeout();
                 } else {
                     Message.warning(res.data.MSG);
                 }
-
             });
         },
         getUID() {
@@ -584,7 +578,6 @@ export default {
                                 );
                                 // 保存合同编号
                                 this.saveContractNo(this.QCinfo);
-
                             }).catch(() => {
                                 Message.info('已取消操作');
                             });
@@ -657,7 +650,6 @@ export default {
                             break;
                         }
                     }
-                    this.Ctrlloading.close();
                 }else if(res.data.SysCode == 100302){
                     this.loginTimeout();
                 }else if(res.data.SysCode == 300500){
@@ -667,14 +659,12 @@ export default {
                     }else{
                         Message.warning(res.data.MSG);
                     }
-                    this.Ctrlloading.close();
                 }else{
                     Message.warning(res.data.MSG);
-                    this.Ctrlloading.close();
                 }
+                this.Ctrlloading.close();
             }).catch(res =>{
                 this.Ctrlloading.close();
-                console.log(res);
             });
         },
         // 跳转到详情页面
@@ -703,18 +693,17 @@ export default {
             let startObj = this.compareTime(row.cityArea, 'pdStar', 'pdEnd');
             let date = timeFormat.toDate(new Date(), '/');
             if(startObj.startTime<=date){
-                this.$message.warning('开始投放时间已经早于当前时间,请直接发布！');
+                Message.warning('开始投放时间已经早于当前时间,请直接发布！');
                 return;
             }
             this.cityList = this.getCityList(row.cityArea);
-            // this.cityList = row.cityArea;
             if(this.cityList.length){
                 this.cityChoose = [];
                 this.isLock = true;
                 this.dialogVisible = true;
                 this.currentItem = row;
             }else{
-                this.$message.warning('方案权限城市内您没有可以预锁的城市');
+                Message.warning('方案权限城市内您没有可以预锁的城市');
             }
         },
         // 获取权限城市内的城市,进行勾选
@@ -742,7 +731,6 @@ export default {
                     resultInfo.push(com);
                 }
             }
-            // return resultArr;
             return resultInfo;
         },
         // 解除预锁
@@ -812,9 +800,7 @@ export default {
                                 if(info.asrIDs.includes(item.asrID)){
                                     for(let ridItem of arr){
                                         if(ridItem.asrID == item.asrID){
-                                            let dayA = Math.abs(timeFormat.getDayBetween(ridItem.pdStar, new Date()));
-                                            console.log('dayA-----', dayA);
-                                            let RemainDay = dayA>7?7:dayA;
+                                            let RemainDay = this.countDay(ridItem.pdStar);
                                             item.RemainDay = RemainDay;
                                             this.$set(item, 'RemainDay', RemainDay);
                                             break;
@@ -825,7 +811,6 @@ export default {
                             break;
                         }
                     }
-                    console.log('plan____current', this.currentPlan);
                     this.currentPlan.push();
                     Message.success(res.data.MSG);
 
@@ -838,17 +823,12 @@ export default {
                     }else{
                         Message.warning(res.data.MSG);
                     }
-                    this.Ctrlloading.close();
                 }else{
                     Message.warning(res.data.MSG);
-                    this.Ctrlloading.close();
                 }
-                // }else if(res.data.asList.length){
-                //     // 存在点位被占，是否立即去方案详情修改？
-                //     this.changeRoute();
-                // }else{
-                //     Message.warning(res.data.MSG);
-                // }
+                this.Ctrlloading.close();
+            }).catch(err =>{
+                console.log(err);
                 this.Ctrlloading.close();
             });
         },
@@ -883,7 +863,17 @@ export default {
                     this.currentPlan.push();
                 }
                 Message.success(res.data.MSG);
+            }).catch(err =>{
+                console.log(err);
+                this.Ctrlloading.close();
             });
+        },
+        // 7天以上显示7天,否则显示相隔天数
+        countDay(time){
+            let dayA = Math.abs(timeFormat.getDayBetween(time, new Date()));
+            console.log('dayA-----', dayA);
+            let RemainDay = dayA>7?7:dayA;
+            return RemainDay;
         },
         // 弹出框修改路径
         changeRoute(){
@@ -898,11 +888,9 @@ export default {
             )
                 .then(() => {
                     this.ToEdit(this.currentItem);
-                    this.Ctrlloading.close();
                 })
                 .catch(() => {
                     Message.info("已取消操作");
-                    this.Ctrlloading.close();
                 });
         },
         // 搜索（优化）
@@ -914,7 +902,7 @@ export default {
                 clearTimeout(timer);
             }, 1000);
             if(
-                keyword || rangeDate || (status>=0) || company || cityWord || Lock
+                keyword || rangeDate || (status===0 || status>0) || company || cityWord || Lock
             ){
                 this.currentPlan = [];
                 this.loading = true;
@@ -923,7 +911,7 @@ export default {
                 this.searchFun();
 
             }else{
-                this.$message.warning('请输入搜索条件');
+                Message.warning('请输入搜索条件');
             }
         },
         searchFun(){
@@ -996,19 +984,12 @@ export default {
         // 重置
         reset(){
             this.searchInfo = {
-                // 搜索的select框
                 select: "1",
-                // 关键字
                 keyword: "",
-                // 时间范围
                 rangeDate: "",
-                // 状态筛选
                 status: '',
-                // 公司搜索
                 company: '',
-                // 城市筛选
                 cityWord: '',
-                // 是否预锁
                 Lock: '',
             };
 

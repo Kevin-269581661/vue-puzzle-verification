@@ -263,7 +263,6 @@ export default {
             isDisable: true,
             //加载中
             loading: true,
-            Info: {},
             currentItem: {},
             // 解锁还是预锁
             isLock: false,
@@ -295,7 +294,6 @@ export default {
     },
     created() {
         this.getSessionData();
-        this.getUID();
         this.getRole();
         this.getFanCity();
         if(this.isAll){
@@ -449,13 +447,6 @@ export default {
                 }
             });
         },
-        getUID() {
-            let uid = this.sessionData.uID;
-            this.Info = {
-                uid: uid,
-                apid: ""
-            };
-        },
         // 判断角色是否有新建按钮(媒介和销售有)
         getRole() {
             let role = this.sessionData.uType;
@@ -532,7 +523,6 @@ export default {
                 token: this.sessionData.token,
                 apid: row.apID
             };
-            this.Info = info;
             let dataArr = row.cityArea;
             let sess = this.sessionData;
             let isRelease = false;
@@ -596,7 +586,6 @@ export default {
             // uid         int【必填】     当前账户UserID
             // apid        int【必填】     方案apID
             // qc          String【必填】  方案合同编号
-            // let info = this.Info;
             let info = {
                 uid: this.sessionData.uID,
                 token: this.sessionData.token,
@@ -617,22 +606,25 @@ export default {
                                     this.releaseFun();
                                 }else{
                                     Message.warning("该方案被预锁,请先解除预锁");
+                                    this.Ctrlloading.close();
                                 }
                             }
                         });
                     }else{
                         Message.warning(res.data.MSG);
+                        this.Ctrlloading.close();
                     }
                 })
                 .catch(res => {
                     console.log(res);
+                    this.Ctrlloading.close();
                 });
         },
         releaseFun(){
             let reseleInfo = {
                 uid: this.sessionData.uID,
                 token: this.sessionData.token,
-                apid: this.Info.apid,
+                apid: this.currentItem.apID,
                 qc: this.QCinfo,
                 act: 'R'
             };
@@ -645,7 +637,7 @@ export default {
                 if(res.data.SysCode == 300200){
                     Message.success(res.data.MSG);
                     for (let data of this.currentPlan) {
-                        if (data.apID == this.Info.apid) {
+                        if (data.apID == this.currentItem.apID) {
                             this.$set(data, "apState", 2);
                             break;
                         }
@@ -687,8 +679,8 @@ export default {
         },
         //预锁
         preload(row) {
-            this.Info.uid = this.sessionData.uID;
-            this.Info.apid = row.apID;
+            console.log('row-----', row);
+            this.currentItem = row;
 
             let startObj = this.compareTime(row.cityArea, 'pdStar', 'pdEnd');
             let date = timeFormat.toDate(new Date(), '/');
@@ -701,7 +693,6 @@ export default {
                 this.cityChoose = [];
                 this.isLock = true;
                 this.dialogVisible = true;
-                this.currentItem = row;
             }else{
                 Message.warning('方案权限城市内您没有可以预锁的城市');
             }
@@ -740,9 +731,6 @@ export default {
             this.dialogVisible = true;
             this.currentItem = row;
             this.cityList = this.getCityList(row.cityArea);
-
-            this.Info.uid = this.sessionData.uID;
-            this.Info.apid = row.apID;
         },
         cancelLock() {
             this.dialogVisible = false;
@@ -795,7 +783,7 @@ export default {
                 console.log(res.data);
                 if(res.data.SysCode == 300200){
                     for (let plandata of this.currentPlan) {
-                        if (plandata.apID == this.Info.apid) {
+                        if (plandata.apID == this.currentItem.apID) {
                             for(let item of plandata.cityArea){
                                 if(info.asrIDs.includes(item.asrID)){
                                     for(let ridItem of arr){
@@ -851,7 +839,7 @@ export default {
                 this.Ctrlloading.close();
                 if(res.data.SysCode == 300200){
                     for (let plandata of this.currentPlan) {
-                        if (plandata.apID == this.Info.apid) {
+                        if (plandata.apID == this.currentItem.apID) {
                             for(let item of plandata.cityArea){
                                 if(info.asrIDs.includes(item.asrID)){
                                     delete item.RemainDay;

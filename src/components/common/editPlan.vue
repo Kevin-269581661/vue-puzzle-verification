@@ -504,43 +504,110 @@
                                    :before-close="shopingBeforeClose">
                             <template slot-scope="scope">
                                 <div class="table_wrap car-list" style="margin-top: 60px"
-                                     :visible.sync="dialogTableVisible">
-                                    <el-row>
-                                        <el-col :span="6">
-                                            <el-button @click="getMapADList" class="mapBtn" :disabled="mapBtn">获取地图选点</el-button>
-                                            <el-button @click="getShareADList" class="mapBtn">更新客户选点</el-button>
-                                        </el-col>
-                                        <el-col :span="18" class="warningInfo">
-                                            <span style="background: #fff1f1" class="warningInfoColor"></span>
-                                            <span class="warningInfoName">被占点位</span>
-                                            <span style="background: rgba(0,153,255,0.2)" class="warningInfoColor"></span>
-                                            <span class="warningInfoName">连排门、同行资源回避、同行媒体回避</span>
-                                            <span class="warningInfoName"
-                                                  v-if="mediaLevelNum.ALevel || mediaLevelNum.BLevel || mediaLevelNum.CLevel">
-                                                        A级:<strong>{{mediaLevelNum.ALevel}}</strong>面、
-                                                        B级:<strong>{{mediaLevelNum.BLevel}}</strong>面、
-                                                        C级:<strong>{{mediaLevelNum.CLevel}}</strong>面
+                                     :visible.sync="dialogTableVisible" v-loading="shopLoading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
+                                    <div class="table_box shopcar_box">
+                                        <h4>
+                                            <el-radio-group v-model="activeName" size="small" @change="handleClick">
+                                                <el-radio-button :label="item.type.toString()" v-for="item of typeShopList" :key="item.type">{{item.mVehicle}}</el-radio-button>
+                                            </el-radio-group>
+
+                                            <span class="button_point">
+                                                <el-button @click="getMapADList" class="mapBtn" :disabled="mapBtn">获取地图选点</el-button>
+                                                <el-button @click="getShareADList" class="mapBtn">更新客户选点</el-button>
                                             </span>
-                                            <span class="warningInfoName" style="margin-right: 0">
-                                                        A面:<strong>{{mediaLevelNum.ANum}}</strong>&nbsp;&nbsp;
-                                                        B面:<strong>{{mediaLevelNum.BNum}}</strong>
-                                            </span>
-                                        </el-col>
-                                    </el-row>
-                                    <div class="car-title">
-                                        <i class="el-icon-info" style="color: #1890FF;"></i>
-                                        <h4>已选择<span>{{shopMedia_ADNum.resNum}}</span>个社区,<span>{{shopMedia_ADNum.mediaNum}}</span>个媒体,
-                                            <p>投放<span>{{shopMedia_ADNum.ADNum}}</span>面,
-                                            </p>
-                                            <p>其中有<span>{{ADLockNum}}</span>个被占点位</p>
-                                            <span style="cursor: pointer" @click="clearADLock">移除被占点位</span>
-                                            <span style="cursor: pointer" @click="removeNoShareAD">移除非客户选点</span>
-                                            <span style="cursor: pointer" @click="removeCommentIndustryAds('res')"> 移除同行资源回避的点位</span>
-                                            <span style="cursor: pointer" @click="removeCommentIndustryAds('media')">移除同行媒体回避的点位</span>
                                         </h4>
-                                    </div>
-                                    <div class="table_box">
+
+                                        <el-row style="margin-bottom:10px;">
+                                            <el-col :span="16" class="warningInfo">
+                                                <span style="background: #fff1f1" class="warningInfoColor"></span>
+                                                <span class="warningInfoName">被占点位</span>
+                                                <span style="background: rgba(0,153,255,0.2)" class="warningInfoColor"></span>
+                                                <span class="warningInfoName">连排门、同行资源回避、同行媒体回避</span>
+                                            </el-col>
+                                            <el-col :span="8" style="text-align:right;">
+                                                <el-select v-model="eventType" placeholder="请选择操作" filterable @change="changeEvent">
+                                                    <el-option v-for="item of eventList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                                                </el-select>
+                                            </el-col>
+                                        </el-row>
+                                        <el-row class="car-title">
+                                            <el-col :span="16">
+                                                <i class="el-icon-info" style="color: #1890FF;"></i>
+                                                <h4>
+                                                    社区:<span>{{shopMedia_ADNum.resNum}}</span>
+                                                    媒体:<span>{{shopMedia_ADNum.mediaNum}}</span>
+                                                    <p>
+                                                        点位:<span>{{shopMedia_ADNum.ADNum}}</span>
+                                                    </p>
+                                                    <p>被占点位:<span>{{ADLockNum}}</span></p>
+                                                </h4>
+                                            </el-col>
+                                            <el-col :span="8" class="warningInfo" style="text-align:right;">
+                                                <span class="warningInfoName"
+                                                    v-if="mediaLevelNum.ALevel || mediaLevelNum.BLevel || mediaLevelNum.CLevel">
+                                                            A级:<strong>{{mediaLevelNum.ALevel}}</strong>面、
+                                                            B级:<strong>{{mediaLevelNum.BLevel}}</strong>面、
+                                                            C级:<strong>{{mediaLevelNum.CLevel}}</strong>面
+                                                </span>
+                                                <span class="warningInfoName" style="margin-right: 0">
+                                                            A面:<strong>{{mediaLevelNum.ANum}}</strong>&nbsp;&nbsp;
+                                                            B面:<strong>{{mediaLevelNum.BNum}}</strong>
+                                                </span>
+                                            </el-col>
+                                        </el-row>
+
+                                        <!-- <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+                                            <el-tab-pane :label="item.mVehicle" :name="item.type.toString()" v-for="item of typeShopList" :key="item.type">
+                                                <el-row style="margin-bottom:10px;">
+                                                    <el-col :span="16" class="warningInfo">
+                                                        <span style="background: #fff1f1" class="warningInfoColor"></span>
+                                                        <span class="warningInfoName">被占点位</span>
+                                                        <span style="background: rgba(0,153,255,0.2)" class="warningInfoColor"></span>
+                                                        <span class="warningInfoName">连排门、同行资源回避、同行媒体回避</span>
+                                                    </el-col>
+                                                    <el-col :span="8" style="text-align:right;">
+                                                        <el-select v-model="eventType" placeholder="请选择操作" filterable @change="changeEvent">
+                                                            <el-option v-for="item of eventList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                                                        </el-select>
+                                                    </el-col>
+                                                </el-row>
+                                                <el-row class="car-title">
+                                                    <el-col :span="16">
+                                                        <i class="el-icon-info" style="color: #1890FF;"></i>
+                                                        <h4>已选择<span>{{shopMedia_ADNum.resNum}}</span>个社区,<span>{{shopMedia_ADNum.mediaNum}}</span>个媒体,
+                                                            <p>投放<span>{{shopMedia_ADNum.ADNum}}</span>面,
+                                                            </p>
+                                                            <p>其中有<span>{{ADLockNum}}</span>个被占点位</p>
+                                                        </h4>
+                                                    </el-col>
+                                                    <el-col :span="8" class="warningInfo" style="text-align:right;">
+                                                        <span class="warningInfoName"
+                                                            v-if="mediaLevelNum.ALevel || mediaLevelNum.BLevel || mediaLevelNum.CLevel">
+                                                                    A级:<strong>{{mediaLevelNum.ALevel}}</strong>面、
+                                                                    B级:<strong>{{mediaLevelNum.BLevel}}</strong>面、
+                                                                    C级:<strong>{{mediaLevelNum.CLevel}}</strong>面
+                                                        </span>
+                                                        <span class="warningInfoName" style="margin-right: 0">
+                                                                    A面:<strong>{{mediaLevelNum.ANum}}</strong>&nbsp;&nbsp;
+                                                                    B面:<strong>{{mediaLevelNum.BNum}}</strong>
+                                                        </span>
+                                                    </el-col>
+                                                </el-row>
+                                            </el-tab-pane>
+                                        </el-tabs> -->
+
                                         <span class="change_scheduling" @click="changeAdsSchedule">更换排期</span>
+                                        <!-- <el-table
+                                            v-loading="shopLoading"
+                                            element-loading-text="加载中"
+                                            element-loading-spinner="el-icon-loading"
+                                            border
+                                            :row-class-name="tableRowClassName"
+                                            :highlight-current-row="true"
+                                            :data="shopShowList"
+                                            @row-click="shopRowClick"
+                                            style="width: 100%"
+                                            id="shopCarTable"> -->
                                         <el-table
                                             v-loading="shopLoading"
                                             element-loading-text="加载中"
@@ -548,7 +615,7 @@
                                             border
                                             :row-class-name="tableRowClassName"
                                             :highlight-current-row="true"
-                                            :data="shopingList"
+                                            :data="shopShowList"
                                             @row-click="shopRowClick"
                                             style="width: 100%"
                                             id="shopCarTable">
@@ -640,10 +707,10 @@
                                             </el-table-column>
                                             <el-table-column min-width="54px" :render-header="renderHeader">
                                                 <template slot-scope="scope">
-                        <span style="cursor: pointer;color: #1890ff"
-                              @click="deleteRow(scope.row)">
-                            <i class="el-icon-delete" style="color: #108DE7;font-size: 20px;margin-left: 7px"></i>
-                        </span>
+                                                    <span style="cursor: pointer;color: #1890ff"
+                                                        @click="deleteRow(scope.row)">
+                                                        <i class="el-icon-delete" style="color: #108DE7;font-size: 20px;margin-left: 7px"></i>
+                                                    </span>
                                                 </template>
                                             </el-table-column>
                                         </el-table>
@@ -1142,6 +1209,14 @@
                 },
                 industryID: '',     // 所选公司所在的行业
                 shopingList: [],        // step2购物车列表
+                // 购物车展示的数据
+                typeShopList:[],
+                activeName: '1',
+                // 事件选择
+                eventType: '',
+                eventList: [],
+                // 购物车表格数据
+                shopShowList: [],
                 planList: [],            //step2可选点位列表
                 sessionData: '',    // 登录用户的数据
                 FAData: '',            // 创建方后台返回的数据
@@ -1197,7 +1272,7 @@
                 mStateIndex: 0,               // 切换媒体状态时，如果状态为1(正常)则进行滚动加载，mStateIndex记录下标
                 editApid: '',                  // 编辑方案的id
                 editApRemark: [],              // 编辑方案之前的备注信息，[{rid:440100,remark:''}]
-                ADLockNum: 0,                  // 被锁点位的数量
+                // ADLockNum: 0,                  // 被锁点位的数量
                 mapADList: [],                 // 地图选择的点位数据
                 mapParams: {},                  // 记录当前地图选点时的参数，包括排期、城市名和rid
                 mapBtn: true,                   // 获取地图选点数据的按钮，默认不可点击
@@ -1294,6 +1369,12 @@
             let shopAnimate = document.getElementsByClassName('shopAnimate')[0]
             shopAnimate.style.right = this.shopXY.x + 'px'
             console.log('this.cityOptions', this.cityOptions)
+
+            // this.dialogVisible();
+            // this.getEventList();
+            // this.typeShopList = this.getTypeList();
+            // this.handleClick();
+            
         },
         directives: {
             loadmore: {
@@ -1316,6 +1397,18 @@
                     this.computeConnectAdData()
                 }
                 return this.shopingList.length
+            },
+            ADLockNum(){
+                let num = 0;
+                if(this.dialogTableVisible){
+                    for (let data of this.shopShowList) {
+                        if(data.lState !== undefined && data.lState.length > 0){
+                            num++;
+                        }
+                    }
+                    return num;
+                }
+                return num;
             },
         },
         methods: {
@@ -3198,7 +3291,221 @@
             dialogVisible() {
                 this.computeConnectAdData()
                 this.dialogTableVisible = true
-                this.computeMedia_AD()
+                this.typeShopList = this.getTypeList();
+                this.handleClick();
+                // this.computeMedia_AD();
+            },
+            // 组合typeShopList
+            getTypeList(){
+                console.log('--------', this.shopingList);
+                let arr = [
+                    {
+                        type: 1,
+                        mVehicle: "广告门",
+                        asidList: [],
+                    },
+                    {
+                        type: 2,
+                        mVehicle: '道闸',
+                        asidList: [],
+                    }
+                ];
+                let type1 = [];
+                let type2 = [];
+                for(let data of this.shopingList){
+                    if(data.mVehicle == '广告门'){
+                        type1.push(data);
+                    }else if(data.mVehicle == '道闸'){
+                        type2.push(data);
+                    }
+                }
+                arr[0].asidList = type1;
+                arr[1].asidList = type2;
+                return arr;
+            },
+            // 切换tab
+            handleClick(){
+                console.log('this.activeName----', this.activeName, this.typeShopList);
+                this.getShowList();
+                this.getEventList();
+                this.computeMedia_AD();
+            },
+            // 设置购物车表格数据
+            getShowList(){
+                let currTab = this.activeName;
+                let arr = this.typeShopList[currTab-1].asidList;
+                this.shopShowList = arr;
+            },
+            // 获取事件
+            getEventList(){
+                let arr = [
+                        {
+                            label: '移除被占点位',
+                            value: 1,
+                        },
+                        {
+                            label: '移除非客户的选点',
+                            value: 2,
+                        },
+                        {
+                            label: '移除同行资源回避的点位',
+                            value: 3,
+                        },
+                        {
+                            label: '移除同行媒体回避的点位',
+                            value: 4,
+                        },
+                        {
+                            label: '同资源保留1个点位',
+                            value: 5,
+                        },
+                        {
+                            label: '同资源保留2个点位',
+                            value: 6,
+                        },
+                    ];
+                let currTab = this.activeName;
+                if(currTab == 1){
+                    let temp = [
+                        {
+                            label: '移除同媒体A面',
+                            value: 7,
+                        },
+                        {
+                            label: '移除同媒体B面',
+                            value: 8,
+                        },
+                    ];
+                    arr = arr.concat(temp);
+                }else if(currTab == 2){
+                    arr = arr;
+                }
+                this.eventList = arr;
+            },
+            // 事件选择
+            changeEvent(val){
+                switch (val){
+                    case 1:
+                        this.clearADLock();
+                        break;
+                    case 2: 
+                        this.removeNoShareAD();
+                        break;
+                    case 3:
+                        this.removeCommentIndustryAds('res');
+                        break;
+                    case 4:
+                        this.removeCommentIndustryAds('media');
+                        break;
+                    case 5:
+                        this.containNuminRes(1);
+                        break;
+                    case 6:
+                        this.containNuminRes(2);
+                        break;
+                    case 7: 
+                        this.removeAllType('A');
+                        break;
+                    case 8:
+                        this.removeAllType('B');
+                        break;
+                }
+            },
+            // 同资源保留个数
+            containNuminRes(num){
+                let residArr = [];
+                let resultArr = [];
+                for(let data of this.shopingList){
+                    if(this.isEnough(data.resID, num, residArr)){
+                        residArr.push(data.resID);
+                        resultArr.push(data);
+                    }
+                }
+                if(resultArr.length){
+                    this.messageFun('success',`成功保留同资源${num}个点位！`);
+                    this.shopingList = resultArr;
+                    this.typeShopList = this.getTypeList();
+                    this.getShowList();
+                    this.computeMedia_AD();
+                    this.resetPlanList();
+                    this.judgeByselect();
+                }else{
+                    this.messageFun('warning', '暂无同资源可移除的点位！')                    
+                }
+            },
+            // 移除A/B面
+            removeAllType(type){
+                var result= this.shopingList.reduce((groups, item)=>{
+                    var groupFound= groups.find(arrItem => item.mID === arrItem.mID&& item.schedules === arrItem.schedules);
+                    if(groupFound) {
+                        groupFound.asidList.push(item);
+                        if(!JSON.stringify(groupFound.asidList).includes(JSON.stringify(item))) {  //去重
+                        groupFound.asidList.push(item);
+                        }
+                    } else {
+                        //不要直接在原来的对象修改，新建对象
+                        var newGroup = {
+                            mID: item.mID,
+                            schedules: item.schedules,
+                            asidList: [item]
+                        }
+                        groups.push(newGroup);
+                    }
+                    return groups;
+                    },[]);
+                if (resultArr.length > 0) {
+                    this.messageFun('success','成功移除' + num + '条数据')
+                    this.shopingList = resultArr;
+                    this.typeShopList = this.getTypeList();
+                    this.getShowList();
+                    this.computeMedia_AD();
+                    this.resetPlanList();
+                    this.judgeByselect();
+                } else {
+                    this.messageFun('warning',`暂无${type}面数据！`)
+                }
+            },
+            // 同一媒体是否有a/b面
+            isEnoughMedia(type, item, arr){
+                let isSame = false;
+                let hasMid = false;
+                // debugger;
+                for(let data of arr){
+                    if(data.mid == item.mID){
+                        console.log(11111);
+                        console.log(data.asidList);
+                        let num = 0;
+                        for(let asidObj of data.asidList){
+                            if(asidObj.schedules == item.schedules){
+                                num++;
+                            }
+                        }
+                        console.log('num----', num);
+                        if(num >= 1){
+                            hasMid = true;
+                        }
+                    }
+                }
+                console.log('hasmid-----', hasMid);
+                if(!hasMid){
+                    return true;
+                }else{
+                    return false;
+                }
+            },
+            // 判断这个值出现的次数符合预期返回true,否则false
+            isEnough(id, time, arr){
+                let sum = 0
+                for(let data of arr){
+                    if(data == id){
+                        sum++;
+                    }
+                }
+                if(sum < time){
+                    return true;
+                }else{
+                    return false;
+                }
             },
             //设置报价单
             APQuotationArr(...data){
@@ -3288,17 +3595,17 @@
                 return selectInfo
             },
             // 取消全选时的购物车删除
-            selectAlldelRow(rows) {
-                if (this.ADLockNum > 0) {
-                    this.ADLockNum -= 1
-                }
-                for (let j = 0; j < this.shopingList.length; j++) {
-                    if (this.shopingList[j].mID === rows.mID && this.shopingList[j].schedules === rows.schedules) {
-                        this.shopingList.splice(j, 1)
-                        break
-                    }
-                }
-            },
+            // selectAlldelRow(rows) {
+            //     // if (this.ADLockNum > 0) {
+            //     //     this.ADLockNum -= 1
+            //     // }
+            //     for (let j = 0; j < this.shopingList.length; j++) {
+            //         if (this.shopingList[j].mID === rows.mID && this.shopingList[j].schedules === rows.schedules) {
+            //             this.shopingList.splice(j, 1)
+            //             break
+            //         }
+            //     }
+            // },
             // 自定义购物车表头-清空
             renderHeader(h, {column}){
                 // console.log('********h*******',h,column)
@@ -3332,11 +3639,16 @@
                         }
                     }
                 }
-                for (let j = 0; j < this.shopingList.length;) {
+                for (let j = 0,len=this.shopShowList.length; j < len;) {
+                    if (this.shopShowList[j].mID === rows.mID && this.shopShowList[j].A_B == rows.A_B && this.shopShowList[j].schedules === rows.schedules) {
+                        this.shopShowList.splice(j, 1);
+                        break
+                    } else {
+                        j++
+                    }
+                }
+                for (let j = 0,len=this.shopingList.length; j < len;) {
                     if (this.shopingList[j].mID === rows.mID && this.shopingList[j].A_B == rows.A_B && this.shopingList[j].schedules === rows.schedules) {
-                        if( this.shopingList[j].lState !== undefined&& this.shopingList[j].lState.length > 0){
-                            this.ADLockNum--
-                        }
                         this.shopingList.splice(j, 1)
                         break
                     } else {
@@ -3707,6 +4019,8 @@
                 if (num > 0) {
                     this.messageFun('success','成功移除' + num + '条数据')
                     this.shopingList = arr
+                    this.typeShopList = this.getTypeList();
+                    this.getShowList();
                     this.computeMedia_AD()
                     this.resetPlanList()
                     this.judgeByselect()
@@ -3845,7 +4159,7 @@
                                 }
                                 // 若更换排期的点位排期是被占的则异常被占标示
                                 if(sKey.lState !== undefined && sKey.lState.length > 0){
-                                    this.ADLockNum--
+                                    // this.ADLockNum--
                                     delete sKey.lState
                                 }
                                 break
@@ -3858,7 +4172,7 @@
                                 }
                                 // 若更换排期的点位排期是被占的则异常被占标示
                                 if(sKey.lState !== undefined && sKey.lState.length > 0){
-                                    this.ADLockNum--
+                                    // this.ADLockNum--
                                     delete sKey.lState
                                 }
                                 break
@@ -4007,7 +4321,7 @@
                         this.allCheckboxUpdata()
                         this.computeMedia_AD()
                         this.messageFun('success','删除成功')
-                        this.ADLockNum = 0
+                        // this.ADLockNum = 0
                         this.resetPlanList()      // 重置planList的勾选
                     }).catch(() => {
                         this.messageFun('info','已取消删除')
@@ -4036,6 +4350,8 @@
                             i++
                         }
                     }
+                    this.typeShopList = this.getTypeList();
+                    this.getShowList();
                     if (haveADLock) {
                         this.messageFun('success','移除成功')
                         this.computeMedia_AD()
@@ -4045,7 +4361,7 @@
                 }).catch(() => {
                     this.messageFun('info','取消成功')
                 })
-                this.ADLockNum = 0
+                // this.ADLockNum = 0
                 this.resetPlanList()
             },
             // 删除非客户选点
@@ -4068,6 +4384,8 @@
                                     this.shopingList.splice(j, 1)
                                 }
                             }
+                            this.typeShopList = this.getTypeList();
+                            this.getShowList();
                             this.computeMedia_AD()
                             this.messageFun('success','删除成功')
                         }).catch(() => {
@@ -4084,14 +4402,17 @@
             },
             // 统计购物车媒体数、面数
             computeMedia_AD(letter) {
-                let shopList = this.shopingList
+                // let shopList = this.shopingList
+                let shopList = [];
+                let currTab = this.activeName;
+                shopList = this.typeShopList[currTab-1].asidList;
                 console.log('购物车统计面数媒体数shopList', shopList)
                 let mediaArr = []
                 let mediaAD = []
                 let resArr = []
                 // ANum：A面数量  BNum：B面数量
                 let mediaLevelNum = {ALevel: 0, BLevel: 0, CLevel: 0,ANum:0,BNum:0}
-                for (let key of this.shopingList) {
+                for (let key of shopList) {
                     if(key.mVehicle === '广告门'){
                         // 等级ABC
                         if(key.mediaLevel === 'A'){
@@ -4150,6 +4471,7 @@
                     this.shopMedia_ADNum.resNum = resArr.length
                 }
                 this.mediaLevelNum = mediaLevelNum
+                console.log('mediaLevelNum-----', this.mediaLevelNum);
             },
             // 价格加上逗号
             priceFormat(price) {
@@ -4270,15 +4592,16 @@
                                 shopList.push(selectInfo)
                             }
                             console.log('shoplist---------',shopList);
-                            this.ADLockNum = LockNum        // 被占点位的个数
+                            // this.ADLockNum = LockNum        // 被占点位的个数
                             this.shopingList = shopList;
                             // console.log('购物车列表数据', this.shopingList)
                         } else {
                             this.shopingList = []
                         }
                         this.shopLoading = false
-                        this.computeMedia_AD()            // 统计购物车媒体数和面数
+                        // this.computeMedia_AD()            // 统计购物车媒体数和面数
                         this.FanganInfoByApid()           //获取方案详情
+                        this.dialogVisible();
                     } else {
                         this.messageFun('warning',res.data.MSG)
                     }
@@ -4598,15 +4921,19 @@
     /*购物车提示信息*/
     .warningInfoColor{
         display: inline-block;
-        height: 28px;
-        width: 28px;
+        height: 20px;
+        width: 20px;
         border-radius: 4px;
+        vertical-align: middle;
     }
 
+    .warningInfo .warningInfoName{
+        color: #333;
+    }
     .warningInfoName{
-        position: relative;
+        /* position: relative;
         top: -9px;
-        margin-right: 18px;
+        margin-right: 18px; */
     }
     .warningInfoName strong{
         font-weight: bold;
@@ -5201,6 +5528,10 @@
         overflow-y: scroll;
         overflow-x: hidden !important;
     }
+    /deep/ .car-list .el-table__body-wrapper {
+        min-height: 380px;
+        max-height: 360px;
+    }
 
     /deep/ .el-table__body-wrapper::-webkit-scrollbar {
         width: 6px;
@@ -5624,11 +5955,20 @@
     .table_box{
         position: relative;
     }
+    /deep/ .shopcar_box .el-tabs__item{
+        height: 38px;
+    }
+    .button_point{
+        text-align: right;
+        /* position: absolute; */
+        /* right: 0; */
+    }
     .change_scheduling{
         color: #1890ff;
         font-size: 14px;
         position: absolute;
-        top:0;
+        /* top:0; */
+        top:144px;
         right: 132px;
         z-index: 10;
         line-height: 45px;

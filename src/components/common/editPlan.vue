@@ -506,108 +506,49 @@
                                 <div class="table_wrap car-list" style="margin-top: 60px"
                                      :visible.sync="dialogTableVisible" v-loading="shopLoading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                                     <div class="table_box shopcar_box">
-                                        <h4>
-                                            <el-radio-group v-model="activeName" size="small" @change="handleClick">
-                                                <el-radio-button :label="item.type.toString()" v-for="item of typeShopList" :key="item.type">{{item.mVehicle}}</el-radio-button>
-                                            </el-radio-group>
-
-                                            <span class="button_point">
-                                                <el-button @click="getMapADList" class="mapBtn" :disabled="mapBtn">获取地图选点</el-button>
-                                                <el-button @click="getShareADList" class="mapBtn">更新客户选点</el-button>
-                                            </span>
-                                        </h4>
 
                                         <el-row style="margin-bottom:10px;">
-                                            <el-col :span="16" class="warningInfo">
-                                                <span style="background: #fff1f1" class="warningInfoColor"></span>
-                                                <span class="warningInfoName">被占点位</span>
-                                                <span style="background: rgba(0,153,255,0.2)" class="warningInfoColor"></span>
-                                                <span class="warningInfoName">连排门、同行资源回避、同行媒体回避</span>
+                                            <el-col :span="8">
+                                                <el-radio-group v-model="activeName" size="small" @change="handleClick">
+                                                    <el-radio-button :label="item.type.toString()" v-for="item of typeShopList" :key="item.type">{{item.mVehicle}}</el-radio-button>
+                                                </el-radio-group>
                                             </el-col>
-                                            <el-col :span="8" style="text-align:right;">
-                                                <el-select v-model="eventType" placeholder="请选择操作" filterable @change="changeEvent">
+
+                                            <el-col :span="16" style="text-align:right;">
+                                                <span class="button_point">
+                                                    <el-button @click="getMapADList" class="mapBtn" :disabled="mapBtn">获取地图选点</el-button>
+                                                    <el-button @click="getShareADList" class="mapBtn">更新客户选点</el-button>
+                                                </span>
+                                                <el-select v-model="eventType" placeholder="快捷配点" filterable @change="changeEvent">
                                                     <el-option v-for="item of eventList" :key="item.value" :label="item.label" :value="item.value"></el-option>
                                                 </el-select>
                                             </el-col>
                                         </el-row>
                                         <el-row class="car-title">
-                                            <el-col :span="16">
+                                            <el-col :span="8">
                                                 <i class="el-icon-info" style="color: #1890FF;"></i>
-                                                <h4>
-                                                    社区:<span>{{shopMedia_ADNum.resNum}}</span>
-                                                    媒体:<span>{{shopMedia_ADNum.mediaNum}}</span>
-                                                    <p>
-                                                        点位:<span>{{shopMedia_ADNum.ADNum}}</span>
-                                                    </p>
-                                                    <p>被占点位:<span>{{ADLockNum}}</span></p>
-                                                </h4>
+                                                社区:<span>{{shopMedia_ADNum.resNum}}</span>
+                                                (选1面:<span>{{shopMedia_ADNum.oneNum}}</span>&nbsp;&nbsp;
+                                                选2面:<span>{{shopMedia_ADNum.twoNum}}</span>&nbsp;&nbsp;
+                                                选3面:<span>{{shopMedia_ADNum.threeNum}}</span>)
                                             </el-col>
-                                            <el-col :span="8" class="warningInfo" style="text-align:right;">
-                                                <span class="warningInfoName"
-                                                    v-if="mediaLevelNum.ALevel || mediaLevelNum.BLevel || mediaLevelNum.CLevel">
-                                                            A级:<strong>{{mediaLevelNum.ALevel}}</strong>面、
-                                                            B级:<strong>{{mediaLevelNum.BLevel}}</strong>面、
-                                                            C级:<strong>{{mediaLevelNum.CLevel}}</strong>面
-                                                </span>
-                                                <span class="warningInfoName" style="margin-right: 0">
-                                                            A面:<strong>{{mediaLevelNum.ANum}}</strong>&nbsp;&nbsp;
-                                                            B面:<strong>{{mediaLevelNum.BNum}}</strong>
-                                                </span>
+                                            <el-col :span="2">
+                                                媒体:<span>{{shopMedia_ADNum.mediaNum}}</span>
                                             </el-col>
+                                            <el-col :span="6">
+                                                点位:<span>{{shopMedia_ADNum.ADNum}}</span>
+                                                (A面:<span>{{mediaLevelNum.ANum}}</span>&nbsp;&nbsp;
+                                                B面:<span>{{mediaLevelNum.BNum}}</span>)
+                                            </el-col>
+                                            <el-col :span="6" v-if="mediaLevelNum.ALevel || mediaLevelNum.BLevel || mediaLevelNum.CLevel">
+                                                A级:<span>{{mediaLevelNum.ALevel}}</span>
+                                                B级:<span>{{mediaLevelNum.BLevel}}</span>
+                                                C级:<span>{{mediaLevelNum.CLevel}}</span>
+                                            </el-col>
+                                            <el-col :span="2">被占点位:<span style="color:#FF7958;">{{ADLockNum}}</span></el-col>
                                         </el-row>
 
-                                        <!-- <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-                                            <el-tab-pane :label="item.mVehicle" :name="item.type.toString()" v-for="item of typeShopList" :key="item.type">
-                                                <el-row style="margin-bottom:10px;">
-                                                    <el-col :span="16" class="warningInfo">
-                                                        <span style="background: #fff1f1" class="warningInfoColor"></span>
-                                                        <span class="warningInfoName">被占点位</span>
-                                                        <span style="background: rgba(0,153,255,0.2)" class="warningInfoColor"></span>
-                                                        <span class="warningInfoName">连排门、同行资源回避、同行媒体回避</span>
-                                                    </el-col>
-                                                    <el-col :span="8" style="text-align:right;">
-                                                        <el-select v-model="eventType" placeholder="请选择操作" filterable @change="changeEvent">
-                                                            <el-option v-for="item of eventList" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                                                        </el-select>
-                                                    </el-col>
-                                                </el-row>
-                                                <el-row class="car-title">
-                                                    <el-col :span="16">
-                                                        <i class="el-icon-info" style="color: #1890FF;"></i>
-                                                        <h4>已选择<span>{{shopMedia_ADNum.resNum}}</span>个社区,<span>{{shopMedia_ADNum.mediaNum}}</span>个媒体,
-                                                            <p>投放<span>{{shopMedia_ADNum.ADNum}}</span>面,
-                                                            </p>
-                                                            <p>其中有<span>{{ADLockNum}}</span>个被占点位</p>
-                                                        </h4>
-                                                    </el-col>
-                                                    <el-col :span="8" class="warningInfo" style="text-align:right;">
-                                                        <span class="warningInfoName"
-                                                            v-if="mediaLevelNum.ALevel || mediaLevelNum.BLevel || mediaLevelNum.CLevel">
-                                                                    A级:<strong>{{mediaLevelNum.ALevel}}</strong>面、
-                                                                    B级:<strong>{{mediaLevelNum.BLevel}}</strong>面、
-                                                                    C级:<strong>{{mediaLevelNum.CLevel}}</strong>面
-                                                        </span>
-                                                        <span class="warningInfoName" style="margin-right: 0">
-                                                                    A面:<strong>{{mediaLevelNum.ANum}}</strong>&nbsp;&nbsp;
-                                                                    B面:<strong>{{mediaLevelNum.BNum}}</strong>
-                                                        </span>
-                                                    </el-col>
-                                                </el-row>
-                                            </el-tab-pane>
-                                        </el-tabs> -->
-
                                         <span class="change_scheduling" @click="changeAdsSchedule">更换排期</span>
-                                        <!-- <el-table
-                                            v-loading="shopLoading"
-                                            element-loading-text="加载中"
-                                            element-loading-spinner="el-icon-loading"
-                                            border
-                                            :row-class-name="tableRowClassName"
-                                            :highlight-current-row="true"
-                                            :data="shopShowList"
-                                            @row-click="shopRowClick"
-                                            style="width: 100%"
-                                            id="shopCarTable"> -->
                                         <el-table
                                             v-loading="shopLoading"
                                             element-loading-text="加载中"
@@ -714,6 +655,13 @@
                                                 </template>
                                             </el-table-column>
                                         </el-table>
+
+                                        <p class="warningInfo">
+                                            <span style="background: #fff1f1" class="warningInfoColor"></span>
+                                            <span class="warningInfoName">被占点位</span>
+                                            <span style="background: rgba(0,153,255,0.2)" class="warningInfoColor"></span>
+                                            <span class="warningInfoName">连排门、同行资源回避、同行媒体回避</span>
+                                        </p>
                                     </div>
 
                                     <div style="text-align: center;margin-bottom: 10px">
@@ -3435,16 +3383,16 @@
             },
             // 移除A/B面
             removeAllType(type){
-                var result= this.shopingList.reduce((groups, item)=>{
-                    var groupFound= groups.find(arrItem => item.mID === arrItem.mID&& item.schedules === arrItem.schedules);
+                let result= this.shopingList.reduce((groups, item)=>{
+                    let groupFound= groups.find(arrItem => item.mID === arrItem.mID&& item.schedules === arrItem.schedules);
                     if(groupFound) {
                         groupFound.asidList.push(item);
                         if(!JSON.stringify(groupFound.asidList).includes(JSON.stringify(item))) {  //去重
-                        groupFound.asidList.push(item);
+                            groupFound.asidList.push(item);
                         }
                     } else {
                         //不要直接在原来的对象修改，新建对象
-                        var newGroup = {
+                        let newGroup = {
                             mID: item.mID,
                             schedules: item.schedules,
                             asidList: [item]
@@ -4317,7 +4265,9 @@
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        this.shopingList = []
+                        this.shopingList = [];
+                        this.typeShopList = this.getTypeList();
+                        this.getShowList();
                         this.allCheckboxUpdata()
                         this.computeMedia_AD()
                         this.messageFun('success','删除成功')
@@ -4410,6 +4360,7 @@
                 let mediaArr = []
                 let mediaAD = []
                 let resArr = []
+                let resAsidArr = [];
                 // ANum：A面数量  BNum：B面数量
                 let mediaLevelNum = {ALevel: 0, BLevel: 0, CLevel: 0,ANum:0,BNum:0}
                 for (let key of shopList) {
@@ -4442,7 +4393,28 @@
                     if (!resArr.includes(key.resID)) {
                         resArr.push(key.resID)
                     }
+                    // 计算各个社区面数
+                    let isHad = false;
+                    for(let data of resAsidArr){
+                        if(data.resID == key.resID){
+                            isHad = true;
+                            if(!data.asidList.includes(key.asID)){
+                                data.asidList.push(key.asID);
+                            }
+                        }
+                    }
+                    if(!isHad){
+                        let obj = {
+                            resID: key.resID,
+                            asidList: [key.asID],
+                        };
+                        resAsidArr.push(obj);
+                    }
                 }
+                console.log('resAsidArr------', resAsidArr);
+                this.shopMedia_ADNum.oneNum = this.getResAsidNum(1, resAsidArr);
+                this.shopMedia_ADNum.twoNum = this.getResAsidNum(2, resAsidArr);
+                this.shopMedia_ADNum.threeNum = this.getResAsidNum(3, resAsidArr);
                 if (letter === 'mapAD') {
                     let stepMNum = 1
                     let stepADNum = 2
@@ -4472,6 +4444,13 @@
                 }
                 this.mediaLevelNum = mediaLevelNum
                 console.log('mediaLevelNum-----', this.mediaLevelNum);
+            },
+            // 获取社区选一面两面三名的数据
+            getResAsidNum(num, arr){
+                let result = arr.filter((item)=>{
+                    return item.asidList.length == num; 
+                });
+                return result.length;
             },
             // 价格加上逗号
             priceFormat(price) {
@@ -4921,14 +4900,15 @@
     /*购物车提示信息*/
     .warningInfoColor{
         display: inline-block;
-        height: 20px;
-        width: 20px;
+        height: 16px;
+        width: 16px;
         border-radius: 4px;
         vertical-align: middle;
     }
 
     .warningInfo .warningInfoName{
         color: #333;
+        font-size: 12px;
     }
     .warningInfoName{
         /* position: relative;
@@ -5967,8 +5947,7 @@
         color: #1890ff;
         font-size: 14px;
         position: absolute;
-        /* top:0; */
-        top:144px;
+        top:96px;
         right: 132px;
         z-index: 10;
         line-height: 45px;

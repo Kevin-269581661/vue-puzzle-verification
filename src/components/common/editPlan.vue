@@ -3983,7 +3983,8 @@
                 let arr = []
                 let isHad = true
                 // 统计购物车数据点位排期，按城市及排期分开
-                for(let key of this.shopingList){
+                // for(let key of this.shopingList){
+                for(let key of this.shopShowList){
                     isHad = false
                     for(let aKey of arr){
                         if(aKey.city === key.city && aKey.oldTime === key.schedules){
@@ -4256,6 +4257,8 @@
                 }
                 console.log('newArr',newArr)
                 this.shopingList = newArr.concat()
+                this.typeShopList = this.getTypeList();
+                this.getShowList();
             },
             // 清空购物车
             clearShop() {

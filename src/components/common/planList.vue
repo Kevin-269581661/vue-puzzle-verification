@@ -175,6 +175,38 @@
                 </el-dialog>
             </div>
         </div>
+        <!--存在异常未完成的方案-->
+        <el-dialog title="您有一个新方案未完成保存，是否继续编辑？"
+                   :visible.sync="unfinishedDialogVisible"
+                   width="400px"
+                   custom-class="unfinished_plan_dialog"
+                   :close-on-click-modal="false"
+                   :show-close="false">
+            <div>
+                <ul>
+                    <li class="unfinished_plan_li">
+                        <span>方案名称:</span>
+                        <span>{{planInfo.planName}}</span>
+                    </li>
+                    <li class="unfinished_plan_li">
+                        <span>所属销售:</span>
+                        <span>{{planInfo.ownerSales}}</span>
+                    </li>
+                    <li class="unfinished_plan_li">
+                        <span>创建时间:</span>
+                        <span>{{planInfo.cleatTime}}</span>
+                    </li>
+                    <li class="unfinished_plan_li">
+                        <span>已选点位:</span>
+                        <span>{{planInfo.adsNum}} 面</span>
+                    </li>
+                </ul>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="cancelEdit">放 弃</el-button>
+                <el-button type="primary" @click="continueEdit">继续编辑</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -184,6 +216,8 @@ import api from "../../api/api.js";
 import commaFormat from "../../commonFun/commaFormat.js";
 // 时间格式化
 import dateFormat from "../../commonFun/timeFormat.js";
+// 方案缓存
+import cacheAdPlan from "../../commonFun/cacheAdPlan"
 import {
     Button,
     CheckboxGroup,
@@ -289,7 +323,13 @@ export default {
             // 表格数据
             currentPlan: [],
             // 权限城市过滤数组
-            filterCityData: []
+            filterCityData: [],
+            // 未完成方案提示
+            unfinishedDialogVisible: false,
+            // 未完成方案
+            planInfo: '',
+            // 继续编辑未完成方案跳转时的loading
+            continueEditLoading:'',
         };
     },
     created() {
@@ -495,7 +535,42 @@ export default {
         },
         // 新建方案
         addOne() {
-            this.$router.push("./createPlan");
+            let params = {
+                uid:this.sessionData.uID,
+                token:this.sessionData.token
+            }
+            api.getApi(this.Advertisement + '/getAdPlanBackups',params).then(res=>{
+                console.log('获取方案缓存',res)
+                if (res.data.SysCode == 200200) {
+                    console.log('获取缓存成功',res.data)
+                    if(JSON.stringify(res.data.data) === '{}'){
+                        this.$router.push("./createPlan");
+                    }else{
+                        let planInfo = JSON.parse(res.data.data)
+                        this.showCookeAdPlan(planInfo)
+                        // 缓存到localStorage
+                        cacheAdPlan.setData(planInfo)
+                    }
+                } else {
+                    // 后台返回异常则查看前台是否有缓存
+                    let returnData = cacheAdPlan.getData(this.sessionData.uID)
+                    if (returnData) {
+                        this.showCookeAdPlan(returnData)
+                    } else {
+                        this.$router.push("./createPlan");
+                    }
+                }
+            })
+        },
+        // 显示缓存方案的信息
+        showCookeAdPlan(adPlan){
+            this.planInfo = {
+                planName: adPlan.planData.baseInfo.planName,
+                ownerSales: adPlan.planData.baseInfo.ownerSales,
+                cleatTime: adPlan.setTime,
+                adsNum: adPlan.planData.adsList.length
+            }
+            this.unfinishedDialogVisible = true
         },
         // 删除
         deleteOne(row) {
@@ -995,6 +1070,50 @@ export default {
             Message.warning("登录超时,请重新登录");
             this.$router.push("/login");
         },
+        // 放弃继续编辑
+        cancelEdit(){
+
+            this.$confirm('放弃后将清除该方案信息及点位!', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                showClose: false,
+                type: 'warning '
+            }).then(() => {
+                this.unfinishedDialogVisible = false
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token
+                }
+                api.postApi(this.Advertisement + '/clearAdPlanBackups',params).then(res=>{
+                    console.log('清空缓存的方案',res)
+                    if (res.data.SysCode == 200200) {
+                        console.log('缓存方案清除成功')
+                    } else {
+
+                    }
+                })
+                cacheAdPlan.removeData(this.sessionData.uID)
+                this.$router.push("./createPlan");
+            }).catch(() => {
+                Message.info('取消成功')
+            })
+        },
+        // 继续创建
+        continueEdit(){
+            this.continueEditLoading = this.$loading({
+                lock: true,
+                text: '方案数据获取中...',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.5)'
+            });
+            this.$router.push("./createPlan?unfinishedPlan");
+            this.unfinishedDialogVisible = false
+        },
+    },
+    beforeDestroy() {
+        if(this.continueEditLoading){
+            this.continueEditLoading.close()
+        }
     }
 };
 </script>
@@ -1393,5 +1512,22 @@ a {
 .el-dialog__footer span {
     float: none !important;
 }
+    /*未完成方案*/
+    /deep/ .unfinished_plan_dialog .el-dialog__header{
+        padding: 20px 20px;
+        border-bottom: 1px solid #E8E8E8;
+    }
+    /deep/ .unfinished_plan_dialog .el-dialog__title{
+        font-size: 15px;
+    }
+    /deep/ .unfinished_plan_dialog .el-dialog__body{
+        padding: 10px 20px;
+    }
+    /deep/ .unfinished_plan_dialog .el-dialog__title{
+        font-weight: bold;
+    }
+    .unfinished_plan_li{
+        line-height: 28px;
+    }
 </style>
 

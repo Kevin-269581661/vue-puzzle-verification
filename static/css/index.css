@@ -157,6 +157,15 @@
 .el-message{
     top: 64px;
 }
+
+/*全局设置*/
+body .el-table th.gutter {
+    display: table-cell !important;
+}
+
+body .el-table colgroup.gutter {
+    display: table-cell !important;
+}
 /*1366*/
 @media screen and (min-width: 1366px) {
   .ad_index_container {

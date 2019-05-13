@@ -38,8 +38,8 @@ var instance = axios.create({
 instance.defaults.timeout = 2500;*/
 
 //全局配置
-// axios.defaults.baseURL = 'https://beta.qinlinad.com/';
-axios.defaults.baseURL = 'https://www.qinlinad.com/';
+axios.defaults.baseURL = 'https://beta.qinlinad.com/';
+// axios.defaults.baseURL = 'https://www.qinlinad.com/';
 Vue.prototype.Map = '/MapAPI'
 Vue.prototype.QZhike ='/QZhike';
 Vue.prototype.QKuyun ='/QinlinKuyun-API';
@@ -53,12 +53,12 @@ Vue.prototype.QADNAPI = '/QADNAPI'
 axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
 // 无忧地图
-Vue.prototype.wuYouMap = 'https://www.dituwuyou.com/qinlin/embed?mid=FPcrNHyq3xXFZDbqlTyHKA&token=fp3nxsKCYZzOSnU0KosEq0GA1o1qcKh5XLA&mapid=' // 正式服
-// Vue.prototype.wuYouMap = 'https://wsopbodv.dituwuyou.com/qinlin/embed?mid=_J6aWeV128gkhVn54AfWIw&token=SvcvtTqpktwPUb8dbu_jx0602nj_4tF-is8&mapid='  // 测试服
+// Vue.prototype.wuYouMap = 'https://www.dituwuyou.com/qinlin/embed?mid=FPcrNHyq3xXFZDbqlTyHKA&token=fp3nxsKCYZzOSnU0KosEq0GA1o1qcKh5XLA&mapid=' // 正式服
+Vue.prototype.wuYouMap = 'https://wsopbodv.dituwuyou.com/qinlin/embed?mid=_J6aWeV128gkhVn54AfWIw&token=SvcvtTqpktwPUb8dbu_jx0602nj_4tF-is8&mapid='  // 测试服
 // 正式服
-Vue.prototype.qadnUrl = 'https://www.qinlinad.com'
+// Vue.prototype.qadnUrl = 'https://www.qinlinad.com'
 //测试服
-// Vue.prototype.qadnUrl = 'https://beta.qinlinad.com'
+Vue.prototype.qadnUrl = 'https://beta.qinlinad.com'
 Vue.use(ElementUI);
 
 console.log('test');

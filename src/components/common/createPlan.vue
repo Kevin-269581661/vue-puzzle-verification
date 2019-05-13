@@ -1039,6 +1039,8 @@
     // 筛选过滤
     import filterFormat from "../../commonFun/filterTableData.js";
     import sheetExcel from "../../commonFun/sheetExcel.js";
+    // 方案缓存
+    import cacheAdPlan from "../../commonFun/cacheAdPlan"
 
     export default {
         name: "createPlan",
@@ -1354,6 +1356,7 @@
                 saleManageLevel: 0,              // 销售权限 0地方销售 1全国销售
                 asrIDList: [],                   // 已选点位里存在的公司及城市
                 indexData: '',                   // 首页来源的数据-前置地图选点
+                unfinishedData: ''               // 未完成方案信息
             };
         },
         mounted() {
@@ -1361,18 +1364,13 @@
             this.getsessionData()   // 获取session中的数据
             this.areaCity = areaArr.cityArea()
             this.getADLimit()       // 获取广告限制列表
-            // 注：window.onresize只能在项目内触发1次
-            let that = this
-            window.onresize = function windowResize() {    // 实时监控body的宽带。注：修改该方法后要重启项目并重新打开页面
-                // 通过捕获系统的onresize事件触发我们需要执行的事件
-                that.bodyWidth = document.body.offsetWidth
-                that.shopXY.x = that.bodyWidth - 170;
-                shopAnimate.style.right = that.shopXY.x + 'px'
+            // 设置购物车动画起点位置
+            this.setShopAnimate()
+            // 获取未完成的方案并填充
+            let inputPath = this.$route.fullPath
+            if (inputPath.indexOf('unfinishedPlan') !== -1) {
+                this.setPlanInfo()
             }
-            let Right = document.body.offsetWidth - 835
-            this.shopXY.x = Right
-            let shopAnimate = document.getElementsByClassName('shopAnimate')[0]
-            shopAnimate.style.right = this.shopXY.x + 'px'
             console.log('this.cityOptions', this.cityOptions)
         },
         directives: {
@@ -1393,6 +1391,10 @@
                 if(this.dialogTableVisible){
                     this.resetConnectAdData()
                     this.computeConnectAdData()
+                }
+                // 当购物车点位数大于0时
+                if(this.shopingList.length){
+                    this.saveApInfo()
                 }
                 return this.shopingList.length
             },
@@ -1441,6 +1443,22 @@
                     this.setDataByIndex()
                 }
                 console.log('this.dateInput',this.dateInput)
+            },
+            // 动态设置购物车动画起点位置
+            setShopAnimate(){
+                // 注：window.onresize只能在项目内触发1次
+                let that = this
+                // 实时监控body的宽带。注：修改该方法后要重启项目并重新打开页面
+                window.onresize = function windowResize() {
+                    // 通过捕获系统的onresize事件触发我们需要执行的事件
+                    that.bodyWidth = document.body.offsetWidth
+                    that.shopXY.x = that.bodyWidth - 170;
+                    shopAnimate.style.right = that.shopXY.x + 'px'
+                }
+                let Right = document.body.offsetWidth - 835
+                this.shopXY.x = Right
+                let shopAnimate = document.getElementsByClassName('shopAnimate')[0]
+                shopAnimate.style.right = this.shopXY.x + 'px'
             },
             // 跳转来源于首页地图选点-设置部分默认数据
             setDataByIndex(){
@@ -2388,7 +2406,20 @@
                 this.activeRName = ''            //step2当前选中的城市名称
                 this.areaName = '全市'           // step2当前选中的区域
                 this.mediaType = '广告门'
-                this.shopingList = []           // 购物车
+                let inputPath = this.$route.fullPath
+               if(inputPath.indexOf('unfinishedPlan') !== -1){
+                    // this.unfinishedData.planData.throwCity
+                   console.log('缓存方案再编辑',this.unfinishedData.planData)
+                    let arr = []
+                    for(let key of this.shopingList){
+                        if(this.unfinishedData.planData.baseInfo.throwCity.includes(key.rid)){
+                            arr.push(key)
+                        }
+                    }
+                   this.shopingList = arr
+                }else{
+                   this.shopingList = []           // 购物车
+               }
                 this.limitList = []             // 初始化广告限制
                 this.filterCondition = []       // 过滤条件tag
                 this.mState = ''                // 媒体状态
@@ -2588,15 +2619,7 @@
                         if (key.asPrice) {
                             adObj.adPrice = key.asPrice / 700
                         } else {
-                            if (key.grade === 'A') {
-                                adObj.adPrice = 3080 / 7
-                            } else if (key.grade === 'B') {
-                                adObj.adPrice = 2380 / 7
-                            } else if (key.grade === 'C') {
-                                adObj.adPrice = 1800 / 7
-                            } else {
-                                adObj.adPrice = 1900 / 7
-                            }
+                            adObj.adPrice = 0
                         }
                     }
                     // A/B面
@@ -3789,7 +3812,6 @@
 
             // dialog购物筐的显示全选中后添加都购物车
             dialogVisible() {
-                // this.computeConnectAdData('dialogVisible')
                 this.dialogTableVisible = true
                 this.computeMedia_AD()            // 统计媒体数量和媒体面数
             },
@@ -3931,23 +3953,14 @@
                     checkBox: {A: info.checkBox.A, B: info.checkBox.B,ABC:  info.checkBox.ABC},
                     box: {A:info.box.A !== undefined ? info.box.A : false,B:info.box.B !== undefined ? info.box.B : false},
                     connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
-                    connID: info.connID,        // 连排门id
+                    connID: info.connID,                 // 连排门id
                     industryInfos: info.industryInfos,   // 同行业资源回避
                     adPrice: info.adPrice,               // 点位价格
-                    mediaLevel: info.mediaLevel,        // 媒体等级
-                    asrID: info.asrID,                // 所属公司id
-                    asName: info.asName,                // 所属公司名称
+                    mediaLevel: info.mediaLevel,         // 媒体等级
+                    asrID: info.asrID,                   // 所属公司id
+                    asName: info.asName,                 // 所属公司名称
                 }
                 return selectInfo
-            },
-            // 取消全选时的购物车删除
-            selectAlldelRow(rows) {
-                for (let j = 0; j < this.shopingList.length; j++) {
-                    if (this.shopingList[j].mID === rows.mID && this.shopingList[j].schedules === rows.schedules) {
-                        this.shopingList.splice(j, 1)
-                        break
-                    }
-                }
             },
             // 自定义购物车表头-清空
             renderHeader(h, {column}){
@@ -4353,6 +4366,21 @@
                             }else{
                                 this.messageFun('success','投放城市的报价信息提交成功')
                             }
+                            // 清除后台缓存
+                            let params = {
+                                uid: this.sessionData.uID,
+                                token: this.sessionData.token
+                            }
+                            api.postApi(this.Advertisement,'/clearAdPlanBackups',params).then(res=>{
+                                console.log('清空缓存的方案',res)
+                                if(res.data.SysCode == 200200){
+                                    console.log('缓存方案清除成功')
+                                }else{
+
+                                }
+                            })
+                            // 清除前台缓存
+                            cacheAdPlan.removeData(this.sessionData.uID)
                         }
                     }
                 })
@@ -4397,6 +4425,126 @@
                 this.messageFun('success','复制成功')
             },
             // 公用方法
+            // 方案异常时，存储当前方案基本数据及购物车点位等临时信息
+            saveApInfo(){
+                let planInfo = {
+                    uid:this.sessionData.uID,
+                    setTime: this.timestampToTime(Date.parse(new Date())),
+                    planData: {
+                        suid: this.BDData.uid,          // 销售uid,如果是销售自己创建方案则uid与suid相同
+                        baseInfo: this.planForm,
+                        adsList: this.shopingList,
+                        throwCity:this.throwCity,
+                        companyBrand: this.companyBrand,
+                    }
+                }
+                console.log('方案异常时，存储当前方案基本数据及购物车点位等临时信息',planInfo)
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    adPlan: JSON.stringify(planInfo)
+                }
+                api.postApi(this.Advertisement + '/createAdPlanBackups',params).then(res=>{
+                    console.log('res创建方案缓存',res)
+                    if(res.data.SysCode == 200200){
+
+                    }else{
+                        // 后台缓存异常，则前台缓存到localStorage
+                        cacheAdPlan.setData(planInfo)
+                        // let planArr = JSON.parse(localStorage.getItem('creatPlanInfo'))
+                        // if(!planArr){
+                        //     planArr = [planInfo]
+                        // }else{
+                        //     let isHad = false
+                        //     for(let key of planArr){
+                        //         if(key.uid == planInfo.uid){
+                        //             key.setTime = planInfo.setTime
+                        //             key.planData = planInfo.planData
+                        //             isHad = true
+                        //             break
+                        //         }
+                        //     }
+                        //     if(!isHad){
+                        //         planArr.push(planInfo)
+                        //     }
+                        // }
+                        // localStorage.setItem('creatPlanInfo',JSON.stringify(planArr))
+                    }
+
+                })
+            },
+            // 设置方案信息
+            setPlanInfo(){
+                let returnData = cacheAdPlan.getData(this.sessionData.uID)
+                if (returnData) {
+                    this.unfinishedData = returnData
+                    this.planForm = returnData.planData.baseInfo
+                    this.BDData.uid = returnData.planData.suid
+                    this.throwCity = returnData.planData.throwCity
+                    this.shopingList = returnData.planData.adsList
+                    this.companyBrand = returnData.planData.companyBrand
+                    if(this.sessionData.uType === 'MD'){
+                        this.getCityList()
+                        this.Get_cName()
+                    }
+                    this.active = 1
+                    console.log('设置方案信息returnData', returnData)
+                    // 设置城市及对应的区域
+                    this.getAreaFun()
+                    this.getAdsParamsData = {
+                        prID: this.city[0].rid,
+                        rid: '440100',
+                        act: 1,
+                        dateTimeBegin: this.dateInput[0],
+                        dateTimeEnd: this.dateInput[1],
+                        resType: this.recType,
+                        mVehicle: this.mediaType,
+                        pageNo: this.pageNo,
+                        pageSize: 50,
+                    }
+                    this.getAdList()            // 获取选点列表
+                    this.getIndustryBycID()     // 根据所选公司获取公司所属行业
+                } else {
+                    return
+                }
+                // let planArr = JSON.parse(localStorage.getItem('creatPlanInfo'))
+                // if (!planArr) {
+                //     return
+                // } else {
+                //     let isHad = false
+                //     for (let key of planArr) {
+                //         if (key.uid == this.sessionData.uID) {
+                //             this.planForm = key.planData.baseInfo
+                //             this.BDData.uid = key.planData.suid
+                //             this.throwCity = key.planData.throwCity
+                //             this.shopingList = key.planData.adsList
+                //             this.companyBrand = key.planData.companyBrand
+                //             isHad = true
+                //             break
+                //         }
+                //     }
+                //     if (!isHad) {
+                //         return
+                //     }
+                //     this.active = 1
+                //     console.log('设置方案信息planArr',planArr)
+                //     // 设置城市及对应的区域
+                //     this.getAreaFun()
+                //     this.getAdsParamsData = {
+                //         prID: this.city[0].rid,
+                //         rid: '440100',
+                //         act: 1,
+                //         dateTimeBegin: this.dateInput[0],
+                //         dateTimeEnd: this.dateInput[1],
+                //         resType: this.recType,
+                //         mVehicle: this.mediaType,
+                //         pageNo: this.pageNo,
+                //         pageSize: 50,
+                //     }
+                //     this.getAdList()            // 获取选点列表
+                //     this.getIndustryBycID()     // 根据所选公司获取公司所属行业
+                // }
+            },
             // 时间戳转换成日期格式 2018-06-18 10:33:24
             timestampToTime(timestamp) {
                 let date = new Date(timestamp);//时间戳为10位需*1000，时间戳为13位的话不需乘1000

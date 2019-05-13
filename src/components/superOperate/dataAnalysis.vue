@@ -2033,11 +2033,11 @@
                     }
                     this.changeCity(this.currCity)
                 } else if (this.activeName === 'second') {
-                    if (this.cityCompareTableKey === 1) {// 变化城市对比中table的key值
-                        this.cityCompareTableKey = 2
-                    } else {
-                        this.cityCompareTableKey = 1
-                    }
+                    // if (this.cityCompareTableKey === 1) {// 变化城市对比中table的key值
+                    //     this.cityCompareTableKey = 2
+                    // } else {
+                    //     this.cityCompareTableKey = 1
+                    // }
                     this.isCitys = true
                     this.beforCurrCityL = this.currCity
                     this.currCity = '0'
@@ -6706,7 +6706,34 @@
     .all-data-table .el-table__fixed-right:before, .all-data-table .el-table__fixed:before{
         background-color:#fff;
     }
+    /*强制兼容safari表头错位bug*/
+    .el-table__fixed-header-wrapper thead tr th.el-table_5_column_31{
+        width: 140px;
+    }
+    .el-table__fixed-header-wrapper thead tr th.el-table_5_column_32{
+        width: 90px;
+    }
+    .el-table__fixed-header-wrapper thead tr th.el-table_5_column_33{
+        width: 120px;
+    }
+    .el-table__fixed-header-wrapper thead tr th.el-table_5_column_34{
+        width: 90px;
+    }
 
+    /*.el-table .el-table__header-wrapper thead.has-gutter tr th.el-table_5_column_31{*/
+        /*width: 140px;*/
+    /*}*/
+    .el-table .el-table__header-wrapper thead.has-gutter tr th.el-table_5_column_31 .cell{
+        width: 140px;
+    }
+
+    /*.el-table .el-table__body-wrapper .el-table__body tbody tr.el-table__row td.el-table_5_column_31{*/
+        /*width: 140px;*/
+    /*}*/
+    .el-table .el-table__body-wrapper .el-table__body tbody tr.el-table__row td.el-table_5_column_31 .cell{
+        width: 140px;
+        margin: 0;
+    }
     /*1920*/
     @media all and (min-width: 1920px) {
         /*滚动条*/

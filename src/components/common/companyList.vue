@@ -43,7 +43,7 @@
                                 <span>{{roleToText(scope.row.type)}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="创建日期" min-width="9.8%" sortable :sort-method="sortData">
+                        <el-table-column label="创建日期" min-width="9.8%" sortable :sort-by="sortData">
                             <template slot-scope="scope">
                                 <span>{{formatTime(scope.row.createTime)}}</span>
                             </template>

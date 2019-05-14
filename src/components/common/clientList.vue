@@ -96,7 +96,7 @@
                                 <span>{{scope.row.puName||'--'}}</span>
                             </template>
 						</el-table-column>
-						<el-table-column label="创建日期" min-width="8.3%" sortable :sort-method="sortData">
+						<el-table-column label="创建日期" min-width="8.3%" sortable :sort-by="sortData">
 							<template slot-scope="scope">
 								<span>{{ formatTime(scope.row.joinTime) }}</span>
 							</template>

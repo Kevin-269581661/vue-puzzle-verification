@@ -116,7 +116,7 @@
                                 </p>
                             </template>
                         </el-table-column>
-                        <el-table-column label="发布日期" min-width="7.3%" sortable :sort-method="sortData">
+                        <el-table-column label="发布日期" min-width="7.3%" sortable :sort-by="sortData">
                             <template slot-scope="scope">
                                 <span>{{formatTime(scope.row.apcTime)}}</span>
                             </template>

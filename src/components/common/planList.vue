@@ -535,12 +535,19 @@ export default {
         },
         // 新建方案
         addOne() {
+            this.continueEditLoading = this.$loading({
+                lock: true,
+                text: '正在查询是否有未完成的方案',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.5)'
+            });
             let params = {
                 uid:this.sessionData.uID,
                 token:this.sessionData.token
             }
             api.getApi(this.Advertisement + '/getAdPlanBackups',params).then(res=>{
                 console.log('获取方案缓存',res)
+                this.continueEditLoading.close()
                 if (res.data.SysCode == 200200) {
                     console.log('获取缓存成功',res.data)
                     if(JSON.stringify(res.data.data) === '{}'){
@@ -560,6 +567,8 @@ export default {
                         this.$router.push("./createPlan");
                     }
                 }
+            }).catch(err=>{
+                this.continueEditLoading.close()
             })
         },
         // 显示缓存方案的信息

@@ -525,8 +525,8 @@
                                             </el-col>
                                         </el-row>
                                         <el-row class="car-title">
-                                            <el-col :span="8">
-                                                <i class="el-icon-info" style="color: #1890FF;"></i>
+                                            <el-col :span="9">
+                                                <img src="../../assets/images/statistics.png" alt="" style="vertical-align: text-top;">
                                                 社区:<span>{{shopMedia_ADNum.resNum}}</span>
                                                 (选1面:<span>{{shopMedia_ADNum.oneNum}}</span>&nbsp;&nbsp;
                                                 选2面:<span>{{shopMedia_ADNum.twoNum}}</span>&nbsp;&nbsp;
@@ -540,7 +540,7 @@
                                                 (A面:<span>{{mediaLevelNum.ANum}}</span>&nbsp;&nbsp;
                                                 B面:<span>{{mediaLevelNum.BNum}}</span>)
                                             </el-col>
-                                            <el-col :span="6" v-if="mediaLevelNum.ALevel || mediaLevelNum.BLevel || mediaLevelNum.CLevel">
+                                            <el-col :span="5" v-if="mediaLevelNum.ALevel || mediaLevelNum.BLevel || mediaLevelNum.CLevel">
                                                 A级:<span>{{mediaLevelNum.ALevel}}</span>
                                                 B级:<span>{{mediaLevelNum.BLevel}}</span>
                                                 C级:<span>{{mediaLevelNum.CLevel}}</span>
@@ -3238,10 +3238,10 @@
             // dialog购物筐的显示全选中后添加都购物车
             dialogVisible() {
                 this.computeConnectAdData()
-                this.dialogTableVisible = true
+                this.dialogTableVisible = true;
+                this.eventType = "";
                 this.typeShopList = this.getTypeList();
                 this.handleClick();
-                // this.computeMedia_AD();
             },
             // 组合typeShopList
             getTypeList(){
@@ -3296,12 +3296,8 @@
                             value: 2,
                         },
                         {
-                            label: '移除同行资源回避的点位',
+                            label: '移除同行已选小区',
                             value: 3,
-                        },
-                        {
-                            label: '移除同行媒体回避的点位',
-                            value: 4,
                         },
                         {
                             label: '同资源保留1个点位',
@@ -3315,6 +3311,10 @@
                 let currTab = this.activeName;
                 if(currTab == 1){
                     let temp = [
+                        {
+                            label: '移除同行已选点位',
+                            value: 4,
+                        },
                         {
                             label: '移除同媒体A面',
                             value: 7,
@@ -3332,6 +3332,7 @@
             },
             // 事件选择
             changeEvent(val){
+                console.log('val', val);
                 switch (val){
                     case 1:
                         this.clearADLock();
@@ -3402,7 +3403,7 @@
                     return groups;
                     },[]);
                 if (resultArr.length > 0) {
-                    this.messageFun('success','成功移除' + num + '条数据')
+                    this.messageFun('success',`成功移除同门${type}面的点位！`)
                     this.shopingList = resultArr;
                     this.typeShopList = this.getTypeList();
                     this.getShowList();
@@ -3410,7 +3411,7 @@
                     this.resetPlanList();
                     this.judgeByselect();
                 } else {
-                    this.messageFun('warning',`暂无${type}面数据！`)
+                    this.messageFun('warning', '暂无可移除点位！')
                 }
             },
             // 同一媒体是否有a/b面
@@ -3719,6 +3720,9 @@
                                 if (res.data !== '' &&  !res.data.SysCode && res.data.asIDList !== undefined && res.data.aiIP !== undefined) {
                                     this.shareADSData = res.data
                                     this.compareShopData_shareData()
+
+                                    this.typeShopList = this.getTypeList();
+                                    this.getShowList();
                                 } else {
                                     // 未更新选点
                                     this.messageFun('warning','暂无数据可获取')
@@ -3886,6 +3890,10 @@
                 }
                 this.getMapLoading.close()
                 this.messageFun('success','成功获取到' + tempArr.length + '条数据')
+                
+                this.typeShopList = this.getTypeList();
+                this.getShowList();
+
                 this.computeMedia_AD('mapAD')
                 this.judgeByselect()
             },
@@ -4312,6 +4320,7 @@
                         this.messageFun('warning','暂无被占点位')
                     }
                 }).catch(() => {
+                    this.eventType = '';
                     this.messageFun('info','取消成功')
                 })
                 // this.ADLockNum = 0
@@ -4342,6 +4351,7 @@
                             this.computeMedia_AD()
                             this.messageFun('success','删除成功')
                         }).catch(() => {
+                            this.eventType = '';                            
                             this.messageFun('info','已取消删除')
                         });
                         this.resetPlanList()
@@ -5577,30 +5587,22 @@
     .car-title span {
         font-size: 14px;
         font-weight: normal;
-        margin: 0 6px;
+        margin: 0 4px;
         cursor: pointer;
         color: #1890ff;
     }
-
-    /*.car-del {*/
-        /*text-align: center;*/
-        /*cursor: pointer;*/
-        /*color: #1890ff;*/
-    /*}*/
 
     /deep/ .car-list .el-table__expanded-cell[class*=cell] {
         padding: 0 46px;
         background-color: #F7F7F7;;
     }
 
-    /*.table_wrap /deep/ .has-gutter th:nth-child(11),*/
     .table_wrap /deep/ .has-gutter th:nth-child(12),
     .table_wrap /deep/ .has-gutter th:nth-child(13),
     .table_wrap /deep/ .has-gutter th:nth-child(17),
     .table_wrap /deep/ .has-gutter th:nth-child(18),
     .table_wrap /deep/ .has-gutter th:nth-child(19),
     .table_wrap /deep/ .has-gutter th:nth-child(20),
-        /*.table_wrap /deep/ .el-table__row td:nth-child(11),*/
     .table_wrap /deep/ .el-table__row td:nth-child(12),
     .table_wrap /deep/ .el-table__row td:nth-child(13),
     .table_wrap /deep/ .el-table__row td:nth-child(17),

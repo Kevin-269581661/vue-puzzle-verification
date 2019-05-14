@@ -590,35 +590,48 @@
                         <el-dialog title="已选点位" :visible.sync="dialogTableVisible">
                             <template slot-scope="scope">
                                 <div class="table_wrap car-list" style="margin-top: 60px">
-                                    <el-row>
-                                        <el-col :span="5">
-                                            <el-button @click="getMapADList" class="mapBtn" :disabled="mapBtn">获取地图选点</el-button>
+                                    <el-row style="margin-bottom:10px;">
+                                        <el-col :span="8">
+                                            <el-radio-group v-model="activeName" size="small" @change="handleClick">
+                                                <el-radio-button :label="item.type.toString()" v-for="item of typeShopList" :key="item.type">{{item.mVehicle}}</el-radio-button>
+                                            </el-radio-group>
                                         </el-col>
-                                        <el-col :span="19" class="warningInfo">
-                                            <span style="background: rgba(0,153,255,0.2)" class="warningInfoColor" ></span>
-                                            <span class="warningInfoName">连排门、同行资源回避、同行媒体回避</span>
-                                            <span class="warningInfoName" v-if="mediaLevelNum.ALevel || mediaLevelNum.BLevel || mediaLevelNum.CLevel">
-                                                A级：<strong>{{mediaLevelNum.ALevel}}</strong>面、
-                                                B级：<strong>{{mediaLevelNum.BLevel}}</strong>面、
-                                                C级：<strong>{{mediaLevelNum.CLevel}}</strong>面
+
+                                        <el-col :span="16" style="text-align:right;">
+                                            <span class="button_point">
+                                                <el-button @click="getMapADList" class="mapBtn" :disabled="mapBtn">获取地图选点</el-button>
                                             </span>
-                                            <span class="warningInfoName">
-                                                A面：<strong>{{mediaLevelNum.ANum}}</strong> &nbsp;&nbsp;
-                                                B面：<strong>{{mediaLevelNum.BNum}}</strong>
-                                            </span>
+                                            <el-select v-model="eventType" placeholder="快捷配点" filterable @change="changeEvent">
+                                                <el-option v-for="item of eventList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                                            </el-select>
                                         </el-col>
                                     </el-row>
-                                    <div class="car-title">
-                                        <i class="el-icon-info" style="color: #1890FF;"></i>
-                                        <h4>已选择<span>{{shopMedia_ADNum.resNum}}</span>个社区,<span>{{shopMedia_ADNum.mediaNum}}</span>个媒体,
-                                            <p>投放<span>{{shopMedia_ADNum.ADNum}}</span>面 </p>
-                                            <span style="cursor: pointer" @click="removeCommentIndustryAds('res')"> 移除同行资源回避的点位</span>
-                                            <span style="cursor: pointer" @click="removeCommentIndustryAds('media')">移除同行媒体回避的点位</span>
-                                        </h4>
-                                    </div>
+                                    <el-row class="car-title">
+                                        <el-col :span="9">
+                                            <img src="../../assets/images/statistics.png" alt="" style="vertical-align: text-top;">
+                                            社区:<span>{{shopMedia_ADNum.resNum}}</span>
+                                            (选1面:<span>{{shopMedia_ADNum.oneNum}}</span>&nbsp;&nbsp;
+                                            选2面:<span>{{shopMedia_ADNum.twoNum}}</span>&nbsp;&nbsp;
+                                            选3面:<span>{{shopMedia_ADNum.threeNum}}</span>)
+                                        </el-col>
+                                        <el-col :span="2">
+                                            媒体:<span>{{shopMedia_ADNum.mediaNum}}</span>
+                                        </el-col>
+                                        <el-col :span="6">
+                                            点位:<span>{{shopMedia_ADNum.ADNum}}</span>
+                                            (A面:<span>{{mediaLevelNum.ANum}}</span>&nbsp;&nbsp;
+                                            B面:<span>{{mediaLevelNum.BNum}}</span>)
+                                        </el-col>
+                                        <el-col :span="5">
+                                            A级:<span>{{mediaLevelNum.ALevel}}</span>
+                                            B级:<span>{{mediaLevelNum.BLevel}}</span>
+                                            C级:<span>{{mediaLevelNum.CLevel}}</span>
+                                        </el-col>
+                                    </el-row>
+
                                     <el-table
                                         border
-                                        :data="shopingList"
+                                        :data="shopShowList"
                                         :default-sort="{prop: 'mID', order: 'descending'}"
                                         :row-class-name="tableRowClassName"
                                         @row-click="shopRowClick"
@@ -723,6 +736,13 @@
                                             </template>
                                         </el-table-column>
                                     </el-table>
+                                    <p class="warningInfo">
+                                        <span style="background: #fff1f1" class="warningInfoColor"></span>
+                                        <span class="warningInfoName">被占点位</span>
+                                        <span style="background: rgba(0,153,255,0.2)" class="warningInfoColor"></span>
+                                        <span class="warningInfoName">连排门、同行资源回避、同行媒体回避</span>
+                                    </p>
+
                                     <div style="text-align: center;margin-bottom: 10px">
                                         <el-button style="margin-top: 12px;" @click="next" type="primary">下一步
                                         </el-button>
@@ -1249,6 +1269,14 @@
                     ],
                 },
                 shopingList: [],            // step2购物车列表
+                // 购物车展示的数据
+                typeShopList:[],
+                activeName: '1',
+                // 事件选择
+                eventType: '',
+                eventList: [],
+                // 购物车表格数据
+                shopShowList: [],
                 planList: [],               //step2可选点位列表
                 IsAll: false,               //当前是否为全选状态
                 sessionData: '',            // 登录用户的数据
@@ -1273,7 +1301,7 @@
                     pSNum: false
                 },
                 loadSign: true,                  // table滚轮
-                shopMedia_ADNum: {resNum: 0, mediaNum: 0, ADNum: 0},
+                shopMedia_ADNum: {resNum: 0, mediaNum: 0, ADNum: 0, oneNum: 0, twoNum: 0, threeNum: 0},
                 ADloading: '',                   // 创建方案、提交选点和报价单时的loading
                 areaCity: [],
                 activeCityData: {},             // 城市切换的数据，默认为this.city[0]
@@ -3710,6 +3738,9 @@
                 if (num > 0) {
                     this.messageFun('success','成功移除' + num + '条数据')
                     this.shopingList = arr
+                    this.shopingList = arr
+                    this.typeShopList = this.getTypeList();
+                    this.getShowList();
                     this.computeMedia_AD()
                     this.resetPlanList()
                     this.judgeByselect()
@@ -3726,6 +3757,8 @@
                         type: 'warning'
                     }).then(() => {
                         this.shopingList = []
+                        this.typeShopList = this.getTypeList();
+                        this.getShowList();
                         this.allCheckboxUpdata()
                         this.computeMedia_AD()
                         this.messageFun('success','删除成功')
@@ -3740,14 +3773,20 @@
             },
             // 统计购物车媒体数、面数
             computeMedia_AD(letter) {
-                let shopList = this.shopingList
+                // let shopList = this.shopingList
+                // console.log('购物车统计面数媒体数shopList', shopList)
+                let shopList = [];
+                let currTab = this.activeName;
+                console.log('typeShopList----', this.typeShopList);
+                shopList = this.typeShopList[currTab-1].asidList;
                 console.log('购物车统计面数媒体数shopList', shopList)
                 let mediaArr = []
                 let mediaAD = []
                 let resArr = []
+                let resAsidArr = [];                
                 // ANum：A面数量  BNum：B面数量
                 let mediaLevelNum = {ALevel: 0, BLevel: 0, CLevel: 0,ANum:0,BNum:0}
-                for(let key of this.shopingList){
+                for(let key of shopList){
                     if(key.mVehicle === '广告门'){
                         // 等级ABC
                         if(key.mediaLevel === 'A'){
@@ -3779,7 +3818,28 @@
                     }else{
                         // console.log('重复的点位',key.resID)
                     }
+                    // 计算各个社区面数
+                    let isHad = false;
+                    for(let data of resAsidArr){
+                        if(data.resID == key.resID){
+                            isHad = true;
+                            if(!data.asidList.includes(key.asID)){
+                                data.asidList.push(key.asID);
+                            }
+                        }
+                    }
+                    if(!isHad){
+                        let obj = {
+                            resID: key.resID,
+                            asidList: [key.asID],
+                        };
+                        resAsidArr.push(obj);
+                    }
                 }
+                // console.log('resAsidArr------', resAsidArr);
+                this.shopMedia_ADNum.oneNum = this.getResAsidNum(1, resAsidArr);
+                this.shopMedia_ADNum.twoNum = this.getResAsidNum(2, resAsidArr);
+                this.shopMedia_ADNum.threeNum = this.getResAsidNum(3, resAsidArr);
                 if (letter === 'mapAD') {
                     let stepMNum = 1
                     let stepADNum = 2
@@ -3808,12 +3868,224 @@
                     this.shopMedia_ADNum.resNum = resArr.length
                 }
                 this.mediaLevelNum = mediaLevelNum
-            },
 
+                console.log('shopMedia_ADNum----', this.shopMedia_ADNum);
+            },
+            // 获取社区选一面两面三名的数据
+            getResAsidNum(num, arr){
+                let result = arr.filter((item)=>{
+                    return item.asidList.length == num; 
+                });
+                return result.length;
+            },
             // dialog购物筐的显示全选中后添加都购物车
             dialogVisible() {
                 this.dialogTableVisible = true
-                this.computeMedia_AD()            // 统计媒体数量和媒体面数
+                // this.computeMedia_AD()            // 统计媒体数量和媒体面数
+                this.eventType = "";
+                this.typeShopList = this.getTypeList();
+                this.handleClick();
+            },
+            // 组合typeShopList
+            getTypeList(){
+                console.log('--------', this.shopingList);
+                let arr = [
+                    {
+                        type: 1,
+                        mVehicle: "广告门",
+                        asidList: [],
+                    },
+                    {
+                        type: 2,
+                        mVehicle: '道闸',
+                        asidList: [],
+                    }
+                ];
+                let type1 = [];
+                let type2 = [];
+                for(let data of this.shopingList){
+                    if(data.mVehicle == '广告门'){
+                        type1.push(data);
+                    }else if(data.mVehicle == '道闸'){
+                        type2.push(data);
+                    }
+                }
+                console.log('type1------', type1);
+                arr[0].asidList = type1;
+                arr[1].asidList = type2;
+                return arr;
+            },
+            // 切换tab
+            handleClick(){
+                console.log('this.activeName----', this.activeName, this.typeShopList);
+                this.getShowList();
+                this.getEventList();
+                this.computeMedia_AD();
+            },
+            // 设置购物车表格数据
+            getShowList(){
+                let currTab = this.activeName;
+                let arr = this.typeShopList[currTab-1].asidList;
+                this.shopShowList = arr;
+            },
+            // 获取事件
+            getEventList(){
+                let arr = [
+                        // {
+                        //     label: '移除被占点位',
+                        //     value: 1,
+                        // },
+                        // {
+                        //     label: '移除非客户的选点',
+                        //     value: 2,
+                        // },
+                        {
+                            label: '移除同行已选小区',
+                            value: 3,
+                        },
+                        {
+                            label: '同资源保留1个点位',
+                            value: 5,
+                        },
+                        {
+                            label: '同资源保留2个点位',
+                            value: 6,
+                        },
+                    ];
+                let currTab = this.activeName;
+                if(currTab == 1){
+                    let temp = [
+                        {
+                            label: '移除同行已选点位',
+                            value: 4,
+                        },
+                        {
+                            label: '移除同媒体A面',
+                            value: 7,
+                        },
+                        {
+                            label: '移除同媒体B面',
+                            value: 8,
+                        },
+                    ];
+                    arr = arr.concat(temp);
+                }else if(currTab == 2){
+                    arr = arr;
+                }
+                this.eventList = arr;
+            },
+            // 事件选择
+            changeEvent(val){
+                console.log('val', val);
+                switch (val){
+                    case 1:
+                        this.clearADLock();
+                        break;
+                    case 2: 
+                        this.removeNoShareAD();
+                        break;
+                    case 3:
+                        this.removeCommentIndustryAds('res');
+                        break;
+                    case 4:
+                        this.removeCommentIndustryAds('media');
+                        break;
+                    case 5:
+                        this.containNuminRes(1);
+                        break;
+                    case 6:
+                        this.containNuminRes(2);
+                        break;
+                    case 7: 
+                        this.removeAllType('A');
+                        break;
+                    case 8:
+                        this.removeAllType('B');
+                        break;
+                }
+            },
+            // 同资源保留个数
+            containNuminRes(num){
+                let residArr = [];
+                let resultArr = [];
+                for(let data of this.shopingList){
+                    if(this.isEnough(data.resID, num, residArr)){
+                        residArr.push(data.resID);
+                        resultArr.push(data);
+                    }
+                }
+                if(resultArr.length){
+                    this.messageFun('success',`成功保留同资源${num}个点位！`);
+                    this.shopingList = resultArr;
+                    this.typeShopList = this.getTypeList();
+                    this.getShowList();
+                    this.computeMedia_AD();
+                    this.resetPlanList();
+                    this.judgeByselect();
+                }else{
+                    this.messageFun('warning', '暂无同资源可移除的点位！')                    
+                }
+            },
+            // 移除A/B面
+            removeAllType(type){
+                let resultArr= this.shopingList.reduce((groups, item)=>{
+                    let groupFound= groups.find(arrItem => item.mID === arrItem.mID&& item.schedules === arrItem.schedules);
+                    if(groupFound) {
+                        if(!JSON.stringify(groupFound.asidList).includes(JSON.stringify(item))) {  //去重
+                            groupFound.asidList.push(item);
+                        }
+                    } else {
+                        //不要直接在原来的对象修改，新建对象
+                        let newGroup = {
+                            mID: item.mID,
+                            schedules: item.schedules,
+                            asidList: [item]
+                        }
+                        groups.push(newGroup);
+                    }
+                    return groups;
+                    },[]);
+                if (resultArr.length > 0) {
+                    this.messageFun('success',`成功移除同门${type}面的点位！`)
+                    this.shopingList = this.isEnoughMedia(type, resultArr);
+                    this.typeShopList = this.getTypeList();
+                    this.getShowList();
+                    this.computeMedia_AD();
+                    this.resetPlanList();
+                    this.judgeByselect();
+                } else {
+                    this.messageFun('warning', '暂无可移除点位！')
+                }
+            },
+            // 同一媒体是否有a/b面
+            isEnoughMedia(type, arr){
+                let resultArr = [];
+                for(let data of arr){
+                    let result = [];
+                    if(data.asidList.length > 1){
+                        result = data.asidList.filter((item)=>{
+                            return item.A_B != type; 
+                        });
+                    }else{
+                        result = data.asidList;
+                    }
+                    resultArr = resultArr.concat(result);
+                }
+                return resultArr;
+            },
+            // 判断这个值出现的次数符合预期返回true,否则false
+            isEnough(id, time, arr){
+                let sum = 0
+                for(let data of arr){
+                    if(data == id){
+                        sum++;
+                    }
+                }
+                if(sum < time){
+                    return true;
+                }else{
+                    return false;
+                }
             },
             // 根据connID高亮行数据
             tableRowClassName({row}){
@@ -4003,6 +4275,9 @@
                         j++
                     }
                 }
+
+                this.typeShopList = this.getTypeList();
+                this.getShowList();
                 this.computeMedia_AD()
                 this.allCheckboxUpdata()
                 event.stopPropagation()
@@ -4636,18 +4911,15 @@
     /*购物车提示信息*/
     .warningInfoColor{
         display: inline-block;
-        height: 28px;
-        width: 28px;
+        height: 16px;
+        width: 16px;
         border-radius: 4px;
+        vertical-align: middle;
     }
 
-    .warningInfoName{
-        position: relative;
-        top: -9px;
-        margin-right: 18px;
-    }
-    .warningInfoName strong{
-        font-weight: bold;
+    .warningInfo .warningInfoName{
+        color: #333;
+        font-size: 12px;
     }
 
     /*状态行*/
@@ -5192,6 +5464,11 @@
     }
     /deep/ .selectAdsTable .el-checkbox__label{
         padding-left: 4px ;
+    }
+
+    /deep/ .car-list .el-table__body-wrapper {
+        min-height: 380px;
+        max-height: 360px;
     }
 
     /*滚动条*/

@@ -1189,7 +1189,7 @@
                     pSNum: false
                 },
                 loadSign: true,            // table滚轮
-                shopMedia_ADNum: {resNum: 0, mediaNum: 0, ADNum: 0},
+                shopMedia_ADNum: {resNum: 0, mediaNum: 0, ADNum: 0, oneNum: 0, twoNum: 0, threeNum: 0},
                 ADloading: '',                 // 创建方案、提交选点和报价单时的loading
                 computeAuotation: '',         // 计算报价单时的loading
                 areaCity: [],
@@ -1317,11 +1317,6 @@
             let shopAnimate = document.getElementsByClassName('shopAnimate')[0]
             shopAnimate.style.right = this.shopXY.x + 'px'
             console.log('this.cityOptions', this.cityOptions)
-
-            // this.dialogVisible();
-            // this.getEventList();
-            // this.typeShopList = this.getTypeList();
-            // this.handleClick();
             
         },
         directives: {
@@ -3384,10 +3379,9 @@
             },
             // 移除A/B面
             removeAllType(type){
-                let result= this.shopingList.reduce((groups, item)=>{
+                let resultArr= this.shopingList.reduce((groups, item)=>{
                     let groupFound= groups.find(arrItem => item.mID === arrItem.mID&& item.schedules === arrItem.schedules);
                     if(groupFound) {
-                        groupFound.asidList.push(item);
                         if(!JSON.stringify(groupFound.asidList).includes(JSON.stringify(item))) {  //去重
                             groupFound.asidList.push(item);
                         }
@@ -3404,7 +3398,7 @@
                     },[]);
                 if (resultArr.length > 0) {
                     this.messageFun('success',`成功移除同门${type}面的点位！`)
-                    this.shopingList = resultArr;
+                    this.shopingList = this.isEnoughMedia(type, resultArr);
                     this.typeShopList = this.getTypeList();
                     this.getShowList();
                     this.computeMedia_AD();
@@ -3415,32 +3409,20 @@
                 }
             },
             // 同一媒体是否有a/b面
-            isEnoughMedia(type, item, arr){
-                let isSame = false;
-                let hasMid = false;
-                // debugger;
+            isEnoughMedia(type, arr){
+                let resultArr = [];
                 for(let data of arr){
-                    if(data.mid == item.mID){
-                        console.log(11111);
-                        console.log(data.asidList);
-                        let num = 0;
-                        for(let asidObj of data.asidList){
-                            if(asidObj.schedules == item.schedules){
-                                num++;
-                            }
-                        }
-                        console.log('num----', num);
-                        if(num >= 1){
-                            hasMid = true;
-                        }
+                    let result = [];
+                    if(data.asidList.length > 1){
+                        result = data.asidList.filter((item)=>{
+                            return item.A_B != type; 
+                        });
+                    }else{
+                        result = data.asidList;
                     }
+                    resultArr = resultArr.concat(result);
                 }
-                console.log('hasmid-----', hasMid);
-                if(!hasMid){
-                    return true;
-                }else{
-                    return false;
-                }
+                return resultArr;
             },
             // 判断这个值出现的次数符合预期返回true,否则false
             isEnough(id, time, arr){
@@ -3543,18 +3525,6 @@
                 }
                 return selectInfo
             },
-            // 取消全选时的购物车删除
-            // selectAlldelRow(rows) {
-            //     // if (this.ADLockNum > 0) {
-            //     //     this.ADLockNum -= 1
-            //     // }
-            //     for (let j = 0; j < this.shopingList.length; j++) {
-            //         if (this.shopingList[j].mID === rows.mID && this.shopingList[j].schedules === rows.schedules) {
-            //             this.shopingList.splice(j, 1)
-            //             break
-            //         }
-            //     }
-            // },
             // 自定义购物车表头-清空
             renderHeader(h, {column}){
                 // console.log('********h*******',h,column)
@@ -3588,14 +3558,14 @@
                         }
                     }
                 }
-                for (let j = 0,len=this.shopShowList.length; j < len;) {
-                    if (this.shopShowList[j].mID === rows.mID && this.shopShowList[j].A_B == rows.A_B && this.shopShowList[j].schedules === rows.schedules) {
-                        this.shopShowList.splice(j, 1);
-                        break
-                    } else {
-                        j++
-                    }
-                }
+                // for (let j = 0,len=this.shopShowList.length; j < len;) {
+                //     if (this.shopShowList[j].mID === rows.mID && this.shopShowList[j].A_B == rows.A_B && this.shopShowList[j].schedules === rows.schedules) {
+                //         this.shopShowList.splice(j, 1);
+                //         break
+                //     } else {
+                //         j++
+                //     }
+                // }
                 for (let j = 0,len=this.shopingList.length; j < len;) {
                     if (this.shopingList[j].mID === rows.mID && this.shopingList[j].A_B == rows.A_B && this.shopingList[j].schedules === rows.schedules) {
                         this.shopingList.splice(j, 1)
@@ -3604,6 +3574,8 @@
                         j++
                     }
                 }
+                this.typeShopList = this.getTypeList();
+                this.getShowList();
                 this.computeMedia_AD()
                 this.allCheckboxUpdata()
                 event.stopPropagation()
@@ -4922,14 +4894,6 @@
     .warningInfo .warningInfoName{
         color: #333;
         font-size: 12px;
-    }
-    .warningInfoName{
-        /* position: relative;
-        top: -9px;
-        margin-right: 18px; */
-    }
-    .warningInfoName strong{
-        font-weight: bold;
     }
     /*状态行*/
     /deep/ .el-table .warning-row {

@@ -5446,17 +5446,21 @@
             },
             // 创建社区时间 - changes
             CreatDateChange(val1,val2){
+                console.log('----------------',val1)
                 if(val1 === 'res'){
+                    if(!this.resCreatDate){
+                        this.resCreatDate = []
+                    }
                     this.pUpMin = ''
                     this.pUpMax = ''
                     this.setPageNoAndTableDataRes()
                     this.getResRateFun()
                 }else if(val1 === 'ads'){
+                    if(!this.adsCreatDate){
+                        this.adsCreatDate = []
+                    }
                     this.cUpMin = '';
                     this.cUpMax = '';
-                    // this.adsLoading = true
-                    // this.adsRateList = []
-                    // this.adsPageNum = 1
                     this.setPageNoAndTableDataAds()
                     this.getAdsRateFun()
                 }

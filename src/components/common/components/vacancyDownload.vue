@@ -42,7 +42,7 @@
                 <el-date-picker
                     v-model="downLoadInfo.daterange"
                     type="daterange"
-                    size="mini"
+                    size="small"
                     start-placeholder="开始日期"
                     end-placeholder="结束日期"
                     value-format="yyyy/MM/dd"
@@ -52,8 +52,8 @@
             </el-col>
         </el-row>
         <p class="button_box">
-            <el-button @click="cancelDown()">取 消</el-button>
-            <el-button type="primary" @click="confirmDown()">确 定</el-button>
+            <el-button @click="cancelDown()" size="small">取 消</el-button>
+            <el-button type="primary" @click="confirmDown()" size="small">确 定</el-button>
         </p>
     </div>
 </template>
@@ -390,11 +390,14 @@ export default {
 /deep/.vacancy_box .el-row{
     height: 45px;
 }
+/deep/.vacancy_box .el-select{
+    width: 90%;
+}
 /deep/.vacancy_box .el-input__inner{
     width: 100%;
 }
 /deep/.vacancy_box .el-date-editor{
-    max-width: 230px;
+    width: 90%;
 }
 /deep/.vacancy_box .el-range-editor--mini .el-range-separator{
     line-height: 30px;

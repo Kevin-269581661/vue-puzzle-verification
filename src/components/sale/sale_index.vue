@@ -151,8 +151,8 @@ export default {
                     link: './sale/planList',
                     children: [
                         {
-                            title: '方案列表',
-                            link: './sale/planList',
+                            title: '导出空位',
+                            link: '',
                         },
                         {
                             title: '地图选点',

@@ -61,41 +61,43 @@
 			</div>
 		</div>
 
-		<el-dialog
-			title=""
-			:visible.sync="isShowMedal"
-			width="340">
-			<div class="dia_con">
-				<div class="top">
-					<img :src="currentImgInfo.url" alt="">
-				</div>
-				<div class="con">
-					<!-- <p style="font-size:28px;line-height:20px;font-weight:bold;">{{currentImgInfo.name}}</p> -->
-					<p style="height:24px;line-height:24px;margin-top: 10px;">
-						<span>{{currentImgInfo.name}}达 {{currentImgInfo.num}} {{currentImgInfo.unit}}</span>
-					</p>
-					<div class="img_modal">
-						<el-row>
-							<el-col :span="7">
-								<img :src="currentImgInfo.img2" alt="">
-								<span class="line_style"></span>
-							</el-col>
-							<el-col :span="7">
-								<img :src="currentImgInfo.img3" alt="">
-								<span class="line_style"></span>
-							</el-col>
-							<el-col :span="7">
-								<img :src="currentImgInfo.img4" alt="">
-								<span class="line_style"></span>
-							</el-col>
-							<el-col :span="3">
-								<img :src="currentImgInfo.img5" alt="">
-							</el-col>
-						</el-row>
+		<div class="dialog_box">
+			<el-dialog
+				title=""
+				:visible.sync="isShowMedal"
+				width="340">
+				<div class="dia_con">
+					<div class="top">
+						<img :src="currentImgInfo.url" alt="">
+					</div>
+					<div class="con">
+						<!-- <p style="font-size:28px;line-height:20px;font-weight:bold;">{{currentImgInfo.name}}</p> -->
+						<p style="height:24px;line-height:24px;margin-top: 10px;">
+							<span>{{currentImgInfo.name}}达 {{currentImgInfo.num}} {{currentImgInfo.unit}}</span>
+						</p>
+						<div class="img_modal">
+							<el-row>
+								<el-col :span="7">
+									<img :src="currentImgInfo.img2" alt="">
+									<span class="line_style"></span>
+								</el-col>
+								<el-col :span="7">
+									<img :src="currentImgInfo.img3" alt="">
+									<span class="line_style"></span>
+								</el-col>
+								<el-col :span="7">
+									<img :src="currentImgInfo.img4" alt="">
+									<span class="line_style"></span>
+								</el-col>
+								<el-col :span="3">
+									<img :src="currentImgInfo.img5" alt="">
+								</el-col>
+							</el-row>
+						</div>
 					</div>
 				</div>
-			</div>
-		</el-dialog>
+			</el-dialog>
+		</div>
 
 		<!-- 媒介工作量 -->
 		<div v-if="isShowNum" style="z-index:2;background: #000000;opacity: 0.3;width:100%;height:100%;position:absolute;top:0;left:0;"> </div>
@@ -198,8 +200,8 @@ export default {
                     link: './media/planList',
                     children: [
                         {
-                            title: '方案列表',
-                            link: './media/planList',
+                            title: '导出空位',
+                            link: '',
                         },
                         {
                             title: '新建方案',
@@ -736,7 +738,7 @@ export default {
 	display: flex;
 	justify-content: space-between;
 }
-.media_index /deep/ .el-dialog{
+.media_index /deep/ .dialog_box .el-dialog{
 	background: #fff;
 	height: 420px;
 	width: 340px;

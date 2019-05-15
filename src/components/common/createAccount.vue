@@ -18,10 +18,10 @@
                     <div class="content_top_form_wrap">
                         <el-form :model="accountForm" status-icon :rules="accountRules" ref="accountForm" label-width="120px" class="demo-ruleForm">
                             <el-form-item label="账号:" prop="account">
-                                <el-input v-model="accountForm.account" placeholder="请输入账号" :disabled="isEdit"></el-input>
+                                <el-input v-model.trim="accountForm.account" placeholder="请输入账号" :disabled="isEdit"></el-input>
                             </el-form-item>
                             <el-form-item label="姓名:" prop="realName">
-                                <el-input v-model="accountForm.realName" placeholder="请输入真实姓名"></el-input>
+                                <el-input v-model.trim="accountForm.realName" placeholder="请输入真实姓名"></el-input>
                             </el-form-item>
                             <el-form-item label="所属公司" prop="company">
                                 <el-select v-model="accountForm.company" placeholder="请选择所属公司" filterable @change="companyChange" size="small">

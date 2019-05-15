@@ -1220,7 +1220,14 @@
             },
             // 设置销售目标 SaveOrUpdateUserTarget
             setSalerTarget(row){
-                // console.log('行数据',row)
+                console.log('行数据',row)
+                if(row.inputValue === ''){
+                    this.messageFun('warning','目标金额不能为空！')
+                    return
+                }else if(!Number(row.inputValue) || Number(row.inputValue) < 0){
+                    this.messageFun('warning','请输入数字金额（正数）！')
+                    return
+                }
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
@@ -1236,7 +1243,7 @@
                         this.messageFun('success',res.data.MSG)
                         row.setBtn = false
                         row.targetAmount = params.target / 100
-                        row.progressBar = Number(((row.salesAmount / row.targetAmount ) * 100).toFixed(0))
+                        row.progressBar = row.targetAmount ? Number(((row.salesAmount / row.targetAmount ) * 100).toFixed(0)) : 0
                         if(params.target > this.maxPrice){
                             this.maxPrice = params.target
                             this.setRunwayPrice(this.maxPrice)

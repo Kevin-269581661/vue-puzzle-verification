@@ -2793,7 +2793,12 @@
                     i++
                 }
                 if(otherRate > 0){
-                    rateArr.push({name: '其它', value: otherRate * 100})
+                    rateArr.push(
+                        {
+                            name: '其它',
+                            value: Math.floor(otherRate * 10000 / (setData.length - 6)) / 100
+                        }
+                    )
                 }
                 console.log('rateArr',rateArr) // asrID
                 this.RMPieRateData = rateArr

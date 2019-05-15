@@ -68,13 +68,11 @@
                         >
                             <template slot-scope="scope">
                                 <el-tooltip class="item" effect="dark" :content="scope.row.resName" placement="bottom">
-								<span @click="mediaDetail(scope.row)" v-if="haveDetail"
+								<span @click="mediaDetail(scope.row)"
                                       style="color: #108ee9;cursor: pointer">
 									{{scope.row.resName}}
 								</span>
-                                    <span v-else>{{scope.row.resName}}</span>
                                 </el-tooltip>
-
                             </template>
                         </el-table-column>
                         <el-table-column

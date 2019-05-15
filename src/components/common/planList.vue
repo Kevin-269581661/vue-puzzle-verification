@@ -568,7 +568,11 @@ export default {
                     }
                 }
             }).catch(err=>{
+                console.log('err',err)
                 this.continueEditLoading.close()
+                if(this.$route.path.includes('planList')){
+                    this.$router.push("./createPlan");
+                }
             })
         },
         // 显示缓存方案的信息

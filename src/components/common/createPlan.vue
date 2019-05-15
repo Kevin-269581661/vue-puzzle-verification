@@ -956,11 +956,62 @@
         </el-dialog>
         <!-- 导入方案弹出框 -->
         <el-dialog
-            title=""
+            class="import_fanan"
+            title="选点导入"
             :visible.sync="isImport"
             top="20vh"
             width="40%">
-            <p class="import_box">
+            <el-row>
+                <el-col :span="4" class="import_col"><span style="color:#FF0000;">*</span> 导入选点:</el-col>
+                <el-col :span="18">
+                    <el-radio-group v-model="importType">
+                        <el-radio label="1">点位</el-radio>
+                        <el-radio label="2">小区</el-radio>
+                    </el-radio-group>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="4" class="import_col"> 下载模板:</el-col>
+                <el-col :span="18">
+                    <el-button icon="el-icon-download" size="small"><a :href ='this.qadnUrl + "/template.xlsx"' download="点位导入模板.xlsx">点位模板</a></el-button>
+                    <el-button icon="el-icon-download" size="small"><a :href ='this.qadnUrl + "/template.xlsx"' download="小区导入模板.xlsx">小区模板</a></el-button>
+                </el-col>
+            </el-row>
+            <el-row class="import_file">
+                <el-col :span="4" class="import_col"> 上传文件:</el-col>
+                <el-col :span="18" >
+                    <el-upload
+                        class="upload_file"
+                        ref="upload"
+                        accept=".xlsx,.xls"
+                        :action="doUpload"
+                        :show-file-list="false"
+                        :http-request="uploadFile"
+                        :multiple="false">
+                        <el-button icon="el-icon-upload2" size="small">上传文件</el-button>
+                    </el-upload>
+                    <span style="color:#999;">支持扩展名: .xlsx .xls</span>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="4" class="import_col"> 文件名称:</el-col>
+                <el-col :span="18">
+                    <el-tag
+                        v-for="(tag, index) of fileNameTags"
+                        :key="index"
+                        type="info"
+                        closable
+                        :disable-transitions="false"
+                        @close="tabCloseFun(tag, index)">
+                        {{tag}}
+                    </el-tag>
+                </el-col>
+            </el-row>
+            <span slot="footer" class="dialog-footer">
+                <el-button size="small">取 消</el-button>
+                <el-button size="small" type="primary" @click="submitUpload()">确定上传</el-button>
+            </span>
+            <!-- <p class="import_box">
                 <span>
                     <b>下载模板:</b>
                     <a href="/template.xlsx" class="el-icon-download aButton" download="方案导入模板.xlsx">下载文件</a>
@@ -982,7 +1033,7 @@
                     <span style="color:#999;">支持扩展名: .xlsx .xls</span>
                 </span>
             </p>
-            <p>
+            <p> 
                 <b>方案名称:</b>
                 <el-tag
                     v-for="(tag, index) of fileNameTags"
@@ -999,7 +1050,7 @@
             </p>
             <p style="color: fuchsia;">
                 *提示,读取导入的点位需要时间,请等待,切勿重复上传
-            </p>
+            </p> -->
         </el-dialog>
         <!-- 导入excel点位部分失败弹框 -->
         <el-dialog
@@ -1137,6 +1188,7 @@
                 isShowHalfYear: false,
                 // doUpload: 'https://beta.qinlinad.com/advertisement/AnalysisExcelAdBaseInfo',
                 doUpload: '/advertisement/AnalysisExcelAdBaseInfo',
+                importType: '1',
                 // 空位导出url
                 downUrl: '',
                 // 是否显示空位导出弹出框
@@ -5098,7 +5150,7 @@
         padding-left: 10px;
     }
 
-    /deep/ .el-button {
+    .search-wrap /deep/ .el-button {
         width: 76px;
         height: 34px;
     }
@@ -5850,7 +5902,7 @@
         font-size: 14px;
     }
     /* 方案导入 */
-    .import_box{
+    /* .import_box{
         display: flex;
         height: 35px;
         line-height: 35px;
@@ -5864,17 +5916,27 @@
         line-height: 26px;
         border-radius: 4px;
         border: 1px solid #dedede;
+    } */
+    /deep/.import_fanan .el-row{
+        height: 40px;
+    }
+    .import_fanan a{
+        color: #606266;
+    }
+    .import_col{
+        text-align: right;
+        margin-right: 20px;
     }
     .import_file{
-        margin-left: 20px;
+        /* margin-left: 20px; */
     }
     .import_file .upload_file{
         display: inline-block;
     }
-    /deep/ .import_file  .el-button{
+    /* /deep/ .import_file  .el-button{
         width: auto;
         padding: 5px;
-    }
+    } */
     .upload_box{
         text-align: center;
         margin-top: 20px

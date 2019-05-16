@@ -1399,6 +1399,7 @@
                 activeSelect: '1',                 //
                 rejectAdPlan: [],                  // 排斥方案选项
                 activeAdPlan: '',                 // 当前选择的方案
+                routePath: '',
             };
         },
         mounted() {
@@ -1409,8 +1410,8 @@
             // 设置购物车动画起点位置
             this.setShopAnimate()
             // 获取未完成的方案并填充
-            let inputPath = this.$route.fullPath
-            if (inputPath.indexOf('unfinishedPlan') !== -1) {
+            this.routePath = this.$route.fullPath
+            if (this.routePath.indexOf('unfinishedPlan') !== -1) {
                 this.setPlanInfo()
             }
             console.log('this.cityOptions', this.cityOptions)
@@ -2875,6 +2876,10 @@
                     ls: this.dateInput[0],
                     le: this.dateInput[1],
                     suID: this.BDData.uid,
+                    apId: this.activeAdPlan
+                }
+                if(params.apId === ''){
+                    delete params.apId
                 }
                 console.log('生成地图MapID参数', params)
                 let tempwindow = window.open()
@@ -2915,7 +2920,6 @@
                     }else{
                         this.oneKeySelectPoint()
                     }
-
                 }else{
                     this.messageFun('warning','信息填写有误')
                 }
@@ -2947,7 +2951,8 @@
                     shn: this.houseNum[1],
                     shp: this.buildPrice[0] * 100,
                     bhp: this.buildPrice[1] * 100,
-                    suid: this.BDData.uid
+                    suid: this.BDData.uid,
+                    apId: this.activeAdPlan
                 }
                 if(this.selectValue === '商圈'){
                     params.ta = this.searchInput
@@ -4771,28 +4776,13 @@
 
                     }else{
                         // 后台缓存异常，则前台缓存到localStorage
-                        cacheAdPlan.setData(planInfo)
-                        // let planArr = JSON.parse(localStorage.getItem('creatPlanInfo'))
-                        // if(!planArr){
-                        //     planArr = [planInfo]
-                        // }else{
-                        //     let isHad = false
-                        //     for(let key of planArr){
-                        //         if(key.uid == planInfo.uid){
-                        //             key.setTime = planInfo.setTime
-                        //             key.planData = planInfo.planData
-                        //             isHad = true
-                        //             break
-                        //         }
-                        //     }
-                        //     if(!isHad){
-                        //         planArr.push(planInfo)
-                        //     }
-                        // }
-                        // localStorage.setItem('creatPlanInfo',JSON.stringify(planArr))
+                        // cacheAdPlan.setData(planInfo)
                     }
-
                 })
+                // 同步缓存一份到localStorage
+                // if(this.routePath.includes('unfinishedPlan')){
+                    cacheAdPlan.setData(planInfo)
+                // }
             },
             // 设置方案信息
             setPlanInfo(){

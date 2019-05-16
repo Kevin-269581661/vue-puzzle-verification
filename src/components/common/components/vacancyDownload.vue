@@ -113,9 +113,11 @@ export default {
                 }
             }else{
                 if(dateType == '1'){
-                    // 半年日期按照点位来导 
+                    // 半年日期按照点位来导
+                    // getDaterangeAds
                 }else{
                     // 自定义日期按照点位来导 
+                    this.getDaterangeAds();
                 }
             }
         },
@@ -365,6 +367,84 @@ export default {
                 obj[dateArr[dateI]] =  dataStr[dateI];
             }
             return obj;
+        },
+        // 自定义日期按照点位来导
+        getDaterangeAds(){
+            let { city, daterange } = this.downLoadInfo;            
+            let rid = city.join(',');
+            let info = {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                rIDs: rid,
+                startTime: daterange[0],
+                endTime: daterange[1],
+            };
+            api.postApi(this.Advertisement+'/ExportSpareAds', info).then(res =>{
+                console.log(res.data);
+                if(res.data.SysCode == 300200){
+                    let resinfo = res.data;
+                    if(resinfo.data.length){
+                        let returnobj = this.formatDataAds(resinfo.data, resinfo.date);
+                        let head = ['资源名称', '省份', '城市', '区域', '商圈', '媒体名称', '媒介载体', '资产编号', '投放面', '媒体等级', '广告限制', '点位备注', '广告尺寸/图片尺寸', '画面尺寸/灯箱尺寸', '详细地址', '楼盘类型', '楼盘价格', '楼栋数量', '入住时间', '小区户数', '人流量', '车位数', '车流量', '空闲日期'];
+                        let allHead = head.concat([info.startTime+'-'+info.endTime]);
+                        let filename = returnobj.city.join('-')+'-'+ info.startTime+'~'+info.endTime+'空位表';
+                        sheetExcel.toDownload(allHead, returnobj.arr, filename);
+                    }
+                }else if(res.data.SysCode == 100302){
+                    this.loginTimeout();
+                }else{
+                    this.messageFun('warning', res.data.MSG)
+                }
+            }).catch(err =>{
+                console.log(err);
+            });
+        },
+        // 结构格式化
+        formatDataAds(arr, date){
+            let resultObj = {
+                city: [],
+                arr: '',
+            };
+            let result = [];
+            for(let data of arr){
+                let resObj = {
+                    sheetName: data.cityName,
+                    showList: [],
+                };
+                resultObj.push(data.cityName);
+                for(let item of data.spareAds){
+                    let obj = {
+                        resName: item.resName || '--',
+                        province: item.prName|| '--',
+                        city: item.crName || '--',
+                        rName: item.rName || '--',
+                        tradingArea: item.tradingArea || '--',
+                        mTitle: item.mTitle || '--',
+                        mVehicle: item.mVehicle,
+                        assetTag: item.assetTag,
+                        asLab: item.asLab,
+                        grade: item.grade || '--',
+                        notPush: item.allNotPush || '--',
+                        remark: item.allremark || '--',
+                        adSize: item.alladSize || '--',
+                        adViewSize: item.alladViewSize || '--',
+                        resAddress: item.resAddress || '--',
+                        cType: item.cType || '--',
+                        hPrice: item.hPrice/100,
+                        fNum: item.fNum || '--',
+                        chDay: item.chDay || '--',
+                        hNum: item.hNum || '--',
+                        peopleFlow: item.peopleFlow || '--',
+                        carFlow: item.carFlow || '--',
+                        parkSpaceNum: item.parkSpaceNum ||'--',
+                        date: date
+                    };
+                    resObj.showList.push(obj);
+                }
+                result.push(resObj);
+            }
+            resultObj.arr = result;
+            return resultObj;
         },
         loginTimeout(){
             Message.warning("登录超时,请重新登录");

@@ -67,6 +67,9 @@
                         <span>
                             <el-button plain v-if="showNewBtn" @click="addOne()">新建</el-button>
                         </span>
+                        <span>
+                            <el-button plain v-if="showNewBtn" @click="isOpenDownload=true">导空位</el-button>
+                        </span>
                     </div>
                 </el-row>
                 <div class="table_wrap">
@@ -207,6 +210,11 @@
                 <el-button type="primary" @click="continueEdit">继续编辑</el-button>
             </span>
         </el-dialog>
+
+        <!-- 导出空点 -->
+        <el-dialog title="空位导出" :visible.sync="isOpenDownload" width="30%">
+            <download-vacancy></download-vacancy>
+        </el-dialog>
     </div>
 </template>
 
@@ -218,6 +226,7 @@ import commaFormat from "../../commonFun/commaFormat.js";
 import dateFormat from "../../commonFun/timeFormat.js";
 // 方案缓存
 import cacheAdPlan from "../../commonFun/cacheAdPlan"
+import downloadVacancy from "../../components/common/components/vacancyDownload.vue"
 import {
     Button,
     CheckboxGroup,
@@ -243,6 +252,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
 export default {
     name: "projectList",
     components: {
+        downloadVacancy,
         elButton: Button,
         elCheckboxGroup: CheckboxGroup,
         elCheckbox: Checkbox,
@@ -330,6 +340,8 @@ export default {
             planInfo: '',
             // 继续编辑未完成方案跳转时的loading
             continueEditLoading:'',
+            // 空位导出
+            isOpenDownload: false,
         };
     },
     created() {

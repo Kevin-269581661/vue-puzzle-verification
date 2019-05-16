@@ -3969,6 +3969,7 @@
             // 切换tab
             handleClick(){
                 console.log('this.activeName----', this.activeName, this.typeShopList);
+                this.eventType = '';
                 this.getShowList();
                 this.getEventList();
                 this.computeMedia_AD();
@@ -4028,31 +4029,36 @@
             // 事件选择
             changeEvent(val){
                 console.log('val', val);
-                switch (val){
-                    case 1:
-                        this.clearADLock();
-                        break;
-                    case 2:
-                        this.removeNoShareAD();
-                        break;
-                    case 3:
-                        this.removeCommentIndustryAds('res');
-                        break;
-                    case 4:
-                        this.removeCommentIndustryAds('media');
-                        break;
-                    case 5:
-                        this.containNuminRes(1);
-                        break;
-                    case 6:
-                        this.containNuminRes(2);
-                        break;
-                    case 7:
-                        this.removeAllType('A');
-                        break;
-                    case 8:
-                        this.removeAllType('B');
-                        break;
+                if(this.shopShowList.length){                
+                    switch (val){
+                        case 1:
+                            this.clearADLock();
+                            break;
+                        case 2:
+                            this.removeNoShareAD();
+                            break;
+                        case 3:
+                            this.removeCommentIndustryAds('res');
+                            break;
+                        case 4:
+                            this.removeCommentIndustryAds('media');
+                            break;
+                        case 5:
+                            this.containNuminRes(1);
+                            break;
+                        case 6:
+                            this.containNuminRes(2);
+                            break;
+                        case 7:
+                            this.removeAllType('A');
+                            break;
+                        case 8:
+                            this.removeAllType('B');
+                            break;
+                    }
+                }else{
+                    let active = this.activeName;
+                    this.messageFun('warning', `没有${active=='1'?'广告门':'道闸'}数据`);
                 }
             },
             // 同资源保留个数
@@ -4065,11 +4071,16 @@
                         resultArr.push(data);
                     }
                 }
+                let len = this.shopingList.length;
                 if(resultArr.length){
-                    this.messageFun('success',`成功保留同资源${num}个点位！`);
                     this.shopingList = resultArr;
                     this.typeShopList = this.getTypeList();
                     this.getShowList();
+                    if(len != resultArr.length){
+                        this.messageFun('success',`成功保留同资源${num}个点位！`);
+                    }else{
+                        this.messageFun('warning', '暂无同资源可移除的点位！')
+                    }
                     this.computeMedia_AD();
                     this.resetPlanList();
                     this.judgeByselect();
@@ -4096,11 +4107,17 @@
                     }
                     return groups;
                     },[]);
+                let len = this.shopingList.length;
                 if (resultArr.length > 0) {
-                    this.messageFun('success',`成功移除同门${type}面的点位！`)
-                    this.shopingList = this.isEnoughMedia(type, resultArr);
+                    resultArr = this.isEnoughMedia(type, resultArr);
+                    this.shopingList = resultArr;
                     this.typeShopList = this.getTypeList();
                     this.getShowList();
+                    if(len != resultArr.length){
+                        this.messageFun('success',`成功移除同门${type}面的点位！`)
+                    }else{
+                        this.messageFun('warning', '暂无可移除点位')
+                    }
                     this.computeMedia_AD();
                     this.resetPlanList();
                     this.judgeByselect();

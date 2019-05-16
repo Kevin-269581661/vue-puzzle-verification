@@ -14,6 +14,7 @@
                         <el-col :span="12" v-for="(data, index) of item.children" :key="index" class="link_chil">
                             <span v-if="data.title === '--'" style="color: rgba(0,0,0,0.45)">{{data.title}}</span>
                             <span v-else-if="data.title === '地图选点'" class="link_chil_map" @click="showMapModel">{{data.title}}</span>
+                            <span v-else-if="data.title === '导出空位'" class="link_chil_map" @click="isOpenDownload=true">{{data.title}}</span>
                             <a v-else :href="data.link" class="link">{{data.title}}</a>
                         </el-col>
                     </el-row>
@@ -71,17 +72,26 @@
                 <el-button type="primary" @click="getMapAdsAndGotoPlan">确 定</el-button>
             </div>
         </el-dialog>
+
+        <!-- 导出空点 -->
+        <el-dialog title="空位导出" :visible.sync="isOpenDownload" width="30%">
+            <download-vacancy></download-vacancy>
+        </el-dialog>
     </div>
 </template>
 
 <script>
 import api from '../../../api/api'
+import downloadVacancy from "../../../components/common/components/vacancyDownload.vue"
 export default {
     props:{
         link:{
             type: Array,
             default: []
         }
+    },
+    components:{
+        downloadVacancy,        
     },
     data(){
         return{
@@ -99,6 +109,8 @@ export default {
             citySelectLoading: true,   // 城市下拉选项loading
             // 确认销售地图选点是否已提交
             confirmVisible: false,
+            // 空位导出
+            isOpenDownload: false,
         }
     },
     mounted(){

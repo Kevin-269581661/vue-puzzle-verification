@@ -2739,6 +2739,7 @@
             selectRejectPlan(val){
                 console.log('方案排斥选择',val,this.activeAdPlan)
                 this.getAdsParamsData.apId = this.activeAdPlan
+                this.setPageNoAndTableData()
                 this.getAdList()
             },
             //step2搜索按钮
@@ -3704,7 +3705,7 @@
 
                 this.typeShopList = this.getTypeList();
                 this.getShowList();
-                
+
                 this.computeMedia_AD('mapAD')
                 this.judgeByselect()
             },
@@ -3795,7 +3796,7 @@
                 if (num > 0) {
                     this.messageFun('success','成功移除' + num + '条数据')
                     this.getResultData(arr);
-                    
+
                     this.computeMedia_AD()
                     this.resetPlanList()
                     this.judgeByselect()
@@ -4721,7 +4722,7 @@
                                 uid: this.sessionData.uID,
                                 token: this.sessionData.token
                             }
-                            api.postApi(this.Advertisement,'/clearAdPlanBackups',params).then(res=>{
+                            api.postApi(this.Advertisement + '/clearAdPlanBackups',params).then(res=>{
                                 console.log('清空缓存的方案',res)
                                 if(res.data.SysCode == 200200){
                                     console.log('缓存方案清除成功')

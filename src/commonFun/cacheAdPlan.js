@@ -1,4 +1,3 @@
-import timeFormat from "./timeFormat";
 
 var adPlan = {}
 var planArr = JSON.parse(localStorage.getItem('creatPlanInfo'))

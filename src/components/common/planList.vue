@@ -183,8 +183,7 @@
                    :visible.sync="unfinishedDialogVisible"
                    width="400px"
                    custom-class="unfinished_plan_dialog"
-                   :close-on-click-modal="false"
-                   :show-close="false">
+                   :close-on-click-modal="false">
             <div>
                 <ul>
                     <li class="unfinished_plan_li">

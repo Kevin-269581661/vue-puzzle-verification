@@ -665,7 +665,9 @@
                                                         <span>{{ props.row.liveYear }}</span>
                                                     </el-form-item>
                                                     <el-form-item label="广告限制：">
-                                                        <span>{{ props.row.adLimit }}</span>
+                                                        <div class="shopList_adLimit">
+                                                            <span>{{ props.row.adLimit }}</span>
+                                                        </div>
                                                     </el-form-item>
                                                 </el-form>
                                             </template>
@@ -4029,7 +4031,7 @@
             // 事件选择
             changeEvent(val){
                 console.log('val', val);
-                if(this.shopShowList.length){                
+                if(this.shopShowList.length){
                     switch (val){
                         case 1:
                             this.clearADLock();
@@ -4836,53 +4838,16 @@
                 } else {
                     return
                 }
-                // let planArr = JSON.parse(localStorage.getItem('creatPlanInfo'))
-                // if (!planArr) {
-                //     return
-                // } else {
-                //     let isHad = false
-                //     for (let key of planArr) {
-                //         if (key.uid == this.sessionData.uID) {
-                //             this.planForm = key.planData.baseInfo
-                //             this.BDData.uid = key.planData.suid
-                //             this.throwCity = key.planData.throwCity
-                //             this.shopingList = key.planData.adsList
-                //             this.companyBrand = key.planData.companyBrand
-                //             isHad = true
-                //             break
-                //         }
-                //     }
-                //     if (!isHad) {
-                //         return
-                //     }
-                //     this.active = 1
-                //     console.log('设置方案信息planArr',planArr)
-                //     // 设置城市及对应的区域
-                //     this.getAreaFun()
-                //     this.getAdsParamsData = {
-                //         prID: this.city[0].rid,
-                //         rid: '440100',
-                //         act: 1,
-                //         dateTimeBegin: this.dateInput[0],
-                //         dateTimeEnd: this.dateInput[1],
-                //         resType: this.recType,
-                //         mVehicle: this.mediaType,
-                //         pageNo: this.pageNo,
-                //         pageSize: 50,
-                //     }
-                //     this.getAdList()            // 获取选点列表
-                //     this.getIndustryBycID()     // 根据所选公司获取公司所属行业
-                // }
             },
             // 时间戳转换成日期格式 2018-06-18 10:33:24
             timestampToTime(timestamp) {
-                let date = new Date(timestamp);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+                let date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
                 let Y = date.getFullYear() + '-';
                 let M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
                 let D = date.getDate() + ' ';
-                let h = date.getHours() + ':';
-                let m = date.getMinutes() + ':';
-                let s = date.getSeconds();
+                let h = (date.getHours() < 10 ? '0'+ date.getHours() : date.getHours())+ ':';
+                let m = (date.getMinutes() < 10 ? '0'+ date.getMinutes() : date.getMinutes())+ ':'; //date.getMinutes() + ':';
+                let s = date.getSeconds() < 10 ? '0'+ date.getSeconds() : date.getSeconds();        //date.getSeconds();
                 return Y + M + D + h + m + s;
             },
             // 操作提示统一方法
@@ -4979,6 +4944,12 @@
     /*状态行*/
     /deep/ .el-table .warning-row-conncet {
         background: rgba(0,153,255,0.2)
+    }
+    .shopList_adLimit{
+        width: 132px;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
     }
 
     /deep/ .el-input__inner:hover {
@@ -5296,7 +5267,7 @@
         cursor: pointer;
         text-align: center;
         font-size: 14px;
-        margin-left: 5px;
+        /*margin-left: 5px;*/
     }
 
     /deep/ .searchBtn .el-icon-search,/deep/ .map .el-icon-location-outline {

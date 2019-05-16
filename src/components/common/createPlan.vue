@@ -2978,7 +2978,9 @@
                     IsXhr = true
                     let tempArr = []
                     let resArr = res.data
-                    if(resArr !== '' && resArr.length > 0){
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        this.loginTimeout()
+                    }else if(resArr !== '' && resArr.length > 0){
                         for(let key of res.data){
                             let selectInfo = {
                                 rid: this.city[this.activeIndex].rid,
@@ -3032,6 +3034,7 @@
                             this.shopingList = tempArr
                         }
                         this.dialogOneKeyPoint = false
+                        this.typeShopList = this.getTypeList();
                         this.computeMedia_AD()
                         this.judgeByselect()
                         if (this.oneKeyPointData.TotalPoint == res.data.length) {
@@ -3039,9 +3042,8 @@
                         } else {
                             this.messageFun('warning','满足条件的点位不足' + this.oneKeyPointData.TotalPoint + '面,成功选择了' + res.data.length + '面')
                         }
-
                     }else{
-                        this.messageFun('warning','选择失败')
+                        this.messageFun('warning','选择失败,暂无匹配点位')
                     }
                     oneKeyPointLoading.close()
                 })

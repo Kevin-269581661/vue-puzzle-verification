@@ -304,7 +304,10 @@
                                                 </div>
                                             </span>
                                         </div>
-                                        <div class="keyDataChart">
+                                        <div class="keyDataChart"
+                                             v-loading="keyDataBarLoading"
+                                             element-loading-text="玩命加载中..."
+                                             element-loading-background="rgba(255, 255, 255)">
                                             <div class="charts2" id="keyDataBar" ref="keyDataBar"
                                                  style="width: 100%;height: 350px">
                                             </div>
@@ -1828,6 +1831,7 @@
                 ],
                 nowMonth: '',               // 当前月份日期
                 keyDataLineLoading: true,   // 关键数据总量loading
+                keyDataBarLoading: true,    // 关键数据增量loading
                 // 结束时间与开始时间的验证 - 返回true即为禁止
                 // 关键数据总量趋势
                 card3POptionsStar:{
@@ -1985,7 +1989,7 @@
                     } else {
                         params = {
                             uid: this.session_userData.uID,
-                            rids: this.currCity,
+                            asrIDs: this.currCity,
                             onStart: onStart,
                             onEnd: onEnd
                         }
@@ -1993,6 +1997,10 @@
                     this.allkeydatakind = '社区数'
                     this.addkeyDataKind = '社区数'
                     this.getAllResData('card',params)
+                    // 重置增量对比按钮为false
+                    this.dateCompare = false
+                    this.CountOfIncreDataShow.AddDataCP = []
+                    // this.card4Radio()
                     // 行业订单总总量趋势
                     this.card5Industry = [1]
                     this.TOrderTitleRadio = '订单金额'
@@ -2319,10 +2327,11 @@
                 }
                 if (card === 'card4') {
                     this.isAddkeyDataKind = true
+                    this.keyDataBarLoading = true
                 } else if (card === 'card3') {
                     this.isReskeyDataKind = true
+                    this.keyDataLineLoading = true
                 }
-                this.keyDataLineLoading = true
                 // console.log('关键数据总量/增量趋势 - params',params)
                 switch (val) {
                     case '社区数':
@@ -3010,7 +3019,11 @@
                     }
                 }else{
                     this.keyDataLine()
-                    this.keyDateBar()
+                    if (this.dateCompare && (this.card4Date2[0] !== null && this.card4Date2[0] !== undefined) && (this.card4Date2[1] !== null && this.card4Date2[1] !== undefined)) {
+                        this.card4ChangeMonth_CP()
+                    } else {
+                        this.keyDateBar()
+                    }
                 }
             },
             // 行业订单总量趋势 - 接口
@@ -3757,6 +3770,7 @@
                     this.keyDataBar.resize();
                 });
                 this.isAddkeyDataKind = false
+                this.keyDataBarLoading = false
             },
             // 行业订单总量趋势 折线图
             busOrderLine() {

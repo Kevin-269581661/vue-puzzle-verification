@@ -12,49 +12,40 @@
                     <div>
                         <div class="search-nav">
                             <div class="search-wrap">
-                                <div style="margin-right: 0">
-                                    <el-select v-model="activeSelect" placeholder="请选择" class="type-select">
-                                        <el-option label="方案排斥" value="1"></el-option>
-                                    </el-select>
-                                    <el-select v-model="activeAdPlan" placeholder="请选择排斥方案" class="reject_select"
-                                               @change="selectRejectPlan" filterable :clearable="true">
-                                        <el-option v-for="item in rejectAdPlan" :key="item.value" :label="item.label"
-                                                   :value="item.value"></el-option>
-                                    </el-select>
-                                </div>
-                                <div>
-                                    <el-input placeholder="请输入要搜索的内容" v-model="searchInput" class="input-with-select" @change="initData">
-                                        <el-select v-model="selectValue" slot="prepend" class="type-select" @change="initData">
-                                            <el-option v-for="item in typeSelect" :key="item.value" :label="item.value"
-                                                       :value="item.value"></el-option>
-                                        </el-select>
-                                    </el-input>
-                                </div>
-                                <div>
-                                    <el-date-picker
-                                        v-model="dateInput"
-                                        type="daterange"
-                                        start-placeholder="开始日期"
-                                        end-placeholder="结束日期"
-                                        value-format="yyyy/MM/dd"
-                                        format="yyyy/MM/dd"
-                                        class="date-select input-with-select"
-                                    >
-                                    </el-date-picker>
-                                </div>
-                                <div>
-                                    <el-button type="primary" style="background: #1890FF" icon="el-icon-search"
-                                               class="searchBtn" @click="searchFun" :disabled="searchBtnAbled">搜索</el-button>
-                                </div>
-                                <div>
-                                    <el-button type="primary" class="map" icon="el-icon-location-outline" @click="mapAD">地图</el-button>
-                                </div>
-                                <div>
+                                <span>
+                                  <el-select v-model="selectValue" placeholder="请选择" class="type-select"
+                                             @change="initData">
+                                    <el-option v-for="item in typeSelect" :key="item.value" :label="item.value"
+                                               :value="item.value"></el-option>
+                                  </el-select>
+                                  <el-input v-model="searchInput" placeholder="请输入要搜索的内容"
+                                            class="searchInput input-with-select" @change="initData"></el-input>
+                                </span>
+                                <span>
+                                   <el-date-picker
+                                       v-model="dateInput"
+                                       type="daterange"
+                                       start-placeholder="开始日期"
+                                       end-placeholder="结束日期"
+                                       value-format="yyyy/MM/dd"
+                                       format="yyyy/MM/dd"
+                                       class="date-select input-with-select"
+                                   >
+                                </el-date-picker>
+                                </span>
+                                <span>
+                                  <el-button type="primary" style="background: #1890FF" icon="el-icon-search"
+                                             class="searchBtn" @click="searchFun" :disabled="searchBtnAbled">搜索</el-button>
+                                </span>
+                                <span>
+                                  <el-button type="primary" class="map" icon="el-icon-location-outline" @click="mapAD">地图</el-button>
+                                </span>
+                                <span>
                                     <el-button type="success" class="oneKeyPointBtn importXle" icon="el-icon-upload2" @click="importFanan">导入</el-button>
-                                </div>
-                                <div>
+                                </span>
+                                <span>
                                     <el-button class="oneKeyPointBtn" @click="dialogOneKeyPoint = true">一键选点</el-button>
-                                </div>
+                                </span>
                                 <div class="shopcar" @click="dialogVisible()">
                                     <el-badge :value="nowPointNum" class="item">
                                         <img src="../../assets/images/shopCar.png" alt="">
@@ -588,9 +579,7 @@
                                                             <span>{{ props.row.liveYear }}</span>
                                                         </el-form-item>
                                                         <el-form-item label="广告限制：">
-                                                            <div class="shopList_adLimit">
-                                                                <span>{{ props.row.adLimit }}</span>
-                                                            </div>
+                                                            <span>{{ props.row.adLimit }}</span>
                                                         </el-form-item>
                                                     </el-form>
                                                 </template>
@@ -1308,11 +1297,6 @@
                 mediaLevelNum:{ALevel: 0, BLevel: 0, CLevel: 0,ANum:0,BNum:0},
                 asrIDList: [],                 // 已选点位里存在的公司及城市
                 saleManageLevel: 0,            // 销售权限 0地方销售 1全国销售
-                /*方案排斥*/
-                activeSelect: '1',                 //
-                rejectAdPlan: [],                  // 排斥方案选项
-                activeAdPlan: '',                 // 当前选择的方案
-                routePath: '',
             };
         },
         mounted() {
@@ -1722,32 +1706,6 @@
                 this.dateInput = [starTime, endTime] // 设置默认时间
                 this.beforeDate = [starTime, endTime]
             },
-            // 获取排斥方案选择列
-            getRejectPlanList(){
-                let params = {
-                    uid:this.sessionData.uID,
-                    token: this.sessionData.token,
-                    sales_user: this.BDData.uid
-                }
-                api.getApi(this.Advertisement + '/getSalesProject', params).then(res => {
-                    console.log('销售所属方案',res)
-                    if (res.data.SysCode == 200200) {
-                        let resData =  res.data.data
-                        let tempList = []
-                        for(let key of resData){
-                            tempList.push({
-                                value: key.apId,
-                                label: key.apName + '--' + key.cname + '--' + key.apcTime
-                            })
-                        }
-                        this.rejectAdPlan = tempList
-                    } else if (res.data.SysCode == 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
-                    } else {
-                        this.messageFun('warning',res.data.MSG)
-                    }
-                })
-            },
             // step2 获取广告限制列表
             getADLimit() {
                 this.ADLimit = []
@@ -2118,12 +2076,6 @@
                 this.HSearch = ''
                 this.pageNo = 1
                 this.planList = []
-            },
-            // 方案排斥选择
-            selectRejectPlan(val){
-                console.log('方案排斥选择',val,this.activeAdPlan)
-                this.getAdsParamsData.apId = this.activeAdPlan
-                this.getAdList()
             },
             //step2搜索按钮
             searchFun() {
@@ -4677,7 +4629,6 @@
                             pageSize: 50,
                         }
                         this.getAdList()    // 获取选点列表
-                        this.getRejectPlanList()    // 获取排斥方案列表
                     } else {
                         this.messageFun('warning',res.data.MSG)
                     }
@@ -4969,12 +4920,6 @@
     /deep/ .el-table .warning-row-conncet {
         background: rgba(0,153,255,0.2)
     }
-    .shopList_adLimit{
-        width: 132px;
-        overflow: hidden;
-        text-overflow:ellipsis;
-        white-space: nowrap;
-    }
 
     /deep/ .el-input__inner:hover {
         border-color: #dcdfe6;
@@ -5142,26 +5087,15 @@
         resize: vertical;
     }
 
-    /*选择点位*/
     /deep/ .type-select .el-input, /deep/ .type-select .el-input__inner {
         width: 95px;
+        position: relative;
+        top: 0;
+        left: -5px;
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
         padding-right: 0;
-    }
-
-    /deep/ .type-select .el-input__inner{
         padding-left: 10px;
-        color: rgb(144, 147, 153);
-    }
-
-    /*方案排斥*/
-    /deep/ .reject_select{
-        left: -6px;
-    }
-    /deep/ .reject_select .el-input,/deep/ .reject_select .el-input__inner{
-        width: 185px;
-        border-top-left-radius: 0;
     }
 
     /deep/ .el-button {
@@ -5169,10 +5103,21 @@
         height: 34px;
     }
 
+    .searchInput /deep/ .el-input__inner, .searchInput {
+        width: 224px !important;
+        position: relative;
+        left: -8px;
+        top: 0;
+        height: 34px;
+        line-height: 34px;
+        border-bottom-left-radius: 0;
+        border-top-left-radius: 0;
+    }
+
     /deep/ .date-select.el-input__inner {
         width: 260px;
         position: relative;
-        /*left: -6px;*/
+        left: -6px;
     }
 
     /*日期*/
@@ -5217,11 +5162,11 @@
     /*step2 四个按钮*/
     .searchBtn, .map {
         position: relative;
-        /*left: 5px;*/
+        left: 5px;
     }
     .oneKeyPointBtn{
         text-align: center;
-        /*margin-left: 6px;*/
+        margin-left: 6px;
         height: 34px;
         padding: 0;
         line-height: 34px;
@@ -5238,7 +5183,7 @@
     .importXle.el-button--success{
         background: #51E171;
         border-color: #51E171;
-        /*margin-left: 11px;*/
+        margin-left: 11px;
     }
 
     /deep/ .importXle.el-button [class*=el-icon-]+span{
@@ -5314,9 +5259,10 @@
         border: 1px solid #C2C2C2;
         border-radius: 4px;
         cursor: pointer;
+        /*top: 3px;*/
         text-align: center;
         font-size: 14px;
-        /*margin-left: 5px;*/
+        margin-left: 5px;
     }
 
     /deep/ .searchBtn .el-icon-search,/deep/ .map .el-icon-location-outline {
@@ -5333,13 +5279,11 @@
 
     .search-wrap {
         position: relative;
-        /*清除浮动*/
-        overflow:hidden;
+        height: 34px;
     }
 
-    .search-wrap > div {
+    .search-wrap span {
         float: left;
-        margin-right: 7px;
         /*margin-bottom: 18px;*/
     }
 

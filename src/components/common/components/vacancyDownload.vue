@@ -16,7 +16,7 @@
                 <span>选择城市:</span>
             </el-col>
             <el-col :span="18">
-                <el-select v-model="downLoadInfo.city" placeholder="请选择城市" multiple size="small">
+                <el-select v-model="downLoadInfo.city" placeholder="请选择城市" multiple size="small" filterable>
                     <el-option
                     v-for="item in cityList"
                     :key="item.value"
@@ -385,10 +385,10 @@ export default {
                     let resinfo = res.data;
                     if(resinfo.data.length){
                         let returnobj = this.formatDataAds(resinfo.data, resinfo.date);
+                        console.log('returnobj-----', returnobj);
                         let head = ['资源名称', '省份', '城市', '区域', '商圈', '媒体名称', '媒介载体', '资产编号', '投放面', '媒体等级', '广告限制', '点位备注', '广告尺寸/图片尺寸', '画面尺寸/灯箱尺寸', '详细地址', '楼盘类型', '楼盘价格', '楼栋数量', '入住时间', '小区户数', '人流量', '车位数', '车流量', '空闲日期'];
-                        let allHead = head.concat([info.startTime+'-'+info.endTime]);
                         let filename = returnobj.city.join('-')+'-'+ info.startTime+'~'+info.endTime+'空位表';
-                        sheetExcel.toDownload(allHead, returnobj.arr, filename);
+                        sheetExcel.toDownload(head, returnobj.arr, filename);
                     }
                 }else if(res.data.SysCode == 100302){
                     this.loginTimeout();
@@ -407,11 +407,12 @@ export default {
             };
             let result = [];
             for(let data of arr){
+                console.log('cityname----', data.cityName);
                 let resObj = {
                     sheetName: data.cityName,
                     showList: [],
                 };
-                resultObj.push(data.cityName);
+                resultObj.city.push(data.cityName);
                 for(let item of data.spareAds){
                     let obj = {
                         resName: item.resName || '--',
@@ -437,7 +438,8 @@ export default {
                         peopleFlow: item.peopleFlow || '--',
                         carFlow: item.carFlow || '--',
                         parkSpaceNum: item.parkSpaceNum ||'--',
-                        date: date
+                        // date: date
+                        date: '2018/08/08-2019/08/08'
                     };
                     resObj.showList.push(obj);
                 }

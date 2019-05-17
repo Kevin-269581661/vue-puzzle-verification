@@ -3507,6 +3507,18 @@
                     return false;
                 }
             },
+            getResultData(resultArr){
+                let other = [];
+                for(let data of this.typeShopList){
+                    if(this.activeName != data.type){
+                        other = other.concat(data.asidList);
+                    }else{
+                        data.asidList = resultArr;
+                    }
+                }
+                this.shopingList = other.concat(resultArr);
+                this.shopShowList = resultArr;
+            },
             //设置报价单
             APQuotationArr(...data){
                 console.log('回传报价单:',data);// data为包含传过来所有数据的数组，第一个元素是对象，第二个元素是字符串
@@ -4317,9 +4329,8 @@
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        this.shopingList = [];
-                        this.typeShopList = this.getTypeList();
-                        this.getShowList();
+                        let arr = [];
+                        this.getResultData(arr); 
                         this.allCheckboxUpdata()
                         this.computeMedia_AD()
                         this.messageFun('success','删除成功')

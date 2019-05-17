@@ -3814,9 +3814,8 @@
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        this.shopingList = []
-                        this.typeShopList = this.getTypeList();
-                        this.getShowList();
+                        let arr = [];
+                        this.getResultData(arr);                        
                         this.allCheckboxUpdata()
                         this.computeMedia_AD()
                         this.messageFun('success','删除成功')

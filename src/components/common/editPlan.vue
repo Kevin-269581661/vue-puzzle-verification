@@ -4161,9 +4161,14 @@
                 for(let aKey of adsList){
                     for(let sKey of this.shopingList){
                         if (aKey.mVehicle === '道闸') {
-                            if(aKey.mID == sKey.mID && aKey.schedules === sKey.schedules){
-                                // console.log('更换成功的点位',sKey)
-                                sKey.schedules = aKey.st + '-' + aKey.et
+                            if(aKey.mID == sKey.mID){ // && aKey.schedules === sKey.schedules
+                                for(let acKey of aKey.childList){
+                                    if(acKey.schedules === sKey.schedules){
+                                        // console.log('更换成功的点位',sKey)
+                                        sKey.schedules = acKey.st + '-' + acKey.et
+                                        break
+                                    }
+                                }
                                 // 异常之前一键更换排期失败的标示
                                 if(sKey.changeError){
                                     delete sKey.changeError
@@ -4331,7 +4336,7 @@
                         type: 'warning'
                     }).then(() => {
                         let arr = [];
-                        this.getResultData(arr); 
+                        this.getResultData(arr);
                         this.allCheckboxUpdata()
                         this.computeMedia_AD()
                         this.messageFun('success','删除成功')

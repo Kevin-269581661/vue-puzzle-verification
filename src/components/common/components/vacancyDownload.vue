@@ -114,7 +114,7 @@ export default {
             }else{
                 if(dateType == '1'){
                     // 半年日期按照点位来导
-                    // getDaterangeAds
+                    // this.getDaterangeAds();
                 }else{
                     // 自定义日期按照点位来导 
                     this.getDaterangeAds();
@@ -124,14 +124,12 @@ export default {
         // 获取城市
         getCity(){
             let info = {
-                "data":{"city":''},
-                "service":"GetCityInfo",
                 "token": this.sessionData.token,
                 "uid": this.sessionData.uID
             };
-            api.postApi_new(this.Media, info).then(res =>{
+            api.postApi(this.Advertisement+'/GetAuthorCity', info).then(res =>{
                 console.log(res.data);
-                if(res.data.SysCode == 200200){
+                if(res.data.SysCode == 300200){
                     let resinfo = res.data.data;
                     let result = [];
                     for(let data of resinfo){
@@ -383,8 +381,9 @@ export default {
                 console.log(res.data);
                 if(res.data.SysCode == 300200){
                     let resinfo = res.data;
+                    let date = resinfo.startTime +'-'+resinfo.endTime;
                     if(resinfo.data.length){
-                        let returnobj = this.formatDataAds(resinfo.data, resinfo.date);
+                        let returnobj = this.formatDataAds(resinfo.data, date);
                         console.log('returnobj-----', returnobj);
                         let head = ['资源名称', '省份', '城市', '区域', '商圈', '媒体名称', '媒介载体', '资产编号', '投放面', '媒体等级', '广告限制', '点位备注', '广告尺寸/图片尺寸', '画面尺寸/灯箱尺寸', '详细地址', '楼盘类型', '楼盘价格', '楼栋数量', '入住时间', '小区户数', '人流量', '车位数', '车流量', '空闲日期'];
                         let filename = returnobj.city.join('-')+'-'+ info.startTime+'~'+info.endTime+'空位表';
@@ -438,8 +437,7 @@ export default {
                         peopleFlow: item.peopleFlow || '--',
                         carFlow: item.carFlow || '--',
                         parkSpaceNum: item.parkSpaceNum ||'--',
-                        // date: date
-                        date: '2018/08/08-2019/08/08'
+                        date: date
                     };
                     resObj.showList.push(obj);
                 }

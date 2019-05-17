@@ -1925,6 +1925,8 @@
             },
             // 确认上传
             submitUpload(){
+                this.showUploadFail = true;
+                // return;
                 if(this.fileData.length){
                     let formData = new FormData();
                     formData.append('file', this.fileData[0]);

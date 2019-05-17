@@ -2305,9 +2305,7 @@
                     IsXhr = true
                     let tempArr = []
                     let resArr = res.data
-                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
-                    }else if(resArr !== '' && resArr.length > 0){
+                    if(resArr !== '' && resArr.length > 0){
                         for(let key of res.data){
                             let selectInfo = {
                                 rid: this.city[this.activeIndex].rid,
@@ -2362,7 +2360,6 @@
                             this.shopingList = tempArr
                         }
                         this.dialogOneKeyPoint = false
-                        // this.typeShopList = this.getTypeList();
                         this.computeMedia_AD()
                         this.judgeByselect()
                         if(this.oneKeyPointData.TotalPoint == res.data.length){
@@ -2372,7 +2369,7 @@
                         }
 
                     }else{
-                        this.messageFun('warning','选择失败,暂无匹配点位')
+                        this.messageFun('warning','选择失败')
                     }
                     oneKeyPointLoading.close()
                 })
@@ -3340,27 +3337,27 @@
             // 获取事件
             getEventList(){
                 let arr = [
-                        {
-                            label: '移除被占点位',
-                            value: 1,
-                        },
-                        {
-                            label: '移除非客户的选点',
-                            value: 2,
-                        },
-                        {
-                            label: '移除同行已选小区',
-                            value: 3,
-                        },
-                        {
-                            label: '同资源保留1个点位',
-                            value: 5,
-                        },
-                        {
-                            label: '同资源保留2个点位',
-                            value: 6,
-                        },
-                    ];
+                    {
+                        label: '移除被占点位',
+                        value: 1,
+                    },
+                    {
+                        label: '移除非客户的选点',
+                        value: 2,
+                    },
+                    {
+                        label: '移除同行已选小区',
+                        value: 3,
+                    },
+                    {
+                        label: '同资源保留1个点位',
+                        value: 5,
+                    },
+                    {
+                        label: '同资源保留2个点位',
+                        value: 6,
+                    },
+                ];
                 let currTab = this.activeName;
                 if(currTab == 1){
                     let temp = [
@@ -3422,17 +3419,15 @@
             containNuminRes(num){
                 let residArr = [];
                 let resultArr = [];
-                for(let data of this.shopingList){
-                    if(this.isEnough(data.resID, num, residArr)){
+                for(let data of this.shopShowList){
+                    if(this.isEnough(data, num, residArr)){
                         residArr.push(data.resID);
                         resultArr.push(data);
                     }
                 }
-                let len = this.shopingList.length;
+                let len = this.shopShowList.length;
                 if(resultArr.length){
-                    this.shopingList = resultArr;
-                    this.typeShopList = this.getTypeList();
-                    this.getShowList();
+                    this.getResultData(resultArr);
                     if(len != resultArr.length){
                         this.messageFun('success',`成功保留同资源${num}个点位！`);
                     }else{
@@ -3447,8 +3442,9 @@
             },
             // 移除A/B面
             removeAllType(type){
-                let resultArr= this.shopingList.reduce((groups, item)=>{
-                    let groupFound= groups.find(arrItem => item.mID === arrItem.mID&& item.schedules === arrItem.schedules);
+                let resultArr= this.shopShowList.reduce((groups, item)=>{
+                    // let groupFound= groups.find(arrItem => item.mID === arrItem.mID&& item.schedules === arrItem.schedules);
+                    let groupFound= groups.find(arrItem => item.mID === arrItem.mID);
                     if(groupFound) {
                         if(!JSON.stringify(groupFound.asidList).includes(JSON.stringify(item))) {  //去重
                             groupFound.asidList.push(item);
@@ -3457,19 +3453,17 @@
                         //不要直接在原来的对象修改，新建对象
                         let newGroup = {
                             mID: item.mID,
-                            schedules: item.schedules,
+                            // schedules: item.schedules,
                             asidList: [item]
                         }
                         groups.push(newGroup);
                     }
                     return groups;
-                    },[]);
-                let len = this.shopingList.length;
+                },[]);
+                let len = this.shopShowList.length;
                 if (resultArr.length > 0) {
                     resultArr = this.isEnoughMedia(type, resultArr);
-                    this.shopingList = resultArr;
-                    this.typeShopList = this.getTypeList();
-                    this.getShowList();
+                    this.getResultData(resultArr);
                     if(len != resultArr.length){
                         this.messageFun('success',`成功移除同门${type}面的点位！`)
                     }else{
@@ -3499,10 +3493,11 @@
                 return resultArr;
             },
             // 判断这个值出现的次数符合预期返回true,否则false
-            isEnough(id, time, arr){
+            isEnough(data, time, arr){
+                let active = this.activeName =='1'?'广告门':'道闸';
                 let sum = 0
                 for(let data of arr){
-                    if(data == id){
+                    if(data == data.resID && data.mVehicle == active){
                         sum++;
                     }
                 }
@@ -3999,7 +3994,7 @@
             },
             // 移除同行资源点位
             removeCommentIndustryAds(letter){
-                let shopingData = this.shopingList
+                let shopingData = this.shopShowList
                 let arr = []
                 let num = 0     // 记录移除个数
                 for (let i = 0; i < shopingData.length; i++) {
@@ -4020,9 +4015,9 @@
                 }
                 if (num > 0) {
                     this.messageFun('success','成功移除' + num + '条数据')
-                    this.shopingList = arr
-                    this.typeShopList = this.getTypeList();
-                    this.getShowList();
+
+                    this.getResultData(arr);
+
                     this.computeMedia_AD()
                     this.resetPlanList()
                     this.judgeByselect()
@@ -4359,6 +4354,7 @@
                     }
                     this.typeShopList = this.getTypeList();
                     this.getShowList();
+
                     if (haveADLock) {
                         this.messageFun('success','移除成功')
                         this.computeMedia_AD()
@@ -5363,15 +5359,15 @@
     }
 
     /*.cart_box {*/
-        /*color: #fff;*/
-        /*background: #108EE9;*/
-        /*border-radius: 50%;*/
-        /*display: inline-block;*/
-        /*width: 50px;*/
-        /*height: 50px;*/
-        /*vertial-align: middle;*/
-        /*text-align: center;*/
-        /*line-height: 50px;*/
+    /*color: #fff;*/
+    /*background: #108EE9;*/
+    /*border-radius: 50%;*/
+    /*display: inline-block;*/
+    /*width: 50px;*/
+    /*height: 50px;*/
+    /*vertial-align: middle;*/
+    /*text-align: center;*/
+    /*line-height: 50px;*/
     /*}*/
 
     /deep/ .shopcar .el-badge__content.is-fixed {

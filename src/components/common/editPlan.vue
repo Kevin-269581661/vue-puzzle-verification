@@ -539,7 +539,8 @@
                                                 社区:<span>{{shopMedia_ADNum.resNum}}</span>
                                                 (选1面:<span>{{shopMedia_ADNum.oneNum}}</span>&nbsp;&nbsp;
                                                 选2面:<span>{{shopMedia_ADNum.twoNum}}</span>&nbsp;&nbsp;
-                                                选3面:<span>{{shopMedia_ADNum.threeNum}}</span>)
+                                                选3面:<span>{{shopMedia_ADNum.threeNum}}</span>&nbsp;&nbsp;
+                                                选更多:<span>{{shopMedia_ADNum.moreNum}}</span>)
                                             </el-col>
                                             <el-col :span="2">
                                                 媒体:<span>{{shopMedia_ADNum.mediaNum}}</span>
@@ -668,9 +669,9 @@
                                         </el-table>
 
                                         <p class="warningInfo">
-                                            <span style="background: #fff1f1" class="warningInfoColor"></span>
+                                            <span style="background: rgba(255,0,0,0.08)" class="warningInfoColor"></span>
                                             <span class="warningInfoName">被占点位</span>
-                                            <span style="background: rgba(0,153,255,0.2)" class="warningInfoColor"></span>
+                                            <span style="background: rgba(255,199,0,0.10)" class="warningInfoColor"></span>
                                             <span class="warningInfoName">连排门、同行资源回避、同行媒体回避</span>
                                         </p>
                                     </div>
@@ -1200,7 +1201,7 @@
                     pSNum: false
                 },
                 loadSign: true,            // table滚轮
-                shopMedia_ADNum: {resNum: 0, mediaNum: 0, ADNum: 0, oneNum: 0, twoNum: 0, threeNum: 0},
+                shopMedia_ADNum: {resNum: 0, mediaNum: 0, ADNum: 0, oneNum: 0, twoNum: 0, threeNum: 0, moreNum: 0},
                 ADloading: '',                 // 创建方案、提交选点和报价单时的loading
                 computeAuotation: '',         // 计算报价单时的loading
                 areaCity: [],
@@ -3443,7 +3444,6 @@
             // 移除A/B面
             removeAllType(type){
                 let resultArr= this.shopShowList.reduce((groups, item)=>{
-                    // let groupFound= groups.find(arrItem => item.mID === arrItem.mID&& item.schedules === arrItem.schedules);
                     let groupFound= groups.find(arrItem => item.mID === arrItem.mID);
                     if(groupFound) {
                         if(!JSON.stringify(groupFound.asidList).includes(JSON.stringify(item))) {  //去重
@@ -3453,7 +3453,6 @@
                         //不要直接在原来的对象修改，新建对象
                         let newGroup = {
                             mID: item.mID,
-                            // schedules: item.schedules,
                             asidList: [item]
                         }
                         groups.push(newGroup);
@@ -3493,11 +3492,10 @@
                 return resultArr;
             },
             // 判断这个值出现的次数符合预期返回true,否则false
-            isEnough(data, time, arr){
-                let active = this.activeName =='1'?'广告门':'道闸';
+            isEnough(item, time, arr){
                 let sum = 0
                 for(let data of arr){
-                    if(data == data.resID && data.mVehicle == active){
+                    if(data == item.resID){
                         sum++;
                     }
                 }
@@ -4480,6 +4478,7 @@
                 this.shopMedia_ADNum.oneNum = this.getResAsidNum(1, resAsidArr);
                 this.shopMedia_ADNum.twoNum = this.getResAsidNum(2, resAsidArr);
                 this.shopMedia_ADNum.threeNum = this.getResAsidNum(3, resAsidArr);
+                this.shopMedia_ADNum.moreNum = resAsidArr.length - this.shopMedia_ADNum.oneNum - this.shopMedia_ADNum.twoNum - this.shopMedia_ADNum.threeNum;
                 if (letter === 'mapAD') {
                     let stepMNum = 1
                     let stepADNum = 2
@@ -4978,11 +4977,11 @@
     }
     /*状态行*/
     /deep/ .el-table .warning-row {
-        background: #fff1f1;
+        background: rgba(255,0,0,0.08);
     }
 
     /deep/ .el-table .warning-row-conncet {
-        background: rgba(0,153,255,0.2)
+        background: rgba(255,199,0,0.10)
     }
     .shopList_adLimit{
         width: 132px;

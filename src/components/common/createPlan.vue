@@ -1892,7 +1892,7 @@
                     // formData.append('suid', this.BDData.uid);
                     // 上传文件
                     api.postUpload_file(this.doUpload+'?uid='+this.sessionData.uID+'&token='+
-                        this.sessionData.token+'&suid='+this.BDData.uid, formData).then(res =>{
+                        this.sessionData.token+'&suid='+this.BDData.uid+'&apId='+this.activeAdPlan, formData).then(res =>{
                         if(!res.data.SysCode){
                             let importInfo = res.data;
                             this.importInfoData = res.data;
@@ -3815,7 +3815,7 @@
                         type: 'warning'
                     }).then(() => {
                         let arr = [];
-                        this.getResultData(arr);                        
+                        this.getResultData(arr);
                         this.allCheckboxUpdata()
                         this.computeMedia_AD()
                         this.messageFun('success','删除成功')

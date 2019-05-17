@@ -1058,7 +1058,8 @@
             title="导入excel的点位信息"
             top="20vh"
             width="80%">
-            <div class="car-title">
+            <import-result :importData="importInfoData"></import-result>
+            <!-- <div class="car-title">
                 <i class="el-icon-info" style="color: #1890FF;"></i>
                 <h4>已成功导入点位<span>{{excelObj.successNum}}</span>个,问题点位<span>{{excelObj.failNum}}</span>个
                     <span @click="downLoadExcel()">下载表格<i class="el-icon-download"></i></span>
@@ -1091,7 +1092,7 @@
                         </el-tooltip>
                     </template>
                 </el-table-column>
-            </el-table>
+            </el-table> -->
         </el-dialog>
     </div>
 </template>
@@ -1112,6 +1113,9 @@
     import sheetExcel from "../../commonFun/sheetExcel.js";
     // 方案缓存
     import cacheAdPlan from "../../commonFun/cacheAdPlan"
+    // 方案导入结果
+    import importResult from './components/importResult.vue'
+
 
     export default {
         name: "createPlan",
@@ -1135,6 +1139,7 @@
             elCheckbox: Checkbox,
             elInputNumber: InputNumber,
             apQuotation,
+            importResult,
         },
         data() {
             let validateSales = (rule, value, callback) => {
@@ -1929,6 +1934,7 @@
                     api.postUpload_file(this.doUpload+'?uid='+this.sessionData.uID+'&token='+
                         this.sessionData.token+'&suid='+this.BDData.uid, formData).then(res =>{
                         if(!res.data.SysCode){
+                            this.showUploadFail = true;
                             let importInfo = res.data;
                             this.importInfoData = res.data;
                             if(importInfo.successList.length){
@@ -1940,7 +1946,7 @@
                                     successNum: importInfo.successList.length,
                                     failNum: importInfo.errorList.length
                                 };
-                                this.showUploadFail = true;
+                                // this.showUploadFail = true;
                             }
                         }else if(res.data.SysCode == 100302){
                             this.loginTimeout();

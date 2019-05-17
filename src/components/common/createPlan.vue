@@ -4764,6 +4764,7 @@
             },
             // 继续创建
             continueCreate() {
+                this.$router.push("./createPlan");
                 location.reload(false)
             },
             //复制协同选点的url

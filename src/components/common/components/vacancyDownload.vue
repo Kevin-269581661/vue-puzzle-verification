@@ -16,7 +16,7 @@
                 <span>选择城市:</span>
             </el-col>
             <el-col :span="18">
-                <el-select v-model="downLoadInfo.city" placeholder="请选择城市" multiple size="small" filterable>
+                <el-select v-model="downLoadInfo.city" placeholder="请选择城市" multiple size="small" collapse-tags filterable>
                     <el-option
                     v-for="item in cityList"
                     :key="item.value"
@@ -112,12 +112,21 @@ export default {
                     this.dateRangeEmpty();
                 }
             }else{
+                let { city, daterange } = this.downLoadInfo;            
+                let rid = city.join(',');
+                let info = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    rIDs: rid,
+                };
                 if(dateType == '1'){
                     // 半年日期按照点位来导
-                    // this.getDaterangeAds();
+                    this.getDaterangeAds(info);
                 }else{
+                    info.startTime = daterange[0];
+                    info.endTime = daterange[1];
                     // 自定义日期按照点位来导 
-                    this.getDaterangeAds();
+                    this.getDaterangeAds(info);
                 }
             }
         },
@@ -367,27 +376,30 @@ export default {
             return obj;
         },
         // 自定义日期按照点位来导
-        getDaterangeAds(){
-            let { city, daterange } = this.downLoadInfo;            
-            let rid = city.join(',');
-            let info = {
-                uid: this.sessionData.uID,
-                token: this.sessionData.token,
-                rIDs: rid,
-                startTime: daterange[0],
-                endTime: daterange[1],
-            };
+        getDaterangeAds(info){
             api.postApi(this.Advertisement+'/ExportSpareAds', info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 300200){
                     let resinfo = res.data;
                     let date = resinfo.startTime +'-'+resinfo.endTime;
                     if(resinfo.data.length){
-                        let returnobj = this.formatDataAds(resinfo.data, date);
-                        console.log('returnobj-----', returnobj);
-                        let head = ['资源名称', '省份', '城市', '区域', '商圈', '媒体名称', '媒介载体', '资产编号', '投放面', '媒体等级', '广告限制', '点位备注', '广告尺寸/图片尺寸', '画面尺寸/灯箱尺寸', '详细地址', '楼盘类型', '楼盘价格', '楼栋数量', '入住时间', '小区户数', '人流量', '车位数', '车流量', '空闲日期'];
-                        let filename = returnobj.city.join('-')+'-'+ info.startTime+'~'+info.endTime+'空位表';
-                        sheetExcel.toDownload(head, returnobj.arr, filename);
+                        let returnData = [];
+                        for(let item of resinfo.data){
+                            if(item.spareAds.length){
+                                returnData.push(item.spareAds);
+                            }
+                        }
+                        if(returnData.length){
+                            let returnobj = this.formatDataAds(resinfo.data, date);
+                            console.log('returnobj-----', returnobj);
+                            let head = ['资源名称', '省份', '城市', '区域', '商圈', '媒体名称', '媒介载体', '资产编号', '投放面', '媒体等级', '广告限制', '点位备注', '广告尺寸/图片尺寸', '画面尺寸/灯箱尺寸', '详细地址', '楼盘类型', '楼盘价格', '楼栋数量', '入住时间', '小区户数', '人流量', '车位数', '车流量', '空闲日期'];
+                            let filename = returnobj.city.join('-')+'-'+ info.startTime+'~'+info.endTime+'空位表';
+                            sheetExcel.toDownload(head, returnobj.arr, filename);
+                        }else{
+                            this.messageFun('warning','此城市在此时间段内没有点位')                            
+                        }
+                    }else{
+                        this.messageFun('warning','此城市在此时间段内没有点位')
                     }
                 }else if(res.data.SysCode == 100302){
                     this.loginTimeout();

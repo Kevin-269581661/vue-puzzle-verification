@@ -419,41 +419,43 @@ export default {
             let result = [];
             for(let data of arr){
                 console.log('cityname----', data.cityName);
-                let resObj = {
-                    sheetName: data.cityName,
-                    showList: [],
-                };
-                resultObj.city.push(data.cityName);
-                for(let item of data.spareAds){
-                    let obj = {
-                        resName: item.resName || '--',
-                        province: item.prName|| '--',
-                        city: item.crName || '--',
-                        rName: item.rName || '--',
-                        tradingArea: item.tradingArea || '--',
-                        mTitle: item.mTitle || '--',
-                        mVehicle: item.mVehicle,
-                        assetTag: item.assetTag,
-                        asLab: item.asLab,
-                        grade: item.grade || '--',
-                        notPush: item.allNotPush || '--',
-                        remark: item.allremark || '--',
-                        adSize: item.alladSize || '--',
-                        adViewSize: item.alladViewSize || '--',
-                        resAddress: item.resAddress || '--',
-                        cType: item.cType || '--',
-                        hPrice: item.hPrice/100,
-                        fNum: item.fNum || '--',
-                        chDay: item.chDay || '--',
-                        hNum: item.hNum || '--',
-                        peopleFlow: item.peopleFlow || '--',
-                        carFlow: item.carFlow || '--',
-                        parkSpaceNum: item.parkSpaceNum ||'--',
-                        date: date
+                if(data.spareAds.length){
+                    let resObj = {
+                        sheetName: data.cityName,
+                        showList: [],
                     };
-                    resObj.showList.push(obj);
+                    resultObj.city.push(data.cityName);
+                    for(let item of data.spareAds){
+                        let obj = {
+                            resName: item.resName || '--',
+                            province: item.prName|| '--',
+                            city: item.crName || '--',
+                            rName: item.rName || '--',
+                            tradingArea: item.tradingArea || '--',
+                            mTitle: item.mTitle || '--',
+                            mVehicle: item.mVehicle,
+                            assetTag: item.assetTag,
+                            asLab: item.asLab,
+                            grade: item.grade || '--',
+                            notPush: item.allNotPush || '--',
+                            remark: item.allremark || '--',
+                            adSize: item.alladSize || '--',
+                            adViewSize: item.alladViewSize || '--',
+                            resAddress: item.resAddress || '--',
+                            cType: item.cType || '--',
+                            hPrice: item.hPrice/100,
+                            fNum: item.fNum || '--',
+                            chDay: item.chDay || '--',
+                            hNum: item.hNum || '--',
+                            peopleFlow: item.peopleFlow || '--',
+                            carFlow: item.carFlow || '--',
+                            parkSpaceNum: item.parkSpaceNum ||'--',
+                            date: date
+                        };
+                        resObj.showList.push(obj);
+                    }
+                    result.push(resObj);
                 }
-                result.push(resObj);
             }
             resultObj.arr = result;
             return resultObj;

@@ -3444,7 +3444,6 @@
             // 移除A/B面
             removeAllType(type){
                 let resultArr= this.shopShowList.reduce((groups, item)=>{
-                    // let groupFound= groups.find(arrItem => item.mID === arrItem.mID&& item.schedules === arrItem.schedules);
                     let groupFound= groups.find(arrItem => item.mID === arrItem.mID);
                     if(groupFound) {
                         if(!JSON.stringify(groupFound.asidList).includes(JSON.stringify(item))) {  //去重
@@ -3454,7 +3453,6 @@
                         //不要直接在原来的对象修改，新建对象
                         let newGroup = {
                             mID: item.mID,
-                            // schedules: item.schedules,
                             asidList: [item]
                         }
                         groups.push(newGroup);
@@ -3494,11 +3492,10 @@
                 return resultArr;
             },
             // 判断这个值出现的次数符合预期返回true,否则false
-            isEnough(data, time, arr){
-                let active = this.activeName =='1'?'广告门':'道闸';
+            isEnough(item, time, arr){
                 let sum = 0
                 for(let data of arr){
-                    if(data == data.resID && data.mVehicle == active){
+                    if(data == item.resID){
                         sum++;
                     }
                 }

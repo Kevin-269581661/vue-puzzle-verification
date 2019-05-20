@@ -4846,6 +4846,7 @@
                     this.getRejectPlanList()    // 获取排斥方案列表
                     this.getIndustryBycID()     // 根据所选公司获取公司所属行业
                 } else {
+                    this.$router.push("./createPlan");
                     return
                 }
             },

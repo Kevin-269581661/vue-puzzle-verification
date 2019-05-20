@@ -1587,10 +1587,10 @@
                             mType: '',
                             mImg: key.mImg || '',
                             mVehicle: key.mediaType,
-                            mRemark: key.mediaRemark === '' ? '暂无备注' : key.mediaRemark,
+                            mRemark: key.mediaRemark,   // key.mediaRemark === '' ? '暂无备注' : key.mediaRemark,
                             mState: (key.mstate).split('')[0],
                             picSize: key.visualW + "*" + key.visualH,
-                            lightBoxSize:  key.LBSizeW + "*" + key.LBSizeH,//
+                            lightBoxSize:  key.LBSizeW + "*" + key.LBSizeH,
                         })
                     }
                 }

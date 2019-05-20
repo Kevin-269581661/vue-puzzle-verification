@@ -18,21 +18,6 @@
                 <li>
                     <router-link :to="{path:'/media/orderList'}" class="nav_fast" id="orderMana">订单管理</router-link>
                 </li>
-            <!--    <li @mouseenter="showKJFS = true" @mouseleave="showKJFS = false">
-                    <a href="#" class="nav_fast more" id="kjfs">常用模块 <i class="fa fa-angle-down"></i>
-                        <ul class="fast_list_fir" v-show="showKJFS">
-                            <li>
-                                <router-link :to="{path:'/media/mediaList'}" id="mediaMana">媒体管理</router-link>
-                            </li>
-                            <li>
-                                <router-link :to="{path:'/media/planList'}" id="planMana">方案管理</router-link>
-                            </li>
-                            <li>
-                                <router-link :to="{path:'/media/orderList'}" id="orderMana">订单管理</router-link>
-                            </li>
-                        </ul>
-                    </a>
-                </li>-->
                 <li @mouseenter="showMore = true" @mouseleave="showMore = false">
                     <a href="#" class="nav_fast more" id="More">其他模块<i class="fa fa-angle-down"></i>
                         <ul class="fast_list_fir" v-show="showMore">

@@ -377,6 +377,12 @@
                             "color": "#999",
                             "border-bottom": "none"
                         });
+                        $('#More').find('a').css({
+                            "color": "#999"
+                        });
+                        $('#kjfs').find('a').css({
+                            "color": "#999"
+                        });
                         break;
                 }
             },

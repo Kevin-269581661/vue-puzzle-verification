@@ -1058,7 +1058,7 @@
             title="导入excel的点位信息"
             top="20vh"
             width="80%">
-            <import-result :importData="importInfoData"></import-result>
+            <import-result :importData="importInfoData" @cancel="cancelImport" @confirmImport="confirmImport"></import-result>
             <!-- <div class="car-title">
                 <i class="el-icon-info" style="color: #1890FF;"></i>
                 <h4>已成功导入点位<span>{{excelObj.successNum}}</span>个,问题点位<span>{{excelObj.failNum}}</span>个
@@ -1959,6 +1959,25 @@
                         console.log(res);
                     });
                 }
+            },
+            // 取消导入
+            cancelImport(){
+                this.showUploadFail = false;
+                this.isImport = false;                
+            },
+            // 确定导入
+            confirmImport(arr){
+                this.showUploadFail = false;
+                console.log('import----data---', arr);
+                for(let info of arr){
+                    if(info.mVehicle == '广告门'){
+                        this.isHaveDiffPush(info);
+                    }else if(info.mVehicle =='道闸'){
+                        this.isHaveDiffPush(info);
+                    }
+                }
+                this.isImport = false;
+                console.log('inport----data----shoplist', this.shopingList);
             },
             // 根据导入方案返回的数据,设置购物车所需要的数据格式
             setShopDataByImport(arr){

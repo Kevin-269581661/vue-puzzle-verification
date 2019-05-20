@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="import_result">
         <div class="car-title">
             <i class="el-icon-info" style="color: #1890FF;"></i>
             <h4>已成功导入点位<span>{{successList.length}}</span>个,问题点位<span>{{errorList.length}}</span>个
@@ -7,7 +7,8 @@
             </h4>
         </div>
 
-        <el-tabs>
+        <p class="num_box">提示：已选择 <span>{{resNum}}</span> 个社区，<span>{{pointNum}}</span> 个点位</p>
+        <el-tabs type="card">
             <el-tab-pane label="成功小区" class="adsTable">
                 <div class="myCheckbox">
                     <el-checkbox v-model="isAll" @change="allCheckboxAds"></el-checkbox>
@@ -83,6 +84,11 @@
                 </el-table>
             </el-tab-pane>
         </el-tabs>
+
+        <p class="button_box">
+            <el-button @click="cancelImport()" size="small">取 消</el-button>
+            <el-button type="primary" @click="confirmImport()" size="small">确 定</el-button>
+        </p>
     </div>
 </template>
 
@@ -252,6 +258,26 @@ export default {
             shopList: [],
             isAll: false,
         }
+    },
+    computed:{
+        resNum(){
+            let residArr = [];
+            for(let data of this.shopList){
+                if(!residArr.includes(data.resID)){
+                    residArr.push(data.resID);
+                }
+            }
+            return residArr.length;
+        },
+        pointNum(){
+            let asidArr = [];
+            for(let data of this.shopList){
+                if(!asidArr.includes(data.asID)){
+                    asidArr.push(data.asID);
+                }
+            }
+            return asidArr.length;
+        },
     },
     created(){
         // this.successList = this.importData.successList;
@@ -529,6 +555,24 @@ export default {
             console.log('shoplist------', this.shopList);
             this.isAll = true
         },
+        // 处理有问题的点
+        checkPointFun(errorList){
+            let resultarr = [];
+            for(let data of errorList){
+                let item = {
+                    resName: data.resName,
+                    city: data.city,
+                    origin: data.district,
+                    mVehicle: data.mVehicle,
+                    mediaName: data.mTitle,
+                    asLab: data.asLab,
+                    assetTag: data.assetTag,
+                    schedules: data.date,
+                };
+                resultarr.push(item);
+            }
+            return resultarr;
+        },
         // 导出有问题的点
         downLoadExcel(){
             let arr = this.questionPoint(this.excelDataUpload, this.importInfoData.successList);
@@ -576,6 +620,14 @@ export default {
             }
             return resultarr;
         },
+        // 取消导入
+        cancelImport(){
+            this.$emit("cancel");
+        },
+        // 确定导入
+        confirmImport(){
+            this.$emit("confirmImport", this.shopList);
+        },
     },
 }
 </script>
@@ -613,7 +665,6 @@ export default {
 /* 表头全勾选 */
 .adsTable{
     position: relative;
-    margin-top: 5px;
 }
 .myCheckbox{
     position: absolute;
@@ -624,5 +675,19 @@ export default {
     top:0;
     left: 0;
     z-index: 99;
+}
+
+.button_box{
+    text-align: right;
+    margin-top: 20px;
+}
+.num_box{
+    position: absolute;
+    left: 230px;
+    top: 110px;
+}
+/deep/.import_result .el-table__body-wrapper {
+    min-height: 440px;
+    max-height: 440px;
 }
 </style>

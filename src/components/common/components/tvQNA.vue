@@ -44,7 +44,7 @@
                     <h3>Q4.电视广告通案下载</h3>
                 </template>
                 <div><p>A4：<!--<a href="ApplicationForm.doc" download="申请表">点击并下载申请表</a>-->
-                    <a href="/qinlinADcase.pdf" download="亲邻同源跨屏联投通案.pdf">点击下载 亲邻同源跨屏联投通案</a></p></div>
+                    <a href="https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/frontfile/qinlinADcase.pdf" download="亲邻同源跨屏联投通案.pdf">点击下载 亲邻同源跨屏联投通案</a></p></div>
             </el-collapse-item>
         </el-collapse>
     </div>

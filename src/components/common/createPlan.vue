@@ -1403,7 +1403,7 @@
                 rejectAdPlan: [],                  // 排斥方案选项
                 activeAdPlan: '',                 // 当前选择的方案
                 routePath: '',
-                isSelect: false,                       //
+                isSelect: false,                  // 判断是否已经选择过点位
             };
         },
         mounted() {

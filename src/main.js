@@ -6,7 +6,7 @@ import router from './router'
 
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-import $ from 'jquery'
+// import $ from 'jquery'
 import axios from 'axios'
 
 import MintUI from 'mint-ui'
@@ -38,8 +38,12 @@ var instance = axios.create({
 instance.defaults.timeout = 2500;*/
 
 //全局配置
+// 开发环境
+// axios.defaults.baseURL = 'http://192.168.1.248/';
+// 测试环境
 axios.defaults.baseURL = 'https://beta.qinlinad.com/';
 // axios.defaults.baseURL = 'https://www.qinlinad.com/';
+
 Vue.prototype.Map = '/MapAPI'
 Vue.prototype.QZhike ='/QZhike';
 Vue.prototype.QKuyun ='/QinlinKuyun-API';
@@ -57,11 +61,12 @@ axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 Vue.prototype.wuYouMap = 'https://wsopbodv.dituwuyou.com/qinlin/embed?mid=_J6aWeV128gkhVn54AfWIw&token=SvcvtTqpktwPUb8dbu_jx0602nj_4tF-is8&mapid='  // 测试服
 // 正式服
 // Vue.prototype.qadnUrl = 'https://www.qinlinad.com'
-//测试服
+// 测试服
 Vue.prototype.qadnUrl = 'https://beta.qinlinad.com'
+// 开发环境
+// Vue.prototype.qadnUrl = 'http://192.168.1.248'
 Vue.use(ElementUI);
 
-console.log('test');
 
 
 /* eslint-disable no-new */

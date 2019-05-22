@@ -2285,7 +2285,8 @@
                     shn: this.houseNum[1],
                     shp: this.buildPrice[0] * 100,
                     bhp: this.buildPrice[1] * 100,
-                    suid: this.BDData.uid
+                    suid: this.BDData.uid,
+                    apId: this.activeAdPlan
                 }
                 if(this.selectValue === '商圈'){
                     params.ta = this.searchInput

@@ -727,6 +727,7 @@
                 let result = [];
                 if (!result.length) {
                     let obj = {};
+                    obj.asrID = asidArr[0].asrID;
                     obj.rID = asidArr[0].rID;
                     obj.mVehicle = asidArr[0].mVehicle;
                     obj.asidlist = "";
@@ -753,6 +754,7 @@
                         let resRID = res.rID.toString().substring(0, 4);
                         let dataRID = init.rID.toString().substring(0, 4);
                         let resObj = {
+                            asrID: init.asrID,
                             rID: init.rID,
                             mVehicle: init.mVehicle,
                             ds: start,
@@ -760,7 +762,8 @@
                             asidlist: "",
                             mNum: ""
                         };
-                        if (resRID == dataRID && res.ds == start && res.de == end && res.mVehicle == init.mVehicle) {
+                        if (resRID == dataRID && res.ds == start && res.de == end
+                            && res.mVehicle == init.mVehicle && res.asrID == init.asrID) {
                             if (asIDs === "") {
                                 asIDs = init.asID.toString();
                                 mNum = 1;
@@ -778,6 +781,7 @@
                                     data.ds == start &&
                                     data.de == end &&
                                     data.mVehicle == init.mVehicle
+                                    && data.asrID == init.asrID
                                 ) {
                                     door = 0;
                                 }
@@ -823,7 +827,7 @@
                         }else{
                             weekDays = weekDay.week +'周'+weekDay.day+'天';
                         }
-                        if (arrDataRID == dataRID) {
+                        if (arrDataRID == dataRID && arrData.asrID == asid.asrID) {
                             if(asid.mVehicle == '广告门'){
                                 obj.SM.push(ds + "-" + de +"("+ weekDays+',共'+ asid.mNum + "面)");
                                 obj.schedules.push(ds+'-'+de);
@@ -1059,7 +1063,8 @@
                 let cityADDoorLevelNum = []
                 for(let skey of this.shopingList){
                     for(let akey of arr){
-                        if (skey.city === akey.city && skey.schedules == akey.schedules && skey.mVehicle === akey.mKind) {
+                        if (skey.city === akey.city && skey.schedules == akey.schedules
+                            && skey.mVehicle === akey.mKind && skey.asrID == akey.asrID) {
                             akey.mNum++
                         }
                         // 判断是否全为A面
@@ -1112,17 +1117,17 @@
                 console.log('统计购物车中不同等级点位的面天数',cityADDoorLevelNum)
                 this.cityADLevelNum = cityADDoorLevelNum
                 for(let akey of arr){
-                    if(this.CSMList.length <= 0){
-                        this.CSMList.push({
-                            city: akey.city,
-                            asrID: akey.asrID,
-                            mKind: akey.mKind,
-                            mNum: akey.mNum,
-                            SM: [akey.SM + ',' + akey.mNum + '面) '],
-                            adLevelNum: akey.adLevelNum,                 // 媒体各等级数
-                            isAllA: akey.isAllA
-                        })
-                    }else{
+                    // if(this.CSMList.length <= 0){
+                    //     this.CSMList.push({
+                    //         city: akey.city,
+                    //         asrID: akey.asrID,
+                    //         mKind: akey.mKind,
+                    //         mNum: akey.mNum,
+                    //         SM: [akey.SM + ',' + akey.mNum + '面) '],
+                    //         adLevelNum: akey.adLevelNum,                 // 媒体各等级数
+                    //         isAllA: akey.isAllA
+                    //     })
+                    // }else{
                         let IsHad = false
                         for(let ckey of this.CSMList){
                             if(ckey.city === akey.city && ckey.asrID == akey.asrID){
@@ -1145,7 +1150,7 @@
                                 isAllA: akey.isAllA
                             })
                         }
-                    }
+                    // }
                 }
                 console.log('城市不同排期的所有面数', JSON.stringify(this.CSMList))
                 for (let qkey of this.quotation){

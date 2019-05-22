@@ -1814,7 +1814,7 @@
             },
             // 创建方案基本信息及投放城市详情(报价单数据提交)
             creatAdPlan(apid){
-                console.log('creatAdPlan',this.quotation,this.pdidList)
+                console.log('creatAdPlan',this.quotation)
                 let arr = []
                 for(let key of this.quotation){
                     for(let i in key.priceMsg){
@@ -1836,9 +1836,10 @@
                                 this.apMinTime = minTime
                             }
                         }
-                        let pdid = this.getpdidByCityAndMType(i,key.city)
+                        let pdid = this.getpdidByCityAndMType(i,key.city,key.asrID)
+                        console.log('pdid',pdid)
                         arr.push({
-                            "pdID": pdid,
+                            "pdID": pdid ? pdid : '',
                             "pdRemark": key.priceMsg[i].remark || '',
                             "rID": key.rid,
                             "asrID": key.asrID,
@@ -1880,15 +1881,16 @@
                     }
                 })
             },
-            getpdidByCityAndMType(mType,city) {
-                console.log(mType,city)
+            getpdidByCityAndMType(mType,city,asrID) {
+                console.log('this.pdidList',this.pdidList,mType,city,asrID)
                 for(let key of this.pdidList){
-                    if(mType === 'adDoor' && key.pdType == 0 && key.city === city){
+                    if(mType === 'adDoor' && key.pdType == 0 && key.city === city && asrID == key.asrID){
                         return key.pdID
-                    }else if (mType === 'roadGate' && key.pdType == 1 && key.city === city){
+                    }else if (mType === 'roadGate' && key.pdType == 1 && key.city === city && asrID == key.asrID){
                         return key.pdID
                     }
                 }
+                return false
             },
             PushADBFun(data) {
                 let ADBData = data
@@ -2126,6 +2128,7 @@
             selectRejectPlan(val){
                 console.log('方案排斥选择',val,this.activeAdPlan)
                 this.getAdsParamsData.apId = this.activeAdPlan
+                this.setPageNoAndTableData()
                 this.getAdList()
             },
             //step2搜索按钮

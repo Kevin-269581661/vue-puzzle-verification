@@ -3418,14 +3418,8 @@
             },
             // 同资源保留个数
             containNuminRes(num){
-                let residArr = [];
-                let resultArr = [];
-                for(let data of this.shopShowList){
-                    if(this.isEnough(data, num, residArr)){
-                        residArr.push(data.resID);
-                        resultArr.push(data);
-                    }
-                }
+                let resultArr = this.funToArr(this.shopShowList, 'resID');
+                resultArr = this.resRandomNum(resultArr, num);
                 let len = this.shopShowList.length;
                 if(resultArr.length){
                     this.getResultData(resultArr);
@@ -3441,10 +3435,44 @@
                     this.messageFun('warning', '暂无同资源可移除的点位！')
                 }
             },
-            // 移除A/B面
-            removeAllType(type){
-                let resultArr= this.shopShowList.reduce((groups, item)=>{
-                    let groupFound= groups.find(arrItem => item.mID === arrItem.mID);
+            // 随机保留num个数点位
+            resRandomNum(arr, num){
+                let result = [];
+                for(let data of arr){
+                    if(num > 1){
+                        let randomArr = [];
+                        let max = data.asidList.length;
+                        if(num >= max){
+                            result = result.concat(data.asidList);
+                        }else{
+                            randomArr = this.randomFun([], num, data.asidList.length);
+                            for(let item of randomArr){
+                                result.push(data.asidList[item]);
+                            }
+                        }
+                    }else{
+                        let randomNum = parseInt(Math.random()*(data.asidList.length), 10);
+                        result.push(data.asidList[randomNum]);
+                    }
+                }
+                return result;
+            },
+            // 递归获取不同的随机数
+            randomFun(arr, num, max){
+                if(arr.length < num){
+                    let randomNum = parseInt(Math.random()*(max), 10);
+                    if(!arr.includes(randomNum)){
+                        arr.push(randomNum);
+                    }
+                    return this.randomFun(arr, num, max);
+                }else{
+                    return arr;
+                }
+            },
+            // 分组数据
+            funToArr(arr, condition){
+                let resultArr= arr.reduce((groups, item)=>{
+                    let groupFound= groups.find(arrItem => item[condition] === arrItem[condition]);
                     if(groupFound) {
                         if(!JSON.stringify(groupFound.asidList).includes(JSON.stringify(item))) {  //去重
                             groupFound.asidList.push(item);
@@ -3452,13 +3480,19 @@
                     } else {
                         //不要直接在原来的对象修改，新建对象
                         let newGroup = {
-                            mID: item.mID,
+                            [condition]: item[condition],
                             asidList: [item]
                         }
                         groups.push(newGroup);
                     }
                     return groups;
                 },[]);
+                return resultArr;
+            },
+            // 移除A/B面
+            removeAllType(type){
+                let resultArr = this.funToArr(this.shopShowList, 'mID');
+                console.log('resultArr------------das---', resultArr);
                 let len = this.shopShowList.length;
                 if (resultArr.length > 0) {
                     resultArr = this.isEnoughMedia(type, resultArr);
@@ -3482,7 +3516,7 @@
                     let result = [];
                     if(data.asidList.length > 1){
                         result = data.asidList.filter((item)=>{
-                            return item.A_B != type;
+                            return (item.A_B != type);
                         });
                     }else{
                         result = data.asidList;
@@ -3490,20 +3524,6 @@
                     resultArr = resultArr.concat(result);
                 }
                 return resultArr;
-            },
-            // 判断这个值出现的次数符合预期返回true,否则false
-            isEnough(item, time, arr){
-                let sum = 0
-                for(let data of arr){
-                    if(data == item.resID){
-                        sum++;
-                    }
-                }
-                if(sum < time){
-                    return true;
-                }else{
-                    return false;
-                }
             },
             getResultData(resultArr){
                 let other = [];

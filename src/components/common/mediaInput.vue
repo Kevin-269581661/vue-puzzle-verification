@@ -1563,7 +1563,7 @@
                             mType: key.doorType,
                             mImg: key.mImg || '',
                             mVehicle: key.mediaType,
-                            mRemark: key.mediaRemark === '' ? '暂无备注' : key.mediaRemark,
+                            mRemark: key.mediaRemark, // key.mediaRemark === '' ? '暂无备注' : key.mediaRemark,
                             mState: (key.mstate).split('')[0],
                             // picSize:'',
                             // lightBoxSize:'',

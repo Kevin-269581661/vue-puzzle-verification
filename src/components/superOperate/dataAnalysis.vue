@@ -2647,7 +2647,7 @@
                 //环状图表(上刊率)
                 for (let key of cityListRate) {
                     if (key.cityName === val) {
-                        this.setHeadDataPie(key.areaList.sort(this.compareSort('publishRate')))
+                        this.setHeadDataSKPie(key.areaList.sort(this.compareSort('publishRate')))
                         break
                     }
                 }

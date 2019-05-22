@@ -1403,6 +1403,7 @@
                 rejectAdPlan: [],                  // 排斥方案选项
                 activeAdPlan: '',                 // 当前选择的方案
                 routePath: '',
+                isSelect: false,                       //
             };
         },
         mounted() {
@@ -1439,7 +1440,7 @@
                     this.computeConnectAdData()
                 }
                 // 当购物车点位数大于0时
-                if(this.shopingList.length){
+                if(this.shopingList.length || this.isSelect){
                     this.saveApInfo()
                 }
                 return this.shopingList.length
@@ -4782,6 +4783,7 @@
             // 公用方法
             // 方案异常时，存储当前方案基本数据及购物车点位等临时信息
             saveApInfo(){
+                this.isSelect = true
                 let planInfo = {
                     uid:this.sessionData.uID,
                     setTime: this.timestampToTime(Date.parse(new Date())),

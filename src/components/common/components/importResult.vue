@@ -2,13 +2,12 @@
     <div class="import_result">
         <div class="car-title">
             <i class="el-icon-info" style="color: #1890FF;"></i>
-            <h4>已成功导入点位<span>{{successList.length}}</span>个,问题点位<span>{{errorList.length}}</span>个
-                <span @click="downLoadExcel()">下载表格<i class="el-icon-download"></i></span>
+            <h4>已成功导入小区<span>{{successList.length}}</span>个,问题小区<span>{{errorList.length}}</span>个
+                <span @click="downLoadExcel()">下载失败小区数据<i class="el-icon-download"></i></span>
             </h4>
         </div>
 
-        <p class="num_box">提示：已选择 <span>{{resNum}}</span> 个社区，<span>{{pointNum}}</span> 个点位</p>
-        <el-tabs type="card">
+        <!-- <el-tabs type="card">
             <el-tab-pane label="成功小区" class="adsTable">
                 <div class="myCheckbox">
                     <el-checkbox v-model="isAll" @change="allCheckboxAds"></el-checkbox>
@@ -21,10 +20,68 @@
                     <el-table-column width="120px">
                         <template slot-scope="scope">
                             <div class="adDoor" v-if="scope.row.mVehicle === '广告门'">
-                                <el-checkbox v-model="scope.row.checkBox.A" label="A面"
+                                <el-popover
+                                    v-if="scope.row.box.A"
+                                    placement="top-start"
+                                    width="310"
+                                    trigger="hover">
+                                    <span v-if="scope.row.adlInfo === ''">暂无被禁用的信息</span>
+                                    <ul v-else>
+                                        <li v-for="(item,index) in scope.row.adlInfo" :key="index">
+                                            <div v-if="item.asState">
+                                                <p style="margin-bottom: 5px">
+                                                    <span style="color: #333">该点位：{{item.asState}}中</span>
+                                                </p>
+                                            </div>
+                                            <div v-else>
+                                                <p style="margin-bottom: 5px">
+                                                    <span style="color: #333">占点方案：</span>
+                                                    <span>
+                                                        <span  style="font-weight: bold">{{sessionData.uType === 'MD' ? item.beOccupieApName : '******'}}</span>
+                                                        方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
+                                                    </span>
+                                                </p>
+                                                <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                    <el-checkbox slot="reference" v-model="scope.row.checkBox.A" label="A面"
+                                        @change="changeA(scope.row)" :disabled="scope.row.box.A">
+                                    </el-checkbox>
+                                </el-popover>
+                                <el-checkbox v-else v-model="scope.row.checkBox.A" label="A面"
                                     @change="changeA(scope.row)" :disabled="scope.row.box.A">
                                 </el-checkbox>
-                                <el-checkbox v-model="scope.row.checkBox.B" label="B面"
+                                <el-popover
+                                    v-if="scope.row.box.B"
+                                    placement="top-start"
+                                    width="310"
+                                    trigger="hover">
+                                    <span v-if="scope.row.adlInfo === ''">暂无被禁用的信息</span>
+                                    <ul v-else>
+                                        <li v-for="(item,index) in scope.row.adlInfo" :key="index">
+                                            <div v-if="item.asState">
+                                                <p style="margin-bottom: 5px">
+                                                    <span style="color: #333">该点位：{{item.asState}}中</span>
+                                                </p>
+                                            </div>
+                                            <div v-else>
+                                                <p style="margin-bottom: 5px">
+                                                    <span style="color: #333">占点方案：</span>
+                                                    <span>
+                                                        <span  style="font-weight: bold">{{sessionData.uType === 'MD' ? item.beOccupieApName : '******'}}</span>
+                                                        方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
+                                                    </span>
+                                                </p>
+                                                <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                    <el-checkbox slot="reference" v-model="scope.row.checkBox.B" label="B面"
+                                        @change="changeB(scope.row)" :disabled="scope.row.box.B">
+                                    </el-checkbox>
+                                </el-popover>
+                                <el-checkbox v-else v-model="scope.row.checkBox.B" label="B面"
                                     @change="changeB(scope.row)" :disabled="scope.row.box.B">
                                 </el-checkbox>
                             </div>
@@ -83,8 +140,156 @@
                     </el-table-column>
                 </el-table>
             </el-tab-pane>
-        </el-tabs>
+        </el-tabs> -->
 
+        <p>
+            <el-radio-group v-model="activeType" size="small" @change="handleType" class="marin10">
+                <el-radio-button :label="1">成功小区</el-radio-button>
+                <el-radio-button :label="2">失败小区</el-radio-button>
+            </el-radio-group>
+            <span>提示：已选择 <b>{{resNum}}</b> 个社区，<b>{{pointNum}}</b> 个点位</span>
+        </p>
+
+        <template v-if="activeType == 1">
+            <div class="adsTable">
+                <div class="myCheckbox">
+                    <el-checkbox v-model="isAll" @change="allCheckboxAds"></el-checkbox>
+                </div>
+                <el-table
+                    border
+                    :data="successList"
+                    style="width: 100%"
+                    >
+                    <el-table-column width="120px">
+                        <template slot-scope="scope">
+                            <div class="adDoor" v-if="scope.row.mVehicle === '广告门'">
+                                <!-- <el-checkbox v-model="scope.row.checkBox.A" label="A面"
+                                    @change="changeA(scope.row)" :disabled="scope.row.box.A">
+                                </el-checkbox>
+                                <el-checkbox v-model="scope.row.checkBox.B" label="B面"
+                                    @change="changeB(scope.row)" :disabled="scope.row.box.B">
+                                </el-checkbox> -->
+                                <el-popover
+                                    v-if="scope.row.box.A"
+                                    placement="top-start"
+                                    width="310"
+                                    trigger="hover">
+                                    <span v-if="scope.row.adlInfo === ''">暂无被禁用的信息</span>
+                                    <ul v-else>
+                                        <li v-for="(item,index) in scope.row.adlInfo" :key="index">
+                                            <div v-if="item.asState">
+                                                <p style="margin-bottom: 5px">
+                                                    <span style="color: #333">该点位：{{item.asState}}中</span>
+                                                </p>
+                                            </div>
+                                            <div v-else>
+                                                <p style="margin-bottom: 5px">
+                                                    <span style="color: #333">占点方案：</span>
+                                                    <span>
+                                                        <span  style="font-weight: bold">{{sessionData.uType === 'MD' ? item.beOccupieApName : '******'}}</span>
+                                                        方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
+                                                    </span>
+                                                </p>
+                                                <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                    <el-checkbox slot="reference" v-model="scope.row.checkBox.A" label="A面"
+                                        @change="changeA(scope.row)" :disabled="scope.row.box.A">
+                                    </el-checkbox>
+                                </el-popover>
+                                <el-checkbox v-else v-model="scope.row.checkBox.A" label="A面"
+                                    @change="changeA(scope.row)" :disabled="scope.row.box.A">
+                                </el-checkbox>
+                                <el-popover
+                                    v-if="scope.row.box.B"
+                                    placement="top-start"
+                                    width="310"
+                                    trigger="hover">
+                                    <span v-if="scope.row.adlInfo === ''">暂无被禁用的信息</span>
+                                    <ul v-else>
+                                        <li v-for="(item,index) in scope.row.adlInfo" :key="index">
+                                            <div v-if="item.asState">
+                                                <p style="margin-bottom: 5px">
+                                                    <span style="color: #333">该点位：{{item.asState}}中</span>
+                                                </p>
+                                            </div>
+                                            <div v-else>
+                                                <p style="margin-bottom: 5px">
+                                                    <span style="color: #333">占点方案：</span>
+                                                    <span>
+                                                        <span  style="font-weight: bold">{{sessionData.uType === 'MD' ? item.beOccupieApName : '******'}}</span>
+                                                        方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
+                                                    </span>
+                                                </p>
+                                                <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                    <el-checkbox slot="reference" v-model="scope.row.checkBox.B" label="B面"
+                                        @change="changeB(scope.row)" :disabled="scope.row.box.B">
+                                    </el-checkbox>
+                                </el-popover>
+                                <el-checkbox v-else v-model="scope.row.checkBox.B" label="B面"
+                                    @change="changeB(scope.row)" :disabled="scope.row.box.B">
+                                </el-checkbox>
+                            </div>
+                            <div class="roadGate" v-else>
+                                <el-checkbox v-model="scope.row.checkBox.ABC" label="ABC面" @change="changeABC(scope.row)">
+                                </el-checkbox>
+                            </div>
+                        </template>                        
+                    </el-table-column>
+                    <el-table-column label="资源名称" min-width="140" prop="resName" >
+                    </el-table-column>
+                    <el-table-column prop="mediaName" label="媒体名称" min-width="130" >
+                    </el-table-column>
+                    <el-table-column prop="city" label="城市" min-width="85" >
+                    </el-table-column>
+                    <el-table-column prop="origin" label="区域" min-width="85" >
+                    </el-table-column>
+                    <el-table-column prop="assetTag" label="资产编号" min-width="130" >
+                    </el-table-column>
+                    <el-table-column prop="schedules" label="排期" min-width="190">
+                        <template slot-scope="scope">
+                            <el-tooltip class="item" effect="dark" :content="scope.row.schedules" placement="bottom">
+                                <span>{{scope.row.schedules}}</span>
+                            </el-tooltip>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+        </template>
+        <template v-if="activeType == 2">
+            <el-table
+                border
+                :data="errorList"
+                style="width: 100%"
+                >
+                <el-table-column label="资源名称" min-width="140" prop="resName" >
+                </el-table-column>
+                <el-table-column prop="city" label="市" min-width="85" >
+                </el-table-column>
+                <el-table-column prop="origin" label="区" min-width="85" >
+                </el-table-column>
+                <el-table-column prop="mediaName" label="媒体名称" min-width="130" >
+                </el-table-column>
+                <el-table-column min-width="70" label="投放面">
+                    <template slot-scope="scope">
+                        <span>{{scope.row.asLab}}面</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="assetTag" label="资产编号" min-width="130" >
+                </el-table-column>
+                <el-table-column prop="schedules" label="排期" min-width="190">
+                    <template slot-scope="scope">
+                        <el-tooltip class="item" effect="dark" :content="scope.row.schedules" placement="bottom">
+                            <span>{{scope.row.schedules}}</span>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </template>
         <p class="button_box">
             <el-button @click="cancelImport()" size="small">取 消</el-button>
             <el-button type="primary" @click="confirmImport()" size="small">确 定</el-button>
@@ -93,170 +298,175 @@
 </template>
 
 <script>
+// 时间格式化
+import timeFormat from "../../../commonFun/timeFormat.js";
+
 export default {
-    // props:{
-    //     importData:{
-    //         type: Object,
-    //         default: {}
-    //     },
-    // },
+    props:{
+        importData:{
+            type: Object,
+            default: {}
+        },
+    },
     data(){
         return{
-            // successList: [],
+            copyData: {},
+            successList: [],
             // errorList: [],
-            successList: [
-                {
-                    adSize: "1480*885",
-                    adlInfo: null,
-                    asIDs: "677115,677116",
-                    asLabs: "A,B",
-                    asName: "北京亲邻众联科技有限公司",
-                    asPrice: 380000,
-                    asStates: "1,1",
-                    asrID: "1",
-                    assetTag: "NBJ01826",
-                    cType: "高端住宅",
-                    carFlow: null,
-                    chDay: "2003年",
-                    connID: null,
-                    dNum: 11,
-                    fNum: 6,
-                    grade: "C",
-                    hNum: 2000,
-                    hPrice: 10000000,
-                    industryInfos: null,
-                    mID: 110101000018,
-                    mRemark: null,
-                    mState: 1,
-                    mTitle: "10号楼南门西",
-                    mVehicle: "广告门",
-                    notPush: null,
-                    parkSpaceNum: null,
-                    peopleFlow: null,
-                    picSize: null,
-                    rName: "东城区",
-                    resAddress: "北京市东城区西花市南里东区",
-                    resID: 38366,
-                    resMapID: 3199750,
-                    resName: "新景家园",
-                    resType: 1,
-                    tradingArea: "崇文门片区",
-                },
-                {
-                    adSize: "1480*885",
-                    adlInfo: null,
-                    asIDs: "677131",
-                    asLabs: "A",
-                    asName: "北京亲邻众联科技有限公司",
-                    asPrice: 380000,
-                    asStates: "1",
-                    asrID: "1",
-                    assetTag: "NBJ01830",
-                    cType: "高端住宅",
-                    carFlow: null,
-                    chDay: "2003年",
-                    connID: null,
-                    dNum: 11,
-                    fNum: 6,
-                    grade: "C",
-                    hNum: 2000,
-                    hPrice: 10000000,
-                    industryInfos: null,
-                    mID: 110101000026,
-                    mRemark: null,
-                    mState: 1,
-                    mTitle: "西九东门",
-                    mVehicle: "广告门",
-                    notPush: null,
-                    parkSpaceNum: null,
-                    peopleFlow: null,
-                    picSize: null,
-                    rName: "东城区",
-                    resAddress: "北京市东城区西花市南里东区",
-                    resID: 38366,
-                    resMapID: 3199750,
-                    resName: "新景家园",
-                    resType: 1,
-                    tradingArea: "崇文门片区",
-                },
-                {
-                    adSize: null,
-                    adlInfo: null,
-                    asIDs: "709536,709537,709538",
-                    asLabs: "A,B,C",
-                    asName: "北京亲邻众联科技有限公司",
-                    asPrice: 980000,
-                    asStates: "1,1,1",
-                    asrID: "1",
-                    assetTag: "AS54485748784",
-                    cType: "中端住宅",
-                    carFlow: 800,
-                    chDay: "2005",
-                    connID: null,
-                    dNum: 3,
-                    fNum: 6,
-                    grade: null,
-                    hNum: 50,
-                    hPrice: 8885900,
-                    industryInfos: null,
-                    mID: 110101000077,
-                    mRemark: "AS54485748784",
-                    mState: 1,
-                    mTitle: "道闸+3",
-                    mVehicle: "道闸",
-                    notPush: "健身、恶俗医疗",
-                    parkSpaceNum: 600,
-                    peopleFlow: 2000,
-                    picSize: "2558*2558",
-                    rName: "东城区",
-                    resAddress: "中山大道55555号",
-                    resID: 45896,
-                    resMapID: 3201094,
-                    resName: "测试道闸资源",
-                    resType: 1,
-                    tradingArea: "三元里",
-                },
-                {
-                    adSize: null,
-                    adlInfo: null,
-                    asIDs: "709539,709540,709541",
-                    asLabs: "A,B,C",
-                    asName: "北京亲邻众联科技有限公司",
-                    asPrice: 980000,
-                    asStates: "1,1,1",
-                    asrID: "1",
-                    assetTag: "AS54485748784",
-                    cType: "中端住宅",
-                    carFlow: 800,
-                    chDay: "2005",
-                    connID: null,
-                    dNum: 3,
-                    fNum: 6,
-                    grade: null,
-                    hNum: 50,
-                    hPrice: 8885900,
-                    industryInfos: null,
-                    mID: 110101000078,
-                    mRemark: "",
-                    mState: 1,
-                    mTitle: "道闸+4",
-                    mVehicle: "道闸",
-                    notPush: "健身、恶俗医疗",
-                    parkSpaceNum: 600,
-                    peopleFlow: 2000,
-                    picSize: "1558*1854",
-                    rName: "东城区",
-                    resAddress: "中山大道55555号",
-                    resID: 45896,
-                    resMapID: 3201094,
-                    resName: "测试道闸资源",
-                    resType: 1,
-                    tradingArea: "三元里",
-                }
-            ],
+            // successList: [
+            //     {
+            //         adSize: "1480*885",
+            //         adlInfo: null,
+            //         asIDs: "677115,677116",
+            //         asLabs: "A,B",
+            //         asName: "北京亲邻众联科技有限公司",
+            //         asPrice: 380000,
+            //         asStates: "1,1",
+            //         asrID: "1",
+            //         assetTag: "NBJ01826",
+            //         cType: "高端住宅",
+            //         carFlow: null,
+            //         chDay: "2003年",
+            //         connID: null,
+            //         dNum: 11,
+            //         fNum: 6,
+            //         grade: "C",
+            //         hNum: 2000,
+            //         hPrice: 10000000,
+            //         industryInfos: null,
+            //         mID: 110101000018,
+            //         mRemark: null,
+            //         mState: 1,
+            //         mTitle: "10号楼南门西",
+            //         mVehicle: "广告门",
+            //         notPush: null,
+            //         parkSpaceNum: null,
+            //         peopleFlow: null,
+            //         picSize: null,
+            //         rName: "东城区",
+            //         resAddress: "北京市东城区西花市南里东区",
+            //         resID: 38366,
+            //         resMapID: 3199750,
+            //         resName: "新景家园",
+            //         resType: 1,
+            //         tradingArea: "崇文门片区",
+            //     },
+            //     {
+            //         adSize: "1480*885",
+            //         adlInfo: null,
+            //         asIDs: "677131",
+            //         asLabs: "A",
+            //         asName: "北京亲邻众联科技有限公司",
+            //         asPrice: 380000,
+            //         asStates: "1",
+            //         asrID: "1",
+            //         assetTag: "NBJ01830",
+            //         cType: "高端住宅",
+            //         carFlow: null,
+            //         chDay: "2003年",
+            //         connID: null,
+            //         dNum: 11,
+            //         fNum: 6,
+            //         grade: "C",
+            //         hNum: 2000,
+            //         hPrice: 10000000,
+            //         industryInfos: null,
+            //         mID: 110101000026,
+            //         mRemark: null,
+            //         mState: 1,
+            //         mTitle: "西九东门",
+            //         mVehicle: "广告门",
+            //         notPush: null,
+            //         parkSpaceNum: null,
+            //         peopleFlow: null,
+            //         picSize: null,
+            //         rName: "东城区",
+            //         resAddress: "北京市东城区西花市南里东区",
+            //         resID: 38366,
+            //         resMapID: 3199750,
+            //         resName: "新景家园",
+            //         resType: 1,
+            //         tradingArea: "崇文门片区",
+            //     },
+            //     {
+            //         adSize: null,
+            //         adlInfo: null,
+            //         asIDs: "709536,709537,709538",
+            //         asLabs: "A,B,C",
+            //         asName: "北京亲邻众联科技有限公司",
+            //         asPrice: 980000,
+            //         asStates: "1,1,1",
+            //         asrID: "1",
+            //         assetTag: "AS54485748784",
+            //         cType: "中端住宅",
+            //         carFlow: 800,
+            //         chDay: "2005",
+            //         connID: null,
+            //         dNum: 3,
+            //         fNum: 6,
+            //         grade: null,
+            //         hNum: 50,
+            //         hPrice: 8885900,
+            //         industryInfos: null,
+            //         mID: 110101000077,
+            //         mRemark: "AS54485748784",
+            //         mState: 1,
+            //         mTitle: "道闸+3",
+            //         mVehicle: "道闸",
+            //         notPush: "健身、恶俗医疗",
+            //         parkSpaceNum: 600,
+            //         peopleFlow: 2000,
+            //         picSize: "2558*2558",
+            //         rName: "东城区",
+            //         resAddress: "中山大道55555号",
+            //         resID: 45896,
+            //         resMapID: 3201094,
+            //         resName: "测试道闸资源",
+            //         resType: 1,
+            //         tradingArea: "三元里",
+            //     },
+            //     {
+            //         adSize: null,
+            //         adlInfo: null,
+            //         asIDs: "709539,709540,709541",
+            //         asLabs: "A,B,C",
+            //         asName: "北京亲邻众联科技有限公司",
+            //         asPrice: 980000,
+            //         asStates: "1,1,1",
+            //         asrID: "1",
+            //         assetTag: "AS54485748784",
+            //         cType: "中端住宅",
+            //         carFlow: 800,
+            //         chDay: "2005",
+            //         connID: null,
+            //         dNum: 3,
+            //         fNum: 6,
+            //         grade: null,
+            //         hNum: 50,
+            //         hPrice: 8885900,
+            //         industryInfos: null,
+            //         mID: 110101000078,
+            //         mRemark: "",
+            //         mState: 1,
+            //         mTitle: "道闸+4",
+            //         mVehicle: "道闸",
+            //         notPush: "健身、恶俗医疗",
+            //         parkSpaceNum: 600,
+            //         peopleFlow: 2000,
+            //         picSize: "1558*1854",
+            //         rName: "东城区",
+            //         resAddress: "中山大道55555号",
+            //         resID: 45896,
+            //         resMapID: 3201094,
+            //         resName: "测试道闸资源",
+            //         resType: 1,
+            //         tradingArea: "三元里",
+            //     }
+            // ],
             errorList: [],
             shopList: [],
             isAll: false,
+            activeType: 1,
         }
     },
     computed:{
@@ -283,10 +493,23 @@ export default {
         // this.successList = this.importData.successList;
         // this.errorList = this.importData.successList;
         // console.log('successList---errror', this.successList, this.errorList);
-        this.successList = this.setTableData(this.successList);
-        console.log('success----', this.successList);
+        // this.successList = this.setTableData(this.successList);
+        // console.log('success----', this.successList);
+        // console.log(this.importData, 'this.importData-----');
+        this.copyData = JSON.parse(JSON.stringify(this.importData));
+        this.successList = this.setTableData(this.copyData.successList);
     },
+    // watch:{
+    //     importData(){
+    //         this.copyData = JSON.parse(JSON.stringify(this.importData));
+    //         this.successList = this.setTableData(this.copyData.successList);
+    //         console.log(this.importData, 'this.importData-----');
+    //     },
+    // },
     methods:{
+        handleType(){
+
+        },
         // 勾选表格数据格式
         setTableData(arr){
             let result = [];
@@ -346,6 +569,27 @@ export default {
                 }
                 if (key.asLabs.indexOf('B') === -1) {
                     adObj.box.B = true
+                }
+                if (key.adlInfo !== null && key.adlInfo !== undefined && key.adlInfo.length > 0) {
+                    let arr = []
+                    for (let akey of key.adlInfo) {
+                        if(akey.asState){
+                            arr.push({
+                                asState: akey.asState
+                            })
+                        }else{
+                            let star = timeFormat.toDate(akey.lStar, '/');
+                            let end = timeFormat.toDate(akey.lEnd, '/');
+                            arr.push({
+                                beOccupieApName: akey.apName,
+                                schedules: star + '-' + end,
+                                lState: akey.lState,
+                            })
+                        }
+                    }
+                    adObj.adlInfo = arr;
+                } else {
+                    adObj.adlInfo = '';
                 }
                 result.push(adObj)
             }
@@ -575,21 +819,17 @@ export default {
         },
         // 导出有问题的点
         downLoadExcel(){
-            let arr = this.questionPoint(this.excelDataUpload, this.importInfoData.successList);
+            let arr = this.questionPoint(this.excelDataUpload);
             let allHead = ['资源名称',	'市', '区',	'媒介载体', '媒体名称', '投放面', '资产编号', '投放排期'];
             sheetExcel.toDownload(allHead, arr, this.planForm.planName+'问题点位表');
         },
         // 导入excel后台返回的问题点位
-        questionPoint(arr, successArr){
+        questionPoint(arr){
             let resultarr = [
                 {
                     sheetName: '问题点位',
                     showList: [],
                 },
-                {
-                    sheetName: '正常点位',
-                    showList: [],
-                }
             ];
             for(let data of arr){
                 let obj = {
@@ -603,20 +843,6 @@ export default {
                     schedules: data.schedules,
                 };
                 resultarr[0].showList.push(obj);
-            }
-            for(let data of successArr){
-                let info = data.adSInfo;
-                let obj = {
-                    resName: info.resName,
-                    city: info.prName,
-                    origin: info.rName,
-                    mVehicle: info.mVehicle,
-                    mediaName: info.mTitle,
-                    asLab: info.asLab,
-                    assetTag: info.assetTag,
-                    schedules: timeFormat.toDate(data.pbStar, '.')+'-'+timeFormat.toDate(data.pbEnd, '.'),
-                };
-                resultarr[1].showList.push(obj);
             }
             return resultarr;
         },
@@ -681,13 +907,11 @@ export default {
     text-align: right;
     margin-top: 20px;
 }
-.num_box{
-    position: absolute;
-    left: 230px;
-    top: 110px;
-}
 /deep/.import_result .el-table__body-wrapper {
     min-height: 440px;
     max-height: 440px;
+}
+.marin10{
+    margin: 0 20px 10px 0;
 }
 </style>

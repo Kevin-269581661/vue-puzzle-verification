@@ -126,7 +126,16 @@
                                   <el-button type="primary" class="map" icon="el-icon-location-outline" @click="mapAD">地图</el-button>
                                 </span>
                                 <span>
-                                    <el-button type="success" class="oneKeyPointBtn importXle" icon="el-icon-upload2" @click="importFanan">导入</el-button>
+                                    <!-- <el-button type="success" class="oneKeyPointBtn importXle" icon="el-icon-upload2" @click="importFanan">导入</el-button> -->
+                                    <el-dropdown>
+                                        <el-button type="success" class="oneKeyPointBtn importXle">
+                                            导入<i class="el-icon-arrow-down el-icon--right"></i>
+                                        </el-button>
+                                        <el-dropdown-menu slot="dropdown">
+                                            <el-dropdown-item @click.native.prevent="importFanan('res')">导入小区</el-dropdown-item>
+                                            <el-dropdown-item @click.native.prevent="importFanan('ads')">导入点位</el-dropdown-item>
+                                        </el-dropdown-menu>
+                                    </el-dropdown>
                                 </span>
                                 <span>
                                     <el-button class="oneKeyPointBtn" @click="dialogOneKeyPoint = true">一键选点</el-button>
@@ -607,20 +616,22 @@
                                         </el-col>
                                     </el-row>
                                     <el-row class="car-title">
-                                        <el-col :span="9">
+                                        <el-col :span="10">
                                             <img src="../../assets/images/statistics.png" alt="" style="vertical-align: text-top;">
                                             社区:<span>{{shopMedia_ADNum.resNum}}</span>
-                                            (选1面:<span>{{shopMedia_ADNum.oneNum}}</span>&nbsp;&nbsp;
-                                            选2面:<span>{{shopMedia_ADNum.twoNum}}</span>&nbsp;&nbsp;
+                                            (选1面:<span>{{shopMedia_ADNum.oneNum}}</span>
+                                            选2面:<span>{{shopMedia_ADNum.twoNum}}</span>
                                             选3面:<span>{{shopMedia_ADNum.threeNum}}</span>)
                                         </el-col>
                                         <el-col :span="2">
                                             媒体:<span>{{shopMedia_ADNum.mediaNum}}</span>
                                         </el-col>
-                                        <el-col :span="6">
+                                        <el-col :span="5">
                                             点位:<span>{{shopMedia_ADNum.ADNum}}</span>
-                                            (A面:<span>{{mediaLevelNum.ANum}}</span>&nbsp;&nbsp;
-                                            B面:<span>{{mediaLevelNum.BNum}}</span>)
+                                            <template v-if="activeName == '1'">
+                                                (A面:<span>{{mediaLevelNum.ANum}}</span>
+                                                B面:<span>{{mediaLevelNum.BNum}}</span>)
+                                            </template>
                                         </el-col>
                                         <el-col :span="5">
                                             A级:<span>{{mediaLevelNum.ALevel}}</span>
@@ -957,11 +968,11 @@
         <!-- 导入方案弹出框 -->
         <el-dialog
             class="import_fanan"
-            title="选点导入"
+            :title="importType=='1'?'小区导入':'点位导入'"
             :visible.sync="isImport"
             top="20vh"
             width="40%">
-            <el-row>
+            <!-- <el-row>
                 <el-col :span="4" class="import_col"><span style="color:#FF0000;">*</span> 导入选点:</el-col>
                 <el-col :span="18">
                     <el-radio-group v-model="importType">
@@ -969,12 +980,12 @@
                         <el-radio label="2">小区</el-radio>
                     </el-radio-group>
                 </el-col>
-            </el-row>
+            </el-row> -->
             <el-row>
                 <el-col :span="4" class="import_col"> 下载模板:</el-col>
                 <el-col :span="18">
-                    <el-button icon="el-icon-download" size="small"><a :href ='this.qadnUrl + "/template.xlsx"' download="点位导入模板.xlsx">点位模板</a></el-button>
-                    <el-button icon="el-icon-download" size="small"><a :href ='this.qadnUrl + "/template.xlsx"' download="小区导入模板.xlsx">小区模板</a></el-button>
+                    <el-button icon="el-icon-download" size="small" v-if="importType=='1'"><a :href ='this.qadnUrl + "/template.xlsx"' download="小区导入模板.xlsx">小区模板</a></el-button>
+                    <el-button icon="el-icon-download" size="small" v-if="importType=='2'"><a :href ='this.qadnUrl + "/template.xlsx"' download="点位导入模板.xlsx">点位模板</a></el-button>
                 </el-col>
             </el-row>
             <el-row class="import_file">
@@ -1011,46 +1022,6 @@
                 <el-button size="small">取 消</el-button>
                 <el-button size="small" type="primary" @click="submitUpload()">确定上传</el-button>
             </span>
-            <!-- <p class="import_box">
-                <span>
-                    <b>下载模板:</b>
-                    <a href="/template.xlsx" class="el-icon-download aButton" download="方案导入模板.xlsx">下载文件</a>
-                </span>
-                <span class="import_file fileUploadSpan">
-                    <b>选择方案:</b>
-                    <el-upload
-                        class="upload_file"
-                        ref="upload"
-                        accept=".xlsx,.xls"
-                        :action="doUpload"
-                        :show-file-list="false"
-                        :http-request="uploadFile"
-                        :multiple="false">
-                        <el-button icon="el-icon-upload2">
-                            上传文件
-                        </el-button>
-                    </el-upload>
-                    <span style="color:#999;">支持扩展名: .xlsx .xls</span>
-                </span>
-            </p>
-            <p> 
-                <b>方案名称:</b>
-                <el-tag
-                    v-for="(tag, index) of fileNameTags"
-                    :key="index"
-                    type="info"
-                    closable
-                    :disable-transitions="false"
-                    @close="tabCloseFun(tag, index)">
-                    {{tag}}
-                </el-tag>
-            </p>
-            <p class="upload_box">
-                <el-button  size="small" type="primary" @click="submitUpload()">确定上传</el-button>
-            </p>
-            <p style="color: fuchsia;">
-                *提示,读取导入的点位需要时间,请等待,切勿重复上传
-            </p> -->
         </el-dialog>
         <!-- 导入excel点位部分失败弹框 -->
         <el-dialog
@@ -1058,41 +1029,45 @@
             title="导入excel的点位信息"
             top="20vh"
             width="80%">
-            <import-result :importData="importInfoData" @cancel="cancelImport" @confirmImport="confirmImport"></import-result>
-            <!-- <div class="car-title">
-                <i class="el-icon-info" style="color: #1890FF;"></i>
-                <h4>已成功导入点位<span>{{excelObj.successNum}}</span>个,问题点位<span>{{excelObj.failNum}}</span>个
-                    <span @click="downLoadExcel()">下载表格<i class="el-icon-download"></i></span>
-                </h4>
-            </div>
-            <el-table
-                border
-                :data="excelDataUpload"
-                style="width: 100%"
-            >
-                <el-table-column label="资源名称" min-width="140" prop="resName" >
-                </el-table-column>
-                <el-table-column prop="city" label="市" min-width="85" >
-                </el-table-column>
-                <el-table-column prop="origin" label="区" min-width="85" >
-                </el-table-column>
-                <el-table-column prop="mediaName" label="媒体名称" min-width="130" >
-                </el-table-column>
-                <el-table-column min-width="70" label="投放面">
-                    <template slot-scope="scope">
-                        <span>{{scope.row.asLab}}面</span>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="assetTag" label="资产编号" min-width="130" >
-                </el-table-column>
-                <el-table-column prop="schedules" label="排期" min-width="190">
-                    <template slot-scope="scope">
-                        <el-tooltip class="item" effect="dark" :content="scope.row.schedules" placement="bottom">
-                            <span>{{scope.row.schedules}}</span>
-                        </el-tooltip>
-                    </template>
-                </el-table-column>
-            </el-table> -->
+            <template v-if="importType =='1'">
+                <import-result :importData="importInfoData" @cancel="cancelImport" @confirmImport="confirmImport"></import-result>
+            </template>
+            <template v-if="importType == '2'">
+                <div class="car-title">
+                    <i class="el-icon-info" style="color: #1890FF;"></i>
+                    <h4>已成功导入点位<span>{{excelObj.successNum}}</span>个,问题点位<span>{{excelObj.failNum}}</span>个
+                        <span @click="downLoadExcel()">下载表格<i class="el-icon-download"></i></span>
+                    </h4>
+                </div>
+                <el-table
+                    border
+                    :data="excelDataUpload"
+                    style="width: 100%"
+                >
+                    <el-table-column label="资源名称" min-width="140" prop="resName" >
+                    </el-table-column>
+                    <el-table-column prop="city" label="市" min-width="85" >
+                    </el-table-column>
+                    <el-table-column prop="origin" label="区" min-width="85" >
+                    </el-table-column>
+                    <el-table-column prop="mediaName" label="媒体名称" min-width="130" >
+                    </el-table-column>
+                    <el-table-column min-width="70" label="投放面">
+                        <template slot-scope="scope">
+                            <span>{{scope.row.asLab}}面</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="assetTag" label="资产编号" min-width="130" >
+                    </el-table-column>
+                    <el-table-column prop="schedules" label="排期" min-width="190">
+                        <template slot-scope="scope">
+                            <el-tooltip class="item" effect="dark" :content="scope.row.schedules" placement="bottom">
+                                <span>{{scope.row.schedules}}</span>
+                            </el-tooltip>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </template>
         </el-dialog>
     </div>
 </template>
@@ -1193,7 +1168,6 @@
                 isShowHalfYear: false,
                 // doUpload: 'https://beta.qinlinad.com/advertisement/AnalysisExcelAdBaseInfo',
                 doUpload: '/advertisement/AnalysisExcelAdBaseInfo',
-                importType: '1',
                 // 空位导出url
                 downUrl: '',
                 // 是否显示空位导出弹出框
@@ -1383,6 +1357,8 @@
                 getMapLoading: '',              // 获取地图选点时的loading
                 // 是否导入方案
                 isImport: false,
+                // importType: '1',
+                importType: '',
                 // 文件名称列表
                 fileNameTags:[],
                 // 当前上传文件的数据- 表格
@@ -1903,7 +1879,12 @@
                 return aDate - bDate;
             },
             // 导入方案弹出框
-            importFanan(){
+            importFanan(type){
+                if(type == 'res'){
+                    this.importType = '1';
+                }else{
+                    this.importType = '2';
+                }
                 this.isImport = true;
                 this.fileData = [];
                 this.fileNameTags = [];
@@ -1925,40 +1906,65 @@
             },
             // 确认上传
             submitUpload(){
-                this.showUploadFail = true;
-                // return;
                 if(this.fileData.length){
                     let formData = new FormData();
                     formData.append('file', this.fileData[0]);
                     formData.append('rids', this.planForm.throwCity.join(','));
-                    // formData.append('suid', this.BDData.uid);
-                    // 上传文件
-                    api.postUpload_file(this.doUpload+'?uid='+this.sessionData.uID+'&token='+
-                        this.sessionData.token+'&suid='+this.BDData.uid, formData).then(res =>{
-                        if(!res.data.SysCode){
-                            this.showUploadFail = true;
-                            let importInfo = res.data;
-                            this.importInfoData = res.data;
-                            if(importInfo.successList.length){
-                                this.setShopDataByImport(importInfo.successList);
-                            }
-                            if(importInfo.errorList.length){
-                                this.excelDataUpload = this.checkPointFun(importInfo);
-                                this.excelObj = {
-                                    successNum: importInfo.successList.length,
-                                    failNum: importInfo.errorList.length
-                                };
-                                // this.showUploadFail = true;
-                            }
-                        }else if(res.data.SysCode == 100302){
-                            this.loginTimeout();
-                        }else{
-                            this.messageFun('warning',res.data.MSG)
-                        }
-                    }).catch(res =>{
-                        console.log(res);
-                    });
+                    formData.append('excludedApId', this.activeAdPlan);
+                    if(this.importType == '2'){
+                        this.adsImport(formData);
+                    }else{
+                        this.resImport(formData);
+                    }
+                }else{
+                    this.messageFun('warning', '请先上传文件');
                 }
+            },
+            // 点位导入
+            adsImport(formData){
+                // 上传文件
+                api.postUpload_file(this.doUpload+'?uid='+this.sessionData.uID+'&token='+
+                    this.sessionData.token+'&suid='+this.BDData.uid, formData).then(res =>{
+                    if(!res.data.SysCode){
+                        let importInfo = res.data;
+                        this.importInfoData = res.data;
+                        if(importInfo.successList.length){
+                            this.setShopDataByImport(importInfo.successList);
+                        }
+                        if(importInfo.errorList.length){
+                            this.excelDataUpload = this.checkPointFun(importInfo);
+                            this.excelObj = {
+                                successNum: importInfo.successList.length,
+                                failNum: importInfo.errorList.length
+                            };
+                            this.showUploadFail = true;
+                        }
+                    }else if(res.data.SysCode == 100302){
+                        this.loginTimeout();
+                    }else{
+                        this.messageFun('warning',res.data.MSG)
+                    }
+                }).catch(res =>{
+                    console.log(res);
+                });
+            },
+            // 小区导入
+            resImport(formData){
+                // 上传文件
+                api.postUpload_file(this.doUpload+'?uid='+this.sessionData.uID+'&token='+
+                    this.sessionData.token+'&suid='+this.BDData.uid, formData).then(res =>{
+                    if(!res.data.SysCode){
+                        let importInfo = res.data;
+                        this.importInfoData = importInfo;
+                        this.showUploadFail = true;
+                    }else if(res.data.SysCode == 100302){
+                        this.loginTimeout();
+                    }else{
+                        this.messageFun('warning',res.data.MSG)
+                    }
+                }).catch(res =>{
+                    console.log(res);
+                });
             },
             // 取消导入
             cancelImport(){
@@ -1977,6 +1983,7 @@
                     }
                 }
                 this.isImport = false;
+                this.dialogTableVisible = true;
                 console.log('inport----data----shoplist', this.shopingList);
             },
             // 根据导入方案返回的数据,设置购物车所需要的数据格式

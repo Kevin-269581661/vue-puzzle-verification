@@ -393,7 +393,7 @@ export default {
                             let returnobj = this.formatDataAds(resinfo.data, date);
                             console.log('returnobj-----', returnobj);
                             let head = ['资源名称', '省份', '城市', '区域', '商圈', '媒体名称', '媒介载体', '资产编号', '投放面', '媒体等级', '广告限制', '点位备注', '广告尺寸/图片尺寸', '画面尺寸/灯箱尺寸', '详细地址', '楼盘类型', '楼盘价格', '楼栋数量', '入住时间', '小区户数', '人流量', '车位数', '车流量', '空闲日期'];
-                            let filename = returnobj.city.join('-')+'-'+ info.startTime+'~'+info.endTime+'空位表';
+                            let filename = returnobj.city.join('-')+'-'+ date +'空位表';
                             sheetExcel.toDownload(head, returnobj.arr, filename);
                         }else{
                             this.messageFun('warning','此城市在此时间段内没有点位')                            

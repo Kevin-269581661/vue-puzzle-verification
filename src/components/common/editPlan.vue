@@ -12,7 +12,7 @@
                     <div>
                         <div class="search-nav">
                             <div class="search-wrap">
-                                <div style="margin-right: 0">
+                                <div style="margin-right: 0" v-show="isOccupied">
                                     <el-select v-model="activeSelect" placeholder="请选择" class="type-select">
                                         <el-option label="方案排斥" value="1"></el-option>
                                     </el-select>

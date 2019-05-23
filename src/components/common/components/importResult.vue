@@ -2,7 +2,7 @@
     <div class="import_result">
         <div class="car-title">
             <i class="el-icon-info" style="color: #1890FF;"></i>
-            <h4>已成功导入小区<span>{{successList.length}}</span>个,问题小区<span>{{errorList.length}}</span>个
+            <h4>已成功导入小区<span>{{successRes}}</span>个,问题小区<span>{{errorRes}}</span>个
                 <span @click="downLoadExcel()">下载失败小区数据<i class="el-icon-download"></i></span>
             </h4>
         </div>
@@ -272,7 +272,9 @@
                 </el-table-column>
                 <el-table-column prop="origin" label="区" min-width="85" >
                 </el-table-column>
-                <el-table-column prop="mediaName" label="媒体名称" min-width="130" >
+                <el-table-column prop="resAddress" label="详细地址" min-width="85" >
+                </el-table-column>
+                <!-- <el-table-column prop="mediaName" label="媒体名称" min-width="130" >
                 </el-table-column>
                 <el-table-column min-width="70" label="投放面">
                     <template slot-scope="scope">
@@ -280,7 +282,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column prop="assetTag" label="资产编号" min-width="130" >
-                </el-table-column>
+                </el-table-column> -->
                 <el-table-column prop="schedules" label="排期" min-width="190">
                     <template slot-scope="scope">
                         <el-tooltip class="item" effect="dark" :content="scope.row.schedules" placement="bottom">
@@ -300,6 +302,8 @@
 <script>
 // 时间格式化
 import timeFormat from "../../../commonFun/timeFormat.js";
+// excel导出
+import sheetExcel from "../../../commonFun/sheetExcel.js";
 
 export default {
     props:{
@@ -307,166 +311,27 @@ export default {
             type: Object,
             default: {}
         },
+        name:{
+            type: String,
+            default: '方案名称'
+        },
     },
     data(){
         return{
-            copyData: {},
+            // copyData: {},
+            // 成功小区
             successList: [],
-            // errorList: [],
-            // successList: [
-            //     {
-            //         adSize: "1480*885",
-            //         adlInfo: null,
-            //         asIDs: "677115,677116",
-            //         asLabs: "A,B",
-            //         asName: "北京亲邻众联科技有限公司",
-            //         asPrice: 380000,
-            //         asStates: "1,1",
-            //         asrID: "1",
-            //         assetTag: "NBJ01826",
-            //         cType: "高端住宅",
-            //         carFlow: null,
-            //         chDay: "2003年",
-            //         connID: null,
-            //         dNum: 11,
-            //         fNum: 6,
-            //         grade: "C",
-            //         hNum: 2000,
-            //         hPrice: 10000000,
-            //         industryInfos: null,
-            //         mID: 110101000018,
-            //         mRemark: null,
-            //         mState: 1,
-            //         mTitle: "10号楼南门西",
-            //         mVehicle: "广告门",
-            //         notPush: null,
-            //         parkSpaceNum: null,
-            //         peopleFlow: null,
-            //         picSize: null,
-            //         rName: "东城区",
-            //         resAddress: "北京市东城区西花市南里东区",
-            //         resID: 38366,
-            //         resMapID: 3199750,
-            //         resName: "新景家园",
-            //         resType: 1,
-            //         tradingArea: "崇文门片区",
-            //     },
-            //     {
-            //         adSize: "1480*885",
-            //         adlInfo: null,
-            //         asIDs: "677131",
-            //         asLabs: "A",
-            //         asName: "北京亲邻众联科技有限公司",
-            //         asPrice: 380000,
-            //         asStates: "1",
-            //         asrID: "1",
-            //         assetTag: "NBJ01830",
-            //         cType: "高端住宅",
-            //         carFlow: null,
-            //         chDay: "2003年",
-            //         connID: null,
-            //         dNum: 11,
-            //         fNum: 6,
-            //         grade: "C",
-            //         hNum: 2000,
-            //         hPrice: 10000000,
-            //         industryInfos: null,
-            //         mID: 110101000026,
-            //         mRemark: null,
-            //         mState: 1,
-            //         mTitle: "西九东门",
-            //         mVehicle: "广告门",
-            //         notPush: null,
-            //         parkSpaceNum: null,
-            //         peopleFlow: null,
-            //         picSize: null,
-            //         rName: "东城区",
-            //         resAddress: "北京市东城区西花市南里东区",
-            //         resID: 38366,
-            //         resMapID: 3199750,
-            //         resName: "新景家园",
-            //         resType: 1,
-            //         tradingArea: "崇文门片区",
-            //     },
-            //     {
-            //         adSize: null,
-            //         adlInfo: null,
-            //         asIDs: "709536,709537,709538",
-            //         asLabs: "A,B,C",
-            //         asName: "北京亲邻众联科技有限公司",
-            //         asPrice: 980000,
-            //         asStates: "1,1,1",
-            //         asrID: "1",
-            //         assetTag: "AS54485748784",
-            //         cType: "中端住宅",
-            //         carFlow: 800,
-            //         chDay: "2005",
-            //         connID: null,
-            //         dNum: 3,
-            //         fNum: 6,
-            //         grade: null,
-            //         hNum: 50,
-            //         hPrice: 8885900,
-            //         industryInfos: null,
-            //         mID: 110101000077,
-            //         mRemark: "AS54485748784",
-            //         mState: 1,
-            //         mTitle: "道闸+3",
-            //         mVehicle: "道闸",
-            //         notPush: "健身、恶俗医疗",
-            //         parkSpaceNum: 600,
-            //         peopleFlow: 2000,
-            //         picSize: "2558*2558",
-            //         rName: "东城区",
-            //         resAddress: "中山大道55555号",
-            //         resID: 45896,
-            //         resMapID: 3201094,
-            //         resName: "测试道闸资源",
-            //         resType: 1,
-            //         tradingArea: "三元里",
-            //     },
-            //     {
-            //         adSize: null,
-            //         adlInfo: null,
-            //         asIDs: "709539,709540,709541",
-            //         asLabs: "A,B,C",
-            //         asName: "北京亲邻众联科技有限公司",
-            //         asPrice: 980000,
-            //         asStates: "1,1,1",
-            //         asrID: "1",
-            //         assetTag: "AS54485748784",
-            //         cType: "中端住宅",
-            //         carFlow: 800,
-            //         chDay: "2005",
-            //         connID: null,
-            //         dNum: 3,
-            //         fNum: 6,
-            //         grade: null,
-            //         hNum: 50,
-            //         hPrice: 8885900,
-            //         industryInfos: null,
-            //         mID: 110101000078,
-            //         mRemark: "",
-            //         mState: 1,
-            //         mTitle: "道闸+4",
-            //         mVehicle: "道闸",
-            //         notPush: "健身、恶俗医疗",
-            //         parkSpaceNum: 600,
-            //         peopleFlow: 2000,
-            //         picSize: "1558*1854",
-            //         rName: "东城区",
-            //         resAddress: "中山大道55555号",
-            //         resID: 45896,
-            //         resMapID: 3201094,
-            //         resName: "测试道闸资源",
-            //         resType: 1,
-            //         tradingArea: "三元里",
-            //     }
-            // ],
+            // 失败小区数据
             errorList: [],
+            // 勾选的点位数据
             shopList: [],
+            // 是否勾选
             isAll: false,
+            // 成功小区还是失败小区
             activeType: 1,
+            // 成功失败小区个数
+            successRes: 0,
+            errorRes: 0,
         }
     },
     computed:{
@@ -496,8 +361,12 @@ export default {
         // this.successList = this.setTableData(this.successList);
         // console.log('success----', this.successList);
         // console.log(this.importData, 'this.importData-----');
-        this.copyData = JSON.parse(JSON.stringify(this.importData));
-        this.successList = this.setTableData(this.copyData.successList);
+        let copyData = JSON.parse(JSON.stringify(this.importData));
+        this.successList = this.setTableData(copyData.successList);
+        this.errorList = this.checkPointFun(copyData.errorList);
+        this.successRes = copyData.successSize;
+        this.errorRes = copyData.errorSize;
+        console.log(this.importData, 'this.importData-----');        
     },
     // watch:{
     //     importData(){
@@ -512,6 +381,7 @@ export default {
         },
         // 勾选表格数据格式
         setTableData(arr){
+            console.log('arr---', arr);
             let result = [];
             for(let key of arr) {
                 let adObj = {
@@ -534,7 +404,8 @@ export default {
                     carFlow: key.carFlow,
                     peopleFlow : key.peopleFlow,
                     buildNum: key.fNum,
-                    schedules: key.pbStar + '-' + key.pbEnd,
+                    // schedules: key.pbStar + '-' + key.pbEnd,
+                    schedules: key.startTime + '-' + key.endTime,
                     tradingArea: key.tradingArea || '',
                     assetTag: key.assetTag || '',
                     liveYear: key.chDay,
@@ -550,7 +421,7 @@ export default {
                     mediaLevel: key.grade || '',        // 媒体等级
                     asName: key.asName,                 // 点位所属公司名称
                     asrID: key.asrID,                   // 所属公司id
-                    checkBox: {A: false, B: false,ABC:false},
+                    checkBox: {A: false, B: false, ABC:false},
                     box: {A: false, B: false},
                 }
                 // 点位价格
@@ -818,7 +689,7 @@ export default {
         downLoadExcel(){
             let arr = this.questionPoint(this.errorList);
             let allHead = ['资源名称',	'市', '区',	'详细地址', '投放排期'];
-            sheetExcel.toDownload(allHead, arr, this.planForm.planName+'问题点位表');
+            sheetExcel.toDownload(allHead, arr, this.name+'问题点位表');
         },
         // 导入excel后台返回的问题点位
         questionPoint(arr){
@@ -833,10 +704,7 @@ export default {
                     resName: data.resName,
                     city: data.city,
                     origin: data.origin,
-                    mVehicle: data.mVehicle,
-                    mediaName: data.mediaName,
-                    asLab: data.asLab,
-                    assetTag: data.assetTag,
+                    resAddress: data.resAddress,
                     schedules: data.schedules,
                 };
                 resultarr[0].showList.push(obj);

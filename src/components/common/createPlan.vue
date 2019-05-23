@@ -984,8 +984,8 @@
             <el-row>
                 <el-col :span="4" class="import_col"> 下载模板:</el-col>
                 <el-col :span="18">
-                    <el-button icon="el-icon-download" size="small" v-if="importType=='1'"><a :href ='this.qadnUrl + "/template.xlsx"' download="小区导入模板.xlsx">小区模板</a></el-button>
-                    <el-button icon="el-icon-download" size="small" v-if="importType=='2'"><a :href ='this.qadnUrl + "/template.xlsx"' download="点位导入模板.xlsx">点位模板</a></el-button>
+                    <el-button icon="el-icon-download" size="small" v-if="importType=='1'"><a :href ='this.qadnUrl + "/importTemplate/resTemplate.xlsx"' download="小区导入模板.xlsx">小区模板</a></el-button>
+                    <el-button icon="el-icon-download" size="small" v-if="importType=='2'"><a :href ='this.qadnUrl + "/importTemplate/adsTemplate.xlsx"' download="点位导入模板.xlsx">点位模板</a></el-button>
                 </el-col>
             </el-row>
             <el-row class="import_file">
@@ -1030,7 +1030,7 @@
             top="20vh"
             width="80%">
             <template v-if="importType =='1'">
-                <import-result :importData="importInfoData" @cancel="cancelImport" @confirmImport="confirmImport"></import-result>
+                <import-result :importData="importInfoData" :name="planForm.planName" @cancel="cancelImport" @confirmImport="confirmImport"></import-result>
             </template>
             <template v-if="importType == '2'">
                 <div class="car-title">
@@ -1955,8 +1955,8 @@
                 // 上传文件
                 api.postUpload_file(this.doUpload+'?uid='+this.sessionData.uID+'&token='+
                     this.sessionData.token+'&suid='+this.BDData.uid, formData).then(res =>{
-                    if(!res.data.SysCode){
-                        let importInfo = res.data;
+                    if(res.data.SysCode == 200200){
+                        let importInfo = res.data.data;
                         this.importInfoData = importInfo;
                         this.showUploadFail = true;
                     }else if(res.data.SysCode == 100302){
@@ -1985,7 +1985,8 @@
                     }
                 }
                 this.isImport = false;
-                this.dialogTableVisible = true;
+                // this.dialogTableVisible = true;
+                this.dialogVisible();
                 console.log('inport----data----shoplist', this.shopingList);
             },
             // 根据导入方案返回的数据,设置购物车所需要的数据格式

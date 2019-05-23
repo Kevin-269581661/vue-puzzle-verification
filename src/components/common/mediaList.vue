@@ -246,8 +246,8 @@
                     </li>
                     <li>
                         <span>下载模板：</span>
-                        <a :href ='this.qadnUrl + "/mediaTemplate/adDoor.xlsx"' class="el-icon-download aButton" download="广告门导入模板.xlsx">广告门模块</a>
-                        <a :href ='this.qadnUrl + "/mediaTemplate/roadGate.xls"' class="el-icon-download aButton" download="道闸导入模板.xls">道闸模块</a>
+                        <a :href ='this.qadnUrl + "/importTemplate/adDoor.xlsx"' class="el-icon-download aButton" download="广告门导入模板.xlsx">广告门模块</a>
+                        <a :href ='this.qadnUrl + "/importTemplate/roadGate.xls"' class="el-icon-download aButton" download="道闸导入模板.xls">道闸模块</a>
                     </li>
                     <li>
                         <span>上传文件：</span>

@@ -1882,8 +1882,10 @@
             importFanan(type){
                 if(type == 'res'){
                     this.importType = '1';
+                    this.doUpload = '/advertisement/AdPlanResImport'
                 }else{
                     this.importType = '2';
+                    this.doUpload = '/advertisement/AnalysisExcelAdBaseInfo';
                 }
                 this.isImport = true;
                 this.fileData = [];

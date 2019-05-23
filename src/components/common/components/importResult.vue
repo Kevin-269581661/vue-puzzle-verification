@@ -807,10 +807,7 @@ export default {
                     resName: data.resName,
                     city: data.city,
                     origin: data.district,
-                    mVehicle: data.mVehicle,
-                    mediaName: data.mTitle,
-                    asLab: data.asLab,
-                    assetTag: data.assetTag,
+                    resAddress: data.resAddress,
                     schedules: data.date,
                 };
                 resultarr.push(item);
@@ -819,8 +816,8 @@ export default {
         },
         // 导出有问题的点
         downLoadExcel(){
-            let arr = this.questionPoint(this.excelDataUpload);
-            let allHead = ['资源名称',	'市', '区',	'媒介载体', '媒体名称', '投放面', '资产编号', '投放排期'];
+            let arr = this.questionPoint(this.errorList);
+            let allHead = ['资源名称',	'市', '区',	'详细地址', '投放排期'];
             sheetExcel.toDownload(allHead, arr, this.planForm.planName+'问题点位表');
         },
         // 导入excel后台返回的问题点位

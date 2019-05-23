@@ -6043,7 +6043,7 @@
 
     .data-tab span:first-child {
         position: relative;
-        top: 5px;
+        top: 0;
     }
 
     .block {
@@ -6746,7 +6746,7 @@
 
     /*.el-table .el-table__header-wrapper thead.has-gutter tr th.el-table_5_column_31{*/
         /*width: 140px;*/
-    /*}*/
+    /*}*/GetSurvey
     .el-table .el-table__header-wrapper thead.has-gutter tr th.el-table_5_column_31 .cell{
         width: 140px;
     }

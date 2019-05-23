@@ -2701,7 +2701,8 @@
                         }else{
                             console.log('非全国',this.currCity)
                             // 表头上刊率
-                            headData.SK = dataArr.publicationRateInfo[0].publishRate * 100
+                            headData.SK = dataArr.publicationRateInfo[0].publishRate * 100 ?
+                                (dataArr.publicationRateInfo[0].publishRate * 100).toFixed(2) : 0
                             //环状图表(上刊率)
                             this.setHeadDataSKPie(dataArr.publicationRateInfo[0].cityList[0].areaList.sort(this.compareSort('publishRate')))
                             // 环状图表 (社区、广告门、点位)

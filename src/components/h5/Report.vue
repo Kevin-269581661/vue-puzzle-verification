@@ -44,9 +44,9 @@
                                     <el-button @click="getPTT()"  class="down_btn">导出PPT</el-button>
                                     <el-button @click="getPDF()"  class="down_btn">导出PDF</el-button>
                                 </span>
-                                <!-- <p class="search_p">
-                                    *备注：若订单点位数量过多，请点击  “导出pptx”  按钮 ，导出的 “pptx” 文件使用正版软件打开后可再另存为“ppt”格式即可发给客户
-                                </p> -->
+                                <p class="search_p">
+                                    <!-- *备注：若订单点位数量过多，请点击  “导出pptx”  按钮 ，导出的 “pptx” 文件使用正版软件打开后可再另存为“ppt”格式即可发给客户 -->
+                                </p>
                             </div>
                             <div class="table_wrap">
                                 <el-table border :data="currPutDetail" style="width: 100%" :default-sort="{prop: 'recName', order: 'descending'}" v-loading="loading" element-loading-text="玩命加载中" element-loading-spinner="el-icon-loading">

@@ -3383,6 +3383,9 @@
                 }else if(currTab == 2){
                     arr = arr;
                 }
+                arr.sort((a, b)=>{
+                    return a.value - b.value;
+                });
                 this.eventList = arr;
             },
             // 事件选择

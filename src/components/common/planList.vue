@@ -67,9 +67,9 @@
                         <span>
                             <el-button plain v-if="showNewBtn" @click="addOne()">新建</el-button>
                         </span>
-                        <span>
+                        <!-- <span>
                             <el-button plain v-if="showNewBtn" @click="isOpenDownload=true">导空位</el-button>
-                        </span>
+                        </span> -->
                     </div>
                 </el-row>
                 <div class="table_wrap">

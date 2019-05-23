@@ -1912,7 +1912,7 @@
                     let formData = new FormData();
                     formData.append('file', this.fileData[0]);
                     formData.append('rids', this.planForm.throwCity.join(','));
-                    formData.append('excludedApId', this.activeAdPlan);
+                    // formData.append('excludedApId', this.activeAdPlan);
                     if(this.importType == '2'){
                         this.adsImport(formData);
                     }else{

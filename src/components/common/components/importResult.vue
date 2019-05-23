@@ -391,7 +391,7 @@ export default {
                     asIDs: key.asIDs,
                     asLabs: key.asLabs,
                     resName: key.resName,
-                    city: key.rName,
+                    city: key.city,
                     rid: key.rID,
                     origin: key.rName,
                     buildType: key.cType,

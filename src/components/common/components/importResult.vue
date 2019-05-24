@@ -363,12 +363,13 @@ export default {
     },
     methods:{
         initData(){
+            console.log(this.importData, 'this.importData----da-'); 
             this.successList = [];
             this.errorList = [];
             this.shopList = [];
             let copyData = JSON.parse(JSON.stringify(this.importData));
-            this.successList = this.setTableData(copyData.successList);
-            this.errorList = this.checkPointFun(copyData.errorList);
+            this.successList = copyData.successList?this.setTableData(copyData.successList):[];
+            this.errorList = copyData.errorList?this.checkPointFun(copyData.errorList):[];
             this.successRes = copyData.successSize;
             this.errorRes = copyData.errorSize;
             this.isAll = false;

@@ -618,7 +618,7 @@
 
                                         <el-col :span="16" style="text-align:right;">
                                             <span class="button_point">
-                                                <el-button @click="getMapADList" class="mapBtn" :disabled="mapBtn">获取地图选点</el-button>
+                                                <el-button @click="getMapADList" size="small" class="mapBtn" :disabled="mapBtn">获取地图选点</el-button>
                                             </span>
                                             <el-select v-model="eventType" placeholder="快捷配点" filterable @change="changeEvent">
                                                 <el-option v-for="item of eventList" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -985,15 +985,6 @@
             :visible.sync="isImport"
             top="20vh"
             width="40%">
-            <!-- <el-row>
-                <el-col :span="4" class="import_col"><span style="color:#FF0000;">*</span> 导入选点:</el-col>
-                <el-col :span="18">
-                    <el-radio-group v-model="importType">
-                        <el-radio label="1">点位</el-radio>
-                        <el-radio label="2">小区</el-radio>
-                    </el-radio-group>
-                </el-col>
-            </el-row> -->
             <el-row>
                 <el-col :span="4" class="import_col"> 下载模板:</el-col>
                 <el-col :span="18">
@@ -1909,6 +1900,7 @@
                 this.isImport = true;
                 this.fileData = [];
                 this.fileNameTags = [];
+                this.importInfoData = {};
             },
             // 自定义上传
             uploadFile(params){
@@ -5036,10 +5028,10 @@
     }
 
     .mapBtn {
-        width: 110px;
+        min-width: 110px;
         text-align: center;
         display: inline-block;
-        padding: 3px;
+        /* padding: 3px; */
         border: 1px solid #D9D9D9;
         border-radius: 4px;
         font-family: PingFangSC-Regular;
@@ -5661,7 +5653,7 @@
     }
 
     /deep/ .car-list .el-button {
-        width: 100px;
+        /* width: 100px; */
     }
 
     /*购物车列表*/

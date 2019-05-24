@@ -1909,30 +1909,32 @@
             // 确认上传
             submitUpload(){
                 if(this.fileData.length){
+                    let rids = this.planForm.throwCity.join(',');
+                    let sess = this.sessionData;
+                    let info = `?uid=${sess.uID}&token=${
+                    sess.token}&suId=${this.BDData.uid}&rids=${rids}&excludedApId=${this.activeAdPlan?this.activeAdPlan:''}`;
                     let formData = new FormData();
                     formData.append('file', this.fileData[0]);
-                    formData.append('rids', this.planForm.throwCity.join(','));
-                    // formData.append('excludedApId', this.activeAdPlan);
                     if(this.importType == '2'){
-                        this.adsImport(formData);
+                        this.adsImport(formData, info);
                     }else{
-                        this.resImport(formData);
+                        this.resImport(formData, info);
                     }
                 }else{
                     this.messageFun('warning', '请先上传文件');
                 }
             },
             // 点位导入
-            adsImport(formData){
+            adsImport(formData, info){
                 // 上传文件
-                api.postUpload_file(this.doUpload+'?uid='+this.sessionData.uID+'&token='+
-                    this.sessionData.token+'&suid='+this.BDData.uid, formData).then(res =>{
+                api.postUpload_file(this.doUpload+info, formData).then(res =>{
                     if(!res.data.SysCode){
                         let importInfo = res.data;
                         this.importInfoData = res.data;
                         if(importInfo.successList.length){
                             this.setShopDataByImport(importInfo.successList);
                         }
+                        console.log('importInfo.errorList.length', importInfo.errorList.length);
                         if(importInfo.errorList.length){
                             this.excelDataUpload = this.checkPointFun(importInfo);
                             this.excelObj = {
@@ -1951,10 +1953,9 @@
                 });
             },
             // 小区导入
-            resImport(formData){
+            resImport(formData, info){
                 // 上传文件
-                api.postUpload_file(this.doUpload+'?uid='+this.sessionData.uID+'&token='+
-                    this.sessionData.token+'&suid='+this.BDData.uid, formData).then(res =>{
+                api.postUpload_file(this.doUpload+info, formData).then(res =>{
                     if(res.data.SysCode == 200200){
                         let importInfo = res.data.data;
                         this.importInfoData = importInfo;
@@ -2061,6 +2062,7 @@
                 }
                 console.log('this.shopingList1----', this.shopingList);
                 Message.success('成功导入'+arr.length+'条数据');
+                this.typeShopList = this.getTypeList();
                 this.isImport = false;
                 this.computeMedia_AD()
                 this.judgeByselect()
@@ -3925,7 +3927,7 @@
                         resAsidArr.push(obj);
                     }
                 }
-                // console.log('resAsidArr------', resAsidArr);
+                console.log('resAsidArr------', resAsidArr);
                 this.shopMedia_ADNum.oneNum = this.getResAsidNum(1, resAsidArr);
                 this.shopMedia_ADNum.twoNum = this.getResAsidNum(2, resAsidArr);
                 this.shopMedia_ADNum.threeNum = this.getResAsidNum(3, resAsidArr);

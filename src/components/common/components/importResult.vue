@@ -143,7 +143,7 @@
         </el-tabs> -->
 
         <p>
-            <el-radio-group v-model="activeType" size="small" @change="handleType" class="marin10">
+            <el-radio-group v-model="activeType" size="small" class="marin10">
                 <el-radio-button :label="1">成功小区</el-radio-button>
                 <el-radio-button :label="2">失败小区</el-radio-button>
             </el-radio-group>
@@ -318,7 +318,6 @@ export default {
     },
     data(){
         return{
-            // copyData: {},
             // 成功小区
             successList: [],
             // 失败小区数据
@@ -355,29 +354,25 @@ export default {
         },
     },
     created(){
-        // this.successList = this.importData.successList;
-        // this.errorList = this.importData.successList;
-        // console.log('successList---errror', this.successList, this.errorList);
-        // this.successList = this.setTableData(this.successList);
-        // console.log('success----', this.successList);
-        // console.log(this.importData, 'this.importData-----');
-        let copyData = JSON.parse(JSON.stringify(this.importData));
-        this.successList = this.setTableData(copyData.successList);
-        this.errorList = this.checkPointFun(copyData.errorList);
-        this.successRes = copyData.successSize;
-        this.errorRes = copyData.errorSize;
-        console.log(this.importData, 'this.importData-----');        
+        this.initData();       
     },
-    // watch:{
-    //     importData(){
-    //         this.copyData = JSON.parse(JSON.stringify(this.importData));
-    //         this.successList = this.setTableData(this.copyData.successList);
-    //         console.log(this.importData, 'this.importData-----');
-    //     },
-    // },
+    watch:{
+        importData(){
+            this.initData();  
+        },
+    },
     methods:{
-        handleType(){
-
+        initData(){
+            this.successList = [];
+            this.errorList = [];
+            this.shopList = [];
+            let copyData = JSON.parse(JSON.stringify(this.importData));
+            this.successList = this.setTableData(copyData.successList);
+            this.errorList = this.checkPointFun(copyData.errorList);
+            this.successRes = copyData.successSize;
+            this.errorRes = copyData.errorSize;
+            this.isAll = false;
+            console.log(this.importData, 'this.importData-----'); 
         },
         // 勾选表格数据格式
         setTableData(arr){
@@ -404,8 +399,8 @@ export default {
                     carFlow: key.carFlow,
                     peopleFlow : key.peopleFlow,
                     buildNum: key.fNum,
-                    // schedules: key.pbStar + '-' + key.pbEnd,
-                    schedules: key.startTime + '-' + key.endTime,
+                    schedules: key.pbStar + '-' + key.pbEnd,
+                    // schedules: key.startTime + '-' + key.endTime,
                     tradingArea: key.tradingArea || '',
                     assetTag: key.assetTag || '',
                     liveYear: key.chDay,
@@ -426,28 +421,28 @@ export default {
                 }
                 // 点位价格
                 if (key.mVehicle === '道闸') {
-                    adObj.adPrice = key.asPrice / 100
+                    adObj.adPrice = key.asPrice / 100;
                 } else {
                     if (key.asPrice) {
-                        adObj.adPrice = key.asPrice / 700
+                        adObj.adPrice = key.asPrice / 700;
                     } else {
-                        adObj.adPrice = 0
+                        adObj.adPrice = 0;
                     }
                 }
                 // A/B面
                 if (key.asLabs.indexOf('A') === -1) {
-                    adObj.box.A = true
+                    adObj.box.A = true;
                 }
                 if (key.asLabs.indexOf('B') === -1) {
-                    adObj.box.B = true
+                    adObj.box.B = true;
                 }
                 if (key.adlInfo !== null && key.adlInfo !== undefined && key.adlInfo.length > 0) {
-                    let arr = []
+                    let arr = [];
                     for (let akey of key.adlInfo) {
                         if(akey.asState){
                             arr.push({
                                 asState: akey.asState
-                            })
+                            });
                         }else{
                             let star = timeFormat.toDate(akey.lStar, '/');
                             let end = timeFormat.toDate(akey.lEnd, '/');
@@ -455,14 +450,14 @@ export default {
                                 beOccupieApName: akey.apName,
                                 schedules: star + '-' + end,
                                 lState: akey.lState,
-                            })
+                            });
                         }
                     }
                     adObj.adlInfo = arr;
                 } else {
                     adObj.adlInfo = '';
                 }
-                result.push(adObj)
+                result.push(adObj);
             }
             return result;
         },

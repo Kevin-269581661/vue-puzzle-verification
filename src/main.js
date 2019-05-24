@@ -41,11 +41,11 @@ instance.defaults.timeout = 2500;*/
 // 开发环境
 // axios.defaults.baseURL = 'http://192.168.1.248/';
 // 灰度环境
-axios.defaults.baseURL = 'http://111.230.241.112/';
+// axios.defaults.baseURL = 'http://111.230.241.112/';
 // 测试环境
 // axios.defaults.baseURL = 'https://beta.qinlinad.com/';
 // 正式环境
-// axios.defaults.baseURL = 'https://www.qinlinad.com/';
+axios.defaults.baseURL = 'https://www.qinlinad.com/';
 
 Vue.prototype.Map = '/MapAPI'
 Vue.prototype.QZhike ='/QZhike';
@@ -65,11 +65,11 @@ Vue.prototype.wuYouMap = 'https://www.dituwuyou.com/qinlin/embed?mid=FPcrNHyq3xX
 // 开发环境
 // Vue.prototype.qadnUrl = 'http://192.168.1.248'
 // 灰度环境
-Vue.prototype.qadnUrl = 'http://111.230.241.112/'
+// Vue.prototype.qadnUrl = 'http://111.230.241.112'
 // 测试环境
 // Vue.prototype.qadnUrl = 'https://beta.qinlinad.com'
 // 正式环境
-// Vue.prototype.qadnUrl = 'https://www.qinlinad.com'
+Vue.prototype.qadnUrl = 'https://www.qinlinad.com'
 Vue.use(ElementUI);
 
 

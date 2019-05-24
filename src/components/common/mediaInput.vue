@@ -108,7 +108,7 @@
                                     <span style="left: 15px">￥</span>
                                 </div>
                             </el-form-item>
-                            <el-form-item :label="rt_village?'楼盘类型':'写字楼类型'" prop="floorType">
+                            <el-form-item :label="rt_village?'楼盘类型':'写字楼类型'" prop="floorType" :class="rt_village ? '' : 'floor_house_item'">
                                 <el-select v-model="recForm.floorType" placeholder="">
                                     <el-option v-for="item in floorType"
                                                :key="item.value"
@@ -118,7 +118,7 @@
                                     </el-option>
                                 </el-select>
                             </el-form-item>
-                            <el-form-item :label="rt_village?'小区户数':'办公室数量'" prop="households">
+                            <el-form-item :label="rt_village?'小区户数':'办公室数量'" prop="households"  :class="rt_village ? '' : 'floor_house_item'">
                                 <el-input v-model="recForm.households" controls-position="right"
                                           :disabled="returnBool(FangJiaWangData.households)"></el-input>
                             </el-form-item>
@@ -1563,7 +1563,7 @@
                             mType: key.doorType,
                             mImg: key.mImg || '',
                             mVehicle: key.mediaType,
-                            mRemark: key.mediaRemark === '' ? '暂无备注' : key.mediaRemark,
+                            mRemark: key.mediaRemark, // key.mediaRemark === '' ? '暂无备注' : key.mediaRemark,
                             mState: (key.mstate).split('')[0],
                             // picSize:'',
                             // lightBoxSize:'',
@@ -1587,10 +1587,10 @@
                             mType: '',
                             mImg: key.mImg || '',
                             mVehicle: key.mediaType,
-                            mRemark: key.mediaRemark === '' ? '暂无备注' : key.mediaRemark,
+                            mRemark: key.mediaRemark,   // key.mediaRemark === '' ? '暂无备注' : key.mediaRemark,
                             mState: (key.mstate).split('')[0],
                             picSize: key.visualW + "*" + key.visualH,
-                            lightBoxSize:  key.LBSizeW + "*" + key.LBSizeH,//
+                            lightBoxSize:  key.LBSizeW + "*" + key.LBSizeH,
                         })
                     }
                 }
@@ -2694,6 +2694,9 @@
         margin-right: -6px;
         position: relative;
         left: 60px;
+    }
+    /deep/ .el-form-item.floor_house_item.is-required .el-form-item__label:before{
+        left: 73px;
     }
     /deep/ .el-form-item.lng_lat_form_item.is-required .el-form-item__label:before{
         left: 46px;

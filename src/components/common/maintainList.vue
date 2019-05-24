@@ -109,7 +109,6 @@
             :visible.sync="isShowImg"
             width="60%">
             <div style="display:flex">
-                <!-- <p v-for="(item, index) of imgUrls" :key="index" style="width:360px;margin:0px 10px;"> -->
                 <p v-for="(item, index) of imgUrls" :key="index" style="margin:0px 10px;text-align: center;">
                     <img :src="item.url" alt="" style="width:360px;height:480px;">
                     <span style="width: 100%;display: inline-block;text-align: center;">
@@ -350,7 +349,6 @@ export default {
                 type: "warning"
             }).then(res=>{
                 console.log(res);
-                // console.log();
                 let info = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,

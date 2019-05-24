@@ -203,20 +203,7 @@ export default {
             // 媒介载体类型
             mediaTypeArr: ['广告门', '道闸'],
             // 表格数据
-            publishPriceList: [
-                // {
-                //     priceId: 1, 
-                //     city: '北京市',
-                //     rid: 110100,
-                //     cityLevel: 1,
-                //     priceType: 1,
-                //     oldPrice: 1522,
-                //     levelAprice: 3800,
-                //     levelBprice: 2800,
-                //     levelCprice: 1800,
-                //     barrierPrice: 1500, 
-                // }
-            ],
+            publishPriceList: [],
             allProvince:[],
         };
     },

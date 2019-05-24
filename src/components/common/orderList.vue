@@ -62,7 +62,6 @@
                     <el-table border :data="currentOrder" style="width: 100%" v-loadmore="orderLoadMore" v-loading="loading" element-loading-text="玩命加载中" element-loading-spinner="el-icon-loading" :default-sort="{prop: 'apcTime', order: 'descending'}">
                         <el-table-column label="订单名称" min-width="14.6%">
                             <template slot-scope="scope">
-                                <!-- <a href="javascript:void(0);" @click="ToDetail(scope.row.apID)">{{scope.row.apName}}</a> -->
                                 <el-tooltip class="item" effect="dark" :content="scope.row.apName" placement="bottom" v-if="scope.row.apName.length>12">
                                     <a href="javascript:void(0);" @click="ToDetail(scope.row)">{{scope.row.apName}}</a>
                                 </el-tooltip>
@@ -117,7 +116,7 @@
                                 </p>
                             </template>
                         </el-table-column>
-                        <el-table-column label="发布日期" min-width="7.3%" sortable :sort-method="sortData">
+                        <el-table-column label="发布日期" min-width="7.3%" sortable :sort-by="sortData">
                             <template slot-scope="scope">
                                 <span>{{formatTime(scope.row.apcTime)}}</span>
                             </template>
@@ -317,7 +316,6 @@ export default {
             }else{
                 api.getApi(this.UCAPI + '/ShowAscr', info).then(res =>{
                     console.log(res);
-                    // companyData
                     if(!res.data.SysCode){
                         let result = [];
                         for(let data of res.data){
@@ -368,14 +366,11 @@ export default {
                     }
 
                     this.filterCityData = result;
-                    console.log('fdasfdlasjfla----', this.filterCityData);
-
                 } else if (res.data.SysCode == 100302) {
                     this.loginTimeout();
                 } else {
                     Message.warning(res.data.MSG);
                 }
-
             });
         },
         // 获取角色
@@ -467,7 +462,7 @@ export default {
                 this.isSearch = true;
                 clearTimeout(timer);
             }, 1000);
-            if(keyword || rangeDate || company || cityWord || (status>=0) ){
+            if(keyword || rangeDate || company || cityWord || (status>0 || status===0) ){
                 this.currentOrder = [];
                 this.loading = true;
                 this.loading_point = false;
@@ -533,7 +528,6 @@ export default {
         },
         // 更换点位
         changePoint(apid) {
-            // Message.warning("该功能尚未完善");
             sessionStorage.setItem('change_point', 'yes');
             sessionStorage.setItem("order_apid", apid);
             this.$router.push("./orderDetail");
@@ -562,8 +556,6 @@ export default {
         },
         //日期排序
         sortData(a, b) {
-            // return a.apcTime < b.apcTime;
-
             return dateFormat.toDate(a.apcTime, '') - dateFormat.toDate(b.apcTime, '');
         },
         // 价格加上逗号
@@ -578,7 +570,6 @@ export default {
                 apid: row.apID,
                 act: "E"
             };
-            // Message.warning("该功能尚未完善");
             MessageBox.confirm(
                 "是否结束<b>" + row.apName + "</b>订单投放？",
                 "提示",
@@ -592,7 +583,6 @@ export default {
                 api.postApi(this.Advertisement+"/SetFangan", info)
                     .then(res => {
                         console.log(res.data);
-                        // Message.success("操作成功");
                         if (res.data.SysCode == 300200) {
                             Message.success(res.data.MSG);
                             this.$set(row, "apState", 5);
@@ -693,24 +683,8 @@ export default {
             let result_ = [];
             let resIDS = '';
             for(let data of arr){
-                // let id = data.resID;
                 if(!resIDS.includes(data.resID)){
                     console.log('data', data.resID);
-                    //  let obj = {
-                    //     resID: data.resID,
-                    //     resName: data.resName,
-                    //     city: data.city,
-                    //     rID: data.rID,
-                    //     rName: data.rName,
-                    //     lEnd: data.lEnd,
-                    //     lStar: data.lStar,
-                    //     person: '',
-                    //     aiState: 3,
-                    //     gsday: '',
-                    //     geday: ''
-                    // };
-                    // console.log('obj-----------', arr);
-                    // resID.push(id);
                     resIDS += data.resID + ",";
                     console.log('resId', resIDS)
                     result_.push(data);
@@ -783,10 +757,6 @@ export default {
                     gid : this.orderRow.adcID,
                     ctlist: data.hoppyType.join(',')
                 };
-                // api.getApi(this.QZhike+'/SetApply', info).then(res=>{
-                //     console.log(res.data)
-                //     Message.success('该订单住户画像开通成功');
-                // });
                 this.downApi(info);
             }
         },
@@ -809,14 +779,7 @@ export default {
                             break;
                         }
                     }
-                    // for(let resData of this.currHouse){
-                    //     if(resData.resID == this.resid){
-                    //         this.$set(resData, 'aiState', 0);
-                    //         break;
-                    //     }
-                    // }
                     this.houselist.push();
-                    // this.currHouse.push();
                 } else if (res.data.SysCode == 100302) {
                     this.loginTimeout();
                 } else {

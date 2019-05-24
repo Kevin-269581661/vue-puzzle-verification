@@ -40,12 +40,12 @@
                                     <el-button type="primary" icon="el-icon-search" class="searchBtn" @click="search()">搜索</el-button>
                                 </span>
                                 <span>
-                                    <el-button class="down_btn" @click="getPTTx()">导出PPTx</el-button>
+                                    <!-- <el-button class="down_btn" @click="getPTTx()">导出PPTx</el-button> -->
                                     <el-button @click="getPTT()"  class="down_btn">导出PPT</el-button>
                                     <el-button @click="getPDF()"  class="down_btn">导出PDF</el-button>
                                 </span>
                                 <p class="search_p">
-                                    *备注：若订单点位数量过多，请点击  “导出pptx”  按钮 ，导出的 “pptx” 文件使用正版软件打开后可再另存为“ppt”格式即可发给客户
+                                    <!-- *备注：若订单点位数量过多，请点击  “导出pptx”  按钮 ，导出的 “pptx” 文件使用正版软件打开后可再另存为“ppt”格式即可发给客户 -->
                                 </p>
                             </div>
                             <div class="table_wrap">

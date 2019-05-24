@@ -68,13 +68,11 @@
                         >
                             <template slot-scope="scope">
                                 <el-tooltip class="item" effect="dark" :content="scope.row.resName" placement="bottom">
-								<span @click="mediaDetail(scope.row)" v-if="haveDetail"
+								<span @click="mediaDetail(scope.row)"
                                       style="color: #108ee9;cursor: pointer">
 									{{scope.row.resName}}
 								</span>
-                                    <span v-else>{{scope.row.resName}}</span>
                                 </el-tooltip>
-
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -459,7 +457,7 @@
                 if (this.loadSign) {
                     // console.log('正在请求')
                     this.loadSign = false
-                    if (this.keyword !== '' && this.loadScroll) {
+                    if (this.keyword !== '') {
                         if(this.pageNo <= this.totalPage){
                             this.searchByKewWord()
                         }else{
@@ -467,7 +465,7 @@
                         }
                     } else {
                         if(this.pageNo <= this.totalPage){
-                            this.getData({"pageNo": this.pageNo,"pageSize":50})
+                            this.getData({"pageNo": this.pageNo,"pageSize":50}) // ,"resName":this.keyword
                         }else{
                             console.log('列表数据已加载完成')
                         }

@@ -76,7 +76,7 @@
                                 <p v-for="(item, index) of scope.row.cityArea" :key="index">{{item}}({{scope.row.timeRange}})</p>
                             </template>
                         </el-table-column>
-                        <el-table-column label="创建日期" min-width="7.3%" sortable :sort-method="sortData">
+                        <el-table-column label="创建日期" min-width="7.3%" sortable :sort-by="sortData">
                             <template slot-scope="scope">
                                 <span>{{formatTime(scope.row.apcTime)}}</span>
                             </template>

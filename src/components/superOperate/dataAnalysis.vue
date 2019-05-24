@@ -304,7 +304,10 @@
                                                 </div>
                                             </span>
                                         </div>
-                                        <div class="keyDataChart">
+                                        <div class="keyDataChart"
+                                             v-loading="keyDataBarLoading"
+                                             element-loading-text="玩命加载中..."
+                                             element-loading-background="rgba(255, 255, 255)">
                                             <div class="charts2" id="keyDataBar" ref="keyDataBar"
                                                  style="width: 100%;height: 350px">
                                             </div>
@@ -1828,6 +1831,7 @@
                 ],
                 nowMonth: '',               // 当前月份日期
                 keyDataLineLoading: true,   // 关键数据总量loading
+                keyDataBarLoading: true,    // 关键数据增量loading
                 // 结束时间与开始时间的验证 - 返回true即为禁止
                 // 关键数据总量趋势
                 card3POptionsStar:{
@@ -1985,7 +1989,7 @@
                     } else {
                         params = {
                             uid: this.session_userData.uID,
-                            rids: this.currCity,
+                            asrIDs: this.currCity,
                             onStart: onStart,
                             onEnd: onEnd
                         }
@@ -1993,6 +1997,10 @@
                     this.allkeydatakind = '社区数'
                     this.addkeyDataKind = '社区数'
                     this.getAllResData('card',params)
+                    // 重置增量对比按钮为false
+                    this.dateCompare = false
+                    this.CountOfIncreDataShow.AddDataCP = []
+                    // this.card4Radio()
                     // 行业订单总总量趋势
                     this.card5Industry = [1]
                     this.TOrderTitleRadio = '订单金额'
@@ -2033,11 +2041,11 @@
                     }
                     this.changeCity(this.currCity)
                 } else if (this.activeName === 'second') {
-                    if (this.cityCompareTableKey === 1) {// 变化城市对比中table的key值
-                        this.cityCompareTableKey = 2
-                    } else {
-                        this.cityCompareTableKey = 1
-                    }
+                    // if (this.cityCompareTableKey === 1) {// 变化城市对比中table的key值
+                    //     this.cityCompareTableKey = 2
+                    // } else {
+                    //     this.cityCompareTableKey = 1
+                    // }
                     this.isCitys = true
                     this.beforCurrCityL = this.currCity
                     this.currCity = '0'
@@ -2319,10 +2327,11 @@
                 }
                 if (card === 'card4') {
                     this.isAddkeyDataKind = true
+                    this.keyDataBarLoading = true
                 } else if (card === 'card3') {
                     this.isReskeyDataKind = true
+                    this.keyDataLineLoading = true
                 }
-                this.keyDataLineLoading = true
                 // console.log('关键数据总量/增量趋势 - params',params)
                 switch (val) {
                     case '社区数':
@@ -2638,7 +2647,7 @@
                 //环状图表(上刊率)
                 for (let key of cityListRate) {
                     if (key.cityName === val) {
-                        this.setHeadDataPie(key.areaList.sort(this.compareSort('publishRate')))
+                        this.setHeadDataSKPie(key.areaList.sort(this.compareSort('publishRate')))
                         break
                     }
                 }
@@ -2692,7 +2701,8 @@
                         }else{
                             console.log('非全国',this.currCity)
                             // 表头上刊率
-                            headData.SK = dataArr.publicationRateInfo[0].publishRate * 100
+                            headData.SK = dataArr.publicationRateInfo[0].publishRate * 100 ?
+                                (dataArr.publicationRateInfo[0].publishRate * 100).toFixed(2) : 0
                             //环状图表(上刊率)
                             this.setHeadDataSKPie(dataArr.publicationRateInfo[0].cityList[0].areaList.sort(this.compareSort('publishRate')))
                             // 环状图表 (社区、广告门、点位)
@@ -2793,7 +2803,12 @@
                     i++
                 }
                 if(otherRate > 0){
-                    rateArr.push({name: '其它', value: otherRate * 100})
+                    rateArr.push(
+                        {
+                            name: '其它',
+                            value: Math.floor(otherRate * 10000 / (setData.length - 6)) / 100
+                        }
+                    )
                 }
                 console.log('rateArr',rateArr) // asrID
                 this.RMPieRateData = rateArr
@@ -3005,7 +3020,11 @@
                     }
                 }else{
                     this.keyDataLine()
-                    this.keyDateBar()
+                    if (this.dateCompare && (this.card4Date2[0] !== null && this.card4Date2[0] !== undefined) && (this.card4Date2[1] !== null && this.card4Date2[1] !== undefined)) {
+                        this.card4ChangeMonth_CP()
+                    } else {
+                        this.keyDateBar()
+                    }
                 }
             },
             // 行业订单总量趋势 - 接口
@@ -3752,6 +3771,7 @@
                     this.keyDataBar.resize();
                 });
                 this.isAddkeyDataKind = false
+                this.keyDataBarLoading = false
             },
             // 行业订单总量趋势 折线图
             busOrderLine() {
@@ -5446,17 +5466,21 @@
             },
             // 创建社区时间 - changes
             CreatDateChange(val1,val2){
+                console.log('----------------',val1)
                 if(val1 === 'res'){
+                    if(!this.resCreatDate){
+                        this.resCreatDate = []
+                    }
                     this.pUpMin = ''
                     this.pUpMax = ''
                     this.setPageNoAndTableDataRes()
                     this.getResRateFun()
                 }else if(val1 === 'ads'){
+                    if(!this.adsCreatDate){
+                        this.adsCreatDate = []
+                    }
                     this.cUpMin = '';
                     this.cUpMax = '';
-                    // this.adsLoading = true
-                    // this.adsRateList = []
-                    // this.adsPageNum = 1
                     this.setPageNoAndTableDataAds()
                     this.getAdsRateFun()
                 }
@@ -6019,7 +6043,7 @@
 
     .data-tab span:first-child {
         position: relative;
-        top: 5px;
+        top: 0;
     }
 
     .block {
@@ -6706,7 +6730,34 @@
     .all-data-table .el-table__fixed-right:before, .all-data-table .el-table__fixed:before{
         background-color:#fff;
     }
+    /*强制兼容safari表头错位bug*/
+    .el-table__fixed-header-wrapper thead tr th.el-table_5_column_31{
+        width: 140px;
+    }
+    .el-table__fixed-header-wrapper thead tr th.el-table_5_column_32{
+        width: 90px;
+    }
+    .el-table__fixed-header-wrapper thead tr th.el-table_5_column_33{
+        width: 120px;
+    }
+    .el-table__fixed-header-wrapper thead tr th.el-table_5_column_34{
+        width: 90px;
+    }
 
+    /*.el-table .el-table__header-wrapper thead.has-gutter tr th.el-table_5_column_31{*/
+        /*width: 140px;*/
+    /*}*/GetSurvey
+    .el-table .el-table__header-wrapper thead.has-gutter tr th.el-table_5_column_31 .cell{
+        width: 140px;
+    }
+
+    /*.el-table .el-table__body-wrapper .el-table__body tbody tr.el-table__row td.el-table_5_column_31{*/
+        /*width: 140px;*/
+    /*}*/
+    .el-table .el-table__body-wrapper .el-table__body tbody tr.el-table__row td.el-table_5_column_31 .cell{
+        width: 140px;
+        margin: 0;
+    }
     /*1920*/
     @media all and (min-width: 1920px) {
         /*滚动条*/

@@ -18,21 +18,6 @@
                 <li>
                     <router-link :to="{path:'/sale/orderList'}" id="orderMana">订单管理</router-link>
                 </li>
-             <!--   <li @mouseenter="showKJFS = true" @mouseleave="showKJFS = false">
-                    <a href="#" class="nav_fast more" id="kjfs">常用模块 <i class="fa fa-angle-down"></i>
-                        <ul class="fast_list_fir" v-show="showKJFS">
-                            <li>
-                                <router-link :to="{path:'/sale/clientList'}" id="clientMana">客户管理</router-link>
-                            </li>
-                            <li>
-                                <router-link :to="{path:'/sale/planList'}" id="planMana">方案管理</router-link>
-                            </li>
-                            <li>
-                                <router-link :to="{path:'/sale/orderList'}" id="orderMana">订单管理</router-link>
-                            </li>
-                        </ul>
-                    </a>
-                </li>-->
                 <li>
                     <router-link :to="{path:'/sale/photoGallery'}" id="Photos">案例库</router-link>
                 </li>
@@ -48,7 +33,7 @@
                                 <router-link :to="{path:'/sale/questionAndAnswer'}" id="qna">操作说明</router-link>
                             </li>
                             <li>
-                                <router-link :to="{path:'/sale/compact'}" id="compact">合同下载</router-link>
+                                <router-link :to="{path:'/sale/compact'}" id="compact">文件下载</router-link>
                             </li>
                         </ul>
                     </a>
@@ -59,42 +44,6 @@
                     </router-link>
                 </li>
             </ul>
-           <!-- <ul class="ad_index_nav">
-                <li>
-                    <router-link :to="{path:'/sale'}" class="nav_fast" id="Home">首页</router-link>
-                </li>
-                <li>
-                    <router-link :to="{path:'/sale/clientList'}" class="nav_fast" id="clientMana">客户管理</router-link>
-                </li>
-                <li>
-                    <router-link :to="{path:'/sale/planList'}" class="nav_fast" id="planMana">方案管理</router-link>
-                </li>
-                <li>
-                    <router-link :to="{path:'/sale/orderList'}" class="nav_fast" id="orderMana">订单管理</router-link>
-                </li>
-                <li v-if="showQinlin">
-                    &lt;!&ndash; <router-link :to="{path:'/sale/ADqinlinzk'}" class="nav_fast" id="ADqinlinzk">智邻数图</router-link> &ndash;&gt;
-                    <router-link :to="{path:'/sale/ADqinlinzk'}" class="nav_fast" id="ADqinlinzk">
-                        &lt;!&ndash; <el-badge value='new'>智邻数图</el-badge> &ndash;&gt;
-                        智邻数图
-                    </router-link>
-                </li>
-                <li>
-                    <router-link :to="{path:'/sale/tvOrderList'}" class="nav_fast" id="TVAdvertising">
-                        &lt;!&ndash; <el-badge value='new'>电视广告</el-badge> &ndash;&gt;
-                        电视广告
-                    </router-link>
-                </li>
-                <li>
-                    <router-link :to="{path:'/sale/photoGallery'}" class="nav_fast" id="photoGallery">案例图</router-link>
-                </li>
-                <li>
-                    <router-link :to="{path:'/sale/publishPriceList'}" class="nav_fast" id="priceMana">刊例价</router-link>
-                </li>
-                <li>
-                    <router-link :to="{path:'/sale/questionAndAnswer'}" class="nav_fast" id="qna">Q&A</router-link>
-                </li>
-            </ul>-->
             <div class="handle clearfix">
                 <a href="#" class="ad_index_user">
                     <!-- <em>销售</em>  -->
@@ -393,7 +342,35 @@
                         })
                         break;
                     case  'questionAndAnswer':
-                        $('#qna').css({
+                        $('#More').css({
+                            "color": "#fff",
+                            "border-bottom": "3px solid #fff"
+                        }).parents().siblings().children('a').css({
+                            "color": "#999",
+                            "border-bottom": "none"
+                        });
+                        $('#qna').addClass('active')
+                        $('#kjfs').find('a').css({
+                            "color": "#999"
+                        })
+                        break;
+                    case 'compact':
+                        $('#More').css({
+                            "color": "#fff",
+                            "border-bottom": "3px solid #fff"
+                        }).parents().siblings().children('a').css({
+                            "color": "#999",
+                            "border-bottom": "none"
+                        });
+                        $('#compact').addClass('active')
+                        $('#kjfs').find('a').css({
+                            "color": "#999"
+                        })
+                        break;
+                    case 'tvOrderList':
+                    case 'advertTV':
+                    case 'tvOrderDetail':
+                        $('#TVAdvertising').css({
                             "color": "#fff",
                             "border-bottom": "3px solid #fff"
                         }).parents().siblings().children('a').css({
@@ -405,17 +382,6 @@
                         });
                         $('#kjfs').find('a').css({
                             "color": "#999"
-                        });
-                        break;
-                    case 'tvOrderList':
-                    case 'advertTV':
-                    case 'tvOrderDetail':
-                        $('#TVAdvertising').css({
-                            "color": "#fff",
-                            "border-bottom": "3px solid #fff"
-                        }).parents().siblings().children('a').css({
-                            "color": "#999",
-                            "border-bottom": "none"
                         });
                         break;
                 }

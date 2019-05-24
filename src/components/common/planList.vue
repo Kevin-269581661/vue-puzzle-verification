@@ -67,6 +67,9 @@
                         <span>
                             <el-button plain v-if="showNewBtn" @click="addOne()">新建</el-button>
                         </span>
+                        <!-- <span>
+                            <el-button plain v-if="showNewBtn" @click="isOpenDownload=true">导空位</el-button>
+                        </span> -->
                     </div>
                 </el-row>
                 <div class="table_wrap">
@@ -134,7 +137,7 @@
                                 </p>
                             </template>
                         </el-table-column>
-                        <el-table-column label="创建日期" min-width="8.3%" sortable :sort-method="sortData">
+                        <el-table-column label="创建日期" min-width="8.3%" sortable :sort-by="sortData">
                             <template slot-scope="scope">
                                 <span>{{formatTime(scope.row.apcTime)}}</span>
                             </template>
@@ -175,6 +178,42 @@
                 </el-dialog>
             </div>
         </div>
+        <!--存在异常未完成的方案-->
+        <el-dialog title="您有一个新方案未完成保存，是否继续编辑？"
+                   :visible.sync="unfinishedDialogVisible"
+                   width="400px"
+                   custom-class="unfinished_plan_dialog"
+                   :close-on-click-modal="false">
+            <div>
+                <ul>
+                    <li class="unfinished_plan_li">
+                        <span>方案名称:</span>
+                        <span>{{planInfo.planName}}</span>
+                    </li>
+                    <li class="unfinished_plan_li">
+                        <span>所属销售:</span>
+                        <span>{{planInfo.ownerSales}}</span>
+                    </li>
+                    <li class="unfinished_plan_li">
+                        <span>创建时间:</span>
+                        <span>{{planInfo.cleatTime}}</span>
+                    </li>
+                    <li class="unfinished_plan_li">
+                        <span>已选点位:</span>
+                        <span>{{planInfo.adsNum}} 面</span>
+                    </li>
+                </ul>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="cancelEdit">放 弃</el-button>
+                <el-button type="primary" @click="continueEdit">继续编辑</el-button>
+            </span>
+        </el-dialog>
+
+        <!-- 导出空点 -->
+        <el-dialog title="空位导出" :visible.sync="isOpenDownload" width="30%">
+            <download-vacancy></download-vacancy>
+        </el-dialog>
     </div>
 </template>
 
@@ -184,6 +223,9 @@ import api from "../../api/api.js";
 import commaFormat from "../../commonFun/commaFormat.js";
 // 时间格式化
 import dateFormat from "../../commonFun/timeFormat.js";
+// 方案缓存
+import cacheAdPlan from "../../commonFun/cacheAdPlan"
+import downloadVacancy from "../../components/common/components/vacancyDownload.vue"
 import {
     Button,
     CheckboxGroup,
@@ -209,6 +251,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
 export default {
     name: "projectList",
     components: {
+        downloadVacancy,
         elButton: Button,
         elCheckboxGroup: CheckboxGroup,
         elCheckbox: Checkbox,
@@ -263,8 +306,6 @@ export default {
             isDisable: true,
             //加载中
             loading: true,
-            // loading: false,
-            Info: {},
             currentItem: {},
             // 解锁还是预锁
             isLock: false,
@@ -291,12 +332,19 @@ export default {
             // 表格数据
             currentPlan: [],
             // 权限城市过滤数组
-            filterCityData: []
+            filterCityData: [],
+            // 未完成方案提示
+            unfinishedDialogVisible: false,
+            // 未完成方案
+            planInfo: '',
+            // 继续编辑未完成方案跳转时的loading
+            continueEditLoading:'',
+            // 空位导出
+            isOpenDownload: false,
         };
     },
     created() {
         this.getSessionData();
-        this.getUID();
         this.getRole();
         this.getFanCity();
         if(this.isAll){
@@ -350,7 +398,6 @@ export default {
             }else{
                 api.getApi(this.UCAPI + '/ShowAscr', info).then(res =>{
                     console.log(res);
-                    // companyData
                     if(!res.data.SysCode){
                         let result = [];
                         for(let data of res.data){
@@ -443,24 +490,13 @@ export default {
                             value: data.rName
                         });
                     }
-
                     this.filterCityData = result;
-                    console.log('fdasfdlasjfla----', this.filterCityData);
-
                 } else if (res.data.SysCode == 100302) {
                     this.loginTimeout();
                 } else {
                     Message.warning(res.data.MSG);
                 }
-
             });
-        },
-        getUID() {
-            let uid = this.sessionData.uID;
-            this.Info = {
-                uid: uid,
-                apid: ""
-            };
         },
         // 判断角色是否有新建按钮(媒介和销售有)
         getRole() {
@@ -506,12 +542,59 @@ export default {
         },
         //日期排序
         sortData(a, b) {
-            // return a.apcTime < b.apcTime;
             return dateFormat.toDate(a.apcTime, '') - dateFormat.toDate(b.apcTime, '');
         },
         // 新建方案
         addOne() {
-            this.$router.push("./createPlan");
+            this.continueEditLoading = this.$loading({
+                lock: true,
+                text: '正在查询是否有未完成的方案',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.5)'
+            });
+            let params = {
+                uid:this.sessionData.uID,
+                token:this.sessionData.token
+            }
+            api.getApi(this.Advertisement + '/getAdPlanBackups',params).then(res=>{
+                console.log('获取方案缓存',res)
+                this.continueEditLoading.close()
+                if (res.data.SysCode == 200200) {
+                    console.log('获取缓存成功',res.data)
+                    if(JSON.stringify(res.data.data) === '{}'){
+                        this.$router.push("./createPlan");
+                    }else{
+                        let planInfo = JSON.parse(res.data.data)
+                        this.showCookeAdPlan(planInfo)
+                        // 缓存到localStorage
+                        cacheAdPlan.setData(planInfo)
+                    }
+                } else {
+                    // 后台返回异常则查看前台是否有缓存
+                    let returnData = cacheAdPlan.getData(this.sessionData.uID)
+                    if (returnData) {
+                        this.showCookeAdPlan(returnData)
+                    } else {
+                        this.$router.push("./createPlan");
+                    }
+                }
+            }).catch(err=>{
+                console.log('err',err)
+                this.continueEditLoading.close()
+                if(this.$route.path.includes('planList')){
+                    this.$router.push("./createPlan");
+                }
+            })
+        },
+        // 显示缓存方案的信息
+        showCookeAdPlan(adPlan){
+            this.planInfo = {
+                planName: adPlan.planData.baseInfo.planName,
+                ownerSales: adPlan.planData.baseInfo.ownerSales,
+                cleatTime: adPlan.setTime,
+                adsNum: adPlan.planData.adsList.length
+            }
+            this.unfinishedDialogVisible = true
         },
         // 删除
         deleteOne(row) {
@@ -524,7 +607,6 @@ export default {
             result = result + dateFormat.toDate(date, "");
             result = result + rid.toString().substring(0, 4);
             result = result + "00" + Math.round(Math.random() * 10);
-            // console.log(result);
             return result;
         },
         // 发布
@@ -540,7 +622,6 @@ export default {
                 token: this.sessionData.token,
                 apid: row.apID
             };
-            this.Info = info;
             let dataArr = row.cityArea;
             let sess = this.sessionData;
             let isRelease = false;
@@ -586,7 +667,6 @@ export default {
                                 );
                                 // 保存合同编号
                                 this.saveContractNo(this.QCinfo);
-
                             }).catch(() => {
                                 Message.info('已取消操作');
                             });
@@ -605,7 +685,6 @@ export default {
             // uid         int【必填】     当前账户UserID
             // apid        int【必填】     方案apID
             // qc          String【必填】  方案合同编号
-            // let info = this.Info;
             let info = {
                 uid: this.sessionData.uID,
                 token: this.sessionData.token,
@@ -626,22 +705,25 @@ export default {
                                     this.releaseFun();
                                 }else{
                                     Message.warning("该方案被预锁,请先解除预锁");
+                                    this.Ctrlloading.close();
                                 }
                             }
                         });
                     }else{
                         Message.warning(res.data.MSG);
+                        this.Ctrlloading.close();
                     }
                 })
                 .catch(res => {
                     console.log(res);
+                    this.Ctrlloading.close();
                 });
         },
         releaseFun(){
             let reseleInfo = {
                 uid: this.sessionData.uID,
                 token: this.sessionData.token,
-                apid: this.Info.apid,
+                apid: this.currentItem.apID,
                 qc: this.QCinfo,
                 act: 'R'
             };
@@ -654,12 +736,11 @@ export default {
                 if(res.data.SysCode == 300200){
                     Message.success(res.data.MSG);
                     for (let data of this.currentPlan) {
-                        if (data.apID == this.Info.apid) {
+                        if (data.apID == this.currentItem.apID) {
                             this.$set(data, "apState", 2);
                             break;
                         }
                     }
-                    this.Ctrlloading.close();
                 }else if(res.data.SysCode == 100302){
                     this.loginTimeout();
                 }else if(res.data.SysCode == 300500){
@@ -669,14 +750,12 @@ export default {
                     }else{
                         Message.warning(res.data.MSG);
                     }
-                    this.Ctrlloading.close();
                 }else{
                     Message.warning(res.data.MSG);
-                    this.Ctrlloading.close();
                 }
+                this.Ctrlloading.close();
             }).catch(res =>{
                 this.Ctrlloading.close();
-                console.log(res);
             });
         },
         // 跳转到详情页面
@@ -699,24 +778,22 @@ export default {
         },
         //预锁
         preload(row) {
-            this.Info.uid = this.sessionData.uID;
-            this.Info.apid = row.apID;
+            console.log('row-----', row);
+            this.currentItem = row;
 
             let startObj = this.compareTime(row.cityArea, 'pdStar', 'pdEnd');
             let date = timeFormat.toDate(new Date(), '/');
             if(startObj.startTime<=date){
-                this.$message.warning('开始投放时间已经早于当前时间,请直接发布！');
+                Message.warning('开始投放时间已经早于当前时间,请直接发布！');
                 return;
             }
             this.cityList = this.getCityList(row.cityArea);
-            // this.cityList = row.cityArea;
             if(this.cityList.length){
                 this.cityChoose = [];
                 this.isLock = true;
                 this.dialogVisible = true;
-                this.currentItem = row;
             }else{
-                this.$message.warning('方案权限城市内您没有可以预锁的城市');
+                Message.warning('方案权限城市内您没有可以预锁的城市');
             }
         },
         // 获取权限城市内的城市,进行勾选
@@ -744,7 +821,6 @@ export default {
                     resultInfo.push(com);
                 }
             }
-            // return resultArr;
             return resultInfo;
         },
         // 解除预锁
@@ -754,9 +830,6 @@ export default {
             this.dialogVisible = true;
             this.currentItem = row;
             this.cityList = this.getCityList(row.cityArea);
-
-            this.Info.uid = this.sessionData.uID;
-            this.Info.apid = row.apID;
         },
         cancelLock() {
             this.dialogVisible = false;
@@ -809,14 +882,12 @@ export default {
                 console.log(res.data);
                 if(res.data.SysCode == 300200){
                     for (let plandata of this.currentPlan) {
-                        if (plandata.apID == this.Info.apid) {
+                        if (plandata.apID == this.currentItem.apID) {
                             for(let item of plandata.cityArea){
                                 if(info.asrIDs.includes(item.asrID)){
                                     for(let ridItem of arr){
                                         if(ridItem.asrID == item.asrID){
-                                            let dayA = Math.abs(timeFormat.getDayBetween(ridItem.pdStar, new Date()));
-                                            console.log('dayA-----', dayA);
-                                            let RemainDay = dayA>7?7:dayA;
+                                            let RemainDay = this.countDay(ridItem.pdStar);
                                             item.RemainDay = RemainDay;
                                             this.$set(item, 'RemainDay', RemainDay);
                                             break;
@@ -827,7 +898,6 @@ export default {
                             break;
                         }
                     }
-                    console.log('plan____current', this.currentPlan);
                     this.currentPlan.push();
                     Message.success(res.data.MSG);
 
@@ -840,17 +910,12 @@ export default {
                     }else{
                         Message.warning(res.data.MSG);
                     }
-                    this.Ctrlloading.close();
                 }else{
                     Message.warning(res.data.MSG);
-                    this.Ctrlloading.close();
                 }
-                // }else if(res.data.asList.length){
-                //     // 存在点位被占，是否立即去方案详情修改？
-                //     this.changeRoute();
-                // }else{
-                //     Message.warning(res.data.MSG);
-                // }
+                this.Ctrlloading.close();
+            }).catch(err =>{
+                console.log(err);
                 this.Ctrlloading.close();
             });
         },
@@ -873,7 +938,7 @@ export default {
                 this.Ctrlloading.close();
                 if(res.data.SysCode == 300200){
                     for (let plandata of this.currentPlan) {
-                        if (plandata.apID == this.Info.apid) {
+                        if (plandata.apID == this.currentItem.apID) {
                             for(let item of plandata.cityArea){
                                 if(info.asrIDs.includes(item.asrID)){
                                     delete item.RemainDay;
@@ -885,7 +950,17 @@ export default {
                     this.currentPlan.push();
                 }
                 Message.success(res.data.MSG);
+            }).catch(err =>{
+                console.log(err);
+                this.Ctrlloading.close();
             });
+        },
+        // 7天以上显示7天,否则显示相隔天数
+        countDay(time){
+            let dayA = Math.abs(timeFormat.getDayBetween(time, new Date()));
+            console.log('dayA-----', dayA);
+            let RemainDay = dayA>7?7:dayA;
+            return RemainDay;
         },
         // 弹出框修改路径
         changeRoute(){
@@ -900,11 +975,9 @@ export default {
             )
                 .then(() => {
                     this.ToEdit(this.currentItem);
-                    this.Ctrlloading.close();
                 })
                 .catch(() => {
                     Message.info("已取消操作");
-                    this.Ctrlloading.close();
                 });
         },
         // 搜索（优化）
@@ -916,7 +989,7 @@ export default {
                 clearTimeout(timer);
             }, 1000);
             if(
-                keyword || rangeDate || (status>=0) || company || cityWord || Lock
+                keyword || rangeDate || (status===0 || status>0) || company || cityWord || Lock
             ){
                 this.currentPlan = [];
                 this.loading = true;
@@ -925,7 +998,7 @@ export default {
                 this.searchFun();
 
             }else{
-                this.$message.warning('请输入搜索条件');
+                Message.warning('请输入搜索条件');
             }
         },
         searchFun(){
@@ -998,19 +1071,12 @@ export default {
         // 重置
         reset(){
             this.searchInfo = {
-                // 搜索的select框
                 select: "1",
-                // 关键字
                 keyword: "",
-                // 时间范围
                 rangeDate: "",
-                // 状态筛选
                 status: '',
-                // 公司搜索
                 company: '',
-                // 城市筛选
                 cityWord: '',
-                // 是否预锁
                 Lock: '',
             };
 
@@ -1028,6 +1094,50 @@ export default {
             Message.warning("登录超时,请重新登录");
             this.$router.push("/login");
         },
+        // 放弃继续编辑
+        cancelEdit(){
+
+            this.$confirm('放弃后将清除该方案信息及点位!', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                showClose: false,
+                type: 'warning '
+            }).then(() => {
+                this.unfinishedDialogVisible = false
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token
+                }
+                api.postApi(this.Advertisement + '/clearAdPlanBackups',params).then(res=>{
+                    console.log('清空缓存的方案',res)
+                    if (res.data.SysCode == 200200) {
+                        console.log('缓存方案清除成功')
+                    } else {
+
+                    }
+                })
+                cacheAdPlan.removeData(this.sessionData.uID)
+                this.$router.push("./createPlan");
+            }).catch(() => {
+                Message.info('取消成功')
+            })
+        },
+        // 继续创建
+        continueEdit(){
+            this.continueEditLoading = this.$loading({
+                lock: true,
+                text: '方案数据获取中...',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.5)'
+            });
+            this.$router.push("./createPlan?unfinishedPlan");
+            this.unfinishedDialogVisible = false
+        },
+    },
+    beforeDestroy() {
+        if(this.continueEditLoading){
+            this.continueEditLoading.close()
+        }
     }
 };
 </script>
@@ -1426,5 +1536,22 @@ a {
 .el-dialog__footer span {
     float: none !important;
 }
+    /*未完成方案*/
+    /deep/ .unfinished_plan_dialog .el-dialog__header{
+        padding: 20px 20px;
+        border-bottom: 1px solid #E8E8E8;
+    }
+    /deep/ .unfinished_plan_dialog .el-dialog__title{
+        font-size: 15px;
+    }
+    /deep/ .unfinished_plan_dialog .el-dialog__body{
+        padding: 10px 20px;
+    }
+    /deep/ .unfinished_plan_dialog .el-dialog__title{
+        font-weight: bold;
+    }
+    .unfinished_plan_li{
+        line-height: 28px;
+    }
 </style>
 

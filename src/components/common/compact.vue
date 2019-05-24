@@ -2,7 +2,7 @@
     <div class="ad_mediaDetail_wrap clearfix">
         <div class="ad_mediaDetail_nav ">
             <p class="clearfix">
-                <a href="#" style="color: #999">合同下载</a>
+                <a href="#" style="color: #999">文件下载</a>
             </p>
         </div>
         <div class="mediaList_wrap">
@@ -102,6 +102,25 @@
                         </el-col>
                     </el-row>
                 </div>
+
+                <div class="table_wrap">
+                    <el-row>
+                        <el-col :span="7">
+                            <h2 class="h2_style">文档下载</h2>
+                            <div class="button_box">
+                                <el-button plain>
+                                    <img src="../../assets/images/pdf.png" alt="">
+                                    <a target='_black'  href="https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/userReport/2019%E5%B9%B4%E7%A4%BE%E5%8C%BA%E5%AA%92%E4%BD%93%E4%BB%B7%E5%80%BC%E8%B0%83%E7%A0%94%E6%8A%A5%E5%91%8A-%E7%BB%88%E7%A8%BF.pdf" download="2019年社区媒体价值调研报告-终稿.pdf">
+                                        <span>《2019年社区媒体价值调研报告-终稿》</span> 
+                                        <i class="el-icon-download el-icon--right"></i>
+                                    </a>
+                                </el-button>
+                            </div>
+                        </el-col>
+                        <el-col :span="17">
+                        </el-col>
+                    </el-row>
+                </div>
             </div>
         </div>
     </div>
@@ -187,6 +206,8 @@ export default {
 }
 .button_box img{
     vertical-align: middle;
+    width: 26px;
+    height: 26px;
 }
 /deep/ .button_box .el-icon-download {
     float: right;

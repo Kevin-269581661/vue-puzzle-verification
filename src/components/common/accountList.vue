@@ -90,7 +90,7 @@
                                 <span>{{scope.row.puName||'--'}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="创建日期" min-width="9.8%" sortable :sort-method="sortData">
+                        <el-table-column label="创建日期" min-width="9.8%" sortable :sort-by="sortData">
                             <template slot-scope="scope">
                                 <span>{{formatTime(scope.row.joinTime)}}</span>
                             </template>
@@ -173,7 +173,7 @@
                     {text: '运营', value: 'OP'},
                     {text: '媒介', value: 'MD'},
                     {text: '销售', value: 'BD'},
-                    {text: '广告主', value: 'AD'},
+                    // {text: '广告主', value: 'AD'},
                     {text: '工程人员', value: 'EP'}
                 ],
             };

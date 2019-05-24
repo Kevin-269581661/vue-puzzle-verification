@@ -12,40 +12,49 @@
                     <div>
                         <div class="search-nav">
                             <div class="search-wrap">
-                                <span>
-                                  <el-select v-model="selectValue" placeholder="请选择" class="type-select"
-                                             @change="initData">
-                                    <el-option v-for="item in typeSelect" :key="item.value" :label="item.value"
-                                               :value="item.value"></el-option>
-                                  </el-select>
-                                  <el-input v-model="searchInput" placeholder="请输入要搜索的内容"
-                                            class="searchInput input-with-select" @change="initData"></el-input>
-                                </span>
-                                <span>
-                                   <el-date-picker
-                                       v-model="dateInput"
-                                       type="daterange"
-                                       start-placeholder="开始日期"
-                                       end-placeholder="结束日期"
-                                       value-format="yyyy/MM/dd"
-                                       format="yyyy/MM/dd"
-                                       class="date-select input-with-select"
-                                   >
-                                </el-date-picker>
-                                </span>
-                                <span>
-                                  <el-button type="primary" style="background: #1890FF" icon="el-icon-search"
-                                             class="searchBtn" @click="searchFun" :disabled="searchBtnAbled">搜索</el-button>
-                                </span>
-                                <span>
-                                  <el-button type="primary" class="map" icon="el-icon-location-outline" @click="mapAD">地图</el-button>
-                                </span>
-                                <span>
+                                <div style="margin-right: 0" v-show="isOccupied">
+                                    <el-select v-model="activeSelect" placeholder="请选择" class="type-select">
+                                        <el-option label="方案排斥" value="1"></el-option>
+                                    </el-select>
+                                    <el-select v-model="activeAdPlan" placeholder="请选择排斥方案" class="reject_select"
+                                               @change="selectRejectPlan" filterable :clearable="true">
+                                        <el-option v-for="item in rejectAdPlan" :key="item.value" :label="item.label"
+                                                   :value="item.value"></el-option>
+                                    </el-select>
+                                </div>
+                                <div>
+                                    <el-input placeholder="请输入要搜索的内容" v-model="searchInput" class="input-with-select" @change="initData">
+                                        <el-select v-model="selectValue" slot="prepend" class="type-select" @change="initData">
+                                            <el-option v-for="item in typeSelect" :key="item.value" :label="item.value"
+                                                       :value="item.value"></el-option>
+                                        </el-select>
+                                    </el-input>
+                                </div>
+                                <div>
+                                    <el-date-picker
+                                        v-model="dateInput"
+                                        type="daterange"
+                                        start-placeholder="开始日期"
+                                        end-placeholder="结束日期"
+                                        value-format="yyyy/MM/dd"
+                                        format="yyyy/MM/dd"
+                                        class="date-select input-with-select"
+                                    >
+                                    </el-date-picker>
+                                </div>
+                                <div>
+                                    <el-button type="primary" style="background: #1890FF" icon="el-icon-search"
+                                               class="searchBtn" @click="searchFun" :disabled="searchBtnAbled">搜索</el-button>
+                                </div>
+                                <div>
+                                    <el-button type="primary" class="map" icon="el-icon-location-outline" @click="mapAD">地图</el-button>
+                                </div>
+                                <div>
                                     <el-button type="success" class="oneKeyPointBtn importXle" icon="el-icon-upload2" @click="importFanan">导入</el-button>
-                                </span>
-                                <span>
+                                </div>
+                                <div>
                                     <el-button class="oneKeyPointBtn" @click="dialogOneKeyPoint = true">一键选点</el-button>
-                                </span>
+                                </div>
                                 <div class="shopcar" @click="dialogVisible()">
                                     <el-badge :value="nowPointNum" class="item">
                                         <img src="../../assets/images/shopCar.png" alt="">
@@ -504,42 +513,51 @@
                                    :before-close="shopingBeforeClose">
                             <template slot-scope="scope">
                                 <div class="table_wrap car-list" style="margin-top: 60px"
-                                     :visible.sync="dialogTableVisible">
-                                    <el-row>
-                                        <el-col :span="6">
-                                            <el-button @click="getMapADList" class="mapBtn" :disabled="mapBtn">获取地图选点</el-button>
-                                            <el-button @click="getShareADList" class="mapBtn">更新客户选点</el-button>
-                                        </el-col>
-                                        <el-col :span="18" class="warningInfo">
-                                            <span style="background: #fff1f1" class="warningInfoColor"></span>
-                                            <span class="warningInfoName">被占点位</span>
-                                            <span style="background: rgba(0,153,255,0.2)" class="warningInfoColor"></span>
-                                            <span class="warningInfoName">连排门、同行资源回避、同行媒体回避</span>
-                                            <span class="warningInfoName"
-                                                  v-if="mediaLevelNum.ALevel || mediaLevelNum.BLevel || mediaLevelNum.CLevel">
-                                                        A级:<strong>{{mediaLevelNum.ALevel}}</strong>面、
-                                                        B级:<strong>{{mediaLevelNum.BLevel}}</strong>面、
-                                                        C级:<strong>{{mediaLevelNum.CLevel}}</strong>面
-                                            </span>
-                                            <span class="warningInfoName" style="margin-right: 0">
-                                                        A面:<strong>{{mediaLevelNum.ANum}}</strong>&nbsp;&nbsp;
-                                                        B面:<strong>{{mediaLevelNum.BNum}}</strong>
-                                            </span>
-                                        </el-col>
-                                    </el-row>
-                                    <div class="car-title">
-                                        <i class="el-icon-info" style="color: #1890FF;"></i>
-                                        <h4>已选择<span>{{shopMedia_ADNum.resNum}}</span>个社区,<span>{{shopMedia_ADNum.mediaNum}}</span>个媒体,
-                                            <p>投放<span>{{shopMedia_ADNum.ADNum}}</span>面,
-                                            </p>
-                                            <p>其中有<span>{{ADLockNum}}</span>个被占点位</p>
-                                            <span style="cursor: pointer" @click="clearADLock">移除被占点位</span>
-                                            <span style="cursor: pointer" @click="removeNoShareAD">移除非客户选点</span>
-                                            <span style="cursor: pointer" @click="removeCommentIndustryAds('res')"> 移除同行资源回避的点位</span>
-                                            <span style="cursor: pointer" @click="removeCommentIndustryAds('media')">移除同行媒体回避的点位</span>
-                                        </h4>
-                                    </div>
-                                    <div class="table_box">
+                                     :visible.sync="dialogTableVisible" v-loading="shopLoading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
+                                    <div class="table_box shopcar_box">
+
+                                        <el-row style="margin-bottom:10px;">
+                                            <el-col :span="8">
+                                                <el-radio-group v-model="activeName" size="small" @change="handleClick">
+                                                    <el-radio-button :label="item.type.toString()" v-for="item of typeShopList" :key="item.type">{{item.mVehicle}}</el-radio-button>
+                                                </el-radio-group>
+                                            </el-col>
+
+                                            <el-col :span="16" style="text-align:right;">
+                                                <span class="button_point">
+                                                    <el-button @click="getMapADList" class="mapBtn" :disabled="mapBtn">获取地图选点</el-button>
+                                                    <el-button @click="getShareADList" class="mapBtn">更新客户选点</el-button>
+                                                </span>
+                                                <el-select v-model="eventType" placeholder="快捷配点" filterable @change="changeEvent">
+                                                    <el-option v-for="item of eventList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                                                </el-select>
+                                            </el-col>
+                                        </el-row>
+                                        <el-row class="car-title">
+                                            <el-col :span="9">
+                                                <img src="../../assets/images/statistics.png" alt="" style="vertical-align: text-top;">
+                                                社区:<span>{{shopMedia_ADNum.resNum}}</span>
+                                                (选1面:<span>{{shopMedia_ADNum.oneNum}}</span>&nbsp;&nbsp;
+                                                选2面:<span>{{shopMedia_ADNum.twoNum}}</span>&nbsp;&nbsp;
+                                                选3面:<span>{{shopMedia_ADNum.threeNum}}</span>&nbsp;&nbsp;
+                                                选更多:<span>{{shopMedia_ADNum.moreNum}}</span>)
+                                            </el-col>
+                                            <el-col :span="2">
+                                                媒体:<span>{{shopMedia_ADNum.mediaNum}}</span>
+                                            </el-col>
+                                            <el-col :span="6">
+                                                点位:<span>{{shopMedia_ADNum.ADNum}}</span>
+                                                (A面:<span>{{mediaLevelNum.ANum}}</span>&nbsp;&nbsp;
+                                                B面:<span>{{mediaLevelNum.BNum}}</span>)
+                                            </el-col>
+                                            <el-col :span="5" v-if="mediaLevelNum.ALevel || mediaLevelNum.BLevel || mediaLevelNum.CLevel">
+                                                A级:<span>{{mediaLevelNum.ALevel}}</span>
+                                                B级:<span>{{mediaLevelNum.BLevel}}</span>
+                                                C级:<span>{{mediaLevelNum.CLevel}}</span>
+                                            </el-col>
+                                            <el-col :span="2">被占点位:<span style="color:#FF7958;">{{ADLockNum}}</span></el-col>
+                                        </el-row>
+
                                         <span class="change_scheduling" @click="changeAdsSchedule">更换排期</span>
                                         <el-table
                                             v-loading="shopLoading"
@@ -548,7 +566,7 @@
                                             border
                                             :row-class-name="tableRowClassName"
                                             :highlight-current-row="true"
-                                            :data="shopingList"
+                                            :data="shopShowList"
                                             @row-click="shopRowClick"
                                             style="width: 100%"
                                             id="shopCarTable">
@@ -571,7 +589,9 @@
                                                             <span>{{ props.row.liveYear }}</span>
                                                         </el-form-item>
                                                         <el-form-item label="广告限制：">
-                                                            <span>{{ props.row.adLimit }}</span>
+                                                            <div class="shopList_adLimit">
+                                                                <span>{{ props.row.adLimit }}</span>
+                                                            </div>
                                                         </el-form-item>
                                                     </el-form>
                                                 </template>
@@ -640,13 +660,20 @@
                                             </el-table-column>
                                             <el-table-column min-width="54px" :render-header="renderHeader">
                                                 <template slot-scope="scope">
-                        <span style="cursor: pointer;color: #1890ff"
-                              @click="deleteRow(scope.row)">
-                            <i class="el-icon-delete" style="color: #108DE7;font-size: 20px;margin-left: 7px"></i>
-                        </span>
+                                                    <span style="cursor: pointer;color: #1890ff"
+                                                        @click="deleteRow(scope.row)">
+                                                        <i class="el-icon-delete" style="color: #108DE7;font-size: 20px;margin-left: 7px"></i>
+                                                    </span>
                                                 </template>
                                             </el-table-column>
                                         </el-table>
+
+                                        <p class="warningInfo">
+                                            <span style="background: rgba(255,0,0,0.08)" class="warningInfoColor"></span>
+                                            <span class="warningInfoName">被占点位</span>
+                                            <span style="background: rgba(255,199,0,0.10)" class="warningInfoColor"></span>
+                                            <span class="warningInfoName">连排门、同行资源回避、同行媒体回避</span>
+                                        </p>
                                     </div>
 
                                     <div style="text-align: center;margin-bottom: 10px">
@@ -1142,6 +1169,14 @@
                 },
                 industryID: '',     // 所选公司所在的行业
                 shopingList: [],        // step2购物车列表
+                // 购物车展示的数据
+                typeShopList:[],
+                activeName: '1',
+                // 事件选择
+                eventType: '',
+                eventList: [],
+                // 购物车表格数据
+                shopShowList: [],
                 planList: [],            //step2可选点位列表
                 sessionData: '',    // 登录用户的数据
                 FAData: '',            // 创建方后台返回的数据
@@ -1166,7 +1201,7 @@
                     pSNum: false
                 },
                 loadSign: true,            // table滚轮
-                shopMedia_ADNum: {resNum: 0, mediaNum: 0, ADNum: 0},
+                shopMedia_ADNum: {resNum: 0, mediaNum: 0, ADNum: 0, oneNum: 0, twoNum: 0, threeNum: 0, moreNum: 0},
                 ADloading: '',                 // 创建方案、提交选点和报价单时的loading
                 computeAuotation: '',         // 计算报价单时的loading
                 areaCity: [],
@@ -1197,7 +1232,7 @@
                 mStateIndex: 0,               // 切换媒体状态时，如果状态为1(正常)则进行滚动加载，mStateIndex记录下标
                 editApid: '',                  // 编辑方案的id
                 editApRemark: [],              // 编辑方案之前的备注信息，[{rid:440100,remark:''}]
-                ADLockNum: 0,                  // 被锁点位的数量
+                // ADLockNum: 0,                  // 被锁点位的数量
                 mapADList: [],                 // 地图选择的点位数据
                 mapParams: {},                  // 记录当前地图选点时的参数，包括排期、城市名和rid
                 mapBtn: true,                   // 获取地图选点数据的按钮，默认不可点击
@@ -1274,6 +1309,11 @@
                 mediaLevelNum:{ALevel: 0, BLevel: 0, CLevel: 0,ANum:0,BNum:0},
                 asrIDList: [],                 // 已选点位里存在的公司及城市
                 saleManageLevel: 0,            // 销售权限 0地方销售 1全国销售
+                /*方案排斥*/
+                activeSelect: '1',                 //
+                rejectAdPlan: [],                  // 排斥方案选项
+                activeAdPlan: '',                 // 当前选择的方案
+                routePath: '',
             };
         },
         mounted() {
@@ -1294,6 +1334,7 @@
             let shopAnimate = document.getElementsByClassName('shopAnimate')[0]
             shopAnimate.style.right = this.shopXY.x + 'px'
             console.log('this.cityOptions', this.cityOptions)
+
         },
         directives: {
             loadmore: {
@@ -1316,6 +1357,18 @@
                     this.computeConnectAdData()
                 }
                 return this.shopingList.length
+            },
+            ADLockNum(){
+                let num = 0;
+                if(this.dialogTableVisible){
+                    for (let data of this.shopShowList) {
+                        if(data.lState !== undefined && data.lState.length > 0){
+                            num++;
+                        }
+                    }
+                    return num;
+                }
+                return num;
             },
         },
         methods: {
@@ -1354,7 +1407,7 @@
                     // formData.append('suid', this.BDData.uid);
                     // 上传文件
                     api.postUpload_file(this.doUpload+'?uid='+this.sessionData.uID + '&token='
-                        + this.sessionData.token + '&suid='+ this.BDData.uid, formData).then(res =>{
+                        + this.sessionData.token + '&suid='+ this.BDData.uid+'&apId='+this.activeAdPlan, formData).then(res =>{
                         console.log(res.data);
                         if(!res.data.SysCode){
                             let importInfo = res.data;
@@ -1373,7 +1426,7 @@
                         }else if(res.data.SysCode == 100302){
                             this.loginTimeout();
                         }else{
-                            Message.warning(res.data.MSG);
+                            this.messageFun('warning',res.data.MSG)
                         }
                     }).catch(res =>{
                         console.log(res);
@@ -1449,7 +1502,7 @@
                     }
                 }
                 console.log('this.shopingList----', this.shopingList);
-                Message.success('成功导入'+arr.length+'条数据');
+                this.messageFun('success','成功导入'+arr.length+'条数据')
                 this.isImport = false;
                 this.computeMedia_AD();
                 this.judgeByselect();
@@ -1670,6 +1723,34 @@
                 this.dateInput = [starTime, endTime] // 设置默认时间
                 this.beforeDate = [starTime, endTime]
             },
+            // 获取排斥方案选择列
+            getRejectPlanList(){
+                let params = {
+                    uid:this.sessionData.uID,
+                    token: this.sessionData.token,
+                    sales_user: this.BDData.uid
+                }
+                api.getApi(this.Advertisement + '/getSalesProject', params).then(res => {
+                    console.log('销售所属方案',res)
+                    if (res.data.SysCode == 200200) {
+                        let resData =  res.data.data
+                        let tempList = []
+                        for(let key of resData){
+                            if(this.apid != key.apId){
+                                tempList.push({
+                                    value: key.apId,
+                                    label: key.apName + '--' + key.cname + '--' + key.apcTime
+                                })
+                            }
+                        }
+                        this.rejectAdPlan = tempList
+                    } else if (res.data.SysCode == 100302 || res.data.MSG === '登陆超时') {
+                        this.loginTimeout()
+                    } else {
+                        this.messageFun('warning',res.data.MSG)
+                    }
+                })
+            },
             // step2 获取广告限制列表
             getADLimit() {
                 this.ADLimit = []
@@ -1725,7 +1806,7 @@
                         if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                             this.loginTimeout()       // 登录超时
                         } else {
-                            Message.warning('选点信息提交失败')
+                            this.messageFun('warning','选点信息提交失败！')
                         }
                         this.ADloading.close()
                     }
@@ -1733,7 +1814,7 @@
             },
             // 创建方案基本信息及投放城市详情(报价单数据提交)
             creatAdPlan(apid){
-                console.log('creatAdPlan',this.quotation,this.pdidList)
+                console.log('creatAdPlan',this.quotation)
                 let arr = []
                 for(let key of this.quotation){
                     for(let i in key.priceMsg){
@@ -1755,9 +1836,10 @@
                                 this.apMinTime = minTime
                             }
                         }
-                        let pdid = this.getpdidByCityAndMType(i,key.city)
+                        let pdid = this.getpdidByCityAndMType(i,key.city,key.asrID)
+                        console.log('pdid',pdid)
                         arr.push({
-                            "pdID": pdid,
+                            "pdID": pdid ? pdid : '',
                             "pdRemark": key.priceMsg[i].remark || '',
                             "rID": key.rid,
                             "asrID": key.asrID,
@@ -1789,25 +1871,26 @@
                         this.PushADBFun(res.data.Data)
                     }else if(res.data.SysCode == 300500){
                         this.ADloading.close()
-                        this.$message.warning(res.data.MSG)
+                        this.messageFun('warning',res.data.MSG)
                     }else if(res.data.SysCode == 100302 || res.data.MSG === '登陆超时'){
                         this.ADloading.close()
                         this.loginTimeout()
                     }else{
                         this.ADloading.close()
-                        this.$message.warning('价格信息提交失败')
+                        this.messageFun('warning','价格信息提交失败')
                     }
                 })
             },
-            getpdidByCityAndMType(mType,city) {
-                console.log(mType,city)
+            getpdidByCityAndMType(mType,city,asrID) {
+                console.log('this.pdidList',this.pdidList,mType,city,asrID)
                 for(let key of this.pdidList){
-                    if(mType === 'adDoor' && key.pdType == 0 && key.city === city){
+                    if(mType === 'adDoor' && key.pdType == 0 && key.city === city && asrID == key.asrID){
                         return key.pdID
-                    }else if (mType === 'roadGate' && key.pdType == 1 && key.city === city){
+                    }else if (mType === 'roadGate' && key.pdType == 1 && key.city === city && asrID == key.asrID){
                         return key.pdID
                     }
                 }
+                return false
             },
             PushADBFun(data) {
                 let ADBData = data
@@ -1868,27 +1951,16 @@
                         this.loginTimeout()
                     } else {
                         if (res.data === '' || res.data === null) {
-                            this.$message({
-                                message: '提交选点失败',
-                                type: 'warning'
-                            })
+                            this.messageFun('warning','提交选点失败')
                         } else {
-                            // this.ADloading.close()
                             this.active = 3
                             if (this.workInSync) {
                                 this.CreateShareADSFun()
                             }
                             if(this.apMinTime <= this.dateTime){
-                                Message({
-                                    message: '该方案的投放期已经开始，建议立即发布该方案！',
-                                    type: 'warning',
-                                    duration: 5000
-                                })
+                                this.messageFun('warning','该方案的投放期已经开始，建议立即发布该方案！')
                             }else{
-                                Message({
-                                    message: '投放城市的报价信息提交成功！',
-                                    type: 'success'
-                                })
+                                this.messageFun('success','投放城市的报价信息提交成功')
                             }
                         }
                     }
@@ -1947,7 +2019,7 @@
                         }
                         this.loading = false
                     } else {
-                        this.$message.warning(res.data.MSG)
+                        this.messageFun('warning',res.data.MSG)
                         this.loading = false
                     }
                     this.searchBtnAbled = false
@@ -2052,6 +2124,13 @@
                 this.pageNo = 1
                 this.planList = []
             },
+            // 方案排斥选择
+            selectRejectPlan(val){
+                console.log('方案排斥选择',val,this.activeAdPlan)
+                this.getAdsParamsData.apId = this.activeAdPlan
+                this.setPageNoAndTableData()
+                this.getAdList()
+            },
             //step2搜索按钮
             searchFun() {
                 console.log('搜索排期时间', this.dateInput)
@@ -2073,7 +2152,7 @@
                         this.getAdList()
                         this.beforeDate = this.dateInput
                     }else if(!this.dateInput){
-                        this.$message.warning('搜索时间不能为空!')
+                        this.messageFun('warning','搜索时间不能为空!')
                         this.searchBtnAbled = false
                     }else{
                         this.searchBtnAbled = false
@@ -2128,6 +2207,10 @@
                     ls: this.dateInput[0],
                     le: this.dateInput[1],
                     suID: this.BDData.uid,
+                    apId: this.activeAdPlan
+                }
+                if(params.apId === ''){
+                    delete params.apId
                 }
                 console.log('生成地图MapID参数', params)
                 let tempwindow = window.open()
@@ -2144,10 +2227,7 @@
                         if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                             this.loginTimeout()       // 登陆超时
                         } else {
-                            Message({
-                                message: res.data.MSG + ',请尝试重新点击',
-                                type: 'warning'
-                            })
+                            this.messageFun('warning',res.data.MSG + ',请尝试重新点击')
                         }
                     }
                 }).catch(err => {
@@ -2169,13 +2249,13 @@
                 if(IsBoolean){
                     console.log('一键选点',this.oneKeyPointData)
                     if(Number(this.oneKeyPointData.TotalPoint) < Number(this.oneKeyPointData.pointNumByRes)){
-                        this.$message.warning('每小区选择的个数不能大于点位总量')
+                        this.messageFun('warning','每小区选择的个数不能大于点位总量')
                     }else{
                         this.oneKeySelectPoint()
                     }
 
                 }else{
-                    this.$message.warning('信息填写有误')
+                    this.messageFun('warning','信息填写有误')
                 }
 
             },
@@ -2205,7 +2285,8 @@
                     shn: this.houseNum[1],
                     shp: this.buildPrice[0] * 100,
                     bhp: this.buildPrice[1] * 100,
-                    suid: this.BDData.uid
+                    suid: this.BDData.uid,
+                    apId: this.activeAdPlan
                 }
                 if(this.selectValue === '商圈'){
                     params.ta = this.searchInput
@@ -2287,20 +2368,20 @@
                         this.computeMedia_AD()
                         this.judgeByselect()
                         if(this.oneKeyPointData.TotalPoint == res.data.length){
-                            this.$message.success('成功选择了'+ res.data.length +'面')
+                            this.messageFun('success','成功选择了'+ res.data.length +'面')
                         }else{
-                            this.$message.warning('满足条件的点位不足'+this.oneKeyPointData.TotalPoint+'面,成功选择了'+ res.data.length +'面')
+                            this.messageFun('warning','满足条件的点位不足'+this.oneKeyPointData.TotalPoint+'面,成功选择了'+ res.data.length +'面')
                         }
 
                     }else{
-                        this.$message.warning('选择失败')
+                        this.messageFun('warning','选择失败')
                     }
                     oneKeyPointLoading.close()
                 })
                 let timer = setTimeout(()=>{
                     if(!IsXhr){
                         // console.log('取消一键选点')
-                        this.$message.warning('点位选择异常')
+                        this.messageFun('warning','点位选择异常')
                         oneKeyPointLoading.close()
                     }else{
                         // console.log('一键选点已成功')
@@ -2509,7 +2590,7 @@
                     this.setPageNoAndTableData()
                     this.getAdList()
                 }else{
-                    this.$message.warning('被占查询状态下，无效切换!')
+                    this.messageFun('warning','被占查询状态下，无效切换!')
                 }
             },
             // 媒体等级过滤
@@ -2542,7 +2623,7 @@
             // 住户数量过滤
             tableHeaderFilter_h() {
                 if (this.houseNum[0] == '' || this.houseNum[1] == '') {
-                    this.$message.warning('数据区间填写有误')
+                    this.messageFun('warning','数据区间填写有误!')
                 } else {
                     let tagName = '住户数量:' + this.houseNum[0] + "-" + this.houseNum[1]
                     this.isHaveThisTag('houseNum', tagName)
@@ -2556,7 +2637,7 @@
             // 楼盘价格过滤
             tableHeaderFilter_p() {
                 if (this.buildPrice[0] == '' || this.buildPrice[1] == '') {
-                    this.$message.warning('数据区间填写有误')
+                    this.messageFun('warning','数据区间填写有误!')
                 } else {
                     let tagName = '楼盘价格:' + this.buildPrice[0] + "-" + this.buildPrice[1]
                     this.isHaveThisTag('buildPrice', tagName)
@@ -2570,7 +2651,7 @@
             // 年份过滤
             tableHeaderFilterByLiveYear() {
                 if (this.liveYear[0] == '' || this.liveYear[1] == '') {
-                    this.$message.warning('数据区间填写有误!')
+                    this.messageFun('warning','数据区间填写有误!')
                 } else {
                     let tagName = '入住年份:' + this.liveYear[0] + "-" + this.liveYear[1]
                     this.isHaveThisTag('liveYear', tagName)
@@ -2596,7 +2677,7 @@
             //人流量过滤
             tableHeaderFilterByPeopleFlow() {
                 if (this.peopleFlow[0] == '' || this.peopleFlow[1] == '') {
-                    this.$message.warning('数据区间填写有误!')
+                    this.messageFun('warning','数据区间填写有误!')
                 } else {
                     let tagName = '人流量:' + this.peopleFlow[0] + "-" + this.peopleFlow[1]
                     this.isHaveThisTag('peopleFlow', tagName)
@@ -2610,7 +2691,7 @@
             // 车流量过滤
             tableHeaderFilterByCarFlow() {
                 if (this.carFlow[0] == '' || this.carFlow[1] == '') {
-                    this.$message.warning('数据区间填写有误!')
+                    this.messageFun('warning','数据区间填写有误!')
                 } else {
                     let tagName = '车流量:' + this.carFlow[0] + "-" + this.carFlow[1]
                     this.isHaveThisTag('carFlow', tagName)
@@ -2624,7 +2705,7 @@
             // 车位数过滤
             tableHeaderFilterByParkSpaceNum(){
                 if(this.parkSpaceNum[0] == '' || this.parkSpaceNum[1]){
-                    this.$message.warning('数据区间填写有误!')
+                    this.messageFun('warning','数据区间填写有误!')
                 }else{
                     let tagName = '车位数:' + this.parkSpaceNum[0] + "-" + this.parkSpaceNum[1]
                     this.isHaveThisTag('parkSpaceNum',tagName)
@@ -3002,10 +3083,7 @@
                     if (this.shopingList.length !== 0) {
                         this.getFA_remark()         // 获取原投放城市详情的备注信息，再去this.creatTab()、 this.getShopingCityName() 、this.computeCityDiffAsIdNum() 、this.quotationFun()
                     } else {
-                        this.$message({
-                            message: '请选择点位',
-                            type: 'warning'
-                        })
+                        this.messageFun('warning','请选择点位')
                     }
                 } else if (this.active === 2) {
                     this.isCityPrice = false
@@ -3022,7 +3100,7 @@
                         })
                         this.SetADBFun()    // 创建方案
                     }else{
-                        this.$message.error('单城市总价格大于系统支持的最大价格（2000万）')
+                        this.messageFun('warning','单城市总价格大于系统支持的最大价格（2000万）')
                     }
                 }
                 if (this.active > 3) {
@@ -3064,10 +3142,7 @@
                 oInput.select();                // 选择对象
                 document.execCommand("Copy"); // 执行浏览器复制命令
                 oInput.style.display = 'none';
-                this.$message({
-                    message: '复制成功',
-                    type: 'success'
-                })
+                this.messageFun('success','复制成功')
             },
             // step3 获取方案的各投放城市的原备注信息
             getFA_remark() {
@@ -3217,8 +3292,257 @@
             // dialog购物筐的显示全选中后添加都购物车
             dialogVisible() {
                 this.computeConnectAdData()
-                this.dialogTableVisible = true
-                this.computeMedia_AD()
+                this.dialogTableVisible = true;
+                this.eventType = "";
+                this.typeShopList = this.getTypeList();
+                this.handleClick();
+            },
+            // 组合typeShopList
+            getTypeList(){
+                console.log('--------', this.shopingList);
+                let arr = [
+                    {
+                        type: 1,
+                        mVehicle: "广告门",
+                        asidList: [],
+                    },
+                    {
+                        type: 2,
+                        mVehicle: '道闸',
+                        asidList: [],
+                    }
+                ];
+                let type1 = [];
+                let type2 = [];
+                for(let data of this.shopingList){
+                    if(data.mVehicle == '广告门'){
+                        type1.push(data);
+                    }else if(data.mVehicle == '道闸'){
+                        type2.push(data);
+                    }
+                }
+                arr[0].asidList = type1;
+                arr[1].asidList = type2;
+                return arr;
+            },
+            // 切换tab
+            handleClick(){
+                console.log('this.activeName----', this.activeName, this.typeShopList);
+                this.eventType = '';
+                this.getShowList();
+                this.getEventList();
+                this.computeMedia_AD();
+            },
+            // 设置购物车表格数据
+            getShowList(){
+                let currTab = this.activeName;
+                let arr = this.typeShopList[currTab-1].asidList;
+                this.shopShowList = arr;
+            },
+            // 获取事件
+            getEventList(){
+                let arr = [
+                    {
+                        label: '移除被占点位',
+                        value: 1,
+                    },
+                    {
+                        label: '移除非客户的选点',
+                        value: 2,
+                    },
+                    {
+                        label: '移除同行已选小区',
+                        value: 3,
+                    },
+                    {
+                        label: '同资源保留1个点位',
+                        value: 5,
+                    },
+                    {
+                        label: '同资源保留2个点位',
+                        value: 6,
+                    },
+                ];
+                let currTab = this.activeName;
+                if(currTab == 1){
+                    let temp = [
+                        {
+                            label: '移除同行已选点位',
+                            value: 4,
+                        },
+                        {
+                            label: '移除同媒体A面',
+                            value: 7,
+                        },
+                        {
+                            label: '移除同媒体B面',
+                            value: 8,
+                        },
+                    ];
+                    arr = arr.concat(temp);
+                }else if(currTab == 2){
+                    arr = arr;
+                }
+                arr.sort((a, b)=>{
+                    return a.value - b.value;
+                });
+                this.eventList = arr;
+            },
+            // 事件选择
+            changeEvent(val){
+                console.log('val', val);
+                if(this.shopShowList.length){
+                    switch (val){
+                        case 1:
+                            this.clearADLock();
+                            break;
+                        case 2:
+                            this.removeNoShareAD();
+                            break;
+                        case 3:
+                            this.removeCommentIndustryAds('res');
+                            break;
+                        case 4:
+                            this.removeCommentIndustryAds('media');
+                            break;
+                        case 5:
+                            this.containNuminRes(1);
+                            break;
+                        case 6:
+                            this.containNuminRes(2);
+                            break;
+                        case 7:
+                            this.removeAllType('A');
+                            break;
+                        case 8:
+                            this.removeAllType('B');
+                            break;
+                    }
+                }else{
+                    let active = this.activeName;
+                    this.messageFun('warning', `没有${active=='1'?'广告门':'道闸'}数据`);
+                }
+            },
+            // 同资源保留个数
+            containNuminRes(num){
+                let resultArr = this.funToArr(this.shopShowList, 'resID');
+                resultArr = this.resRandomNum(resultArr, num);
+                let len = this.shopShowList.length;
+                if(resultArr.length){
+                    this.getResultData(resultArr);
+                    if(len != resultArr.length){
+                        this.messageFun('success',`成功保留同资源${num}个点位！`);
+                    }else{
+                        this.messageFun('warning', '暂无同资源可移除的点位！')
+                    }
+                    this.computeMedia_AD();
+                    this.resetPlanList();
+                    this.judgeByselect();
+                }else{
+                    this.messageFun('warning', '暂无同资源可移除的点位！')
+                }
+            },
+            // 随机保留num个数点位
+            resRandomNum(arr, num){
+                let result = [];
+                for(let data of arr){
+                    if(num > 1){
+                        let randomArr = [];
+                        let max = data.asidList.length;
+                        if(num >= max){
+                            result = result.concat(data.asidList);
+                        }else{
+                            randomArr = this.randomFun([], num, data.asidList.length);
+                            for(let item of randomArr){
+                                result.push(data.asidList[item]);
+                            }
+                        }
+                    }else{
+                        let randomNum = parseInt(Math.random()*(data.asidList.length), 10);
+                        result.push(data.asidList[randomNum]);
+                    }
+                }
+                return result;
+            },
+            // 递归获取不同的随机数
+            randomFun(arr, num, max){
+                if(arr.length < num){
+                    let randomNum = parseInt(Math.random()*(max), 10);
+                    if(!arr.includes(randomNum)){
+                        arr.push(randomNum);
+                    }
+                    return this.randomFun(arr, num, max);
+                }else{
+                    return arr;
+                }
+            },
+            // 分组数据
+            funToArr(arr, condition){
+                let resultArr= arr.reduce((groups, item)=>{
+                    let groupFound= groups.find(arrItem => item[condition] === arrItem[condition]);
+                    if(groupFound) {
+                        if(!JSON.stringify(groupFound.asidList).includes(JSON.stringify(item))) {  //去重
+                            groupFound.asidList.push(item);
+                        }
+                    } else {
+                        //不要直接在原来的对象修改，新建对象
+                        let newGroup = {
+                            [condition]: item[condition],
+                            asidList: [item]
+                        }
+                        groups.push(newGroup);
+                    }
+                    return groups;
+                },[]);
+                return resultArr;
+            },
+            // 移除A/B面
+            removeAllType(type){
+                let resultArr = this.funToArr(this.shopShowList, 'mID');
+                console.log('resultArr------------das---', resultArr);
+                let len = this.shopShowList.length;
+                if (resultArr.length > 0) {
+                    resultArr = this.isEnoughMedia(type, resultArr);
+                    this.getResultData(resultArr);
+                    if(len != resultArr.length){
+                        this.messageFun('success',`成功移除同门${type}面的点位！`)
+                    }else{
+                        this.messageFun('warning', '暂无可移除点位')
+                    }
+                    this.computeMedia_AD();
+                    this.resetPlanList();
+                    this.judgeByselect();
+                } else {
+                    this.messageFun('warning', '暂无可移除点位！')
+                }
+            },
+            // 同一媒体是否有a/b面
+            isEnoughMedia(type, arr){
+                let resultArr = [];
+                for(let data of arr){
+                    let result = [];
+                    if(data.asidList.length > 1){
+                        result = data.asidList.filter((item)=>{
+                            return (item.A_B != type);
+                        });
+                    }else{
+                        result = data.asidList;
+                    }
+                    resultArr = resultArr.concat(result);
+                }
+                return resultArr;
+            },
+            getResultData(resultArr){
+                let other = [];
+                for(let data of this.typeShopList){
+                    if(this.activeName != data.type){
+                        other = other.concat(data.asidList);
+                    }else{
+                        data.asidList = resultArr;
+                    }
+                }
+                this.shopingList = other.concat(resultArr);
+                this.shopShowList = resultArr;
             },
             //设置报价单
             APQuotationArr(...data){
@@ -3307,18 +3631,6 @@
                 }
                 return selectInfo
             },
-            // 取消全选时的购物车删除
-            selectAlldelRow(rows) {
-                if (this.ADLockNum > 0) {
-                    this.ADLockNum -= 1
-                }
-                for (let j = 0; j < this.shopingList.length; j++) {
-                    if (this.shopingList[j].mID === rows.mID && this.shopingList[j].schedules === rows.schedules) {
-                        this.shopingList.splice(j, 1)
-                        break
-                    }
-                }
-            },
             // 自定义购物车表头-清空
             renderHeader(h, {column}){
                 // console.log('********h*******',h,column)
@@ -3352,17 +3664,24 @@
                         }
                     }
                 }
-                for (let j = 0; j < this.shopingList.length;) {
+                // for (let j = 0,len=this.shopShowList.length; j < len;) {
+                //     if (this.shopShowList[j].mID === rows.mID && this.shopShowList[j].A_B == rows.A_B && this.shopShowList[j].schedules === rows.schedules) {
+                //         this.shopShowList.splice(j, 1);
+                //         break
+                //     } else {
+                //         j++
+                //     }
+                // }
+                for (let j = 0,len=this.shopingList.length; j < len;) {
                     if (this.shopingList[j].mID === rows.mID && this.shopingList[j].A_B == rows.A_B && this.shopingList[j].schedules === rows.schedules) {
-                        if( this.shopingList[j].lState !== undefined&& this.shopingList[j].lState.length > 0){
-                            this.ADLockNum--
-                        }
                         this.shopingList.splice(j, 1)
                         break
                     } else {
                         j++
                     }
                 }
+                this.typeShopList = this.getTypeList();
+                this.getShowList();
                 this.computeMedia_AD()
                 this.allCheckboxUpdata()
                 event.stopPropagation()
@@ -3456,11 +3775,8 @@
             // 购物车- 获取协同选点的数据
             getShareADList() {
                 if (this.shareADSData.aiCode !== undefined && this.shareADSData.aiCode !== null) {
-                    let time = timeFormat.toDateTime(this.shareADSData.aisTime, ".") || ''// this.formatTime(this.shareADSData.aisTime)
-                    Message({
-                        message: '未更新选点，上次提交时间为' + time, // 未更新选点
-                        type: 'warning'
-                    })
+                    let time = timeFormat.toDateTime(this.shareADSData.aisTime, ".") || ''
+                    this.messageFun('warning','未更新选点，上次提交时间为' + time)
                 } else {
                     let ShareLoading = this.$loading({
                         lock: true,
@@ -3482,20 +3798,18 @@
                                 if (res.data !== '' &&  !res.data.SysCode && res.data.asIDList !== undefined && res.data.aiIP !== undefined) {
                                     this.shareADSData = res.data
                                     this.compareShopData_shareData()
+
+                                    this.typeShopList = this.getTypeList();
+                                    this.getShowList();
                                 } else {
-                                    Message({
-                                        message: '暂无数据可获取', // 未更新选点
-                                        type: 'warning'
-                                    })
+                                    // 未更新选点
+                                    this.messageFun('warning','暂无数据可获取')
                                 }
                                 ShareLoading.close()
                             })
                         } else {
                             ShareLoading.close()
-                            Message({
-                                message: '暂无数据可获取', // 未更新选点
-                                type: 'warning'
-                            })
+                            this.messageFun('warning','暂无数据可获取')
                         }
                     })
                 }
@@ -3531,10 +3845,7 @@
                     }
                 }
                 let time = timeFormat.toDateTime(this.shareADSData.aisTime, "-") //this.shareADSData.aisTime
-                this.$message({
-                    type: 'success',
-                    message: '更新选点共' + shareNum + '面(带小红点),上次提交时间:' + time
-                })
+                this.messageFun('success','更新选点共' + shareNum + '面(带小红点),上次提交时间:' + time)
             },
             // 购物车-获取地图选择的点位列表
             getMapADList() {
@@ -3553,20 +3864,14 @@
                         if(this.mapADList.length > 0){
                             this.setShopDataByMapAD()
                         } else {
-                            Message({
-                                message: '数据为空',
-                                type: 'warning'
-                            })
+                            this.messageFun('warning','数据为空')
                             this.getMapLoading.close()
                         }
                     } else if(res.data.code == '100302' || res.data.MSG === "登陆超时"){
                         this.loginTimeout()
                     } else {
                         this.getMapLoading.close()
-                        Message({
-                            message: '数据获取异常',
-                            type: 'warning'
-                        })
+                        this.messageFun('warning','数据获取异常')
                     }
                 })
             },
@@ -3662,10 +3967,11 @@
                     this.shopingList = tempArr
                 }
                 this.getMapLoading.close()
-                Message({
-                    message: '成功获取到' + tempArr.length + '条数据',
-                    type: 'success'
-                })
+                this.messageFun('success','成功获取到' + tempArr.length + '条数据')
+
+                this.typeShopList = this.getTypeList();
+                this.getShowList();
+
                 this.computeMedia_AD('mapAD')
                 this.judgeByselect()
             },
@@ -3725,7 +4031,7 @@
             },
             // 移除同行资源点位
             removeCommentIndustryAds(letter){
-                let shopingData = this.shopingList
+                let shopingData = this.shopShowList
                 let arr = []
                 let num = 0     // 记录移除个数
                 for (let i = 0; i < shopingData.length; i++) {
@@ -3745,13 +4051,15 @@
                     }
                 }
                 if (num > 0) {
-                    this.$message.success('成功移除' + num + '条数据')
-                    this.shopingList = arr
+                    this.messageFun('success','成功移除' + num + '条数据')
+
+                    this.getResultData(arr);
+
                     this.computeMedia_AD()
                     this.resetPlanList()
                     this.judgeByselect()
                 } else {
-                    this.$message.warning('暂无同行回避点位')
+                    this.messageFun('warning','暂无同行回避点位!')
                 }
             },
             // 更换排期
@@ -3761,7 +4069,8 @@
                 let arr = []
                 let isHad = true
                 // 统计购物车数据点位排期，按城市及排期分开
-                for(let key of this.shopingList){
+                // for(let key of this.shopingList){
+                for(let key of this.shopShowList){
                     isHad = false
                     for(let aKey of arr){
                         if(aKey.city === key.city && aKey.oldTime === key.schedules){
@@ -3836,7 +4145,7 @@
                     }
                 }
                 if(arr.length <= 0){
-                    this.$message.warning('请选择新的排期！')
+                    this.messageFun('warning','请选择新的排期!')
                     return
                 }
                 let params = {
@@ -3849,17 +4158,11 @@
                         this.loginTimeout()
                     } else {
                         if (res.data === '' || res.data === null) {
-                            this.$message({
-                                message: '更换排期失败',
-                                type: 'warning'
-                            })
+                            this.messageFun('warning','更换排期失败')
                         } else {
                             let adsData = res.data
                             if(adsData.errorList.length <= 0 && adsData.successList.length > 0){
-                                Message({
-                                    message: '更换排期成功！',
-                                    type: 'success'
-                                })
+                                this.messageFun('success','更换排期成功')
                                 this.setSuccessScheduled(adsData.successList)
                             }else{
                                 if(adsData.successList.length > 0){
@@ -3882,8 +4185,7 @@
                 for(let aKey of adsList){
                     for(let sKey of this.shopingList){
                         if (aKey.mVehicle === '道闸') {
-                            if(aKey.mID == sKey.mID && aKey.schedules === sKey.schedules){
-                                // console.log('更换成功的点位',sKey)
+                            if(aKey.mID == sKey.mID  && aKey.schedules === sKey.schedules){
                                 sKey.schedules = aKey.st + '-' + aKey.et
                                 // 异常之前一键更换排期失败的标示
                                 if(sKey.changeError){
@@ -3891,7 +4193,7 @@
                                 }
                                 // 若更换排期的点位排期是被占的则异常被占标示
                                 if(sKey.lState !== undefined && sKey.lState.length > 0){
-                                    this.ADLockNum--
+                                    // this.ADLockNum--
                                     delete sKey.lState
                                 }
                                 break
@@ -3904,7 +4206,7 @@
                                 }
                                 // 若更换排期的点位排期是被占的则异常被占标示
                                 if(sKey.lState !== undefined && sKey.lState.length > 0){
-                                    this.ADLockNum--
+                                    // this.ADLockNum--
                                     delete sKey.lState
                                 }
                                 break
@@ -4040,6 +4342,8 @@
                 }
                 console.log('newArr',newArr)
                 this.shopingList = newArr.concat()
+                this.typeShopList = this.getTypeList();
+                this.getShowList();
             },
             // 清空购物车
             clearShop() {
@@ -4049,26 +4353,18 @@
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        this.shopingList = []
+                        let arr = [];
+                        this.getResultData(arr);
                         this.allCheckboxUpdata()
                         this.computeMedia_AD()
-                        this.$message({
-                            type: 'success',
-                            message: '删除成功!'
-                        })
-                        this.ADLockNum = 0
+                        this.messageFun('success','删除成功')
+                        // this.ADLockNum = 0
                         this.resetPlanList()      // 重置planList的勾选
                     }).catch(() => {
-                        this.$message({
-                            type: 'info',
-                            message: '已取消删除'
-                        });
+                        this.messageFun('info','已取消删除')
                     });
                 }else{
-                    this.$message({
-                        type: 'warning',
-                        message: '无数据可删除'
-                    });
+                    this.messageFun('warning','无数据可删除')
                 }
 
             },
@@ -4091,25 +4387,20 @@
                             i++
                         }
                     }
+                    this.typeShopList = this.getTypeList();
+                    this.getShowList();
+
                     if (haveADLock) {
-                        this.$message({
-                            type: 'success',
-                            message: '移除成功!'
-                        });
+                        this.messageFun('success','移除成功')
                         this.computeMedia_AD()
                     } else {
-                        this.$message({
-                            type: 'warning',
-                            message: '暂无被占点位'
-                        });
+                        this.messageFun('warning','暂无被占点位')
                     }
                 }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '取消成功'
-                    });
+                    this.eventType = '';
+                    this.messageFun('info','取消成功')
                 })
-                this.ADLockNum = 0
+                // this.ADLockNum = 0
                 this.resetPlanList()
             },
             // 删除非客户选点
@@ -4132,42 +4423,37 @@
                                     this.shopingList.splice(j, 1)
                                 }
                             }
+                            this.typeShopList = this.getTypeList();
+                            this.getShowList();
                             this.computeMedia_AD()
-                            this.$message({
-                                type: 'success',
-                                message: '删除成功!'
-                            })
+                            this.messageFun('success','删除成功')
                         }).catch(() => {
-                            this.$message({
-                                type: 'info',
-                                message: '已取消删除'
-                            });
+                            this.eventType = '';
+                            this.messageFun('info','已取消删除')
                         });
                         this.resetPlanList()
                     }else{
-                        this.$message({
-                            message: '没有客户选点信息！',
-                            type: 'warning',
-                        })
+                        this.messageFun('warning','没有客户选点信息')
                     }
                 }else{
-                    this.$message({
-                        message: '请先获取客户选择的点位，再移除非客户选择的点位',
-                        type: 'warning',
-                    })
+                    this.messageFun('warning','请先获取客户选择的点位，再移除非客户选择的点位')
                 }
 
             },
             // 统计购物车媒体数、面数
             computeMedia_AD(letter) {
-                let shopList = this.shopingList
+                // let shopList = this.shopingList
+                let shopList = [];
+                let currTab = this.activeName;
+                shopList = this.typeShopList[currTab-1].asidList;
                 console.log('购物车统计面数媒体数shopList', shopList)
                 let mediaArr = []
                 let mediaAD = []
                 let resArr = []
+                let resAsidArr = [];
                 // ANum：A面数量  BNum：B面数量
                 let mediaLevelNum = {ALevel: 0, BLevel: 0, CLevel: 0,ANum:0,BNum:0}
-                for (let key of this.shopingList) {
+                for (let key of shopList) {
                     if(key.mVehicle === '广告门'){
                         // 等级ABC
                         if(key.mediaLevel === 'A'){
@@ -4197,7 +4483,29 @@
                     if (!resArr.includes(key.resID)) {
                         resArr.push(key.resID)
                     }
+                    // 计算各个社区面数
+                    let isHad = false;
+                    for(let data of resAsidArr){
+                        if(data.resID == key.resID){
+                            isHad = true;
+                            if(!data.asidList.includes(key.asID)){
+                                data.asidList.push(key.asID);
+                            }
+                        }
+                    }
+                    if(!isHad){
+                        let obj = {
+                            resID: key.resID,
+                            asidList: [key.asID],
+                        };
+                        resAsidArr.push(obj);
+                    }
                 }
+                console.log('resAsidArr------', resAsidArr);
+                this.shopMedia_ADNum.oneNum = this.getResAsidNum(1, resAsidArr);
+                this.shopMedia_ADNum.twoNum = this.getResAsidNum(2, resAsidArr);
+                this.shopMedia_ADNum.threeNum = this.getResAsidNum(3, resAsidArr);
+                this.shopMedia_ADNum.moreNum = resAsidArr.length - this.shopMedia_ADNum.oneNum - this.shopMedia_ADNum.twoNum - this.shopMedia_ADNum.threeNum;
                 if (letter === 'mapAD') {
                     let stepMNum = 1
                     let stepADNum = 2
@@ -4226,6 +4534,14 @@
                     this.shopMedia_ADNum.resNum = resArr.length
                 }
                 this.mediaLevelNum = mediaLevelNum
+                console.log('mediaLevelNum-----', this.mediaLevelNum);
+            },
+            // 获取社区选一面两面三名的数据
+            getResAsidNum(num, arr){
+                let result = arr.filter((item)=>{
+                    return item.asidList.length == num;
+                });
+                return result.length;
             },
             // 价格加上逗号
             priceFormat(price) {
@@ -4346,17 +4662,18 @@
                                 shopList.push(selectInfo)
                             }
                             console.log('shoplist---------',shopList);
-                            this.ADLockNum = LockNum        // 被占点位的个数
+                            // this.ADLockNum = LockNum        // 被占点位的个数
                             this.shopingList = shopList;
                             // console.log('购物车列表数据', this.shopingList)
                         } else {
                             this.shopingList = []
                         }
                         this.shopLoading = false
-                        this.computeMedia_AD()            // 统计购物车媒体数和面数
+                        // this.computeMedia_AD()            // 统计购物车媒体数和面数
                         this.FanganInfoByApid()           //获取方案详情
+                        this.dialogVisible();
                     } else {
-                        Message.warning(res.data.MSG)
+                        this.messageFun('warning',res.data.MSG)
                     }
                 }).catch(res => {
                     console.log(res);
@@ -4401,8 +4718,9 @@
                             pageSize: 50,
                         }
                         this.getAdList()    // 获取选点列表
+                        this.getRejectPlanList()    // 获取排斥方案列表
                     } else {
-                        Message.warning(res.data.MSG);
+                        this.messageFun('warning',res.data.MSG)
                     }
                 })
             },
@@ -4493,7 +4811,7 @@
             shopingBeforeClose() {
                 for (let j = 0; j < this.shopingList.length; j++) {
                     if (this.shopingList[j].lState !== undefined && this.shopingList[j].lState.length > 0) {
-                        Message.warning('请先删除完被占点位再进行其它操作');
+                        this.messageFun('warning','请先删除完被占点位再进行其它操作')
                         break;
                     }
                     if (j >= this.shopingList.length - 1) {
@@ -4560,10 +4878,7 @@
                     }else{
                         this.planList = []
                         if (res.data === '' || res.data === null || res.data.length <= 0){
-                            this.$message({
-                                message: '暂无该小区被占信息',
-                                type: 'warning'
-                            })
+                            this.messageFun('warning','暂无该小区被占信息')
                         }else{
                             let arr = []
                             for(let key of dataArr){
@@ -4603,6 +4918,14 @@
                     this.searchBtnAbled = false
                 })
             },
+            // 操作提示统一方法
+            messageFun(mesType,mes){
+                this.$message({
+                    message: mes,
+                    type: mesType,
+                    showClose: true,
+                })
+            },
             // 登录超时
             loginTimeout() {
                 this.$message({
@@ -4636,6 +4959,7 @@
     }
     .adsTable{
         position: relative;
+        margin-top: 5px;
     }
     .myCheckbox{
         position: absolute;
@@ -4668,26 +4992,29 @@
     /*购物车提示信息*/
     .warningInfoColor{
         display: inline-block;
-        height: 28px;
-        width: 28px;
+        height: 16px;
+        width: 16px;
         border-radius: 4px;
+        vertical-align: middle;
     }
 
-    .warningInfoName{
-        position: relative;
-        top: -9px;
-        margin-right: 18px;
-    }
-    .warningInfoName strong{
-        font-weight: bold;
+    .warningInfo .warningInfoName{
+        color: #333;
+        font-size: 12px;
     }
     /*状态行*/
     /deep/ .el-table .warning-row {
-        background: #fff1f1;
+        background: rgba(255,0,0,0.08);
     }
 
     /deep/ .el-table .warning-row-conncet {
-        background: rgba(0,153,255,0.2)
+        background: rgba(255,199,0,0.10)
+    }
+    .shopList_adLimit{
+        width: 132px;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
     }
 
     /deep/ .el-input__inner:hover {
@@ -4856,15 +5183,26 @@
         resize: vertical;
     }
 
+    /*选择点位*/
     /deep/ .type-select .el-input, /deep/ .type-select .el-input__inner {
         width: 95px;
-        position: relative;
-        top: 0;
-        left: -5px;
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
         padding-right: 0;
+    }
+
+    /deep/ .type-select .el-input__inner{
         padding-left: 10px;
+        color: rgb(144, 147, 153);
+    }
+
+    /*方案排斥*/
+    /deep/ .reject_select{
+        left: -6px;
+    }
+    /deep/ .reject_select .el-input,/deep/ .reject_select .el-input__inner{
+        width: 185px;
+        border-top-left-radius: 0;
     }
 
     /deep/ .el-button {
@@ -4872,21 +5210,10 @@
         height: 34px;
     }
 
-    .searchInput /deep/ .el-input__inner, .searchInput {
-        width: 224px !important;
-        position: relative;
-        left: -8px;
-        top: 0;
-        height: 34px;
-        line-height: 34px;
-        border-bottom-left-radius: 0;
-        border-top-left-radius: 0;
-    }
-
     /deep/ .date-select.el-input__inner {
         width: 260px;
         position: relative;
-        left: -6px;
+        /*left: -6px;*/
     }
 
     /*日期*/
@@ -4931,11 +5258,11 @@
     /*step2 四个按钮*/
     .searchBtn, .map {
         position: relative;
-        left: 5px;
+        /*left: 5px;*/
     }
     .oneKeyPointBtn{
         text-align: center;
-        margin-left: 6px;
+        /*margin-left: 6px;*/
         height: 34px;
         padding: 0;
         line-height: 34px;
@@ -4952,7 +5279,7 @@
     .importXle.el-button--success{
         background: #51E171;
         border-color: #51E171;
-        margin-left: 11px;
+        /*margin-left: 11px;*/
     }
 
     /deep/ .importXle.el-button [class*=el-icon-]+span{
@@ -5028,10 +5355,9 @@
         border: 1px solid #C2C2C2;
         border-radius: 4px;
         cursor: pointer;
-        /*top: 3px;*/
         text-align: center;
         font-size: 14px;
-        margin-left: 5px;
+        /*margin-left: 5px;*/
     }
 
     /deep/ .searchBtn .el-icon-search,/deep/ .map .el-icon-location-outline {
@@ -5048,11 +5374,13 @@
 
     .search-wrap {
         position: relative;
-        height: 34px;
+        /*清除浮动*/
+        overflow:hidden;
     }
 
-    .search-wrap span {
+    .search-wrap > div {
         float: left;
+        margin-right: 7px;
         /*margin-bottom: 18px;*/
     }
 
@@ -5067,15 +5395,15 @@
     }
 
     /*.cart_box {*/
-        /*color: #fff;*/
-        /*background: #108EE9;*/
-        /*border-radius: 50%;*/
-        /*display: inline-block;*/
-        /*width: 50px;*/
-        /*height: 50px;*/
-        /*vertial-align: middle;*/
-        /*text-align: center;*/
-        /*line-height: 50px;*/
+    /*color: #fff;*/
+    /*background: #108EE9;*/
+    /*border-radius: 50%;*/
+    /*display: inline-block;*/
+    /*width: 50px;*/
+    /*height: 50px;*/
+    /*vertial-align: middle;*/
+    /*text-align: center;*/
+    /*line-height: 50px;*/
     /*}*/
 
     /deep/ .shopcar .el-badge__content.is-fixed {
@@ -5202,7 +5530,7 @@
         width: 100%;
         height:36px;
         line-height: 36px;
-        margin: 5px 0;
+        margin: 5px 0 0;
         background:rgb(241,241,241);
     }
     .filter-condition /deep/ .el-tag{
@@ -5271,6 +5599,10 @@
         overflow-y: scroll;
         overflow-x: hidden !important;
     }
+    /deep/ .car-list .el-table__body-wrapper {
+        min-height: 380px;
+        max-height: 360px;
+    }
 
     /deep/ .el-table__body-wrapper::-webkit-scrollbar {
         width: 6px;
@@ -5333,30 +5665,22 @@
     .car-title span {
         font-size: 14px;
         font-weight: normal;
-        margin: 0 6px;
+        margin: 0 4px;
         cursor: pointer;
         color: #1890ff;
     }
-
-    /*.car-del {*/
-        /*text-align: center;*/
-        /*cursor: pointer;*/
-        /*color: #1890ff;*/
-    /*}*/
 
     /deep/ .car-list .el-table__expanded-cell[class*=cell] {
         padding: 0 46px;
         background-color: #F7F7F7;;
     }
 
-    /*.table_wrap /deep/ .has-gutter th:nth-child(11),*/
     .table_wrap /deep/ .has-gutter th:nth-child(12),
     .table_wrap /deep/ .has-gutter th:nth-child(13),
     .table_wrap /deep/ .has-gutter th:nth-child(17),
     .table_wrap /deep/ .has-gutter th:nth-child(18),
     .table_wrap /deep/ .has-gutter th:nth-child(19),
     .table_wrap /deep/ .has-gutter th:nth-child(20),
-        /*.table_wrap /deep/ .el-table__row td:nth-child(11),*/
     .table_wrap /deep/ .el-table__row td:nth-child(12),
     .table_wrap /deep/ .el-table__row td:nth-child(13),
     .table_wrap /deep/ .el-table__row td:nth-child(17),
@@ -5694,11 +6018,19 @@
     .table_box{
         position: relative;
     }
+    /deep/ .shopcar_box .el-tabs__item{
+        height: 38px;
+    }
+    .button_point{
+        text-align: right;
+        /* position: absolute; */
+        /* right: 0; */
+    }
     .change_scheduling{
         color: #1890ff;
         font-size: 14px;
         position: absolute;
-        top:0;
+        top:96px;
         right: 132px;
         z-index: 10;
         line-height: 45px;

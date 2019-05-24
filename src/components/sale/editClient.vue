@@ -366,8 +366,8 @@ export default {
                         // 用户信息
                         this.clientForm = uInfo;
                         this.clientForm.phone = Number(uInfo.phone);
-                        let parStr = this.clientForm.rID.toString().substring(0, 2) + "0000";
-                        let rid = this.clientForm.rID.toString().substring(0, 4) + "00";
+                        let parStr = this.clientForm.rID?this.clientForm.rID.toString().substring(0, 2) + "0000" : '';
+                        let rid = this.clientForm.rID?this.clientForm.rID.toString().substring(0, 4) + "00" : '';
                         let result = [parStr, rid];
                         // this.handleItemChange(result);
                         this.clientForm.cityArr = result;
@@ -473,17 +473,6 @@ export default {
         },
         // 判断客户信息是否修改
         isChangeUser() {
-            // division:"",
-            // email:"",
-            // phone:"13666666666",
-            // position:"we",
-            // puName:"销售",
-            // rID:0,
-            // realName:"wewer",
-            // sName:"wewewerw",
-            // telephone:"",
-            // uID:98
-            // let userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
             let userInfo = this.oldClientForm;
             console.log(userInfo, this.clientForm);
             for (let data of [this.clientForm]) {

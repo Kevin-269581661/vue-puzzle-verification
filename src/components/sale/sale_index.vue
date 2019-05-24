@@ -150,7 +150,11 @@ export default {
                     desc: '方案管理模块，您可在此模块中查看、新建、发布方案',
                     link: './sale/planList',
                     children: [
-                        {
+                        // {
+                        //     title: '导出空位',
+                        //     link: '',
+						// },
+						{
                             title: '方案列表',
                             link: './sale/planList',
                         },

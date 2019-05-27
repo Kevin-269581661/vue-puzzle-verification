@@ -347,6 +347,7 @@ export default {
                             adsNum: item.adsNum,
                         };
                         let showData = item.DateInfo.sort(this.sortDate);
+                        console.log('showData',showData)
                         for(let date of showData){
                             dateArr.push(timeFormat.toDate(date.starDate, '/')+'-'+timeFormat.toDate(date.endDate, '/'));
                             dataStr.push(date.adsNum);
@@ -460,6 +461,12 @@ export default {
             }
             resultObj.arr = result;
             return resultObj;
+        },
+        // 时间大小排序
+        sortDate(a, b){
+            let aDate = timeFormat.toDate(a.starDate, '');
+            let bDate = timeFormat.toDate(b.starDate, '');
+            return aDate - bDate;
         },
         loginTimeout(){
             Message.warning("登录超时,请重新登录");

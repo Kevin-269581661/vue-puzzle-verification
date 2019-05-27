@@ -94,25 +94,25 @@
                                                     <el-table :data="RMAllData" border height="430px"
                                                               class="all-city-data-table-12">
                                                         <el-table-column
-                                                            property="city" label="区域" min-width="36%"
+                                                            property="city" label="区域" min-width="178"
                                                         >
                                                         </el-table-column>
-                                                        <el-table-column property="countRes" label="社区数" min-width="20%"
+                                                        <el-table-column property="countRes" label="社区数" min-width="96"
                                                                          sortable
                                                                          :sort-orders="[2,1]">
 
                                                         </el-table-column>
                                                         <el-table-column property="countMedia" label="广告门数"
-                                                                         min-width="27%" sortable
+                                                                         min-width="130" sortable
                                                                          :sort-orders="[2,1]">
 
                                                         </el-table-column>
-                                                        <el-table-column property="countAds" label="点位数" min-width="27%"
+                                                        <el-table-column property="countAds" label="点位数" min-width="130"
                                                                          sortable
                                                                          :sort-orders="[2,1]">
 
                                                         </el-table-column>
-                                                        <el-table-column label="上刊率" min-width="20%" sortable
+                                                        <el-table-column label="上刊率" sortable
                                                                          :sort-method="sortUpPercent">
                                                             <template slot-scope="scope">
                                                                 {{scope.row.upPercent}}％
@@ -121,7 +121,6 @@
                                                     </el-table>
                                                 </div>
                                             </el-dialog>
-                                            <!--<div class="bottom-data"></div>-->
                                         </div>
                                     </div>
                                 </el-card>
@@ -734,13 +733,10 @@
                                                 fixed
                                                 prop="city"
                                                 label="城市"
-                                                min-width="140">
+                                                min-width="140"
+                                                :show-overflow-tooltip="true">
                                                 <template slot-scope="scope">
-                                                    <el-tooltip :content="scope.row.city"
-                                                                placement="bottom-start"
-                                                                :visible-arrow="false">
-                                                        <span>{{scope.row.city || '--' }}</span>
-                                                    </el-tooltip>
+                                                    <span>{{scope.row.city || '--' }}</span>
                                                 </template>
                                             </el-table-column>
                                             <el-table-column
@@ -1058,8 +1054,6 @@
                                             <dl>
                                                 <dt>总点位数</dt>
                                                 <dd>{{adsUserData.totalAdSpaceInfoCount.toLocaleString()}}</dd>
-                                                <!--.toLocaleString()-->
-                                                <!-- <dd>{{priceFormat(adsUserData.totalAdSpaceInfoCount)}}</dd>-->
                                             </dl>
                                             <dl>
                                                 <dt>A面上刊率</dt>
@@ -1074,7 +1068,6 @@
                                             <dl>
                                                 <dt>方案点位数</dt>
                                                 <dd>{{adsUserData.planSpotCount.toLocaleString()}}</dd>
-                                                <!--.toLocaleString()-->
                                             </dl>
                                             <dl>
                                                 <dt>方案数</dt>
@@ -1085,12 +1078,10 @@
                                             <dl>
                                                 <dt>订单点位数</dt>
                                                 <dd>{{adsUserData.orderSpotCount.toLocaleString()}}</dd>
-                                                <!--.toLocaleString()-->
                                             </dl>
                                             <dl>
                                                 <dt>订单数</dt>
                                                 <dd>{{adsUserData.orderCount}}</dd>
-                                                <!--<dd>{{priceFormat(adsUserData.orderCount)}}</dd>-->
                                             </dl>
                                             <dl>
                                                 <dt>成交单价</dt>
@@ -3164,8 +3155,8 @@
             // 入驻物业排行 - 接口
             getResPMCRankData(Sting) {
                 // console.log('时间段', this.resPMCDate)
-                let tStart = this.resPMCDate[0] //this.splitTimeString(this.resPMCDate[0])
-                let tEnd = this.resPMCDate[1] //this.splitTimeString(this.resPMCDate[1])
+                let tStart = this.resPMCDate[0]
+                let tEnd = this.resPMCDate[1]
                 let params = {
                     uid: this.session_userData.uID,
                     token: this.session_userData.token,
@@ -3268,8 +3259,8 @@
             getSalesRankData(Sting) {
                 let params = {}
                 // console.log('时间段this.salesRankDate', this.salesRankDate)
-                let tStart = this.salesRankDate[0] //this.splitTimeString(this.salesRankDate[0])
-                let tEnd = this.salesRankDate[1] //this.splitTimeString(this.salesRankDate[1])
+                let tStart = this.salesRankDate[0]
+                let tEnd = this.salesRankDate[1]
                 params = {
                     uid: this.session_userData.uID,
                     token: this.session_userData.token,
@@ -4338,8 +4329,8 @@
             },
             // 城市关键数据对比 - 接口 （社区、广告门、点位）
             getCityKeyData_resMediaAds(){
-                let tStart = this.cityKeyDataDate[0] //this.splitTimeString(this.cityKeyDataDate[0])
-                let tEnd = this.cityKeyDataDate[1] //this.splitTimeString(this.cityKeyDataDate[1])
+                let tStart = this.cityKeyDataDate[0]
+                let tEnd = this.cityKeyDataDate[1]
                 let params = {
                     uid: this.session_userData.uID,
                     token: this.session_userData.token,
@@ -4398,8 +4389,8 @@
             //城市关键数据对比  - 接口
             getCityBattleData(data, i) {
                 this.CityBattleData = []
-                let tStart = this.cityKeyDataDate[0] //this.splitTimeString(this.cityKeyDataDate[0])
-                let tEnd = this.cityKeyDataDate[1] //this.splitTimeString(this.cityKeyDataDate[1])
+                let tStart = this.cityKeyDataDate[0]
+                let tEnd = this.cityKeyDataDate[1]
                 let params = {uid: this.session_userData.uID,token: this.session_userData.token, asrIDs: data, istart: tStart, iend: tEnd}
                 // console.log('各城市参数', params)
                 api.getApi(this.Count + '/GetCOrder', params).then(res => {
@@ -5737,9 +5728,9 @@
                 return commaFormat.init(price);
             },
             // 时间字符切割
-            splitTimeString(time) {
-                return time.split("-").join("");
-            },
+            // splitTimeString(time) {
+            //     return time.split("-").join("");
+            // },
             // 时间格式转换
             changeTime(stringTime){
                 return stringTime.replace(/-/g, '/');
@@ -5948,27 +5939,6 @@
         cursor: pointer;
     }
 
-    /*  .bottom-data {
-          position: absolute;
-          bottom: -30px;
-          left: 23%;
-      }
-
-      .bottom-data ul li {
-          float: left;
-          margin-right: 24px;
-          font-size: 14px;
-          color: rgba(0, 0, 0, 0.65);
-      }
-
-      .bottom-data ul li .dot {
-          display: inline-block;
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          margin-right: 8px;
-      }*/
-
     /*关键数据展示*/
     .data-tab {
         font-size: 12px;
@@ -5976,7 +5946,7 @@
         margin-bottom: 10px;
         height: 30px;
     }
-
+/*
     .data-title {
         width: 79%;
         margin-left: 19%;
@@ -5992,7 +5962,7 @@
 
     .data-title div {
         text-align: right;
-    }
+    }*/
 
     .month-data {
         display: flex;
@@ -6062,7 +6032,6 @@
         width: 200px;
         height: 70px;
         box-sizing: border-box;
-        /*width: 100%;*/
     }
 
     .card6 .title p {
@@ -6090,7 +6059,6 @@
 
     .table-wrap {
         width: 100%;
-        /*border: 1px solid #dedede;*/
         margin-bottom: 30px;
     }
     .table-wrap .el-table{
@@ -6325,21 +6293,21 @@
         width: 100%;
         border: none;
     }
-    /*超出省略 all-city-data-table-12*/
+    /*超出省略*/
     /deep/ .el-table .cell{
         overflow-x: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+    .all-city-data-table-12 /deep/ .el-table__body-wrapper{
+        overflow-y: hidden;
+    }
     /*1440*/
     @media all and (min-width: 1420px) {
         .card6 .title {
             left: 9.5%;
-
-            /*width: 100%;*/
         }
     }
-
     /*1920*/
     @media all and (min-width: 1900px) {
         .charts2 {
@@ -6350,14 +6318,10 @@
             width: 850px !important;
         }
 
-        .data-title {
+      /*  .data-title {
             width: 81%;
             margin-left: 18%;
-        }
-
-        .bottom-data {
-            left: 30%;
-        }
+        }*/
 
         .card6 .title {
             left: 11.5%;
@@ -6416,11 +6380,6 @@
     /*关键数据增量对比*/
     .card4 .el-range-editor--mini.el-input__inner {
         width: 220px;
-    }
-
-    .data-analysis .el-checkbox__input.is-checked + .el-checkbox__label {
-        /*font-size: 12px;*/
-        /*padding-left: 5px;*/
     }
 
     .data-analysis .el-button-group .el-button:first-child {
@@ -6503,7 +6462,6 @@
 
     .el-table__body-wrapper::-webkit-scrollbar-thumb {
         /*滚动条里面小方块*/
-
         -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
         background: #c1c1c1;
         border-radius: 4px;
@@ -6665,7 +6623,6 @@
     }
 
     /*入驻物业总排行表格*/
-
     .into-property-rank .has-gutter th:nth-of-type(3),
     .into-property-rank .has-gutter th:nth-of-type(4),
     .into-property-rank .el-table__row td:nth-of-type(3),
@@ -6744,16 +6701,10 @@
         width: 90px;
     }
 
-    /*.el-table .el-table__header-wrapper thead.has-gutter tr th.el-table_5_column_31{*/
-        /*width: 140px;*/
-    /*}*/GetSurvey
     .el-table .el-table__header-wrapper thead.has-gutter tr th.el-table_5_column_31 .cell{
         width: 140px;
     }
 
-    /*.el-table .el-table__body-wrapper .el-table__body tbody tr.el-table__row td.el-table_5_column_31{*/
-        /*width: 140px;*/
-    /*}*/
     .el-table .el-table__body-wrapper .el-table__body tbody tr.el-table__row td.el-table_5_column_31 .cell{
         width: 140px;
         margin: 0;

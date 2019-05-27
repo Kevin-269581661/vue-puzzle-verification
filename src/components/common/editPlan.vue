@@ -266,7 +266,10 @@
                                 style="width: 100%"
                                 class="selectAdsTable"
                                 height="480">
-                                <el-table-column width="110px" fixed>
+                                <el-table-column
+                                    fixed
+                                    width="110px"
+                                    class-name="el-table-column-checkbox">
                                     <template slot-scope="scope">
                                         <div v-if="isOccupied">
                                             <div class="adDoor" v-if="mediaType === '广告门'">
@@ -352,16 +355,18 @@
                                 </el-table-column>
                                 <el-table-column
                                     fixed
+                                    class-name="el-table-column-resName"
                                     label="资源名称"
-                                    min-width="200"
+                                    width="200"
                                     prop="resName"
                                 >
                                 </el-table-column>
                                 <el-table-column
                                     fixed
+                                    class-name="el-table-column-mediaName"
                                     prop="mediaName"
                                     label="媒体名称"
-                                    min-width="140"
+                                    width="140"
                                     class="tar"
                                 >
                                 </el-table-column>
@@ -386,22 +391,21 @@
                                 </el-table-column>
                                 <el-table-column
                                     label="媒体备注"
-                                    min-width="140">
+                                    min-width="140"
+                                    prop="mediaRemark"
+                                    class-name="el-table-column-mediaRemark"
+                                    :show-overflow-tooltip="true">
                                     <template slot-scope="scope">
-                                        <span v-if="scope.row.mediaRemark.length <= 6">{{scope.row.mediaRemark || '--' }}</span>
-                                        <el-tooltip v-else class="item" effect="dark" :content="scope.row.mediaRemark" placement="bottom-start">
-                                            <span>{{scope.row.mediaRemark || '--' }}</span>
-                                        </el-tooltip>
+                                        <span>{{scope.row.mediaRemark || '--' }}</span>
                                     </template>
                                 </el-table-column>
                                 <el-table-column
                                     label="资产编号"
-                                    min-width="160">
+                                    min-width="160"
+                                    prop="assetTag"
+                                    :show-overflow-tooltip="true">
                                     <template slot-scope="scope">
-                                        <span v-if="scope.row.assetTag.length <= 14">{{scope.row.assetTag || '--' }}</span>
-                                        <el-tooltip v-else class="item" effect="dark" :content="scope.row.assetTag" placement="bottom-start">
-                                            <span>{{scope.row.assetTag || '--' }}</span>
-                                        </el-tooltip>
+                                        <span>{{scope.row.assetTag || '--' }}</span>
                                     </template>
                                 </el-table-column>
                                 <el-table-column
@@ -414,22 +418,20 @@
                                 </el-table-column>
                                 <el-table-column
                                     label="广告限制"
-                                    min-width="130">
+                                    min-width="130"
+                                    prop="adLimit"
+                                    :show-overflow-tooltip="true">
                                     <template slot-scope="scope">
-                                        <el-tooltip class="item" effect="dark" :content="scope.row.adLimit" placement="bottom-start">
-                                            <span>{{scope.row.adLimit || '--' }}</span>
-                                        </el-tooltip>
+                                        <span>{{scope.row.adLimit || '--' }}</span>
                                     </template>
                                 </el-table-column>
                                 <el-table-column
-                                    :label="recType === 1? '楼盘类型':'写字楼类型'"
+                                    :label="recType == 1? '楼盘类型':'写字楼类型'"
                                     min-width="100"
-                                >
+                                    prop="buildType"
+                                    :show-overflow-tooltip="true">
                                     <template slot-scope="scope">
-                                        <span v-if="recType == 1">{{ scope.row.buildType || '--' }}</span>
-                                        <el-tooltip v-else class="item" effect="dark" :content="scope.row.buildType" placement="bottom-start">
-                                            <span>{{scope.row.buildType || '--' }}</span>
-                                        </el-tooltip>
+                                        <span>{{scope.row.buildType || '--' }}</span>
                                     </template>
                                 </el-table-column>
                                 <el-table-column
@@ -6103,6 +6105,19 @@
         width: 55px;
         height: 30px;
         padding: 9px 12px;
+    }
+    /*safari下表头错位*/
+    /deep/ .el-table .el-table-column-checkbox .cell{
+        width: 110px;
+    }
+    /deep/ .el-table .el-table-column-resName .cell{
+        width: 200px;
+    }
+    /deep/ .el-table .el-table-column-mediaName .cell{
+        width: 140px;
+    }
+    /deep/ .el-table .el-table-column-mediaRemark .cell{
+        width: 140px;
     }
     /*1440*/
     @media all and (min-width: 1420px) {

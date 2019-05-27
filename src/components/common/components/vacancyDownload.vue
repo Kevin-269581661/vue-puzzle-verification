@@ -88,7 +88,8 @@ export default {
             this.sessionData = JSON.parse(sessionStorage.getItem("session_data"));
         },
         cancelDown(){
-            Message.warning('取消此操作');
+            this.messageFun('info', '取消此操作');
+            this.$emit('cancelClick', false)
         },
         confirmDown(){
             console.log('downLoadInfo----', this.downLoadInfo);
@@ -112,7 +113,7 @@ export default {
                     this.dateRangeEmpty();
                 }
             }else{
-                let { city, daterange } = this.downLoadInfo;            
+                let { city, daterange } = this.downLoadInfo;
                 let rid = city.join(',');
                 let info = {
                     uid: this.sessionData.uID,
@@ -125,7 +126,7 @@ export default {
                 }else{
                     info.startTime = daterange[0];
                     info.endTime = daterange[1];
-                    // 自定义日期按照点位来导 
+                    // 自定义日期按照点位来导
                     this.getDaterangeAds(info);
                 }
             }
@@ -396,7 +397,7 @@ export default {
                             let filename = returnobj.city.join('-')+'-'+ date +'空位表';
                             sheetExcel.toDownload(head, returnobj.arr, filename);
                         }else{
-                            this.messageFun('warning','此城市在此时间段内没有点位')                            
+                            this.messageFun('warning','此城市在此时间段内没有点位')
                         }
                     }else{
                         this.messageFun('warning','此城市在此时间段内没有点位')
@@ -439,8 +440,8 @@ export default {
                             grade: item.grade || '--',
                             notPush: item.allNotPush || '--',
                             remark: item.allremark || '--',
-                            adSize: item.alladSize || '--',
-                            adViewSize: item.alladViewSize || '--',
+                            adSize: item.adSize || '--',
+                            adViewSize: item.adViewSize || '--',
                             resAddress: item.resAddress || '--',
                             cType: item.cType || '--',
                             hPrice: item.hPrice/100,

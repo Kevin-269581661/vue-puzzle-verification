@@ -26,7 +26,7 @@
 			<div style="margin:24px 0; background:#fff;">
 				<h2 class="h2_style">业绩进度 <span class="span_rank">单位为：万</span></h2>
 				<div style=" width:96%; margin:24px auto;position:relative;" v-if="isShowLine">
-					
+
 					<ul class="timeline">
 						<li v-for="(item, index) of priceList" :key="index" class="timeline_item" :style="'width:'+100/(priceList.length-1)+'%'">
 							<div class="line_tail"></div>
@@ -126,7 +126,7 @@ export default {
 	data(){
 		return {
 			// 动效
-			isMonthlyRanking: false,			
+			isMonthlyRanking: false,
 			linkArr:[
                 {
                     imgurl: require('../../assets/images/group.png'),
@@ -150,14 +150,14 @@ export default {
                     desc: '方案管理模块，您可在此模块中查看、新建、发布方案',
                     link: './sale/planList',
                     children: [
-                        // {
-                        //     title: '导出空位',
-                        //     link: '',
-						// },
-						{
-                            title: '方案列表',
-                            link: './sale/planList',
-                        },
+                        {
+                            title: '导出空位',
+                            link: '',
+						},
+						// {
+                         //    title: '方案列表',
+                         //    link: './sale/planList',
+                        // },
                         {
                             title: '地图选点',
                             link: '',
@@ -235,7 +235,7 @@ export default {
 			// 勋章
 			companyHonor: [],
 			isCom: false,
-			
+
 		}
 	},
 	methods:{
@@ -248,7 +248,7 @@ export default {
 			this.userInfo.avator = this.sessionData.headPic ? this.sessionData.headPic : require('../../assets/images/index/niu.png')
 		},
 		getIsCom(){
-			let sessrid = this.sessionData.asrID; 
+			let sessrid = this.sessionData.asrID;
 			let comarr = ['1','2','3','4','5','6','7'];
 			for(let data of comarr){
 				if(sessrid== data){
@@ -337,7 +337,7 @@ export default {
 						this.animateFun()
 						clearTimeout(timer)
 					}, 200);
-					
+
 				}else if(res.data.SysCode == 100302){
 					this.loginTimeout();
 				}else{
@@ -582,7 +582,7 @@ export default {
 .ad_index_container{
 	margin: 24px auto;
 	width: 92%;
-	height: auto;	
+	height: auto;
 }
 .h2_style{
 	font-family:PingFangSC-Medium;
@@ -598,7 +598,7 @@ export default {
 }
 .loglist_box{
 	padding: 10px 24px 0;
-    height:150px; 
+    height:150px;
     overflow-x:hidden;
     overflow-y:scroll;
 }
@@ -730,10 +730,10 @@ export default {
     height: 0;
     border-color: transparent;
     border-style: solid;
-    
+
     border-width: 10px;
     filter: drop-shadow(0 2px 10px rgba(0,0,0,.03));
-    
+
     border-left-width: 0;
     border-right-color: #ebeef5;
 
@@ -760,13 +760,13 @@ export default {
     transition: 0.5s 1s;
 } */
 
-#rank_model{ 
-	width: 190px; 
-	height: 120px; 
-	padding: 3px; 
+#rank_model{
+	width: 190px;
+	height: 120px;
+	padding: 3px;
 	position: absolute;
-	z-index: 12; 
-	top: 100px; 
+	z-index: 12;
+	top: 100px;
 	left: 50%;
 }
  /*动画名字， 动画运行的时间，alternate平滑过渡， infinite是反复执行*/
@@ -1006,7 +1006,7 @@ export default {
 		left: 50%;
 	}
 	100%{
-		top: 100px; 
+		top: 100px;
 		left: 50%;
 	}
 }

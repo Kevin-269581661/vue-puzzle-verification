@@ -339,7 +339,7 @@ export default {
 
 		},
 		getIsCom(){
-			let sessrid = this.sessionData.asrID; 
+			let sessrid = this.sessionData.asrID;
 			let comarr = ['1','2','3','4','5','6','7'];
 			for(let data of comarr){
 				if(sessrid== data){
@@ -446,7 +446,7 @@ export default {
 					this.imginfo[1].num = this.medalInfo.helpNum;
 					this.imginfo[1].rank = this.medalInfo.help;
 					this.imginfo[1].name = this.getName(2, this.medalInfo.help-2);
-					this.imginfo[1].title = this.imginfo[1].name?this.imginfo[1].name:'';					
+					this.imginfo[1].title = this.imginfo[1].name?this.imginfo[1].name:'';
 					this.imginfo[2].url = require('../../assets/images/index/release-'+this.medalInfo.release+'.png');
 					this.imginfo[2].num = this.medalInfo.releaseNum;
 					this.imginfo[2].rank = this.medalInfo.release;

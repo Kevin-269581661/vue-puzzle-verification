@@ -1026,7 +1026,7 @@
                 </el-col>
             </el-row>
             <span slot="footer" class="dialog-footer">
-                <el-button size="small">取 消</el-button>
+                <el-button size="small" @click="isImport = false">取 消</el-button>
                 <el-button size="small" type="primary" @click="submitUpload()">确定上传</el-button>
             </span>
         </el-dialog>
@@ -6039,6 +6039,11 @@
     }
     /deep/ .upload_box .el-button{
         width: auto;
+    }
+    /deep/.import_fanan .el-button [class*="el-icon-"] + span,
+    .select-wrap button .el-icon-search{
+        left: 0;
+        top: 0px;
     }
     /*safari下表头错位*/
     /deep/ .el-table .el-table-column-checkbox .cell{

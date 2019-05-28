@@ -7,141 +7,6 @@
             </h4>
         </div>
 
-        <!-- <el-tabs type="card">
-            <el-tab-pane label="成功小区" class="adsTable">
-                <div class="myCheckbox">
-                    <el-checkbox v-model="isAll" @change="allCheckboxAds"></el-checkbox>
-                </div>
-                <el-table
-                    border
-                    :data="successList"
-                    style="width: 100%"
-                    >
-                    <el-table-column width="120px">
-                        <template slot-scope="scope">
-                            <div class="adDoor" v-if="scope.row.mVehicle === '广告门'">
-                                <el-popover
-                                    v-if="scope.row.box.A"
-                                    placement="top-start"
-                                    width="310"
-                                    trigger="hover">
-                                    <span v-if="scope.row.adlInfo === ''">暂无被禁用的信息</span>
-                                    <ul v-else>
-                                        <li v-for="(item,index) in scope.row.adlInfo" :key="index">
-                                            <div v-if="item.asState">
-                                                <p style="margin-bottom: 5px">
-                                                    <span style="color: #333">该点位：{{item.asState}}中</span>
-                                                </p>
-                                            </div>
-                                            <div v-else>
-                                                <p style="margin-bottom: 5px">
-                                                    <span style="color: #333">占点方案：</span>
-                                                    <span>
-                                                        <span  style="font-weight: bold">{{sessionData.uType === 'MD' ? item.beOccupieApName : '******'}}</span>
-                                                        方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
-                                                    </span>
-                                                </p>
-                                                <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                    <el-checkbox slot="reference" v-model="scope.row.checkBox.A" label="A面"
-                                        @change="changeA(scope.row)" :disabled="scope.row.box.A">
-                                    </el-checkbox>
-                                </el-popover>
-                                <el-checkbox v-else v-model="scope.row.checkBox.A" label="A面"
-                                    @change="changeA(scope.row)" :disabled="scope.row.box.A">
-                                </el-checkbox>
-                                <el-popover
-                                    v-if="scope.row.box.B"
-                                    placement="top-start"
-                                    width="310"
-                                    trigger="hover">
-                                    <span v-if="scope.row.adlInfo === ''">暂无被禁用的信息</span>
-                                    <ul v-else>
-                                        <li v-for="(item,index) in scope.row.adlInfo" :key="index">
-                                            <div v-if="item.asState">
-                                                <p style="margin-bottom: 5px">
-                                                    <span style="color: #333">该点位：{{item.asState}}中</span>
-                                                </p>
-                                            </div>
-                                            <div v-else>
-                                                <p style="margin-bottom: 5px">
-                                                    <span style="color: #333">占点方案：</span>
-                                                    <span>
-                                                        <span  style="font-weight: bold">{{sessionData.uType === 'MD' ? item.beOccupieApName : '******'}}</span>
-                                                        方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
-                                                    </span>
-                                                </p>
-                                                <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                    <el-checkbox slot="reference" v-model="scope.row.checkBox.B" label="B面"
-                                        @change="changeB(scope.row)" :disabled="scope.row.box.B">
-                                    </el-checkbox>
-                                </el-popover>
-                                <el-checkbox v-else v-model="scope.row.checkBox.B" label="B面"
-                                    @change="changeB(scope.row)" :disabled="scope.row.box.B">
-                                </el-checkbox>
-                            </div>
-                            <div class="roadGate" v-else>
-                                <el-checkbox v-model="scope.row.checkBox.ABC" label="ABC面" @change="changeABC(scope.row)">
-                                </el-checkbox>
-                            </div>
-                        </template>                        
-                    </el-table-column>
-                    <el-table-column label="资源名称" min-width="140" prop="resName" >
-                    </el-table-column>
-                    <el-table-column prop="mediaName" label="媒体名称" min-width="130" >
-                    </el-table-column>
-                    <el-table-column prop="city" label="城市" min-width="85" >
-                    </el-table-column>
-                    <el-table-column prop="origin" label="区域" min-width="85" >
-                    </el-table-column>
-                    <el-table-column prop="assetTag" label="资产编号" min-width="130" >
-                    </el-table-column>
-                    <el-table-column prop="schedules" label="排期" min-width="190">
-                        <template slot-scope="scope">
-                            <el-tooltip class="item" effect="dark" :content="scope.row.schedules" placement="bottom">
-                                <span>{{scope.row.schedules}}</span>
-                            </el-tooltip>
-                        </template>
-                    </el-table-column>
-                </el-table>
-            </el-tab-pane>
-            <el-tab-pane label="失败小区">
-                <el-table
-                    border
-                    :data="errorList"
-                    style="width: 100%"
-                    >
-                    <el-table-column label="资源名称" min-width="140" prop="resName" >
-                    </el-table-column>
-                    <el-table-column prop="city" label="市" min-width="85" >
-                    </el-table-column>
-                    <el-table-column prop="origin" label="区" min-width="85" >
-                    </el-table-column>
-                    <el-table-column prop="mediaName" label="媒体名称" min-width="130" >
-                    </el-table-column>
-                    <el-table-column min-width="70" label="投放面">
-                        <template slot-scope="scope">
-                            <span>{{scope.row.asLab}}面</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="assetTag" label="资产编号" min-width="130" >
-                    </el-table-column>
-                    <el-table-column prop="schedules" label="排期" min-width="190">
-                        <template slot-scope="scope">
-                            <el-tooltip class="item" effect="dark" :content="scope.row.schedules" placement="bottom">
-                                <span>{{scope.row.schedules}}</span>
-                            </el-tooltip>
-                        </template>
-                    </el-table-column>
-                </el-table>
-            </el-tab-pane>
-        </el-tabs> -->
-
         <p>
             <el-radio-group v-model="activeType" size="small" class="marin10">
                 <el-radio-button :label="1">成功小区</el-radio-button>
@@ -163,12 +28,6 @@
                     <el-table-column width="120px">
                         <template slot-scope="scope">
                             <div class="adDoor" v-if="scope.row.mVehicle === '广告门'">
-                                <!-- <el-checkbox v-model="scope.row.checkBox.A" label="A面"
-                                    @change="changeA(scope.row)" :disabled="scope.row.box.A">
-                                </el-checkbox>
-                                <el-checkbox v-model="scope.row.checkBox.B" label="B面"
-                                    @change="changeB(scope.row)" :disabled="scope.row.box.B">
-                                </el-checkbox> -->
                                 <el-popover
                                     v-if="scope.row.box.A"
                                     placement="top-start"
@@ -274,15 +133,6 @@
                 </el-table-column>
                 <el-table-column prop="resAddress" label="详细地址" min-width="85" >
                 </el-table-column>
-                <!-- <el-table-column prop="mediaName" label="媒体名称" min-width="130" >
-                </el-table-column>
-                <el-table-column min-width="70" label="投放面">
-                    <template slot-scope="scope">
-                        <span>{{scope.row.asLab}}面</span>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="assetTag" label="资产编号" min-width="130" >
-                </el-table-column> -->
                 <el-table-column prop="schedules" label="排期" min-width="190">
                     <template slot-scope="scope">
                         <el-tooltip class="item" effect="dark" :content="scope.row.schedules" placement="bottom">
@@ -685,7 +535,7 @@ export default {
         downLoadExcel(){
             let arr = this.questionPoint(this.errorList);
             let allHead = ['资源名称',	'市', '区',	'详细地址', '投放排期'];
-            sheetExcel.toDownload(allHead, arr, this.name+'问题点位表');
+            sheetExcel.toDownload(allHead, arr, '导入失败小区表'+timeFormat.toDate(new Date(), '-'));
         },
         // 导入excel后台返回的问题点位
         questionPoint(arr){

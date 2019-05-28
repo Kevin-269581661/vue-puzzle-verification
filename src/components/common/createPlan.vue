@@ -1774,7 +1774,8 @@
                         let func=new Promise(function(resolve, reject){ //定义Promise并处理请求逻辑
                             let data=[];
                             self.$http.get(
-                                'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes/'+self.planForm.throwCity[i]+'.json'
+                                // 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes/'+self.planForm.throwCity[i]+'.json'
+                                this.jsonLink+self.planForm.throwCity[i]+'.json'
                             ).then(function(response){
                                 console.log('response----', response.data);
                                 if (!response.data.SysCode) {

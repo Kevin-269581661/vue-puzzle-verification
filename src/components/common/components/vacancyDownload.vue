@@ -268,7 +268,8 @@ export default {
                 let func=new Promise((resolve, reject)=>{ //定义Promise并处理请求逻辑
                     let data=[];
                     this.$http.get(
-                        'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes/'+this.downLoadInfo.city[i]+'.json'
+                        // 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes/'+this.downLoadInfo.city[i]+'.json'
+                        this.jsonLink+this.downLoadInfo.city[i]+'.json'
                     ).then((response)=>{
                         console.log('response----', response.data);
                         if (!response.data.SysCode) {

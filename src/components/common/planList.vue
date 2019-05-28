@@ -212,7 +212,7 @@
 
         <!-- 导出空点 -->
         <el-dialog title="空位导出" :visible.sync="isOpenDownload" width="30%">
-            <download-vacancy></download-vacancy>
+            <download-vacancy @cancelClick="isOpenDownload = false"></download-vacancy>
         </el-dialog>
     </div>
 </template>

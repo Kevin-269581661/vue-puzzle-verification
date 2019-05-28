@@ -43,9 +43,9 @@ instance.defaults.timeout = 2500;*/
 // 灰度环境
 // axios.defaults.baseURL = 'http://111.230.241.112/';
 // 测试环境
-// axios.defaults.baseURL = 'https://beta.qinlinad.com/';
+axios.defaults.baseURL = 'https://beta.qinlinad.com/';
 // 正式环境
-axios.defaults.baseURL = 'https://www.qinlinad.com/';
+// axios.defaults.baseURL = 'https://www.qinlinad.com/';
 
 Vue.prototype.Map = '/MapAPI'
 Vue.prototype.QZhike ='/QZhike';
@@ -60,16 +60,19 @@ Vue.prototype.QADNAPI = '/QADNAPI'
 axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
 // 无忧地图
-Vue.prototype.wuYouMap = 'https://www.dituwuyou.com/qinlin/embed?mid=FPcrNHyq3xXFZDbqlTyHKA&token=fp3nxsKCYZzOSnU0KosEq0GA1o1qcKh5XLA&mapid=' // 正式服
-// Vue.prototype.wuYouMap = 'https://wsopbodv.dituwuyou.com/qinlin/embed?mid=_J6aWeV128gkhVn54AfWIw&token=SvcvtTqpktwPUb8dbu_jx0602nj_4tF-is8&mapid='  // 测试服
+// Vue.prototype.wuYouMap = 'https://www.dituwuyou.com/qinlin/embed?mid=FPcrNHyq3xXFZDbqlTyHKA&token=fp3nxsKCYZzOSnU0KosEq0GA1o1qcKh5XLA&mapid=' // 正式服
+Vue.prototype.wuYouMap = 'https://wsopbodv.dituwuyou.com/qinlin/embed?mid=_J6aWeV128gkhVn54AfWIw&token=SvcvtTqpktwPUb8dbu_jx0602nj_4tF-is8&mapid='  // 测试服
 // 开发环境
 // Vue.prototype.qadnUrl = 'http://192.168.1.248'
+// Vue.prototype.jsonLink = 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes-dev/'
 // 灰度环境
 // Vue.prototype.qadnUrl = 'http://111.230.241.112'
 // 测试环境
-// Vue.prototype.qadnUrl = 'https://beta.qinlinad.com'
+Vue.prototype.qadnUrl = 'https://beta.qinlinad.com'
+Vue.prototype.jsonLink = 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes-test/'
 // 正式环境
-Vue.prototype.qadnUrl = 'https://www.qinlinad.com'
+// Vue.prototype.qadnUrl = 'https://www.qinlinad.com'
+// Vue.prototype.jsonLink = 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes/'
 Vue.use(ElementUI);
 
 

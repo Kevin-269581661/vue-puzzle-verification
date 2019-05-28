@@ -38,8 +38,9 @@ var instance = axios.create({
 instance.defaults.timeout = 2500;*/
 
 //全局配置
-axios.defaults.baseURL = 'https://beta.qinlinad.com/';
+// axios.defaults.baseURL = 'https://beta.qinlinad.com/';
 // axios.defaults.baseURL = 'https://www.qinlinad.com/';
+axios.defaults.baseURL = window.location.protocol;
 Vue.prototype.Map = '/MapAPI'
 Vue.prototype.QZhike ='/QZhike';
 Vue.prototype.QKuyun ='/QinlinKuyun-API';
@@ -58,7 +59,8 @@ Vue.prototype.wuYouMap = 'https://wsopbodv.dituwuyou.com/qinlin/embed?mid=_J6aWe
 // 正式服
 // Vue.prototype.qadnUrl = 'https://www.qinlinad.com'
 //测试服
-Vue.prototype.qadnUrl = 'https://beta.qinlinad.com'
+// Vue.prototype.qadnUrl = 'https://beta.qinlinad.com'
+Vue.prototype.qadnUrl = window.location.protocol;
 Vue.use(ElementUI);
 
 console.log('test');

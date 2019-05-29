@@ -6051,7 +6051,7 @@
     /deep/.import_fanan .el-button [class*="el-icon-"] + span,
     .select-wrap button .el-icon-search{
         left: 0;
-        top: 0px;
+        top: 0;
     }
     /*safari下表头错位*/
     /deep/ .el-table .el-table-column-checkbox .cell{

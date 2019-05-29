@@ -6111,6 +6111,11 @@
     /deep/ .upload_box .el-button{
         width: auto;
     }
+    /deep/.import_fanan .el-button [class*="el-icon-"] + span,
+    .select-wrap button .el-icon-search{
+        left: 0;
+        top: 0;
+    }
     /*一键更换排期*/
     .table_box{
         position: relative;

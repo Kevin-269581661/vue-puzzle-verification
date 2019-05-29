@@ -299,7 +299,7 @@
                 // this.IndustryArr = result;
 
                 // 真实数据
-                api.getApi(this.QZhike+'/GetPianHao', info).then(res=>{
+                api.getApi(this.apiVar.QZhike+'/GetPianHao', info).then(res=>{
                     console.log(res.data);
                     if(res.data){
                         if(res.data.SysCode == 700200){

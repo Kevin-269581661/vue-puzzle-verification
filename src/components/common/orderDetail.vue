@@ -637,8 +637,8 @@ export default {
             pageDownReportArr: [],
             downImgPercent: 0,
             // 上传图片地址
-            doUpload: "/advertisement/UpLoad",
-            // doUpload: "https://beta.qinlinad.com/advertisement/UpLoad",
+            doUpload: "/Advertisement/UpLoad",
+            // doUpload: "https://beta.qinlinad.com/Advertisement/UpLoad",
             upLoadObj:{},
             //上刊报告市区级联
             citys: [],
@@ -896,7 +896,7 @@ export default {
                 apID: sessionStorage.getItem('order_apid'),
                 queryType: 0,
             };
-            api.getApi(this.Advertisement+'/GetAdMaterial', params).then(res =>{
+            api.getApi(this.apiVar.Advertisement+'/GetAdMaterial', params).then(res =>{
                 console.log('res.data-----', res.data);
                 if(!res.data.SysCode && res.data.length){
                     for(let data of res.data){
@@ -932,7 +932,7 @@ export default {
             this.getMaterInfo(info);
         },
         getMaterInfo(params){
-            api.postApi(this.Advertisement+'/GetAdMaterial', params).then(res =>{
+            api.postApi(this.apiVar.Advertisement+'/GetAdMaterial', params).then(res =>{
                 console.log(res.data);
                 if(res.data.total >= 0){
                     let dataInfo = res.data;
@@ -1210,7 +1210,7 @@ export default {
                         token: this.sessionData.token,
                         adMaterails: JSON.stringify(result),
                     };
-                    api.postApi(this.Advertisement+ '/AddAdMaterial', info).then(res =>{
+                    api.postApi(this.apiVar.Advertisement+ '/AddAdMaterial', info).then(res =>{
                         console.log(res.data);
                         if(res.data.SysCode == 200200){
                             Message.success(res.data.MSG);
@@ -1253,7 +1253,7 @@ export default {
             };
             // uid         int【必填】     当前账户UserID
             // apid        int             公司对应方案apID
-            api.getApi(this.Advertisement+"/GetFanganInfo", info)
+            api.getApi(this.apiVar.Advertisement+"/GetFanganInfo", info)
                 .then(res => {
                     console.log(res.data);
                     if (res.data.SysCode == 200200) {
@@ -1318,7 +1318,7 @@ export default {
             };
             // uid         int【必填】     当前账户UserID
             // apid        int             公司对应方案apID
-            api.getApi(this.Advertisement+"/GetAdLaunch", info)
+            api.getApi(this.apiVar.Advertisement+"/GetAdLaunch", info)
                 .then(res => {
                     console.log(res.data);
                     if (!res.data.SysCode) {
@@ -1488,7 +1488,7 @@ export default {
         },
         // 获取上刊图片数据
         getUpImgInfo(params) {
-            api.postApi(this.Advertisement+"/GetImg", params)
+            api.postApi(this.apiVar.Advertisement+"/GetImg", params)
                 .then(res => {
                     if (!res.data.SysCode) {
                         console.log(res.data);
@@ -1526,7 +1526,7 @@ export default {
 
         // 获取下刊图片数据
         getDownImgInfo(params) {
-            api.postApi(this.Advertisement+"/GetImg", params)
+            api.postApi(this.apiVar.Advertisement+"/GetImg", params)
                 .then(res => {
                     if (!res.data.SysCode) {
                         console.log(res.data);
@@ -1839,7 +1839,7 @@ export default {
                 imgs: pidarr
             };
             console.log('pidarr---', pidarr);
-            api.postApi_json(this.Advertisement+'/SetImgList?uid='+uid+'&token='+token, imgs).then(res =>{
+            api.postApi_json(this.apiVar.Advertisement+'/SetImgList?uid='+uid+'&token='+token, imgs).then(res =>{
                 console.log(res.data);
                 this.addload.close();
                 if(res.data.SysCode == 300200){
@@ -1938,7 +1938,7 @@ export default {
                 let img = {
                     imgs: [info]
                 };
-                api.postApi_json(this.Advertisement+'/SetImgList?uid='+uid+'&token='+token, img)
+                api.postApi_json(this.apiVar.Advertisement+'/SetImgList?uid='+uid+'&token='+token, img)
                     .then(res => {
                         console.log(res.data);
                         // 实时更新进度条
@@ -1981,7 +1981,7 @@ export default {
         showH5(type){
             let apid = sessionStorage.getItem('order_apid');
             let tempwindow = window.open();
-            api.getApi(this.UCAPI+'/EncryptNo', {num: apid}).then(res =>{
+            api.getApi(this.apiVar.UCAPI+'/EncryptNo', {num: apid}).then(res =>{
                 console.log(res.data);
                 tempwindow.location = "/Report?"+type+"="+res.data.EncryptCode;
             }).catch(res =>{
@@ -2012,7 +2012,7 @@ export default {
                 apid: apid,
                 qc: qc
             };
-            api.postApi(this.Advertisement+"/SetAdPlan", info)
+            api.postApi(this.apiVar.Advertisement+"/SetAdPlan", info)
                 .then(res => {
                     console.log(res);
                     if (res.data.SysCode == 300200) {
@@ -2052,7 +2052,7 @@ export default {
                     type: "warning"
                 }
             ).then(() => {
-                api.postApi(this.Advertisement+"/StopADS", info)
+                api.postApi(this.apiVar.Advertisement+"/StopADS", info)
                     .then(res => {
                         console.log(res.data);
                         if (!res.data.SysCode) {
@@ -2106,7 +2106,7 @@ export default {
                     type: "warning"
                 }
             ).then(() => {
-                api.postApi(this.Advertisement+"/StopADS", info)
+                api.postApi(this.apiVar.Advertisement+"/StopADS", info)
                     .then(res => {
                         console.log(res.data);
                         if (!res.data.SysCode) {
@@ -2232,7 +2232,7 @@ export default {
             }
             let postData = { uID: userData.uID, token: userData.token, asIDList: arr}
             console.log('添加点位对话框确认按钮', postData)
-            api.postApi_json(this.Advertisement + '/SetPDAS?uid='+ userData.uID + '&token=' + userData.token,
+            api.postApi_json(this.apiVar.Advertisement + '/SetPDAS?uid='+ userData.uID + '&token=' + userData.token,
                 JSON.stringify(postData)).then(res => {
                 console.log('添加选点返回信息', res)
                 addload.close()

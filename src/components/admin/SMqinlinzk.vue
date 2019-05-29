@@ -429,7 +429,7 @@
                     uid: uid,
                     tooken: token
                 };
-                api.getApi(that.QZhike + '/SetPorList', info).then(res => {
+                api.getApi(that.apiVar.QZhike + '/SetPorList', info).then(res => {
                         console.log('SetPorList画像审核列表返回---', res.data);
                         // let obj = {};
                         if (res.data.SysCode == 100302) {
@@ -524,7 +524,7 @@
                     aitime:timeFormat.toDateTime(aitime)
                 };
                 console.log('获取社区列表info--',info)
-                api.getApi(this.QZhike + '/SelectApIdOrder', info).then(res => {
+                api.getApi(this.apiVar.QZhike + '/SelectApIdOrder', info).then(res => {
                     console.log('SelectApIdOrder返回---', res.data);
                     let resList = [];
                     if (res.data.SysCode) {
@@ -597,7 +597,7 @@
                     ctlist: ctArr.join(',')
                 };
                 console.log('审核info---', info);
-                api.getApi(this.QZhike + '/UpdateState', info).then(res => {
+                api.getApi(this.apiVar.QZhike + '/UpdateState', info).then(res => {
                     console.log("审核UpdateState返回---", res.data);
                     if (res.data.SysCode == 100302) {
                         this.$message.warning('登录超时,请重新登录');

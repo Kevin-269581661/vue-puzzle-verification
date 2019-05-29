@@ -110,7 +110,7 @@ export default {
                 }
             };
             api
-                .postApi_new(this.Media, info)
+                .postApi_new(this.apiVar.Media, info)
                 .then(res => {
                     console.log(res.data);
                     if (res.data.SysCode ==200200) {
@@ -172,7 +172,7 @@ export default {
                         }
                     };
                     // 删除接口
-                    api.postApi_new(this.Media, info).then(res => {
+                    api.postApi_new(this.apiVar.Media, info).then(res => {
                         console.log(res.data);
                         if (res.data.SysCode == 200200) {
                             this.ADlist.splice(index, 1);
@@ -238,7 +238,7 @@ export default {
                 };
 
                 api
-                    .postApi_new(this.Media, info)
+                    .postApi_new(this.apiVar.Media, info)
                     .then(res => {
                         console.log(res);
                         if (res.data.SysCode == 200200) {
@@ -288,7 +288,7 @@ export default {
                 };
                 console.log("editinfo", info);
                 api
-                    .postApi_new(this.Media, info)
+                    .postApi_new(this.apiVar.Media, info)
                     .then(res => {
                         console.log(res);
                         if (res.data.SysCode == 200200) {

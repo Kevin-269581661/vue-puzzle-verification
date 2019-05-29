@@ -115,7 +115,7 @@
         methods: {
             // 获取所有行业信息并保存
             getIndustry() {
-                api.getApi(this.Advertisement + '/GetIndustry', {act: 'all'}).then(res => {
+                api.getApi(this.apiVar.Advertisement + '/GetIndustry', {act: 'all'}).then(res => {
                     let arr = res.data;
                     sessionStorage.setItem('industry', JSON.stringify(arr));
                 });
@@ -154,8 +154,8 @@
                 }
                 //接口
                 let loginParams = {username: name, pwd: pass};
-                // api.getApi(this.UCAPI + '/Login', loginParams).then(res => {
-                api.postApi(this.UCAPI + '/Login', loginParams).then(res => {
+                // api.getApi(this.apiVar.UCAPI + '/Login', loginParams).then(res => {
+                api.postApi(this.apiVar.UCAPI + '/Login', loginParams).then(res => {
                     let userMsg = res.data;
                     console.log('登录返回的数据', res.data)
                     if (userMsg) {
@@ -288,7 +288,7 @@
             //扫码登录接口
             loginFun(data) {
                 let params = data
-                api.postApi(this.UCAPI + '/UserLogin', params).then(res => {
+                api.postApi(this.apiVar.UCAPI + '/UserLogin', params).then(res => {
                     console.log('UserLogin', res)
                     let isLogin = res.data
                     if (isLogin !== '' && isLogin !== null && !isLogin.SysCode && isLogin.IsLogin !== false) {

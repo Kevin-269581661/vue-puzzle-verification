@@ -181,7 +181,7 @@ export default {
             let info = {
 
             };
-            api.getApi(this.QKuyun+'/GetPlanList', info).then(res =>{
+            api.getApi(this.apiVar.QKuyun+'/GetPlanList', info).then(res =>{
                 console.log(res.data);
                 if(res.data.code == 500200){
                     let result = [];
@@ -268,7 +268,7 @@ export default {
                         background: 'rgba(0, 0, 0, 0.7)'
                     });
 
-                    api.getApi(this.QKuyun+'/LaunchPlan', info).then(res =>{
+                    api.getApi(this.apiVar.QKuyun+'/LaunchPlan', info).then(res =>{
                         console.log(res.data);
                         loading.close();
                         if(res.data.code == 500200){

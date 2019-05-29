@@ -404,7 +404,7 @@ export default {
                     token: session.token,
                     sname: sname
                 };
-                api.postApi(this.UCAPI+"/CheckUserName", info).then(res => {
+                api.postApi(this.apiVar.UCAPI+"/CheckUserName", info).then(res => {
                     if (res.data.SysCode == 200200) {
                         console.log(res.data.data);
                         if(res.data.data.uID){
@@ -474,7 +474,7 @@ export default {
                     token: this.sessionData.token,
                     cn: queryString
                 };
-                api.postApi(this.Advertisement+"/GetCompanyInfo", info)
+                api.postApi(this.apiVar.Advertisement+"/GetCompanyInfo", info)
                     .then(res => {
                         if (res.data) {
                             for (let i of res.data) {
@@ -525,7 +525,7 @@ export default {
                 token: this.sessionData.token,
                 cid: item.cID,
             };
-            api.getApi(this.Advertisement+"/GetBrand", bInfo).then(res => {
+            api.getApi(this.apiVar.Advertisement+"/GetBrand", bInfo).then(res => {
                 console.log(res.data);
                 this.oldBrandTags = res.data;
             });
@@ -625,7 +625,7 @@ export default {
                     bt: brand,
                     cid: cID
                 };
-                api.getApi(this.Advertisement+"/AddBrand", AbInfo).then(res => {
+                api.getApi(this.apiVar.Advertisement+"/AddBrand", AbInfo).then(res => {
                     console.log(res.data);
                     this.oldBrandTags.push(res.data);
                 });
@@ -656,7 +656,7 @@ export default {
             if(this.isChangeCom()){
                 // 修改公司信息
                 api
-                    .postApi(this.Advertisement+"/SetMyCom", companyInfo)
+                    .postApi(this.apiVar.Advertisement+"/SetMyCom", companyInfo)
                     .then(res => {
                         let mes = res.data;
                         if (mes.SysCode == 300200) {
@@ -716,7 +716,7 @@ export default {
             console.log(companyInfo);
             // 注册公司
             api
-                .getApi(this.Advertisement+"/AddCom", companyInfo)
+                .getApi(this.apiVar.Advertisement+"/AddCom", companyInfo)
                 .then(res => {
                     console.log(res.data);
 
@@ -778,7 +778,7 @@ export default {
             // 	this.clientForm.rid = this.clientForm.cityArr[1];
             // }
 
-            api.postApi(this.UCAPI+"/RegUser", clientInfo)
+            api.postApi(this.apiVar.UCAPI+"/RegUser", clientInfo)
                 .then(res => {
                     console.log(res);
                     let userMsg = res.data;

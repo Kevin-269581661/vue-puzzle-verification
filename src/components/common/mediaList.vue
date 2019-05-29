@@ -244,8 +244,8 @@
                     </li>
                     <li>
                         <span>下载模板：</span>
-                        <a :href ='this.qadnUrl + "/importTemplate/adDoor.xlsx"' class="el-icon-download aButton" download="广告门导入模板.xlsx">广告门模块</a>
-                        <a :href ='this.qadnUrl + "/importTemplate/roadGate.xls"' class="el-icon-download aButton" download="道闸导入模板.xls">道闸模块</a>
+                        <a :href ='this.apiVar.qadnUrl + "/importTemplate/adDoor.xlsx"' class="el-icon-download aButton" download="广告门导入模板.xlsx">广告门模块</a>
+                        <a :href ='this.apiVar.qadnUrl + "/importTemplate/roadGate.xls"' class="el-icon-download aButton" download="道闸导入模板.xls">道闸模块</a>
                     </li>
                     <li>
                         <span>上传文件：</span>
@@ -407,7 +407,7 @@
                 importAsrID: '',                // 导入媒体时所选择的公司id
                 importSelectLoading: true,      // 公司下拉选项
                 companyList: [],                // SA媒体导入时获取的公司列表
-                doUpload: this.qadnUrl + '/mediaService/media/MediaInfoImport',
+                doUpload: this.apiVar.qadnUrl + '/mediaService/media/MediaInfoImport',
                 fileData:[],                            // 当前上传文件的数据- 表格
                 fileNameTags:[],                        // 文件名称列表
                 excelDataUpload:[],                     // 导入excel之后返回的数组
@@ -521,7 +521,7 @@
                         delete params.data[i]
                     }
                 }
-                api.postApi_new(this.Media , params).then(res => {
+                api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('资源媒体列表：', res)
                     let RMList = res.data.data.list;
                     this.totalPage = res.data.data.totalPage
@@ -766,7 +766,7 @@
                     params.data.asState = asState
                 }
                 console.log('params',params)
-                api.postApi_new(this.Media, params).then(res => {
+                api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('修改状态：', res)
                     if (res.data.SysCode === 200200 || res.data.MSG === '操作成功') {
                         Message({
@@ -907,7 +907,7 @@
                         uid: this.sessionData.uID,
                         token: this.sessionData.token,
                     }
-                    api.getApi(this.UCAPI + '/getCompany', params).then(res=>{
+                    api.getApi(this.apiVar.UCAPI + '/getCompany', params).then(res=>{
                         console.log('公司列表',res)
                         if (res.data.SysCode == 200200) {
                             let tempList = []

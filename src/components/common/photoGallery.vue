@@ -406,7 +406,7 @@ export default {
                 spinner: 'el-icon-loading',
                 background: 'rgba(0, 0, 0, 0.7)'
             });
-            api.getApi(this.Advertisement+"/GetImgList", params)
+            api.getApi(this.apiVar.Advertisement+"/GetImgList", params)
                 .then(res => {
                     if (!res.data.SysCode) {
                         console.log(res.data);
@@ -456,7 +456,7 @@ export default {
                 spinner: 'el-icon-loading',
                 background: 'rgba(0, 0, 0, 0.7)'
             });
-            api.getApi(this.Advertisement+"/GetImgList", params)
+            api.getApi(this.apiVar.Advertisement+"/GetImgList", params)
                 .then(res => {
                     if (!res.data.SysCode) {
                         console.log(res.data);

@@ -71,8 +71,8 @@ export default {
     data() {
         return {
             sessionData: '',
-            uploadUrl: '/UCAPI/UpdateUserInfo',
-            // uploadUrl: 'http://beta.qinlinad.com/UCAPI/UpdateUserInfo',
+            uploadUrl: '/apiVar.UCAPI/UpdateUserInfo',
+            // uploadUrl: 'http://beta.qinlinad.com/apiVar.UCAPI/UpdateUserInfo',
             fileData:{
                 uid: '',
                 token: '',
@@ -126,7 +126,7 @@ export default {
                 token: sess.token,
                 userId: sess.uID
             };
-            api.postApi(this.UCAPI+'/GetUser', info).then(res =>{
+            api.postApi(this.apiVar.UCAPI+'/GetUser', info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 200200){
                     let result = res.data.data;
@@ -146,7 +146,7 @@ export default {
             let formData = new FormData();
             formData.append('headPic', item.file);
             let sess = this.sessionData;
-            api.postUpload_file(this.UCAPI+'/UpdateUserInfo?uid='+sess.uID+'&token='+sess.token, formData).then(res =>{
+            api.postUpload_file(this.apiVar.UCAPI+'/UpdateUserInfo?uid='+sess.uID+'&token='+sess.token, formData).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 400200){
                     let result = res.data.data;

@@ -152,7 +152,7 @@
                 }
                 let arr = [];
                 let obj = {A:0, B:0, C:0, D:0,E:0,F:0,G:0,H:0,I:0,J:0,K:0,L:0,M:0,N:0,O:0,P:0,Q:0,R:0,S:0,T:0,U:0,V:0,W:0,X:0,};
-                api.getApi(this.QZhike + '/GetThc', info).then(res => {
+                api.getApi(this.apiVar.QZhike + '/GetThc', info).then(res => {
                     console.log('getThc返回--', res.data);
                     if (res.data.SysCode == 100302) {
                         this.$message.warning('登录超时,请重新登录');

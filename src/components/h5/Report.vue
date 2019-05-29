@@ -348,7 +348,7 @@ export default {
             tempwindow.document.body.style.textAlign = 'center';
             tempwindow.document.body.style.marginTop = '200';
             tempwindow.document.body.innerHTML="正在奋力下载ppt,请稍后！"
-            api.getApi(this.Advertisement+'/GetPPTReport', info).then(res =>{
+            api.getApi(this.apiVar.Advertisement+'/GetPPTReport', info).then(res =>{
                 console.log(res.data);
                 addload.close();
                 if(res.data.code == 300200){
@@ -389,7 +389,7 @@ export default {
             tempwindow.document.body.style.textAlign = 'center';
             tempwindow.document.body.style.marginTop = '200';
             tempwindow.document.body.innerHTML="正在奋力下载ppt,请稍后！"
-            api.getApi(this.Advertisement+'/GetPPTXReport', info).then(res =>{
+            api.getApi(this.apiVar.Advertisement+'/GetPPTXReport', info).then(res =>{
                 console.log(res.data);
                 addload.close();
                 if(res.data.code == 300200){
@@ -430,7 +430,7 @@ export default {
             tempwindow.document.body.style.textAlign = 'center';
             tempwindow.document.body.style.marginTop = '200';
             tempwindow.document.body.innerHTML="正在奋力下载pdf,请稍后！"
-            api.getApi(this.Advertisement+'/GetPdfReport', info).then(res =>{
+            api.getApi(this.apiVar.Advertisement+'/GetPdfReport', info).then(res =>{
                 console.log(res.data);
                 addload.close();
                 if(res.data.code == 300200){
@@ -503,7 +503,7 @@ export default {
             let info = {
                 [name]: val
             };
-            api.getApi(this.Advertisement+"/GetReportBatch", info)
+            api.getApi(this.apiVar.Advertisement+"/GetReportBatch", info)
                 .then(res => {
                     console.log(res.data);
                     if (res.data.SysCode == 200200) {
@@ -610,7 +610,7 @@ export default {
 
         // 获取图片信息(广告门)
         getImgData(params){
-            api.postApi(this.Advertisement+"/GetImg", params)
+            api.postApi(this.apiVar.Advertisement+"/GetImg", params)
                 .then(res => {
                     if (!res.data.SysCode) {
                         console.log(res.data);
@@ -648,7 +648,7 @@ export default {
                 pType: this.Info.name,
                 [name]: val
             };
-            api.postApi(this.Advertisement+'/GetImgByResId', info).then(res =>{
+            api.postApi(this.apiVar.Advertisement+'/GetImgByResId', info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 200200){
                     if(res.data.data.length){

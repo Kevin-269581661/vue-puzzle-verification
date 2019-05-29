@@ -189,7 +189,7 @@
             },
             // 滚动获取列表数据
             getData(params){
-                api.getApi(this.UCAPI+'/AscrList', params).then(res =>{
+                api.getApi(this.apiVar.UCAPI+'/AscrList', params).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 100302){
                         this.loginTimeout();
@@ -307,7 +307,7 @@
                                 asName: keyword,
                                 ascType: type,
                             };
-                            api.postApi(this.UCAPI+'/SetAscrInfo', info).then(res =>{
+                            api.postApi(this.apiVar.UCAPI+'/SetAscrInfo', info).then(res =>{
                                 console.log(res);
                                 if(res.data.SysCode == 100200){
                                     Message.success(res.data.MSG);
@@ -331,7 +331,7 @@
                             asName: keyword,
                             ascType: type,
                         };
-                        api.postApi(this.UCAPI+'/UpdateAscrInfo', info).then(res =>{
+                        api.postApi(this.apiVar.UCAPI+'/UpdateAscrInfo', info).then(res =>{
                             console.log(res);
                             if(res.data.SysCode == 100200){
                                 Message.success(res.data.MSG);
@@ -399,7 +399,7 @@
                         ascState: row.state==1 ? 0: 1
                     };
                     console.log('info----', row.state, info);
-                    api.postApi(this.UCAPI + "/UpdateAscState", info)
+                    api.postApi(this.apiVar.UCAPI + "/UpdateAscState", info)
                         .then(res => {
                             console.log(res.data);
                             if (res.data.SysCode == 100200) {

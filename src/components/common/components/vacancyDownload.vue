@@ -137,7 +137,7 @@ export default {
                 "token": this.sessionData.token,
                 "uid": this.sessionData.uID
             };
-            api.postApi(this.Advertisement+'/GetAuthorCity', info).then(res =>{
+            api.postApi(this.apiVar.Advertisement+'/GetAuthorCity', info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 300200){
                     let resinfo = res.data.data;
@@ -175,7 +175,7 @@ export default {
                 startTime: daterange[0],
                 endTime: daterange[1],
             };
-            api.postApi(this.Advertisement+'/ExportSpareRes', info).then(res =>{
+            api.postApi(this.apiVar.Advertisement+'/ExportSpareRes', info).then(res =>{
                 console.log(res.data);
                 if(!res.data.SysCode){
                     if(res.data.length){
@@ -269,7 +269,7 @@ export default {
                     let data=[];
                     this.$http.get(
                         // 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes/'+this.downLoadInfo.city[i]+'.json'
-                        this.jsonLink+this.downLoadInfo.city[i]+'.json'
+                        this.apiVar.jsonLink+this.downLoadInfo.city[i]+'.json'
                     ).then((response)=>{
                         console.log('response----', response.data);
                         if (!response.data.SysCode) {
@@ -380,7 +380,7 @@ export default {
         },
         // 自定义日期按照点位来导
         getDaterangeAds(info){
-            api.postApi(this.Advertisement+'/ExportSpareAds', info).then(res =>{
+            api.postApi(this.apiVar.Advertisement+'/ExportSpareAds', info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 300200){
                     let resinfo = res.data;

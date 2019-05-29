@@ -527,7 +527,7 @@
                         info: 'y'
                     }
                 }
-                api.postApi_new(this.Media, params ).then(res => {
+                api.postApi_new(this.apiVar.Media, params ).then(res => {
                     console.log('mediaDetail', res.data) //fNum楼栋数量 dNum出入数量 hNum住户数量
                     if(res.data.SysCode == 200200){
                         if (res.data.data === null || res.data.data === '') {
@@ -623,7 +623,7 @@
                         "resid": this.resID
                     }
                 }
-                api.postApi_new(this.Media , mParams).then(res => {
+                api.postApi_new(this.apiVar.Media, mParams).then(res => {
                     console.log('媒体信息', res.data)
                     if(res.data.SysCode == 200200){
                         if (res.data.data.length === 0 || res.data.data === '') {
@@ -673,7 +673,7 @@
                         ptid: this.resID,
                         ptype: 'resType'
                     }
-                    api.getApi(this.UCAPI + '/GetImg', params).then(res => {
+                    api.getApi(this.apiVar.UCAPI + '/GetImg', params).then(res => {
                         console.log('资源图片的信息', res)
                         if (res.data.length === 0) {
                             this.$message({
@@ -752,7 +752,7 @@
                         token: this.sessionData.token,
                         resID: this.resID
                     }
-                    api.getApi(this.Advertisement + '/GetConnRowInfo',params).then(res=>{
+                    api.getApi(this.apiVar.Advertisement + '/GetConnRowInfo',params).then(res=>{
                         this.ConnectDoorDialogVisible = true
                         this.isUpdataConnectAD = false
                         console.log('获取该资源的连排门信息',res)
@@ -872,7 +872,7 @@
                     connIDs: this.selectAdName[index].connID,
                 }
                 console.log('删除连排门信息params',params)
-                api.postApi(this.Advertisement + '/DeleteConnRowInfo',params).then(res=>{
+                api.postApi(this.apiVar.Advertisement + '/DeleteConnRowInfo',params).then(res=>{
                     console.log('删除连排门信息',res)
                     this.connectAdBox.splice(index,1)
                     this.selectAdName.splice(index,1)
@@ -953,7 +953,7 @@
                         connRowList: arr,
                     }
                     console.log('params',params)
-                    api.postApi_json(this.Advertisement + '/SaveOrUpdateConnRowInfo?uid='+ this.sessionData.uID +'&token='+ this.sessionData.token, params)
+                    api.postApi_json(this.apiVar.Advertisement + '/SaveOrUpdateConnRowInfo?uid='+ this.sessionData.uID +'&token='+ this.sessionData.token, params)
                         .then(res => {
                             console.log('设置连排门res', res)
                             this.isConnectBtn = false

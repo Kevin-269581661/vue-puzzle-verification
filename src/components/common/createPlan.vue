@@ -1969,6 +1969,12 @@
             },
             // 小区导入
             resImport(formData, info){
+                let Loading = this.$loading({
+                    lock: true,
+                    text: '快马加鞭选点中...',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                });
                 // 上传文件
                 api.postUpload_file(this.doUpload+info, formData).then(res =>{
                     if(res.data.SysCode == 200200){
@@ -1980,8 +1986,10 @@
                     }else{
                         this.messageFun('warning',res.data.MSG)
                     }
+                    Loading.close();                    
                 }).catch(res =>{
                     console.log(res);
+                    Loading.close();
                 });
             },
             // 取消导入

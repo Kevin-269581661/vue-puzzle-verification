@@ -204,20 +204,29 @@ export default {
         },
     },
     created(){
-        this.initData();       
+        console.log('createdd-----1');
+        if(this.importData.successList){
+            this.initData();       
+            console.log('createdd-----2');
+        }
     },
     watch:{
         importData(){
-            this.initData();  
+            console.log('createdd-----3');            
+            if(this.importData.successList){
+                this.initData();       
+                console.log('createdd-----4');                
+            } 
         },
     },
     methods:{
         initData(){
             console.log(this.importData, 'this.importData----da-'); 
-            this.successList = [];
-            this.errorList = [];
+            // this.successList = [];
+            // this.errorList = [];
             this.shopList = [];
-            let copyData = JSON.parse(JSON.stringify(this.importData));
+            // let copyData = JSON.parse(JSON.stringify(this.importData));
+            let copyData = Object.assign({}, this.importData);
             this.successList = copyData.successList?this.setTableData(copyData.successList):[];
             this.errorList = copyData.errorList?this.checkPointFun(copyData.errorList):[];
             this.successRes = copyData.successSize;

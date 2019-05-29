@@ -168,6 +168,8 @@ export default {
     },
     data(){
         return{
+            // 登录信息
+            sessionData: {},
             // 成功小区
             successList: [],
             // 失败小区数据
@@ -204,6 +206,7 @@ export default {
         },
     },
     created(){
+        this.getSessionData();
         console.log('createdd-----1');
         if(this.importData.successList){
             this.initData();       
@@ -220,6 +223,9 @@ export default {
         },
     },
     methods:{
+        getSessionData(){
+            this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))            
+        },
         initData(){
             console.log(this.importData, 'this.importData----da-'); 
             // this.successList = [];

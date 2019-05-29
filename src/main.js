@@ -60,7 +60,7 @@ Vue.prototype.wuYouMap = 'https://wsopbodv.dituwuyou.com/qinlin/embed?mid=_J6aWe
 // Vue.prototype.qadnUrl = 'https://www.qinlinad.com'
 //测试服
 // Vue.prototype.qadnUrl = 'https://beta.qinlinad.com'
-Vue.prototype.qadnUrl = window.location.protocol;
+Vue.prototype.qadnUrl = window.location.protocol + "//" + window.location.hostname;
 Vue.use(ElementUI);
 
 console.log('test');

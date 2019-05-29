@@ -43,14 +43,14 @@
                 <el-row>
                     <el-col :span="5">
                         <span>上画时间:</span>
-                        <el-radio-group v-model="activeType" size="small">
+                        <el-radio-group v-model="activeType" size="small" @change="changeDateType">
                             <el-radio-button :label="1">本周</el-radio-button>
-                            <el-radio-button :label="2" >本月</el-radio-button>
-                            <el-radio-button :label="3">近2周</el-radio-button>
+                            <el-radio-button :label="2">近2周</el-radio-button>
+                            <el-radio-button :label="3" >本月</el-radio-button>
                         </el-radio-group>
                     </el-col>
                     <el-col :span="5">
-                        <el-date-picker class="input-with-select" v-model="rangeDate" size="small" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" >
+                        <el-date-picker class="input-with-select" v-model="rangeDate" size="small" type="daterange" range-separator="-" format="yyyy/MM/dd" value-format="yyyy/MM/dd" >
                         </el-date-picker>
                     </el-col>
                 </el-row>
@@ -102,6 +102,7 @@
     // 时间控件格式化
     import dateFormat from "../../commonFun/timeFormat.js";
     import api from "../../api/api.js";
+    import timeFormat from '../../commonFun/timeFormat.js';
     export default {
         data(){
             return{
@@ -210,6 +211,18 @@
             }
         },
         methods:{
+            changeDateType(){
+                let active = this.activeType;
+                let result = {};
+                if(active == 1){
+                    result = timeFormat.returnDayRange(7, new Date());
+                }else if(active == 2){
+                    result = timeFormat.returnDayRange(14, new Date());
+                }else{
+                    result = timeFormat.returnDayRange(timeFormat.getCurrMonthDays(new Date()), new Date());
+                }
+                this.rangeDate = [result.startTime, result.endTime];
+            },
             // 判断角色是否有新建按钮(系统管理员和超级管理员有)
             getRole() {
                 this.sessionData = JSON.parse(sessionStorage.getItem("session_data"));
@@ -355,6 +368,7 @@
             },
         },
         mounted(){
+            this.changeDateType();
             // this.getRole();
             // this.searchFun();
         },

@@ -637,8 +637,8 @@ export default {
             pageDownReportArr: [],
             downImgPercent: 0,
             // 上传图片地址
-            doUpload: "/Advertisement/UpLoad",
-            // doUpload: "https://beta.qinlinad.com/Advertisement/UpLoad",
+            doUpload: "/advertisement/UpLoad",
+            // doUpload: "https://beta.qinlinad.com/advertisement/UpLoad",
             upLoadObj:{},
             //上刊报告市区级联
             citys: [],

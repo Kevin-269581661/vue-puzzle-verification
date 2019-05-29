@@ -956,7 +956,7 @@
                     }
                 ],
                 liveTime: '',                   // 资源时间
-                doUpload: '/Advertisement/UpLoad',     //https://beta.qinlinad.com,
+                doUpload: '/advertisement/UpLoad',     //https://beta.qinlinad.com,
                 resImg: {                       // 上传图片附带参数
                     uid: JSON.parse(sessionStorage.getItem('session_data')).uID,
                     pid: '',                // 图片id

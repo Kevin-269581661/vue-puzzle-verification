@@ -1089,7 +1089,7 @@
             }
             return {
                 // doUpload: 'https://beta.qinlinad.com/Advertisement/AnalysisExcelAdBaseInfo',
-                doUpload: '/Advertisement/AnalysisExcelAdBaseInfo',
+                doUpload: '/advertisement/AnalysisExcelAdBaseInfo',
                 shopLoading: true,  // 购物车加载中
                 loading: true,//加载中
                 dynamicTags: [],
@@ -1403,10 +1403,10 @@
                 this.importInfoData = {};
                 if(type == 'res'){
                     this.importType = '1';
-                    this.doUpload = '/Advertisement/AdPlanResImport'
+                    this.doUpload = '/advertisement/AdPlanResImport'
                 }else{
                     this.importType = '2';
-                    this.doUpload = '/Advertisement/AnalysisExcelAdBaseInfo';
+                    this.doUpload = '/advertisement/AnalysisExcelAdBaseInfo';
                 }
             },
             // 自定义上传

@@ -1174,7 +1174,7 @@
                 // 导空点是否展示半年json下载(全国媒介或全国销售有权限下载)
                 isShowHalfYear: false,
                 // doUpload: 'https://beta.qinlinad.com/Advertisement/AnalysisExcelAdBaseInfo',
-                doUpload: '/Advertisement/AnalysisExcelAdBaseInfo',
+                doUpload: '/advertisement/AnalysisExcelAdBaseInfo',
                 // 空位导出url
                 downUrl: '',
                 // 是否显示空位导出弹出框
@@ -1896,10 +1896,10 @@
             importFanan(type){
                 if(type == 'res'){
                     this.importType = '1';
-                    this.doUpload = '/Advertisement/AdPlanResImport'
+                    this.doUpload = '/advertisement/AdPlanResImport'
                 }else{
                     this.importType = '2';
-                    this.doUpload = '/Advertisement/AnalysisExcelAdBaseInfo';
+                    this.doUpload = '/advertisement/AnalysisExcelAdBaseInfo';
                 }
                 this.isImport = true;
                 this.fileData = [];

@@ -187,6 +187,7 @@
                                             <el-option label="已上传" value="2"></el-option>
                                             <el-option label="未上传" value="3"></el-option>
                                         </el-select>
+                                        <el-button type="primary" @click="downloadImg()">导出图片</el-button>
                                         <!--进度条-->
                                         <div class="progress">
                                             <el-progress :percentage="upImgPercent"></el-progress>
@@ -2273,6 +2274,10 @@ export default {
             let m = date.getMinutes() + ':';
             let s = date.getSeconds();
             return Y + M + D + h + m + s;
+        },
+        // 导出图片
+        downloadImg(){
+            // api.getApi_file(this.apiVar.Advertisement, info);
         },
     },
 };

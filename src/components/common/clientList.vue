@@ -48,7 +48,7 @@
 					</div>
 				</el-row>
 				<div class="table_wrap">
-					<el-table border :data="currentPlan" v-loading="loading" v-loadmore="userLoadMore" element-loading-text="玩命加载中..." element-loading-spinner="el-icon-loading" style="width: 100%" :default-sort="{prop: 'joinTime', order: 'descending'}">
+					<el-table border :data="currentPlan" v-loading="loading" element-loading-text="玩命加载中..." element-loading-spinner="el-icon-loading" style="width: 100%" :default-sort="{prop: 'joinTime', order: 'descending'}">
 						<el-table-column label="联系人" min-width="6%">
 							<template slot-scope="scope">
 								<el-tooltip class="item" effect="dark" :content="scope.row.realName" placement="bottom"  v-if="scope.row.realName.length>18">
@@ -107,6 +107,16 @@
 							</template>
 						</el-table-column>
 					</el-table>
+
+                    <el-pagination
+                        @size-change="sizeChange"
+                        @current-change="changePage"
+                        :current-page.sync="currPage"
+                        :page-sizes="pageSizes"
+                        :page-size="pageSize"
+                        layout="total, sizes, prev, pager, next, jumper"
+                        :total="totalNum">
+                    </el-pagination>
 				</div>
 			</div>
 		</div>
@@ -145,9 +155,11 @@ export default {
         return {
             // 公司列表
             companyArr: [],
-            pageSize: 15,
+            pageSize: 20,
+            pageSizes: [20, 50, 80, 100],
             currPage: 1,
             totalPage: 0,
+            totalNum: 0,
             // 登录信息
             sessionData:{},
             //加载中
@@ -161,8 +173,6 @@ export default {
             },
             // 表格数据
             currentPlan: [],
-            // 是否滚动加载
-            loading_point: true,
             isSearch: true,
             isReset: true,
         };
@@ -189,6 +199,20 @@ export default {
         }
     },
     methods: {
+        // 切换页码
+        changePage(page) {
+            this.currPage = page;
+            console.log('page----', page);
+            this.searchFun();
+        },
+        // 每页条数切换
+        sizeChange(val) {
+            this.pageSize = val;
+            if (this.currPage == 1) {
+                this.searchFun();
+            }
+            this.currPage = 1;
+        },
         // 获取公司
         getCompany(){
             let sess = this.sessionData;
@@ -217,15 +241,6 @@ export default {
                 console.log(err);
             });
         },
-        // 用户列表--滚动监听
-        userLoadMore(){
-            if(this.loading_point){
-                this.loading_point = false;
-                if(this.currPage <= this.totalPage){
-                    this.searchFun();
-                }
-            }
-        },
         // 判断角色是否有新建按钮(销售有)
         getRole() {
             this.sessionData = JSON.parse(sessionStorage.getItem("session_data"));
@@ -237,6 +252,7 @@ export default {
         },
         // 搜索数据格式化
         searchFormat(){
+            console.log('currpage--', this.currPage);
             let session = this.sessionData;
             let info = {
                 uid: session.uID,
@@ -277,13 +293,19 @@ export default {
                     this.loginTimeout();
                 }else{
                     if(!res.data.SysCode){
+                        // let dataInfo = res.data.page;
+                        // this.totalPage = dataInfo.totalPage;
+                        // this.totalNum = dataInfo.total;
+                        // let dataArr = dataInfo.list;
+                        // this.currentPlan = this.currentPlan.concat(this.funcData(dataArr));
                         let dataInfo = res.data.page;
-                        this.totalPage = dataInfo.totalPage;
+                        this.totalNum = dataInfo.total;
                         let dataArr = dataInfo.list;
-                        this.currentPlan = this.currentPlan.concat(this.funcData(dataArr));
-                        this.loading_point = true;
-                        this.currPage++;
+                        this.currentPlan = this.funcData(dataArr);
                         this.loading = false;
+                        if (dataInfo.totalSize == 0) {
+                            this.$Message.warning('暂无数据');
+                        }
                         if(dataInfo.totalPage == 0){
                             Message.warning('暂无数据');
                         }
@@ -314,7 +336,6 @@ export default {
             if(date || keyword || company){
                 this.currentPlan = [];
                 this.loading = true;
-                this.loading_point = false;
                 this.currPage = 1;
                 this.searchFun()
             }else{
@@ -585,23 +606,23 @@ export default {
 }
 
 /*滚动条*/
-/deep/ .el-table__body-wrapper {
+/* /deep/ .el-table__body-wrapper {
     height: 405px;
     overflow-y: scroll;
     overflow-x: hidden;
-}
+} */
 
-/deep/ .el-table__body-wrapper::-webkit-scrollbar {
+/* /deep/ .el-table__body-wrapper::-webkit-scrollbar {
     width: 4px;
     background: #fafafa;
-}
+} */
 
-/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
+/*滚动条里面小方块*/
+/* /deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
     -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
     background: #c1c1c1;
     border-radius: 4px;
-}
+} */
 
 /*超出省略*/
 /deep/ .el-table .cell {

@@ -50,7 +50,7 @@
                         </el-radio-group>
                     </el-col>
                     <el-col :span="5">
-                        <el-date-picker class="input-with-select" v-model="rangeDate" size="small" type="daterange" range-separator="-" format="yyyy/MM/dd" value-format="yyyy/MM/dd" >
+                        <el-date-picker class="input-with-select" v-model="searchInfo.rangeDate" size="small" type="daterange" range-separator="-" format="yyyy/MM/dd" value-format="yyyy/MM/dd" >
                         </el-date-picker>
                     </el-col>
                 </el-row>
@@ -108,12 +108,16 @@
             return{
                 // 登录信息
                 sessionData:{},
+                // 本周/本月/近两周
+                activeType: 1,
                 // 搜索数据
                 searchInfo:{
                     city: '',
                     line: '',
                     engineer: '',
                     order: '',
+                    // 搜索时间段
+                    rangeDate: '',
                 },
                 isSearch: true,
                 isReset: true,
@@ -189,11 +193,7 @@
                 loading_point: true, 
                 currPage: 1,
                 totalPage: 0,
-                pageSize: 15,
-                // 本周/本月/近两周
-                activeType: 1,
-                // 搜索时间段
-                rangeDate: []             
+                pageSize: 15,         
             }
         },
         directives: {
@@ -221,7 +221,7 @@
                 }else{
                     result = timeFormat.returnDayRange(timeFormat.getCurrMonthDays(new Date()), new Date());
                 }
-                this.rangeDate = [result.startTime, result.endTime];
+                this.searchInfo.rangeDate = [result.startTime, result.endTime];
             },
             // 判断角色是否有新建按钮(系统管理员和超级管理员有)
             getRole() {

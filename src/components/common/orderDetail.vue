@@ -811,16 +811,17 @@ export default {
                     chDay: data.chDay,
                     adSize: data.mVehicle == "广告门" ? data.adSize: data.picSize,
                     adViewSize: data.mVehicle == "广告门" ? data.adViewSize: data.lightBoxSize,
+                    notPush: data.notPush,
+                    mRemark: data.mRemark,
                     resAddress: data.resAddress,
-                    notPush: data.notPush
                 };
                 resultArr.push(obj);
             }
 
             require.ensure([], () => {
                 const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
-                const tHeader = ['资源名称', '市', '区域', '媒介载体', '媒体名称', '资产编号', '投放面', '投放日期', '终止日期', '商圈', '楼盘类型/写字楼类型', '楼盘价格', '住户数量/办公室数量', '楼栋数量', '入住年份/建成年份', '广告尺寸/画面尺寸', '可视画面/灯箱尺寸', '广告限制', '详细地址'];
-                const filterVal = ['resName', 'city', 'rName', 'mVehicle', 'mTitle', 'assetTag', 'asLab', 'timeRange', 'finishTimeRange', 'tradingArea', 'cType', 'hPrice', 'hNum', 'fNum', 'chDay', 'adSize', 'adViewSize', 'notPush', 'resAddress'];
+                const tHeader = ['资源名称', '市', '区域', '媒介载体', '媒体名称', '资产编号', '投放面', '投放日期', '终止日期', '商圈', '楼盘类型/写字楼类型', '楼盘价格', '住户数量/办公室数量', '楼栋数量', '入住年份/建成年份', '广告尺寸/画面尺寸', '可视画面/灯箱尺寸', '广告限制', '媒体备注', '详细地址'];
+                const filterVal = ['resName', 'city', 'rName', 'mVehicle', 'mTitle', 'assetTag', 'asLab', 'timeRange', 'finishTimeRange', 'tradingArea', 'cType', 'hPrice', 'hNum', 'fNum', 'chDay', 'adSize', 'adViewSize', 'notPush', 'mRemark', 'resAddress'];
                 const list = resultArr;
                 const data = this.formatJson(filterVal, list);
                 export_json_to_excel(tHeader, data, name);

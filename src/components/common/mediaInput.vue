@@ -1009,7 +1009,7 @@
                     "service":"GetNotPush",
                     "data": {}
                 }
-                api.postApi_new(this.Media, params).then(res => {
+                api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('广告限制列表', res)
                     if(res.data.SysCode == 200200){
                         let limit = res.data.data
@@ -1047,7 +1047,7 @@
                             keyword: queryString,
                             max: 20,
                         }
-                        api.postApi(this.QADNAPI + '/ResAutoComplete', params).then(res => {
+                        api.postApi(this.apiVar.QADNAPI + '/ResAutoComplete', params).then(res => {
                             console.log('远程获取房价网的小区名称res', res)
                             if (res.data.code === '200200' || res.data.msg === 'success') {
                                 if(res.data.data.code == '200' || res.data.data.msg === 'ok'){
@@ -1098,7 +1098,7 @@
                         district: this.resAddres.area,
                         name: this.recForm.resname
                     }
-                    api.postApi(this.QADNAPI + '/GetResDetails', params).then(res => {
+                    api.postApi(this.apiVar.QADNAPI + '/GetResDetails', params).then(res => {
                         console.log('res', res)
                         if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                             this.loginTimeout()
@@ -1159,7 +1159,7 @@
                         address:   this.resAddres.city  +  this.resAddres.area + this.recForm.resaddr
                     }
                     console.log('根据填写的具体地址去获取经纬度',params)
-                    api.postApi(this.Map + '/Geocoder', params).then(res => {
+                    api.postApi(this.apiVar.Map + '/Geocoder', params).then(res => {
                         console.log('Geocoder', res)
                         if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                             this.loginTimeout()
@@ -1498,7 +1498,7 @@
                     token: this.sessionData.token,
                     data: recObj
                 }
-                api.postApi_new(this.Media, params).then(res => {
+                api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('资源数据：', res.data)
                     let recData = res.data.data
                     this.resData = recData
@@ -1602,7 +1602,7 @@
                 }
                 console.log('params',params)
                 if(params.data.medias.length){
-                    api.postApi_new(this.Media , params).then(res => {
+                    api.postApi_new(this.apiVar.Media, params).then(res => {
                         console.log('批量创建媒体',res)
                         this.Editloading.close()
                         if(res.data.SysCode == 200200 && res.data.data.length > 0){
@@ -1651,7 +1651,7 @@
                     }
                 }
                 console.log('资源媒体图片-无忧地图参数',params)
-                api.postApi_new(this.Media, params).then(res =>{
+                api.postApi_new(this.apiVar.Media, params).then(res =>{
                     console.log('资源媒体图片无忧地图',res)
                 })
             },
@@ -2199,7 +2199,7 @@
                         ptype: 'restype',
                         ptid: this.resData.resID
                     }
-                    api.getApi(this.UCAPI + '/GetImg', params).then(res => {
+                    api.getApi(this.apiVar.UCAPI + '/GetImg', params).then(res => {
                         console.log('资源图片的信息', res)
                         if (res.data.length === 0) {
                             console.log('暂时没有该资源的图片')
@@ -2287,7 +2287,7 @@
                     "service":"SetResCT",
                     "data": SetResCTObj
                 }
-                api.postApi_new(this.Media, params).then(res => {
+                api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('修改资源信息', res)
                     if (res.data.SysCode == 200200) {
                         // 设置资源图片信息
@@ -2362,7 +2362,7 @@
                             "service":"SetMediaInfo",
                             "data": temp_media
                         }
-                        api.postApi_new(this.Media, mParams).then(res => {
+                        api.postApi_new(this.apiVar.Media, mParams).then(res => {
                             console.log('广告门修改', res)
                             if(res.data.SysCode == 200200){
                                 mIDArr.push(res.data.data.mID)
@@ -2435,7 +2435,7 @@
                             "service":"SetMediaInfo",
                             "data": temp_media
                         }
-                        api.postApi_new(this.Media, mParams).then(res => {
+                        api.postApi_new(this.apiVar.Media, mParams).then(res => {
                             console.log('道闸修改', res)
                             if(res.data.SysCode == 200200){
                                 mIDArr.push(res.data.data.mID)
@@ -2477,7 +2477,7 @@
                         "mstate": mstate
                     }
                 }
-                api.postApi_new(this.Media, params).then(res => {
+                api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('修改媒体状态', res)
                     if (res.data.SysCode === 200200 || res.data.MSG === '操作成功') {
                         Message({

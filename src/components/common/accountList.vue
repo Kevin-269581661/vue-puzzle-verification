@@ -206,7 +206,7 @@
                     uid: sess.uID,
                     token: sess.token,
                 };
-                api.getApi(this.UCAPI + '/ShowAscr', info).then(res =>{
+                api.getApi(this.apiVar.UCAPI + '/ShowAscr', info).then(res =>{
                     console.log(res);
                     if(!res.data.SysCode){
                         let result = [];
@@ -251,7 +251,7 @@
             },
             // 滚动加载数据列表
             getData(params){
-                api.getApi(this.UCAPI+'/GetUserList', params).then(res =>{
+                api.getApi(this.apiVar.UCAPI+'/GetUserList', params).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 100302){
                         this.loginTimeout();
@@ -411,7 +411,7 @@
                             toid: row.uID,
                             ustate: row.uState ? 0 : 1
                         };
-                        api.postApi(this.UCAPI + "/CtrlUser", info)
+                        api.postApi(this.apiVar.UCAPI + "/CtrlUser", info)
                             .then(res => {
                                 console.log(res.data);
                                 if (res.data.SysCode == 200200) {

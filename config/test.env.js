@@ -1,7 +1,10 @@
-'use strict'
-const merge = require('webpack-merge')
-const devEnv = require('./dev.env')
 
-module.exports = merge(devEnv, {
-  NODE_ENV: '"testing"'
-})
+'use strict'
+const apiConfig = require('../src/utils/config')
+
+
+module.exports = {
+	NODE_ENV: '"testing"',
+	EVN_CONFIG: '"test"',
+	API_ROOT: apiConfig.apiRoot.testURL
+}

@@ -664,7 +664,7 @@
             // 根据方案id获取该方案的信息
             getTheTvApDataById(){
                 let params = {plan_id: this.tvApID}
-                api.getApi(this.QKuyun+'/GetPlanDetail', params).then(res=>{
+                api.getApi(this.apiVar.QKuyun+'/GetPlanDetail', params).then(res=>{
                     console.log('编辑获取方案信息',res.data);
                     if(res.data.code == 500200){
                         let obj = res.data.data
@@ -873,7 +873,7 @@
                         token: this.sessionData.token,
                         sname: queryString
                     }
-                    api.postApi(this.UCAPI+'/GetUserName', params).then(res => {
+                    api.postApi(this.apiVar.UCAPI+'/GetUserName', params).then(res => {
                         //{SysCode: 100302, MSG: "登陆超时"}
                         console.log('GetUserName', res)
                         if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
@@ -908,7 +908,7 @@
             },
             //获取公司名称列表MyCustomer
             Get_cName() {
-                api.getApi(this.Advertisement+'/MyCustomer', {uid: this.BDData.uid, token: this.sessionData.token}).then(res => {
+                api.getApi(this.apiVar.Advertisement+'/MyCustomer', {uid: this.BDData.uid, token: this.sessionData.token}).then(res => {
                     console.log('MyCustomer:', res.data)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         this.loginTimeout()
@@ -954,7 +954,7 @@
                     cid: val,
                     token: this.sessionData.token
                 }
-                api.getApi(this.Advertisement+'/GetBrand', cidParams).then(res => {
+                api.getApi(this.apiVar.Advertisement+'/GetBrand', cidParams).then(res => {
                     console.log('公司品牌', res.data)
                     let CBrand = res.data
                     let BrandList = []
@@ -1078,7 +1078,7 @@
             getCityPrice(){
                 let params = {}
                 // console.log('获取城市价格列表',)
-                api.getApi(this.QKuyun + '/GetAdPrice',params).then(res=>{
+                api.getApi(this.apiVar.QKuyun + '/GetAdPrice',params).then(res=>{
                     console.log('获取城市价格列表',res)
                     let dataArr = res.data.data
                         // [
@@ -1109,7 +1109,7 @@
                 // } else {
                 //     params = {uid: this.BDData.uid}
                 // }
-                api.postApi(this.Advertisement + '/GetOrderList',params).then(res=>{
+                api.postApi(this.apiVar.Advertisement + '/GetOrderList',params).then(res=>{
                     console.log('获取方案列表',res)
                     if (!res.data.SysCode) {
                         let dataArr =  res.data.orderList
@@ -1276,7 +1276,7 @@
                         apid: apID,
                         token: this.sessionData.token,
                     }
-                    api.getApi(this.Advertisement + '/GetApRes',params).then(res=>{
+                    api.getApi(this.apiVar.Advertisement + '/GetApRes',params).then(res=>{
                         console.log('获取资源列表',res)
                         let dataArr = res.data
                             // [
@@ -1890,7 +1890,7 @@
                 console.log('参数',params)
                 if(this.isEdit === true){
                     params.plan_id = this.tvApID
-                    api.postApi_new(this.QKuyun + '/UpdatePlan',params).then(res=>{
+                    api.postApi_new(this.apiVar.QKuyun + '/UpdatePlan',params).then(res=>{
                         console.log('编辑方案',res)     // 方案创建失败，素材尚未验证通过，请稍后...
                         if(res.data.code == '500300'){
                             this.$message.warning('方案创建失败，视频素材尚未验证通过，请稍后再试...')
@@ -1904,7 +1904,7 @@
                         }
                     })
                 }else{
-                    api.postApi_new(this.QKuyun + '/AddPlan',params).then(res=>{
+                    api.postApi_new(this.apiVar.QKuyun + '/AddPlan',params).then(res=>{
                         console.log('创建方案',res) // 方案创建失败，素材尚未验证通过，请稍后...res.data.msg
                         if(res.data.code == '500300'){
                             this.$message.warning('方案创建失败，视频素材尚未验证通过，请稍后再试...')

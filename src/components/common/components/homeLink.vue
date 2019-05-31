@@ -132,7 +132,7 @@ export default {
                     service: "GetRMCity",
                     token: this.sessionData.token
                 }
-                api.postApi_new(this.Media, params).then(res=>{
+                api.postApi_new(this.apiVar.Media, params).then(res=>{
                     console.log('res',res)
                     if (res.data.SysCode === 200200) {
                         let resData = []
@@ -188,15 +188,15 @@ export default {
             if (this.sessionData.uType === 'BD') {
                 params.suID = this.sessionData.uID
             }
-            api.getApi(this.Map + '/GetMapInfo', params).then(res=>{
-                console.log(this.wuYouMap,'GetMapInfo地图mapid返回的信息', res)
+            api.getApi(this.apiVar.Map + '/GetMapInfo', params).then(res=>{
+                console.log(this.apiVar.wuYouMap,'GetMapInfo地图mapid返回的信息', res)
                 if (!res.data.SysCode) {
                     let mapid = res.data.MapID
                     if (this.sessionData.uType === 'BD') {
-                        tempwindow.location = this.wuYouMap + mapid + '&city=' + this.mapCityName + '&flag=' + true
+                        tempwindow.location = this.apiVar.wuYouMap + mapid + '&city=' + this.mapCityName + '&flag=' + true
                         this.confirmVisible = true
                     } else if (this.sessionData.uType === 'SM') {
-                        tempwindow.location = this.wuYouMap + mapid + '&city=' + this.mapCityName + '&flag=' + false
+                        tempwindow.location = this.apiVar.wuYouMap + mapid + '&city=' + this.mapCityName + '&flag=' + false
                     } else {
                         console.log('1**************1')
                     }
@@ -218,7 +218,7 @@ export default {
         },
         // 判断是否已提交地图选择点位,并跳转到创建方案页面
         getMapAdsAndGotoPlan(){
-            api.getApi(this.Map + '/checkMapSelect',{uid: this.sessionData.uID,token: this.sessionData.token}).then(res =>{
+            api.getApi(this.apiVar.Map + '/checkMapSelect',{uid: this.sessionData.uID,token: this.sessionData.token}).then(res =>{
                 console.log('用户是否选点的接口', res)
                 if(res.data.SysCode == '200200'){
                     let resData = res.data.data

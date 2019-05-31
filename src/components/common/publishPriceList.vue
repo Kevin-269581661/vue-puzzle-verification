@@ -222,7 +222,7 @@ export default {
                     uid: sess.uID,
                     token: sess.token,
                 };
-                api.getApi(this.UCAPI+'/ShowAscr', info).then(res =>{
+                api.getApi(this.apiVar.UCAPI+'/ShowAscr', info).then(res =>{
                     console.log(res.data);
                     if(!res.data.SysCode){
                         let result = [];
@@ -259,7 +259,7 @@ export default {
                 service:"GetCityByAsrID",
                 data: {}
             };
-            api.postApi_new(this.Media, info).then(res =>{
+            api.postApi_new(this.apiVar.Media, info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 200200){
                     let resinfo = res.data.data;
@@ -297,7 +297,7 @@ export default {
                 service:"GetAdPrice",
                 data: {}
             };
-            api.postApi_new(this.Media, info).then(res =>{
+            api.postApi_new(this.apiVar.Media, info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 200200){
                     let result = [];
@@ -419,7 +419,7 @@ export default {
                     data: data
                 };
                 // 编辑
-                api.postApi_new(this.Media, info).then(res =>{
+                api.postApi_new(this.apiVar.Media, info).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 200200){
                         let priceList = this.publishPriceList;
@@ -447,7 +447,7 @@ export default {
                     data: data
                 };
                 // 新增
-                api.postApi_new(this.Media, info).then(res =>{
+                api.postApi_new(this.apiVar.Media, info).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 200200){
                         this.isShowPrice = false;
@@ -500,7 +500,7 @@ export default {
                         asrID: row.asrID
                     }
                 };
-                api.postApi_new(this.Media, info).then(res =>{
+                api.postApi_new(this.apiVar.Media, info).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 200200){
                         Message.success(res.data.MSG);

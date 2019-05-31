@@ -342,7 +342,7 @@
                 }
             },
             getFAInfo() {
-                api.getApi(this.Advertisement + '/GetShareADS', {aicode: this.aicode}).then(res => {
+                api.getApi(this.apiVar.Advertisement + '/GetShareADS', {aicode: this.aicode}).then(res => {
                     console.log('GetShareADS', res)
                     if (res.data !== '' && !res.data.SysCode) {
                         this.shareADSData = res.data
@@ -396,7 +396,7 @@
             },
             // 获取原始数据
             getADList() {
-                api.getApi(this.Advertisement + '/GetMapADB', {apid: this.apid}).then(res => {
+                api.getApi(this.apiVar.Advertisement + '/GetMapADB', {apid: this.apid}).then(res => {
                     console.log('获取协同选点列表', res)
                     if (res.data.code === 300200 || res.data.msg === 'success') {
                         if (JSON.stringify(res.data.data) === "{}") {
@@ -855,7 +855,7 @@
                 }
                 let params = {apID: this.apid, data: arr}
                 console.log('提交列表to无忧地图',params)
-                api.postApi_new(this.Map + '/PushListData',params).then(res=>{
+                api.postApi_new(this.apiVar.Map + '/PushListData',params).then(res=>{
                     console.log('提交列表模式临时数据到无忧地图',res)
                     if (urlPath.indexOf('www') !== -1) {
                         // 生产环境
@@ -871,7 +871,7 @@
             // 无忧同步到列表
             wuYouMapToList(){
                 let params = {apID: this.apid}
-                api.getApi(this.Map + '/GetListData',params).then(res=>{
+                api.getApi(this.apiVar.Map + '/GetListData',params).then(res=>{
                     console.log('无忧同步到列表',res)
                     let dataArr = res.data
                     if(dataArr.code == '300200'){
@@ -1011,7 +1011,7 @@
                     }
                 }
                 console.log('反馈协同选点列表params',params)
-                api.postApi_json(this.Advertisement + '/PushShareADS', JSON.stringify(params)).then(res =>{
+                api.postApi_json(this.apiVar.Advertisement + '/PushShareADS', JSON.stringify(params)).then(res =>{
                     console.log('协同选点列表的提交', res)
                     if (res.data.SysCode == '300200' || res.data.msg === '操作成功') {
                         this.$message({

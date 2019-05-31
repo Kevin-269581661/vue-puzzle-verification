@@ -128,7 +128,7 @@
                 }
             };
             let validateAssetId = (rule, value, callback) => {
-                let szReg = /^1[345789]\d{9}$/;
+                let szReg = /^1[3456789]\d{9}$/;
                 let HKszReg = /^\d{8}$/;        // 香港号码
                 // console.log('szReg',szReg,'HKszReg',HKszReg)
                 if (!szReg.test(value) && !HKszReg.test(value)) {
@@ -300,7 +300,7 @@
                         uid: sess.uID,
                         token: sess.token,
                     };
-                    api.getApi(this.UCAPI+'/getCompany', info).then(res =>{
+                    api.getApi(this.apiVar.UCAPI+'/getCompany', info).then(res =>{
                         console.log(res.data);
                         if(res.data.SysCode == 200200){
                             let result = [];
@@ -376,7 +376,7 @@
                             uType: 'BD',
                             sname: queryString
                         };
-                        api.postApi(this.UCAPI + "/CheckUserName", info)
+                        api.postApi(this.apiVar.UCAPI + "/CheckUserName", info)
                             .then(res => {
                                 if (res.data.SysCode == 200200) {
                                     if(res.data.data.uID){
@@ -461,7 +461,7 @@
             postEditInfo() {
                 let account = this.setSubmitData();
                 console.log(account);
-                api.postApi(this.UCAPI+"/RegUser", account)
+                api.postApi(this.apiVar.UCAPI+"/RegUser", account)
                     .then(res => {
                         console.log(res);
                         let data = res.data;
@@ -487,7 +487,7 @@
             createFun() {
                 let account = this.setSubmitData();                
                 console.log('提交的账号信息', account);
-                api.postApi(this.UCAPI+"/RegUser", account)
+                api.postApi(this.apiVar.UCAPI+"/RegUser", account)
                     .then(res => {
                         console.log(res);
                         let data = res.data;
@@ -545,7 +545,7 @@
                             token: sess.token,
                             userId: userId
                         };
-                        api.postApi(this.UCAPI+'/GetUser', info).then(res =>{
+                        api.postApi(this.apiVar.UCAPI+'/GetUser', info).then(res =>{
                             console.log(res.data);
                             if(res.data.SysCode == 200200){
                                 this.isEdit = true;
@@ -594,7 +594,7 @@
                     "token": this.sessionData.token,
                     "uid": this.sessionData.uID
                 };
-                api.postApi_new(this.Media, info).then(res =>{
+                api.postApi_new(this.apiVar.Media, info).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 200200){
                         let resinfo = res.data.data;

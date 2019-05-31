@@ -468,7 +468,7 @@
                     }
                 }
                 console.log('GetAdPriceByRids:params',params)
-                api.postApi_new(this.Media, params).then(res => {
+                api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('刊例价信息', res)
                     let ADPriceList = res.data
                     if (ADPriceList.SysCode === 100302 || ADPriceList.MSG === '登陆超时') {
@@ -498,7 +498,7 @@
                     token: this.sessionData.token,
                     apid: apid
                 };
-                api.getApi(this.Advertisement+"/GetAPD", info)
+                api.getApi(this.apiVar.Advertisement+"/GetAPD", info)
                     .then(res =>{
                         console.log('test--', res.data);
                         if (!res.data.SysCode) {

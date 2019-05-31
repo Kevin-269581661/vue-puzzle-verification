@@ -199,7 +199,7 @@ export default {
 				uid:sessionData.uID,
 				tooken: sessionData.token
 			};
-			api.getApi(this.QZhike+'/SelectAllOrder', info).then(res=>{
+			api.getApi(this.apiVar.QZhike+'/SelectAllOrder', info).then(res=>{
 				console.log(res.data);
 				if(res.data){
 					if (res.data.SysCode == 100302) {

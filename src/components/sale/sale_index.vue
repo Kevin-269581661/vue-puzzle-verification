@@ -155,8 +155,8 @@ export default {
                             link: '',
 						},
 						// {
-                         //    title: '方案列表',
-                         //    link: './sale/planList',
+                        //     title: '方案列表',
+                        //     link: './sale/planList',
                         // },
                         {
                             title: '地图选点',
@@ -293,7 +293,7 @@ export default {
 				uid: this.sessionData.uID,
 				token: this.sessionData.token
 			};
-			api.postApi(this.Count + '/GetMonthRankOfBD', info).then(res =>{
+			api.postApi(this.apiVar.Count + '/GetMonthRankOfBD', info).then(res =>{
 				console.log(res.data);
 				if(res.data.SysCode == 200200){
 					let resinfo = res.data.data;
@@ -358,7 +358,7 @@ export default {
 				uid: this.sessionData.uID,
 				token: this.sessionData.token,
 			};
-			api.postApi(this.Count + '/GetCountMessage', info).then(res =>{
+			api.postApi(this.apiVar.Count + '/GetCountMessage', info).then(res =>{
 				console.log(res);
 				if(res.data.SysCode == 200200){
 					let resinfo = res.data.data;
@@ -379,7 +379,7 @@ export default {
 				uid: this.sessionData.uID,
 				token: this.sessionData.token,
 			};
-			api.postApi(this.Count+'/GetHomePageInfoOfBD', info).then(res =>{
+			api.postApi(this.apiVar.Count + '/GetHomePageInfoOfBD', info).then(res =>{
 				console.log(res.data);
 				if(res.data.SysCode == 200200){
 					let resInfo = res.data.data;
@@ -403,7 +403,7 @@ export default {
 				uid: this.sessionData.uID,
 				token: this.sessionData.token,
 			};
-			api.postApi(this.Count + '/GetTargetOfYear', info).then(res =>{
+			api.postApi(this.apiVar.Count + '/GetTargetOfYear', info).then(res =>{
 				console.log(res.data);
 				if(res.data.SysCode == 200200){
 					let target = res.data.data.targetOfYear/1000000;
@@ -427,7 +427,7 @@ export default {
 				uid: this.sessionData.uID,
 				token: this.sessionData.token,
 			};
-			api.postApi(this.Count + '/GetApTotalSoFarOfBD', info).then(res=>{
+			api.postApi(this.apiVar.Count + '/GetApTotalSoFarOfBD', info).then(res=>{
 				console.log(res.data);
 				if(res.data.SysCode == 200200){
 					let resinfo = res.data.data;

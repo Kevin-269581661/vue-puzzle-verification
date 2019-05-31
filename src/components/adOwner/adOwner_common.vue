@@ -233,7 +233,7 @@
                     uid: sessionData.uID,
                     tooken: sessionData.token
                 };
-                api.getApi(this.QZhike + '/GetMess', info).then(res => {
+                api.getApi(this.apiVar.QZhike + '/GetMess', info).then(res => {
                         console.log('GetMess--', res.data);
                         if (res.data.length) {
                             let arr = res.data.concat();
@@ -298,7 +298,7 @@
                                 ptime: dateFormat.toDateTime(this.orderArr[data].pTime),
                             };
                             //点一下就已读
-                            api.getApi(this.QZhike + '/UpdateRead', info).then(res => {
+                            api.getApi(this.apiVar.QZhike + '/UpdateRead', info).then(res => {
                                 console.log(res.data);
                                 if (res.data.MSG == '消息已读') {
                                     this.orderArr[data].ReadState = 1;

@@ -2568,7 +2568,7 @@
                             asrIDs: this.returnAsrID()
                         }
                         let url = this.isKeyDataKind(this.addkeyDataKind)
-                        api.getApi(this.Count + url, params).then(res=>{
+                        api.getApi(this.apiVar.Count + url, params).then(res=>{
                             console.log('关键数据增量月份对比',res)
                             let dataArr = res.data
                             if(this.addkeyDataKind === '订单总额'){
@@ -2658,7 +2658,7 @@
                     token: this.session_userData.token,
                     asrIDs: this.returnAsrID()
                 }
-                api.getApi(this.Count + '/GetSurvey', params).then(res=>{
+                api.getApi(this.apiVar.Count + '/GetSurvey', params).then(res=>{
                     console.log('概况相关汇总数据接口',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.allDataLoading = false
@@ -2811,7 +2811,7 @@
             getAllResData(card,params) {
                 // console.log('关键数据总量/增量趋势 - params',params)
                 params.token = this.session_userData.token
-                api.getApi(this.Count + '/GetResCountOfTotalAndIncrement', params).then(res => {
+                api.getApi(this.apiVar.Count + '/GetResCountOfTotalAndIncrement', params).then(res => {
                     console.log('社区总量趋势', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()       // 登录超时
@@ -2843,7 +2843,7 @@
             // 关键数据总量/增量趋势 - 广告门接口 this.session_userData.token
             getAllMediaData(card,params) {
                 params.token = this.session_userData.token
-                api.getApi(this.Count + '/GetMediaCountOfTotalAndIncrement', params).then(res => {
+                api.getApi(this.apiVar.Count + '/GetMediaCountOfTotalAndIncrement', params).then(res => {
                     console.log('广告门总量趋势', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()       // 登录超时
@@ -2866,7 +2866,7 @@
             // 关键数据总量/增量趋势 - 点位数接口
             getAllAdsData(card,params) {
                 params.token = this.session_userData.token
-                api.getApi(this.Count + '/GetAdSpaceCountOfTotalAndIncrement', params).then(res => {
+                api.getApi(this.apiVar.Count + '/GetAdSpaceCountOfTotalAndIncrement', params).then(res => {
                     console.log('点位数总量趋势', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()       // 登录超时
@@ -2889,7 +2889,7 @@
             // 关键数据总量/增量趋势 - 上刊率接口
             getAllRateData(card,params){
                 params.token = this.session_userData.token
-                api.getApi(this.Count + '/GetPublicationRateTotalAndIncrement', params).then(res=>{
+                api.getApi(this.apiVar.Count + '/GetPublicationRateTotalAndIncrement', params).then(res=>{
                     console.log('上刊率总量趋势',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()       // 登录超时
@@ -2912,7 +2912,7 @@
             // 关键数据总量/增量趋势 - 订单接口
             getAllOrderData(card,params){
                 params.token = this.session_userData.token
-                api.getApi(this.Count + '/GetOrderTotalAndIncrement', params).then(res=>{
+                api.getApi(this.apiVar.Count + '/GetOrderTotalAndIncrement', params).then(res=>{
                     console.log('订单总量/增量趋势',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()       // 登录超时
@@ -2935,7 +2935,7 @@
             // 关键数据总量/增量趋势 - 订单总额接口
             getAllOrderPriceData(card,params){
                 params.token = this.session_userData.token
-                api.getApi(this.Count + '/GetOrderIncomeTotalAndIncrement', params).then(res=>{
+                api.getApi(this.apiVar.Count + '/GetOrderIncomeTotalAndIncrement', params).then(res=>{
                     console.log('订单总额/增量趋势',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()       // 登录超时
@@ -2958,7 +2958,7 @@
             // 关键数据总量/增量趋势 - 广告主数接口
             getAllAdOwnerData(card,params){
                 params.token = this.session_userData.token
-                api.getApi(this.Count + '/GetAdOwnerTotalAndIncrement', params).then(res=>{
+                api.getApi(this.apiVar.Count + '/GetAdOwnerTotalAndIncrement', params).then(res=>{
                     console.log('广告主总数/增量趋势',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()       // 登录超时
@@ -3036,7 +3036,7 @@
                     iend: tEnd,
                     asrIDs: this.returnAsrID()
                 }
-                api.getApi(this.Count + '/GetIOrder', params).then(res =>{
+                api.getApi(this.apiVar.Count + '/GetIOrder', params).then(res =>{
                     console.log(params,'行业订单总量趋势 - 接口',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()
@@ -3088,7 +3088,7 @@
                     token: this.session_userData.token,
                     asrIDs: this.returnAsrID()
                 }
-                api.getApi(this.Count + '/GetAllIOrder', params).then(res => {
+                api.getApi(this.apiVar.Count + '/GetAllIOrder', params).then(res => {
                     console.log('行业订单占比', res)
                     let dataArr = res.data
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
@@ -3168,7 +3168,7 @@
                     delete(params.istart)
                     delete(params.iend)
                 }
-                api.getApi(this.Count + '/GetResPMC', params).then(res => {
+                api.getApi(this.apiVar.Count + '/GetResPMC', params).then(res => {
                     console.log('销售业绩排行', res)
                     let ResPMCdata = res.data
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
@@ -3218,7 +3218,7 @@
                     delete(params.iend)
                 }
                 // console.log('接口参数', params)
-                api.getApi(this.Count + '/GetCOrder', params).then(res => {
+                api.getApi(this.apiVar.Count + '/GetCOrder', params).then(res => {
                     console.log('广告主排行 ', res)
                     let dataArr = res.data
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
@@ -3273,7 +3273,7 @@
                     delete(params.istart)
                     delete(params.iend)
                 }
-                api.getApi(this.Count + '/GetSOrder', params).then(res => {
+                api.getApi(this.apiVar.Count + '/GetSOrder', params).then(res => {
                     console.log(params,'销售业绩排行', res)
                     let dataArr =  res.data
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
@@ -4338,7 +4338,7 @@
                     istart: tStart,
                     iend: tEnd
                 }
-                api.getApi(this.Count + '/GetRM', params).then(res=>{
+                api.getApi(this.apiVar.Count + '/GetRM', params).then(res=>{
                     console.log('城市关键数据对比 - 接口 （社区、广告门、点位）',res)
                     let dataArr = res.data
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
@@ -4393,7 +4393,7 @@
                 let tEnd = this.cityKeyDataDate[1]
                 let params = {uid: this.session_userData.uID,token: this.session_userData.token, asrIDs: data, istart: tStart, iend: tEnd}
                 // console.log('各城市参数', params)
-                api.getApi(this.Count + '/GetCOrder', params).then(res => {
+                api.getApi(this.apiVar.Count + '/GetCOrder', params).then(res => {
                     console.log(data,'城市数据展示res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()       // 登录超时
@@ -4485,7 +4485,7 @@
                 }
                 let url = u
                 // console.log(url,'城市数据对比社区接口 - params',params)
-                api.getApi(this.Count + url, params).then(res=>{
+                api.getApi(this.apiVar.Count + url, params).then(res=>{
                     console.log('asrID',asrID,'城市数据对比社区接口 - 接口', res)
                     let ResCount = res.data
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
@@ -4547,7 +4547,7 @@
                     onStart:this.cityRateCompareDate[0],
                     onEnd:this.cityRateCompareDate[1]
                 }
-                api.getApi(this.Count + '/GetPublicationRateByCityCompare', params).then(res=>{
+                api.getApi(this.apiVar.Count + '/GetPublicationRateByCityCompare', params).then(res=>{
                     console.log('城市上刊率对比',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()       // 登录超时
@@ -5285,7 +5285,7 @@
                 }else if(val === 'month'){
                     params.dateType = 'month'
                 }
-                api.getApi(this.Count + '/GetSpotUsedInfo', params).then(res => {
+                api.getApi(this.apiVar.Count + '/GetSpotUsedInfo', params).then(res => {
                     console.log('参数', params, '点位使用概况', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()
@@ -5360,7 +5360,7 @@
                         delete params[i]
                     }
                 }
-                api.postApi(this.Count + '/GetResPublicationRate',params).then(res=> {
+                api.postApi(this.apiVar.Count + '/GetResPublicationRate',params).then(res=> {
                     console.log('社区社区列表-接口', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()
@@ -5412,7 +5412,7 @@
                         delete params[i]
                     }
                 }
-                api.postApi(this.Count + '/GetSpotPublicationRate',params).then(res=>{
+                api.postApi(this.apiVar.Count + '/GetSpotPublicationRate',params).then(res=>{
                     console.log('点位社区列表 - 接口',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()
@@ -5651,7 +5651,7 @@
                         delete params[i]
                     }
                 }
-                api.getApi_file(this.Count + '/ExportResPublicationRate'
+                api.getApi_file(this.apiVar.Count + '/ExportResPublicationRate'
                     , params).then(res=>{
                     console.log('社区上刊率导出',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
@@ -5687,7 +5687,7 @@
                         delete params[i]
                     }
                 }
-                api.getApi_file(this.Count + '/ExportSpotPublicationRate',params).then(res=>{
+                api.getApi_file(this.apiVar.Count + '/ExportSpotPublicationRate',params).then(res=>{
                     console.log('点位上刊率导出',res.headers)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()

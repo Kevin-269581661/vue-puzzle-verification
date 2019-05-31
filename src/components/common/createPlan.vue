@@ -991,8 +991,8 @@
             <el-row>
                 <el-col :span="4" class="import_col"> 下载模板:</el-col>
                 <el-col :span="18">
-                    <el-button icon="el-icon-download" size="small" v-if="importType=='1'"><a :href ='this.qadnUrl + "/importTemplate/resTemplate.xlsx"' download="小区导入模板.xlsx">小区模板</a></el-button>
-                    <el-button icon="el-icon-download" size="small" v-if="importType=='2'"><a :href ='this.qadnUrl + "/importTemplate/adsTemplate.xlsx"' download="点位导入模板.xlsx">点位模板</a></el-button>
+                    <el-button icon="el-icon-download" size="small" v-if="importType=='1'"><a :href ='this.apiVar.qadnUrl + "/importTemplate/resTemplate.xlsx"' download="小区导入模板.xlsx">小区模板</a></el-button>
+                    <el-button icon="el-icon-download" size="small" v-if="importType=='2'"><a :href ='this.apiVar.qadnUrl + "/importTemplate/adsTemplate.xlsx"' download="点位导入模板.xlsx">点位模板</a></el-button>
                 </el-col>
             </el-row>
             <el-row class="import_file">
@@ -1026,7 +1026,7 @@
                 </el-col>
             </el-row>
             <span slot="footer" class="dialog-footer">
-                <el-button size="small">取 消</el-button>
+                <el-button size="small" @click="isImport = false">取 消</el-button>
                 <el-button size="small" type="primary" @click="submitUpload()">确定上传</el-button>
             </span>
         </el-dialog>
@@ -1173,7 +1173,7 @@
             return {
                 // 导空点是否展示半年json下载(全国媒介或全国销售有权限下载)
                 isShowHalfYear: false,
-                // doUpload: 'https://beta.qinlinad.com/advertisement/AnalysisExcelAdBaseInfo',
+                // doUpload: 'https://beta.qinlinad.com/Advertisement/AnalysisExcelAdBaseInfo',
                 doUpload: '/advertisement/AnalysisExcelAdBaseInfo',
                 // 空位导出url
                 downUrl: '',
@@ -1565,7 +1565,7 @@
                     if(!this.isBD){
                         params.suID = this.BDData.uid
                     }
-                    api.getApi(this.Advertisement + '/GetFanganCity', params).then(res => {
+                    api.getApi(this.apiVar.Advertisement + '/GetFanganCity', params).then(res => {
                         console.log('获取权限下的城市列表', res.data)
                         if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                             this.loginTimeout()       // 登录超时
@@ -1669,7 +1669,7 @@
                     startTime: this.emptyRange[0],
                     endTime: this.emptyRange[1],
                 };
-                api.postApi(this.Advertisement+'/ExportSpareRes', info).then(res =>{
+                api.postApi(this.apiVar.Advertisement+'/ExportSpareRes', info).then(res =>{
                     console.log(res.data);
                     if(!res.data.SysCode){
                         if(res.data.length){
@@ -1774,7 +1774,8 @@
                         let func=new Promise(function(resolve, reject){ //定义Promise并处理请求逻辑
                             let data=[];
                             self.$http.get(
-                                'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes/'+self.planForm.throwCity[i]+'.json'
+                                // 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes/'+self.planForm.throwCity[i]+'.json'
+                                this.apiVar.jsonLink+self.planForm.throwCity[i]+'.json'
                             ).then(function(response){
                                 console.log('response----', response.data);
                                 if (!response.data.SysCode) {
@@ -1968,6 +1969,12 @@
             },
             // 小区导入
             resImport(formData, info){
+                let Loading = this.$loading({
+                    lock: true,
+                    text: '快马加鞭选点中...',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                });
                 // 上传文件
                 api.postUpload_file(this.doUpload+info, formData).then(res =>{
                     if(res.data.SysCode == 200200){
@@ -1979,8 +1986,10 @@
                     }else{
                         this.messageFun('warning',res.data.MSG)
                     }
+                    Loading.close();                    
                 }).catch(res =>{
                     console.log(res);
+                    Loading.close();
                 });
             },
             // 取消导入
@@ -2369,7 +2378,7 @@
                         token: this.sessionData.token,
                         sname: queryString
                     }
-                    api.postApi(this.UCAPI+'/GetUserName', params).then(res => {
+                    api.postApi(this.apiVar.UCAPI+'/GetUserName', params).then(res => {
                         console.log('GetUserName', res)
                         if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                             this.loginTimeout()
@@ -2413,7 +2422,7 @@
                     uid: this.BDData.uid,
                     token: this.sessionData.token
                 }
-                api.getApi(this.Advertisement + '/MyCustomer', params).then(res => {
+                api.getApi(this.apiVar.Advertisement + '/MyCustomer', params).then(res => {
                     console.log('MyCustomer:', res.data)
                     let customerList = res.data
                     this.customer = res.data    //保存所有信息，方便后面的过滤使用
@@ -2449,7 +2458,7 @@
                     cid: val,
                     token: this.sessionData.token
                 }
-                api.getApi(this.Advertisement +'/GetBrand', cidParams).then(res => {
+                api.getApi(this.apiVar.Advertisement +'/GetBrand', cidParams).then(res => {
                     console.log('公司品牌', res.data)
                     let CBrand = res.data
                     let BrandList = []
@@ -2571,7 +2580,7 @@
                     token: this.sessionData.token,
                     sales_user: this.BDData.uid
                 }
-                api.getApi(this.Advertisement + '/getSalesProject', params).then(res => {
+                api.getApi(this.apiVar.Advertisement + '/getSalesProject', params).then(res => {
                     console.log('销售所属方案',res)
                     if (res.data.SysCode == 200200) {
                         let resData =  res.data.data
@@ -2599,7 +2608,7 @@
                     "service":"GetNotPush",
                     "data": {}
                 }
-                api.postApi_new(this.Media, params).then(res => {
+                api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('广告限制列表', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         this.loginTimeout()
@@ -2703,7 +2712,7 @@
                     "data":  this.getAdsParamsData
                 }
                 let timer = setTimeout(() => {        // setTimeout 异步让table出现loading
-                    api.postApi_new(this.Media, params).then(res => {
+                    api.postApi_new(this.apiVar.Media, params).then(res => {
                         console.log('选点列表：', res)
                         if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                             this.loginTimeout()       // 登录超时
@@ -2900,7 +2909,7 @@
                     le: endTime.split(".").join(""),
                 }
                 console.log('参数',params)
-                api.postApi(this.Advertisement + '/GetResAdplanInfo',params).then(res=>{
+                api.postApi(this.apiVar.Advertisement + '/GetResAdplanInfo',params).then(res=>{
                     console.log('查询被占点位',res)
                     this.isOccupied = false    // 被占搜索时隐藏过滤条件
                     let dataArr = res.data
@@ -2974,14 +2983,14 @@
                 }
                 console.log('生成地图MapID参数', params)
                 let tempwindow = window.open()
-                api.getApi(this.Map +'/GetMapInfo', params).then(res => {
+                api.getApi(this.apiVar.Map +'/GetMapInfo', params).then(res => {
                     console.log('GetMapInfo地图mapid返回的信息', res)
                     if (!res.data.SysCode) {
                         let mapid = res.data.MapID
                         this.mapBtn = false
                         this.dialogVisible()
                         // tempwindow.location = 'https://www.dituwuyou.com/qinlin/embed?mid=FPcrNHyq3xXFZDbqlTyHKA&token=fp3nxsKCYZzOSnU0KosEq0GA1o1qcKh5XLA&mapid=' + mapid
-                        tempwindow.location = this.wuYouMap + mapid + '&city=' + this.activeRName + '&flag=' + true
+                        tempwindow.location = this.apiVar.wuYouMap+ mapid + '&city=' + this.activeRName + '&flag=' + true
                     } else {
                         tempwindow.close()
                         if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
@@ -3061,7 +3070,7 @@
                         delete params[i]
                     }
                 }
-                api.postApi(this.Advertisement + '/AutoSetAdS', params).then(res=>{
+                api.postApi(this.apiVar.Advertisement + '/AutoSetAdS', params).then(res=>{
                     console.log('一键选点',res.data)
                     IsXhr = true
                     let tempArr = []
@@ -3676,7 +3685,7 @@
                     background: 'rgba(0, 0, 0, 0.7)'
                 })
                 this.mapBtn = true
-                api.getApi(this.Map + '/SendMap', {uid: this.sessionData.uID,token: this.sessionData.token}).then(res => {
+                api.getApi(this.apiVar.Map + '/SendMap', {uid: this.sessionData.uID,token: this.sessionData.token}).then(res => {
                     console.log('地图选点', res)
                     if(res.data.code == '500200'){
                         this.mapADList = res.data.data
@@ -4747,7 +4756,7 @@
                     delete params.suid;
                 }
                 console.log('params',params)
-                api.postApi(this.Advertisement + '/CreateAPDBatch', params).then(res=>{
+                api.postApi(this.apiVar.Advertisement + '/CreateAPDBatch', params).then(res=>{
                     console.log('创建方案',res)
                     if(res.data.SysCode == 200200){
                         this.FAData.apID = res.data.Data[0].apID
@@ -4812,7 +4821,7 @@
                     token: this.sessionData.token,
                     abList: arr
                 }
-                api.postApi_json(this.Advertisement + '/PushADB?uid='+this.sessionData.uID+'&token='+this.sessionData.token,postData).then(res => {
+                api.postApi_json(this.apiVar.Advertisement + '/PushADB?uid='+this.sessionData.uID+'&token='+this.sessionData.token,postData).then(res => {
                     console.log('PushADB提交选点', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         this.ADloading.close()
@@ -4833,7 +4842,7 @@
                                 uid: this.sessionData.uID,
                                 token: this.sessionData.token
                             }
-                            api.postApi(this.Advertisement + '/clearAdPlanBackups',params).then(res=>{
+                            api.postApi(this.apiVar.Advertisement + '/clearAdPlanBackups',params).then(res=>{
                                 console.log('清空缓存的方案',res)
                                 if(res.data.SysCode == 200200){
                                     console.log('缓存方案清除成功')
@@ -4858,10 +4867,10 @@
                     apid: this.FAData.apID,
                     aiinfo: JSON.stringify(aiInfo)
                 }
-                api.postApi(this.Advertisement+'/CreateShareCode', params).then(res => {
+                api.postApi(this.apiVar.Advertisement+'/CreateShareCode', params).then(res => {
                     console.log('生成协同选点aiCode', res)
                     this.apAicode = res.data.aiCode         // 协同选点 aiCode
-                    this.shareADUrl = this.qadnUrl + '/shareADList?apid=' + this.FAData.apID + '&aicode=' + res.data.aiCode
+                    this.shareADUrl = this.apiVar.qadnUrl + '/shareADList?apid=' + this.FAData.apID + '&aicode=' + res.data.aiCode
                     this.active = 3
                 })
             },
@@ -4908,7 +4917,7 @@
                     token: this.sessionData.token,
                     adPlan: JSON.stringify(planInfo)
                 }
-                api.postApi(this.Advertisement + '/createAdPlanBackups',params).then(res=>{
+                api.postApi(this.apiVar.Advertisement + '/createAdPlanBackups',params).then(res=>{
                     console.log('res创建方案缓存',res)
                     if(res.data.SysCode == 200200){
 
@@ -6038,6 +6047,11 @@
     }
     /deep/ .upload_box .el-button{
         width: auto;
+    }
+    /deep/.import_fanan .el-button [class*="el-icon-"] + span,
+    .select-wrap button .el-icon-search{
+        left: 0;
+        top: 0;
     }
     /*safari下表头错位*/
     /deep/ .el-table .el-table-column-checkbox .cell{

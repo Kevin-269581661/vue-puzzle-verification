@@ -2990,7 +2990,7 @@
                         this.mapBtn = false
                         this.dialogVisible()
                         // tempwindow.location = 'https://www.dituwuyou.com/qinlin/embed?mid=FPcrNHyq3xXFZDbqlTyHKA&token=fp3nxsKCYZzOSnU0KosEq0GA1o1qcKh5XLA&mapid=' + mapid
-                        tempwindow.location = apiVar.wuYouMap+ mapid + '&city=' + this.activeRName + '&flag=' + true
+                        tempwindow.location = this.apiVar.wuYouMap+ mapid + '&city=' + this.activeRName + '&flag=' + true
                     } else {
                         tempwindow.close()
                         if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {

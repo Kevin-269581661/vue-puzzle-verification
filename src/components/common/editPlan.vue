@@ -2308,7 +2308,7 @@
                         this.dialogTableVisible = true
                         this.computeMedia_AD()
                         this.mapBtn = false
-                        tempwindow.location = apiVar.wuYouMap+ mapid + '&city=' + this.activeRName + '&flag=' + true
+                        tempwindow.location = this.apiVar.wuYouMap+ mapid + '&city=' + this.activeRName + '&flag=' + true
                     } else {
                         tempwindow.close()
                         if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {

@@ -99,7 +99,6 @@
 }
 
 .panel_top_right h1 {
-
   font-size: 24px;
   color: #666666;
   letter-spacing: 0;
@@ -169,12 +168,15 @@
 }
 /*表格公共样式*/
 .el-table th{
-    height: 44px;
+    /*height: 54px;*/
     padding: 0;
     background-color: #f7f7f7;
 }
+.el-table tr{
+    height: 54px;
+}
 .el-table td {
-    padding: 8px 0;
+    padding: 12px 0;
     text-overflow: ellipsis;
 }
 
@@ -206,6 +208,9 @@
     height: 32px;
     text-align: center;
     padding: 0;
+}
+.el-button--primary{
+    line-height: normal;
 }
 .el-button+.el-button{
     margin-left: 3px;

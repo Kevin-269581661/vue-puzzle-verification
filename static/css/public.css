@@ -39,3 +39,7 @@
     float: left;
     margin-right: 8px;
 }
+/*分页样式*/
+.ad_pagination{
+    text-align: right;
+}

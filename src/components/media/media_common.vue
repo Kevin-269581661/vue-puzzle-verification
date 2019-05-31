@@ -24,6 +24,9 @@
                             <li>
                                 <router-link :to="{path:'/media/publishPriceList'}" id="priceMana">刊例价</router-link>
                             </li>
+                            <li>
+                                <router-link :to="{path:'/media/paintedPath'}" id="paintedPathMana">线路管理</router-link>
+                            </li>
                         </ul>
                     </a>
                 </li>
@@ -43,13 +46,9 @@
                         </ul>
                     </a>
                 </li>
-                <!--<li>
-                    <router-link :to="{path:'/media/questionAndAnswer'}" class="nav_fast" id="qna">Q&A</router-link>
-                </li>-->
             </ul>
 			<div class="handle clearfix">
 				<a href="#" class="ad_index_user">
-					<!-- <em>媒介</em>  -->
                     <img class="ad_index_user_avator" :src="avator" alt="">
 					<i class="uname">{{userName}}</i>
 					<img src="../../assets/images/downArr.png" alt="">
@@ -315,18 +314,8 @@ export default {
                     $('#More').find('a').css({
                         "color": "#999"
                     });
-                    // $('#kjfs').css({
-                    //     "color": "#fff",
-                    //     "border-bottom": "3px solid #fff"
-                    // }).parents().siblings().children('a').css({
-                    //     "color": "#999",
-                    //     "border-bottom": "none"
-                    // });
-                    // $('#orderMana').addClass('active')
-                    // $('#More').find('a').css({
-                    //     "color": "#999"
-                    // })
                     break;
+                // 刊例价
                 case 'publishPriceList':
                     $('#More').css({
                         "color": "#fff",
@@ -340,6 +329,21 @@ export default {
                         "color": "#999"
                     })
                     break;
+                // 线路管理
+                case 'paintedPath':
+                    $('#More').css({
+                        "color": "#fff",
+                        "border-bottom": "3px solid #fff"
+                    }).parents().siblings().children('a').css({
+                        "color": "#999",
+                        "border-bottom": "none"
+                    });
+                    $('#paintedPathMana').addClass('active')
+                    $('#kjfs').find('a').css({
+                        "color": "#999"
+                    })
+                    break;
+                // 广告限制
                 case 'ADlimitList':
                     $('#More').css({
                         "color": "#fff",

@@ -43,6 +43,8 @@ const settingPrice = () => import('../components/common/settingPrice.vue')
 const maintainList = () => import('../components/common/maintainList.vue')
 const companyList = () => import('../components/common/companyList.vue')
 const compact = () => import('../components/common/compact.vue')
+const paintedPath = () => import('../components/common/paintedPath.vue')
+const adsDialPlate = () => import('../components/common/adsDialPlate.vue')
 //地图选点中转页面
 const mapMessage = () => import('../components/common/mapMessage.vue')
 
@@ -194,6 +196,8 @@ export default new Router({
                 {path: '/media/maintainList', component: maintainList},
                 {path: '/media/myInfo', component: myInfo},
                 {path: '/media/compact', component: compact},
+                {path: '/media/paintedPath', component: paintedPath},
+                {path: '/media/adsDialPlate', component: adsDialPlate},
             ]
         },
         //销售

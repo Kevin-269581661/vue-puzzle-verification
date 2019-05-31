@@ -70,6 +70,7 @@
                                        v-model="recForm.resaddr"
                                        :fetch-suggestions="querySearchAsync"
                                        placeholder="例：工业大道53号"
+                                       class="el-from-item-address"
                                    >
                                    </el-autocomplete>
                             </el-form-item>
@@ -142,19 +143,19 @@
                                     placeholder="">
                                 </el-date-picker>
                             </el-form-item>
-                            <el-form-item label="占地面积" prop="floorSpace">
+                            <el-form-item label="占地面积（m²）" prop="floorSpace">
                                 <div class="el-form-item_unit">
                                     <el-input v-model="recForm.floorSpace" placeholder=""
                                               :disabled="returnBool(FangJiaWangData.floorSpace)">
                                     </el-input>
-                                    <span>m²</span>
+                                    <!--<span></span>-->
                                 </div>
                             </el-form-item>
-                            <el-form-item label="建筑面积" prop="constructionSpace" class="right_form_item">
+                            <el-form-item label="建筑面积（m²）" prop="constructionSpace" class="right_form_item">
                                 <div class="el-form-item_unit">
                                     <el-input v-model="recForm.constructionSpace" placeholder=""
                                               :disabled="returnBool(FangJiaWangData.constructionSpace)"></el-input>
-                                    <span>m²</span>
+                                    <!--<span>m²</span>-->
                                 </div>
                             </el-form-item>
                             <el-form-item label="建筑结构" prop="buildingStructure" class="left_form_item">
@@ -166,17 +167,14 @@
                                           :disabled="returnBool(FangJiaWangData.plotRatio)"></el-input>
                             </el-form-item>
                             <el-form-item label="绿化率" prop="greenPercentage">
-                                <!--<div class="el-form-item_unit">-->
                                 <el-input v-model="recForm.greenPercentage" placeholder=""
                                           :disabled="returnBool(FangJiaWangData.greenPercentage)"></el-input>
-                                <!--<span>%</span>-->
-                                <!--</div>-->
                             </el-form-item>
-                            <el-form-item label="产权年限" prop="ownershipPeriod" class="right_form_item">
+                            <el-form-item label="产权年限（年）" prop="ownershipPeriod" class="right_form_item">
                                 <div class="el-form-item_unit">
                                     <el-input v-model="recForm.ownershipPeriod" placeholder=""
                                               :disabled="returnBool(FangJiaWangData.ownershipPeriod)"></el-input>
-                                    <span>年</span>
+                                    <!--<span>年</span>-->
                                 </div>
                             </el-form-item>
                             <el-form-item label="车位数" prop="carNumber" class="left_form_item">
@@ -466,7 +464,7 @@
                 <div class="content_bottom_btn">
                     <el-button type="primary" class="create" :disabled="submitBtnIsAble" @click="submitForm('recForm','mediaForm','roadGateForm')">{{PathHaveEdit?'保存':'创建'}}</el-button>
                     <!--<button v-if='PathHaveEdit' @click="editReturn">返回</button>-->
-                    <button class="cancel" @click="clearData">取消</button>
+                    <el-button class="cancel" @click="clearData">取消</el-button>
                 </div>
             </div>
         </div>
@@ -723,7 +721,7 @@
                 resAddres: {city:'',area:'',},  // 市区域地址获取经纬度
                 recRules: {
                     rt: [
-                        {required: true, message: '请选择资源类型', trigger: 'change'},
+                        {required: true, message: '请选择资源类型', trigger: 'blur'},
                     ],
                     resname: [
                         {required: true, message: '资源名称不能为空', trigger: 'blur'},
@@ -762,8 +760,8 @@
                         {required: true, message: '请选择年份', trigger: 'change'},
                     ],
                     lat: [
-                        {required: true, message: '经度不能为空', trigger: 'change'},
-                        {required: true,validator: validateLat, trigger: 'change'},
+                        {required: true, message: '经度不能为空', trigger: 'blur'},
+                        {required: true,validator: validateLat, trigger: 'blur'},
                     ],
                     lng: [
                         {required: true, message: '纬度不能为空', trigger: 'change'},
@@ -1074,6 +1072,8 @@
                     }else{
                         this.messageFun('warning','请先选择社区所在的城市')
                     }
+                }else{
+                    callback([])
                 }
             },
             // 根据选择的小区获取所在区域
@@ -1150,6 +1150,7 @@
             },
             // 根据填写的具体地址去获取经纬度
             querySearchAsync(queryString, callback) {
+                callback([])
                 let uid = this.sessionData.uID
                 if (queryString) {
                     let params = {
@@ -1167,10 +1168,6 @@
                                 this.recForm.lat = res.data.result.location.lng.toFixed(6)     // 经度
                                 this.recForm.lng = res.data.result.location.lat.toFixed(6)     // 纬度
                             }
-                            let timeout = setTimeout(() => {
-                                clearTimeout(timeout)
-                                callback([]);
-                            }, 3000 * Math.random());
                         }
                     });
                 }
@@ -2648,7 +2645,7 @@
 
     /deep/ .el-input__inner, .el-input-number {
         width: 240px;
-        height: 34px !important;
+        height: 32px;
         text-align: left;
         line-height: 35px;
         padding-right: 20px;
@@ -2829,23 +2826,15 @@
         left: 45.3%;
     }
 
-    .mediaMana_content_bottom .content_bottom_btn button {
-        width: 80px;
-        height: 34px;
-        outline: none;
-        cursor: pointer;
-    }
-
-    .mediaMana_content_bottom .content_bottom_btn button.cancel {
-        background: #F5F6FA;
-        border: none;
-        font-size: 14px;
-        color: #979797;
+    .mediaMana_content_bottom .content_bottom_btn .el-button {
+        width: 76px;
+        height: 32px;
+        text-align: center;
+        padding: 0;
     }
 
     /deep/ .mediaMana_content_bottom .el-form-item__error {
         top: 92%;
-
     }
 
     /*上传图片*/
@@ -2947,7 +2936,7 @@
     }
 
     /deep/ .el-cascader{
-        line-height: 34px;
+        line-height: 32px;
     }
 
     /deep/ .el-tabs__nav{

@@ -305,7 +305,7 @@ export default {
         },
         // 搜索(优化)
         search(){
-            let { date, select, keyword, company } = this.searchInfo;            
+            let { date, select, keyword, company } = this.searchInfo;
             this.isSearch = false;
             let timer = setTimeout(()=>{
                 this.isSearch = true;
@@ -375,7 +375,7 @@ export default {
         },
         //日期排序
         sortData(a, b) {
-            return dateFormat.toDate(a.joinTime, '') - dateFormat.toDate(b.joinTime, '');            
+            return dateFormat.toDate(a.joinTime, '') - dateFormat.toDate(b.joinTime, '');
         },
         loginTimeout(){
             Message.warning("登录超时,请重新登录");
@@ -473,7 +473,7 @@ export default {
     }
 
     /*wrap*/
-    .mediaList_wrap {
+ /*   .mediaList_wrap {
         width: 92%;
         background: #ffffff;
         border: 1px solid #e6e7e9;
@@ -499,7 +499,7 @@ export default {
     .mediaList_wrap .mediaList_container {
         width: 96%;
         margin: 24px auto;
-    }
+    }*/
 
 .el-input {
     width: 240px;
@@ -523,7 +523,7 @@ export default {
 
 
 .mediaList_wrap .mediaList_container .table_wrap {
-    margin: 24px auto; 
+    margin: 24px auto;
     border-radius: 4px;
 }
 

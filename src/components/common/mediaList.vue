@@ -207,13 +207,13 @@
                         </el-table-column>
                     </el-table>
                 </div>
-                <div>
+             <!--   <div>
                     <el-pagination
                         background
                         layout="prev, pager, next,jumper"
                         :total="100">
                     </el-pagination>
-                </div>
+                </div>-->
             </div>
             <!--媒体状态修改模态框-->
             <el-dialog :visible.sync="mStatusDialogVisible" :close-on-click-modal="false" custom-class="mStatueDialog">

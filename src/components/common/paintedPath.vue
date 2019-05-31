@@ -9,20 +9,10 @@
             </div>
             <div class="mediaList_container">
                 <div class="handel_ul">
-                    <li class="handel_ul_li handel_ul_li_select">
-                        <el-select v-model="selectCity" filterable placeholder="请选择城市" :clearable="true"
-                                   style="width: 100%" size="small" @change="">
-                            <el-option
-                                v-for="item in cityList"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value">
-                            </el-option>
-                        </el-select>
-                    </li>
                     <li class="handel_ul_li handel_ul_li_area">
+                        <span>所属线路:</span>
                         <el-select v-model="selectPath" filterable placeholder="请选择线路" :clearable="true"
-                                   style="width: 100%" size="small" @change="">
+                                    size="small" @change="">
                             <el-option v-for="item in pathList"
                                        :key="item.value"
                                        :label="item.label"
@@ -78,10 +68,17 @@
                             label="操作"
                             width="100px">
                             <template slot-scope="scope">
-                                <span class="detail_btn" @click="showDetail">查看详情</span>
+                                <span class="detail_btn" @click="showDetail(scope.row)">查看详情</span>
                             </template>
                         </el-table-column>
                     </el-table>
+                </div>
+                <div class="ad_pagination">
+                    <el-pagination
+                        background
+                        layout="total, prev, pager, next, sizes, jumper"
+                        :total="100">
+                    </el-pagination>
                 </div>
             </div>
         </div>
@@ -127,59 +124,79 @@
         </el-dialog>
         <!--详情弹出框-->
         <el-dialog
-            title="线路名称"
+            :title="activePathName"
             :visible.sync="detailDialogVisible"
-            width="340">
-            <div>
+            width="65%">
+            <div class="path_detail_box">
                 <el-table
                     element-loading-text="拼命加载中..."
                     element-loading-spinner="el-icon-loading"
                     border
-                    :data="pathTableList"
-                    height="240"
+                    :data="detailList"
+                    height="480"
                     style="width: 100%">
                     <el-table-column
-                        prop="pathLine"
-                        label="线路"
-                        min-width="12%">
-                    </el-table-column>
-                    <el-table-column
-                        prop="city"
-                        label="城市"
-                        min-width="12">
-                    </el-table-column>
-                    <el-table-column
                         prop="resName"
-                        label="覆盖小区"
-                        min-width="12%">
-                    </el-table-column>
-                    <el-table-column
-                        prop="mediaName"
-                        label="覆盖媒体"
-                        min-width="15%">
-                    </el-table-column>
-                    <el-table-column
-                        prop="ads"
-                        label="覆盖点位"
-                        min-width="15%">
-                    </el-table-column>
-                    <el-table-column
-                        prop="time"
-                        label="更新时间"
-                        min-width="12%">
-                    </el-table-column>
-                    <el-table-column
-                        label="操作"
-                        width="100px">
+                        label="覆盖资源"
+                        min-width="20%">
                         <template slot-scope="scope">
-                            <span class="detail_btn" @click="showDetail">查看详情</span>
+                            <span v-if="!scope.row.isInput">{{scope.row.resName}}</span>
+                            <el-input v-else v-model.trim="scope.row.resName" placeholder="小区名称" size="small"></el-input>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                        prop="area"
+                        label="区域"
+                        min-width="17">
+                        <template slot-scope="scope">
+                            <span v-if="!scope.row.isInput">{{scope.row.area}}</span>
+                            <el-input v-else v-model.trim="scope.row.area" placeholder="区域" size="small"></el-input>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                        prop="tradingArea"
+                        label="商圈"
+                        min-width="17%">
+                        <template slot-scope="scope">
+                            <span>{{scope.row.area}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                        prop="buildType"
+                        label="类型"
+                        min-width="12%">
+                        <template slot-scope="scope">
+                            <span>{{scope.row.buildType}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                        prop="address"
+                        label="详细地址"
+                        :show-overflow-tooltip="true"
+                        min-width="20%">
+                        <template slot-scope="scope">
+                            <span>{{scope.row.address}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                        v-if="isEdit"
+                        prop="btn"
+                        label="操作"
+                        width="80px">
+                        <template slot-scope="scope">
+                            <span class="detail_table_row_btn">{{scope.row.isInput ? '取消' : '删除'}}</span>
                         </template>
                     </el-table-column>
                 </el-table>
+                <div class="add_res" @click="AddRow()" v-show="isEdit">
+                    <i class="el-icon-plus" style="color: rgba(24,144,255,1)"></i>
+                    添加
+                </div>
             </div>
             <div slot="footer" class="dialog-footer">
-                <el-button @click="detailDialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="detailDialogVisible = false">确 定</el-button>
+                <el-button v-if="isEdit" @click="isEdit = false">取 消</el-button>
+                <el-button v-else @click="isEdit = true">编 辑</el-button>
+                <el-button type="primary" @click="detailDialogVisible = false">{{isEdit ? '保 存' : '关 闭'}}</el-button>
             </div>
         </el-dialog>
     </div>
@@ -263,7 +280,19 @@
                     {value:'4',label:'小区4'}
                 ],
                 // 线路详情
-                detailDialogVisible: false
+                detailDialogVisible: false,
+                detailList:[
+                    {
+                        resName:'中信西关海二期',
+                        area:'荔湾区',
+                        tradingArea:'荔湾湖商圈',
+                        buildType:'住宅',
+                        address:'广州市荔湾区中山八路西关路48号'
+                    }
+                ],
+                // 编辑状态
+                isEdit: false,
+                activePathName:'',
             }
         },
         mounted(){
@@ -284,7 +313,8 @@
                 this.createDialogVisible = true
             },
             // 查看详情
-            showDetail(){
+            showDetail(row){
+                this.activePathName = row.pathLine
                 this.detailDialogVisible = true
             },
             handleClose(done) {
@@ -309,6 +339,17 @@
                     }
                 });
             },
+            // 新增一行
+            AddRow(){
+                this.detailList.unshift({
+                    resName:'',
+                    area:'',
+                    tradingArea:'',
+                    buildType:'',
+                    address:'',
+                    isInput: true,
+                });
+            },
         },
     }
 </script>
@@ -326,9 +367,58 @@
         width: 92%;
         margin: 0 auto;
     }
-    /*详情按钮*/
+    /*搜索条件*/
+    .handel_ul_li{
+        margin-right: 32px;
+    }
+    .handel_ul_li_area{
+        width: 23%;
+    }
+    /deep/ .handel_ul .el-select{
+        width: calc(100% - 74px);
+    }
+    /deep/ .el-pagination__jump{
+        margin-left: 0;
+    }
+        /*详情按钮*/
     .detail_btn{
         cursor: pointer;
         color: #2a98fe;
+    }
+    /*编辑*/
+    .add_res {
+        box-sizing: border-box;
+        width: 100%;
+        height: 32px;
+        border: 1px dashed #d9d9d9;
+        border-radius: 4px;
+        text-align: center;
+        line-height: 32px;
+        cursor: pointer;
+        margin-top: 10px;
+        font-size: 14px;
+        color: rgba(24,144,255,1);
+    }
+    .add_res:hover{
+        border-color: rgba(24,144,255,1);
+    }
+    /*弹出框标题*/
+    /deep/ .el-dialog__title{
+        font-weight: 600;
+        font-size:16px;
+        color:rgba(0,0,0,0.85);
+    }
+    /deep/ .el-dialog__header{
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(0,0,0,0.09);
+    }
+    /*详情*/
+    .path_detail_box /deep/ .el-input--small .el-input__inner{
+        height: 30px;
+        line-height: 30px;
+    }
+    .detail_table_row_btn{
+        color: rgba(24,144,255,1);
+        cursor: pointer;
     }
 </style>

@@ -1995,7 +1995,7 @@
             // 取消导入
             cancelImport(){
                 this.showUploadFail = false;
-                this.isImport = false;                
+                this.isImport = false;
             },
             // 确定导入
             confirmImport(arr){
@@ -2995,7 +2995,7 @@
                         tempwindow.close()
                         if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                             this.loginTimeout()       // 登陆超时
-                        } else {
+                     } else {
                             this.messageFun('warning',res.data.MSG + ',请尝试重新点击')
                         }
                     }

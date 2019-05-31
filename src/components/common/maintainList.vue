@@ -13,7 +13,7 @@
 				<el-row>
                     <el-col :span="8">
                         <span>所在公司:</span>
-                        <el-select v-model="searchInfo.company" placeholder="请选择公司" @change="getPeople()">
+                        <el-select v-model="searchInfo.company" placeholder="请选择公司" @change="getPeople()" filterable>
                             <el-option v-for="item of companyArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-col>
@@ -95,12 +95,13 @@
                             </el-col>
                         </el-row> 
                     </div>
+
+                    <div class="page_box" v-if="totalNum" style="text-align:right;margin-bottom:30px;">
+                        <el-pagination small background :current-page.sync="currPage" :page-sizes="[5, 10]" :page-size="pageSize" layout="sizes, prev, pager, next, jumper" :total="totalNum" @size-change="sizeChange" @current-change='changePape'>
+                        </el-pagination>
+                    </div>
 				</div>
 			</div>
-            <div class="page_box" v-if="totalNum" style="text-align:right;margin-bottom:30px;">
-                <el-pagination small background :current-page.sync="currPage" :page-sizes="[5, 10]" :page-size="pageSize" layout="sizes, prev, pager, next, jumper" :total="totalNum" @size-change="sizeChange" @current-change='changePape'>
-                </el-pagination>
-            </div>
 		</div>
 
         <!-- 照片弹出框 -->

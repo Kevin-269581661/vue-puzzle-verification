@@ -155,6 +155,7 @@ export default {
         return {
             // 公司列表
             companyArr: [],
+            // 分页信息
             pageSize: 20,
             pageSizes: [20, 50, 80, 100],
             currPage: 1,
@@ -183,20 +184,6 @@ export default {
             this.getCompany();
         }
         this.searchFun();
-    },
-    directives: {
-        loadmore: {
-            bind: function (el, binding) {
-                const selectWrap = el.querySelector('.el-table__body-wrapper')
-                selectWrap.addEventListener('scroll', function () {
-                    const scrollDistance = this.scrollHeight - this.scrollTop - this.clientHeight;
-                    // console.log('滚动的距离',scrollDistance)
-                    if (scrollDistance <= 100) {
-                        binding.value()
-                    }
-                })
-            }
-        }
     },
     methods: {
         // 切换页码
@@ -293,11 +280,6 @@ export default {
                     this.loginTimeout();
                 }else{
                     if(!res.data.SysCode){
-                        // let dataInfo = res.data.page;
-                        // this.totalPage = dataInfo.totalPage;
-                        // this.totalNum = dataInfo.total;
-                        // let dataArr = dataInfo.list;
-                        // this.currentPlan = this.currentPlan.concat(this.funcData(dataArr));
                         let dataInfo = res.data.page;
                         this.totalNum = dataInfo.total;
                         let dataArr = dataInfo.list;

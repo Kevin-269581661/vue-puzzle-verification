@@ -34,7 +34,7 @@
                     </el-col>
 				</el-row>
                 <div class="table_wrap">
-                    <el-table border :data="companyList" height="450" v-loading="loading" v-loadmore="companyLoadMore"
+                    <el-table border :data="companyList" v-loading="loading" 
                         element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                         <el-table-column label="公司名称" min-width="11.8%" prop="name">
                         </el-table-column>
@@ -61,6 +61,16 @@
                             </template>
                         </el-table-column>
                     </el-table>
+
+                    <el-pagination
+                        @size-change="sizeChange"
+                        @current-change="changePage"
+                        :current-page.sync="currPage"
+                        :page-sizes="pageSizes"
+                        :page-size="pageSize"
+                        layout="total, sizes, prev, pager, next, jumper"
+                        :total="totalNum">
+                    </el-pagination>
                 </div>
             </div>
         </div>
@@ -99,6 +109,12 @@
     export default {
         data(){
             return{
+                // 分页信息
+                pageSize: 20,
+                pageSizes: [20, 50, 80, 100],
+                currPage: 1,
+                totalPage: 0,
+                totalNum: 0,
                 // 登录信息
                 sessionData:{},
                 // 搜索数据
@@ -143,28 +159,24 @@
                 showNewBtn: false,
                 // 编辑或新建
                 isAdd: false,
-                loading: true,
-                loading_point: true, 
-                currPage: 1,
-                totalPage: 0,
-                pageSize: 15,               
-            }
-        },
-        directives: {
-            loadmore: {
-                bind: function (el, binding) {
-                    const selectWrap = el.querySelector('.el-table__body-wrapper')
-                    selectWrap.addEventListener('scroll', function () {
-                        const scrollDistance = this.scrollHeight - this.scrollTop - this.clientHeight;
-                        // console.log('滚动的距离',scrollDistance)
-                        if (scrollDistance <= 100) {
-                            binding.value()
-                        }
-                    })
-                }
+                loading: true,             
             }
         },
         methods:{
+            // 切换页码
+            changePage(page) {
+                this.currPage = page;
+                console.log('page----', page);
+                this.searchFun();
+            },
+            // 每页条数切换
+            sizeChange(val) {
+                this.pageSize = val;
+                if (this.currPage == 1) {
+                    this.searchFun();
+                }
+                this.currPage = 1;
+            },
             // 判断角色是否有新建按钮(系统管理员和超级管理员有)
             getRole() {
                 this.sessionData = JSON.parse(sessionStorage.getItem("session_data"));
@@ -172,15 +184,6 @@
                 console.log(role);
                 if (role == 0 ) {
                     this.showNewBtn = true;
-                }
-            },
-            // 公司列表滚动监听
-            companyLoadMore(){
-                if(this.loading_point){
-                    this.loading_point = false;
-                    if(this.currPage <= this.totalPage){
-                        this.searchFun();
-                    }
                 }
             },
             searchFun(){
@@ -197,11 +200,9 @@
                         if(!res.data.SysCode){
                             console.log(res.data);
                             let dataInfo = res.data;
-                            this.totalPage = dataInfo.totalpage;
+                            this.totalNum = dataInfo.count;
                             let dataArr = dataInfo.data;
-                            this.companyList = this.companyList.concat(this.funcData(dataArr));
-                            this.loading_point = true;
-                            this.currPage++;
+                            this.companyList = this.funcData(dataArr);
                             this.loading = false;
                             if(dataInfo.totalpage == 0){
                                 Message.warning('暂无数据');
@@ -265,7 +266,6 @@
                 if(keyword || (type>=0) || (state>=0)){
                     this.companyList = [];
                     this.loading = true;
-                    this.loading_point = false;
                     this.currPage = 1;
                     this.searchFun();
                 }else{

@@ -271,7 +271,7 @@
                     tooken: sessionData.token,
                     aitime: dateFormat.toDateTime(sessionStorage.getItem('aiTime'))
                 };
-                api.getApi(this.QZhike+'/GetComm', info).then(res=>{
+                api.getApi(this.apiVar.QZhike+'/GetComm', info).then(res=>{
                     console.log(res.data);
                     // if(res.data){}
                     if(res.data.length){

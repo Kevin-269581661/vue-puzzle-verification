@@ -196,7 +196,7 @@ export default {
                 uid: sess.uID,
                 token: sess.token,
             };
-            api.getApi(this.UCAPI + '/GetDirectAscr', info).then(res =>{
+            api.getApi(this.apiVar.UCAPI + '/GetDirectAscr', info).then(res =>{
                 console.log(res);
                 if(!res.data.SysCode){
                     let result = [];
@@ -271,7 +271,7 @@ export default {
         },
         // 滚动加载获取数据(无搜索数据)
         getData(params){
-            api.getApi(this.Advertisement+'/GetCustomer', params).then(res =>{
+            api.getApi(this.apiVar.Advertisement+'/GetCustomer', params).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 100302){
                     this.loginTimeout();

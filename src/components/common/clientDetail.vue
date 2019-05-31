@@ -124,7 +124,7 @@ export default {
                 token: this.sessionData.token,
                 customerId: sessionStorage.getItem('customerId')
             };
-            api.getApi(this.Advertisement+'/GetCustomerInfo', info).then(res =>{
+            api.getApi(this.apiVar.Advertisement+'/GetCustomerInfo', info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 100302){
                     this.loginTimeout();

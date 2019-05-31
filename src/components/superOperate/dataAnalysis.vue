@@ -94,25 +94,25 @@
                                                     <el-table :data="RMAllData" border height="430px"
                                                               class="all-city-data-table-12">
                                                         <el-table-column
-                                                            property="city" label="区域" min-width="36%"
+                                                            property="city" label="区域" min-width="178"
                                                         >
                                                         </el-table-column>
-                                                        <el-table-column property="countRes" label="社区数" min-width="20%"
+                                                        <el-table-column property="countRes" label="社区数" min-width="96"
                                                                          sortable
                                                                          :sort-orders="[2,1]">
 
                                                         </el-table-column>
                                                         <el-table-column property="countMedia" label="广告门数"
-                                                                         min-width="27%" sortable
+                                                                         min-width="130" sortable
                                                                          :sort-orders="[2,1]">
 
                                                         </el-table-column>
-                                                        <el-table-column property="countAds" label="点位数" min-width="27%"
+                                                        <el-table-column property="countAds" label="点位数" min-width="130"
                                                                          sortable
                                                                          :sort-orders="[2,1]">
 
                                                         </el-table-column>
-                                                        <el-table-column label="上刊率" min-width="20%" sortable
+                                                        <el-table-column label="上刊率" sortable
                                                                          :sort-method="sortUpPercent">
                                                             <template slot-scope="scope">
                                                                 {{scope.row.upPercent}}％
@@ -121,7 +121,6 @@
                                                     </el-table>
                                                 </div>
                                             </el-dialog>
-                                            <!--<div class="bottom-data"></div>-->
                                         </div>
                                     </div>
                                 </el-card>
@@ -734,13 +733,10 @@
                                                 fixed
                                                 prop="city"
                                                 label="城市"
-                                                min-width="140">
+                                                min-width="140"
+                                                :show-overflow-tooltip="true">
                                                 <template slot-scope="scope">
-                                                    <el-tooltip :content="scope.row.city"
-                                                                placement="bottom-start"
-                                                                :visible-arrow="false">
-                                                        <span>{{scope.row.city || '--' }}</span>
-                                                    </el-tooltip>
+                                                    <span>{{scope.row.city || '--' }}</span>
                                                 </template>
                                             </el-table-column>
                                             <el-table-column
@@ -1058,8 +1054,6 @@
                                             <dl>
                                                 <dt>总点位数</dt>
                                                 <dd>{{adsUserData.totalAdSpaceInfoCount.toLocaleString()}}</dd>
-                                                <!--.toLocaleString()-->
-                                                <!-- <dd>{{priceFormat(adsUserData.totalAdSpaceInfoCount)}}</dd>-->
                                             </dl>
                                             <dl>
                                                 <dt>A面上刊率</dt>
@@ -1074,7 +1068,6 @@
                                             <dl>
                                                 <dt>方案点位数</dt>
                                                 <dd>{{adsUserData.planSpotCount.toLocaleString()}}</dd>
-                                                <!--.toLocaleString()-->
                                             </dl>
                                             <dl>
                                                 <dt>方案数</dt>
@@ -1085,12 +1078,10 @@
                                             <dl>
                                                 <dt>订单点位数</dt>
                                                 <dd>{{adsUserData.orderSpotCount.toLocaleString()}}</dd>
-                                                <!--.toLocaleString()-->
                                             </dl>
                                             <dl>
                                                 <dt>订单数</dt>
                                                 <dd>{{adsUserData.orderCount}}</dd>
-                                                <!--<dd>{{priceFormat(adsUserData.orderCount)}}</dd>-->
                                             </dl>
                                             <dl>
                                                 <dt>成交单价</dt>
@@ -2577,7 +2568,7 @@
                             asrIDs: this.returnAsrID()
                         }
                         let url = this.isKeyDataKind(this.addkeyDataKind)
-                        api.getApi(this.Count + url, params).then(res=>{
+                        api.getApi(this.apiVar.Count + url, params).then(res=>{
                             console.log('关键数据增量月份对比',res)
                             let dataArr = res.data
                             if(this.addkeyDataKind === '订单总额'){
@@ -2667,7 +2658,7 @@
                     token: this.session_userData.token,
                     asrIDs: this.returnAsrID()
                 }
-                api.getApi(this.Count + '/GetSurvey', params).then(res=>{
+                api.getApi(this.apiVar.Count + '/GetSurvey', params).then(res=>{
                     console.log('概况相关汇总数据接口',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.allDataLoading = false
@@ -2820,7 +2811,7 @@
             getAllResData(card,params) {
                 // console.log('关键数据总量/增量趋势 - params',params)
                 params.token = this.session_userData.token
-                api.getApi(this.Count + '/GetResCountOfTotalAndIncrement', params).then(res => {
+                api.getApi(this.apiVar.Count + '/GetResCountOfTotalAndIncrement', params).then(res => {
                     console.log('社区总量趋势', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()       // 登录超时
@@ -2852,7 +2843,7 @@
             // 关键数据总量/增量趋势 - 广告门接口 this.session_userData.token
             getAllMediaData(card,params) {
                 params.token = this.session_userData.token
-                api.getApi(this.Count + '/GetMediaCountOfTotalAndIncrement', params).then(res => {
+                api.getApi(this.apiVar.Count + '/GetMediaCountOfTotalAndIncrement', params).then(res => {
                     console.log('广告门总量趋势', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()       // 登录超时
@@ -2875,7 +2866,7 @@
             // 关键数据总量/增量趋势 - 点位数接口
             getAllAdsData(card,params) {
                 params.token = this.session_userData.token
-                api.getApi(this.Count + '/GetAdSpaceCountOfTotalAndIncrement', params).then(res => {
+                api.getApi(this.apiVar.Count + '/GetAdSpaceCountOfTotalAndIncrement', params).then(res => {
                     console.log('点位数总量趋势', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()       // 登录超时
@@ -2898,7 +2889,7 @@
             // 关键数据总量/增量趋势 - 上刊率接口
             getAllRateData(card,params){
                 params.token = this.session_userData.token
-                api.getApi(this.Count + '/GetPublicationRateTotalAndIncrement', params).then(res=>{
+                api.getApi(this.apiVar.Count + '/GetPublicationRateTotalAndIncrement', params).then(res=>{
                     console.log('上刊率总量趋势',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()       // 登录超时
@@ -2921,7 +2912,7 @@
             // 关键数据总量/增量趋势 - 订单接口
             getAllOrderData(card,params){
                 params.token = this.session_userData.token
-                api.getApi(this.Count + '/GetOrderTotalAndIncrement', params).then(res=>{
+                api.getApi(this.apiVar.Count + '/GetOrderTotalAndIncrement', params).then(res=>{
                     console.log('订单总量/增量趋势',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()       // 登录超时
@@ -2944,7 +2935,7 @@
             // 关键数据总量/增量趋势 - 订单总额接口
             getAllOrderPriceData(card,params){
                 params.token = this.session_userData.token
-                api.getApi(this.Count + '/GetOrderIncomeTotalAndIncrement', params).then(res=>{
+                api.getApi(this.apiVar.Count + '/GetOrderIncomeTotalAndIncrement', params).then(res=>{
                     console.log('订单总额/增量趋势',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()       // 登录超时
@@ -2967,7 +2958,7 @@
             // 关键数据总量/增量趋势 - 广告主数接口
             getAllAdOwnerData(card,params){
                 params.token = this.session_userData.token
-                api.getApi(this.Count + '/GetAdOwnerTotalAndIncrement', params).then(res=>{
+                api.getApi(this.apiVar.Count + '/GetAdOwnerTotalAndIncrement', params).then(res=>{
                     console.log('广告主总数/增量趋势',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()       // 登录超时
@@ -3045,7 +3036,7 @@
                     iend: tEnd,
                     asrIDs: this.returnAsrID()
                 }
-                api.getApi(this.Count + '/GetIOrder', params).then(res =>{
+                api.getApi(this.apiVar.Count + '/GetIOrder', params).then(res =>{
                     console.log(params,'行业订单总量趋势 - 接口',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()
@@ -3097,7 +3088,7 @@
                     token: this.session_userData.token,
                     asrIDs: this.returnAsrID()
                 }
-                api.getApi(this.Count + '/GetAllIOrder', params).then(res => {
+                api.getApi(this.apiVar.Count + '/GetAllIOrder', params).then(res => {
                     console.log('行业订单占比', res)
                     let dataArr = res.data
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
@@ -3164,8 +3155,8 @@
             // 入驻物业排行 - 接口
             getResPMCRankData(Sting) {
                 // console.log('时间段', this.resPMCDate)
-                let tStart = this.resPMCDate[0] //this.splitTimeString(this.resPMCDate[0])
-                let tEnd = this.resPMCDate[1] //this.splitTimeString(this.resPMCDate[1])
+                let tStart = this.resPMCDate[0]
+                let tEnd = this.resPMCDate[1]
                 let params = {
                     uid: this.session_userData.uID,
                     token: this.session_userData.token,
@@ -3177,7 +3168,7 @@
                     delete(params.istart)
                     delete(params.iend)
                 }
-                api.getApi(this.Count + '/GetResPMC', params).then(res => {
+                api.getApi(this.apiVar.Count + '/GetResPMC', params).then(res => {
                     console.log('销售业绩排行', res)
                     let ResPMCdata = res.data
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
@@ -3227,7 +3218,7 @@
                     delete(params.iend)
                 }
                 // console.log('接口参数', params)
-                api.getApi(this.Count + '/GetCOrder', params).then(res => {
+                api.getApi(this.apiVar.Count + '/GetCOrder', params).then(res => {
                     console.log('广告主排行 ', res)
                     let dataArr = res.data
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
@@ -3268,8 +3259,8 @@
             getSalesRankData(Sting) {
                 let params = {}
                 // console.log('时间段this.salesRankDate', this.salesRankDate)
-                let tStart = this.salesRankDate[0] //this.splitTimeString(this.salesRankDate[0])
-                let tEnd = this.salesRankDate[1] //this.splitTimeString(this.salesRankDate[1])
+                let tStart = this.salesRankDate[0]
+                let tEnd = this.salesRankDate[1]
                 params = {
                     uid: this.session_userData.uID,
                     token: this.session_userData.token,
@@ -3282,7 +3273,7 @@
                     delete(params.istart)
                     delete(params.iend)
                 }
-                api.getApi(this.Count + '/GetSOrder', params).then(res => {
+                api.getApi(this.apiVar.Count + '/GetSOrder', params).then(res => {
                     console.log(params,'销售业绩排行', res)
                     let dataArr =  res.data
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
@@ -4338,8 +4329,8 @@
             },
             // 城市关键数据对比 - 接口 （社区、广告门、点位）
             getCityKeyData_resMediaAds(){
-                let tStart = this.cityKeyDataDate[0] //this.splitTimeString(this.cityKeyDataDate[0])
-                let tEnd = this.cityKeyDataDate[1] //this.splitTimeString(this.cityKeyDataDate[1])
+                let tStart = this.cityKeyDataDate[0]
+                let tEnd = this.cityKeyDataDate[1]
                 let params = {
                     uid: this.session_userData.uID,
                     token: this.session_userData.token,
@@ -4347,7 +4338,7 @@
                     istart: tStart,
                     iend: tEnd
                 }
-                api.getApi(this.Count + '/GetRM', params).then(res=>{
+                api.getApi(this.apiVar.Count + '/GetRM', params).then(res=>{
                     console.log('城市关键数据对比 - 接口 （社区、广告门、点位）',res)
                     let dataArr = res.data
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
@@ -4398,11 +4389,11 @@
             //城市关键数据对比  - 接口
             getCityBattleData(data, i) {
                 this.CityBattleData = []
-                let tStart = this.cityKeyDataDate[0] //this.splitTimeString(this.cityKeyDataDate[0])
-                let tEnd = this.cityKeyDataDate[1] //this.splitTimeString(this.cityKeyDataDate[1])
+                let tStart = this.cityKeyDataDate[0]
+                let tEnd = this.cityKeyDataDate[1]
                 let params = {uid: this.session_userData.uID,token: this.session_userData.token, asrIDs: data, istart: tStart, iend: tEnd}
                 // console.log('各城市参数', params)
-                api.getApi(this.Count + '/GetCOrder', params).then(res => {
+                api.getApi(this.apiVar.Count + '/GetCOrder', params).then(res => {
                     console.log(data,'城市数据展示res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()       // 登录超时
@@ -4494,7 +4485,7 @@
                 }
                 let url = u
                 // console.log(url,'城市数据对比社区接口 - params',params)
-                api.getApi(this.Count + url, params).then(res=>{
+                api.getApi(this.apiVar.Count + url, params).then(res=>{
                     console.log('asrID',asrID,'城市数据对比社区接口 - 接口', res)
                     let ResCount = res.data
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
@@ -4556,7 +4547,7 @@
                     onStart:this.cityRateCompareDate[0],
                     onEnd:this.cityRateCompareDate[1]
                 }
-                api.getApi(this.Count + '/GetPublicationRateByCityCompare', params).then(res=>{
+                api.getApi(this.apiVar.Count + '/GetPublicationRateByCityCompare', params).then(res=>{
                     console.log('城市上刊率对比',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()       // 登录超时
@@ -5294,7 +5285,7 @@
                 }else if(val === 'month'){
                     params.dateType = 'month'
                 }
-                api.getApi(this.Count + '/GetSpotUsedInfo', params).then(res => {
+                api.getApi(this.apiVar.Count + '/GetSpotUsedInfo', params).then(res => {
                     console.log('参数', params, '点位使用概况', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()
@@ -5369,7 +5360,7 @@
                         delete params[i]
                     }
                 }
-                api.postApi(this.Count + '/GetResPublicationRate',params).then(res=> {
+                api.postApi(this.apiVar.Count + '/GetResPublicationRate',params).then(res=> {
                     console.log('社区社区列表-接口', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()
@@ -5421,7 +5412,7 @@
                         delete params[i]
                     }
                 }
-                api.postApi(this.Count + '/GetSpotPublicationRate',params).then(res=>{
+                api.postApi(this.apiVar.Count + '/GetSpotPublicationRate',params).then(res=>{
                     console.log('点位社区列表 - 接口',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()
@@ -5660,7 +5651,7 @@
                         delete params[i]
                     }
                 }
-                api.getApi_file(this.Count + '/ExportResPublicationRate'
+                api.getApi_file(this.apiVar.Count + '/ExportResPublicationRate'
                     , params).then(res=>{
                     console.log('社区上刊率导出',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
@@ -5696,7 +5687,7 @@
                         delete params[i]
                     }
                 }
-                api.getApi_file(this.Count + '/ExportSpotPublicationRate',params).then(res=>{
+                api.getApi_file(this.apiVar.Count + '/ExportSpotPublicationRate',params).then(res=>{
                     console.log('点位上刊率导出',res.headers)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()
@@ -5737,9 +5728,9 @@
                 return commaFormat.init(price);
             },
             // 时间字符切割
-            splitTimeString(time) {
-                return time.split("-").join("");
-            },
+            // splitTimeString(time) {
+            //     return time.split("-").join("");
+            // },
             // 时间格式转换
             changeTime(stringTime){
                 return stringTime.replace(/-/g, '/');
@@ -5948,27 +5939,6 @@
         cursor: pointer;
     }
 
-    /*  .bottom-data {
-          position: absolute;
-          bottom: -30px;
-          left: 23%;
-      }
-
-      .bottom-data ul li {
-          float: left;
-          margin-right: 24px;
-          font-size: 14px;
-          color: rgba(0, 0, 0, 0.65);
-      }
-
-      .bottom-data ul li .dot {
-          display: inline-block;
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          margin-right: 8px;
-      }*/
-
     /*关键数据展示*/
     .data-tab {
         font-size: 12px;
@@ -5976,7 +5946,7 @@
         margin-bottom: 10px;
         height: 30px;
     }
-
+/*
     .data-title {
         width: 79%;
         margin-left: 19%;
@@ -5992,7 +5962,7 @@
 
     .data-title div {
         text-align: right;
-    }
+    }*/
 
     .month-data {
         display: flex;
@@ -6062,7 +6032,6 @@
         width: 200px;
         height: 70px;
         box-sizing: border-box;
-        /*width: 100%;*/
     }
 
     .card6 .title p {
@@ -6090,7 +6059,6 @@
 
     .table-wrap {
         width: 100%;
-        /*border: 1px solid #dedede;*/
         margin-bottom: 30px;
     }
     .table-wrap .el-table{
@@ -6325,21 +6293,21 @@
         width: 100%;
         border: none;
     }
-    /*超出省略 all-city-data-table-12*/
+    /*超出省略*/
     /deep/ .el-table .cell{
         overflow-x: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+    .all-city-data-table-12 /deep/ .el-table__body-wrapper{
+        overflow-y: hidden;
+    }
     /*1440*/
     @media all and (min-width: 1420px) {
         .card6 .title {
             left: 9.5%;
-
-            /*width: 100%;*/
         }
     }
-
     /*1920*/
     @media all and (min-width: 1900px) {
         .charts2 {
@@ -6350,14 +6318,10 @@
             width: 850px !important;
         }
 
-        .data-title {
+      /*  .data-title {
             width: 81%;
             margin-left: 18%;
-        }
-
-        .bottom-data {
-            left: 30%;
-        }
+        }*/
 
         .card6 .title {
             left: 11.5%;
@@ -6416,11 +6380,6 @@
     /*关键数据增量对比*/
     .card4 .el-range-editor--mini.el-input__inner {
         width: 220px;
-    }
-
-    .data-analysis .el-checkbox__input.is-checked + .el-checkbox__label {
-        /*font-size: 12px;*/
-        /*padding-left: 5px;*/
     }
 
     .data-analysis .el-button-group .el-button:first-child {
@@ -6503,7 +6462,6 @@
 
     .el-table__body-wrapper::-webkit-scrollbar-thumb {
         /*滚动条里面小方块*/
-
         -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
         background: #c1c1c1;
         border-radius: 4px;
@@ -6665,7 +6623,6 @@
     }
 
     /*入驻物业总排行表格*/
-
     .into-property-rank .has-gutter th:nth-of-type(3),
     .into-property-rank .has-gutter th:nth-of-type(4),
     .into-property-rank .el-table__row td:nth-of-type(3),
@@ -6744,16 +6701,10 @@
         width: 90px;
     }
 
-    /*.el-table .el-table__header-wrapper thead.has-gutter tr th.el-table_5_column_31{*/
-        /*width: 140px;*/
-    /*}*/GetSurvey
     .el-table .el-table__header-wrapper thead.has-gutter tr th.el-table_5_column_31 .cell{
         width: 140px;
     }
 
-    /*.el-table .el-table__body-wrapper .el-table__body tbody tr.el-table__row td.el-table_5_column_31{*/
-        /*width: 140px;*/
-    /*}*/
     .el-table .el-table__body-wrapper .el-table__body tbody tr.el-table__row td.el-table_5_column_31 .cell{
         width: 140px;
         margin: 0;

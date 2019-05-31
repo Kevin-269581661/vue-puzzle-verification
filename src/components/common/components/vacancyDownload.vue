@@ -88,7 +88,8 @@ export default {
             this.sessionData = JSON.parse(sessionStorage.getItem("session_data"));
         },
         cancelDown(){
-            Message.warning('取消此操作');
+            this.messageFun('info', '取消此操作');
+            this.$emit('cancelClick', false)
         },
         confirmDown(){
             console.log('downLoadInfo----', this.downLoadInfo);
@@ -112,7 +113,7 @@ export default {
                     this.dateRangeEmpty();
                 }
             }else{
-                let { city, daterange } = this.downLoadInfo;            
+                let { city, daterange } = this.downLoadInfo;
                 let rid = city.join(',');
                 let info = {
                     uid: this.sessionData.uID,
@@ -125,7 +126,7 @@ export default {
                 }else{
                     info.startTime = daterange[0];
                     info.endTime = daterange[1];
-                    // 自定义日期按照点位来导 
+                    // 自定义日期按照点位来导
                     this.getDaterangeAds(info);
                 }
             }
@@ -136,7 +137,7 @@ export default {
                 "token": this.sessionData.token,
                 "uid": this.sessionData.uID
             };
-            api.postApi(this.Advertisement+'/GetAuthorCity', info).then(res =>{
+            api.postApi(this.apiVar.Advertisement+'/GetAuthorCity', info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 300200){
                     let resinfo = res.data.data;
@@ -174,7 +175,7 @@ export default {
                 startTime: daterange[0],
                 endTime: daterange[1],
             };
-            api.postApi(this.Advertisement+'/ExportSpareRes', info).then(res =>{
+            api.postApi(this.apiVar.Advertisement+'/ExportSpareRes', info).then(res =>{
                 console.log(res.data);
                 if(!res.data.SysCode){
                     if(res.data.length){
@@ -267,7 +268,8 @@ export default {
                 let func=new Promise((resolve, reject)=>{ //定义Promise并处理请求逻辑
                     let data=[];
                     this.$http.get(
-                        'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes/'+this.downLoadInfo.city[i]+'.json'
+                        // 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes/'+this.downLoadInfo.city[i]+'.json'
+                        this.apiVar.jsonLink+this.downLoadInfo.city[i]+'.json'
                     ).then((response)=>{
                         console.log('response----', response.data);
                         if (!response.data.SysCode) {
@@ -346,6 +348,7 @@ export default {
                             adsNum: item.adsNum,
                         };
                         let showData = item.DateInfo.sort(this.sortDate);
+                        console.log('showData',showData)
                         for(let date of showData){
                             dateArr.push(timeFormat.toDate(date.starDate, '/')+'-'+timeFormat.toDate(date.endDate, '/'));
                             dataStr.push(date.adsNum);
@@ -377,7 +380,7 @@ export default {
         },
         // 自定义日期按照点位来导
         getDaterangeAds(info){
-            api.postApi(this.Advertisement+'/ExportSpareAds', info).then(res =>{
+            api.postApi(this.apiVar.Advertisement+'/ExportSpareAds', info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 300200){
                     let resinfo = res.data;
@@ -396,7 +399,7 @@ export default {
                             let filename = returnobj.city.join('-')+'-'+ date +'空位表';
                             sheetExcel.toDownload(head, returnobj.arr, filename);
                         }else{
-                            this.messageFun('warning','此城市在此时间段内没有点位')                            
+                            this.messageFun('warning','此城市在此时间段内没有点位')
                         }
                     }else{
                         this.messageFun('warning','此城市在此时间段内没有点位')
@@ -439,8 +442,8 @@ export default {
                             grade: item.grade || '--',
                             notPush: item.allNotPush || '--',
                             remark: item.allremark || '--',
-                            adSize: item.alladSize || '--',
-                            adViewSize: item.alladViewSize || '--',
+                            adSize: item.adSize || '--',
+                            adViewSize: item.adViewSize || '--',
                             resAddress: item.resAddress || '--',
                             cType: item.cType || '--',
                             hPrice: item.hPrice/100,
@@ -459,6 +462,12 @@ export default {
             }
             resultObj.arr = result;
             return resultObj;
+        },
+        // 时间大小排序
+        sortDate(a, b){
+            let aDate = timeFormat.toDate(a.starDate, '');
+            let bDate = timeFormat.toDate(b.starDate, '');
+            return aDate - bDate;
         },
         loginTimeout(){
             Message.warning("登录超时,请重新登录");

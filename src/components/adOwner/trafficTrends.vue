@@ -174,7 +174,7 @@ export default {
                     tooken: session.token
                 };
             }
-            api.getApi(this.QZhike+'/GetToTalCountInfo', info).then(res=>{
+            api.getApi(this.apiVar.QZhike+'/GetToTalCountInfo', info).then(res=>{
                 console.log(res);
                 if(res.data.SysCode == 100302){
                     this.loginTimeout();

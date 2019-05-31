@@ -199,14 +199,14 @@ export default {
                     desc: '方案管理模块，您可在此模块中查看、新建、发布方案',
                     link: './media/planList',
                     children: [
-                        // {
-                        //     title: '导出空位',
-                        //     link: '',
-						// },
-						{
-                            title: '方案列表',
-                            link: './media/planList',
-                        },
+                        {
+                            title: '导出空位',
+                            link: '',
+						},
+						// {
+                        //     title: '方案列表',
+                        //     link: './media/planList',
+                        // },
                         {
                             title: '新建方案',
                             link: './media/createPlan',
@@ -339,7 +339,7 @@ export default {
 
 		},
 		getIsCom(){
-			let sessrid = this.sessionData.asrID; 
+			let sessrid = this.sessionData.asrID;
 			let comarr = ['1','2','3','4','5','6','7'];
 			for(let data of comarr){
 				if(sessrid== data){
@@ -376,7 +376,7 @@ export default {
 				uid: this.sessionData.uID,
 				token: this.sessionData.token,
 			};
-			api.postApi(this.Count+'/GetHomePageInfoOfMD', info).then(res =>{
+			api.postApi(this.apiVar.Count + '/GetHomePageInfoOfMD', info).then(res =>{
 				console.log(res.data);
 				if(res.data.SysCode == 200200){
 					let resInfo = res.data.data;
@@ -401,7 +401,7 @@ export default {
 				uid: this.sessionData.uID,
 				token: this.sessionData.token,
 			};
-			api.postApi(this.Count + '/GetSummaryOfLastMonthOfMD', info).then(res =>{
+			api.postApi(this.apiVar.Count + '/GetSummaryOfLastMonthOfMD', info).then(res =>{
 				console.log(res);
 				if(res.data.SysCode == 200200){
 					let resinfo = res.data.data;
@@ -425,7 +425,7 @@ export default {
 				uid: this.sessionData.uID,
 				token: this.sessionData.token,
 			};
-			api.postApi(this.Count + '/GetTotalPerformanceOfMD', info).then(res =>{
+			api.postApi(this.apiVar.Count + '/GetTotalPerformanceOfMD', info).then(res =>{
 				console.log(res);
 				if(res.data.SysCode == 200200){
 					let resinfo = res.data.data;
@@ -446,7 +446,7 @@ export default {
 					this.imginfo[1].num = this.medalInfo.helpNum;
 					this.imginfo[1].rank = this.medalInfo.help;
 					this.imginfo[1].name = this.getName(2, this.medalInfo.help-2);
-					this.imginfo[1].title = this.imginfo[1].name?this.imginfo[1].name:'';					
+					this.imginfo[1].title = this.imginfo[1].name?this.imginfo[1].name:'';
 					this.imginfo[2].url = require('../../assets/images/index/release-'+this.medalInfo.release+'.png');
 					this.imginfo[2].num = this.medalInfo.releaseNum;
 					this.imginfo[2].rank = this.medalInfo.release;
@@ -561,7 +561,7 @@ export default {
 				startTime: this.monthRange[0],
 				endTime: this.monthRange[1]
 			};
-			api.postApi(this.Count + '/GetAdPlanCountAndAsCountByPeriodOfMD', info).then(res =>{
+			api.postApi(this.apiVar.Count + '/GetAdPlanCountAndAsCountByPeriodOfMD', info).then(res =>{
 				console.log(res.data);
 				if(res.data.SysCode == 200200){
 					let title = [];

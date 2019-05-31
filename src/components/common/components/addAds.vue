@@ -591,7 +591,7 @@
                     "service":"GetNotPush",
                     "data": {}
                 }
-                api.postApi_new(this.Media, params).then(res => {
+                api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('广告限制列表', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         this.loginTimeout()
@@ -619,7 +619,7 @@
                     token: this.sessionData.token,
                     apid: apid,
                 }
-                api.getApi(this.Advertisement+"/GetFanganInfo", params).then(res => {
+                api.getApi(this.apiVar.Advertisement+"/GetFanganInfo", params).then(res => {
                     console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         let info = res.data.data;
@@ -768,7 +768,7 @@
                     "service": "GetAdS",
                     "data": this.getAdsParamsData
                 }
-                api.postApi_new(this.Media, params).then(res => {
+                api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('选点列表：', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()       // 登录超时

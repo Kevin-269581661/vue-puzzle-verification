@@ -260,7 +260,7 @@
             },
             // 获取方案信息
             getApInfo() {
-                api.getApi(this.Advertisement+'/GetShareADS', {aicode: this.aicode}).then(res => {
+                api.getApi(this.apiVar.Advertisement+'/GetShareADS', {aicode: this.aicode}).then(res => {
                     console.log('GetShareADS', res)
                     if (res.data !== '' && !res.data.SysCode) {
                         this.shareADSData = res.data
@@ -305,7 +305,7 @@
             },
             // 获取该方案原始数据
             getADList() {
-                api.getApi(this.Advertisement + '/GetMapADB', {apid: this.apid}).then(res => {
+                api.getApi(this.apiVar.Advertisement + '/GetMapADB', {apid: this.apid}).then(res => {
                     console.log('获取协同选点列表', res)
                     if (res.data.code === 300200 || res.data.msg === 'success'){
                         if (JSON.stringify(res.data.data) === "{}") {
@@ -863,7 +863,7 @@
                     }
                 }
                 console.log('反馈协同选点列表params',params)
-                api.postApi_json(this.Advertisement + '/PushShareADS', JSON.stringify(params)).then(res =>{
+                api.postApi_json(this.apiVar.Advertisement + '/PushShareADS', JSON.stringify(params)).then(res =>{
                     console.log('协同选点列表的提交', res)
                     if (res.data.SysCode == '300200' || res.data.msg === '操作成功') {
                         this.$message({

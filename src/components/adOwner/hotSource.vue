@@ -307,7 +307,7 @@
                         tooken: session.token
                     };
                 }
-                api.getApi(this.QZhike + '/GetPene', info).then(res => {
+                api.getApi(this.apiVar.QZhike + '/GetPene', info).then(res => {
                     console.log('GetPene---', res.data);
                     if (res.data) {
                         if (res.data.SysCode == 100302) {

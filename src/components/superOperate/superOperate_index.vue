@@ -603,7 +603,7 @@
                     uid: this.sessionData.uID,
                     token: this.sessionData.token
                 }
-                api.getApi(this.Count + '/GetPdIncomeCount',params).then(res=>{
+                api.getApi(this.apiVar.Count + '/GetPdIncomeCount',params).then(res=>{
                     // console.log('直营公司收入排名',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()
@@ -675,7 +675,7 @@
                     uid: this.sessionData.uID,
                     token: this.sessionData.token
                 }
-                api.getApi(this.Count + '/GetSMOverview',params).then(res=>{
+                api.getApi(this.apiVar.Count + '/GetSMOverview',params).then(res=>{
                     console.log('超级运营顶部内容详情',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()       // 登录超时
@@ -785,7 +785,7 @@
                     onEnd: this.returnDate(endTime),
                 }
                 // console.log('成交金额接口参数',params,isCompare)
-                api.getApi(this.Count + '/GetOrderIncomeByMonth',params).then(res=>{
+                api.getApi(this.apiVar.Count + '/GetOrderIncomeByMonth',params).then(res=>{
                     // console.log('成交金额接口',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()
@@ -833,7 +833,7 @@
                     onEnd: this.returnDate(endTime),
                 }
                 // console.log('获取订单数量总量接口参数',params)
-                api.getApi(this.Count + '/GetOrderCountByMonth',params).then(res=>{
+                api.getApi(this.apiVar.Count + '/GetOrderCountByMonth',params).then(res=>{
                     console.log('订单总数接口',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()
@@ -1123,7 +1123,7 @@
                     asrIDs: this.returnAsrID(this.sessionData.asrID),
                 }
                 // console.log('获取业绩排行参数',params)
-                api.getApi(this.Count + '/GetAchievementRankList', params).then(res => {
+                api.getApi(this.apiVar.Count + '/GetAchievementRankList', params).then(res => {
                     console.log('业绩排行接口', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()
@@ -1235,7 +1235,7 @@
                     suID: row.uID,
                 }
                 // console.log('设置销售目标参数',params)
-                api.postApi(this.Count + '/SaveOrUpdateUserTarget', params).then(res=>{
+                api.postApi(this.apiVar.Count + '/SaveOrUpdateUserTarget', params).then(res=>{
                     console.log('设置销售目标',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()

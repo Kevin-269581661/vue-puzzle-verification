@@ -136,7 +136,16 @@
                                     <el-button type="primary" class="map" icon="el-icon-location-outline" @click="mapAD">地图</el-button>
                                 </div>
                                 <div>
-                                    <el-button type="success" class="oneKeyPointBtn importXle" icon="el-icon-upload2" @click="importFanan">导入</el-button>
+                                    <!-- <el-button type="success" class="oneKeyPointBtn importXle" icon="el-icon-upload2" @click="importFanan">导入</el-button> -->
+                                    <el-dropdown>
+                                        <el-button type="success" class="oneKeyPointBtn importXle">
+                                            导入<i class="el-icon-arrow-down el-icon--right"></i>
+                                        </el-button>
+                                        <el-dropdown-menu slot="dropdown">
+                                            <el-dropdown-item @click.native.prevent="importFanan('res')">导入小区</el-dropdown-item>
+                                            <el-dropdown-item @click.native.prevent="importFanan('ads')">导入点位</el-dropdown-item>
+                                        </el-dropdown-menu>
+                                    </el-dropdown>
                                 </div>
                                 <div>
                                     <el-button class="oneKeyPointBtn" @click="dialogOneKeyPoint = true">一键选点</el-button>
@@ -360,7 +369,10 @@
                                 style="width: 100%"
                                 class="selectAdsTable"
                                 height="480">
-                                <el-table-column width="110px" fixed><!-- :render-header="customFieldColumn"-->
+                                <el-table-column
+                                    fixed
+                                    class-name="el-table-column-checkbox"
+                                    width="110px"><!-- :render-header="customFieldColumn"-->
                                     <template slot-scope="scope">
                                         <div v-if="isOccupied">
                                             <div class="adDoor" v-if="mediaType === '广告门'">
@@ -446,16 +458,18 @@
                                 </el-table-column>
                                 <el-table-column
                                     fixed
+                                    class-name="el-table-column-resName"
                                     label="资源名称"
-                                    min-width="200"
+                                    width="200"
                                     prop="resName"
                                 >
                                 </el-table-column>
                                 <el-table-column
                                     fixed
+                                    class-name="el-table-column-mediaName"
                                     prop="mediaName"
                                     label="媒体名称"
-                                    min-width="140"
+                                    width="140"
                                     class="tar"
                                 >
                                 </el-table-column>
@@ -480,22 +494,21 @@
                                 </el-table-column>
                                 <el-table-column
                                     label="媒体备注"
-                                    min-width="140">
+                                    min-width="140"
+                                    prop="mediaRemark"
+                                    class-name="el-table-column-mediaRemark"
+                                    :show-overflow-tooltip="true">
                                     <template slot-scope="scope">
-                                        <span v-if="scope.row.mediaRemark.length <= 6">{{scope.row.mediaRemark || '--' }}</span>
-                                        <el-tooltip v-else class="item" effect="dark" :content="scope.row.mediaRemark" placement="bottom-start">
-                                            <span>{{scope.row.mediaRemark || '--' }}</span>
-                                        </el-tooltip>
+                                        <span>{{scope.row.mediaRemark || '--' }}</span>
                                     </template>
                                 </el-table-column>
                                 <el-table-column
                                     label="资产编号"
-                                    min-width="160">
+                                    min-width="160"
+                                    prop="assetTag"
+                                    :show-overflow-tooltip="true">
                                     <template slot-scope="scope">
-                                        <span v-if="scope.row.assetTag.length <= 14">{{scope.row.assetTag || '--' }}</span>
-                                        <el-tooltip v-else class="item" effect="dark" :content="scope.row.assetTag" placement="bottom-start">
-                                            <span>{{scope.row.assetTag || '--' }}</span>
-                                        </el-tooltip>
+                                        <span>{{scope.row.assetTag || '--' }}</span>
                                     </template>
                                 </el-table-column>
                                 <el-table-column
@@ -508,21 +521,20 @@
                                 </el-table-column>
                                 <el-table-column
                                     label="广告限制"
-                                    min-width="130">
+                                    min-width="130"
+                                    prop="adLimit"
+                                    :show-overflow-tooltip="true">
                                     <template slot-scope="scope">
-                                        <el-tooltip class="item" effect="dark" :content="scope.row.adLimit" placement="bottom-start">
-                                            <span>{{scope.row.adLimit || '--' }}</span>
-                                        </el-tooltip>
+                                        <span>{{scope.row.adLimit || '--' }}</span>
                                     </template>
                                 </el-table-column>
                                 <el-table-column
                                     :label="recType == 1? '楼盘类型':'写字楼类型'"
-                                    min-width="100">
+                                    min-width="100"
+                                    prop="buildType"
+                                    :show-overflow-tooltip="true">
                                     <template slot-scope="scope">
-                                        <span v-if="recType == 1">{{ scope.row.buildType || '--' }}</span>
-                                        <el-tooltip v-else class="item" effect="dark" :content="scope.row.buildType" placement="bottom-start">
-                                            <span>{{scope.row.buildType || '--' }}</span>
-                                        </el-tooltip>
+                                        <span>{{scope.row.buildType || '--' }}</span>
                                     </template>
                                 </el-table-column>
                                 <el-table-column
@@ -609,7 +621,7 @@
 
                                         <el-col :span="16" style="text-align:right;">
                                             <span class="button_point">
-                                                <el-button @click="getMapADList" class="mapBtn" :disabled="mapBtn">获取地图选点</el-button>
+                                                <el-button @click="getMapADList" size="small" class="mapBtn" :disabled="mapBtn">获取地图选点</el-button>
                                             </span>
                                             <el-select v-model="eventType" placeholder="快捷配点" filterable @change="changeEvent">
                                                 <el-option v-for="item of eventList" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -617,7 +629,7 @@
                                         </el-col>
                                     </el-row>
                                     <el-row class="car-title">
-                                        <el-col :span="9">
+                                        <el-col :span="10">
                                             <img src="../../assets/images/statistics.png" alt="" style="vertical-align: text-top;">
                                             社区:<span>{{shopMedia_ADNum.resNum}}</span>
                                             (选1面:<span>{{shopMedia_ADNum.oneNum}}</span>&nbsp;&nbsp;
@@ -628,10 +640,12 @@
                                         <el-col :span="2">
                                             媒体:<span>{{shopMedia_ADNum.mediaNum}}</span>
                                         </el-col>
-                                        <el-col :span="6">
+                                        <el-col :span="5">
                                             点位:<span>{{shopMedia_ADNum.ADNum}}</span>
-                                            (A面:<span>{{mediaLevelNum.ANum}}</span>&nbsp;&nbsp;
-                                            B面:<span>{{mediaLevelNum.BNum}}</span>)
+                                            <template v-if="activeName == '1'">
+                                                (A面:<span>{{mediaLevelNum.ANum}}</span>
+                                                B面:<span>{{mediaLevelNum.BNum}}</span>)
+                                            </template>
                                         </el-col>
                                         <el-col :span="5">
                                             A级:<span>{{mediaLevelNum.ALevel}}</span>
@@ -969,17 +983,21 @@
         </el-dialog>
         <!-- 导入方案弹出框 -->
         <el-dialog
-            title=""
+            class="import_fanan"
+            :title="importType=='1'?'小区导入':'点位导入'"
             :visible.sync="isImport"
             top="20vh"
             width="40%">
-            <p class="import_box">
-                <span>
-                    <b>下载模板:</b>
-                    <a href="/template.xlsx" class="el-icon-download aButton" download="方案导入模板.xlsx">下载文件</a>
-                </span>
-                <span class="import_file fileUploadSpan">
-                    <b>选择方案:</b>
+            <el-row>
+                <el-col :span="4" class="import_col"> 下载模板:</el-col>
+                <el-col :span="18">
+                    <el-button icon="el-icon-download" size="small" v-if="importType=='1'"><a :href ='this.apiVar.qadnUrl + "/importTemplate/resTemplate.xlsx"' download="小区导入模板.xlsx">小区模板</a></el-button>
+                    <el-button icon="el-icon-download" size="small" v-if="importType=='2'"><a :href ='this.apiVar.qadnUrl + "/importTemplate/adsTemplate.xlsx"' download="点位导入模板.xlsx">点位模板</a></el-button>
+                </el-col>
+            </el-row>
+            <el-row class="import_file">
+                <el-col :span="4" class="import_col"> 上传文件:</el-col>
+                <el-col :span="18" >
                     <el-upload
                         class="upload_file"
                         ref="upload"
@@ -988,31 +1006,29 @@
                         :show-file-list="false"
                         :http-request="uploadFile"
                         :multiple="false">
-                        <el-button icon="el-icon-upload2">
-                            上传文件
-                        </el-button>
+                        <el-button icon="el-icon-upload2" size="small">上传文件</el-button>
                     </el-upload>
                     <span style="color:#999;">支持扩展名: .xlsx .xls</span>
-                </span>
-            </p>
-            <p>
-                <b>方案名称:</b>
-                <el-tag
-                    v-for="(tag, index) of fileNameTags"
-                    :key="index"
-                    type="info"
-                    closable
-                    :disable-transitions="false"
-                    @close="tabCloseFun(tag, index)">
-                    {{tag}}
-                </el-tag>
-            </p>
-            <p class="upload_box">
-                <el-button  size="small" type="primary" @click="submitUpload()">确定上传</el-button>
-            </p>
-            <p style="color: fuchsia;">
-                *提示,读取导入的点位需要时间,请等待,切勿重复上传
-            </p>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="4" class="import_col"> 文件名称:</el-col>
+                <el-col :span="18">
+                    <el-tag
+                        v-for="(tag, index) of fileNameTags"
+                        :key="index"
+                        type="info"
+                        closable
+                        :disable-transitions="false"
+                        @close="tabCloseFun(tag, index)">
+                        {{tag}}
+                    </el-tag>
+                </el-col>
+            </el-row>
+            <span slot="footer" class="dialog-footer">
+                <el-button size="small" @click="isImport = false">取 消</el-button>
+                <el-button size="small" type="primary" @click="submitUpload()">确定上传</el-button>
+            </span>
         </el-dialog>
         <!-- 导入excel点位部分失败弹框 -->
         <el-dialog
@@ -1020,40 +1036,45 @@
             title="导入excel的点位信息"
             top="20vh"
             width="80%">
-            <div class="car-title">
-                <i class="el-icon-info" style="color: #1890FF;"></i>
-                <h4>已成功导入点位<span>{{excelObj.successNum}}</span>个,问题点位<span>{{excelObj.failNum}}</span>个
-                    <span @click="downLoadExcel()">下载表格<i class="el-icon-download"></i></span>
-                </h4>
-            </div>
-            <el-table
-                border
-                :data="excelDataUpload"
-                style="width: 100%"
-            >
-                <el-table-column label="资源名称" min-width="140" prop="resName" >
-                </el-table-column>
-                <el-table-column prop="city" label="市" min-width="85" >
-                </el-table-column>
-                <el-table-column prop="origin" label="区" min-width="85" >
-                </el-table-column>
-                <el-table-column prop="mediaName" label="媒体名称" min-width="130" >
-                </el-table-column>
-                <el-table-column min-width="70" label="投放面">
-                    <template slot-scope="scope">
-                        <span>{{scope.row.asLab}}面</span>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="assetTag" label="资产编号" min-width="130" >
-                </el-table-column>
-                <el-table-column prop="schedules" label="排期" min-width="190">
-                    <template slot-scope="scope">
-                        <el-tooltip class="item" effect="dark" :content="scope.row.schedules" placement="bottom">
-                            <span>{{scope.row.schedules}}</span>
-                        </el-tooltip>
-                    </template>
-                </el-table-column>
-            </el-table>
+            <template v-if="importType =='1'">
+                <import-result :importData="importInfoData" :name="planForm.planName" @cancel="cancelImport" @confirmImport="confirmImport"></import-result>
+            </template>
+            <template v-if="importType == '2'">
+                <div class="car-title">
+                    <i class="el-icon-info" style="color: #1890FF;"></i>
+                    <h4>已成功导入点位<span>{{excelObj.successNum}}</span>个,问题点位<span>{{excelObj.failNum}}</span>个
+                        <span @click="downLoadExcel()">下载表格<i class="el-icon-download"></i></span>
+                    </h4>
+                </div>
+                <el-table
+                    border
+                    :data="excelDataUpload"
+                    style="width: 100%"
+                >
+                    <el-table-column label="资源名称" min-width="140" prop="resName" >
+                    </el-table-column>
+                    <el-table-column prop="city" label="市" min-width="85" >
+                    </el-table-column>
+                    <el-table-column prop="origin" label="区" min-width="85" >
+                    </el-table-column>
+                    <el-table-column prop="mediaName" label="媒体名称" min-width="130" >
+                    </el-table-column>
+                    <el-table-column min-width="70" label="投放面">
+                        <template slot-scope="scope">
+                            <span>{{scope.row.asLab}}面</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="assetTag" label="资产编号" min-width="130" >
+                    </el-table-column>
+                    <el-table-column prop="schedules" label="排期" min-width="190">
+                        <template slot-scope="scope">
+                            <el-tooltip class="item" effect="dark" :content="scope.row.schedules" placement="bottom">
+                                <span>{{scope.row.schedules}}</span>
+                            </el-tooltip>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </template>
         </el-dialog>
     </div>
 </template>
@@ -1074,6 +1095,9 @@
     import sheetExcel from "../../commonFun/sheetExcel.js";
     // 方案缓存
     import cacheAdPlan from "../../commonFun/cacheAdPlan"
+    // 方案导入结果
+    import importResult from './components/importResult.vue'
+
 
     export default {
         name: "createPlan",
@@ -1097,6 +1121,7 @@
             elCheckbox: Checkbox,
             elInputNumber: InputNumber,
             apQuotation,
+            importResult,
         },
         data() {
             let validateSales = (rule, value, callback) => {
@@ -1148,7 +1173,7 @@
             return {
                 // 导空点是否展示半年json下载(全国媒介或全国销售有权限下载)
                 isShowHalfYear: false,
-                // doUpload: 'https://beta.qinlinad.com/advertisement/AnalysisExcelAdBaseInfo',
+                // doUpload: 'https://beta.qinlinad.com/Advertisement/AnalysisExcelAdBaseInfo',
                 doUpload: '/advertisement/AnalysisExcelAdBaseInfo',
                 // 空位导出url
                 downUrl: '',
@@ -1167,7 +1192,7 @@
                 cityOptions: [],
                 cityOther: false,           // 判断是否可选择全国城市
                 isBD: true,                 // 判断登录用户是否为销售
-                username: '',               // 获取登录用户的userName
+                // username: '',               // 获取登录用户的userName
                 recType: 1,                 // step2  1:社区 2:写字楼
                 mediaType: '广告门',         // 媒体类型 广告门、道闸
                 shopXY: {x: '', y: ''},     // 动画起始坐标
@@ -1339,6 +1364,8 @@
                 getMapLoading: '',              // 获取地图选点时的loading
                 // 是否导入方案
                 isImport: false,
+                // importType: '1',
+                importType: '',
                 // 文件名称列表
                 fileNameTags:[],
                 // 当前上传文件的数据- 表格
@@ -1538,7 +1565,7 @@
                     if(!this.isBD){
                         params.suID = this.BDData.uid
                     }
-                    api.getApi(this.Advertisement + '/GetFanganCity', params).then(res => {
+                    api.getApi(this.apiVar.Advertisement + '/GetFanganCity', params).then(res => {
                         console.log('获取权限下的城市列表', res.data)
                         if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                             this.loginTimeout()       // 登录超时
@@ -1642,7 +1669,7 @@
                     startTime: this.emptyRange[0],
                     endTime: this.emptyRange[1],
                 };
-                api.postApi(this.Advertisement+'/ExportSpareRes', info).then(res =>{
+                api.postApi(this.apiVar.Advertisement+'/ExportSpareRes', info).then(res =>{
                     console.log(res.data);
                     if(!res.data.SysCode){
                         if(res.data.length){
@@ -1747,7 +1774,8 @@
                         let func=new Promise(function(resolve, reject){ //定义Promise并处理请求逻辑
                             let data=[];
                             self.$http.get(
-                                'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes/'+self.planForm.throwCity[i]+'.json'
+                                // 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes/'+self.planForm.throwCity[i]+'.json'
+                                this.apiVar.jsonLink+self.planForm.throwCity[i]+'.json'
                             ).then(function(response){
                                 console.log('response----', response.data);
                                 if (!response.data.SysCode) {
@@ -1865,10 +1893,18 @@
                 return aDate - bDate;
             },
             // 导入方案弹出框
-            importFanan(){
+            importFanan(type){
+                if(type == 'res'){
+                    this.importType = '1';
+                    this.doUpload = '/advertisement/AdPlanResImport'
+                }else{
+                    this.importType = '2';
+                    this.doUpload = '/advertisement/AnalysisExcelAdBaseInfo';
+                }
                 this.isImport = true;
                 this.fileData = [];
                 this.fileNameTags = [];
+                this.importInfoData = {};
             },
             // 自定义上传
             uploadFile(params){
@@ -1888,36 +1924,94 @@
             // 确认上传
             submitUpload(){
                 if(this.fileData.length){
+                    let rids = this.planForm.throwCity.join(',');
+                    let sess = this.sessionData;
+                    let info = `?uid=${sess.uID}&token=${
+                    sess.token}&suId=${this.BDData.uid}&rids=${rids}&excludedApId=${this.activeAdPlan?this.activeAdPlan:''}`;
                     let formData = new FormData();
                     formData.append('file', this.fileData[0]);
-                    formData.append('rids', this.planForm.throwCity.join(','));
-                    // formData.append('suid', this.BDData.uid);
-                    // 上传文件
-                    api.postUpload_file(this.doUpload+'?uid='+this.sessionData.uID+'&token='+
-                        this.sessionData.token+'&suid='+this.BDData.uid+'&apId='+this.activeAdPlan, formData).then(res =>{
-                        if(!res.data.SysCode){
-                            let importInfo = res.data;
-                            this.importInfoData = res.data;
-                            if(importInfo.successList.length){
-                                this.setShopDataByImport(importInfo.successList);
-                            }
-                            if(importInfo.errorList.length){
-                                this.excelDataUpload = this.checkPointFun(importInfo);
-                                this.excelObj = {
-                                    successNum: importInfo.successList.length,
-                                    failNum: importInfo.errorList.length
-                                };
-                                this.showUploadFail = true;
-                            }
-                        }else if(res.data.SysCode == 100302){
-                            this.loginTimeout();
-                        }else{
-                            this.messageFun('warning',res.data.MSG)
-                        }
-                    }).catch(res =>{
-                        console.log(res);
-                    });
+                    if(this.importType == '2'){
+                        this.adsImport(formData, info);
+                    }else{
+                        this.resImport(formData, info);
+                    }
+                }else{
+                    this.messageFun('warning', '请先上传文件');
                 }
+            },
+            // 点位导入
+            adsImport(formData, info){
+                // 上传文件
+                api.postUpload_file(this.doUpload+info, formData).then(res =>{
+                    if(!res.data.SysCode){
+                        let importInfo = res.data;
+                        this.importInfoData = res.data;
+                        if(importInfo.successList.length){
+                            this.setShopDataByImport(importInfo.successList);
+                        }
+                        console.log('importInfo.errorList.length', importInfo.errorList.length);
+                        if(importInfo.errorList.length){
+                            this.excelDataUpload = this.checkPointFun(importInfo);
+                            this.excelObj = {
+                                successNum: importInfo.successList.length,
+                                failNum: importInfo.errorList.length
+                            };
+                            this.showUploadFail = true;
+                        }
+                    }else if(res.data.SysCode == 100302){
+                        this.loginTimeout();
+                    }else{
+                        this.messageFun('warning',res.data.MSG)
+                    }
+                }).catch(res =>{
+                    console.log(res);
+                });
+            },
+            // 小区导入
+            resImport(formData, info){
+                let Loading = this.$loading({
+                    lock: true,
+                    text: '快马加鞭选点中...',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                });
+                // 上传文件
+                api.postUpload_file(this.doUpload+info, formData).then(res =>{
+                    if(res.data.SysCode == 200200){
+                        let importInfo = res.data.data;
+                        this.importInfoData = importInfo;
+                        this.showUploadFail = true;
+                    }else if(res.data.SysCode == 100302){
+                        this.loginTimeout();
+                    }else{
+                        this.messageFun('warning',res.data.MSG)
+                    }
+                    Loading.close();                    
+                }).catch(res =>{
+                    console.log(res);
+                    Loading.close();
+                });
+            },
+            // 取消导入
+            cancelImport(){
+                this.showUploadFail = false;
+                this.isImport = false;                
+            },
+            // 确定导入
+            confirmImport(arr){
+                this.showUploadFail = false;
+                console.log('import----data---', arr);
+                for(let info of arr){
+                    if(info.mVehicle == '广告门'){
+                        this.isHaveDiffPush(info);
+                    }else if(info.mVehicle =='道闸'){
+                        this.isHaveDiffPush(info);
+                    }
+                }
+                this.isImport = false;
+                // this.dialogTableVisible = true;
+                this.dialogVisible();
+                console.log('inport----data----shoplist', this.shopingList);
             },
             // 根据导入方案返回的数据,设置购物车所需要的数据格式
             setShopDataByImport(arr){
@@ -1991,6 +2085,7 @@
                 }
                 console.log('this.shopingList1----', this.shopingList);
                 Message.success('成功导入'+arr.length+'条数据');
+                this.typeShopList = this.getTypeList();
                 this.isImport = false;
                 this.computeMedia_AD()
                 this.judgeByselect()
@@ -2283,7 +2378,7 @@
                         token: this.sessionData.token,
                         sname: queryString
                     }
-                    api.postApi(this.UCAPI+'/GetUserName', params).then(res => {
+                    api.postApi(this.apiVar.UCAPI+'/GetUserName', params).then(res => {
                         console.log('GetUserName', res)
                         if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                             this.loginTimeout()
@@ -2327,7 +2422,7 @@
                     uid: this.BDData.uid,
                     token: this.sessionData.token
                 }
-                api.getApi(this.Advertisement + '/MyCustomer', params).then(res => {
+                api.getApi(this.apiVar.Advertisement + '/MyCustomer', params).then(res => {
                     console.log('MyCustomer:', res.data)
                     let customerList = res.data
                     this.customer = res.data    //保存所有信息，方便后面的过滤使用
@@ -2363,7 +2458,7 @@
                     cid: val,
                     token: this.sessionData.token
                 }
-                api.getApi(this.Advertisement +'/GetBrand', cidParams).then(res => {
+                api.getApi(this.apiVar.Advertisement +'/GetBrand', cidParams).then(res => {
                     console.log('公司品牌', res.data)
                     let CBrand = res.data
                     let BrandList = []
@@ -2485,7 +2580,7 @@
                     token: this.sessionData.token,
                     sales_user: this.BDData.uid
                 }
-                api.getApi(this.Advertisement + '/getSalesProject', params).then(res => {
+                api.getApi(this.apiVar.Advertisement + '/getSalesProject', params).then(res => {
                     console.log('销售所属方案',res)
                     if (res.data.SysCode == 200200) {
                         let resData =  res.data.data
@@ -2513,7 +2608,7 @@
                     "service":"GetNotPush",
                     "data": {}
                 }
-                api.postApi_new(this.Media, params).then(res => {
+                api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('广告限制列表', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         this.loginTimeout()
@@ -2617,7 +2712,7 @@
                     "data":  this.getAdsParamsData
                 }
                 let timer = setTimeout(() => {        // setTimeout 异步让table出现loading
-                    api.postApi_new(this.Media, params).then(res => {
+                    api.postApi_new(this.apiVar.Media, params).then(res => {
                         console.log('选点列表：', res)
                         if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                             this.loginTimeout()       // 登录超时
@@ -2814,7 +2909,7 @@
                     le: endTime.split(".").join(""),
                 }
                 console.log('参数',params)
-                api.postApi(this.Advertisement + '/GetResAdplanInfo',params).then(res=>{
+                api.postApi(this.apiVar.Advertisement + '/GetResAdplanInfo',params).then(res=>{
                     console.log('查询被占点位',res)
                     this.isOccupied = false    // 被占搜索时隐藏过滤条件
                     let dataArr = res.data
@@ -2888,14 +2983,14 @@
                 }
                 console.log('生成地图MapID参数', params)
                 let tempwindow = window.open()
-                api.getApi(this.Map +'/GetMapInfo', params).then(res => {
+                api.getApi(this.apiVar.Map +'/GetMapInfo', params).then(res => {
                     console.log('GetMapInfo地图mapid返回的信息', res)
                     if (!res.data.SysCode) {
                         let mapid = res.data.MapID
                         this.mapBtn = false
                         this.dialogVisible()
                         // tempwindow.location = 'https://www.dituwuyou.com/qinlin/embed?mid=FPcrNHyq3xXFZDbqlTyHKA&token=fp3nxsKCYZzOSnU0KosEq0GA1o1qcKh5XLA&mapid=' + mapid
-                        tempwindow.location = this.wuYouMap + mapid + '&city=' + this.activeRName + '&flag=' + true
+                        tempwindow.location = this.apiVar.wuYouMap+ mapid + '&city=' + this.activeRName + '&flag=' + true
                     } else {
                         tempwindow.close()
                         if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
@@ -2975,7 +3070,7 @@
                         delete params[i]
                     }
                 }
-                api.postApi(this.Advertisement + '/AutoSetAdS', params).then(res=>{
+                api.postApi(this.apiVar.Advertisement + '/AutoSetAdS', params).then(res=>{
                     console.log('一键选点',res.data)
                     IsXhr = true
                     let tempArr = []
@@ -3590,7 +3685,7 @@
                     background: 'rgba(0, 0, 0, 0.7)'
                 })
                 this.mapBtn = true
-                api.getApi(this.Map + '/SendMap', {uid: this.sessionData.uID,token: this.sessionData.token}).then(res => {
+                api.getApi(this.apiVar.Map + '/SendMap', {uid: this.sessionData.uID,token: this.sessionData.token}).then(res => {
                     console.log('地图选点', res)
                     if(res.data.code == '500200'){
                         this.mapADList = res.data.data
@@ -4661,7 +4756,7 @@
                     delete params.suid;
                 }
                 console.log('params',params)
-                api.postApi(this.Advertisement + '/CreateAPDBatch', params).then(res=>{
+                api.postApi(this.apiVar.Advertisement + '/CreateAPDBatch', params).then(res=>{
                     console.log('创建方案',res)
                     if(res.data.SysCode == 200200){
                         this.FAData.apID = res.data.Data[0].apID
@@ -4726,7 +4821,7 @@
                     token: this.sessionData.token,
                     abList: arr
                 }
-                api.postApi_json(this.Advertisement + '/PushADB?uid='+this.sessionData.uID+'&token='+this.sessionData.token,postData).then(res => {
+                api.postApi_json(this.apiVar.Advertisement + '/PushADB?uid='+this.sessionData.uID+'&token='+this.sessionData.token,postData).then(res => {
                     console.log('PushADB提交选点', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         this.ADloading.close()
@@ -4747,7 +4842,7 @@
                                 uid: this.sessionData.uID,
                                 token: this.sessionData.token
                             }
-                            api.postApi(this.Advertisement + '/clearAdPlanBackups',params).then(res=>{
+                            api.postApi(this.apiVar.Advertisement + '/clearAdPlanBackups',params).then(res=>{
                                 console.log('清空缓存的方案',res)
                                 if(res.data.SysCode == 200200){
                                     console.log('缓存方案清除成功')
@@ -4772,10 +4867,10 @@
                     apid: this.FAData.apID,
                     aiinfo: JSON.stringify(aiInfo)
                 }
-                api.postApi(this.Advertisement+'/CreateShareCode', params).then(res => {
+                api.postApi(this.apiVar.Advertisement+'/CreateShareCode', params).then(res => {
                     console.log('生成协同选点aiCode', res)
                     this.apAicode = res.data.aiCode         // 协同选点 aiCode
-                    this.shareADUrl = this.qadnUrl + '/shareADList?apid=' + this.FAData.apID + '&aicode=' + res.data.aiCode
+                    this.shareADUrl = this.apiVar.qadnUrl + '/shareADList?apid=' + this.FAData.apID + '&aicode=' + res.data.aiCode
                     this.active = 3
                 })
             },
@@ -4822,7 +4917,7 @@
                     token: this.sessionData.token,
                     adPlan: JSON.stringify(planInfo)
                 }
-                api.postApi(this.Advertisement + '/createAdPlanBackups',params).then(res=>{
+                api.postApi(this.apiVar.Advertisement + '/createAdPlanBackups',params).then(res=>{
                     console.log('res创建方案缓存',res)
                     if(res.data.SysCode == 200200){
 
@@ -4945,10 +5040,10 @@
     }
 
     .mapBtn {
-        width: 110px;
+        min-width: 110px;
         text-align: center;
         display: inline-block;
-        padding: 3px;
+        /* padding: 3px; */
         border: 1px solid #D9D9D9;
         border-radius: 4px;
         font-family: PingFangSC-Regular;
@@ -5168,7 +5263,7 @@
         border-top-left-radius: 0;
     }
 
-    /deep/ .el-button {
+    .search-wrap /deep/ .el-button {
         width: 76px;
         height: 34px;
     }
@@ -5570,7 +5665,7 @@
     }
 
     /deep/ .car-list .el-button {
-        width: 100px;
+        /* width: 100px; */
     }
 
     /*购物车列表*/
@@ -5911,7 +6006,7 @@
         font-size: 14px;
     }
     /* 方案导入 */
-    .import_box{
+    /* .import_box{
         display: flex;
         height: 35px;
         line-height: 35px;
@@ -5925,23 +6020,51 @@
         line-height: 26px;
         border-radius: 4px;
         border: 1px solid #dedede;
+    } */
+    /deep/.import_fanan .el-row{
+        height: 40px;
+    }
+    .import_fanan a{
+        color: #606266;
+    }
+    .import_col{
+        text-align: right;
+        margin-right: 20px;
     }
     .import_file{
-        margin-left: 20px;
+        /* margin-left: 20px; */
     }
     .import_file .upload_file{
         display: inline-block;
     }
-    /deep/ .import_file  .el-button{
+    /* /deep/ .import_file  .el-button{
         width: auto;
         padding: 5px;
-    }
+    } */
     .upload_box{
         text-align: center;
         margin-top: 20px
     }
     /deep/ .upload_box .el-button{
         width: auto;
+    }
+    /deep/.import_fanan .el-button [class*="el-icon-"] + span,
+    .select-wrap button .el-icon-search{
+        left: 0;
+        top: 0;
+    }
+    /*safari下表头错位*/
+    /deep/ .el-table .el-table-column-checkbox .cell{
+        width: 110px;
+    }
+    /deep/ .el-table .el-table-column-resName .cell{
+        width: 200px;
+    }
+    /deep/ .el-table .el-table-column-mediaName .cell{
+        width: 140px;
+    }
+    /deep/ .el-table .el-table-column-mediaRemark .cell{
+        width: 140px;
     }
     /*1440*/
     @media all and (min-width: 1420px) {

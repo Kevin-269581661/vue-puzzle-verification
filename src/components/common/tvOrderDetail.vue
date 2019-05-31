@@ -358,7 +358,7 @@ export default {
                 plan_id: apid
             };
 
-            api.getApi(this.QKuyun+'/GetPlanDetail', info).then(res =>{
+            api.getApi(this.apiVar.QKuyun+'/GetPlanDetail', info).then(res =>{
                 console.log(res.data);
                 if(res.data.code == 500200){
                     let result = res.data.data;
@@ -465,7 +465,7 @@ export default {
         getCityPrice(){
             let params = {}
             // console.log('获取城市价格列表',)
-            api.getApi(this.QKuyun + '/GetAdPrice',params).then(res=>{
+            api.getApi(this.apiVar.QKuyun + '/GetAdPrice',params).then(res=>{
                 console.log('获取城市价格列表',res)
                 let dataArr = res.data.data;
                 for(let data of this.setpointArr){
@@ -598,7 +598,7 @@ export default {
                         spinner: 'el-icon-loading',
                         background: 'rgba(0, 0, 0, 0.7)'
                     });
-                    api.getApi(this.QKuyun+'/LaunchPlan', info).then(res =>{
+                    api.getApi(this.apiVar.QKuyun+'/LaunchPlan', info).then(res =>{
                         console.log(res.data);
                         loading.close();
                         if(res.data.code == 500200){

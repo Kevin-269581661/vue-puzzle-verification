@@ -293,7 +293,7 @@ export default {
                 token: sess.token,
             };
             if(sess.ascType==0){
-                api.getApi(this.UCAPI + '/GetDirectAscr', info).then(res =>{
+                api.getApi(this.apiVar.UCAPI + '/GetDirectAscr', info).then(res =>{
                     console.log(res);
                     if(!res.data.SysCode){
                         let result = [];
@@ -314,7 +314,7 @@ export default {
                     console.log(err);
                 });
             }else{
-                api.getApi(this.UCAPI + '/ShowAscr', info).then(res =>{
+                api.getApi(this.apiVar.UCAPI + '/ShowAscr', info).then(res =>{
                     console.log(res);
                     if(!res.data.SysCode){
                         let result = [];
@@ -351,7 +351,7 @@ export default {
                 uid: this.sessionData.uID,
                 token: this.sessionData.token
             };
-            api.getApi(this.Advertisement+'/GetAPDCityNames', info).then(res =>{
+            api.getApi(this.apiVar.Advertisement+'/GetAPDCityNames', info).then(res =>{
                 console.log(res.data);
                 let arr = res.data;
                 let result = [];
@@ -422,7 +422,7 @@ export default {
         },
         // 滚动加载获取数据(无搜索数据)
         getData(params){
-            api.postApi(this.Advertisement+'/GetOrderList', params).then(res =>{
+            api.postApi(this.apiVar.Advertisement+'/GetOrderList', params).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 100302){
                     this.loginTimeout();
@@ -580,7 +580,7 @@ export default {
                     type: "warning"
                 }
             ).then(() => {
-                api.postApi(this.Advertisement+"/SetFangan", info)
+                api.postApi(this.apiVar.Advertisement+"/SetFangan", info)
                     .then(res => {
                         console.log(res.data);
                         if (res.data.SysCode == 300200) {
@@ -648,7 +648,7 @@ export default {
             };
             // uid         int【必填】     当前账户UserID
             // apid        int             公司对应方案apID
-            api.getApi(this.Advertisement+"/GetAdLaunch", info)
+            api.getApi(this.apiVar.Advertisement+"/GetAdLaunch", info)
                 .then(res => {
                     console.log(res.data);
                     if (!res.data.SysCode) {
@@ -708,7 +708,7 @@ export default {
                 tooken: this.sessionData.token,
                 apname: this.orderRow.apName
             };
-            api.getApi(this.QZhike+'/SelectByApID', info).then(res=>{
+            api.getApi(this.apiVar.QZhike+'/SelectByApID', info).then(res=>{
                 console.log(res.data);
                 if(res.data){
                     if (res.data.SysCode == 100302) {
@@ -769,7 +769,7 @@ export default {
             // gsday[必填]   申请开通的开始时间
             // geday[必填]   申请开通的结束时间
             // ctlist[必填]  消费偏好
-            api.getApi(this.QZhike+'/AdminSetApply', info).then(res => {
+            api.getApi(this.apiVar.QZhike+'/AdminSetApply', info).then(res => {
                 console.log(res.data)
                 if(res.data.SysCode == 700200){
                     Message.success(res.data.MSG);

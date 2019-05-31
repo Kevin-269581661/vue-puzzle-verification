@@ -244,7 +244,7 @@ export default {
                 "token": this.sessionData.token,
                 "uid": this.sessionData.uID
             };
-            api.postApi_new(this.Media, info).then(res =>{
+            api.postApi_new(this.apiVar.Media, info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 200200){
                     let result = [];
@@ -282,7 +282,7 @@ export default {
                     "asrID": asrID
                 },
             };
-            api.postApi_new(this.Media, info).then(res =>{
+            api.postApi_new(this.apiVar.Media, info).then(res =>{
                 console.log(res);
                 if(res.data.SysCode == 200200){
                     let result = [];
@@ -318,7 +318,7 @@ export default {
                     mID: item.mID
                 }
             };
-            api.postApi_new(this.Media, info).then(res =>{
+            api.postApi_new(this.apiVar.Media, info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 200200){
                     this.remark = item.remark||'暂无备注';
@@ -358,7 +358,7 @@ export default {
                         result: this.remark,
                     }
                 };
-                api.postApi_new(this.Media, info).then(res =>{
+                api.postApi_new(this.apiVar.Media, info).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 200200){
                         Message.success(res.data.MSG);
@@ -421,7 +421,7 @@ export default {
         },
         // 滚动加载获取数据(无搜索数据)
         getData(params){
-            api.postApi_new(this.Media, params).then(res =>{
+            api.postApi_new(this.apiVar.Media, params).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 100302){
                     this.loginTimeout();

@@ -414,7 +414,7 @@
                         tooken: session.token
                     };
 
-                api.getApi(this.QZhike+'/GetTher',info).then(res=>{
+                api.getApi(this.apiVar.QZhike+'/GetTher',info).then(res=>{
                     console.log('热力图数据GetTher----',res.data);
                     let min,max,clng,clat;
                     let points = [];
@@ -629,7 +629,7 @@
                             info: 'y'
                         }
                     }
-                    api.postApi_new(this.Media, params).then(res => {
+                    api.postApi_new(this.apiVar.Media, params).then(res => {
                         console.log('社区信息---', res.data);
                        if(res.data){
                            if(res.data.SysCode == 100302){
@@ -655,7 +655,7 @@
                        console.log('社区的位置---',this.lng,this.lat)
                     });
                     //社区人流量
-                    api.getApi(this.QZhike + '/GetToTalCountInfo', info).then(res => {
+                    api.getApi(this.apiVar.QZhike + '/GetToTalCountInfo', info).then(res => {
                         console.log('GetToTalCountInfo--', res.data);
                         if (res.data) {
                             if (res.data.SysCode == 100302) {
@@ -682,7 +682,7 @@
                     };
                 }
                 /*//到访频次
-                api.getApi(this.QZhike + '/GetTFre', info).then(res => {
+                api.getApi(this.apiVar.QZhike + '/GetTFre', info).then(res => {
                     console.log('GetTFre返回--', res.data);
                     if (res.data) {
                         if (res.data.SysCode == 100302) {
@@ -739,7 +739,7 @@
                         tooken: session.token
                     };
                 }
-                api.getApi(this.QZhike + '/GetRemen', info).then(res => {
+                api.getApi(this.apiVar.QZhike + '/GetRemen', info).then(res => {
                     console.log('/GetRemen=====', res.data);
                     let aRemen = JSON.parse(res.data[0].aRemen);
 

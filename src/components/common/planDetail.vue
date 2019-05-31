@@ -256,7 +256,7 @@ export default {
             };
             // uid         int【必填】     当前账户UserID
             // apid        int             公司对应方案apID
-            api.getApi(this.Advertisement+"/GetFanganInfo", info)
+            api.getApi(this.apiVar.Advertisement+"/GetFanganInfo", info)
                 .then(res => {
                     console.log('resdata---', res.data);
                     if (res.data.SysCode == 200200) {
@@ -318,9 +318,9 @@ export default {
                 apid: apid
             };
             if (this.planDetail.apState == 1) {
-                this.funcToInit(this.Advertisement+'/GetADB', info, this.planDetail.apState);
+                this.funcToInit(this.apiVar.Advertisement+'/GetADB', info, this.planDetail.apState);
             } else {
-                this.funcToInit(this.Advertisement+'/GetAdLaunch', info, this.planDetail.apState);
+                this.funcToInit(this.apiVar.Advertisement+'/GetAdLaunch', info, this.planDetail.apState);
             }
         },
         // 请求数据整合
@@ -446,7 +446,7 @@ export default {
                 token: session.token,
                 apid: apid,
             };
-            api.postApi(this.Advertisement+"/CheckLock", info).then(res =>{
+            api.postApi(this.apiVar.Advertisement+"/CheckLock", info).then(res =>{
                 console.log(res.data);
                 if(!res.data.SysCode){
                     if(!res.data.IsLock){

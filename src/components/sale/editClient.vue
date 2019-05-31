@@ -323,7 +323,7 @@ export default {
                 token: this.sessionData.token,
                 customerId: sessionStorage.getItem('customerId')
             };
-            api.getApi(this.Advertisement+'/GetCustomerInfo', info).then(res =>{
+            api.getApi(this.apiVar.Advertisement+'/GetCustomerInfo', info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 100302){
                     this.loginTimeout();
@@ -379,7 +379,7 @@ export default {
                             uid: this.sessionData.uID,
                             cid: this.companyForm.cID,
                         };
-                        api.getApi(this.Advertisement+"/GetBrand", upinfo).then(res => {
+                        api.getApi(this.apiVar.Advertisement+"/GetBrand", upinfo).then(res => {
                             console.log(res.data);
                             this.oldBrandTags = res.data;
                         });
@@ -433,7 +433,7 @@ export default {
                     cn: queryString
                 };
                 api
-                    .postApi(this.Advertisement+"/GetCompanyInfo", { cn: queryString })
+                    .postApi(this.apiVar.Advertisement+"/GetCompanyInfo", { cn: queryString })
                     .then(res => {
                         if (res.data) {
                             for (let i of res.data) {
@@ -544,7 +544,7 @@ export default {
             };
             if(this.isChangeCom()){
                 // 修改公司信息
-                api.postApi(this.UCAPI+"/SetMyCom", companyInfo)
+                api.postApi(this.apiVar.UCAPI+"/SetMyCom", companyInfo)
                     .then(res => {
                         let mes = res.data;
                         if (mes.SysCode == 300200) {
@@ -608,7 +608,7 @@ export default {
                     bt: brand,
                     cid: cID
                 };
-                api.getApi(this.Advertisement+"/AddBrand", info).then(res => {
+                api.getApi(this.apiVar.Advertisement+"/AddBrand", info).then(res => {
                     console.log(res.data);
                     this.oldBrandTags.push(res.data);
                 });
@@ -639,7 +639,7 @@ export default {
                 division: clForm.division
             };
             api
-                .postApi(this.UCAPI+"/SetMyCustomer", userInfo)
+                .postApi(this.apiVar.UCAPI+"/SetMyCustomer", userInfo)
                 .then(res => {
                     console.log(res);
                     let userMsg = res.data;

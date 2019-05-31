@@ -67,9 +67,9 @@
                         <span>
                             <el-button plain v-if="showNewBtn" @click="addOne()">新建</el-button>
                         </span>
-                        <!-- <span>
+                        <span>
                             <el-button plain v-if="showNewBtn" @click="isOpenDownload=true">导空位</el-button>
-                        </span> -->
+                        </span>
                     </div>
                 </el-row>
                 <div class="table_wrap">
@@ -212,7 +212,7 @@
 
         <!-- 导出空点 -->
         <el-dialog title="空位导出" :visible.sync="isOpenDownload" width="30%">
-            <download-vacancy></download-vacancy>
+            <download-vacancy @cancelClick="isOpenDownload = false"></download-vacancy>
         </el-dialog>
     </div>
 </template>
@@ -375,7 +375,7 @@ export default {
                 token: sess.token,
             };
             if(sess.ascType==0){
-                api.getApi(this.UCAPI + '/GetDirectAscr', info).then(res =>{
+                api.getApi(this.apiVar.UCAPI + '/GetDirectAscr', info).then(res =>{
                     console.log(res);
                     if(!res.data.SysCode){
                         let result = [];
@@ -396,7 +396,7 @@ export default {
                     console.log(err);
                 });
             }else{
-                api.getApi(this.UCAPI + '/ShowAscr', info).then(res =>{
+                api.getApi(this.apiVar.UCAPI + '/ShowAscr', info).then(res =>{
                     console.log(res);
                     if(!res.data.SysCode){
                         let result = [];
@@ -429,7 +429,7 @@ export default {
         },
         // 滚动加载获取数据(无搜索数据)
         getData(params){
-            api.getApi(this.Advertisement+'/GetProposal', params).then(res =>{
+            api.getApi(this.apiVar.Advertisement+'/GetProposal', params).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 100302){
                     this.loginTimeout();
@@ -477,7 +477,7 @@ export default {
                 uid: this.sessionData.uID,
                 token: this.sessionData.token,
             };
-            api.getApi(this.Advertisement+'/GetAPDCityNames', info).then(res =>{
+            api.getApi(this.apiVar.Advertisement+'/GetAPDCityNames', info).then(res =>{
                 console.log(res.data);
                 let arr = res.data;
                 let result = [];
@@ -556,7 +556,7 @@ export default {
                 uid:this.sessionData.uID,
                 token:this.sessionData.token
             }
-            api.getApi(this.Advertisement + '/getAdPlanBackups',params).then(res=>{
+            api.getApi(this.apiVar.Advertisement + '/getAdPlanBackups',params).then(res=>{
                 console.log('获取方案缓存',res)
                 this.continueEditLoading.close()
                 if (res.data.SysCode == 200200) {
@@ -641,7 +641,7 @@ export default {
             if(isRelease){
                 // uid         int【必填】     当前账户UserID
                 // apid        int             公司对应方案apID
-                api.getApi(this.Advertisement+"/GetFanganInfo", info)
+                api.getApi(this.apiVar.Advertisement+"/GetFanganInfo", info)
                     .then(res => {
                         console.log(res.data);
                         if (res.data.SysCode == 200200) {
@@ -691,14 +691,14 @@ export default {
                 apid: this.currentItem.apID,
             };
             info.qc = contractNo;
-            api.postApi(this.Advertisement+"/SetAdPlan", info)
+            api.postApi(this.apiVar.Advertisement+"/SetAdPlan", info)
                 .then(res => {
                     console.log(res);
                     if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else if(res.data.SysCode == 300200){
                         // 查看是否被锁
-                        api.postApi(this.Advertisement+"/CheckLock", info).then(res =>{
+                        api.postApi(this.apiVar.Advertisement+"/CheckLock", info).then(res =>{
                             console.log(res.data);
                             if(!res.data.SysCode){
                                 if(!res.data.IsLock){
@@ -731,7 +731,7 @@ export default {
         },
         // 发布方案(优化后的接口)
         releaseFangan(info){
-            api.postApi(this.Advertisement+'/SetFangan', info).then(res =>{
+            api.postApi(this.apiVar.Advertisement+'/SetFangan', info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 300200){
                     Message.success(res.data.MSG);
@@ -878,7 +878,7 @@ export default {
                 asrIDs: asrIDs.join(',')
             };
             console.log(info);
-            api.postApi(this.Advertisement+'/SetFangan', info).then(res =>{
+            api.postApi(this.apiVar.Advertisement+'/SetFangan', info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 300200){
                     for (let plandata of this.currentPlan) {
@@ -933,7 +933,7 @@ export default {
                 asrIDs: asrIDs
             };
             console.log(info);
-            api.postApi(this.Advertisement+'/ClFangan', info).then(res =>{
+            api.postApi(this.apiVar.Advertisement+'/ClFangan', info).then(res =>{
                 console.log(res.data);
                 this.Ctrlloading.close();
                 if(res.data.SysCode == 300200){
@@ -1108,7 +1108,7 @@ export default {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token
                 }
-                api.postApi(this.Advertisement + '/clearAdPlanBackups',params).then(res=>{
+                api.postApi(this.apiVar.Advertisement + '/clearAdPlanBackups',params).then(res=>{
                     console.log('清空缓存的方案',res)
                     if (res.data.SysCode == 200200) {
                         console.log('缓存方案清除成功')

@@ -110,7 +110,7 @@ export default {
                         newpwd: this.formChangePwd.newPwd
                     };
                     console.log(userInfo);
-                    api.postApi(this.UCAPI+"/SetPasswd", userInfo)
+                    api.postApi(this.apiVar.UCAPI+"/SetPasswd", userInfo)
                         .then(res => {
                             console.log(res);
                             let result = res.data;

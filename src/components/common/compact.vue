@@ -50,54 +50,29 @@
                             <div class="text_box">
                                 <p>在执行合同中请注意以下几点：</p>
                                 <el-row>
-                                    <el-col :span="1">1.</el-col>
+                                    <el-col :span="0.5">1、</el-col>
                                     <el-col :span="23">请务必保留上刊及下刊报告，直至合同款项全部到位、双方权利义务完结。</el-col>
                                 </el-row>
                                 <el-row>
-                                    <el-col :span="1">2.</el-col>
+                                    <el-col :span="0.5">2、</el-col>
                                     <el-col :span="23">请督促对方签署合同附件二广告发布验收单，如对方不配合，可根据合同5.2.4条款提示对方法律风险。</el-col>
                                 </el-row>
                                 <el-row>
-                                    <el-col :span="1">3.</el-col>
+                                    <el-col :span="0.5">3、</el-col>
                                     <el-col :span="23">在合同尚未签署单甲方需发布广告的情形下，请将合同的附件一附件二替换成“未签署情形下广告发布确认单及验收确认单"文档，并按照批注框的指引操作。</el-col>
                                 </el-row>
                                 <el-row>
-                                    <el-col :span="1">4.</el-col>
+                                    <el-col :span="0.5">4、</el-col>
                                     <el-col :span="23">另日后所有合同盖总部章的申请，需要按照亲邻印章管理制度，经法务审核后方可申请盖章，具体印章申请流程请查阅之前下发的亲邻印章管理制度，填写印章申请表。</el-col>
                                 </el-row>
                                 <el-row>
-                                    <el-col :span="1">5.</el-col>
+                                    <el-col :span="0.5">5、</el-col>
                                     <el-col :span="23">亲邻日益壮大，文件及各流程规范管理更显得日益重要，烦请大家把以上要求传达公司相关部门，严格遵照执行。 如模板文件内容有疑问请及时与总部法务联系：zhanglijuan@qinlinkeji.com </el-col>
                                 </el-row>
                                 <el-row>
                                     <el-col :span="1"> </el-col>
                                     <el-col :span="23">感谢支持！</el-col>
                                 </el-row>
-                                <!-- <div>
-                                   <span>1. </span> 
-                                   <p> 请务必保留上刊及下刊报告，直至合同款项全部到位、双方权利义务完结。 </p>
-                                </div>
-                                <div>
-                                   <span>2. </span> 
-                                   <p>请督促对方签署合同附件二广告发布验收单，如对方不配合，可根据合同5.2.4条款提示对方法律风险。</p> 
-                                </div> 
-                                <div>
-                                    <span>3. </span>
-                                   <p>在合同尚未签署单甲方需发布广告的情形下，请将合同的附件一附件二替换成“未签署情形下广告发布确认单及验收确认单"文档，并按照批注框的指引操作。</p> 
-                                </div>  
-                                <div>
-                                    <span>4. </span>                                    
-                                    <p>另日后所有合同盖总部章的申请，需要按照亲邻印章管理制度，经法务审核后方可申请盖章，具体印章申请流程请查阅之前下发的亲邻印章管理制度，填写印章申请表。</p> 
-                                </div> 
-                                <div>
-                                    <span>5. </span>   
-                                    <p>亲邻日益壮大，文件及各流程规范管理更显得日益重要，烦请大家把以上要求传达公司相关部门，严格遵照执行。 如模板文件内容有疑问请及时与总部法务联系：zhanglijuan@qinlinkeji.com </p>                                 
-                                </div>
-                                <div>
-                                    <span></span>
-                                    <p>感谢支持！</p> 
-                                </div> -->
-                                 
                             </div>
                         </el-col>
                     </el-row>
@@ -211,6 +186,8 @@ export default {
 }
 /deep/ .button_box .el-icon-download {
     float: right;
+    font-size: 18px;
+    color: rgba(216,216,216,1);
 }
 .h2_style{
     width:72px;

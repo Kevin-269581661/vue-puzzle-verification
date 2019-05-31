@@ -293,7 +293,7 @@ export default {
                     amID: this.cityInfo.amID
                 }
             };
-            api.postApi_new(this.Media, info).then(res =>{
+            api.postApi_new(this.apiVar.Media, info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 200200){
                     let resInfo = res.data.data;
@@ -405,7 +405,7 @@ export default {
                     data.premium = 0;
                 }
                 info.data = data;
-                api.postApi_new(this.Media, info).then(res =>{
+                api.postApi_new(this.apiVar.Media, info).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 200200){
                         // Message.success('最终的分层结果需几分钟，请稍后查看');
@@ -420,7 +420,7 @@ export default {
                                 amID: this.cityInfo.amID
                             }
                         };
-                        api.postApi_new(this.Media, perInfo).then(res =>{
+                        api.postApi_new(this.apiVar.Media, perInfo).then(res =>{
                             console.log(res.data);
                             if(res.data.SysCode == 200200){
                                 let perResInfo = res.data.data;

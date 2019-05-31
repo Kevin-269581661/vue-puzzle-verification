@@ -525,7 +525,7 @@ export default {
                 dNum: '',
                 chDay: ''
             };
-            api.getApi(this.UCAPI + '/GetImg', imgInfo).then(res =>{
+            api.getApi(this.apiVar.UCAPI + '/GetImg', imgInfo).then(res =>{
                 console.log(res.data);
                 if(res.data){
                     if(res.data.SysCode == 100302){
@@ -548,7 +548,7 @@ export default {
                         info: 'y'
                     }
                 }
-                api.postApi_new(this.Media, params).then(res => {
+                api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('社区信息---', res.data);
                     if(res.data){
                         if(res.data.SysCode == 100302){
@@ -605,7 +605,7 @@ export default {
                     geday: obj.schedules[1],
                     apname: this.orderDetail.apName
                 };
-                // api.getApi(this.QZhike+'/SetApply', info).then(res=>{
+                // api.getApi(this.apiVar.QZhike+'/SetApply', info).then(res=>{
                 //     console.log(res.data)
                 //     Message.success('该订单住户画像开通成功');
                 // });
@@ -635,7 +635,7 @@ export default {
         toH5Report(type) {
             let apid = sessionStorage.getItem('ADorder_apid');
             let tempwindow = window.open();
-            api.getApi(this.UCAPI+'/EncryptNo', {num: apid}).then(res =>{
+            api.getApi(this.apiVar.UCAPI+'/EncryptNo', {num: apid}).then(res =>{
                 console.log(res.data);
                 tempwindow.location = "/Report?"+type+"="+res.data.EncryptCode;
             }).catch(res =>{
@@ -654,7 +654,7 @@ export default {
             };
             // uid         int【必填】     当前账户UserID
             // apid        int             公司对应方案apID
-            api.getApi(this.Advertisement+"/MyOrderInfo", info)
+            api.getApi(this.apiVar.Advertisement+"/MyOrderInfo", info)
                 .then(res => {
                     console.log(res.data);
                     if (!res.data.SysCode) {
@@ -714,7 +714,7 @@ export default {
             };
             // uid         int【必填】     当前账户UserID
             // apid        int             公司对应方案apID
-            api.getApi(this.Advertisement+"/GetAdLaunch", info)
+            api.getApi(this.apiVar.Advertisement+"/GetAdLaunch", info)
                 .then(res => {
                     console.log(res.data);
                     if (!res.data.SysCode) {
@@ -780,7 +780,7 @@ export default {
                 tooken: this.sessionData.token,
                 apname: this.orderDetail.apName
             };
-            api.getApi(this.QZhike+'/SelectByApID', info).then(res => {
+            api.getApi(this.apiVar.QZhike+'/SelectByApID', info).then(res => {
                 console.log(res.data);
                 if(res.data){
                     if (res.data.SysCode == 100302) {
@@ -911,7 +911,7 @@ export default {
             this.downApi(info);
         },
         downApi(info){
-            api.postApi(this.QZhike+'/SetApply', info).then(res => {
+            api.postApi(this.apiVar.QZhike+'/SetApply', info).then(res => {
                 console.log(res.data)
                 if(res.data.SysCode == 700200){
                     this.openPicDate = [];

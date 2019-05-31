@@ -471,7 +471,7 @@ export default {
             // this.expenseTrend();
 
 
-            api.getApi(this.QZhike+'/GetTPPT', info).then(res =>{
+            api.getApi(this.apiVar.QZhike+'/GetTPPT', info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 100302){
                     this.loginTimeout();

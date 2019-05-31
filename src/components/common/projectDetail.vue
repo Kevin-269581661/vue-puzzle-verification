@@ -1,49 +1,71 @@
 <template>
-    <div class="ad_mediaDetail_wrap clearfix">
-        <div class="ad_mediaDetail_nav ">
-            <p class="clearfix">
-                <a href="#" style="color: #999">工程管理</a>
+    <div class="ad_mediaDetail_wrap">
+        <div class="ad_mediaDetail_nav clearfix">
+            <p>
+                <a href="#">工程管理</a>
+                <em> / </em>
+                <a href="#">工程详情</a>
             </p>
         </div>
         <div class="comList_wrap">
-            <div class="comList_head">
-                <h2>上画任务</h2>
-            </div>
-            <div class="comList_container">
-                <el-row>
-                    <el-col :span="5">
-                        <span>所属线路:</span>
-                        <b>{{projectInfo.line}}</b>
+            <div class="pro_content_top">
+                <el-row class="top_row">
+                    <el-col :span="12">
+                        <h4>
+                            <img src="../../assets/images/planlogo.png" alt="">                                
+                            上画清单
+                        </h4>
                     </el-col>
-                    <el-col :span="6">
-                        <span>工程人员:</span>
-                        <el-select v-model="projectInfo.engineer" placeholder="请选择" size="small">
-                            <el-option v-for="item of engineerArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                        </el-select>
-                        <el-button size="small">分配</el-button>
+                    <el-col :span="12" class="text_right">
+                        <el-button size="small" @click="download()">导出清单</el-button>
+                        <el-button type="primary" size="small">分配人员</el-button>
+                    </el-col>
+                </el-row>
+                <el-row class="same_padding">
+                    <el-col :span="5">
+                        <b>所属线路：</b>
+                        <span>{{projectInfo.line}}</span>
                     </el-col>
                     <el-col :span="5">
-                        <span>上画状态:</span>
+                        <b>工程人员：</b>
+                        <span>{{projectInfo.engineer}}</span>
+                    </el-col>
+                    <el-col :span="5">
+                        <b>小区数量：</b>
+                        <span>{{projectInfo.resNum}}</span>
+                    </el-col>
+                    <el-col :span="5">
+                        <b>点位数量：</b>
+                        <span>{{projectInfo.adsNum}}</span>
+                    </el-col>
+                    <el-col :span="4" class="text_right">
+                        <span>上画状态</span>
+                    </el-col>
+                </el-row>
+                <el-row class="same_padding">
+                    <el-col :span="5">
+                        <b>上画时间：</b>
+                        <span>{{projectInfo.photoTime}}</span>
+                    </el-col>
+                    <el-col :span="5">
+                        <b>订单数量：</b>
+                        <span>{{projectInfo.orderNum}}</span>
+                    </el-col>
+                    <el-col :span="5">
+                        <b>媒体数量：</b>
+                        <span>{{projectInfo.mediaNum}}</span>
+                    </el-col>
+                    <el-col :span="5">
+                        <b>已上画数：</b>
+                        <span>{{projectInfo.finishNum}}</span>
+                    </el-col>
+                    <el-col :span="4"  class="text_right state_text">
                         <b>{{projectInfo.progress}}</b>
                     </el-col>
-                    <el-col :span="5">
-                        <span>上画时间:</span>
-                        <b>{{projectInfo.photoTime}}</b>
-                    </el-col>
-                    <el-col :span="3">
-                        <el-button type="primary" icon="el-icon-search" @click="download()" size="small">导出清单</el-button>
-                    </el-col>
-				</el-row>
-                <el-row class="car-title">
-                    <p>
-                        订单:<span>{{projectInfo.orderNum}}</span>
-                        小区:<span>{{projectInfo.resNum}}</span>
-                        媒体:<span>{{projectInfo.mediaNum}}</span>
-                        点位:<span>{{projectInfo.adsNum}}</span>
-                        已上画:<span>{{projectInfo.finishNum}}</span>
-                    </p>
                 </el-row>
-                <div class="table_wrap">
+            </div>
+            <div class="pro_detail_container">
+                <!-- <div class="table_wrap">
                     <div class="" v-for="item in projectOrderList" :key="item.orderId">
                         <el-row>
                             <el-col>
@@ -82,7 +104,47 @@
                             </el-table-column>
                         </el-table>
                     </div>
-                </div>
+                </div> -->
+                
+                <el-tabs>
+                    <el-tab-pane v-for="(item, index) in projectOrderList" :key="item.orderId" :label="'订单'+toChinesNum(index+1)">
+                        <div class="table_wrap">
+                            <el-row>
+                                <h4>{{item.orderName}}</h4>
+                            </el-row>
+                            <el-row class="car-title">
+                                <i class="el-icon-info" style="color: #1890FF;"></i>                            
+                                订单:<span>{{projectInfo.orderNum}}</span>
+                                小区:<span>{{projectInfo.resNum}}</span>
+                                媒体:<span>{{projectInfo.mediaNum}}</span>
+                                点位:<span>{{projectInfo.adsNum}}</span>
+                                已上画:<span>{{projectInfo.finishNum}}</span>
+                            </el-row>
+                            <el-table border :data="item.asidList">
+                                <el-table-column type="index" label="序号" width="60">
+                                </el-table-column>
+                                <el-table-column prop="resName" label="小区">
+                                </el-table-column>
+                                <el-table-column prop="mTitle" label="媒体">
+                                </el-table-column>
+                                <el-table-column prop="asLab" label="投放面">
+                                </el-table-column>
+                                <el-table-column prop="adSize" label="尺寸">
+                                </el-table-column>
+                                <el-table-column prop="assetTag" label="资产编号">
+                                </el-table-column>
+                                <el-table-column prop="mRemark" label="点位备注">
+                                </el-table-column>
+                                <el-table-column prop="materialUrl" label="素材" width="60">
+                                </el-table-column>
+                                <el-table-column prop="resAddress" label="详情地址">
+                                </el-table-column>
+                                <el-table-column prop="state" label="状态">
+                                </el-table-column>
+                            </el-table>
+                        </div>
+                    </el-tab-pane>
+                </el-tabs>
             </div>
         </div>
     </div>
@@ -259,6 +321,26 @@
             formatJson(filterVal, jsonData) {
                 return jsonData.map(v => filterVal.map(j => v[j]))
             },
+            // 数字转换为中文
+            toChinesNum(num){
+                let changeNum = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+                let unit = ["", "十", "百", "千", "万"];
+                num = parseInt(num);
+                let getWan = (temp) => {
+                let strArr = temp.toString().split("").reverse();
+                let newNum = "";
+                for (var i = 0; i < strArr.length; i++) {
+                    newNum = (i == 0 && strArr[i] == 0 ? "" : (i > 0 && strArr[i] == 0 && strArr[i - 1] == 0 ? "" : changeNum[strArr[i]] + (strArr[i] == 0 ? unit[0] : unit[i]))) + newNum;
+                    }
+                    return newNum;
+                }
+                let overWan = Math.floor(num / 10000);
+                let noWan = num % 10000;
+                if (noWan.toString().length < 4) {
+                    noWan = "0" + noWan;
+                }
+                return overWan ? getWan(overWan) + "万" + getWan(noWan) : getWan(num);
+            }
         },
         mounted(){
 
@@ -299,110 +381,83 @@
 
     .comList_wrap {
         width: 92%;
-        background: #ffffff;
-        border: 1px solid #e6e7e9;
         margin: 0 auto;
     }
 
-    .comList_wrap .comList_head {
-        width: 100%;
-        height: 24px;
-        padding: 12px 0;
-        border-bottom: 1px solid #e6e7e9;
+    .pro_content_top, .pro_detail_container{
+        background:#fff;
+        border:1px solid rgba(230,231,233,1);
+        padding: 24px 32px;
     }
-
-    .comList_wrap .comList_head h2 {
-        font-size: 16px;
-        color: #2c313c;
-        height: 24px;
-        padding-left: 14px;
+    .pro_content_top .el-row b{
+        font-size:14px;
+        font-family:PingFangSC-Regular;
+        font-weight:400;
+        color:rgba(0,0,0,1);
+    }
+    .pro_content_top .el-row span{
+        font-size:14px;
+        font-family:PingFangSC-Regular;
+        font-weight:400;
+        color:rgba(0,0,0,0.85);
+    }
+    .top_row{
+        margin-bottom: 16px;
+    }
+    .top_row h4{
+        font-size: 20px;
         font-weight: bold;
+        font-family: PingFangSC-Medium;
+        color: rgba(0,0,0,0.85);
     }
-
-    .comList_wrap .comList_container {
-        width: 96%;
-        margin: 24px auto;
+    .top_row h4 img{
+        width: 28px;
+        height: 28px;
+        margin-right: 6px;
+        vertical-align: bottom;
     }
-    .table_wrap{
-        margin: 24px auto;
-        width: 100%;
+    .same_padding{
+        margin-bottom: 8px;
+        padding-left: 40px;
+    }
+    .pro_detail_container{
+        margin: 24px 0;
+        padding: 0;
+        
+    }
+    .el-col-24{
+        width: auto;
     }
     /*表格*/
-    /deep/ .el-table th,
-    .el-table tr {
+    /deep/.pro_detail_container .el-table th {
         height: 44px;
         padding: 0;
         background-color: #f7f7f7;
     }
-    /deep/ .el-table td {
+    /deep/.pro_detail_container .el-table td {
         padding: 8px 0;
         overflow-x: hidden;
         text-overflow: ellipsis;
     }
 
-    /deep/ .el-table--border {
+    /deep/.pro_detail_container .el-table--border {
         border-radius: 4px;
     }
 
-    /deep/ .el-table th > .cell {
+    /deep/.pro_detail_container .el-table th > .cell {
         font-size: 14px;
         color: #666666;
         font-weight: bold;
     }
-    
-    /deep/ .el-table__body-wrapper::-webkit-scrollbar {
-        width: 4px;
-        background: #fafafa;
+    /deep/.pro_detail_container .el-table tr {
+        height: 54px;
     }
-
-    /deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-        /*滚动条里面小方块*/
-        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-        background: #c1c1c1;
-        border-radius: 4px;
-    }
-    /deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
-        position: relative;
-        left: -2px;
-        top: 0px;
-    }
-
-    /deep/ button.el-button.el-button--default.el-button--small:hover {
-        color: #666;
-        border-color: #d8d8d8;
-        background-color: #fff;
-    }
-    /deep/ .el-dropdown .el-button-group .el-button {
-        height: 28px;
-        width: 48px;
-        font-size: 14px;
-        padding: 0;
-    }
-    /deep/ .el-button-group button {
-        float: left !important;
-    }
-
-    /deep/ .el-dropdown .el-button-group .el-button:last-child {
-        width: 30px;
-        position: relative;
-        top: 0px;
-    }
-
-    .input-with-select /deep/ .el-input__inner {
-        font-size: 14px;
-        height: 34px;
-        vertical-align: middle;
-    }
-    /deep/ .el-date-editor--daterange.el-input__inner{
-        width: 240px;
-    }
-
     /* 各个属性个数等 */
     .car-title {
         background: #E6F7FF;
         border: 1px solid #BAE7FF;
         border-radius: 4px;
-        margin-bottom: 10px;
+        margin-bottom: 16px;
         padding: 5px;
     }
 
@@ -424,6 +479,51 @@
         margin: 0 6px;
         cursor: pointer;
         color: #1890ff;
+    }
+    .text_right{
+        text-align:right;
+    }
+    .pro_content_top .state_text b{
+        color:rgba(0,0,0,0.85);
+        font-size: 20px;        
+    }
+    .table_wrap{
+        padding: 10px 32px; 
+    }
+    .table_wrap h4{
+        font-size: 20px;
+        font-family:PingFangSC-Medium;
+        font-weight:500;
+        color:rgba(0,0,0,0.85);
+        height: 34px;
+        line-height: 10px;
+    }
+    /deep/ .pro_detail_container .el-tabs__header{
+        border-bottom: 1px solid #e6e7e9;
+        height: 53px;
+        line-height: 54px;
+    }
+    /deep/.pro_detail_container  .baojiadan .el-tabs__header{
+        border-bottom: none;
+        height: 38px;
+        line-height: 38px;
+        background-color: #f5f7fa;
+        border-bottom: 1px solid #e4e7ed;
+        margin: 0;
+    }
+    /deep/ .el-tabs__nav-scroll {
+        padding-left: 32px;
+    }
+
+    /deep/ .el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active{
+        background-color: transparent;
+        border: none;
+    }
+    /deep/ .el-tabs--border-card>.el-tabs__header .el-tabs__item{
+        border: none;
+    }
+    /deep/ .el-tabs__item:focus.is-active.is-focus:not(:active){
+        box-shadow: none;
     }
 </style>
 

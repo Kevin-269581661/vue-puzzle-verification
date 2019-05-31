@@ -9,53 +9,40 @@
             <div class="comList_head">
                 <h2>上画任务</h2>
             </div>
-            <div class="comList_container">
-                <el-row>
-                    <el-col :span="5">
-                        <span>城市:</span>
-                        <el-select v-model="searchInfo.city" placeholder="请选择" size="small">
-                            <el-option v-for="item of cityArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                        </el-select>
-                    </el-col>
-                    <el-col :span="5">
-                        <span>线路:</span>
+            <el-row class="fix_date">
+                <el-col>
+                    <el-date-picker class="input-with-select" v-model="searchInfo.rangeDate" align="right" size="small" type="daterange" range-separator="-" format="yyyy/MM/dd" value-format="yyyy/MM/dd" >
+                    </el-date-picker>
+                </el-col>
+            </el-row>
+            <div class="project_container">
+                <el-row :gutter="32">
+                    <el-col>
+                        <span>所属线路:</span>
                         <el-select v-model="searchInfo.line" placeholder="请选择" size="small">
                             <el-option v-for="item of lineArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-col>
-                    <el-col :span="6">
+                    <el-col>
                         <span>工程人员:</span>
                         <el-select v-model="searchInfo.engineer" placeholder="请选择" size="small">
                             <el-option v-for="item of engineerArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-col>
-                    <el-col :span="5">
-                        <span>订单:</span>
+                    <el-col>
+                        <span>订单名称:</span>
                         <el-select v-model="searchInfo.order" placeholder="请选择" size="small">
                             <el-option v-for="item of orderArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-col>
-                    <el-col :span="3">
-                        <el-button type="primary" icon="el-icon-search" @click="search()" size="small" :disabled="!isSearch">查询</el-button>
+                    <el-col>
+                        <el-button type="primary" @click="search()" size="small" :disabled="!isSearch">查询</el-button>
                         <el-button @click="reset()" size="small">重置</el-button>
                     </el-col>
-				</el-row>
-                <el-row>
-                    <el-col :span="5">
-                        <span>上画时间:</span>
-                        <el-radio-group v-model="activeType" size="small" @change="changeDateType">
-                            <el-radio-button :label="1">本周</el-radio-button>
-                            <el-radio-button :label="2">近2周</el-radio-button>
-                            <el-radio-button :label="3" >本月</el-radio-button>
-                        </el-radio-group>
-                    </el-col>
-                    <el-col :span="5">
-                        <el-date-picker class="input-with-select" v-model="searchInfo.rangeDate" size="small" type="daterange" range-separator="-" format="yyyy/MM/dd" value-format="yyyy/MM/dd" >
-                        </el-date-picker>
-                    </el-col>
                 </el-row>
+                
                 <div class="table_wrap">
-                    <el-table border :data="projectList" height="450" v-loading="loading" v-loadmore="companyLoadMore"
+                    <el-table border :data="projectList" height="450" v-loading="loading" 
                         element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                         <el-table-column label="上画时间" min-width="11.8%" prop="photoTime">
                         </el-table-column>
@@ -77,7 +64,10 @@
                         </el-table-column>
                         <el-table-column label="操作" min-width="7.1%">
                             <template slot-scope="scope">
-                                <el-dropdown size="small" split-button trigger="click" placement="bottom-start">操作
+                                <el-dropdown size="small" trigger="click" placement="bottom-start">
+                                    <span class="el-dropdown-link">
+                                        操作<i class="el-icon-arrow-down el-icon--right"></i>
+                                    </span>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item @click.native.prevent="toPhotoDetail(scope.row)">上画清单
                                         </el-dropdown-item>
@@ -190,24 +180,9 @@
                     },
                 ],
                 loading: false,
-                loading_point: true, 
                 currPage: 1,
                 totalPage: 0,
                 pageSize: 15,         
-            }
-        },
-        directives: {
-            loadmore: {
-                bind: function (el, binding) {
-                    const selectWrap = el.querySelector('.el-table__body-wrapper')
-                    selectWrap.addEventListener('scroll', function () {
-                        const scrollDistance = this.scrollHeight - this.scrollTop - this.clientHeight;
-                        // console.log('滚动的距离',scrollDistance)
-                        if (scrollDistance <= 100) {
-                            binding.value()
-                        }
-                    })
-                }
             }
         },
         methods:{
@@ -232,15 +207,6 @@
                     this.showNewBtn = true;
                 }
             },
-            // 公司列表滚动监听
-            companyLoadMore(){
-                if(this.loading_point){
-                    this.loading_point = false;
-                    if(this.currPage <= this.totalPage){
-                        this.searchFun();
-                    }
-                }
-            },
             searchFun(){
                 let info = this.searchFormat();
                 this.getData(info);
@@ -258,7 +224,6 @@
                             this.totalPage = dataInfo.totalpage;
                             let dataArr = dataInfo.data;
                             this.projectList = this.projectList.concat(this.funcData(dataArr));
-                            this.loading_point = true;
                             this.currPage++;
                             this.loading = false;
                             if(dataInfo.totalpage == 0){
@@ -323,7 +288,6 @@
                 if(keyword || (type>=0) || (state>=0)){
                     this.projectList = [];
                     this.loading = true;
-                    this.loading_point = false;
                     this.currPage = 1;
                     this.searchFun();
                 }else{
@@ -399,10 +363,10 @@
         height: 42px;
         position: relative;
     }
-    /deep/.comList_container .el-input{
-        max-width: 180px;
+    /deep/.project_container .el-input{
+        width: 100%;
     }
-    /deep/.comList_container .el-row{
+    /deep/.project_container .el-row{
         margin-top:24px;
     }
 
@@ -411,6 +375,7 @@
         background: #ffffff;
         border: 1px solid #e6e7e9;
         margin: 0 auto;
+        position: relative;
     }
 
     .comList_wrap .comList_head {
@@ -427,74 +392,68 @@
         padding-left: 14px;
         font-weight: bold;
     }
+    .fix_date{
+        position: absolute;
+        right: 32px;
+        top: 8px;
+    }
 
-    .comList_wrap .comList_container {
-        width: 96%;
-        margin: 24px auto;
+    .comList_wrap .project_container {
+        margin: 24px 32px;
     }
     .table_wrap{
         margin: 24px auto;
         width: 100%;
     }
     /*表格*/
-    /deep/ .el-table th,
-    .el-table tr {
-        height: 44px;
+    /deep/.project_container .el-table th{
         padding: 0;
         background-color: #f7f7f7;
     }
-    /deep/ .el-table td {
+    
+    /deep/.project_container .el-table tr {
+        height: 54px;
+    }
+    /deep/.project_container .el-table td {
         padding: 8px 0;
         overflow-x: hidden;
         text-overflow: ellipsis;
     }
 
-    /deep/ .el-table--border {
+    /deep/.project_container .el-table--border {
         border-radius: 4px;
     }
 
-    /deep/ .el-table th > .cell {
+    /deep/.project_container .el-table th > .cell {
+        font-family: PingFangSC-Medium;
         font-size: 14px;
-        color: #666666;
-        font-weight: bold;
+        font-weight: 500;
+        color: rgba(0,0,0,0.85);
+        height: 22px;
+        line-height: 22px;
     }
-    
-    /deep/ .el-table__body-wrapper::-webkit-scrollbar {
-        width: 4px;
-        background: #fafafa;
+    /deep/.project_container .el-table .cell {
+        font-size:14px;
+        font-family:PingFangSC-Regular;
+        font-weight:400;
+        color:rgba(0,0,0,0.65);
     }
-
-    /deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-        /*滚动条里面小方块*/
-        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-        background: #c1c1c1;
-        border-radius: 4px;
+    /* 操作 */
+    .el-dropdown-link {
+        cursor: pointer;
+        color: #409EFF;
     }
-    /deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
-        position: relative;
-        left: -2px;
-        top: 0px;
+    .el-icon-arrow-down {
+        font-size: 12px;
     }
-
-    /deep/ button.el-button.el-button--default.el-button--small:hover {
-        color: #666;
-        border-color: #d8d8d8;
-        background-color: #fff;
+    .el-dropdown-menu{
+        margin: 0;
     }
-    /deep/ .el-dropdown .el-button-group .el-button {
-        height: 28px;
-        width: 48px;
-        font-size: 14px;
-        padding: 0;
+    .el-popper[x-placement^=bottom]{
+        margin-top: 0;
     }
-    /deep/ .el-button-group button {
-        float: left !important;
-    }
-
-    /deep/ .el-dropdown .el-button-group .el-button:last-child {
-        width: 30px;
-        position: relative;
-        top: 0px;
+    /deep/ .popper__arrow {
+        display: none;
     }
 
     .input-with-select /deep/ .el-input__inner {
@@ -504,6 +463,24 @@
     }
     /deep/ .el-date-editor--daterange.el-input__inner{
         width: 240px;
+        min-width: 240px;
+    }
+
+    .el-row span{
+        color: rgba(0,0,0,0.85);
+        font-size: 14px;
+    }
+    .el-col-24{
+        width: auto;
+    }
+    .el-col-24:not(:last-child){
+        min-width: 25%;
+    }
+    .el-row .el-select{
+        width: calc(98% - 60px);
+    }
+    .el-button+.el-button{
+        margin-left: 8px;
     }
 </style>
 

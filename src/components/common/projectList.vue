@@ -50,8 +50,8 @@
                         </el-table-column>
                         <el-table-column prop="order" label="订单" min-width="9.8%" >
                         </el-table-column>
-                        <el-table-column prop="size" label="素材(尺寸/数量)" min-width="10.9%">
-                        </el-table-column>
+                        <!-- <el-table-column prop="size" label="素材(尺寸/数量)" min-width="10.9%">
+                        </el-table-column> -->
                         <el-table-column prop="photoNum" label="上画面数" min-width="8.9%">
                         </el-table-column>
                         <el-table-column prop="mediaNum" label="媒体数" min-width="8.9%">
@@ -73,6 +73,8 @@
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="toAssign(scope.row)">分配人员
                                         </el-dropdown-item>
+                                        <el-dropdown-item @click.native.prevent="toSizeDetail(scope.row)">素材明细
+                                        </el-dropdown-item>
                                     </el-dropdown-menu>
                                 </el-dropdown>
                             </template>
@@ -81,6 +83,35 @@
                 </div>
             </div>
         </div>
+
+        <!-- 分配人员弹出框 -->
+        <el-dialog title="分配上画人员"
+            :visible.sync="isShowDistri"
+            custom-class="size_detail_dialog"            
+            width="400px">
+            <el-select v-model="currEngineer" placeholder="请选择" size="small" multiple>
+                <el-option v-for="item of engineerArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
+            </el-select>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="isShowDistri = false" size="small">取 消</el-button>
+                <el-button type="primary" @click="confirmDistribute" size="small">确 定</el-button>
+            </span>
+        </el-dialog>
+        <!-- 分配人员弹出框 -->
+        <el-dialog title="素材明细"
+            :visible.sync="isShowSize"
+            custom-class="size_detail_dialog"
+            width="540px">
+            <el-table border :data="sizeList" height="450">
+                <el-table-column prop="size" label="广告尺寸" >
+                </el-table-column>
+                <el-table-column prop="num" label="数量">
+                </el-table-column>
+            </el-table>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="isShowSize = false" size="small">关 闭</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -99,10 +130,9 @@
                 // 登录信息
                 sessionData:{},
                 // 本周/本月/近两周
-                activeType: 1,
+                // activeType: 1,
                 // 搜索数据
                 searchInfo:{
-                    city: '',
                     line: '',
                     engineer: '',
                     order: '',
@@ -111,14 +141,17 @@
                 },
                 isSearch: true,
                 isReset: true,
-                // 城市
-                cityArr: [],
                 // 线路
                 lineArr: [],
                 // 工程人员
                 engineerArr: [],
+                isShowDistri: false,
+                currEngineer: [],
                 // 订单
                 orderArr: [],
+                // 素材明细
+                sizeList: [],
+                isShowSize: false,
                 // 表格数据
                 // projectList: [],
                 projectList: [
@@ -187,25 +220,21 @@
         },
         methods:{
             changeDateType(){
-                let active = this.activeType;
+                // let active = this.activeType;
                 let result = {};
-                if(active == 1){
-                    result = timeFormat.returnDayRange(7, new Date());
-                }else if(active == 2){
-                    result = timeFormat.returnDayRange(14, new Date());
-                }else{
-                    result = timeFormat.returnDayRange(timeFormat.getCurrMonthDays(new Date()), new Date());
-                }
+                result = timeFormat.returnDayRange(7, new Date());
+                // if(active == 1){
+                //     result = timeFormat.returnDayRange(7, new Date());
+                // }else if(active == 2){
+                //     result = timeFormat.returnDayRange(14, new Date());
+                // }else{
+                //     result = timeFormat.returnDayRange(timeFormat.getCurrMonthDays(new Date()), new Date());
+                // }
                 this.searchInfo.rangeDate = [result.startTime, result.endTime];
             },
             // 判断角色是否有新建按钮(系统管理员和超级管理员有)
             getRole() {
                 this.sessionData = JSON.parse(sessionStorage.getItem("session_data"));
-                let role = this.sessionData.ascType;
-                console.log(role);
-                if (role == 0 ) {
-                    this.showNewBtn = true;
-                }
             },
             searchFun(){
                 let info = this.searchFormat();
@@ -254,38 +283,51 @@
                     start: this.currPage,
                     pagesize: this.pageSize
                 };
-                let { keyword, type, state } = this.searchInfo;
-                if(keyword){
-                    info.ascName = keyword;
+                let { line, engineer, order, rangeDate } = this.searchInfo;
+                if(line){
+                    info.line = line;
                 }
-                if(state>=0){
-                    info.astate = state;
+                if(engineer){
+                    info.engineer = engineer;
                 }
-                if(type>=0){
-                    info.asType = type;
+                if(order){
+                    info.order = order;
+                }
+                if(rangeDate){
+                    if(rangeDate.length){
+                        info.startTime = rangeDate[0];
+                        info.endTime = rangeDate[1];
+                    }
                 }
                 return info;
             },
             // 设置表格数据
             setTableData(item){
                 let obj = {
-                    asrID: item.asrID ? item.asrID : '',
-                    name: item.asName ? item.asName : '',
-                    state: item.ascState>=0 ? item.ascState : '',
-                    type: item.ascType>=0 ? item.ascType : '',
-                    createTime: item.createTime ? item.createTime : '',
+                    photoId: item.photoId,
+                    photoTime: item.photoTime,
+                    line: item.line,
+                    lineName: item.lineName,
+                    orderId: item.orderId,
+                    order: item.order,
+                    size: item.size,
+                    photoNum: item.photoNum,
+                    mediaNum: item.mediaNum,
+                    resNum: item.resNum,
+                    engineer: item.engineer,
+                    progress: item.progress
                 };
                 return obj;
             },
             // 搜索
             search(){
-                let { keyword, type, state } = this.searchInfo;
+                let { line, engineer, order, rangeDate } = this.searchInfo;
                 this.isSearch = false;
                 let timer = setTimeout(()=>{
                     this.isSearch = true;
                     clearTimeout(timer);
                 }, 1000);
-                if(keyword || (type>=0) || (state>=0)){
+                if(line || engineer || order || rangeDate){
                     this.projectList = [];
                     this.loading = true;
                     this.currPage = 1;
@@ -297,10 +339,13 @@
             // 重置
             reset(){
                 this.searchInfo = {
-                    keyword: '',
-                    type: '',
-                    state: '',
+                    line: '',
+                    engineer: '',
+                    order: '',
+                    // 搜索时间段
+                    rangeDate: '',
                 };
+                this.changeDateType();
                 this.currPage = 1;
                 this.projectList = [];
                 this.isReset = false;
@@ -324,7 +369,17 @@
             },
             // 分配人员
             toAssign(item){
-                
+                this.currEngineer = item.engineerArr;
+                this.isShowDistri = true;
+            },
+            // 素材明细
+            toSizeDetail(item){
+                this.sizeList = item.size;
+                this.isShowSize = true;
+            },
+            // 确认分配工程人员
+            confirmDistribute(){
+
             },
             loginTimeout() {
                 Message.warning("登录超时,请重新登录");
@@ -481,6 +536,15 @@
     }
     .el-button+.el-button{
         margin-left: 8px;
+    }
+    /deep/ .size_detail_dialog .el-dialog__header{
+        font-weight: bold;
+        padding: 16px;
+        border-bottom: 1px solid #E8E8E8;
+    }
+    /deep/ .size_detail_dialog .el-dialog__footer{
+        border-top: 1px solid #E8E8E8;
+        padding: 16px;
     }
 </style>
 

@@ -18,7 +18,7 @@
                     </el-col>
                     <el-col :span="12" class="text_right">
                         <el-button size="small" @click="download()">导出清单</el-button>
-                        <el-button type="primary" size="small">分配人员</el-button>
+                        <el-button type="primary" size="small" @click="toDistribute()">分配人员</el-button>
                     </el-col>
                 </el-row>
                 <el-row class="same_padding">
@@ -65,47 +65,6 @@
                 </el-row>
             </div>
             <div class="pro_detail_container">
-                <!-- <div class="table_wrap">
-                    <div class="" v-for="item in projectOrderList" :key="item.orderId">
-                        <el-row>
-                            <el-col>
-                                <b>订单名:</b>
-                                <b>{{item.orderName}}</b>
-                            </el-col>
-                            <el-col>
-                                (包含小区: <b>{{item.resNum}}</b>
-                                媒体: <b>{{item.mediaNum}}</b>
-                                点位: <b>{{item.adsNum}}</b>
-                                已上画: <b>{{item.finishNum}}</b>
-                                上画率: <b>{{(item.progress*100).toFixed(2)}}%</b>
-                                 )
-                            </el-col>
-                        </el-row>
-                        <el-table border :data="item.asidList">
-                            <el-table-column type="index" label="序号" width="60">
-                            </el-table-column>
-                            <el-table-column prop="resName" label="小区">
-                            </el-table-column>
-                            <el-table-column prop="mTitle" label="媒体">
-                            </el-table-column>
-                            <el-table-column prop="asLab" label="投放面">
-                            </el-table-column>
-                            <el-table-column prop="adSize" label="尺寸">
-                            </el-table-column>
-                            <el-table-column prop="assetTag" label="资产编号">
-                            </el-table-column>
-                            <el-table-column prop="mRemark" label="点位备注">
-                            </el-table-column>
-                            <el-table-column prop="materialUrl" label="素材" width="60">
-                            </el-table-column>
-                            <el-table-column prop="resAddress" label="详情地址">
-                            </el-table-column>
-                            <el-table-column prop="state" label="状态">
-                            </el-table-column>
-                        </el-table>
-                    </div>
-                </div> -->
-                
                 <el-tabs>
                     <el-tab-pane v-for="(item, index) in projectOrderList" :key="item.orderId" :label="'订单'+toChinesNum(index+1)">
                         <div class="table_wrap">
@@ -123,30 +82,62 @@
                             <el-table border :data="item.asidList">
                                 <el-table-column type="index" label="序号" width="60">
                                 </el-table-column>
-                                <el-table-column prop="resName" label="小区">
+                                <el-table-column prop="resName" label="小区" min-width="120">
                                 </el-table-column>
                                 <el-table-column prop="mTitle" label="媒体">
                                 </el-table-column>
                                 <el-table-column prop="asLab" label="投放面">
                                 </el-table-column>
-                                <el-table-column prop="adSize" label="尺寸">
+                                <el-table-column prop="adSize" label="广告尺寸">
                                 </el-table-column>
                                 <el-table-column prop="assetTag" label="资产编号">
                                 </el-table-column>
+                                <el-table-column prop="resAddress" label="详情地址" min-width="250">
+                                </el-table-column>
                                 <el-table-column prop="mRemark" label="点位备注">
                                 </el-table-column>
-                                <el-table-column prop="materialUrl" label="素材" width="60">
+                                <el-table-column prop="state" label="状态" width="80">
+                                    <template slot-scope="scope">
+                                        <span class="point">
+                                            <b :style="{background:scope.row.state==1?'rgba(82,196,26,1)':'rgba(250,173,20,1)'}"></b>
+                                            {{(scope.row.state == 1?'已完成':'未完成')}}
+                                        </span>
+                                    </template>
                                 </el-table-column>
-                                <el-table-column prop="resAddress" label="详情地址">
-                                </el-table-column>
-                                <el-table-column prop="state" label="状态">
+                                <el-table-column label="素材" width="60" >
+                                    <template slot-scope="scope">
+                                            <span @click="toShowImg(scope.row)" class="link_text">查看</span>
+                                    </template>
                                 </el-table-column>
                             </el-table>
                         </div>
                     </el-tab-pane>
                 </el-tabs>
+
+                <div class="content_bottom_btn">
+                    <el-button class="cancel" @click="goBack()" size="small">返回</el-button>                
+                </div>
             </div>
         </div>
+
+        <!-- 分配人员弹出框 -->
+        <el-dialog title="分配上画人员"
+            :visible.sync="isShowDistri"
+            custom-class="size_detail_dialog"                        
+            width="400px">
+            <el-select v-model="projectInfo.engineer" placeholder="请选择" size="small">
+                <el-option v-for="item of engineerArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
+            </el-select>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="isShowDistri = false" size="small">取 消</el-button>
+                <el-button type="primary" @click="confirmDistribute" size="small">确 定</el-button>
+            </span>
+        </el-dialog>
+
+        <!-- 查看素材 -->
+        <el-dialog :visible.sync="isShowImg" class="imgPreview">
+            <img  :src="dialogImageUrl" alt="素材" />
+        </el-dialog>
     </div>
 </template>
 
@@ -180,6 +171,11 @@
                 lineArr: [],
                 // 工程人员
                 engineerArr: [],
+                isShowDistri: false,
+                // 展示图片
+                isShowImg: false,
+                // 图片url
+                dialogImageUrl: '',
                 // 订单
                 orderArr: [],
                 // 表格数据
@@ -203,7 +199,7 @@
                                 mRemark: '小区A',
                                 materialUrl: '',
                                 resAddress: '水科路与花园北路交叉口向东750米路北',
-                                state: 1,
+                                state: 2,
                             },
                             {
                                 resID: 123,
@@ -245,7 +241,7 @@
                     },
                     {
                         orderId: 1,
-                        orderName: '鑫苑国际新城1',
+                        orderName: '鑫苑国际新城2',
                         resNum: 34,
                         mediaNum: 45,
                         adsNum: 67,
@@ -321,6 +317,24 @@
             formatJson(filterVal, jsonData) {
                 return jsonData.map(v => filterVal.map(j => v[j]))
             },
+            // 分配人员
+            toDistribute(){
+                this.getDistribute();
+                this.isShowDistri = true;
+            },
+            // 获取分配人员(工程人员)
+            getDistribute(){
+                // api.getApi(this.apiVar, info).then( res =>{
+                //     console.log(res);
+                //     // engineerArr
+                // }).catch(err =>{
+                //     console.log(err);
+                // });
+            },
+            // 确认分配工程人员
+            confirmDistribute(){
+
+            },
             // 数字转换为中文
             toChinesNum(num){
                 let changeNum = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
@@ -340,7 +354,16 @@
                     noWan = "0" + noWan;
                 }
                 return overWan ? getWan(overWan) + "万" + getWan(noWan) : getWan(num);
-            }
+            },
+            // 查看素材
+            toShowImg(row){
+                this.dialogImageUrl = row.materialUrl;
+                this.isShowImg = true;
+            },
+            // 返回
+            goBack() {
+                this.$router.push("./projectList");
+            },
         },
         mounted(){
 
@@ -524,6 +547,31 @@
     }
     /deep/ .el-tabs__item:focus.is-active.is-focus:not(:active){
         box-shadow: none;
+    }
+    /deep/ .size_detail_dialog .el-dialog__header{
+        font-weight: bold;
+        padding: 16px;
+        border-bottom: 1px solid #E8E8E8;
+    }
+    /deep/ .size_detail_dialog .el-dialog__footer{
+        border-top: 1px solid #E8E8E8;
+        padding: 16px;
+    }
+    .content_bottom_btn {
+        margin: 20px;
+        width: 100%;
+        text-align: center;
+    }
+    .link_text{
+        color: rgb(16, 142, 233);
+        cursor: pointer;
+        font-size: 14px;
+    }
+    .point b{
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
     }
 </style>
 

@@ -836,11 +836,8 @@
             <!-- <el-button v-if="active === 0" type="default" @click="exportExcelData()">导空点</el-button> -->
             <el-button v-if="active === 0" type="default" @click="exportEmpty()">导空点</el-button>
 
-            <el-button style="margin-top: 12px;padding: 12px" @click="next"
-                       v-if="active == 0 || active == 1" type="primary">下一步
-            </el-button>
-            <el-button style="margin-top: 12px;padding: 12px" @click="next"
-                       v-if="active == 2" type="primary">创建方案 </el-button>
+            <el-button @click="next" v-if="active == 0 || active == 1" type="primary">下一步</el-button>
+            <el-button @click="next" v-if="active == 2" type="primary">创建方案 </el-button>
 
             <!-- <p v-if="active === 0" style="color: #666;font-size: 14px;margin-top:10px;">备注：导空点功能目前导出的为最近一年的空点</p> -->
 
@@ -1986,7 +1983,7 @@
                     }else{
                         this.messageFun('warning',res.data.MSG)
                     }
-                    Loading.close();                    
+                    Loading.close();
                 }).catch(res =>{
                     console.log(res);
                     Loading.close();
@@ -5043,7 +5040,6 @@
         min-width: 110px;
         text-align: center;
         display: inline-block;
-        /* padding: 3px; */
         border: 1px solid #D9D9D9;
         border-radius: 4px;
         font-family: PingFangSC-Regular;
@@ -5263,7 +5259,7 @@
         border-top-left-radius: 0;
     }
 
-    .search-wrap /deep/ .el-button {
+     /deep/ .el-button {
         width: 76px;
         height: 34px;
     }
@@ -5271,7 +5267,6 @@
     /deep/ .date-select.el-input__inner {
         width: 260px;
         position: relative;
-        /*left: -6px;*/
     }
 
     /*日期*/
@@ -5312,46 +5307,21 @@
         font-weight: 700;
     }
     /*step2 四个按钮*/
-    .searchBtn, .map {
-        position: relative;
-        /*left: 5px;*/
-    }
     .oneKeyPointBtn{
         text-align: center;
-        /*margin-left: 6px;*/
-        height: 34px;
+        height: 32px;
         padding: 0;
-        line-height: 34px;
-    }
-
-    /deep/ .el-button.searchBtn span {
-        left: -10px;
-    }
-
-    .searchBtn.el-button + .el-button {
-        margin-left: 0;
+        line-height: 32px;
     }
 
     .importXle.el-button--success{
         background: #51E171;
         border-color: #51E171;
-        /*margin-left: 11px;*/
-    }
-
-    /deep/ .importXle.el-button [class*=el-icon-]+span{
-        top:0;
-        left: 0;
     }
 
     /deep/ .map.el-button--primary {
         background: #FF8F49;
         border-color: #FF8F49;
-    }
-
-    /deep/ .el-button--primary span {
-        position: relative;
-        left: -2px;
-        top: -2px;
     }
 
     /*下拉搜索框*/
@@ -5379,17 +5349,8 @@
         background-color: #fcfcfc;
     }
 
-    .content_bottom_btn /deep/ .el-button span {
-        position: relative;
-        top: -2px;
-    }
-
     .content_bottom_btn /deep/ .el-button span a {
         color: #606266;
-    }
-
-    .finishBtn /deep/ .el-button span {
-        left: -8px;
     }
 
     .map {
@@ -5400,19 +5361,6 @@
         cursor: pointer;
         text-align: center;
         font-size: 14px;
-        /*margin-left: 5px;*/
-    }
-
-    /deep/ .searchBtn .el-icon-search,/deep/ .map .el-icon-location-outline {
-        position: relative;
-        top: -2px;
-        left: -9px;
-    }
-
-    /deep/ .el-button.map span{
-        position: relative;
-        left: -10px;
-        top: -2px;
     }
 
     .search-wrap {
@@ -5553,9 +5501,7 @@
         border-radius: 0;
 
     }
-    /deep/ .input-wrap-Btn.el-button--primary span{
-        left: 0;
-    }
+
     /*筛选条件*/
     .filter-condition{
         width: 100%;
@@ -5662,10 +5608,6 @@
 
     .step3 /deep/ .el-dialog {
         width: 388px !important;
-    }
-
-    /deep/ .car-list .el-button {
-        /* width: 100px; */
     }
 
     /*购物车列表*/
@@ -5822,11 +5764,6 @@
         margin-left: 20px;
         font-size: 14px;
         color: #666666;
-    }
-
-    /deep/ .el-button.el-button--text span {
-        position: relative;
-        top: -5px;
     }
 
     /*确认报价单修改框*/
@@ -6006,21 +5943,6 @@
         font-size: 14px;
     }
     /* 方案导入 */
-    /* .import_box{
-        display: flex;
-        height: 35px;
-        line-height: 35px;
-        margin-bottom: 20px;
-    }
-    .import_box .aButton{
-        display: inline-block;
-        color: #666;
-        height: 26px;
-        padding: 3px;
-        line-height: 26px;
-        border-radius: 4px;
-        border: 1px solid #dedede;
-    } */
     /deep/.import_fanan .el-row{
         height: 40px;
     }
@@ -6031,16 +5953,11 @@
         text-align: right;
         margin-right: 20px;
     }
-    .import_file{
-        /* margin-left: 20px; */
-    }
+
     .import_file .upload_file{
         display: inline-block;
     }
-    /* /deep/ .import_file  .el-button{
-        width: auto;
-        padding: 5px;
-    } */
+
     .upload_box{
         text-align: center;
         margin-top: 20px
@@ -6048,11 +5965,7 @@
     /deep/ .upload_box .el-button{
         width: auto;
     }
-    /deep/.import_fanan .el-button [class*="el-icon-"] + span,
-    .select-wrap button .el-icon-search{
-        left: 0;
-        top: 0;
-    }
+
     /*safari下表头错位*/
     /deep/ .el-table .el-table-column-checkbox .cell{
         width: 110px;
@@ -6080,9 +5993,6 @@
         }
         .input-wrap.focus{
             width: 170px;
-        }
-        .filter-input .input-wrap .el-button--mini {
-            left: 1px;
         }
 
         .tbody .tr li:nth-of-type(1) {
@@ -6146,16 +6056,6 @@
             text-indent: 1em;
             font-size: 14px;
             color: #666;
-        }
-
-        .filter-input .input-wrap .el-button--mini {
-            width: 52px;
-            height: 26px;
-        }
-        .input-wrap /deep/ .el-button--mini span {
-            position: relative;
-            top: -1px;
-            left: -3px;
         }
 
         .tbody .tr li:nth-of-type(1) {

@@ -18,40 +18,40 @@
                     <h4>客户信息</h4>
                     <ul>
                         <li>
-                            <em>联系人：</em>{{userInfo.realName}}</li>
+                            <em>联系人：</em>{{userInfo.realName || '--'}}</li>
                         <li>
-                            <em>邮箱：</em>{{userInfo.email}}</li>
+                            <em>邮箱：</em>{{userInfo.email || '--'}}</li>
                         <li>
-                            <em>手机号码：</em>{{userInfo.phone }}</li>
+                            <em>手机号码：</em>{{userInfo.phone || '--'}}</li>
                         <li>
-                            <em>账户名：</em>{{userInfo.sName}}</li>
+                            <em>账户名：</em>{{userInfo.sName || '--'}}</li>
                         <li>
-                            <em>职位：</em>{{userInfo.position }}</li>
+                            <em>职位：</em>{{userInfo.position || '--'}}</li>
                         <li>
-                            <em>固定电话：</em>{{userInfo.telephone }}</li>
+                            <em>固定电话：</em>{{userInfo.telephone || '--'}}</li>
                         <li>
-                            <em>所在地：</em>{{userInfo.rName }}</li>
+                            <em>所在地：</em>{{userInfo.rName || '--'}}</li>
                         <li>
-                            <em>事业部：</em>{{userInfo.division}}</li>
+                            <em>事业部：</em>{{userInfo.division || '--'}}</li>
                         <li>
-                            <em>所有人：</em>{{userInfo.puName}}</li>
+                            <em>所有人：</em>{{userInfo.puName || '--'}}</li>
                     </ul>
                 </div>
                 <div class="companyInfo">
                     <h4>公司信息</h4>
                     <ul>
                         <li>
-                            <em>公司名称：</em>{{companyInfo.cName}}</li>
+                            <em>公司名称：</em>{{companyInfo.cName || '--'}}</li>
                         <li>
-                            <em>公司地址：</em>{{companyInfo.cAddress}}</li>
+                            <em>公司地址：</em>{{companyInfo.cAddress || '--'}}</li>
                         <li>
-                            <em>行业：</em>{{companyInfo.iName}}</li>
+                            <em>行业：</em>{{companyInfo.iName || '--'}}</li>
                         <li>
-                            <em>公司品牌：</em>{{companyInfo.cBrand}}</li>
+                            <em>公司品牌：</em>{{companyInfo.cBrand || '--'}}</li>
                         <li>
-                            <em>所在城市：</em>{{companyInfo.rName}}</li>
+                            <em>所在城市：</em>{{companyInfo.rName || '--'}}</li>
                         <li>
-                            <em>备注：</em>{{companyInfo.cRemark}}</li>
+                            <em>备注：</em>{{companyInfo.cRemark || '--'}}</li>
                     </ul>
                 </div>
             </div>

@@ -98,12 +98,9 @@
                                 <span v-else>{{scope.row.bTitle||'--'}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="方案价格" sortable :sort-method="sortPrice" class="tar" min-width="8.3%">
+                        <el-table-column label="方案价格" sortable :sort-method="sortPrice" width="120px" align="right">
                             <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.apTotal?priceFormat(scope.row.apTotal/100):0" placement="bottom" v-if="scope.row.apTotal?scope.row.apTotal.toString().length>8:0">
-                                    <span>&yen; {{scope.row.apTotal?priceFormat(scope.row.apTotal/100):0}}</span>
-                                </el-tooltip>
-                                <span v-else>&yen; {{scope.row.apTotal?priceFormat(scope.row.apTotal/100):0}}</span>
+                                <span>&yen;{{scope.row.apTotal?priceFormat(scope.row.apTotal/100):0}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="realName" label="所有人" min-width="6.1%"  v-if="!(role=='AD')">
@@ -147,7 +144,7 @@
                                 <span>{{ stateToText(scope.row.apState) }}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作" min-width="8.4%" v-if="!(role=='OP' || role=='AD')">
+                        <el-table-column label="操作" width="100px" v-if="!(role=='OP' || role=='AD')">
                             <template slot-scope="scope">
                                 <el-dropdown size="small" split-button trigger="click" placement="bottom-start">操作
                                     <el-dropdown-menu slot="dropdown">
@@ -530,7 +527,7 @@ export default {
         },
         // 时间格式规范
         formatTime(val) {
-            return dateFormat.toDate(val);
+            return dateFormat.toDate(val, '/');
         },
         // 价格加上逗号
         priceFormat(price) {
@@ -606,7 +603,7 @@ export default {
             let result = "QC";
             result = result + dateFormat.toDate(date, "");
             result = result + rid.toString().substring(0, 4);
-            result = result + "00" + Math.round(Math.random() * 10);
+            result = result + "00" + Math.round(Math.random() * 9);
             return result;
         },
         // 发布
@@ -1414,14 +1411,6 @@ a {
     white-space: nowrap;
 }
 
-/deep/ .el-table__row td:nth-child(4) {
-    text-align: right;
-}
-
-/deep/ .el-table__row td:nth-child(4) .cell span {
-    width: 90px;
-}
-
 /deep/ .el-table__row td:nth-child(7) .cell span {
     width: 85px;
 }
@@ -1478,11 +1467,6 @@ a {
     color: #666;
     border-color: #d8d8d8;
     background-color: #fff;
-}
-
-.tar {
-    text-align: right !important;
-    padding-right: 10px;
 }
 
 /deep/ .el-dropdown .el-button-group .el-button {

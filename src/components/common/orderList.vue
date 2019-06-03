@@ -84,21 +84,14 @@
                                 <span v-else title="">{{scope.row.bTitle||'--'}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="合同编号" class="tar" min-width="8.5%">
+                        <el-table-column label="合同编号" width="180px">
                             <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.apQC" placement="bottom" v-if="scope.row.apQC.length>10">
-                                    <span title="">{{scope.row.apQC}}</span>
-                                </el-tooltip>
-                                <span v-else title="">{{scope.row.apQC}}</span>
+                                <span>{{scope.row.apQC}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column sortable :sort-method="sortPrice" label="订单总价" min-width="7.5%">
+                        <el-table-column sortable :sort-method="sortPrice" label="订单总价" width="120px" align="right">
                             <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="(scope.row.apTotal)?priceFormat(scope.row.apTotal/100):0" placement="bottom" v-if="scope.row.apTotal?scope.row.apTotal.toString().length>8:0">
-                                    <span>&yen; {{(scope.row.apTotal)?priceFormat(scope.row.apTotal/100):0}}</span>
-                                </el-tooltip>
-                                <span v-else>&yen; {{(scope.row.apTotal)?priceFormat(scope.row.apTotal/100):0}}</span>
-
+                                <span>&yen;{{(scope.row.apTotal)?priceFormat(scope.row.apTotal/100):0}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="投放城市(点位面数，排期)" prop="cityArea" min-width="20.2%">
@@ -126,7 +119,7 @@
                                 <span>{{ stateToText(scope.row.apState) }}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作" min-width="7.0%" v-if="!(role=='OP' || role=='AD')">
+                        <el-table-column label="操作" width="100px" v-if="!(role=='OP' || role=='AD')">
                             <template slot-scope="scope">
                                 <el-dropdown size="small" split-button trigger="click" placement="bottom-start">操作
                                     <el-dropdown-menu slot="dropdown">
@@ -548,7 +541,7 @@ export default {
         },
         // 时间格式规范
         formatTime(val) {
-            return dateFormat.toDate(val);
+            return dateFormat.toDate(val, '/');
         },
         // 价格排序
         sortPrice(a, b) {
@@ -1129,21 +1122,8 @@ a {
     line-height: 24px;
 }
 
-.table_wrap /deep/ .el-table__row td:nth-child(5) .cell,
-.table_wrap /deep/ .has-gutter tr th:nth-child(5) .cell {
-    text-align: right;
-}
-
-/deep/ .el-table__row td:nth-child(5) .cell span {
-    width: 85px;
-}
-
 /deep/ .el-table__row td:nth-child(7) .cell span {
     width: 87px;
-}
-
-/deep/ .el-table__row td:nth-child(4) .cell span {
-    width: 95px;
 }
 
 /deep/ .el-table__row td:nth-child(3) .cell span {
@@ -1192,11 +1172,6 @@ a {
     color: #666;
     border-color: #d8d8d8;
     background-color: #fff;
-}
-
-.tar {
-    text-align: right !important;
-    padding-right: 10px;
 }
 
 /deep/ .el-dropdown .el-button-group .el-button {

@@ -42,7 +42,7 @@ export default {
         },
         // 时间格式规范
         formatTime(val) {
-            return dateFormat.toDate(val, ".");
+            return dateFormat.toDate(val, "/");
         },
     },
 }

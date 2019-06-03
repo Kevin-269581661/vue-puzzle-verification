@@ -345,7 +345,7 @@ export default {
         },
         // 时间格式化
         formatTime(time) {
-            return dateFormat.toDate(time);
+            return dateFormat.toDate(time, '/');
         },
         // 重置
         reset(){

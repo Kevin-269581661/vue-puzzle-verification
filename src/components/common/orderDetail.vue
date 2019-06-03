@@ -109,7 +109,7 @@
                                             <span>{{scope.row.resName||'--'}}</span>
                                         </template>
                                     </el-table-column>
-                                    <el-table-column prop="mTitle" label="媒体名称" min-width="10.3%" class="tar">
+                                    <el-table-column prop="mTitle" label="媒体名称" min-width="10.3%">
                                     </el-table-column>
                                     <el-table-column prop="asLab" label="投放面" min-width="8.8%">
                                     </el-table-column>
@@ -122,9 +122,9 @@
                                             <span>{{scope.row.cType||'--'}}</span>
                                         </template>
                                     </el-table-column>
-                                    <el-table-column prop="hNum" label="小区户数" min-width="7.3%" class="tar">
+                                    <el-table-column prop="hNum" label="小区户数" min-width="7.3%" align="right">
                                     </el-table-column>
-                                    <el-table-column label="楼盘价格" min-width="7.3%">
+                                    <el-table-column label="楼盘价格" min-width="7.3%" align="right">
                                         <template slot-scope="scope">
                                             <span>&yen;{{(scope.row.hPrice)?priceFormat(scope.row.hPrice/100): 0 }}</span>
                                         </template>
@@ -2342,13 +2342,6 @@ export default {
     font-weight: bold;
 }
 
-/deep/ .el-table__row td:nth-child(8),
-/deep/ .el-table__row td:nth-child(9),
-/deep/ .has-gutter th:nth-child(8),
-/deep/ .has-gutter th:nth-child(9) {
-    text-align: right;
-}
-
 /deep/ .el-table__column-filter-trigger {
     position: relative;
     left: 5px;
@@ -3029,11 +3022,6 @@ export default {
 
 /deep/ .el-form-item__label {
     padding: 0 0 0 12px;
-}
-
-/deep/ .tar .cell {
-    text-align: right !important;
-    padding-right: 10px;
 }
 
 /*滚动条*/

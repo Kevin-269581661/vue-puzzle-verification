@@ -55,7 +55,7 @@
                 </el-row>
                 <div class="table_wrap">
                     <el-table border :data="currAccount" style="width: 100%" v-loading="loading" v-loadmore="accountLoadMore"
-                              element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading"
+                              element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading" 
                               :default-sort="{prop: 'joinTime', order: 'descending'}">
                         <el-table-column label="账号" min-width="11.8%">
                             <template slot-scope="scope">
@@ -107,6 +107,10 @@
                                 <span v-if="scope.row.uState ==0" style="color: #108EE9;cursor: pointer;" @click="isForbidden(scope.row)">开通</span>
                             </template>
                         </el-table-column>
+
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
                     </el-table>
                 </div>
             </div>
@@ -132,6 +136,7 @@
     import dateFormat from "../../commonFun/timeFormat.js";
     // 角色转换为中文
     import uTypeToText from "../../commonFun/uTypeToText.js";
+    import noSearchResult from "./components/noSearchResult.vue";
 
     export default {
         name: "customList",
@@ -142,7 +147,8 @@
             elTable: Table,
             elTableColumn: TableColumn,
             elSelect: Select,
-            elOption: Option
+            elOption: Option,
+            noSearchResult,
         },
         data() {
             return {
@@ -334,7 +340,7 @@
             },
             // 时间格式化
             formatTime(time) {
-                return dateFormat.toDate(time);
+                return dateFormat.toDate(time, '/');
             },
             // 角色格式化
             roleToText(role) {

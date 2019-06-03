@@ -362,7 +362,7 @@
             },
             // 时间格式化
             formatTime(time) {
-                return dateFormat.toDate(time);
+                return dateFormat.toDate(time, '/');
             },
             // 角色格式化
             roleToText(type) {

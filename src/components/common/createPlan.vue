@@ -144,6 +144,7 @@
                                         <el-dropdown-menu slot="dropdown">
                                             <el-dropdown-item @click.native.prevent="importFanan('res')">导入小区</el-dropdown-item>
                                             <el-dropdown-item @click.native.prevent="importFanan('ads')">导入点位</el-dropdown-item>
+                                            <el-dropdown-item @click.native.prevent="importFanan('copy')">复制方案</el-dropdown-item>
                                         </el-dropdown-menu>
                                     </el-dropdown>
                                 </div>
@@ -1076,6 +1077,18 @@
                 </el-table>
             </template>
         </el-dialog>
+        <!-- 复制方案弹出框 -->
+        <el-dialog
+            :visible.sync="isCopy"
+            title="复制方案"
+            width="450px"
+            >
+            <el-input placeholder="可输入搜索要导入的方案"></el-input>
+            <span slot="footer" class="dialog-footer">
+                <el-button size="small" @click="isCopy = false">取 消</el-button>
+                <el-button size="small" type="primary" @click="confirmCopy()">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -1383,6 +1396,8 @@
                 importInfoData: {},
                 // 导入excel之后返回的数组
                 excelDataUpload:[],
+                // 复制方案
+                isCopy: false,
                 apAicode:'',                  // 方案的协同aicode
                 shareADUrl: '',               // 协同选点的url https://beta.qinlinad.com/shareADList?apid=649&aicode=0DDD2685D9D3842ECB0DDC45D79D2131
                 dialogOneKeyPoint: false,    // 一键选点模态框
@@ -1897,9 +1912,12 @@
                 if(type == 'res'){
                     this.importType = '1';
                     this.doUpload = '/advertisement/AdPlanResImport'
-                }else{
+                }else if(type == 'ads'){
                     this.importType = '2';
                     this.doUpload = '/advertisement/AnalysisExcelAdBaseInfo';
+                }else if(type == 'copy'){
+                    this.isCopy = true;
+                    return;
                 }
                 this.isImport = true;
                 this.fileData = [];
@@ -2203,6 +2221,10 @@
                 }
                 return resultarr;
             },
+            // 确定复制
+            confirmCopy(){
+                // api.postApi();
+            },            
             // 第四步的导出方案
             downLoadFanan(){
                 let arr = this.excelData(this.shopingList)

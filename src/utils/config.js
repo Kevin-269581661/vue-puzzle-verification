@@ -14,8 +14,8 @@ if(process.env.NODE_ENV == 'development'){
 const apiRoot = {
     devURL: '"http://192.168.1.248/"',
     // devURL: '"https://beta.qinlinad.com/"',
-    testURL: '"https://beta.qinlinad.com/"',
-    grayURL: '"http://111.230.241.112/"',
+    testURL: '"https://test-qadn.qinlindmp.com/"',
+    grayURL: '"https://beta-qadn.qinlindmp.com/"',
     prodURL: '"https://www.qinlinad.com/"',
 };
 

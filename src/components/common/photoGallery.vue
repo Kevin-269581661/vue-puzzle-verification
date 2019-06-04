@@ -10,7 +10,7 @@
                 <div class="mediaList_container">
                     <el-tabs v-model="activeName" @tab-click="handleClick()">
                         <!--搜索框-->
-                        <div class="search-wrap" v-if="!ludan">
+                        <div class="search-wrap clearfix" v-if="!ludan">
                             <span>
                                 <div style="display:inline-block">
                                     <el-input placeholder="请输入内容" v-model="keyword" class="input-with-select">
@@ -618,7 +618,8 @@ export default {
 
 /*面包屑导航*/
 .ad_mediaMana_wrap {
-    position: relative;
+    /* position: relative; */
+    margin-bottom: 50px;
 }
 
 .ad_mediaMana_nav p {
@@ -643,17 +644,34 @@ export default {
     color: #999;
 }
 
-.mediaList_wrap {
-    width: 1246px;
-    background: #ffffff;
-    border: 1px solid #e6e7e9;
-    margin: 0 auto;
-    margin-bottom: 26px;
-}
+    /*wrap*/
+    .mediaList_wrap {
+        width: 92%;
+        background: #ffffff;
+        border: 1px solid #e6e7e9;
+        margin: 0 auto;
+    }
 
-.mediaList_wrap .mediaList_container {
-    padding: 0 18px 31px 18px;
-}
+    .mediaList_wrap .mediaList_head {
+        width: 100%;
+        height: 24px;
+        padding: 12px 0;
+        border-bottom: 1px solid #e6e7e9;
+    }
+
+    .mediaList_wrap .mediaList_head h2 {
+        font-size: 16px;
+        color: #2c313c;
+        height: 24px;
+
+        padding-left: 14px;
+        font-weight: bold;
+    }
+
+    .mediaList_wrap .mediaList_container {
+        width: 96%;
+        margin: 0 32px;
+    }
 
 /*tabs*/
 /deep/ .el-tabs__item {
@@ -723,8 +741,8 @@ export default {
     left: -12px;
 }
 .search-wrap {
-    position: relative;
-    height: 40px;
+    /* position: relative;
+    height: 40px; */
 }
 
 /deep/ .el-input-group .el-input__suffix {
@@ -733,34 +751,6 @@ export default {
 
 /deep/ .el-input__icon {
     line-height: 34px;
-}
-
-.tempPic {
-    text-align: center;
-    margin-bottom: 50px;
-}
-
-.noFind,
-.cantFind {
-    margin-top: 87px;
-    margin-bottom: 70px;
-}
-
-.tempPic img {
-    width: 350px;
-    height: 245px;
-}
-
-.tempPic p {
-    font-size: 16px;
-    color: #666666;
-}
-
-.tempPic h4 {
-    font-size: 28px;
-    color: #666666;
-    margin-top: -30px;
-    margin-bottom: 7px;
 }
 
 /*搜索到的图片列表*/
@@ -776,85 +766,8 @@ export default {
     vertical-align: middle;
 }
 
-.find {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.find .photoCard {
-    margin-right: 6px;
-}
-
-.photoCard {
-    transition: all 0.3s;
-    float: left;
-    width: 234px;
-    background: #ffffff;
-    border-radius: 2px;
-    text-align: left;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    margin-top: 20px;
-}
-
-.photoCard + .photoCard {
-    /*margin-left: 7px;*/
-}
-
-.find .photoCard:nth-child(6) {
-    /*margin-left: 0;*/
-}
-
-.photoCard .imgBox {
-    width: 234px;
-    height: 190px;
-    position: relative;
-    overflow: hidden;
-}
-
-.imgBox .mask-btn {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background-color: rgba(0, 0, 0, 0.2);
-
-    text-align: center;
-}
-
-.mask-btn .el-icon-search {
-    color: #fff;
-    font-size: 26px;
-    line-height: 176px;
-    cursor: pointer;
-}
-
-.mask-btn a {
-    position: absolute;
-    bottom: 18px;
-    left: 63px;
-    background: #1890ff;
-    border-radius: 4px;
-    width: 100px;
-    height: 34px;
-    color: #fff;
-    text-align: center;
-    line-height: 34px;
-    font-size: 14px;
-}
-
 /deep/ .el-dialog {
     box-shadow: none;
-}
-
-.photoCard .imgBox > img {
-    display: inline-block;
-    /* width: 100%; */
-    /* height: 100%; */
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translateX(-50%) translateY(-50%);
 }
 
 .detailBox {
@@ -946,24 +859,11 @@ export default {
 }
 
 /*页码*/
-/* .pager {
-    position: absolute;
-    bottom: 0;
-    right: 10px;
-    height: 32px;
-    margin-top: 18px;
-}
-
-/deep/ .el-pagination {
-    position: absolute;
-    right: 0;
-    top: 50px;
-} */
 
 .pager{
     width: 100%;
     margin-top: 20px;
-    text-align: center;
+    text-align: right;
 }
 /deep/ .el-pagination.is-background .el-pager li {
     font-weight: normal;
@@ -1047,12 +947,6 @@ export default {
 
 /deep/ .el-button + .el-button {
     margin-left: 0;
-}
-
-.mediaList_wrap .mediaList_container .table_wrap {
-    width: 1210px;
-    margin: 10px 0 0 0;
-    border-radius: 4px;
 }
 
 /deep/ .el-date-editor .el-range-separator {
@@ -1292,57 +1186,6 @@ export default {
 
 /deep/ .el-tabs__nav-wrap::after {
     height: 1px;
-}
-
-/*1440*/
-@media all and (min-width: 1420px) {
-    .ad_mediaDetail_nav p {
-        padding-left: 60px;
-    }
-
-    .mediaList_wrap {
-        width: 1321.3px !important;
-        /*margin-bottom: 165px !important;*/
-    }
-
-    .mediaList_wrap .mediaList_container .table_wrap {
-        width: 1284px;
-    }
-  .find .photoCard {
-    margin-right: 20px;
-  }
-
-    .photoCard + .photoCard {
-        /*margin-left: 26px;*/
-    }
-
-    .find .photoCard:nth-child(6) {
-        /*margin-left: 0;*/
-    }
-}
-
-/*1920*/
-@media all and (min-width: 1900px) {
-    .mediaList_wrap {
-        width: 1800px !important;
-        /*margin-bottom: 70px !important;*/
-    }
-
-    .mediaList_wrap .mediaList_container .table_wrap {
-        width: 1764px;
-    }
-
-    .photoCard {
-        margin-left: 35px;
-    }
-
-    .photoCard + .photoCard {
-        /*margin-left: 98px;*/
-    }
-
-    .find .photoCard:nth-child(6) {
-        /*margin-left: 98px;*/
-    }
 }
 .search-wrap /deep/ .el-date-editor--daterange.el-input__inner{
     /* width: 300px; */

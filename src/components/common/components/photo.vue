@@ -142,28 +142,24 @@ export default {
             </div>
         </div>
         <!--缩略图对话框-->
-        <el-dialog :visible.sync="dialogVisible">
-            <img style="width: 100%;height: 100%" :src="dialogImageUrl" alt="">
+        <el-dialog :visible.sync="dialogVisible" width="500px;">
+            <img style="width: 50%;height: auto;" :src="dialogImageUrl" alt="">
         </el-dialog>
     </div>
 </template>
 
 <style scoped>
 .tempPic {
-    text-align: center;
-    /*margin-top: 87px;*/
+    text-align: left;
     margin-bottom: 50px;
 }
 
-.noFind,
-.cantFind {
-    margin-top: 87px;
-    margin-bottom: 70px;
-}
 
 .tempPic img {
-    width: 350px;
-    height: 245px;
+    /* width: 350px;
+    height: 245px; */
+    width: 100%;
+    height: auto;
 }
 
 .tempPic p {
@@ -171,6 +167,22 @@ export default {
     color: #666666;
 }
 
+.noFind,
+.cantFind {
+    margin-top: 87px;
+    margin-bottom: 70px;
+}
+.noFind,
+.cantFind {
+    margin-top: 87px;
+    margin-bottom: 70px;
+    text-align: center;
+}
+.noFind img,
+.cantFind img{
+    width: 350px;
+    height: 245px;
+}
 .tempPic h4 {
     font-size: 28px;
     color: #666666;
@@ -180,40 +192,32 @@ export default {
 
 .find {
     /* position: relative; */
-    display: flex;
-    flex-wrap: wrap;
+    /* display: flex;
+    flex-wrap: wrap; */
     /*justify-content: space-around;*/
 }
 
 .find .photoCard {
     /* margin-right: 20px; */
-    margin-right: 6px;
+    /* margin-right: 6px; */
 }
 
 .photoCard {
     transition: all 0.3s;
     float: left;
-    width: 234px;
+    width: 18%;
     /*height: 307px;*/
     background: #ffffff;
     /*box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.20);*/
     border-radius: 2px;
     text-align: left;
     border: 1px solid rgba(0, 0, 0, 0.1);
-    margin-top: 20px;
-}
-
-.photoCard + .photoCard {
-    /*margin-left: 7px;*/
-}
-
-.find .photoCard:nth-child(6) {
-    /*margin-left: 0;*/
+    margin: 0.9%;
 }
 
 .photoCard .imgBox {
-    width: 234px;
-    height: 190px;
+    width: 100%;
+    height: 160px;
     position: relative;
     overflow: hidden;
 }
@@ -225,21 +229,23 @@ export default {
     top: 0;
     left: 0;
     background-color: rgba(0, 0, 0, 0.2);
-
     text-align: center;
+    margin: 0 auto;
 }
 
 .mask-btn .el-icon-search {
     color: #fff;
     font-size: 26px;
-    line-height: 176px;
+    /* line-height: 176px; */
     cursor: pointer;
+    margin-top: 45px;
 }
 
 .mask-btn a {
-    position: absolute;
+    /* position: absolute;
     bottom: 18px;
-    left: 63px;
+    left: 63px; */
+    display: block;
     background: #1890ff;
     border-radius: 4px;
     width: 100px;
@@ -248,6 +254,7 @@ export default {
     text-align: center;
     line-height: 34px;
     font-size: 14px;
+    margin: 12px auto;
 }
 
 .photoCard .imgBox > img {
@@ -350,35 +357,4 @@ export default {
     top: 5px;
 }
 
-.pager{
-    width: 100%;
-    margin-top: 20px;
-}
-
-/*1440*/
-@media all and (min-width: 1420px) {
-    .photoCard + .photoCard {
-        /*margin-left: 26px;*/
-    }
-
-    .find .photoCard:nth-child(6) {
-        /*margin-left: 0;*/
-    }
-}
-
-/*1920*/
-@media all and (min-width: 1900px) {
-    .find .photoCard {
-        margin-left: 35px;
-        margin-right: 20px;
-    }
-
-    .photoCard + .photoCard {
-        /*margin-left: 98px;*/
-    }
-
-    .find .photoCard:nth-child(6) {
-        /*margin-left: 98px;*/
-    }
-}
 </style>

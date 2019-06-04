@@ -60,6 +60,10 @@
                                 <span style="color: #108EE9;cursor: pointer; margin-left:10px;" @click="isEdit(scope.row)">编辑</span>
                             </template>
                         </el-table-column>
+
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
                     </el-table>
                 </div>
             </div>
@@ -96,7 +100,11 @@
     // 时间控件格式化
     import dateFormat from "../../commonFun/timeFormat.js";
     import api from "../../api/api.js";
+    import noSearchResult from "./components/noSearchResult.vue";    
     export default {
+        components: {
+            noSearchResult,
+        },
         data(){
             return{
                 // 登录信息

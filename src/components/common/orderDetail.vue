@@ -149,6 +149,10 @@
                                             <el-button type="text" v-else @click="disContinue(scope.row)">终止</el-button>
                                         </template>
                                     </el-table-column>
+
+                                    <div slot="empty">
+                                        <no-search-result></no-search-result>
+                                    </div>
                                 </el-table>
                                 <p style="font-size: 12px;color: #666666;margin-top: 10px">提示：带*号的为新增点位</p>
                             </div>
@@ -438,6 +442,10 @@
                                 <el-button size="small" icon="el-icon-delete" :style="{'color':scope.row.imgUrl?'#108DE7':''}" @click="deleteOneImg(scope.row, scope.$index)" :disabled="!scope.row.imgUrl"></el-button>
                             </template>
                         </el-table-column>
+
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
                     </el-table>
                     <p style="text-align:center;margin-top:20px;">
                         <el-button type="primary" size="small" @click="saveAll()">保存</el-button>
@@ -477,6 +485,8 @@ import apQuotation from './components/apQuotation.vue'
 import material from "./components/materialInfo.vue";
 import detail from "./components/detailInfo.vue";
 import addAds from "./components/addAds"
+import noSearchResult from "./components/noSearchResult.vue";
+
 import {
     Table,
     TableColumn,
@@ -508,6 +518,7 @@ export default {
         material,
         detail,
         addAds,
+        noSearchResult,
         elTable: Table,
         elTableColumn: TableColumn,
         elTabs: Tabs,
@@ -3139,7 +3150,7 @@ export default {
 }
 
 
-/deep/ .el-dialog__body img{
+/deep/.imgPreview .el-dialog__body img{
   width: 100%;
   max-height: 640px;
 }

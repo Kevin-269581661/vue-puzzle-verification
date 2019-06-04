@@ -57,6 +57,10 @@
                                 </el-button>
                             </template>
                         </el-table-column>
+
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
                     </el-table>
                 </div>
             </div>
@@ -144,6 +148,8 @@
 import api from "../../api/api.js";
 // 价格格式化
 import commaFormat from "../../commonFun/commaFormat.js";
+import noSearchResult from "./components/noSearchResult.vue";
+
 import {
     Table,
     TableColumn,
@@ -159,6 +165,7 @@ import {
 export default {
     name: "publishPriceList",
     components: {
+        noSearchResult,
         elTable: Table,
         elTableColumn: TableColumn,
         elInput: Input,

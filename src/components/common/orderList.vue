@@ -133,6 +133,10 @@
                                 </el-dropdown>
                             </template>
                         </el-table-column>
+
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
                     </el-table>
                 </div>
             </div>
@@ -155,6 +159,8 @@ import commaFormat from "../../commonFun/commaFormat.js";
 
 // 画像申请
 import applyphoto from './components/applyPhoto.vue';
+import noSearchResult from "./components/noSearchResult.vue";
+
 import {
     Button,
     CheckboxGroup,
@@ -179,6 +185,7 @@ export default {
     name: "projectList",
     components: {
         applyphoto,
+        noSearchResult,
         elButton: Button,
         elCheckboxGroup: CheckboxGroup,
         elCheckbox: Checkbox,
@@ -193,7 +200,7 @@ export default {
         elTooltip: Tooltip,
         elDialog: Dialog,
         elSelect: Select,
-        elOption: Option
+        elOption: Option,
     },
     data() {
         return {

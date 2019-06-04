@@ -141,6 +141,7 @@
     export default {
         name: "customList",
         components: {
+            noSearchResult,
             elRow: Row,
             elInput: Input,
             elButton: Button,
@@ -148,7 +149,6 @@
             elTableColumn: TableColumn,
             elSelect: Select,
             elOption: Option,
-            noSearchResult,
         },
         data() {
             return {

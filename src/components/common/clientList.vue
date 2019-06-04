@@ -106,6 +106,10 @@
 								<a href="javascript:void(0)" @click="showDetail(scope.row)" style="color: #108EE9">查看</a>
 							</template>
 						</el-table-column>
+
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
 					</el-table>
 				</div>
 			</div>
@@ -117,6 +121,7 @@
 import api from "../../api/api.js";
 // 时间控件格式化
 import dateFormat from "../../commonFun/timeFormat.js";
+import noSearchResult from "./components/noSearchResult.vue";
 import {
     Row,
     Input,
@@ -132,6 +137,7 @@ import {
 export default {
     name: "customList",
     components: {
+        noSearchResult,
         elRow: Row,
         elInput: Input,
         elButton: Button,
@@ -139,7 +145,7 @@ export default {
         elTableColumn: TableColumn,
         elDatePicker: DatePicker,
         elSelect: Select,
-        elOption: Option
+        elOption: Option,
     },
     data() {
         return {

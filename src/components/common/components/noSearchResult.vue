@@ -1,9 +1,7 @@
 <template>
     <div>
-        <div>
-            <!-- <img src="../../assets/pcpay/no_record_pic.png" alt="" width="140" height="140" /> -->
-        </div>
-        <p :style="{'marginTop': '23px'}">未查询到您的交易记录</p>
+        <img src="../../../assets/images/nofound.png" alt="没有找到记录" width="122" height="83" />
+        <p class="not_search">未查询到记录</p>
     </div>
 </template>
 
@@ -13,6 +11,9 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+.not_search{
+    margin-top: 24px;
+    color: rgba(0,0,0,0.45);
+}
 </style>

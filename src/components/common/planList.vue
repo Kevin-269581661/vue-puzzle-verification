@@ -74,21 +74,24 @@
                 </el-row>
                 <div class="table_wrap">
                     <el-table border :data="currentPlan" style="width: 100%" v-loadmore="pointLoadMore" v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
-                        <el-table-column label="方案名称" min-width="14.9%">
-                            <template slot-scope="scope">
+                        <el-table-column prop="apName" label="方案名称" min-width="14.9%" :show-overflow-tooltip="true">
+                            <!-- <template slot-scope="scope">
                                 <el-tooltip class="item" effect="dark" :content="scope.row.apName" placement="bottom" v-if="scope.row.apName.length>15">
                                     <a href="javascript:void(0);" @click="ToDetail(scope.row)">{{scope.row.apName}}</a>
                                 </el-tooltip>
                                 <a href="javascript:void(0);" @click="ToDetail(scope.row)" v-else>{{scope.row.apName}}</a>
+                            </template> -->
+                            <template slot-scope="scope">
+                                <a href="javascript:void(0);" @click="ToDetail(scope.row)">{{scope.row.apName}}</a>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="cName" label="客户名称" min-width="12.6%">
-                            <template slot-scope="scope">
+                        <el-table-column prop="cName" label="客户名称" min-width="12.6%" :show-overflow-tooltip="true">
+                            <!-- <template slot-scope="scope">
                                 <el-tooltip class="item" effect="dark" :content="scope.row.cName" placement="bottom" v-if="scope.row.cName.length>9">
                                     <span title="">{{scope.row.cName}}</span>
                                 </el-tooltip>
                                 <span v-else title="">{{scope.row.cName}}</span>
-                            </template>
+                            </template> -->
                         </el-table-column>
                         <el-table-column prop="bTitle" label="品牌名称" min-width="6.6%">
                             <template slot-scope="scope">

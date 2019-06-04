@@ -7,7 +7,6 @@ pipeline {
             steps {
                 sh '''
                     /usr/bin/cnpm install
-                    /usr/bin/cnpm install cross-env --save-dev
                     /usr/bin/cnpm run build
                 '''
             }

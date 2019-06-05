@@ -87,8 +87,7 @@
         <el-dialog
             title="新建线路"
             :visible.sync="createDialogVisible"
-            width="340"
-            :before-close="handleClose">
+            width="340">
             <div>
                 <el-form :model="createData" :rules="createRules" ref="createData" label-width="92px" class="demo-ruleForm">
                     <el-form-item label="线路名称:" prop="pathLine">
@@ -107,7 +106,7 @@
                     </el-form-item>
                     <el-form-item label="选择小区:" prop="resName">
                         <el-select v-model="createData.resName" filterable multiple placeholder="请选择小区" :clearable="true"
-                                   style="width: 100%" size="small" @change="">
+                                   :loading="resLoading" style="width: 100%" size="small" @focus="selectResFocus" @change="">
                             <el-option
                                 v-for="item in resList"
                                 :key="item.value"
@@ -131,6 +130,7 @@
             width="65%">
             <div class="path_detail_box">
                 <el-table
+                    v-loading="pathDetaiLoading"
                     element-loading-text="拼命加载中..."
                     element-loading-spinner="el-icon-loading"
                     border
@@ -143,8 +143,8 @@
                         min-width="20%">
                         <template slot-scope="scope">
                             <span v-if="!scope.row.isInput">{{scope.row.resourceName}}</span>
-                            <el-select v-model="scope.row.resourceName" filterable placeholder="请选择资源" :clearable="true"
-                                       style="width: 100%" size="small" @change="changeRes">
+                            <el-select v-model="scope.row.resourceId" filterable placeholder="请选择资源" :clearable="true"
+                                       style="width: 100%" size="small" @change="changeRes(scope.row)">
                                 <el-option
                                     v-for="item in resList"
                                     :key="item.value"
@@ -161,7 +161,15 @@
                         min-width="17">
                         <template slot-scope="scope">
                             <span v-if="!scope.row.isInput">{{scope.row.regionName}}</span>
-                            <el-input v-else v-model.trim="scope.row.regionName" placeholder="区域" size="small"></el-input>
+                            <el-select v-model="scope.row.regionId" filterable placeholder="区域" :clearable="true"
+                                       style="width: 100%" size="small" @change="changeArea">
+                                <el-option
+                                    v-for="(item,index) in areaList"
+                                    :key="index"
+                                    :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -195,7 +203,7 @@
                         label="操作"
                         width="80px">
                         <template slot-scope="scope">
-                            <span class="detail_table_row_btn">{{scope.row.isInput ? '取消' : '删除'}}</span>
+                            <span class="detail_table_row_btn" @click="deleteLineRes(scope.row)">{{scope.row.isInput ? '取消' : '删除'}}</span>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -205,9 +213,9 @@
                 </div>
             </div>
             <div slot="footer" class="dialog-footer path_detail_footer">
-                <el-button v-if="isEdit" @click="isEdit = false">取 消</el-button>
+                <el-button v-if="isEdit" @click="cancelEdit">取 消</el-button>
                 <el-button v-else @click="isEdit = true">编 辑</el-button>
-                <el-button type="primary" @click="detailDialogVisible = false">{{isEdit ? '保 存' : '关 闭'}}</el-button>
+                <el-button type="primary" @click="saveResToLine">{{isEdit ? '保 存' : '关 闭'}}</el-button>
             </div>
         </el-dialog>
     </div>
@@ -218,6 +226,13 @@
     export default {
         name: "paintedPath",
         data(){
+            let validateresName = (rule, value, callback) => {
+                if(!this.createData.city){
+                    callback(new Error('请先选择城市'));
+                }else{
+                    callback();
+                }
+            };
             return{
                 // 用户登录信息
                 sessionData: '',
@@ -232,6 +247,11 @@
                 tableLoading: true,
                 cityList: [],
                 selectCity: '',
+                // 编辑线路是选择的区域下拉
+                areaList:[],
+                // 编辑线路是选择的区域id
+                regionID:'',
+                //
                 pathList: [
                     {value: '0',label:'线路一'},
                     {value: '1',label:'线路二'},
@@ -252,6 +272,8 @@
                     pathLine:'',
                     resName:''
                 },
+                // 小区下拉loading
+                resLoading: true,
                 // 创建路线的表单验证
                 createRules:{
                     pathLine: [
@@ -262,27 +284,37 @@
                         { required: true, message: '请输入选择城市', trigger: 'change' },
                     ],
                     resName:[
+                        {validator: validateresName, trigger: ['blur', 'change'] },
                         // { required: true, message: '请输入路线名称', trigger: 'blur' },
                     ]
                 },
                 // 可选择的小区列表 440105海珠区
                 resList:[
-                    {value:'45813',label:'阳光名苑',area:'荔湾区'},
-                    {value:'44072',label:'雅郡花园',area:'荔湾区'},
-                    {value:'42438',label:'珠江国际公馆',area:'荔湾区'},
-                    {value:'40955',label:'海印南苑',area:'荔湾区'}
+                    // {value:'52001',label:'来北家园'},
+                    // {value:'45813',label:'阳光名苑',area:'荔湾区'},
+                    // {value:'44072',label:'雅郡花园',area:'荔湾区'},
+                    // {value:'42438',label:'珠江国际公馆',area:'荔湾区'},
+                    // {value:'40955',label:'海印南苑',area:'荔湾区'}
                 ],
                 // 线路详情
                 detailDialogVisible: false,
+                pathDetaiLoading: true,
+                // 线路详情的id
+                detailLineId: '',
                 detailList:[],
                 // 编辑状态
                 isEdit: false,
+                // 线路详情的名称
                 activePathName:'',
+                // 新增行下标
+                addRowIndex: 0,
             }
         },
         mounted(){
             this.getSessionData()
+            // 获取线路列表
             this.getTableList()
+            // 获取城市列表
             this.getCity()
         },
         methods:{
@@ -293,10 +325,11 @@
             searchFun() {
                 this.getTableList()
             },
-            // 重置搜索
+            // 重置搜索 selectPath
             clearSearch(){
                 this.selectCity = '';
                 this.selectPath = '';
+                this.getTableList()
             },
             // 新建线路
             createPath(){
@@ -315,10 +348,9 @@
                     pageNo: this.pageData.pageNo,
                     pageSize: this.pageData.pageSize,
                 }
-                if(!params.name){
+                if (!params.name) {
                     delete params.name
                 }
-                this.tableLoading = false
                 api.getApi(this.apiVar.engineer + '/list',params).then(res=>{
                     console.log('线路列表接口',res)
                     if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
@@ -328,6 +360,7 @@
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }
+                    this.tableLoading = false
                 })
             },
             // 设置表格数据
@@ -343,10 +376,14 @@
                         updateTime: key.updateTime
                     }
                     // 覆盖小区
-                    for(let rKey of key.regionInfo){
-                        obj.regionInfo += rKey.regionName + '('+ rKey.count +')' + ' / '   // 斜杠前后有空格
+                    if(Array.isArray(key.regionInfo)){
+                        for(let rKey of key.regionInfo){
+                            obj.regionInfo += rKey.regionName + '('+ rKey.count +')' + ' / '   // 斜杠前后有空格
+                        }
+                        obj.regionInfo = obj.regionInfo.substr(0,obj.regionInfo.length-2)
+                    }else{
+                        obj.regionInfo = key.regionInfo || '--'
                     }
-                    obj.regionInfo = obj.regionInfo.substr(0,obj.regionInfo.length-2)
                     // 覆盖媒体
                     if(Array.isArray(key.mediaTypeInfo)){
                         for(let mKey of key.mediaTypeInfo){
@@ -366,7 +403,7 @@
                     "token": this.sessionData.token,
                     "uid": this.sessionData.uID
                 };
-                api.postApi(this.apiVar.Advertisement+'/GetAuthorCity', info).then(res =>{
+                api.postApi(this.apiVar.Advertisement + '/GetAuthorCity', info).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 300200){
                         let resinfo = res.data.data;
@@ -386,33 +423,114 @@
                     }
                 });
             },
+            // 获取区域
+            getAreaByRID(){
+                let cityIds = ''
+                for(let key of this.cityList){
+                    cityIds += key.value + ','
+                }
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    cityIds: cityIds.substr(0,cityIds.length-1)
+                }
+                api.getApi(this.apiVar.engineer + '/districtList', params).then(res=>{
+                    console.log('获取区域',res);
+                    if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
+                        let resData = res.data.data;
+                        let areaArr = [];
+                         for(let key of resData){
+                             areaArr.push({
+                                 label: key.rName,
+                                 value: key.rID
+                             })
+                         }
+                        this.areaList = areaArr;
+                    } else if (res.data.SysCode == 100302) {
+                        this.loginTimeout();
+                    } else {
+                        this.messageFun('warning', res.data.MSG);
+                    }
+                })
+            },
+            // 小区下拉选项
+            getResList(){
+                console.log('小区列表',this.resList)
+                if(!this.resList.length){
+                    this.resLoading = true
+                    let params = {
+                        uid: this.sessionData.uID,
+                        token: this.sessionData.token,
+                        districtId: this.regionID,
+                        cityId: this.createData.city,
+                        // resName: '',
+                    }
+                    if(!params.districtId){
+                        delete params.districtId;
+                    }
+                    if(!params.cityId){
+                        delete params.cityId;
+                    }
+                    api.getApi(this.apiVar.engineer + '/resInfoListByDistrictId',params).then(res=>{
+                        console.log('小区下拉选项res',res);
+                        if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
+                            let resData = res.data.data;
+                            let resArr = [];
+                            for(let key of resData){
+                                resArr.push({
+                                    label: key.resName,
+                                    value: key.resID
+                                });
+                            }
+                            this.resList = resArr;
+                            this.resLoading = false
+                        } else if (res.data.SysCode == 100302) {
+                            this.loginTimeout();
+                        } else {
+                            this.messageFun('warning', res.data.MSG);
+                        }
+                    })
+                }
+            },
             // 查看详情 detailList
             showDetail(row){
                 this.activePathName = row.lineName
+                this.detailLineId = row.lineId
                 let params = {
                     uid:this.sessionData.uID,
                     token: this.sessionData.token,
                     lineId: row.lineId
                 }
                 api.getApi(this.apiVar.engineer + '/detail', params).then(res => {
-                    console.log('线路详情res', res)
+                    console.log('线路详情res', res);
                     if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
-                        this.setDetailData(res.data.data)
+                        this.setDetailData(res.data.data);
+                        this.pathDetaiLoading = false;
+                        this.isEdit = false;
                     } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout()
+                        this.loginTimeout();
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        this.messageFun('warning', res.data.MSG);
                     }
                 })
-                this.detailDialogVisible = true
+                //获取小区下拉
+                this.createData.city = ''
+                this.resList = []
+                this.getResList()
+                // 获取城市区域
+                if(!this.areaList.length){
+                    this.getAreaByRID();
+                }
+                this.detailDialogVisible = true;
             },
             // 线路详情
             setDetailData(lineData){
                 console.log('线路详情lineData',lineData)
                 if(Array.isArray(lineData)){
-                    let detailList = []
+                    let detailList = [];
                     for(let key of lineData){
                         detailList.push({
+                            "lineId": this.detailLineId,
                             "resourceId": key.resourceId,
                             "resourceName": key.resourceName,
                             "regionId": key.regionId,
@@ -424,17 +542,163 @@
                             "address": key.address,
                         })
                     }
-                    this.detailList = detailList
+                    this.detailList = detailList;
                 }
             },
-            handleClose(done) {
-                console.log('done',done)
-                this.createDialogVisible = false
-                // this.$confirm('确认关闭？') .then(_ => {
-                //         done();
-                //     }).catch(_ => {
-                //
-                // });
+            // 新增一行
+            AddRow(){
+                this.detailList.unshift({
+                    resourceId: '',
+                    resourceName:'',
+                    regionName:'',
+                    regionId: '',
+                    cityId: "",
+                    cityName: "",
+                    tradingArea:'',
+                    type:'',
+                    address:'',
+                    isInput: true,
+                    addRowIndex: this.addRowIndex,
+                });
+                this.addRowIndex += 1
+            },
+            // 删除线路小区
+            deleteLineRes(row){
+                console.log('删除线路小区',row)
+                if (row.isInput) {
+                    // 未添加线路的行删除
+                    this.detailDeletRow('1',row.addRowIndex)
+                } else {
+                    this.$confirm('确认删除该小区？').then(_ => {
+                        let params = {
+                            uid: this.sessionData.uID,
+                            token: this.sessionData.token,
+                            resId: row.resourceId,
+                            lineId: row.lineId
+                        }
+                        api.postApi(this.apiVar.engineer + '/removeResFromLine', params).then(res => {
+                            console.log('删除线路的小区', res)
+                            if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
+                                this.detailDeletRow('2', row.resourceId)
+                                this.messageFun('success', '删除成功')
+                            } else if (res.data.SysCode == 100302) {
+                                this.loginTimeout()
+                            } else {
+                                this.messageFun('warning', res.data.MSG)
+                            }
+                        })
+                    }).catch(_ => {
+                        this.messageFun('info', '已取消')
+                    })
+                }
+            },
+            // 详情列表编辑状态删除行 stats：1为普通的行删除 2为线路里的小区删除
+            detailDeletRow(stats,id){
+                for (let i = 0; i < this.detailList.length; i++) {
+                    if (stats === '1') {
+                        if (id === this.detailList[i].addRowIndex) {
+                            this.detailList.splice(i, 1)
+                            break
+                        }
+                    } else if (stats === '2') {
+                        if (id === this.detailList[i].resourceId) {
+                            this.detailList.splice(i, 1)
+                            break
+                        }
+                    }
+                }
+            },
+            // 编辑线路-选择小区
+            changeRes(row){
+                console.log('选择的小区',row)
+                if(row.resourceId !== '' && row.resourceId !== null){
+                    let params = {
+                        uid: this.sessionData.uID,
+                        token: this.sessionData.token,
+                        resId: row.resourceId
+                    }
+                    api.getApi(this.apiVar.engineer + '/resInfoByResId', params).then(res=>{
+                        console.log('获取选择小区的信息',res)
+                        if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
+                            let resData = res.data.data
+                            row.type = resData.cType || '--'
+                            row.address = resData.resAddress || '--'
+                            row.resourceName = resData.resName
+                            row.tradingArea = resData.tradingArea || '--'
+                            row.regionId = resData.rID
+                        } else if (res.data.SysCode == 100302) {
+                            this.loginTimeout()
+                        } else {
+                            this.messageFun('warning', res.data.MSG)
+                        }
+                    })
+                }
+            },
+            // 编辑线路-选择区域
+            changeArea(val){
+                this.regionID = val
+                this.resList = []
+                this.getResList()
+            },
+            // 取消编辑
+            cancelEdit(){
+                let arr = []
+                for (let key of this.detailList) {
+                    if (!key.isInput) {
+                        arr.push(key);
+                    }
+                }
+                this.detailList = arr;
+                this.isEdit = false
+            },
+            // 保存或关闭
+            saveResToLine(){
+                if (this.isEdit) {
+                    console.log('保存')
+                    let resourceIds = ''
+                    let isAdd = false
+                    for(let key of this.detailList){
+                        if(key.isInput){
+                            isAdd = true
+                            resourceIds += key.resourceId + ','
+                        }
+                    }
+                    if(isAdd){
+                        let params = {
+                            uid: this.sessionData.uID,
+                            token: this.sessionData.token,
+                            lineId: this.detailLineId,
+                            resourceIds: resourceIds.substr(0,resourceIds.length-1)
+                        }
+                        api.postApi(this.apiVar.engineer + '/addResource',params).then(res=>{
+                            console.log('线路新增资源',res)
+                            if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
+                                this.messageFun('success', '保存成功')
+                                this.getTableList()
+                            } else if (res.data.SysCode == 100302) {
+                                this.loginTimeout()
+                            } else {
+                                this.messageFun('warning', res.data.MSG)
+                            }
+                        })
+                    }else{
+                        this.messageFun('warning','暂无新增资源需保存！')
+                    }
+                } else {
+                    console.log('关闭')
+                }
+                this.detailDialogVisible = false
+            },
+            // 新建方案-小区选择
+            selectResFocus(){
+                if(!this.createData.city){
+                    this.resLoading = false
+                    this.$refs.createData.validateField('resName')  // 手动触发校验
+                }else{
+                    this.$refs.createData.clearValidate('resName') // 清除验证
+                    //获取小区下拉
+                    this.getResList()
+                }
             },
             //创建的表单验证
             submitForm(formName) {
@@ -443,7 +707,6 @@
                     if (valid) {
                         console.log('submit!',this.createData);
                         this.creatLine()
-                        // this.createDialogVisible = false
                     } else {
                         console.log('error submit!!');
                         return false;
@@ -465,6 +728,8 @@
                   if (res.data.System == 200200 || res.data.MSG === "成功") {
                       this.messageFun('success', '新建成功')
                       this.createDialogVisible = false
+                      this.getTableList()
+                      this.setFormData()
                   } else if (res.data.SysCode == 100302) {
                       this.loginTimeout()
                   } else {
@@ -472,16 +737,12 @@
                   }
               })
             },
-            // 新增一行
-            AddRow(){
-                this.detailList.unshift({
-                    resName:'',
-                    area:'',
-                    tradingArea:'',
-                    buildType:'',
-                    address:'',
-                    isInput: true,
-                });
+            // 新建成功后数据初始
+            setFormData(){
+                this.resList = []
+                for(let i in this.createData){
+                    this.createData[i] = ""
+                }
             },
             // 操作提示统一方法
             messageFun(mesType,mes){

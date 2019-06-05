@@ -29,7 +29,8 @@ const apiVar = {
     //经营分析
     Count: '/Count',
     QADNAPI: '/QADNAPI',
-    engineer: '/engineer',
+    // 分画模块相关
+    publishPaintTask: '/engineer/publishPaintTask',
     wuYouMap: wuYouMap,
     jsonLink: jsonLink,
     qadnUrl: process.env.API_ROOT?process.env.API_ROOT.substr(0, process.env.API_ROOT.length-1):''

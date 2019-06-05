@@ -24,7 +24,7 @@
                 <el-row class="same_padding">
                     <el-col :span="5">
                         <b>所属线路：</b>
-                        <span>{{projectInfo.line}}</span>
+                        <span>{{projectInfo.lineName}}</span>
                     </el-col>
                     <el-col :span="5">
                         <b>工程人员：</b>
@@ -123,9 +123,9 @@
         <!-- 分配人员弹出框 -->
         <el-dialog title="分配上画人员"
             :visible.sync="isShowDistri"
-            custom-class="size_detail_dialog"                        
+            custom-class="size_detail_dialog"            
             width="400px">
-            <el-select v-model="projectInfo.engineer" placeholder="请选择" size="small" multiple>
+            <el-select v-model="currEngineer" placeholder="请选择" size="small" multiple>
                 <el-option v-for="item of engineerArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
             <span slot="footer" class="dialog-footer">
@@ -173,6 +173,7 @@
                 // 工程人员
                 engineerArr: [],
                 isShowDistri: false,
+                currEngineer: [],
                 // 展示图片
                 isShowImg: false,
                 // 图片url
@@ -326,7 +327,7 @@
                     token: sess.token,
                     publishId: sessionStorage.getItem('taskId'),
                 };
-                api.getApi_file(this.apiVar.engineer+"/publishPaintTask/export", info).then(res =>{
+                api.getApi_file(this.apiVar.publishPaintTask+"/export", info).then(res =>{
                     console.log(res.data);
 
                 }).catch(err =>{
@@ -335,6 +336,9 @@
             },
             // 分配人员
             toDistribute(){
+                this.currEngineer = this.projectInfo.engineerArr.map((data, index)=> {
+                    return data.value
+                });
                 this.getEngineer();
                 this.isShowDistri = true;
             },
@@ -373,11 +377,12 @@
                 let info = {
                     uid: sess.uID,
                     token: sess.token,
-                    taskId: this.currTaskId,
+                    taskId: this.projectInfo.photoId,
                     userIds: this.currEngineer.join(','),
                 };
-                api.postApi(this.apiVar.engineer+"/publishPaintTask/setEngineerUser", info).then(res =>{
+                api.postApi(this.apiVar.publishPaintTask+"/setEngineerUser", info).then(res =>{
                     if(res.data.SysCode == 200200){
+
                         Message.success(res.data.MSG);
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
@@ -394,11 +399,80 @@
                     token: sess.token,
                     publishId: sessionStorage.getItem('taskId'),
                 };
-                api.getApi(this.apiVar.engineer+"/publishPaintTask/detail", info).then(res =>{
+                api.getApi(this.apiVar.publishPaintTask+"/detail", info).then(res =>{
                     console.log(res.data);
+                    if(res.data.SysCode == 200200){
+                        let resInfo = res.data.data;
+                        this.projectInfo = this.setData(resInfo);
+                        this.projectOrderList = this.setTableData(resInfo.orderList);
+                    }else if(res.data.SysCode == 100302){
+                        this.loginTimeout();
+                    }else{
+                        Message.warning(res.data.MSG);
+                    }
                 }).catch(err =>{
                     console.log(err);
                 });
+            },
+            // 设置数据格式
+            setData(item){
+                let obj = {
+                    photoId: item.publishId,
+                    photoTime: item.publishDate,
+                    line: item.lineId,
+                    lineName: item.lineName,
+                    photoNum: item.publishPaintCount,
+                    mediaNum: item.mediaCount,
+                    resNum: item.resourceCount,
+                    engineerArr: [],
+                    engineer: "",
+                    progress: item.publishProgress,
+                    finishNum: item.finishNum,
+                    orderNum: item.orderList.length,
+                };
+                obj.engineer = item.engineerMember?item.engineerMember.map((data, index) =>{
+                    return data.userName;
+                }).join('/'): '';
+                obj.engineerArr = item.engineerMember?item.engineerMember.map((data, index) =>{
+                    return {
+                        label: data.userName,
+                        value: data.userId,
+                    };
+                }): [];
+                return obj;
+            },
+            // 设置表格数据
+            setTableData(arr){
+                let result = [];
+                result = arr.map((item, index)=>{
+                    let info = {
+                        orderId: item.orderId,
+                        orderName: item.orderName,
+
+                        resNum: item.resNum,
+                        mediaNum: item.mediaNum,
+                        adsNum: item.adsNum,
+                        finishNum: item.finishNum,
+                        progress: item.progress,
+                        asidList: []
+                    };
+                    info.asidList = item.resourceList.map((data, daIndex)=>{
+                        return {
+                            resID: data.resourceId,
+                            resName: data.resourceName,
+                            mTitle: data.mediaName,
+                            asLab: data.asName,
+                            adSize: data.resourceSize,
+                            assetTag: data.assetNumber,
+                            mRemark: data.remark,
+                            materialUrl: data.material,
+                            resAddress: data.address,
+                            state: data.publishStatus,
+                        }
+                    });
+                    return info;
+                });
+                return result;
             },
             // 数字转换为中文
             toChinesNum(num){

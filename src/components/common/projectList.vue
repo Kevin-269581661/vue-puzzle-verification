@@ -164,65 +164,7 @@
                 sizeList: [],
                 isShowSize: false,
                 // 表格数据
-                // projectList: [],
-                projectList: [
-                    {
-                        photoId: 1,
-                        photoTime: '2018-08-08',
-                        line: 1,
-                        lineName: '线路一',
-                        orderId: 1,
-                        order: '订单一',
-                        size: '1080*1920',
-                        photoNum: 280,
-                        mediaNum: 24,
-                        resNum: 20,
-                        engineer: '工程一',
-                        progress: 0.8
-                    },
-                    {
-                        photoId: 1,
-                        photoTime: '2018-08-08',
-                        line: 1,
-                        lineName: '线路一',
-                        orderId: 1,
-                        order: '订单一',
-                        size: '1080*1920',
-                        photoNum: 280,
-                        mediaNum: 24,
-                        resNum: 20,
-                        engineer: '工程一',
-                        progress: 0.8
-                    },
-                    {
-                        photoId: 1,
-                        photoTime: '2018-08-08',
-                        line: 1,
-                        lineName: '线路一',
-                        orderId: 1,
-                        order: '订单一',
-                        size: '1080*1920',
-                        photoNum: 280,
-                        mediaNum: 24,
-                        resNum: 20,
-                        engineer: '工程一',
-                        progress: 0.8
-                    },
-                    {
-                        photoId: 1,
-                        photoTime: '2018-08-08',
-                        line: 1,
-                        lineName: '线路一',
-                        orderId: 1,
-                        order: '订单一',
-                        size: '1080*1920',
-                        photoNum: 280,
-                        mediaNum: 24,
-                        resNum: 20,
-                        engineer: '工程一',
-                        progress: 0.8
-                    },
-                ],
+                projectList: [],
                 loadingOrder: false,
                 loading: false,
                 currPage: 1,
@@ -255,7 +197,7 @@
                     uid: sess.uID,
                     token: sess.token,
                 };
-                api.getApi(this.apiVar.engineer+"/publishLine/list", info).then(res =>{
+                api.getApi(this.apiVar.engineer+"/list", info).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 200200){
                         this.lineArr = res.data.data.map((item, index) =>{
@@ -312,7 +254,7 @@
                         apName: query,
                     };
                     this.loadingOrder = true;
-                    api.getApi(this.apiVar.engineer+"/publishPaintTask/orderList", info).then(res =>{
+                    api.getApi(this.apiVar.publishPaintTask+"/orderList", info).then(res =>{
                         console.log(res.data);
                         this.loadingOrder = false;
                         this.orderArr = res.data.data.map(item => {
@@ -334,7 +276,7 @@
             },
             // 滚动获取列表数据
             getData(params){
-                api.getApi(this.apiVar.engineer+'/publishPaintTask/list', params).then(res =>{
+                api.getApi(this.apiVar.publishPaintTask+'/list', params).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 100302){
                         this.loginTimeout();
@@ -495,8 +437,9 @@
                     taskId: this.currTaskId,
                     userIds: this.currEngineer.join(','),
                 };
-                api.postApi(this.apiVar.engineer+"/publishPaintTask/setEngineerUser", info).then(res =>{
+                api.postApi(this.apiVar.publishPaintTask+"/setEngineerUser", info).then(res =>{
                     if(res.data.SysCode == 200200){
+                        
                         Message.success(res.data.MSG);
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();

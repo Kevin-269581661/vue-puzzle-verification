@@ -95,7 +95,7 @@
                     </el-form-item>
                     <el-form-item label="选择城市:" prop="city">
                         <el-select v-model="createData.city" filterable placeholder="请选择城市" :clearable="true"
-                                   style="width: 100%" size="small" @change="">
+                                   style="width: 100%" size="small" @change="changeCity">
                             <el-option
                                 v-for="item in cityList"
                                 :key="item.value"
@@ -106,7 +106,7 @@
                     </el-form-item>
                     <el-form-item label="选择小区:" prop="resName">
                         <el-select v-model="createData.resName" filterable multiple placeholder="请选择小区" :clearable="true"
-                                   :loading="resLoading" style="width: 100%" size="small" @focus="selectResFocus" @change="">
+                                   :loading="resLoading" style="width: 100%" size="small" @focus="selectResFocus">
                             <el-option
                                 v-for="item in resList"
                                 :key="item.value"
@@ -246,7 +246,6 @@
                 //加载中
                 tableLoading: true,
                 cityList: [],
-                selectCity: '',
                 // 编辑线路是选择的区域下拉
                 areaList:[],
                 // 编辑线路是选择的区域id
@@ -288,14 +287,8 @@
                         // { required: true, message: '请输入路线名称', trigger: 'blur' },
                     ]
                 },
-                // 可选择的小区列表 440105海珠区
-                resList:[
-                    // {value:'52001',label:'来北家园'},
-                    // {value:'45813',label:'阳光名苑',area:'荔湾区'},
-                    // {value:'44072',label:'雅郡花园',area:'荔湾区'},
-                    // {value:'42438',label:'珠江国际公馆',area:'荔湾区'},
-                    // {value:'40955',label:'海印南苑',area:'荔湾区'}
-                ],
+                // 可选择的小区列表
+                resList:[],
                 // 线路详情
                 detailDialogVisible: false,
                 pathDetaiLoading: true,
@@ -327,7 +320,6 @@
             },
             // 重置搜索 selectPath
             clearSearch(){
-                this.selectCity = '';
                 this.selectPath = '';
                 this.getTableList()
             },
@@ -456,7 +448,7 @@
             // 小区下拉选项
             getResList(){
                 console.log('小区列表',this.resList)
-                if(!this.resList.length){
+                // if(!this.resList.length){
                     this.resLoading = true
                     let params = {
                         uid: this.sessionData.uID,
@@ -477,12 +469,16 @@
                             let resData = res.data.data;
                             let resArr = [];
                             for(let key of resData){
+                                if(!key.resID){
+                                    console.log('key.resID',key)
+                                }
                                 resArr.push({
                                     label: key.resName,
-                                    value: key.resID
+                                    value: key.resID.toString()
                                 });
                             }
                             this.resList = resArr;
+                            console.log('this.resList',this.resList)
                             this.resLoading = false
                         } else if (res.data.SysCode == 100302) {
                             this.loginTimeout();
@@ -490,7 +486,7 @@
                             this.messageFun('warning', res.data.MSG);
                         }
                     })
-                }
+                // }
             },
             // 查看详情 detailList
             showDetail(row){
@@ -569,7 +565,7 @@
                     // 未添加线路的行删除
                     this.detailDeletRow('1',row.addRowIndex)
                 } else {
-                    this.$confirm('确认删除该小区？').then(_ => {
+                    this.$confirm('确定删除该小区？','提示').then(_ => {
                         let params = {
                             uid: this.sessionData.uID,
                             token: this.sessionData.token,
@@ -689,15 +685,20 @@
                 }
                 this.detailDialogVisible = false
             },
+            // 新建方案 - 城市选择
+            changeCity(val){
+                console.log('城市选择',val)
+                this.createData.resName = []
+                //获取小区下拉
+                this.getResList()
+            },
             // 新建方案-小区选择
             selectResFocus(){
-                if(!this.createData.city){
+                if (!this.createData.city) {
                     this.resLoading = false
                     this.$refs.createData.validateField('resName')  // 手动触发校验
-                }else{
+                } else {
                     this.$refs.createData.clearValidate('resName') // 清除验证
-                    //获取小区下拉
-                    this.getResList()
                 }
             },
             //创建的表单验证

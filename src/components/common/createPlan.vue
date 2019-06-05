@@ -1085,6 +1085,7 @@
     import api from '../../api/api'
     import areaArr from '../../commonFun/areaPackage_new'
     import commaFormat from '../../commonFun/commaFormat'
+    import sessFun from '../../commonFun/sessFun.js'
     // 时间格式化
     import timeFormat from '../../commonFun/timeFormat'
     // 筛选过滤
@@ -1485,7 +1486,7 @@
             },
             // 获取浏览器session数据
             getsessionData() {
-                this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
+                this.sessionData = sessFun.getSess();
                 let sess = this.sessionData;
                 if((sess.uType == 'BD' && sess.saleManageLevel == 1) || (sess.uType == 'MD' && sess.mediaManageLevel == 1)){
                     this.isShowHalfYear = true;

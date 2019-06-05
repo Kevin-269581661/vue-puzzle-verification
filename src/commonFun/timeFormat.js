@@ -5,10 +5,10 @@ var timeFormat = {};
 timeFormat.toDate = function (time, format = '-') {
 	let result = '';
 	if (time) {
-		let str = time.toString().substring(time.length - 2);
-		if (str == ".0") {
-			time = time.toString().substring(0, time.length - 2);
-		}
+		// let str = time.toString().substring(time.length - 2);
+		// if (str == ".0") {
+		// 	time = time.toString().substring(0, time.length - 2);
+		// }
 		time = new Date(Date.parse(time.toString().replace(/[-\.]/g, "/")));
 		let year = time.getFullYear();
 		let month = time.getMonth() + 1;//js从0开始取
@@ -230,5 +230,31 @@ timeFormat.returnMonthCount = function (AddMonthCount,format) {  // format: . �
     let M = (dd.getMonth() + 1 < 10 ? '0' + (dd.getMonth() + 1) : dd.getMonth() + 1)
     let D = dd.getDate() < 10 ? "0" + dd.getDate() : dd.getDate()
     return Y + format + M + format + D
+}
+// 获取date本月本周或者近两周的时间(周一到周日为一周),例如获取近一周的时间 returnDayRange(7, new Date());
+timeFormat.returnDayRange = function (num, date){
+	let resultObj = {
+		startTime: '',
+		endTime: '',
+	};
+	let time = new Date(this.toDate(date, '/'));
+	let sTime = time.getTime();
+	let day = time.getDay();
+	let limit = (day-1) * 86400000;
+	let resultTime = time.getTime() - limit;
+	let startTime = new Date(resultTime);
+	let endTime = resultTime + (num-1)*86400000;
+	resultObj.startTime = timeFormat.toDate(startTime);
+	resultObj.endTime = timeFormat.toDate(new Date(endTime));
+	return resultObj;
+}
+// 获取传入日期当月的天数
+timeFormat.getCurrMonthDays = function(date){
+	let aDate = new Date(this.toDate(date));
+	let aYear = aDate.getFullYear();
+	let aMonth = aDate.getMonth()+1;
+	let new_date = new Date(aYear, aMonth, 0);
+	//这里传入的0,代表获取上一个月的最后一天;如果传1,则获得当月的第一天；
+	return new_date.getDate();
 }
 export default timeFormat;

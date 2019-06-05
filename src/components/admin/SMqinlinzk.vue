@@ -119,6 +119,7 @@
     import api from "../../api/api.js";
     import timeFormat from '../../commonFun/timeFormat.js'
     import commaFormat from '../../commonFun/commaFormat.js'
+    import sessFun from '../../commonFun/sessFun.js';    
     // 消费偏好json
     import allHoppy from "../../commonFun/json/allHoppy_new.json";
     // 消费偏好转换中文
@@ -398,7 +399,7 @@
             }
         },
         created() {
-            this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
+            this.sessionData = sessFun.getSess();
             this.allHoppy = allHoppy;
         },
         mounted() {

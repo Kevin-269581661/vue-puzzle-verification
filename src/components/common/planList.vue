@@ -149,7 +149,10 @@
                         </el-table-column>
                         <el-table-column label="操作" min-width="8.4%" v-if="!(role=='OP' || role=='AD')">
                             <template slot-scope="scope">
-                                <el-dropdown size="small" split-button trigger="click" placement="bottom-start">操作
+                                <el-dropdown size="small" trigger="click" placement="bottom-start">
+                                    <span class="el-dropdown-link">
+                                        操作<i class="el-icon-arrow-down el-icon--right"></i>
+                                    </span>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item @click.native.prevent="preload(scope.row)" :disabled="isDisable||(scope.row.apState!=1)">预锁
                                         </el-dropdown-item>
@@ -223,6 +226,7 @@ import api from "../../api/api.js";
 import commaFormat from "../../commonFun/commaFormat.js";
 // 时间格式化
 import dateFormat from "../../commonFun/timeFormat.js";
+import sessFun from "../../commonFun/sessFun.js";
 // 方案缓存
 import cacheAdPlan from "../../commonFun/cacheAdPlan"
 import downloadVacancy from "../../components/common/components/vacancyDownload.vue"
@@ -463,7 +467,7 @@ export default {
         },
         // 获取session数据
         getSessionData() {
-            this.sessionData = JSON.parse(sessionStorage.getItem("session_data"));
+            this.sessionData = sessFun.getSess();
             let sess = this.sessionData;
             if(sess.ascType==0 || (sess.uType=='MD' && sess.mediaManageLevel==1) || (sess.uType =='BD') && sess.saleManageLevel == 1){
                 this.isAll = true;
@@ -1461,6 +1465,14 @@ a {
 }
 
 /*操作*/
+.el-dropdown-link {
+    cursor: pointer;
+    color: #409EFF;
+}
+.el-icon-arrow-down {
+    font-size: 12px;
+}
+
 /deep/ .el-button--mini,
 .el-button--small {
     font-size: 14px !important;

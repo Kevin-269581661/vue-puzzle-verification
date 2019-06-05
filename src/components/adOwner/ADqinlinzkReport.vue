@@ -73,6 +73,7 @@
 import commaFormat from "../../commonFun/commaFormat.js";
 // 时间格式化
 import dateFormat from "../../commonFun/timeFormat.js";
+import sessFun from "../../commonFun/sessFun.js";
 import { api } from '../../api/api';
 export default {
     name: "ADqinlinzkReport",
@@ -147,7 +148,7 @@ export default {
         };
     },
     created() {
-		this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
+		this.sessionData = sessFun.getSess();
 		this.getInitData();
     },
     methods: {

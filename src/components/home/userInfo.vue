@@ -66,6 +66,8 @@
 <script>
 import api from "../../api/api.js";
 import { Message } from 'element-ui';
+import sessFun from "../../commonFun/sessFun.js";
+
 export default {
     name: "userInfo",
     data() {
@@ -111,7 +113,7 @@ export default {
     },
     methods: {
         getSess(){
-            this.sessionData = JSON.parse(sessionStorage.getItem("session_data"));
+            this.sessionData = sessFun.getSess();
             this.fileData = {
                 uid: this.sessionData.uID,
                 token: this.sessionData.token,

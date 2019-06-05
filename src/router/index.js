@@ -61,6 +61,8 @@ const operateCommon = () => import('../components/operate/operate_common.vue')
 //媒介
 const mediaIndex = () => import('../components/media/media_index.vue')
 const mediaCommon = () => import('../components/media/media_common.vue')
+const projectList = () => import('../components/common/projectList.vue')
+const projectDetail = () => import('../components/common/projectDetail.vue')
 
 //销售
 const saleIndex = () => import('../components/sale/sale_index.vue')
@@ -198,6 +200,8 @@ export default new Router({
                 {path: '/media/compact', component: compact},
                 {path: '/media/paintedPath', component: paintedPath},
                 {path: '/media/adsDialPlate', component: adsDialPlate},
+                {path: '/media/projectList', component: projectList},
+                {path: '/media/projectDetail', component: projectDetail},
             ]
         },
         //销售

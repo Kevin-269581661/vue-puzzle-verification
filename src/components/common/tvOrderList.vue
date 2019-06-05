@@ -113,6 +113,7 @@ import { api } from "../../api/api";
 import dateFormat from "../../commonFun/timeFormat.js";
 // 价格格式化
 import commaFormat from "../../commonFun/commaFormat.js";
+import sessFun from "../../commonFun/sessFun.js";
 import {
     Button,
     CheckboxGroup,
@@ -172,7 +173,7 @@ export default {
 
         // 获取角色
         getRole() {
-            this.sessionData= JSON.parse(sessionStorage.getItem("session_data"));
+            this.sessionData= sessFun.getSess();
             this.role = this.sessionData.uType;
         },
         // 获取默认数据

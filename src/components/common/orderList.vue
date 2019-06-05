@@ -128,7 +128,10 @@
                         </el-table-column>
                         <el-table-column label="操作" min-width="7.0%" v-if="!(role=='OP' || role=='AD')">
                             <template slot-scope="scope">
-                                <el-dropdown size="small" split-button trigger="click" placement="bottom-start">操作
+                                <el-dropdown size="small" trigger="click" placement="bottom-start">
+                                    <span class="el-dropdown-link">
+                                        操作<i class="el-icon-arrow-down el-icon--right"></i>
+                                    </span>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item :disabled="(scope.row.apState==0)||(scope.row.apState==5)||(role!='SM') " @click.native.prevent="finishOrder(scope.row)" class="finish">结束订单</el-dropdown-item>
                                         <el-dropdown-item :disabled="(role!='SM')" @click.native.prevent="applyPhoto(scope.row)" class="finish">申请画像</el-dropdown-item>
@@ -159,6 +162,7 @@ import { api } from "../../api/api";
 import dateFormat from "../../commonFun/timeFormat.js";
 // 价格格式化
 import commaFormat from "../../commonFun/commaFormat.js";
+import sessFun from "../../commonFun/sessFun.js";
 
 // 画像申请
 import applyphoto from './components/applyPhoto.vue';
@@ -375,7 +379,7 @@ export default {
         },
         // 获取角色
         getRole() {
-            this.sessionData= JSON.parse(sessionStorage.getItem("session_data"));
+            this.sessionData= sessFun.getSess();
             this.role = this.sessionData.uType;
             let sess = this.sessionData;
             if(sess.ascType==0 || (sess.uType=='MD' && sess.mediaManageLevel==1) || (sess.uType =='BD') && sess.saleManageLevel == 1){
@@ -1175,6 +1179,13 @@ a {
 }
 
 /*操作*/
+.el-dropdown-link {
+    cursor: pointer;
+    color: #409EFF;
+}
+.el-icon-arrow-down {
+    font-size: 12px;
+}
 /deep/ .el-button--mini,
 .el-button--small {
     font-size: 14px !important;

@@ -63,6 +63,7 @@ import api from "../../../api/api.js";
 // 时间格式化
 import timeFormat from '../../../commonFun/timeFormat.js'
 import sheetExcel from "../../../commonFun/sheetExcel.js";
+import sessFun from "../../../commonFun/sessFun.js";
 
 import { Message } from 'element-ui';
 
@@ -85,7 +86,7 @@ export default {
     methods:{
         // 获取session数据
         getSessionData() {
-            this.sessionData = JSON.parse(sessionStorage.getItem("session_data"));
+            this.sessionData = sessFun.getSess();
         },
         cancelDown(){
             this.messageFun('info', '取消此操作');

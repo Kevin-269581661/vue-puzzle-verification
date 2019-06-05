@@ -292,6 +292,7 @@
     import dateFormat from "../../../commonFun/timeFormat.js";
     // 转换时间
     import dayToWeek from "../../../commonFun/dayToWeek.js";
+    import sessFun from "../../../commonFun/sessFun.js";
     export default {
         name: "apQuotation",
         data(){
@@ -378,7 +379,7 @@
                 premiumData:'',                 // 溢价信息
                 MaxGMDate: 0,                   // 最大赠送面天
                 isDetail: true,                 // 标示来源-创建、详情等
-                sessionData: JSON.parse(sessionStorage.getItem('session_data')),
+                sessionData: sessFun.getSess(),
                 ADPriceList: [],                // 城市刊例价
                 CSMList: [],                    // 城市不同排期的所有面数
                 commentMediaADNum: [],        // 统计同一城市相同因不同排期而选择相同的asid

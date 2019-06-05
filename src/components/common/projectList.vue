@@ -200,7 +200,7 @@
                 api.getApi(this.apiVar.engineer+"/list", info).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 200200){
-                        this.lineArr = res.data.data.map((item, index) =>{
+                        this.lineArr = res.data.data.map(item =>{
                             return {
                                 label: item.lineName,
                                 value: item.lineId,
@@ -229,7 +229,7 @@
                 api.postApi_new(this.apiVar.Media, info).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 200200){
-                        this.engineerArr = res.data.data.map((item, index) =>{
+                        this.engineerArr = res.data.data.map(item =>{
                             return {
                                 value: item.uID,
                                 label: item.realName
@@ -353,10 +353,10 @@
                     engineer: "",
                     progress: item.publishProgress
                 };
-                obj.engineer = item.engineerMember.map((data, index) =>{
+                obj.engineer = item.engineerMember.map(data =>{
                     return data.userName;
                 }).join('/');
-                obj.engineerArr = item.engineerMember.map((data, index) =>{
+                obj.engineerArr = item.engineerMember.map(data =>{
                     return {
                         label: data.userName,
                         value: data.userId,
@@ -416,7 +416,7 @@
             // 分配人员
             toAssign(item){
                 console.log(item);
-                this.currEngineer = item.engineerArr.map((data, index)=> {
+                this.currEngineer = item.engineerArr.map(data=> {
                     return data.value
                 });
                 this.currTaskId = item.photoId;
@@ -439,8 +439,20 @@
                 };
                 api.postApi(this.apiVar.publishPaintTask+"/setEngineerUser", info).then(res =>{
                     if(res.data.SysCode == 200200){
-                        
+                        let updateArr = this.engineerArr.filter(ele=>{
+                            return this.currEngineer.includes(ele.value)
+                        });
+                        this.projectList = this.projectList.map(t =>{
+                            if(t.photoId == this.currTaskId){
+                                t.engineerArr = updateArr;
+                                t.engineer = updateArr.map(data =>{
+                                    return data.label;
+                                }).join('/');
+                            }
+                            return t;
+                        });
                         Message.success(res.data.MSG);
+                        this.isShowDistri = false;
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{

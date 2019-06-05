@@ -336,7 +336,7 @@
             },
             // 分配人员
             toDistribute(){
-                this.currEngineer = this.projectInfo.engineerArr.map((data, index)=> {
+                this.currEngineer = this.projectInfo.engineerArr.map(data=> {
                     return data.value
                 });
                 this.getEngineer();
@@ -356,7 +356,7 @@
                 api.postApi_new(this.apiVar.Media, info).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 200200){
-                        this.engineerArr = res.data.data.map((item, index) =>{
+                        this.engineerArr = res.data.data.map(item =>{
                             return {
                                 value: item.uID,
                                 label: item.realName
@@ -382,8 +382,15 @@
                 };
                 api.postApi(this.apiVar.publishPaintTask+"/setEngineerUser", info).then(res =>{
                     if(res.data.SysCode == 200200){
-
+                        let updateArr = this.engineerArr.filter(ele =>{
+                            return this.currEngineer.includes(ele.value)
+                        });
+                        this.projectInfo.engineerArr = updateArr;
+                        this.projectInfo.engineer = updateArr.map(data =>{
+                            return data.label;
+                        }).join('/');
                         Message.success(res.data.MSG);
+                        this.isShowDistri = false;                        
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{
@@ -430,10 +437,10 @@
                     finishNum: item.finishNum,
                     orderNum: item.orderList.length,
                 };
-                obj.engineer = item.engineerMember?item.engineerMember.map((data, index) =>{
+                obj.engineer = item.engineerMember?item.engineerMember.map(data =>{
                     return data.userName;
                 }).join('/'): '';
-                obj.engineerArr = item.engineerMember?item.engineerMember.map((data, index) =>{
+                obj.engineerArr = item.engineerMember?item.engineerMember.map(data =>{
                     return {
                         label: data.userName,
                         value: data.userId,
@@ -456,7 +463,7 @@
                         progress: item.progress,
                         asidList: []
                     };
-                    info.asidList = item.resourceList.map((data, daIndex)=>{
+                    info.asidList = item.resourceList.map(data=>{
                         return {
                             resID: data.resourceId,
                             resName: data.resourceName,

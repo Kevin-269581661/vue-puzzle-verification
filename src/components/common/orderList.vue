@@ -214,7 +214,7 @@ export default {
                 rangeDate: "",
                 // 公司搜索
                 company: '',
-                // 城市筛选 
+                // 城市筛选
                 cityWord: '',
                 // 状态筛选
                 status: '',
@@ -393,7 +393,7 @@ export default {
                 pageNum: this.currPage,
                 pageSize: this.pageSize
             };
-            let { select, keyword, rangeDate, company, cityWord, status } = this.searchInfo;            
+            let { select, keyword, rangeDate, company, cityWord, status } = this.searchInfo;
             if(keyword){
                 if(select == '1'){
                     info.orderName = keyword;
@@ -456,7 +456,7 @@ export default {
         },
         // 搜索(优化)
         search(){
-            let { keyword, rangeDate, company, cityWord, status } = this.searchInfo;            
+            let { keyword, rangeDate, company, cityWord, status } = this.searchInfo;
             this.isSearch = false;
             let timer = setTimeout(()=>{
                 this.isSearch = true;
@@ -611,7 +611,7 @@ export default {
                 rangeDate: "",
                 // 公司搜索
                 company: '',
-                // 城市筛选 
+                // 城市筛选
                 cityWord: '',
                 // 状态筛选
                 status: '',
@@ -956,7 +956,7 @@ a {
 
 
 .mediaList_wrap .mediaList_container .table_wrap {
-    margin: 24px auto; 
+    margin: 24px auto;
     border-radius: 4px;
 }
 
@@ -1069,9 +1069,9 @@ a {
     text-overflow: ellipsis;
 }
 /deep/ .el-table td a{
-    padding: 8px 0;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
+    /*padding: 8px 0;*/
+    /*overflow-x: hidden;*/
+    /*text-overflow: ellipsis;*/
 }
 
 /deep/ .el-table--border {
@@ -1117,16 +1117,16 @@ a {
     overflow-x: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    line-height: 24px;
-    display: flex;
-    flex-direction: column;
+    /*line-height: 24px;*/
+    /*display: flex;*/
+    /*flex-direction: column;*/
 }
 
 /deep/ .el-table__row .cell span {
     overflow-x: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    line-height: 24px;
+    /*line-height: 24px;*/
 }
 
 .table_wrap /deep/ .el-table__row td:nth-child(5) .cell,

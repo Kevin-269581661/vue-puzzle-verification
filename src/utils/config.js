@@ -12,7 +12,8 @@ if(process.env.NODE_ENV == 'development'){
     jsonLink = 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes-dev/';
 }
 const apiRoot = {
-    devURL: '"http://192.168.1.248/"',
+    // devURL: '"http://192.168.1.248/"',
+    devURL: '"http://192.168.1.239/"',
     testURL: '"https://beta.qinlinad.com/"',
     grayURL: '"http://111.230.241.112/"',
     prodURL: '"https://www.qinlinad.com/"',
@@ -28,6 +29,7 @@ const apiVar = {
     //经营分析
     Count: '/Count',
     QADNAPI: '/QADNAPI',
+    engineer: '/engineer',
     wuYouMap: wuYouMap,
     jsonLink: jsonLink,
     qadnUrl: process.env.API_ROOT?process.env.API_ROOT.substr(0, process.env.API_ROOT.length-1):''

@@ -24,6 +24,8 @@
 <script>
 import api from "../../api/api.js";
 import { Form, FormItem, Button, Input, MessageBox, Message } from "element-ui";
+import sessFun from "../../commonFun/sessFun.js";
+
 export default {
     name: "changePwd",
     components: {
@@ -92,7 +94,7 @@ export default {
     },
     methods: {
         getSession(){
-            this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
+            this.sessionData = sessFun.getSess();
         },
         // 修改密码
         submitForm(formName) {

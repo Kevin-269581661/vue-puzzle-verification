@@ -16,6 +16,7 @@
 </template>
 
 <script>
+    import sessFun from "../../commonFun/sessFun.js";
     export default {
       name: "mapMessage",
       data(){
@@ -30,7 +31,7 @@
       },
       methods:{
         getSessionData(){
-          this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
+          this.sessionData = sessFun.getSess();
           if (this.sessionData.uType === 'BD') {
             this.$router.push('/sale/mapMessage')
           }else if(this.sessionData.uType === 'MD'){

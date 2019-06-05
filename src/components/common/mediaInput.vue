@@ -505,6 +505,7 @@
     import api from '../../api/api'
     import areaPackageNew from '../../commonFun/areaPackage_new'
     import areaToTextNew from '../../commonFun/areaToText_new'
+    import sessFun from '../../commonFun/sessFun.js'
     export default {
         name: "mediaInput",
         components: {
@@ -978,7 +979,7 @@
                 resImgDialog: false,            // 资源图片，大图
                 resImgUrl: '',                  // 上传成功后的url地址，用于显示大图
                 resData: {resID:''},            // 创建资源成功，保存返回来的数据
-                sessionData: JSON.parse(sessionStorage.getItem('session_data')),
+                sessionData: sessFun.getSess(),
                 submitBtnIsAble: false,         // 防止多次点击
                 mediaADImg:[],                  // 广告门媒体图片
                 mediaImgDialogVisible: false,   // 媒体图片放大的模态框

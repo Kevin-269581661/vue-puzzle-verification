@@ -82,6 +82,7 @@
     import { api } from '../../api/api';
     // 时间格式化
     import dateFormat from "../../commonFun/timeFormat.js";
+    import sessFun from "../../commonFun/sessFun.js";
     // 消费偏好转换中文
     import hoppyToText from "../../commonFun/hoppyToText.js";
     import hoppyNumToText from "../../commonFun/hoppyNumToText.js";
@@ -415,7 +416,7 @@
             },
         },
         mounted() {
-            this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
+            this.sessionData = sessFun.getSess();
             console.log('selectRes-----------', this.selectRes);
             this.getHoppyData();
             this.costType = this.costOptions[0].name;

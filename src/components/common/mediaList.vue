@@ -327,6 +327,7 @@
     import areaPackageNew from '../../commonFun/areaPackage_new'
     import areaToTextNew from '../../commonFun/areaToText_new'
     import sheetExcel from "../../commonFun/sheetExcel.js";
+    import sessFun from "../../commonFun/sessFun.js";
     import {
         Form,
         FormItem,
@@ -419,7 +420,7 @@
         },
         mounted: function () {
             // 判断角色确定是否有操作这一列
-            this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
+            this.sessionData = sessFun.getSess();
             this.role = this.sessionData.uType
             if (this.sessionData.uType === 'MD') {
                 this.showNewBtn = true

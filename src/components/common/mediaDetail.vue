@@ -425,6 +425,7 @@
 <script>
     import api from '../../api/api'
     import areaToText_new from '../../commonFun/areaToText_new'
+    import sessFun from '../../commonFun/sessFun.js'
     import {Button, Table, TableColumn, Row, Col, Message} from 'element-ui';
 
     export default {
@@ -472,7 +473,7 @@
                 mediaImgTitle:'',       // 当前图片的媒体名称
                 roadGateImgSrc: [{mid: '', src: ''}],
                 mediaImgSrcIndex: 0,
-                sessionData: JSON.parse(sessionStorage.getItem('session_data')),
+                sessionData: sessFun.getSess(),
                 ConnectDoorDialogVisible: false, // 连排门Dialog
                 connectAdBox:[
                     {

@@ -11,7 +11,7 @@
             </div>
             <el-row class="fix_date">
                 <el-col>
-                    <el-date-picker class="input-with-select" v-model="searchInfo.rangeDate" align="right" size="small" type="daterange" range-separator="-" format="yyyy/MM/dd" value-format="yyyy/MM/dd" >
+                    <el-date-picker class="input-with-select" v-model="searchInfo.rangeDate" @change="changeDate()" align="right" size="small" type="daterange" range-separator="-" format="yyyy/MM/dd" value-format="yyyy/MM/dd" >
                     </el-date-picker>
                 </el-col>
             </el-row>
@@ -31,7 +31,14 @@
                     </el-col>
                     <el-col>
                         <span>订单名称:</span>
-                        <el-select v-model="searchInfo.order" placeholder="请选择" size="small">
+                        <el-select v-model="searchInfo.order" size="small"
+                            filterable
+                            remote
+                            reserve-keyword
+                            placeholder="请输入关键词"
+                            :remote-method="remoteGetOrder"
+                            :loading="loadingOrder"
+                        >
                             <el-option v-for="item of orderArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-col>
@@ -97,15 +104,16 @@
                 <el-button type="primary" @click="confirmDistribute" size="small">确 定</el-button>
             </span>
         </el-dialog>
-        <!-- 分配人员弹出框 -->
+
+        <!-- 素材明细弹出框 -->
         <el-dialog title="素材明细"
             :visible.sync="isShowSize"
             custom-class="size_detail_dialog"
             width="540px">
             <el-table border :data="sizeList" height="450">
-                <el-table-column prop="size" label="广告尺寸" >
+                <el-table-column prop="materialSize" label="广告尺寸" >
                 </el-table-column>
-                <el-table-column prop="num" label="数量">
+                <el-table-column prop="materialCount" label="数量">
                 </el-table-column>
             </el-table>
             <span slot="footer" class="dialog-footer">
@@ -124,6 +132,7 @@
     import dateFormat from "../../commonFun/timeFormat.js";
     import api from "../../api/api.js";
     import timeFormat from '../../commonFun/timeFormat.js';
+    import sessFun from '../../commonFun/sessFun.js';
     export default {
         data(){
             return{
@@ -147,6 +156,8 @@
                 engineerArr: [],
                 isShowDistri: false,
                 currEngineer: [],
+                // 当前任务
+                currTaskId: '',
                 // 订单
                 orderArr: [],
                 // 素材明细
@@ -212,6 +223,7 @@
                         progress: 0.8
                     },
                 ],
+                loadingOrder: false,
                 loading: false,
                 currPage: 1,
                 totalPage: 0,
@@ -232,9 +244,89 @@
                 // }
                 this.searchInfo.rangeDate = [result.startTime, result.endTime];
             },
-            // 判断角色是否有新建按钮(系统管理员和超级管理员有)
-            getRole() {
-                this.sessionData = JSON.parse(sessionStorage.getItem("session_data"));
+            changeDate(){
+                console.log(this.searchInfo.rangeDate);
+                this.searchFun();
+            },
+            // 线路列表
+            getLine(){
+                let sess = this.sessionData;
+                let info = {
+                    uid: sess.uID,
+                    token: sess.token,
+                };
+                api.getApi(this.apiVar.engineer+"/publishLine/list", info).then(res =>{
+                    console.log(res.data);
+                    if(res.data.SysCode == 200200){
+                        this.lineArr = res.data.data.map((item, index) =>{
+                            return {
+                                label: item.lineName,
+                                value: item.lineId,
+                            };
+                        });
+                    }else if(res.data.SysCode == 100302){
+                        this.loginTimeout();
+                    }else{
+                        Message.warning(res.data.MSG);
+                    }
+                }).catch(err =>{
+                    console.log(err);
+                });
+            },
+            // 工程人员列表
+            getEngineer(){
+                let sess = this.sessionData;
+                let info = {
+                    uid: sess.uID,
+                    token: sess.token,
+                    service: "GetEPByAsrID",
+                    data: {
+                        asrID: sess.asrID,
+                    }
+                };
+                api.postApi_new(this.apiVar.Media, info).then(res =>{
+                    console.log(res.data);
+                    if(res.data.SysCode == 200200){
+                        this.engineerArr = res.data.data.map((item, index) =>{
+                            return {
+                                value: item.uID,
+                                label: item.realName
+                            }
+                        });
+                    }else if(res.data.SysCode == 100302){
+                        this.loginTimeout();
+                    }else{
+                        Message.warning(res.data.MSG);
+                    }
+                }).catch(err =>{
+                    console.log(err);
+                });
+            },
+            // 获取订单
+            remoteGetOrder(query){
+                if (query !== '') {
+                    let sess = this.sessionData;
+                    let info = {
+                        uid: sess.uID,
+                        token: sess.token,
+                        apName: query,
+                    };
+                    this.loadingOrder = true;
+                    api.getApi(this.apiVar.engineer+"/publishPaintTask/orderList", info).then(res =>{
+                        console.log(res.data);
+                        this.loadingOrder = false;
+                        this.orderArr = res.data.data.map(item => {
+                            return {
+                                label: item.apName,
+                                value: item.apID
+                            };
+                        });
+                    }).catch(err =>{
+                        console.log(err);
+                    });
+                } else {
+                    this.orderArr = [];
+                }
             },
             searchFun(){
                 let info = this.searchFormat();
@@ -242,17 +334,17 @@
             },
             // 滚动获取列表数据
             getData(params){
-                api.getApi(this.apiVar.UCAPI+'/AscrList', params).then(res =>{
+                api.getApi(this.apiVar.engineer+'/publishPaintTask/list', params).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{
-                        if(!res.data.SysCode){
+                        if(res.data.SysCode == 200200){
                             console.log(res.data);
                             let dataInfo = res.data;
                             this.totalPage = dataInfo.totalpage;
                             let dataArr = dataInfo.data;
-                            this.projectList = this.projectList.concat(this.funcData(dataArr));
+                            this.projectList = this.funcData(dataArr);
                             this.currPage++;
                             this.loading = false;
                             if(dataInfo.totalpage == 0){
@@ -277,26 +369,27 @@
             },
             // 搜索数据格式化
             searchFormat(){
+                let sess = this.sessionData;
                 let info = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token,
-                    start: this.currPage,
-                    pagesize: this.pageSize
+                    uid: sess.uID,
+                    token: sess.token,
+                    pageNo: this.currPage,
+                    pageSize: this.pageSize
                 };
                 let { line, engineer, order, rangeDate } = this.searchInfo;
                 if(line){
-                    info.line = line;
+                    info.lineId = line;
                 }
                 if(engineer){
-                    info.engineer = engineer;
+                    info.userId = engineer;
                 }
                 if(order){
-                    info.order = order;
+                    info.orderId = order;
                 }
                 if(rangeDate){
                     if(rangeDate.length){
-                        info.startTime = rangeDate[0];
-                        info.endTime = rangeDate[1];
+                        info.startDate = rangeDate[0];
+                        info.endDate = rangeDate[1];
                     }
                 }
                 return info;
@@ -304,19 +397,29 @@
             // 设置表格数据
             setTableData(item){
                 let obj = {
-                    photoId: item.photoId,
-                    photoTime: item.photoTime,
-                    line: item.line,
+                    photoId: item.publishId,
+                    photoTime: item.publishDate,
+                    line: item.lineId,
                     lineName: item.lineName,
                     orderId: item.orderId,
-                    order: item.order,
-                    size: item.size,
-                    photoNum: item.photoNum,
-                    mediaNum: item.mediaNum,
-                    resNum: item.resNum,
-                    engineer: item.engineer,
-                    progress: item.progress
+                    order: item.orderName,
+                    size: item.material,
+                    photoNum: item.publishPaintCount,
+                    mediaNum: item.mediaCount,
+                    resNum: item.resourceCount,
+                    engineerArr: [],
+                    engineer: "",
+                    progress: item.publishProgress
                 };
+                obj.engineer = item.engineerMember.map((data, index) =>{
+                    return data.userName;
+                }).join('/');
+                obj.engineerArr = item.engineerMember.map((data, index) =>{
+                    return {
+                        label: data.userName,
+                        value: data.userId,
+                    };
+                });
                 return obj;
             },
             // 搜索
@@ -365,11 +468,16 @@
             },
             // 上画清单
             toPhotoDetail(item){
+                sessionStorage.setItem('taskId', item.photoId);
                 this.$router.push('./projectDetail');
             },
             // 分配人员
             toAssign(item){
-                this.currEngineer = item.engineerArr;
+                console.log(item);
+                this.currEngineer = item.engineerArr.map((data, index)=> {
+                    return data.value
+                });
+                this.currTaskId = item.photoId;
                 this.isShowDistri = true;
             },
             // 素材明细
@@ -379,7 +487,23 @@
             },
             // 确认分配工程人员
             confirmDistribute(){
-
+                console.log(this.currEngineer);
+                let sess = this.sessionData;
+                let info = {
+                    uid: sess.uID,
+                    token: sess.token,
+                    taskId: this.currTaskId,
+                    userIds: this.currEngineer.join(','),
+                };
+                api.postApi(this.apiVar.engineer+"/publishPaintTask/setEngineerUser", info).then(res =>{
+                    if(res.data.SysCode == 200200){
+                        Message.success(res.data.MSG);
+                    }else if(res.data.SysCode == 100302){
+                        this.loginTimeout();
+                    }else{
+                        Message.warning(res.data.MSG);
+                    }
+                });
             },
             loginTimeout() {
                 Message.warning("登录超时,请重新登录");
@@ -388,8 +512,10 @@
         },
         mounted(){
             this.changeDateType();
-            // this.getRole();
-            // this.searchFun();
+            this.sessionData = sessFun.getSess();
+            this.getEngineer();
+            this.getLine();
+            this.searchFun();
         },
     };
 </script>

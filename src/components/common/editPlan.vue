@@ -1029,6 +1029,7 @@
     import api from '../../api/api'
     import areaArr from '../../commonFun/areaPackage_new'
     import commaFormat from '../../commonFun/commaFormat'
+    import sessFun from '../../commonFun/sessFun.js'
     // 时间格式化
     import timeFormat from "../../commonFun/timeFormat.js";
     import apQuotation from './components/apQuotation'
@@ -1793,7 +1794,7 @@
             },
             // 获取浏览器session数据
             getsessionData() {
-                this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
+                this.sessionData = sessFun.getSess();
                 if (this.sessionData.uType === 'BD') {
                     this.BDData.realName = this.sessionData.username //sessionStorage.getItem('username')
                     this.planForm.ownerSales = this.BDData.realName

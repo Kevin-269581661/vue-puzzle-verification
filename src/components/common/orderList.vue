@@ -162,6 +162,7 @@ import { api } from "../../api/api";
 import dateFormat from "../../commonFun/timeFormat.js";
 // 价格格式化
 import commaFormat from "../../commonFun/commaFormat.js";
+import sessFun from "../../commonFun/sessFun.js";
 
 // 画像申请
 import applyphoto from './components/applyPhoto.vue';
@@ -378,7 +379,7 @@ export default {
         },
         // 获取角色
         getRole() {
-            this.sessionData= JSON.parse(sessionStorage.getItem("session_data"));
+            this.sessionData= sessFun.getSess();
             this.role = this.sessionData.uType;
             let sess = this.sessionData;
             if(sess.ascType==0 || (sess.uType=='MD' && sess.mediaManageLevel==1) || (sess.uType =='BD') && sess.saleManageLevel == 1){

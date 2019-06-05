@@ -24,9 +24,6 @@
                             <li>
                                 <router-link :to="{path:'/superOperate/orderList'}" id="orderMana">订单管理</router-link>
                             </li>
-                            <li>
-                                <router-link :to="{path:'/superOperate/projectList'}" id="orderMana">工程管理</router-link>
-                            </li>
                         </ul>
                     </a>
                 </li>

@@ -163,6 +163,7 @@ import homeTop from '../common/components/homeTop.vue';
 import homeLink from '../common/components/homeLink.vue';
 import { api } from '../../api/api';
 import comcards from '../../commonFun/json/comcard.json';
+import sessFun from '../../commonFun/sessFun.js';
 
 export default {
 	name: "media_index",
@@ -328,7 +329,7 @@ export default {
 	},
 	methods:{
 		getSession(){
-			this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
+			this.sessionData = sessFun.getSess();
 			let sess = this.sessionData;
 			this.isAllMedia = (sess.uType=='MD' && sess.mediaManageLevel==1) ? true: false;
 			this.userInfo.username = sess.realName;

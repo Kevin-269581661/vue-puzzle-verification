@@ -226,6 +226,7 @@ import api from "../../api/api.js";
 import commaFormat from "../../commonFun/commaFormat.js";
 // 时间格式化
 import dateFormat from "../../commonFun/timeFormat.js";
+import sessFun from "../../commonFun/sessFun.js";
 // 方案缓存
 import cacheAdPlan from "../../commonFun/cacheAdPlan"
 import downloadVacancy from "../../components/common/components/vacancyDownload.vue"
@@ -466,7 +467,7 @@ export default {
         },
         // 获取session数据
         getSessionData() {
-            this.sessionData = JSON.parse(sessionStorage.getItem("session_data"));
+            this.sessionData = sessFun.getSess();
             let sess = this.sessionData;
             if(sess.ascType==0 || (sess.uType=='MD' && sess.mediaManageLevel==1) || (sess.uType =='BD') && sess.saleManageLevel == 1){
                 this.isAll = true;

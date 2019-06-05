@@ -125,7 +125,7 @@
             :visible.sync="isShowDistri"
             custom-class="size_detail_dialog"                        
             width="400px">
-            <el-select v-model="projectInfo.engineer" placeholder="请选择" size="small">
+            <el-select v-model="projectInfo.engineer" placeholder="请选择" size="small" multiple>
                 <el-option v-for="item of engineerArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
             <span slot="footer" class="dialog-footer">
@@ -148,6 +148,7 @@
     } from "element-ui";
     // 时间控件格式化
     import dateFormat from "../../commonFun/timeFormat.js";
+    import sessFun from '../../commonFun/sessFun.js'    
     import api from "../../api/api.js";
     export default {
         data(){
@@ -302,38 +303,102 @@
             }
         },
         methods:{
-            // 导出excel
+            // // 导出excel
+            // download(){
+            //     let resultArr = [];
+            //     require.ensure([], () => {
+            //         const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
+            //         const tHeader = ['上画时间', '所属线路', '工程人员', '上画状态', '订单', '资源名称', '媒体', '投放面', '物料尺寸', '资产编号', '点位备注', '素材', '详细地址', '城市', '区域', '实际上刊时间'];
+            //         const filterVal = ['photoTime', 'line', 'engineer', 'progress', 'orderName', 'resName', 'mTitle', 'asLab', 'adSize', 'assetTag', 'mRemark', 'materialUrl', 'resAddress', 'city', 'rName', 'truePhotoTime'];
+            //         const list = resultArr;
+            //         const data = this.formatJson(filterVal, list);
+            //         export_json_to_excel(tHeader, data, name);
+            //     })
+            // },
+            // formatJson(filterVal, jsonData) {
+            //     return jsonData.map(v => filterVal.map(j => v[j]))
+            // },
+            // 导出清单
             download(){
-                let resultArr = [];
-                require.ensure([], () => {
-                    const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
-                    const tHeader = ['上画时间', '所属线路', '工程人员', '上画状态', '订单', '资源名称', '媒体', '投放面', '物料尺寸', '资产编号', '点位备注', '素材', '详细地址', '城市', '区域', '实际上刊时间'];
-                    const filterVal = ['photoTime', 'line', 'engineer', 'progress', 'orderName', 'resName', 'mTitle', 'asLab', 'adSize', 'assetTag', 'mRemark', 'materialUrl', 'resAddress', 'city', 'rName', 'truePhotoTime'];
-                    const list = resultArr;
-                    const data = this.formatJson(filterVal, list);
-                    export_json_to_excel(tHeader, data, name);
-                })
-            },
-            formatJson(filterVal, jsonData) {
-                return jsonData.map(v => filterVal.map(j => v[j]))
+                let sess = this.sessionData;
+                let info = {
+                    uid: sess.uID,
+                    token: sess.token,
+                    publishId: sessionStorage.getItem('taskId'),
+                };
+                api.getApi_file(this.apiVar.engineer+"/publishPaintTask/export", info).then(res =>{
+                    console.log(res.data);
+
+                }).catch(err =>{
+                    console.log(err);
+                });
             },
             // 分配人员
             toDistribute(){
-                this.getDistribute();
+                this.getEngineer();
                 this.isShowDistri = true;
             },
-            // 获取分配人员(工程人员)
-            getDistribute(){
-                // api.getApi(this.apiVar, info).then( res =>{
-                //     console.log(res);
-                //     // engineerArr
-                // }).catch(err =>{
-                //     console.log(err);
-                // });
+            // 工程人员列表
+            getEngineer(){
+                let sess = this.sessionData;
+                let info = {
+                    uid: sess.uID,
+                    token: sess.token,
+                    service: "GetEPByAsrID",
+                    data: {
+                        asrID: sess.asrID,
+                    }
+                };
+                api.postApi_new(this.apiVar.Media, info).then(res =>{
+                    console.log(res.data);
+                    if(res.data.SysCode == 200200){
+                        this.engineerArr = res.data.data.map((item, index) =>{
+                            return {
+                                value: item.uID,
+                                label: item.realName
+                            }
+                        });
+                    }else if(res.data.SysCode == 100302){
+                        this.loginTimeout();
+                    }else{
+                        Message.warning(res.data.MSG);
+                    }
+                }).catch(err =>{
+                    console.log(err);
+                });
             },
             // 确认分配工程人员
             confirmDistribute(){
-
+                let sess = this.sessionData;
+                let info = {
+                    uid: sess.uID,
+                    token: sess.token,
+                    taskId: this.currTaskId,
+                    userIds: this.currEngineer.join(','),
+                };
+                api.postApi(this.apiVar.engineer+"/publishPaintTask/setEngineerUser", info).then(res =>{
+                    if(res.data.SysCode == 200200){
+                        Message.success(res.data.MSG);
+                    }else if(res.data.SysCode == 100302){
+                        this.loginTimeout();
+                    }else{
+                        Message.warning(res.data.MSG);
+                    }
+                });
+            },
+            // 获取详情
+            getData(){
+                let sess = this.sessionData;
+                let info = {
+                    uid: sess.uID,
+                    token: sess.token,
+                    publishId: sessionStorage.getItem('taskId'),
+                };
+                api.getApi(this.apiVar.engineer+"/publishPaintTask/detail", info).then(res =>{
+                    console.log(res.data);
+                }).catch(err =>{
+                    console.log(err);
+                });
             },
             // 数字转换为中文
             toChinesNum(num){
@@ -366,7 +431,9 @@
             },
         },
         mounted(){
-
+            this.sessionData = sessFun.getSess();
+            this.getEngineer();
+            this.getData();
         },
     };
 </script>

@@ -117,6 +117,7 @@
 import api from "../../api/api.js";
 // 时间控件格式化
 import dateFormat from "../../commonFun/timeFormat.js";
+import sessFun from "../../commonFun/sessFun.js";
 import {
     Row,
     Input,
@@ -228,7 +229,7 @@ export default {
         },
         // 判断角色是否有新建按钮(销售有)
         getRole() {
-            this.sessionData = JSON.parse(sessionStorage.getItem("session_data"));
+            this.sessionData = sessFun.getSess();
             let role = this.sessionData.uType;
             console.log(role);
             if (role != "BD") {

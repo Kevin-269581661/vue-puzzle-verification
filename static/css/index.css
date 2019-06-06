@@ -168,12 +168,12 @@
 }
 /*表格公共样式*/
 .el-table th{
-    /*height: 54px;*/
+    height: 54px;
     padding: 0;
     background-color: #f7f7f7;
 }
-.el-table tr{
-    height: 52px;
+.el-table tr td{
+    height: 53px;
 }
 .el-table td {
     padding: 12px 0;

@@ -374,6 +374,7 @@
 
 <script>
     import api from "../../api/api.js";
+    import sessFun from "../../commonFun/sessFun.js";    
     import XLSX from 'xlsx'
     export default {
         name: "createPlan",
@@ -628,7 +629,7 @@
         methods: {
             // 获取浏览器session数据
             getsessionData() {
-                this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
+                this.sessionData = sessFun.getSess();
                 this.judgeIsEdit()
                 console.log('sessionData', this.sessionData)
                 if (this.sessionData.uType === 'BD') {

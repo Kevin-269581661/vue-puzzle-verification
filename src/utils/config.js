@@ -14,7 +14,6 @@ if(process.env.NODE_ENV == 'development'){
 const apiRoot = {
     // devURL: '"http://192.168.1.248/"',
     devURL: '"http://192.168.1.239/"',
-    // devURL: '"https://beta.qinlinad.com/"',
     testURL: '"https://beta.qinlinad.com/"',
     grayURL: '"http://111.230.241.112/"',
     prodURL: '"https://www.qinlinad.com/"',
@@ -32,6 +31,8 @@ const apiVar = {
     QADNAPI: '/QADNAPI',
     // 工程分画线路
     engineer:'engineer/publishLine',
+    // 分画模块相关
+    publishPaintTask: '/engineer/publishPaintTask',
     wuYouMap: wuYouMap,
     jsonLink: jsonLink,
     qadnUrl: process.env.API_ROOT?process.env.API_ROOT.substr(0, process.env.API_ROOT.length-1):''

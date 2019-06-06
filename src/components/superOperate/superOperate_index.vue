@@ -238,6 +238,7 @@
     import homeLink from '../common/components/homeLink.vue';
     import timeFormat from '../../commonFun/timeFormat'
     import commaFormat from '../../commonFun/commaFormat'
+    import sessFun from '../../commonFun/sessFun.js'
     import api from "../../api/api";
     export default {
         name: "admin_index",
@@ -495,7 +496,7 @@
         methods: {
             // 获取浏览器session数据及权限设置
             getsessionData() {
-                this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
+                this.sessionData = sessFun.getSess();
                 if (this.sessionData.asrID === '999') {
                     this.isPlatform = false
                     // this.linkArr = JSON.parse(JSON.stringify(this.linkTemp))

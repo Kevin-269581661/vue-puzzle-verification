@@ -121,6 +121,7 @@ import commaFormat from "../../commonFun/commaFormat.js";
 import filterFormat from "../../commonFun/filterTableData.js";
 // 时间格式化
 import dateFormat from "../../commonFun/timeFormat.js";
+import sessFun from "../../commonFun/sessFun.js";
 // 报价单
 import apQuotation from './components/apQuotation.vue'
 import material from "./components/materialInfo.vue";
@@ -459,7 +460,7 @@ export default {
         },
         // 获取角色
         getRole() {
-            this.sessionData = JSON.parse(sessionStorage.getItem("session_data"));
+            this.sessionData = sessFun.getSess();
             this.role = this.sessionData.uType;
         },
         loginTimeout(){

@@ -413,6 +413,7 @@
     import api from '../../../api/api'
     // 时间格式化
     import timeFormat from "../../../commonFun/timeFormat.js"
+    import sessFun from "../../../commonFun/sessFun.js"
     export default {
         name: "addAds",
         data() {
@@ -557,7 +558,7 @@
         },
         mounted(){
             console.log('this.IsAdd',this.IsAdd)
-            this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
+            this.sessionData = sessFun.getSess();
             let starTime, endTime
             this.dateTime = timeFormat.returnDayCount(0,'/')
             starTime = timeFormat.returnDayCount(1,'/')

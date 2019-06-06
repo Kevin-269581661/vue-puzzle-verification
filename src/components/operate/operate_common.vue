@@ -157,6 +157,7 @@
 
 <script>
     import uTypeToText from '../../commonFun/uTypeToText.js'
+    import sessFun from '../../commonFun/sessFun.js'
 
     export default {
         name: 'images',
@@ -182,7 +183,7 @@
         },
         created() {
             console.log("开始创建created");
-            this.sessionData = JSON.parse(sessionStorage.getItem("session_data"));
+            this.sessionData = sessFun.getSess();
             console.log("this.sessionData", this.sessionData);
             if (this.sessionData !== null && this.sessionData !== undefined) {
                 if (this.sessionData.uType !== "OP") {

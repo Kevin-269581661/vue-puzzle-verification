@@ -130,6 +130,7 @@
     import {api} from "../../api/api";
     // 时间控件格式化
     import dateFormat from "../../commonFun/timeFormat.js";
+    import sessFun from "../../commonFun/sessFun.js";
     // 角色转换为中文
     import uTypeToText from "../../commonFun/uTypeToText.js";
 
@@ -229,7 +230,7 @@
             },
             // 判断角色是否有新建按钮(系统管理员和超级管理员有)
             getRole() {
-                this.sessionData = JSON.parse(sessionStorage.getItem("session_data"));
+                this.sessionData = sessFun.getSess();
                 let role = this.sessionData.uType;
                 console.log(role);
                 if (role != "SA" && role != "SM") {

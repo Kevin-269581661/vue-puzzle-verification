@@ -288,6 +288,7 @@
 import { api } from "../../api/api.js";
 // 价格格式化
 import commaFormat from "../../commonFun/commaFormat.js";
+import sessFun from "../../commonFun/sessFun.js";
 // 筛选过滤
 import filterFormat from "../../commonFun/filterTableData.js";
 // 时间格式化
@@ -429,7 +430,7 @@ export default {
     },
     methods: {
         getSessData(){
-            this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
+            this.sessionData = sessFun.getSess();
         },
         //百度地图
         map(city = '北京市') {

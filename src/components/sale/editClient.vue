@@ -98,6 +98,7 @@
 import api from "../../api/api.js";
 import areaPackageNew from "../../commonFun/areaPackage_new.js";
 import industryToText from "../../commonFun/industryToText.js";
+import sessFun from "../../commonFun/sessFun.js";
 import {
     Form,
     FormItem,
@@ -314,7 +315,7 @@ export default {
     },
     methods: {
         getSession(){
-            this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
+            this.sessionData = sessFun.getSess();
         },
         // 处理成所需要的数据格式或者说文本
         getFormatData() {

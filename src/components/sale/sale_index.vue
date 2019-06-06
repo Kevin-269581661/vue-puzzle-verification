@@ -114,6 +114,7 @@ import homeTop from '../common/components/homeTop.vue';
 import homeLink from '../common/components/homeLink.vue';
 import { api } from '../../api/api';
 import timeFormat from '../../commonFun/timeFormat';
+import sessFun from '../../commonFun/sessFun.js';
 import comcards from '../../commonFun/json/comcard.json';
 
 export default {
@@ -240,7 +241,7 @@ export default {
 	},
 	methods:{
 		getSession(){
-			this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
+			this.sessionData = sessFun.getSess();
 			this.userInfo.username = this.sessionData.realName;
 			this.userInfo.dep = this.sessionData.division;
 			this.userInfo.duty = this.sessionData.asName;

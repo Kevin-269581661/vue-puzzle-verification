@@ -3,6 +3,7 @@
     import api from "../../api/api.js";
     import timeFormat from '../../commonFun/timeFormat.js'
     import commaFormat from '../../commonFun/commaFormat.js'
+    import sessFun from '../../commonFun/sessFun.js'
 
     export default {
         props:{
@@ -232,7 +233,7 @@
         },
         mounted() {
             let apid = sessionStorage.getItem('AD_apid');
-            this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
+            this.sessionData = sessFun.getSess();
             if(apid){
                 // this.getComm();
                 // this.areaMap();

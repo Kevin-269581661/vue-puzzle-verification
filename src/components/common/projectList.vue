@@ -15,7 +15,7 @@
                     </el-date-picker>
                 </el-col>
             </el-row>
-            <div class="project_container">
+            <div class="mediaList_container project_container">
                 <el-row :gutter="32">
                     <el-col>
                         <span>所属线路:</span>
@@ -57,17 +57,15 @@
                         </el-table-column>
                         <el-table-column prop="order" label="订单" min-width="9.8%" >
                         </el-table-column>
-                        <!-- <el-table-column prop="size" label="素材(尺寸/数量)" min-width="10.9%">
-                        </el-table-column> -->
-                        <el-table-column prop="photoNum" label="上画面数" min-width="8.9%">
+                        <el-table-column prop="photoNum" label="上画面数" min-width="8.9%" align="right">
                         </el-table-column>
-                        <el-table-column prop="mediaNum" label="媒体数" min-width="8.9%">
+                        <el-table-column prop="mediaNum" label="媒体数" min-width="8.9%" align="right"> 
                         </el-table-column>
-                        <el-table-column prop="resNum" label="小区数" min-width="8.9%">
+                        <el-table-column prop="resNum" label="小区数" min-width="8.9%" align="right">
                         </el-table-column>
                         <el-table-column prop="engineer" label="工程人员" min-width="8.9%">
                         </el-table-column>
-                        <el-table-column prop="progress" label="上画进度" min-width="8.9%">
+                        <el-table-column prop="progress" label="上画进度" min-width="8.9%" align="right">
                         </el-table-column>
                         <el-table-column label="操作" min-width="7.1%">
                             <template slot-scope="scope">
@@ -87,6 +85,17 @@
                             </template>
                         </el-table-column>
                     </el-table>
+                </div>
+                <div class="ad_pagination">
+                    <el-pagination
+                        @size-change="sizeChange"
+                        @current-change="changePage"
+                        :current-page.sync="currPage"
+                        :page-sizes="pageSizes"
+                        :page-size="pageSize"
+                        layout="total, sizes, prev, pager, next, jumper"
+                        :total="totalNum">
+                    </el-pagination>
                 </div>
             </div>
         </div>
@@ -167,12 +176,30 @@
                 projectList: [],
                 loadingOrder: false,
                 loading: false,
+                // 分页信息
+                pageSize: 20,
+                pageSizes: [20, 50, 80, 100],
                 currPage: 1,
                 totalPage: 0,
-                pageSize: 15,         
+                totalNum: 0,      
             }
         },
         methods:{
+            // 切换页码
+            changePage(page) {
+                this.currPage = page;
+                console.log('page----', page);
+                this.searchFun();
+            },
+            // 每页条数切换
+            sizeChange(val) {
+                this.pageSize = val;
+                if (this.currPage == 1) {
+                    this.searchFun();
+                }
+                this.currPage = 1;
+            },
+            // 转变日期类型
             changeDateType(){
                 // let active = this.activeType;
                 let result = {};
@@ -196,16 +223,18 @@
                 let info = {
                     uid: sess.uID,
                     token: sess.token,
+                    getAll: 1,
                 };
                 api.getApi(this.apiVar.engineer+"/list", info).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 200200){
-                        this.lineArr = res.data.data.map(item =>{
+                        let resinfo = res.data.data.data;
+                        this.lineArr = resinfo ? resinfo.map(item =>{
                             return {
                                 label: item.lineName,
                                 value: item.lineId,
                             };
-                        });
+                        }): [];
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{
@@ -498,9 +527,6 @@
     .ad_mediaDetail_nav {
         height: 42px;
         position: relative;
-    }
-    /deep/.project_container .el-input{
-        width: 100%;
     }
     /deep/.project_container .el-row{
         margin-top:24px;

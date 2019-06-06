@@ -17,6 +17,7 @@
                         </h4>
                     </el-col>
                     <el-col :span="12" class="text_right">
+                        <el-button size="small" @click="toSetLine()">设置线路</el-button>
                         <el-button size="small" @click="download()">导出清单</el-button>
                         <el-button type="primary" size="small" @click="toDistribute()">分配人员</el-button>
                     </el-col>
@@ -24,11 +25,11 @@
                 <el-row class="same_padding">
                     <el-col :span="5">
                         <b>所属线路：</b>
-                        <span>{{projectInfo.lineName}}</span>
+                        <span>{{projectInfo.lineName||'未设置'}}</span>
                     </el-col>
                     <el-col :span="5">
                         <b>工程人员：</b>
-                        <span>{{projectInfo.engineer}}</span>
+                        <span>{{projectInfo.engineer||'--'}}</span>
                     </el-col>
                     <el-col :span="5">
                         <b>小区数量：</b>
@@ -65,60 +66,83 @@
                 </el-row>
             </div>
             <div class="pro_detail_container">
-                <el-tabs>
-                    <el-tab-pane v-for="(item, index) in projectOrderList" :key="item.orderId" :label="'订单'+toChinesNum(index+1)">
-                        <div class="table_wrap">
-                            <el-row>
-                                <h4>{{item.orderName}}</h4>
-                            </el-row>
-                            <el-row class="car-title">
-                                <i class="el-icon-info" style="color: #1890FF;"></i>                            
-                                订单:<span>{{projectInfo.orderNum}}</span>
-                                小区:<span>{{projectInfo.resNum}}</span>
-                                媒体:<span>{{projectInfo.mediaNum}}</span>
-                                点位:<span>{{projectInfo.adsNum}}</span>
-                                已上画:<span>{{projectInfo.finishNum}}</span>
-                            </el-row>
-                            <el-table border :data="item.asidList">
-                                <el-table-column type="index" label="序号" width="60">
-                                </el-table-column>
-                                <el-table-column prop="resName" label="小区" min-width="120">
-                                </el-table-column>
-                                <el-table-column prop="mTitle" label="媒体">
-                                </el-table-column>
-                                <el-table-column prop="asLab" label="投放面">
-                                </el-table-column>
-                                <el-table-column prop="adSize" label="广告尺寸">
-                                </el-table-column>
-                                <el-table-column prop="assetTag" label="资产编号">
-                                </el-table-column>
-                                <el-table-column prop="resAddress" label="详情地址" min-width="250">
-                                </el-table-column>
-                                <el-table-column prop="mRemark" label="点位备注">
-                                </el-table-column>
-                                <el-table-column prop="state" label="状态" width="80">
-                                    <template slot-scope="scope">
-                                        <span class="point">
-                                            <b :style="{background:scope.row.state==1?'rgba(82,196,26,1)':'rgba(250,173,20,1)'}"></b>
-                                            {{(scope.row.state == 1?'已完成':'未完成')}}
-                                        </span>
-                                    </template>
-                                </el-table-column>
-                                <el-table-column label="素材" width="60" >
-                                    <template slot-scope="scope">
-                                            <span @click="toShowImg(scope.row)" class="link_text">查看</span>
-                                    </template>
-                                </el-table-column>
-                            </el-table>
-                        </div>
+                <el-tabs @tab-click="handleClick" v-model="currentOrder">
+                    <el-tab-pane v-for="(item, index) in tabOrderList" :name="item.orderId?item.orderId.toString():''" :key="item.orderId" :label="'订单'+toChinesNum(index+1)">
+                        <el-row class="order_row">
+                            <h4>{{item.orderName}}</h4>
+                        </el-row>
                     </el-tab-pane>
                 </el-tabs>
+                <div class="table_wrap">
+                    <el-row class="car-title">
+                        <i class="el-icon-info" style="color: #1890FF;"></i>                            
+                        小区:<span>{{tableNumInfo.resNum}}</span>
+                        媒体:<span>{{tableNumInfo.mediaNum}}</span>
+                        点位:<span>{{tableNumInfo.adsNum}}</span>
+                        已上画:<span>{{tableNumInfo.finishNum}}</span>
+                        上画率:<span>{{tableNumInfo.progress}}</span>
+                    </el-row>
+                    <el-table border :data="currAsidList">
+                        <el-table-column type="index" label="序号" width="60">
+                        </el-table-column>
+                        <el-table-column prop="resName" label="小区" min-width="120">
+                        </el-table-column>
+                        <el-table-column prop="mTitle" label="媒体">
+                        </el-table-column>
+                        <el-table-column prop="asLab" label="投放面">
+                        </el-table-column>
+                        <el-table-column prop="adSize" label="广告尺寸">
+                        </el-table-column>
+                        <el-table-column prop="assetTag" label="资产编号">
+                        </el-table-column>
+                        <el-table-column prop="resAddress" label="详情地址" min-width="250">
+                        </el-table-column>
+                        <el-table-column prop="mRemark" label="点位备注">
+                        </el-table-column>
+                        <el-table-column prop="state" label="状态" width="80">
+                            <template slot-scope="scope">
+                                <span class="point">
+                                    <b :style="{background:scope.row.state==1?'rgba(82,196,26,1)':'rgba(250,173,20,1)'}"></b>
+                                    {{(scope.row.state == 1?'已上画':'未上画')}}
+                                </span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="素材" width="60" >
+                            <template slot-scope="scope">
+                                    <span @click="toShowImg(scope.row)" class="link_text">查看</span>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
 
                 <div class="content_bottom_btn">
                     <el-button class="cancel" @click="goBack()" size="small">返回</el-button>                
                 </div>
             </div>
         </div>
+
+        <!-- 设置线路弹出框 -->
+        <el-dialog title="设置线路"
+            :visible.sync="isShowLine"
+            custom-class="size_detail_dialog line_box">
+            <el-table border :data="resList" height="450">
+                <el-table-column prop="resName" label="小区" >
+                </el-table-column>
+                <el-table-column prop="area" label="区域">
+                </el-table-column>
+                <el-table-column prop="line" label="选择线路">
+                    <template slot-scope="scope">
+                        <el-select v-model="scope.row.lineId" placeholder="请选择线路" size="small">
+                            <el-option v-for="item of lineArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                        </el-select>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="isShowLine = false" size="small">取 消</el-button>
+                <el-button type="primary" @click="updateLine()" size="small">更 新</el-button>
+            </span>
+        </el-dialog>
 
         <!-- 分配人员弹出框 -->
         <el-dialog title="分配上画人员"
@@ -153,10 +177,12 @@
     export default {
         data(){
             return{
-                // 搜索数据
+                // 当前订单
+                currentOrder: '',
+                // 任务数据
                 projectInfo:{
                     line: '线路一',
-                    engineer: [],
+                    engineer: '',
                     progress: 0.8,
                     photoTime: '2019-06-01',
                     truePhotoTime: '2019-06-02',
@@ -166,10 +192,27 @@
                     adsNum: 65,
                     finishNum: 5
                 },
-                // 城市
-                cityArr: [],
                 // 线路
                 lineArr: [],
+                isShowLine: false,
+                // 小区列表
+                // resList: [],
+                resList: [
+                    {
+                        resID: 1,
+                        resName: '小区一',
+                        area: '天河区',
+                        lineId: 25,
+                        lineName: '',
+                    },
+                    {
+                        resID: 2,
+                        resName: '小区二',
+                        area: '天河区',
+                        lineId: '',                        
+                        lineName: '',
+                    },
+                ],
                 // 工程人员
                 engineerArr: [],
                 isShowDistri: false,
@@ -180,145 +223,151 @@
                 dialogImageUrl: '',
                 // 订单
                 orderArr: [],
-                // 表格数据
-                projectOrderList: [
-                    {
-                        orderId: 2,
-                        orderName: '鑫苑国际新城1',
-                        resNum: 34,
-                        mediaNum: 45,
-                        adsNum: 67,
-                        finishNum: 5,
-                        progress: 0.83,
-                        asidList: [
-                            {
-                                resID: 123,
-                                resName: '21世纪美墅加州风情',
-                                mTitle: '南门进',
-                                asLab: 'A',
-                                adSize: '125*160',
-                                assetTag: 'ZJ0305+1',
-                                mRemark: '小区A',
-                                materialUrl: '',
-                                resAddress: '水科路与花园北路交叉口向东750米路北',
-                                state: 2,
-                            },
-                            {
-                                resID: 123,
-                                resName: '21世纪美墅加州风情',
-                                mTitle: '南门进',
-                                asLab: 'A',
-                                adSize: '125*160',
-                                assetTag: 'ZJ0305+1',
-                                mRemark: '小区A',
-                                materialUrl: '',
-                                resAddress: '水科路与花园北路交叉口向东750米路北',
-                                state: 1,
-                            },
-                            {
-                                resID: 123,
-                                resName: '21世纪美墅加州风情',
-                                mTitle: '南门进',
-                                asLab: 'A',
-                                adSize: '125*160',
-                                assetTag: 'ZJ0305+1',
-                                mRemark: '小区A',
-                                materialUrl: '',
-                                resAddress: '水科路与花园北路交叉口向东750米路北',
-                                state: 1,
-                            },
-                            {
-                                resID: 123,
-                                resName: '21世纪美墅加州风情',
-                                mTitle: '南门进',
-                                asLab: 'A',
-                                adSize: '125*160',
-                                assetTag: 'ZJ0305+1',
-                                mRemark: '小区A',
-                                materialUrl: '',
-                                resAddress: '水科路与花园北路交叉口向东750米路北',
-                                state: 1,
-                            },
-                        ],
-                    },
-                    {
-                        orderId: 1,
-                        orderName: '鑫苑国际新城2',
-                        resNum: 34,
-                        mediaNum: 45,
-                        adsNum: 67,
-                        finishNum: 5,
-                        progress: 0.83,
-                        asidList: [
-                            {
-                                resID: 123,
-                                resName: '21世纪美墅加州风情',
-                                mTitle: '南门进',
-                                asLab: 'A',
-                                adSize: '125*160',
-                                assetTag: 'ZJ0305+1',
-                                mRemark: '小区A',
-                                materialUrl: '',
-                                resAddress: '水科路与花园北路交叉口向东750米路北',
-                                state: 1,
-                            },
-                            {
-                                resID: 123,
-                                resName: '21世纪美墅加州风情',
-                                mTitle: '南门进',
-                                asLab: 'A',
-                                adSize: '125*160',
-                                assetTag: 'ZJ0305+1',
-                                mRemark: '小区A',
-                                materialUrl: '',
-                                resAddress: '水科路与花园北路交叉口向东750米路北',
-                                state: 1,
-                            },
-                            {
-                                resID: 123,
-                                resName: '21世纪美墅加州风情',
-                                mTitle: '南门进',
-                                asLab: 'A',
-                                adSize: '125*160',
-                                assetTag: 'ZJ0305+1',
-                                mRemark: '小区A',
-                                materialUrl: '',
-                                resAddress: '水科路与花园北路交叉口向东750米路北',
-                                state: 1,
-                            },
-                            {
-                                resID: 123,
-                                resName: '21世纪美墅加州风情',
-                                mTitle: '南门进',
-                                asLab: 'A',
-                                adSize: '125*160',
-                                assetTag: 'ZJ0305+1',
-                                mRemark: '小区A',
-                                materialUrl: '',
-                                resAddress: '水科路与花园北路交叉口向东750米路北',
-                                state: 1,
-                            },
-                        ],
-                    },
-                ],           
+                // tab数据
+                tabOrderList: [
+                    // {
+                    //     orderId: 2,
+                    //     orderName: '鑫苑国际新城1',
+                    //     // resNum: 34,
+                    //     // mediaNum: 45,
+                    //     // adsNum: 67,
+                    //     // finishNum: 5,
+                    //     // progress: 0.83,
+                    //     asidList: [
+                    //         {
+                    //             resID: 123,
+                    //             resName: '21世纪美墅加州风情',
+                    //             mTitle: '南门进',
+                    //             asLab: 'A',
+                    //             adSize: '125*160',
+                    //             assetTag: 'ZJ0305+1',
+                    //             mRemark: '小区A',
+                    //             materialUrl: '',
+                    //             resAddress: '水科路与花园北路交叉口向东750米路北',
+                    //             state: 2,
+                    //         },
+                    //         {
+                    //             resID: 123,
+                    //             resName: '21世纪美墅加州风情',
+                    //             mTitle: '南门进',
+                    //             asLab: 'A',
+                    //             adSize: '125*160',
+                    //             assetTag: 'ZJ0305+1',
+                    //             mRemark: '小区A',
+                    //             materialUrl: '',
+                    //             resAddress: '水科路与花园北路交叉口向东750米路北',
+                    //             state: 1,
+                    //         },
+                    //         {
+                    //             resID: 123,
+                    //             resName: '21世纪美墅加州风情',
+                    //             mTitle: '南门进',
+                    //             asLab: 'A',
+                    //             adSize: '125*160',
+                    //             assetTag: 'ZJ0305+1',
+                    //             mRemark: '小区A',
+                    //             materialUrl: '',
+                    //             resAddress: '水科路与花园北路交叉口向东750米路北',
+                    //             state: 1,
+                    //         },
+                    //         {
+                    //             resID: 123,
+                    //             resName: '21世纪美墅加州风情',
+                    //             mTitle: '南门进',
+                    //             asLab: 'A',
+                    //             adSize: '125*160',
+                    //             assetTag: 'ZJ0305+1',
+                    //             mRemark: '小区A',
+                    //             materialUrl: '',
+                    //             resAddress: '水科路与花园北路交叉口向东750米路北',
+                    //             state: 1,
+                    //         },
+                    //     ],
+                    // },
+                    // {
+                    //     orderId: 1,
+                    //     orderName: '鑫苑国际新城2',
+                    //     resNum: 34,
+                    //     mediaNum: 45,
+                    //     adsNum: 67,
+                    //     finishNum: 5,
+                    //     progress: 0.83,
+                    //     asidList: [
+                    //         {
+                    //             resID: 123,
+                    //             resName: '21世纪美墅加州风情',
+                    //             mTitle: '南门进',
+                    //             asLab: 'A',
+                    //             adSize: '125*160',
+                    //             assetTag: 'ZJ0305+1',
+                    //             mRemark: '小区A',
+                    //             materialUrl: '',
+                    //             resAddress: '水科路与花园北路交叉口向东750米路北',
+                    //             state: 1,
+                    //         },
+                    //         {
+                    //             resID: 123,
+                    //             resName: '21世纪美墅加州风情',
+                    //             mTitle: '南门进',
+                    //             asLab: 'A',
+                    //             adSize: '125*160',
+                    //             assetTag: 'ZJ0305+1',
+                    //             mRemark: '小区A',
+                    //             materialUrl: '',
+                    //             resAddress: '水科路与花园北路交叉口向东750米路北',
+                    //             state: 1,
+                    //         },
+                    //         {
+                    //             resID: 123,
+                    //             resName: '21世纪美墅加州风情',
+                    //             mTitle: '南门进',
+                    //             asLab: 'A',
+                    //             adSize: '125*160',
+                    //             assetTag: 'ZJ0305+1',
+                    //             mRemark: '小区A',
+                    //             materialUrl: '',
+                    //             resAddress: '水科路与花园北路交叉口向东750米路北',
+                    //             state: 1,
+                    //         },
+                    //         {
+                    //             resID: 123,
+                    //             resName: '21世纪美墅加州风情',
+                    //             mTitle: '南门进',
+                    //             asLab: 'A',
+                    //             adSize: '125*160',
+                    //             assetTag: 'ZJ0305+1',
+                    //             mRemark: '小区A',
+                    //             materialUrl: '',
+                    //             resAddress: '水科路与花园北路交叉口向东750米路北',
+                    //             state: 1,
+                    //         },
+                    //     ],
+                    // },
+                ],
+                // 表格数据       
+                currAsidList: [],
+                // 表格数据统计
+                tableNumInfo:{
+                    resNum: 34,
+                    mediaNum: 45,
+                    adsNum: 67,
+                    finishNum: 5,
+                    progress: 0.83,
+                },
             }
         },
         methods:{
-            // // 导出excel
-            // download(){
-            //     let resultArr = [];
-            //     require.ensure([], () => {
-            //         const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
-            //         const tHeader = ['上画时间', '所属线路', '工程人员', '上画状态', '订单', '资源名称', '媒体', '投放面', '物料尺寸', '资产编号', '点位备注', '素材', '详细地址', '城市', '区域', '实际上刊时间'];
-            //         const filterVal = ['photoTime', 'line', 'engineer', 'progress', 'orderName', 'resName', 'mTitle', 'asLab', 'adSize', 'assetTag', 'mRemark', 'materialUrl', 'resAddress', 'city', 'rName', 'truePhotoTime'];
-            //         const list = resultArr;
-            //         const data = this.formatJson(filterVal, list);
-            //         export_json_to_excel(tHeader, data, name);
-            //     })
-            // },
-            // formatJson(filterVal, jsonData) {
-            //     return jsonData.map(v => filterVal.map(j => v[j]))
-            // },
+            handleClick(){
+                console.log(this.currentOrder);
+                this.getTableData(this.currentOrder);
+            },
+            // 设置线路
+            toSetLine(){
+                if(!this.lineArr.length){
+                    this.getLine();
+                }
+                this.isShowLine = true;
+            },
             // 导出清单
             download(){
                 let sess = this.sessionData;
@@ -339,8 +388,63 @@
                 this.currEngineer = this.projectInfo.engineerArr.map(data=> {
                     return data.value
                 });
-                this.getEngineer();
+                if(!this.engineerArr.length){
+                    this.getEngineer();
+                }
                 this.isShowDistri = true;
+            },
+            // 线路列表
+            getLine(){
+                let sess = this.sessionData;
+                let info = {
+                    uid: sess.uID,
+                    token: sess.token,
+                    getAll: 1,
+                };
+                api.getApi(this.apiVar.engineer+"/list", info).then(res =>{
+                    console.log(res.data);
+                    if(res.data.SysCode == 200200){
+                        let resinfo = res.data.data.data;
+                        this.lineArr = resinfo ? resinfo.map(item =>{
+                            return {
+                                label: item.lineName,
+                                value: item.lineId,
+                            };
+                        }): [];
+                    }else if(res.data.SysCode == 100302){
+                        this.loginTimeout();
+                    }else{
+                        Message.warning(res.data.MSG);
+                    }
+                }).catch(err =>{
+                    console.log(err);
+                });
+            },
+            // 更新线路小区关联
+            updateLine(){
+                console.log(this.resList, 'reslist---');
+                let result = this.resList.filter(item =>{
+                    return item.lineId;
+                });
+                console.log('result---', result);
+                let sess = this.sessionData;
+                let info = {
+                    uid: sess.uID,
+                    token: sess.token,
+                };
+                api.postApi(this.apiVar.publishPaintTask+"/", info).then(res =>{
+                    console.log(res.data);
+                    if(res.data.SysCode == 200200){
+                        this.isShowLine = false;
+                        location.reload(false);
+                    }else if(res.data.SysCode == 100302){
+                        this.loginTimeout();
+                    }else{
+                        Message.warning(res.data.MSG);
+                    }
+                }).catch(err =>{
+                    console.log(err);
+                });
             },
             // 工程人员列表
             getEngineer(){
@@ -405,13 +509,17 @@
                     uid: sess.uID,
                     token: sess.token,
                     publishId: sessionStorage.getItem('taskId'),
+                    // publishId: 23,
                 };
                 api.getApi(this.apiVar.publishPaintTask+"/detail", info).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 200200){
                         let resInfo = res.data.data;
                         this.projectInfo = this.setData(resInfo);
-                        this.projectOrderList = this.setTableData(resInfo.orderList);
+                        this.tabOrderList = this.setTabData(resInfo.orderList);
+                        // 获取表格数据
+                        this.currentOrder = this.tabOrderList[0].orderId.toString();
+                        this.getTableData(this.currentOrder);
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{
@@ -448,10 +556,11 @@
                 }): [];
                 return obj;
             },
-            // 设置表格数据
-            setTableData(arr){
+            // 设置tab数据
+            setTabData(arr){
+                console.log(arr);
                 let result = [];
-                result = arr.map((item, index)=>{
+                result = arr.map(item=>{
                     let info = {
                         orderId: item.orderId,
                         orderName: item.orderName,
@@ -461,23 +570,53 @@
                         adsNum: item.adsNum,
                         finishNum: item.finishNum,
                         progress: item.progress,
-                        asidList: []
                     };
-                    info.asidList = item.resourceList.map(data=>{
-                        return {
-                            resID: data.resourceId,
-                            resName: data.resourceName,
-                            mTitle: data.mediaName,
-                            asLab: data.asName,
-                            adSize: data.resourceSize,
-                            assetTag: data.assetNumber,
-                            mRemark: data.remark,
-                            materialUrl: data.material,
-                            resAddress: data.address,
-                            state: data.publishStatus,
-                        }
-                    });
                     return info;
+                });
+                return result;
+            },
+            // 获取表格数据
+            getTableData(orderId){
+                console.log('----orderid', orderId);
+                let sess = this.sessionData;
+                let info = {
+                    uid: sess.uID,
+                    token: sess.token,
+                    taskId: sessionStorage.getItem('taskId'),                    
+                    // taskId: 23,
+                    orderId: orderId
+                };
+                api.getApi(this.apiVar.publishPaintTask+"/getOrderDetail", info).then(res =>{
+                    console.log(res.data);
+                    if(res.data.SysCode == 200200){
+                        let resinfo = res.data.data;
+                        this.currAsidList = resinfo.resourceList? this.setTableData(resinfo.resourceList):[];
+                    }else if(res.data.SysCode == 100302){
+                        this.loginTimeout();
+                    }else{
+                        Message.warning(res.data.MSG);
+                    }
+                }).catch(err =>{
+                    console.log(err);
+                });
+            },
+            // 设置表格数据
+            setTableData(arr){
+                console.log(arr);
+                let result = [];
+                result = arr.map(item=>{
+                    return {
+                        resID: item.resourceId,
+                        resName: item.resourceName,
+                        mTitle: item.mediaName,
+                        asLab: item.asName,
+                        adSize: item.resourceSize,
+                        assetTag: item.assetNumber,
+                        mRemark: item.remark,
+                        materialUrl: item.material,
+                        resAddress: item.address,
+                        state: item.publishStatus,
+                    }
                 });
                 return result;
             },
@@ -630,6 +769,7 @@
         border-radius: 4px;
         margin-bottom: 16px;
         padding: 5px;
+        font-size: 14px;
     }
 
     .car-title h4 {
@@ -659,15 +799,16 @@
         font-size: 20px;        
     }
     .table_wrap{
-        padding: 10px 32px; 
+        margin: 0 32px;
     }
-    .table_wrap h4{
+    .order_row h4{
         font-size: 20px;
         font-family:PingFangSC-Medium;
         font-weight:500;
         color:rgba(0,0,0,0.85);
         height: 34px;
-        line-height: 10px;
+        line-height: 34px;
+        margin: 0 32px 16px;
     }
     /deep/ .pro_detail_container .el-tabs__header{
         border-bottom: 1px solid #e6e7e9;
@@ -720,6 +861,10 @@
         width: 8px;
         height: 8px;
         border-radius: 50%;
+    }
+    /deep/ .line_box .el-input--small .el-input__inner{
+        height: 30px;
+        line-height: 30px;
     }
 </style>
 

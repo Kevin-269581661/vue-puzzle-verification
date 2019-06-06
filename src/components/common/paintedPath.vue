@@ -46,7 +46,8 @@
                         <el-table-column
                             prop="regionInfo"
                             label="覆盖小区"
-                            min-width="30%">
+                            min-width="30%"
+                            :show-overflow-tooltip="true">
                         </el-table-column>
                         <el-table-column
                             prop="mediaInfo"
@@ -77,8 +78,9 @@
                         background
                         layout="total, prev, pager, next, sizes, jumper"
                         @current-change="changePage"
+                        @size-change="changeSize"
                         :page-sizes="[10, 20, 30, 40]"
-                        :total="300">
+                        :total="this.pageData.totalSize">
                     </el-pagination>
                 </div>
             </div>
@@ -87,11 +89,11 @@
         <el-dialog
             title="新建线路"
             :visible.sync="createDialogVisible"
-            width="340">
+            width="650px">
             <div>
                 <el-form :model="createData" :rules="createRules" ref="createData" label-width="92px" class="demo-ruleForm">
                     <el-form-item label="线路名称:" prop="pathLine">
-                        <el-input v-model="createData.pathLine" placeholder="请选择输入线路名称"></el-input>
+                        <el-input v-model="createData.pathLine" placeholder="请选择输入线路名称" @change="changeLineName"></el-input>
                     </el-form-item>
                     <el-form-item label="选择城市:" prop="city">
                         <el-select v-model="createData.city" filterable placeholder="请选择城市" :clearable="true"
@@ -135,7 +137,6 @@
                     element-loading-spinner="el-icon-loading"
                     border
                     :data="detailList"
-                    height="480"
                     style="width: 100%">
                     <el-table-column
                         prop="resourceName"
@@ -143,8 +144,8 @@
                         min-width="20%">
                         <template slot-scope="scope">
                             <span v-if="!scope.row.isInput">{{scope.row.resourceName}}</span>
-                            <el-select v-model="scope.row.resourceId" filterable placeholder="请选择资源" :clearable="true"
-                                       style="width: 100%" size="small" @change="changeRes(scope.row)">
+                            <el-select v-else v-model="scope.row.resourceId" filterable placeholder="请选择资源" :clearable="true"
+                                       v-loading="detailResLoading" style="width: 100%" size="small" @change="changeRes(scope.row)">
                                 <el-option
                                     v-for="item in resList"
                                     :key="item.value"
@@ -161,8 +162,8 @@
                         min-width="17">
                         <template slot-scope="scope">
                             <span v-if="!scope.row.isInput">{{scope.row.regionName}}</span>
-                            <el-select v-model="scope.row.regionId" filterable placeholder="区域" :clearable="true"
-                                       style="width: 100%" size="small" @change="changeArea">
+                            <el-select v-else v-model="scope.row.regionId" filterable placeholder="区域" :clearable="true"
+                                       style="width: 100%" size="small" @change="changeArea(scope.row)">
                                 <el-option
                                     v-for="(item,index) in areaList"
                                     :key="index"
@@ -214,7 +215,7 @@
             </div>
             <div slot="footer" class="dialog-footer path_detail_footer">
                 <el-button v-if="isEdit" @click="cancelEdit">取 消</el-button>
-                <el-button v-else @click="isEdit = true">编 辑</el-button>
+                <el-button v-if="!isEdit && showCreateBtn" @click="isEdit = true">编 辑</el-button>
                 <el-button type="primary" @click="saveResToLine">{{isEdit ? '保 存' : '关 闭'}}</el-button>
             </div>
         </el-dialog>
@@ -233,13 +234,21 @@
                     callback();
                 }
             };
+            let validatereLineName = (rule, value, callback) => {
+                if(this.repetLineName){
+                    callback(new Error('该名称已被占用!'));
+                }else{
+                    callback();
+                }
+            };
             return{
                 // 用户登录信息
                 sessionData: '',
                 // 页码及条数
                 pageData:{
-                    pageNo: 1,
+                    pageNum: 1,
                     pageSize: 10,
+                    totalSize: 0,
                 },
                 // 表格高度
                 tableHeight: 595,
@@ -265,19 +274,23 @@
                 pathTableList:[],
                 // 新建弹出框
                 createDialogVisible: false,
+                // 创建时的loading
+                createLoading: '',
                 // 创建的路线数据
                 createData:{
                     city:'',
                     pathLine:'',
                     resName:''
                 },
+                repetLineName: false,
                 // 小区下拉loading
                 resLoading: true,
                 // 创建路线的表单验证
                 createRules:{
                     pathLine: [
                         { required: true, message: '请输入路线名称', trigger: 'change' },
-                        { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'change' }
+                        { min: 1, max: 40, message: '长度在 1 到 40 个字符', trigger: 'change' },
+                        {validator: validatereLineName, trigger: ['blur', 'change'] },
                     ],
                     city: [
                         { required: true, message: '请输入选择城市', trigger: 'change' },
@@ -294,7 +307,10 @@
                 pathDetaiLoading: true,
                 // 线路详情的id
                 detailLineId: '',
+                // 详情列表
                 detailList:[],
+                //添加资源时下拉loading
+                detailResLoading: true,
                 // 编辑状态
                 isEdit: false,
                 // 线路详情的名称
@@ -313,6 +329,9 @@
         methods:{
             getSessionData(){
                 this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
+                if(this.sessionData.mediaManageLevel == 1){
+                    this.showCreateBtn = false
+                }
             },
             // 搜索按钮
             searchFun() {
@@ -323,21 +342,26 @@
                 this.selectPath = '';
                 this.getTableList()
             },
-            // 新建线路
-            createPath(){
-                this.createDialogVisible = true
-            },
             // 分页
             changePage(val){
                 console.log('当前页',val)
+                this.pageData.pageNum = val
+                this.getTableList()
+            },
+            // 每页的条数
+            changeSize(val){
+                console.log('每页的条数',val)
+                this.pageData.pageSize = val
+                this.getTableList()
             },
             // 获取表格数据
             getTableList(){
+                this.tableLoading = true
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                     name: this.selectPath,
-                    pageNo: this.pageData.pageNo,
+                    pageNum: this.pageData.pageNum,
                     pageSize: this.pageData.pageSize,
                 }
                 if (!params.name) {
@@ -346,7 +370,8 @@
                 api.getApi(this.apiVar.engineer + '/list',params).then(res=>{
                     console.log('线路列表接口',res)
                     if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
-                        this.setTableData(res.data.data)
+                        this.pageData.totalSize = res.data.data.totalSize
+                        this.setTableData(res.data.data.data)
                     } else if (res.data.SysCode == 100302) {
                         this.loginTimeout()
                     } else {
@@ -370,7 +395,7 @@
                     // 覆盖小区
                     if(Array.isArray(key.regionInfo)){
                         for(let rKey of key.regionInfo){
-                            obj.regionInfo += rKey.regionName + '('+ rKey.count +')' + ' / '   // 斜杠前后有空格
+                            obj.regionInfo += rKey.regionName + '('+ rKey.count +'个)' + ' / '   // 斜杠前后有空格
                         }
                         obj.regionInfo = obj.regionInfo.substr(0,obj.regionInfo.length-2)
                     }else{
@@ -379,7 +404,7 @@
                     // 覆盖媒体
                     if(Array.isArray(key.mediaTypeInfo)){
                         for(let mKey of key.mediaTypeInfo){
-                            obj.mediaInfo += mKey.mediaName + '('+ mKey.mediaCount +')' + ' / '
+                            obj.mediaInfo += mKey.mediaName + '('+ mKey.mediaCount +'个)' + ' / '
                         }
                         obj.mediaInfo = obj.mediaInfo.substr(0,obj.mediaInfo.length-2)
                     }else{
@@ -480,6 +505,7 @@
                             this.resList = resArr;
                             console.log('this.resList',this.resList)
                             this.resLoading = false
+                            this.detailResLoading = false
                         } else if (res.data.SysCode == 100302) {
                             this.loginTimeout();
                         } else {
@@ -492,6 +518,7 @@
             showDetail(row){
                 this.activePathName = row.lineName
                 this.detailLineId = row.lineId
+                this.detailList = []
                 let params = {
                     uid:this.sessionData.uID,
                     token: this.sessionData.token,
@@ -631,10 +658,16 @@
                 }
             },
             // 编辑线路-选择区域
-            changeArea(val){
-                this.regionID = val
+            changeArea(row){
+                this.regionID = row.regionId
                 this.resList = []
                 this.getResList()
+                // 重新选择区域则初始化行数据
+                row.type = ''
+                row.address = ''
+                row.resourceName = ''
+                row.regionId = ''
+                row.tradingArea = ''
             },
             // 取消编辑
             cancelEdit(){
@@ -685,6 +718,15 @@
                 }
                 this.detailDialogVisible = false
             },
+            // 新建线路
+            createPath(){
+                this.createDialogVisible = true
+            },
+            // 新建方案 - 线路名称
+            changeLineName(val){
+                console.log('新建方案 - 线路名称',val)
+                this.repetLineName = false
+            },
             // 新建方案 - 城市选择
             changeCity(val){
                 console.log('城市选择',val)
@@ -716,6 +758,12 @@
             },
             // 新建线路
             creatLine(){
+                this.createloading = this.$loading({
+                    lock: true,
+                    text: '加急创建中...',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                })
               let params = {
                   uid: this.sessionData.uID,
                   token: this.sessionData.token,
@@ -733,13 +781,18 @@
                       this.setFormData()
                   } else if (res.data.SysCode == 100302) {
                       this.loginTimeout()
+                  } else if(res.data.SysCode == 200500){
+                      this.repetLineName = true
+                      this.$refs.createData.validateField('pathLine')  // 手动触发校验
                   } else {
                       this.messageFun('warning', res.data.MSG)
                   }
+                  this.createloading.close()
               })
             },
             // 新建成功后数据初始
             setFormData(){
+                this.$refs.createData.resetFields()
                 this.resList = []
                 for(let i in this.createData){
                     this.createData[i] = ""
@@ -837,16 +890,20 @@
         height: 30px;
         line-height: 30px;
     }
+    .path_detail_box /deep/ .el-table__body-wrapper {
+        height: 320px;
+        min-height: 320px;
+    }
     .detail_table_row_btn{
         color: rgba(24,144,255,1);
         cursor: pointer;
     }
-    .path_detail /deep/ .el-dialog__footer{
+    /deep/ .el-dialog__footer{
         border-top: 1px solid rgba(0,0,0,0.09);
     }
     /*滚动条*/
     /deep/ .el-table__body-wrapper {
-        height: 450px;
+        min-height: 500px;
         overflow-y: auto;
         overflow-x: hidden;
     }

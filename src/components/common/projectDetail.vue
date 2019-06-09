@@ -17,7 +17,7 @@
                         </h4>
                     </el-col>
                     <el-col :span="12" class="text_right">
-                        <el-button size="small" @click="toSetLine()">设置线路</el-button>
+                        <el-button size="small" @click="toSetLine()" v-if="!projectInfo.line">设置线路</el-button>
                         <el-button size="small" @click="download()">导出清单</el-button>
                         <el-button type="primary" size="small" @click="toDistribute()">分配人员</el-button>
                     </el-col>
@@ -224,126 +224,7 @@
                 // 订单
                 orderArr: [],
                 // tab数据
-                tabOrderList: [
-                    // {
-                    //     orderId: 2,
-                    //     orderName: '鑫苑国际新城1',
-                    //     // resNum: 34,
-                    //     // mediaNum: 45,
-                    //     // adsNum: 67,
-                    //     // finishNum: 5,
-                    //     // progress: 0.83,
-                    //     asidList: [
-                    //         {
-                    //             resID: 123,
-                    //             resName: '21世纪美墅加州风情',
-                    //             mTitle: '南门进',
-                    //             asLab: 'A',
-                    //             adSize: '125*160',
-                    //             assetTag: 'ZJ0305+1',
-                    //             mRemark: '小区A',
-                    //             materialUrl: '',
-                    //             resAddress: '水科路与花园北路交叉口向东750米路北',
-                    //             state: 2,
-                    //         },
-                    //         {
-                    //             resID: 123,
-                    //             resName: '21世纪美墅加州风情',
-                    //             mTitle: '南门进',
-                    //             asLab: 'A',
-                    //             adSize: '125*160',
-                    //             assetTag: 'ZJ0305+1',
-                    //             mRemark: '小区A',
-                    //             materialUrl: '',
-                    //             resAddress: '水科路与花园北路交叉口向东750米路北',
-                    //             state: 1,
-                    //         },
-                    //         {
-                    //             resID: 123,
-                    //             resName: '21世纪美墅加州风情',
-                    //             mTitle: '南门进',
-                    //             asLab: 'A',
-                    //             adSize: '125*160',
-                    //             assetTag: 'ZJ0305+1',
-                    //             mRemark: '小区A',
-                    //             materialUrl: '',
-                    //             resAddress: '水科路与花园北路交叉口向东750米路北',
-                    //             state: 1,
-                    //         },
-                    //         {
-                    //             resID: 123,
-                    //             resName: '21世纪美墅加州风情',
-                    //             mTitle: '南门进',
-                    //             asLab: 'A',
-                    //             adSize: '125*160',
-                    //             assetTag: 'ZJ0305+1',
-                    //             mRemark: '小区A',
-                    //             materialUrl: '',
-                    //             resAddress: '水科路与花园北路交叉口向东750米路北',
-                    //             state: 1,
-                    //         },
-                    //     ],
-                    // },
-                    // {
-                    //     orderId: 1,
-                    //     orderName: '鑫苑国际新城2',
-                    //     resNum: 34,
-                    //     mediaNum: 45,
-                    //     adsNum: 67,
-                    //     finishNum: 5,
-                    //     progress: 0.83,
-                    //     asidList: [
-                    //         {
-                    //             resID: 123,
-                    //             resName: '21世纪美墅加州风情',
-                    //             mTitle: '南门进',
-                    //             asLab: 'A',
-                    //             adSize: '125*160',
-                    //             assetTag: 'ZJ0305+1',
-                    //             mRemark: '小区A',
-                    //             materialUrl: '',
-                    //             resAddress: '水科路与花园北路交叉口向东750米路北',
-                    //             state: 1,
-                    //         },
-                    //         {
-                    //             resID: 123,
-                    //             resName: '21世纪美墅加州风情',
-                    //             mTitle: '南门进',
-                    //             asLab: 'A',
-                    //             adSize: '125*160',
-                    //             assetTag: 'ZJ0305+1',
-                    //             mRemark: '小区A',
-                    //             materialUrl: '',
-                    //             resAddress: '水科路与花园北路交叉口向东750米路北',
-                    //             state: 1,
-                    //         },
-                    //         {
-                    //             resID: 123,
-                    //             resName: '21世纪美墅加州风情',
-                    //             mTitle: '南门进',
-                    //             asLab: 'A',
-                    //             adSize: '125*160',
-                    //             assetTag: 'ZJ0305+1',
-                    //             mRemark: '小区A',
-                    //             materialUrl: '',
-                    //             resAddress: '水科路与花园北路交叉口向东750米路北',
-                    //             state: 1,
-                    //         },
-                    //         {
-                    //             resID: 123,
-                    //             resName: '21世纪美墅加州风情',
-                    //             mTitle: '南门进',
-                    //             asLab: 'A',
-                    //             adSize: '125*160',
-                    //             assetTag: 'ZJ0305+1',
-                    //             mRemark: '小区A',
-                    //             materialUrl: '',
-                    //             resAddress: '水科路与花园北路交叉口向东750米路北',
-                    //             state: 1,
-                    //         },
-                    //     ],
-                    // },
-                ],
+                tabOrderList: [],
                 // 表格数据       
                 currAsidList: [],
                 // 表格数据统计
@@ -364,6 +245,7 @@
             // 设置线路
             toSetLine(){
                 if(!this.lineArr.length){
+                    this.getResList();
                     this.getLine();
                 }
                 this.isShowLine = true;
@@ -420,6 +302,36 @@
                     console.log(err);
                 });
             },
+            // 获取小区列表
+            getResList(){
+                let sess = this.sessionData;
+                let info = {
+                    uid: sess.uID,
+                    token: sess.token,
+                    taskId: this.projectInfo.photoId
+                };
+                api.getApi(this.apiVar.publishPaintTask + "/listResource", info).then(res =>{
+                    console.log(res.data);
+                    if(res.data.SysCode == 200200){
+                        let resinfo = res.data.data;
+                        this.resList = resinfo ? resinfo.map(item =>{
+                            return {
+                                resID: item.resourceId,
+                                resName: item.resourceName,
+                                area: item.regionName,
+                                lineId: '',
+                                lineName: '',
+                            };
+                        }): [];
+                    }else if(res.data.SysCode == 100302){
+                        this.loginTimeout();
+                    }else{
+                        Message.warning(res.data.MSG);
+                    }
+                }).catch(err =>{
+                    console.log(err);
+                });
+            },
             // 更新线路小区关联
             updateLine(){
                 console.log(this.resList, 'reslist---');
@@ -427,16 +339,27 @@
                     return item.lineId;
                 });
                 console.log('result---', result);
+                let arr = result.map(item => {
+                    return {
+                        lineId: item.lineId,
+                        resId: item.resID
+                    };
+                });
                 let sess = this.sessionData;
                 let info = {
                     uid: sess.uID,
                     token: sess.token,
+                    resources: JSON.stringify(arr)
                 };
-                api.postApi(this.apiVar.publishPaintTask+"/", info).then(res =>{
+                api.postApi(this.apiVar.engineer+"/updateResourceLine", info).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 200200){
                         this.isShowLine = false;
-                        location.reload(false);
+                        if(result.length >= this.resList.length){
+                            this.$router.push('./projectList');
+                        }else{
+                            location.reload(false);
+                        }
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{
@@ -536,13 +459,13 @@
                     photoTime: item.publishDate,
                     line: item.lineId,
                     lineName: item.lineName,
-                    photoNum: item.publishPaintCount,
+                    adsNum: item.publishPaintCount,
                     mediaNum: item.mediaCount,
                     resNum: item.resourceCount,
                     engineerArr: [],
                     engineer: "",
-                    progress: item.publishProgress,
-                    finishNum: item.finishNum,
+                    progress: item.publishProgress*100,
+                    finishNum: item.publishCount,
                     orderNum: item.orderList.length,
                 };
                 obj.engineer = item.engineerMember?item.engineerMember.map(data =>{
@@ -565,11 +488,11 @@
                         orderId: item.orderId,
                         orderName: item.orderName,
 
-                        resNum: item.resNum,
-                        mediaNum: item.mediaNum,
-                        adsNum: item.adsNum,
-                        finishNum: item.finishNum,
-                        progress: item.progress,
+                        // resNum: item.resNum,
+                        // mediaNum: item.mediaNum,
+                        // adsNum: item.adsNum,
+                        // finishNum: item.finishNum,
+                        // progress: item.progress,
                     };
                     return info;
                 });
@@ -591,6 +514,13 @@
                     if(res.data.SysCode == 200200){
                         let resinfo = res.data.data;
                         this.currAsidList = resinfo.resourceList? this.setTableData(resinfo.resourceList):[];
+                        this.tableNumInfo = {
+                            resNum: resinfo.resourceCount,
+                            mediaNum: resinfo.mediaCount,
+                            adsNum: resinfo.publishPaintCount,
+                            finishNum: resinfo.publishCount,
+                            progress: resinfo.publishProgress*100,
+                        };
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{

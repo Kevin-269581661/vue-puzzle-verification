@@ -180,7 +180,6 @@
                 pageSize: 20,
                 pageSizes: [20, 50, 80, 100],
                 currPage: 1,
-                totalPage: 0,
                 totalNum: 0,      
             }
         },
@@ -313,12 +312,11 @@
                         if(res.data.SysCode == 200200){
                             console.log(res.data);
                             let dataInfo = res.data;
-                            this.totalPage = dataInfo.totalpage;
+                            this.totalNum = dataInfo.total;
                             let dataArr = dataInfo.data;
                             this.projectList = this.funcData(dataArr);
-                            this.currPage++;
                             this.loading = false;
-                            if(dataInfo.totalpage == 0){
+                            if(dataInfo.total == 0){
                                 Message.warning('暂无数据');
                             }
                         }else{

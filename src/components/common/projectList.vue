@@ -177,8 +177,8 @@
                 loadingOrder: false,
                 loading: false,
                 // 分页信息
-                pageSize: 20,
-                pageSizes: [20, 50, 80, 100],
+                pageSize: 10,
+                pageSizes: [10, 20, 30, 40],
                 currPage: 1,
                 totalNum: 0,      
             }

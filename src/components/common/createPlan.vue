@@ -1083,7 +1083,16 @@
             title="复制方案"
             width="450px"
             >
-            <el-input placeholder="可输入搜索要导入的方案"></el-input>
+            <el-select v-model="orderName" size="small"
+                filterable
+                remote
+                reserve-keyword
+                placeholder="请输入关键词"
+                :remote-method="remoteGetOrder"
+                :loading="loadingOrder"
+            >
+                <el-option v-for="item of orderArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
+            </el-select>
             <span slot="footer" class="dialog-footer">
                 <el-button size="small" @click="isCopy = false">取 消</el-button>
                 <el-button size="small" type="primary" @click="confirmCopy()">确 定</el-button>
@@ -1398,6 +1407,12 @@
                 excelDataUpload:[],
                 // 复制方案
                 isCopy: false,
+                // 搜索方案时的loading
+                loadingOrder: false,
+                // 搜索方案名称
+                orderName: '',
+                // 返回的订单列表
+                orderArr: [],
                 apAicode:'',                  // 方案的协同aicode
                 shareADUrl: '',               // 协同选点的url https://beta.qinlinad.com/shareADList?apid=649&aicode=0DDD2685D9D3842ECB0DDC45D79D2131
                 dialogOneKeyPoint: false,    // 一键选点模态框
@@ -2220,6 +2235,32 @@
                     resultarr[1].showList.push(obj);
                 }
                 return resultarr;
+            },
+            // 获取订单
+            remoteGetOrder(query){
+                if (query !== '') {
+                    let sess = this.sessionData;
+                    let info = {
+                        uid: sess.uID,
+                        token: sess.token,
+                        apName: query,
+                    };
+                    this.loadingOrder = true;
+                    api.getApi(this.apiVar.publishPaintTask+"/orderList", info).then(res =>{
+                        console.log(res.data);
+                        this.loadingOrder = false;
+                        this.orderArr = res.data.data.map(item => {
+                            return {
+                                label: item.apName,
+                                value: item.apID
+                            };
+                        });
+                    }).catch(err =>{
+                        console.log(err);
+                    });
+                } else {
+                    this.orderArr = [];
+                }
             },
             // 确定复制
             confirmCopy(){

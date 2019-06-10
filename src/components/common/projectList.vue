@@ -15,7 +15,7 @@
                     </el-date-picker>
                 </el-col>
             </el-row>
-            <div class="project_container">
+            <div class="mediaList_container project_container">
                 <el-row :gutter="32">
                     <el-col>
                         <span>所属线路:</span>
@@ -49,25 +49,26 @@
                 </el-row>
                 
                 <div class="table_wrap">
-                    <el-table border :data="projectList" height="450" v-loading="loading" 
+                    <el-table border :data="projectList" v-loading="loading" 
                         element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
-                        <el-table-column label="上画时间" min-width="11.8%" prop="photoTime">
+                        <el-table-column label="上画时间" min-width="11.8%" prop="photoTime" sortable :sort-by="sortData">
                         </el-table-column>
                         <el-table-column prop="lineName" label="所属线路" min-width="8.1%">
                         </el-table-column>
                         <el-table-column prop="order" label="订单" min-width="9.8%" >
                         </el-table-column>
-                        <!-- <el-table-column prop="size" label="素材(尺寸/数量)" min-width="10.9%">
-                        </el-table-column> -->
-                        <el-table-column prop="photoNum" label="上画面数" min-width="8.9%">
+                        <el-table-column prop="photoNum" label="上画面数" min-width="8.9%" align="right">
                         </el-table-column>
-                        <el-table-column prop="mediaNum" label="媒体数" min-width="8.9%">
+                        <el-table-column prop="mediaNum" label="媒体数" min-width="8.9%" align="right"> 
                         </el-table-column>
-                        <el-table-column prop="resNum" label="小区数" min-width="8.9%">
+                        <el-table-column prop="resNum" label="小区数" min-width="8.9%" align="right">
                         </el-table-column>
                         <el-table-column prop="engineer" label="工程人员" min-width="8.9%">
+                            <template slot-scope="scope">
+                                <span>{{scope.row.engineer || '--'}}</span>
+                            </template>
                         </el-table-column>
-                        <el-table-column prop="progress" label="上画进度" min-width="8.9%">
+                        <el-table-column prop="progress" label="上画进度" min-width="8.9%" align="right">
                         </el-table-column>
                         <el-table-column label="操作" min-width="7.1%">
                             <template slot-scope="scope">
@@ -87,6 +88,18 @@
                             </template>
                         </el-table-column>
                     </el-table>
+                </div>
+                <div class="ad_pagination">
+                    <el-pagination
+                        v-if="paginationShow"
+                        @size-change="sizeChange"
+                        @current-change="changePage"
+                        :current-page.sync="currPage"
+                        :page-sizes="pageSizes"
+                        :page-size="pageSize"
+                        layout="total, sizes, prev, pager, next, jumper"
+                        :total="totalNum">
+                    </el-pagination>
                 </div>
             </div>
         </div>
@@ -150,6 +163,7 @@
                 },
                 isSearch: true,
                 isReset: true,
+                paginationShow: true,
                 // 线路
                 lineArr: [],
                 // 工程人员
@@ -166,13 +180,28 @@
                 // 表格数据
                 projectList: [],
                 loadingOrder: false,
-                loading: false,
+                loading: true,
+                // 分页信息
+                pageSize: 10,
+                pageSizes: [10, 20, 30, 40],
                 currPage: 1,
-                totalPage: 0,
-                pageSize: 15,         
+                totalNum: 0,      
             }
         },
         methods:{
+            // 切换页码
+            changePage(page) {
+                this.currPage = page;
+                console.log('page----', page);
+                this.searchFun();
+            },
+            // 每页条数切换
+            sizeChange(val) {
+                this.pageSize = val;
+                this.currPage = 1;
+                this.searchFun();
+            },
+            // 转变日期类型
             changeDateType(){
                 // let active = this.activeType;
                 let result = {};
@@ -190,22 +219,28 @@
                 console.log(this.searchInfo.rangeDate);
                 this.searchFun();
             },
+            //日期排序
+            sortData(a, b) {
+                return dateFormat.toDate(a.apcTime, '') - dateFormat.toDate(b.apcTime, '');
+            },
             // 线路列表
             getLine(){
                 let sess = this.sessionData;
                 let info = {
                     uid: sess.uID,
                     token: sess.token,
+                    getAll: 1,
                 };
                 api.getApi(this.apiVar.engineer+"/list", info).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 200200){
-                        this.lineArr = res.data.data.map(item =>{
+                        let resinfo = res.data.data.data;
+                        this.lineArr = resinfo ? resinfo.map(item =>{
                             return {
                                 label: item.lineName,
                                 value: item.lineId,
                             };
-                        });
+                        }): [];
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{
@@ -271,8 +306,13 @@
                 }
             },
             searchFun(){
+                this.paginationShow = false;
+                this.loading = true;
                 let info = this.searchFormat();
                 this.getData(info);
+                this.$nextTick(function () {
+                    this.paginationShow = true;
+                });
             },
             // 滚动获取列表数据
             getData(params){
@@ -284,12 +324,11 @@
                         if(res.data.SysCode == 200200){
                             console.log(res.data);
                             let dataInfo = res.data;
-                            this.totalPage = dataInfo.totalpage;
+                            this.totalNum = dataInfo.total;
                             let dataArr = dataInfo.data;
                             this.projectList = this.funcData(dataArr);
-                            this.currPage++;
                             this.loading = false;
-                            if(dataInfo.totalpage == 0){
+                            if(dataInfo.total == 0){
                                 Message.warning('暂无数据');
                             }
                         }else{
@@ -330,8 +369,8 @@
                 }
                 if(rangeDate){
                     if(rangeDate.length){
-                        info.startDate = rangeDate[0];
-                        info.endDate = rangeDate[1];
+                        info.startDate = timeFormat.toDate(rangeDate[0]);
+                        info.endDate = timeFormat.toDate(rangeDate[1]);
                     }
                 }
                 return info;
@@ -340,7 +379,7 @@
             setTableData(item){
                 let obj = {
                     photoId: item.publishId,
-                    photoTime: item.publishDate,
+                    photoTime: timeFormat.toDate(item.publishDate, '/'),
                     line: item.lineId,
                     lineName: item.lineName,
                     orderId: item.orderId,
@@ -478,6 +517,7 @@
     /*面包屑导航*/
     .ad_mediaDetail_wrap {
         position: relative;
+        margin-bottom: 50px;
     }
     .ad_mediaDetail_nav{
         width: 92%;
@@ -498,9 +538,6 @@
     .ad_mediaDetail_nav {
         height: 42px;
         position: relative;
-    }
-    /deep/.project_container .el-input{
-        width: 100%;
     }
     /deep/.project_container .el-row{
         margin-top:24px;

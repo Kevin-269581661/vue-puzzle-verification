@@ -19,7 +19,7 @@
                     <router-link :to="{path:'/media/orderList'}" class="nav_fast" id="orderMana">订单管理</router-link>
                 </li>
                 <li>
-                    <router-link :to="{path:'/media/projectList'}" class="nav_fast" id="planMana">工程管理</router-link>
+                    <router-link :to="{path:'/media/projectList'}" class="nav_fast" id="proMana">工程管理</router-link>
                 </li>
                 <li @mouseenter="showMore = true" @mouseleave="showMore = false">
                     <a href="#" class="nav_fast more" id="More">其他模块<i class="fa fa-angle-down"></i>
@@ -312,6 +312,19 @@ export default {
                 case 'orderList':
                 case 'orderDetail':
                     $('#orderMana').css({
+                        "color": "#fff",
+                        "border-bottom": "3px solid #fff"
+                    }).parents().siblings().children('a').css({
+                        "color": "#999",
+                        "border-bottom": "none"
+                    });
+                    $('#More').find('a').css({
+                        "color": "#999"
+                    });
+                    break;
+                case 'projectList':
+                case 'projectDetail':
+                    $('#proMana').css({
                         "color": "#fff",
                         "border-bottom": "3px solid #fff"
                     }).parents().siblings().children('a').css({

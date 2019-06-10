@@ -80,7 +80,7 @@
                         @current-change="changePage"
                         @size-change="changeSize"
                         :page-sizes="[10, 20, 30, 40]"
-                        :total="this.pageData.totalSize">
+                        :total="pageData.totalSize">
                     </el-pagination>
                 </div>
             </div>
@@ -340,6 +340,7 @@
             // 重置搜索 selectPath
             clearSearch(){
                 this.selectPath = '';
+                // this.pageData.pageNum = 1
                 this.getTableList()
             },
             // 分页

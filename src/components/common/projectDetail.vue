@@ -47,6 +47,12 @@
                     <el-col :span="5">
                         <b>上画时间：</b>
                         <span>{{projectInfo.photoTime}}</span>
+                        <el-tooltip placement="top" width="200" trigger="hover" effect="dark" v-if="projectInfo.photoTime>new Date()">
+                            <div slot="content">
+                                距离上画剩余 <span :style="remainDay<=3?'color:red;':''">{{remainDay}}</span> 天
+                            </div>
+                            <i class="fa fa-info-circle"></i>
+                        </el-tooltip>
                     </el-col>
                     <el-col :span="5">
                         <b>订单数量：</b>
@@ -96,8 +102,18 @@
                         <el-table-column prop="assetTag" label="资产编号">
                         </el-table-column>
                         <el-table-column prop="resAddress" label="详情地址" min-width="250">
+                            <template slot-scope="scope">
+                                <span>
+                                    {{scope.row.resAddress || '--'}}
+                                </span>
+                            </template>
                         </el-table-column>
                         <el-table-column prop="mRemark" label="点位备注">
+                            <template slot-scope="scope">
+                                <span>
+                                    {{scope.row.mRemark || '--'}}
+                                </span>
+                            </template>
                         </el-table-column>
                         <el-table-column prop="state" label="状态" width="80">
                             <template slot-scope="scope">
@@ -180,6 +196,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
             return{
                 // 当前订单
                 currentOrder: '',
+                remainDay: 0,
                 // 任务数据
                 projectInfo:{
                     line: '线路一',
@@ -451,6 +468,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
                         this.tabOrderList = this.setTabData(resInfo.orderList);
                         // 获取表格数据
                         this.currentOrder = this.tabOrderList[0].orderId.toString();
+                        this.remainDay = this.countDay(this.projectInfo.photoTime);
                         this.getTableData(this.currentOrder);
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
@@ -460,6 +478,13 @@ import timeFormat from '../../commonFun/timeFormat.js';
                 }).catch(err =>{
                     console.log(err);
                 });
+            },
+            // 7天以上显示7天,否则显示相隔天数
+            countDay(time){
+                let dayA = Math.abs(timeFormat.getDayBetween(time, new Date()));
+                console.log('dayA-----', dayA);
+                let RemainDay = dayA>7?7:dayA;
+                return RemainDay;
             },
             // 设置数据格式
             setData(item){

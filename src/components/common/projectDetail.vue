@@ -257,7 +257,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
                 let info = {
                     uid: sess.uID,
                     token: sess.token,
-                    publishId: sessionStorage.getItem('taskId'),
+                    taskId: sessionStorage.getItem('taskId'),
                 };
                 api.getApi_file(this.apiVar.publishPaintTask+"/taskDetailsReport", info).then(res =>{
                     console.log(res.data);

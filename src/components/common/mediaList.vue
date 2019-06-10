@@ -332,7 +332,6 @@
     import api from '../../api/api'
     import areaPackageNew from '../../commonFun/areaPackage_new'
     import areaToTextNew from '../../commonFun/areaToText_new'
-    import sheetExcel from "../../commonFun/sheetExcel.js";
     import sessFun from "../../commonFun/sessFun.js";
     import {
         Form,

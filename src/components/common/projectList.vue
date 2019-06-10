@@ -51,7 +51,7 @@
                 <div class="table_wrap">
                     <el-table border :data="projectList" v-loading="loading" 
                         element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
-                        <el-table-column label="上画时间" min-width="11.8%" prop="photoTime">
+                        <el-table-column label="上画时间" min-width="11.8%" prop="photoTime" sortable :sort-by="sortData">
                         </el-table-column>
                         <el-table-column prop="lineName" label="所属线路" min-width="8.1%">
                         </el-table-column>
@@ -64,6 +64,9 @@
                         <el-table-column prop="resNum" label="小区数" min-width="8.9%" align="right">
                         </el-table-column>
                         <el-table-column prop="engineer" label="工程人员" min-width="8.9%">
+                            <template slot-scope="scope">
+                                <span>{{scope.row.engineer || '--'}}</span>
+                            </template>
                         </el-table-column>
                         <el-table-column prop="progress" label="上画进度" min-width="8.9%" align="right">
                         </el-table-column>
@@ -215,6 +218,10 @@
             changeDate(){
                 console.log(this.searchInfo.rangeDate);
                 this.searchFun();
+            },
+            //日期排序
+            sortData(a, b) {
+                return dateFormat.toDate(a.apcTime, '') - dateFormat.toDate(b.apcTime, '');
             },
             // 线路列表
             getLine(){

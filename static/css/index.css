@@ -99,7 +99,6 @@
 }
 
 .panel_top_right h1 {
-
   font-size: 24px;
   color: #666666;
   letter-spacing: 0;
@@ -156,6 +155,95 @@
 /*提示框*/
 .el-message{
     top: 64px;
+}
+/*二级联动*/
+.el-cascader-menu::-webkit-scrollbar{
+    width: 6px;
+    background: #FAFAFA;
+}
+.el-cascader-menu::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    background: #C1C1C1;
+    border-radius: 4px;
+}
+/*表格公共样式*/
+.el-table th{
+    height: 54px;
+    padding: 0;
+    background-color: #f7f7f7;
+}
+.el-table tr td{
+    height: 53px;
+}
+.el-table td {
+    padding: 12px 0;
+    text-overflow: ellipsis;
+}
+
+.el-table td .cell {
+    height: 30px;
+    line-height: 30px;
+}
+
+.el-table--border {
+    border-radius: 4px;
+}
+
+.el-table th > .cell {
+    font-size: 14px;
+    color: #666666;
+    font-weight: bold;
+}
+
+.el-table .caret-wrapper {
+    width: 22px;
+}
+
+.el-table--enable-row-hover .el-table__body tr:hover > td {
+    background-color: #ecf5ff;
+}
+/*按钮样式覆盖*/
+.el-button {
+    width: 76px;
+    height: 32px;
+    text-align: center;
+    padding: 0;
+}
+.el-button--primary{
+    line-height: normal;
+}
+.el-button+.el-button{
+    margin-left: 3px;
+}
+/*分页样式覆盖*/
+.el-pagination.is-background .btn-next,
+.el-pagination.is-background .btn-prev,
+.el-pagination.is-background .el-pager li{
+    background: #fff;
+    color: #515a6e;
+    border: 1px solid #dcdee2;
+    border-radius: 4px;
+    font-weight: 500;
+}
+.el-pagination.is-background .btn-next:hover,
+.el-pagination.is-background .btn-prev:hover,
+.el-pagination.is-background .el-pager li:hover{
+    color:#2d8cf0;
+    border-color: #2d8cf0;
+}
+.el-pagination.is-background .el-pager li:not(.disabled).active{
+    background: #fff;
+    color:#2d8cf0;
+    border-color: #2d8cf0;
+}
+.el-pagination__editor:hover{
+    color:#2d8cf0;
+    border-color: #2d8cf0;
+}
+/*分页箭头样式*/
+.el-pagination .btn-next .el-icon,
+.el-pagination .btn-prev .el-icon{
+    color: #666;
 }
 
 /*全局设置*/

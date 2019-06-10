@@ -83,6 +83,7 @@
 <script>
 import api from '../../../api/api'
 import downloadVacancy from "../../../components/common/components/vacancyDownload.vue"
+import sessFun from "../../../commonFun/sessFun.js";
 export default {
     props:{
         link:{
@@ -122,7 +123,7 @@ export default {
         },
         // 获取登录用户信息
         getsessionData() {
-            this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
+            this.sessionData = sessFun.getSess();
         },
         // 显示map条件选择框
         showMapModel(){

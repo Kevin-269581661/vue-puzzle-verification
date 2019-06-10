@@ -1,0 +1,71 @@
+
+.ad_main{
+    margin-bottom: 32px;
+}
+/*wrap主体内容布局-表格*/
+.mediaList_wrap {
+    width: 92%;
+    background: #ffffff;
+    border: 1px solid #e6e7e9;
+    margin: 0 auto;
+}
+
+.mediaList_wrap .mediaList_head {
+    width: 100%;
+    height: 24px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e6e7e9;
+}
+
+.mediaList_wrap .mediaList_head h2 {
+    font-size: 16px;
+    color: #2c313c;
+    height: 24px;
+    padding-left: 14px;
+    font-weight: bold;
+}
+
+.mediaList_wrap .mediaList_container {
+    width: 96%;
+    margin: 24px auto;
+}
+.mediaList_wrap .mediaList_container .table_wrap {
+    margin: 24px auto 16px;
+    border-radius: 4px;
+}
+/*滚动条*/
+/deep/ .el-table__body-wrapper {
+    /*height: 405px;*/
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+/deep/ .el-table__body-wrapper::-webkit-scrollbar {
+    width: 4px;
+    background: #FAFAFA;
+
+}
+
+/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    background: #C1C1C1;
+    border-radius: 4px;
+}
+/*表格上部条件*/
+.handel_ul{
+    list-style:none;
+    overflow: hidden;
+}
+.handel_ul_li{
+    float: left;
+    margin-right: 8px;
+}
+.handel_ul_li_title{
+    font-size: 14px;
+    font-weight:400;
+    color:rgba(0,0,0,0.85)
+}
+/*分页样式*/
+.ad_pagination{
+    text-align: right;
+}

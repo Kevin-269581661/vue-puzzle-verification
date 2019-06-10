@@ -137,6 +137,7 @@ import {
     Message
 } from "element-ui";
 import timeFormat from '../../commonFun/timeFormat.js';
+import sessFun from '../../commonFun/sessFun.js';
 
 export default {
     name: "PhotoGallery",
@@ -324,7 +325,7 @@ export default {
         };
     },
     created() {
-        this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
+        this.sessionData = sessFun.getSess();
         this.getIndustry();
         this.getAllCity();
     },

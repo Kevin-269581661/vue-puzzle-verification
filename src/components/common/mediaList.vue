@@ -8,10 +8,10 @@
                 <h2>媒体列表</h2>
             </div>
             <div class="mediaList_container">
-                <div class="mediaList_handel">
-                    <span style="display:inline-block">
+                <div class="handel_ul">
+                    <li class="handel_ul_li handel_ul_li_select">
                         <el-input placeholder="请输入内容" v-model="keyword" class="input-with-select"
-                                  @change="initData">
+                                  size="small" @change="initData">
                             <el-select v-model="selectInfo" slot="prepend" placeholder="请选择">
                                 <el-option
                                     v-for="item in SelOptions"
@@ -21,8 +21,8 @@
                                 </el-option>
                             </el-select>
                         </el-input>
-                    </span>
-                    <span>
+                    </li>
+                    <li class="handel_ul_li handel_ul_li_city">
                         <el-cascader
                             v-if="cityOther"
                             :options="cityOptions"
@@ -32,24 +32,27 @@
                             placeholder="请选择城市"
                             filterable
                             size="small"
+                            style="width: 100%"
                             @change="handleChange">
                         </el-cascader>
-                    </span>
-                    <span>
-                         <el-select v-model="selectRName" placeholder="请选择区域" :clearable="true"
-                                    @change="getRegion">
-                              <el-option v-for="item in regionOpt"
-                                         :key="item.value"
-                                         :label="item.label"
-                                         :value="item.value">
-                              </el-option>
-                         </el-select>
-                    </span>
-                    <span><el-button type="primary" icon="el-icon-search" @click="searchFun" :disabled="searchBtnAbled">搜索</el-button></span>
-                    <span><el-button @click="clearSearch">重置</el-button></span>
-                    <span><el-button plain @click="newMedia" v-if="showNewBtn">新建</el-button></span>
-                    <el-button @click="importMedia" v-if="showImportBtn">导入媒体</el-button>
-                    <el-button @click="maintain" v-if="!showImportBtn">维护管理</el-button>
+                    </li>
+                    <li class="handel_ul_li handel_ul_li_area">
+                        <el-select v-model="selectRName" placeholder="请选择区域" :clearable="true"
+                                   style="width: 100%" size="small" @change="getRegion">
+                            <el-option v-for="item in regionOpt"
+                                       :key="item.value"
+                                       :label="item.label"
+                                       :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </li>
+                    <li class="handel_ul_li handel_ul_li_btn">
+                        <el-button type="primary" icon="el-icon-search" @click="searchFun" :disabled="searchBtnAbled">搜索</el-button>
+                        <el-button @click="clearSearch">重置</el-button>
+                        <el-button plain @click="newMedia" v-if="showNewBtn">新建</el-button>
+                        <el-button @click="importMedia" v-if="showImportBtn">导入媒体</el-button>
+                        <el-button @click="maintain" v-if="!showImportBtn">维护管理</el-button>
+                    </li>
                 </div>
                 <div class="table_wrap">
                     <el-table
@@ -60,12 +63,10 @@
                         border
                         :data="currentPlan"
                         style="width: 100%"
-                        :default-sort="{prop: 'resName', order: 'descending'}"
-                    >
+                        :default-sort="{prop: 'resName', order: 'descending'}">
                         <el-table-column
                             label="资源名称"
-                            min-width="10.2%"
-                        >
+                            min-width="10.2%">
                             <template slot-scope="scope">
                                 <el-tooltip class="item" effect="dark" :content="scope.row.resName" placement="bottom">
 								<span @click="mediaDetail(scope.row)"
@@ -177,7 +178,7 @@
                         <el-table-column
                             v-if="showNewBtn"
                             label="操作"
-                            min-width="7.4%"
+                            width="112"
                         >
                             <template slot-scope="scope">
                                 <el-dropdown size="small" split-button class="handel_btn" trigger="click"
@@ -206,6 +207,13 @@
                         </el-table-column>
                     </el-table>
                 </div>
+             <!--   <div>
+                    <el-pagination
+                        background
+                        layout="prev, pager, next,jumper"
+                        :total="100">
+                    </el-pagination>
+                </div>-->
             </div>
             <!--媒体状态修改模态框-->
             <el-dialog :visible.sync="mStatusDialogVisible" :close-on-click-modal="false" custom-class="mStatueDialog">
@@ -305,8 +313,6 @@
                     </el-table-column>
                     <el-table-column prop="mtitle" label="媒体名称" min-width="85" >
                     </el-table-column>
-                    <!--<el-table-column prop="mvehicle" label="媒体类型" min-width="65" >-->
-                    <!--</el-table-column>-->
                     <el-table-column prop="assetTag" label="资产编号" min-width="85" >
                     </el-table-column>
                     <el-table-column prop="errorMsg" label="失败信息" min-width="90" >
@@ -326,7 +332,7 @@
     import api from '../../api/api'
     import areaPackageNew from '../../commonFun/areaPackage_new'
     import areaToTextNew from '../../commonFun/areaToText_new'
-    import sheetExcel from "../../commonFun/sheetExcel.js";
+    import sessFun from "../../commonFun/sessFun.js";
     import {
         Form,
         FormItem,
@@ -419,7 +425,7 @@
         },
         mounted: function () {
             // 判断角色确定是否有操作这一列
-            this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
+            this.sessionData = sessFun.getSess();
             this.role = this.sessionData.uType
             if (this.sessionData.uType === 'MD') {
                 this.showNewBtn = true
@@ -1053,20 +1059,19 @@
 </script>
 
 <style scoped>
+
     /deep/ .el-table-filter{
         height: 400px !important;
         overflow-y:auto !important;
     }
+
     a {
         color: #108EE9;
     }
 
     .input-with-select /deep/ .el-input__inner {
         font-size: 14px;
-        /*padding: 10px 10px;*/
-        height: 34px;
-        line-height: 34px;
-        /*vertical-align: middle;*/
+        line-height: 32px;
     }
 
     /deep/ .el-table th > .cell.highlight {
@@ -1085,11 +1090,16 @@
     /*面包屑导航*/
     .ad_mediaDetail_wrap {
         position: relative;
-        /*height: 768px;*/
+    }
+
+    .ad_mediaDetail_nav{
+        width: 92%;
+        height: 42px;
+        margin: 0 auto;
+        position: relative;
     }
 
     .ad_mediaDetail_nav p {
-        padding-left: 57px;
         position: absolute;
         left: 0;
         top: 12px;
@@ -1101,22 +1111,16 @@
         color: #666;
     }
 
-    .ad_mediaDetail_nav {
-        height: 42px;
-        position: relative;
-    }
-
     .ad_mediaMana_nav p a:nth-of-type(1) {
         color: #999;
     }
 
     /*媒体列表*/
-    .mediaList_wrap {
-        width: 1246px;
-        background: #FFFFFF;
-        border: 1px solid #E6E7E9;
+ /*   .mediaList_wrap {
+        width: 92%;
+        background: #ffffff;
+        border: 1px solid #e6e7e9;
         margin: 0 auto;
-        /*margin-bottom: 26px;*/
     }
 
     .mediaList_wrap .mediaList_head {
@@ -1130,23 +1134,43 @@
         font-size: 16px;
         color: #2C313C;
         height: 24px;
-
         padding-left: 14px;
         font-weight: bold;
     }
 
     .mediaList_wrap .mediaList_container {
-        width: 100%;
-        padding: 18px 18px 31px 18px;
+        width: 96%;
+        margin: 24px auto;
+    }*/
+    /*过滤条件样式*/
+    .handel_ul{
+        list-style:none;
+        overflow: hidden;
     }
-
+    .handel_ul_li{
+        float: left;
+        margin-right: 8px;
+    }
+    .handel_ul_li_select{
+        width: 23.5%;
+    }
+    .handel_ul_li_city{
+        width: 15%;
+    }
+    .handel_ul_li_area{
+        width: 15%;
+    }
+    .handel_ul_li_btn{
+        width: 32%;
+    }
+    .handel_ul_li .el-button{
+        margin: 0 2px 0 0;
+    }
     /*下拉搜索框*/
     /deep/ .el-input-group__prepend {
         width: 64px;
         position: relative;
         background-color: #fff;
-        /*   border-top-right-radius: 4px;
-           border-bottom-right-radius: 4px;*/
     }
 
     /deep/ .el-input-group--prepend .el-select {
@@ -1154,29 +1178,13 @@
         border-bottom-left-radius: 4px;
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
-
-    }
-
-    .el-input {
-
-        height: 34px !important;
-        border-radius: 4px;
-    }
-
-    /deep/ .el-input__inner {
-        height: 34px;
-        /*line-height: 34px;*/
-        /*position: relative;
-        top: -1px;*/
     }
 
     .el-button {
         width: 76px;
-        height: 34px;
+        height: 32px;
         text-align: center;
-        /*line-height: 34px;*/
         padding: 0;
-        margin-left: 2px
     }
     /deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
         position: relative;
@@ -1185,18 +1193,8 @@
     }
 
     .mediaList_wrap .mediaList_container .table_wrap {
-        width: 1210px;
-        margin: 10px 0 0 0;
-
-        border-radius: 4px;;
-    }
-
-    .table_wrap {
-        width: 1210px;
+        margin: 24px auto;
         border-radius: 4px;
-
-        margin: 0 auto;
-        margin-top: 20px;
     }
 
     /*表格*/
@@ -1208,17 +1206,14 @@
         height: 44px;
         padding: 0;
         background-color: #f7f7f7;
-
     }
 
-    /deep/ .el-table td {
+/*    /deep/ .el-table td {
         padding: 8px 0;
-        /* overflow-x: hidden; */
         text-overflow: ellipsis;
     }
 
     /deep/ .el-table td .cell {
-        /*display: flex;*/
         height: 30px;
         line-height: 30px;
     }
@@ -1239,7 +1234,7 @@
 
     /deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
         background-color: #ecf5ff;
-    }
+    }*/
 
     /*滚动条*/
     /deep/ .el-table__body-wrapper {
@@ -1262,12 +1257,6 @@
 
     /*超出省略*/
     /deep/ .el-table .cell {
-        overflow-x: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    /deep/ .el-table__row .cell span {
         overflow-x: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -1323,11 +1312,6 @@
         width: 45px !important;
     }
 
-    /deep/ .el-input--small .el-input__inner{
-        height: 34px;
-        line-height: 34px;
-    }
-
     /deep/ button.el-button.el-button--default.el-button--small:hover {
         color: #666;
         border-color: #d8d8d8;
@@ -1345,10 +1329,6 @@
         font-size: 14px;
         padding: 0;
     }
-
-    /*/deep/ .el-button-group .el-button:not(:last-child){*/
-    /*margin-top: -1px;*/
-    /*}*/
 
     /deep/ .el-button-group button {
         float: left !important;
@@ -1370,8 +1350,6 @@
         padding: 7px 15px 7px 20px;
     }
 
-
-
     /*按钮*/
     /deep/ .el-button--default:focus, .el-button--default:hover {
         color: #606266;
@@ -1390,13 +1368,6 @@
 
     .handel_btn {
         position: relative;
-    }
-    .mediaList_handel{
-        overflow:hidden;
-    }
-    .mediaList_handel span {
-        float: left !important;
-        margin-left: 2px !important;
     }
     /deep/ .mStatueDialog{
         width: 285px;
@@ -1460,89 +1431,5 @@
         margin: 0 6px;
         cursor: pointer;
         color: #1890ff;
-    }
-    /*1440*/
-    @media all and (min-width: 1420px) {
-
-        .ad_mediaDetail_nav p {
-            padding-left: 60px;
-        }
-
-        .mediaList_wrap {
-            width: 1321.3px !important;
-            /*margin-bottom: 165px !important;*/
-        }
-
-        .mediaList_wrap .mediaList_container .table_wrap {
-            width: 1284px;
-        }
-
-
-        /deep/ .el-table__row td:nth-child(9) .cell , /deep/ .has-gutter th:nth-child(9) .cell {
-            text-align: right !important;
-        }
-
-        /deep/ .el-table__row td:nth-child(1) .cell {
-            width: 155px;
-        }
-        /deep/ .el-table__row td:nth-child(3) .cell span{
-            width: 75px;
-        }
-        /deep/ .el-table__row td:nth-child(4) .cell span{
-            width: 90px;
-        }
-
-        /deep/ .el-table__row td:nth-child(5) .cell span {
-            width: 126px;
-        }
-
-        /deep/ .el-table__row td:nth-child(7) .cell span {
-            width: 96px;
-        }
-
-        /deep/ .el-table__row td:nth-child(8) .cell span {
-            width: 156px;
-        }
-    }
-
-    /*1920*/
-    @media all and (min-width: 1900px) {
-
-        .mediaList_wrap {
-            width: 1800px !important;
-            /*margin-bottom: 176px !important;*/
-        }
-
-        .mediaList_wrap .mediaList_container .table_wrap {
-            width: 1764px;
-        }
-
-        /deep/ .el-table__row td:nth-child(1) .cell {
-            width: 202px;
-        }
-
-        /deep/ .el-table__row td:nth-child(5) .cell span {
-            width: 195px;
-        }
-
-        /deep/ .el-table__row td:nth-child(7) .cell span {
-            width: 155px;
-        }
-
-        /deep/ .el-table__row td:nth-child(8) .cell span {
-            width: 235px;
-        }
-    }
-</style>
-<style>
-    /*城市选择-二级联动*/
-    .el-cascader-menu::-webkit-scrollbar{
-        width: 6px;
-        background: #FAFAFA;
-    }
-    .el-cascader-menu::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
-        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-        background: #C1C1C1;
-        border-radius: 4px;
     }
 </style>

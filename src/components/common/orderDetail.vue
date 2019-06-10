@@ -499,6 +499,7 @@ import {
     Message
 } from "element-ui";
 import timeFormat from '../../commonFun/timeFormat.js';
+import sessFun from '../../commonFun/sessFun.js';
 
 export default {
     name: "orderDetail",
@@ -840,7 +841,7 @@ export default {
         },
         // 获取角色
         getRole() {
-            this.sessionData = JSON.parse(sessionStorage.getItem("session_data"));
+            this.sessionData = sessFun.getSess();
             this.role = this.sessionData.uType;
         },
         // 页数大小改变

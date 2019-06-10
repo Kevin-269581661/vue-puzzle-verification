@@ -18,11 +18,17 @@
                 <li>
                     <router-link :to="{path:'/media/orderList'}" class="nav_fast" id="orderMana">订单管理</router-link>
                 </li>
+                <li>
+                    <router-link :to="{path:'/media/projectList'}" class="nav_fast" id="proMana">工程管理</router-link>
+                </li>
                 <li @mouseenter="showMore = true" @mouseleave="showMore = false">
                     <a href="#" class="nav_fast more" id="More">其他模块<i class="fa fa-angle-down"></i>
                         <ul class="fast_list_fir" v-show="showMore">
                             <li>
                                 <router-link :to="{path:'/media/publishPriceList'}" id="priceMana">刊例价</router-link>
+                            </li>
+                            <li v-if="!this.isNation">
+                                <router-link :to="{path:'/media/paintedPath'}" id="paintedPathMana">线路管理</router-link>
                             </li>
                         </ul>
                     </a>
@@ -43,13 +49,9 @@
                         </ul>
                     </a>
                 </li>
-                <!--<li>
-                    <router-link :to="{path:'/media/questionAndAnswer'}" class="nav_fast" id="qna">Q&A</router-link>
-                </li>-->
             </ul>
 			<div class="handle clearfix">
 				<a href="#" class="ad_index_user">
-					<!-- <em>媒介</em>  -->
                     <img class="ad_index_user_avator" :src="avator" alt="">
 					<i class="uname">{{userName}}</i>
 					<img src="../../assets/images/downArr.png" alt="">
@@ -179,34 +181,38 @@ export default {
             //解绑成功
             openWxBox5: false,
             // 媒介账号信息
-            mediaData: "",
+            sessionData: "",
             avator: require('../../assets/images/index/headimg.png'),
+            // 是否为全国权限
+            isNation: false,
         };
     },
     created() {
-        console.log("开始创建created");
-        this.mediaData = JSON.parse(sessionStorage.getItem("session_data"));
-        console.log("this.mediaData", this.mediaData);
-        if (this.mediaData !== null && this.mediaData !== undefined) {
-            if (this.mediaData.uType !== "MD") {
+        this.sessionData = JSON.parse(sessionStorage.getItem("session_data"));
+        console.log("this.sessionData", this.sessionData);
+        if (this.sessionData !== null && this.sessionData !== undefined) {
+            if (this.sessionData.uType !== "MD") {
                 this.$message({
                     type: "warning",
                     message: "权限异常,请重新登录"
                 });
                 this.$router.push("/login");
             }
+            if(this.sessionData.mediaManageLevel == 1){
+                this.isNation = true
+            }
         } else {
             this.$router.push("/login");
         }
-        this.avator = this.mediaData.headPic || require('../../assets/images/index/headimg.png')
+        this.avator = this.sessionData.headPic || require('../../assets/images/index/headimg.png')
     },
     methods: {
         // 获取用户名称和角色
         getUserName() {
             // let data = JSON.parse(sessionStorage.getItem('session_data'));
-            let utype = this.mediaData.uType;
+            let utype = this.sessionData.uType;
             this.userName =
-                uTypeToText.toText(utype) + "-" + this.mediaData.realName;
+                uTypeToText.toText(utype) + "-" + this.sessionData.realName;
             console.log(this.userName);
         },
         routerNav: function(path) {
@@ -315,18 +321,21 @@ export default {
                     $('#More').find('a').css({
                         "color": "#999"
                     });
-                    // $('#kjfs').css({
-                    //     "color": "#fff",
-                    //     "border-bottom": "3px solid #fff"
-                    // }).parents().siblings().children('a').css({
-                    //     "color": "#999",
-                    //     "border-bottom": "none"
-                    // });
-                    // $('#orderMana').addClass('active')
-                    // $('#More').find('a').css({
-                    //     "color": "#999"
-                    // })
                     break;
+                case 'projectList':
+                case 'projectDetail':
+                    $('#proMana').css({
+                        "color": "#fff",
+                        "border-bottom": "3px solid #fff"
+                    }).parents().siblings().children('a').css({
+                        "color": "#999",
+                        "border-bottom": "none"
+                    });
+                    $('#More').find('a').css({
+                        "color": "#999"
+                    });
+                    break;
+                // 刊例价
                 case 'publishPriceList':
                     $('#More').css({
                         "color": "#fff",
@@ -340,6 +349,21 @@ export default {
                         "color": "#999"
                     })
                     break;
+                // 线路管理
+                case 'paintedPath':
+                    $('#More').css({
+                        "color": "#fff",
+                        "border-bottom": "3px solid #fff"
+                    }).parents().siblings().children('a').css({
+                        "color": "#999",
+                        "border-bottom": "none"
+                    });
+                    $('#paintedPathMana').addClass('active')
+                    $('#kjfs').find('a').css({
+                        "color": "#999"
+                    })
+                    break;
+                // 广告限制
                 case 'ADlimitList':
                     $('#More').css({
                         "color": "#fff",

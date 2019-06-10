@@ -151,6 +151,7 @@
     import {api} from '../../api/api';
     // 时间格式化
     import dateFormat from "../../commonFun/timeFormat.js";
+    import sessFun from "../../commonFun/sessFun.js";
     // 时间格式化
     import timeFormat from "../../commonFun/timeFormat.js";
     import {Message} from 'element-ui';
@@ -246,7 +247,7 @@
             }
         },
         mounted() {
-            this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
+            this.sessionData = sessFun.getSess();
             let apid = sessionStorage.getItem('AD_apid');
             if(apid){
                 // this.getComm();

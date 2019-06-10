@@ -70,6 +70,7 @@ import api from "../../api/api.js";
 import areaToText from "../../commonFun/areaToText_new.js";
 // 行业转换为中文
 import industryToText from "../../commonFun/industryToText.js";
+import sessFun from "../../commonFun/sessFun.js";
 import { Button } from "element-ui";
 export default {
     name: "clientDetail",
@@ -109,7 +110,7 @@ export default {
     methods: {
         // 获取角色
         getRole() {
-            this.sessionData = JSON.parse(sessionStorage.getItem("session_data"));
+            this.sessionData = sessFun.getSess();
             this.role = this.sessionData.uType;
             console.log(this.role);
         },

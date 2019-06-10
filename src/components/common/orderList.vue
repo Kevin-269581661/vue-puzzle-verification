@@ -128,7 +128,10 @@
                         </el-table-column>
                         <el-table-column label="操作" min-width="7.0%" v-if="!(role=='OP' || role=='AD')">
                             <template slot-scope="scope">
-                                <el-dropdown size="small" split-button trigger="click" placement="bottom-start">操作
+                                <el-dropdown size="small" trigger="click" placement="bottom-start">
+                                    <span class="el-dropdown-link">
+                                        操作<i class="el-icon-arrow-down el-icon--right"></i>
+                                    </span>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item :disabled="(scope.row.apState==0)||(scope.row.apState==5)||(role!='SM') " @click.native.prevent="finishOrder(scope.row)" class="finish">结束订单</el-dropdown-item>
                                         <el-dropdown-item :disabled="(role!='SM')" @click.native.prevent="applyPhoto(scope.row)" class="finish">申请画像</el-dropdown-item>
@@ -159,6 +162,7 @@ import { api } from "../../api/api";
 import dateFormat from "../../commonFun/timeFormat.js";
 // 价格格式化
 import commaFormat from "../../commonFun/commaFormat.js";
+import sessFun from "../../commonFun/sessFun.js";
 
 // 画像申请
 import applyphoto from './components/applyPhoto.vue';
@@ -214,7 +218,7 @@ export default {
                 rangeDate: "",
                 // 公司搜索
                 company: '',
-                // 城市筛选 
+                // 城市筛选
                 cityWord: '',
                 // 状态筛选
                 status: '',
@@ -375,7 +379,7 @@ export default {
         },
         // 获取角色
         getRole() {
-            this.sessionData= JSON.parse(sessionStorage.getItem("session_data"));
+            this.sessionData= sessFun.getSess();
             this.role = this.sessionData.uType;
             let sess = this.sessionData;
             if(sess.ascType==0 || (sess.uType=='MD' && sess.mediaManageLevel==1) || (sess.uType =='BD') && sess.saleManageLevel == 1){
@@ -393,7 +397,7 @@ export default {
                 pageNum: this.currPage,
                 pageSize: this.pageSize
             };
-            let { select, keyword, rangeDate, company, cityWord, status } = this.searchInfo;            
+            let { select, keyword, rangeDate, company, cityWord, status } = this.searchInfo;
             if(keyword){
                 if(select == '1'){
                     info.orderName = keyword;
@@ -456,7 +460,7 @@ export default {
         },
         // 搜索(优化)
         search(){
-            let { keyword, rangeDate, company, cityWord, status } = this.searchInfo;            
+            let { keyword, rangeDate, company, cityWord, status } = this.searchInfo;
             this.isSearch = false;
             let timer = setTimeout(()=>{
                 this.isSearch = true;
@@ -611,7 +615,7 @@ export default {
                 rangeDate: "",
                 // 公司搜索
                 company: '',
-                // 城市筛选 
+                // 城市筛选
                 cityWord: '',
                 // 状态筛选
                 status: '',
@@ -956,7 +960,7 @@ a {
 
 
 .mediaList_wrap .mediaList_container .table_wrap {
-    margin: 24px auto; 
+    margin: 24px auto;
     border-radius: 4px;
 }
 
@@ -1069,9 +1073,9 @@ a {
     text-overflow: ellipsis;
 }
 /deep/ .el-table td a{
-    padding: 8px 0;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
+    /*padding: 8px 0;*/
+    /*overflow-x: hidden;*/
+    /*text-overflow: ellipsis;*/
 }
 
 /deep/ .el-table--border {
@@ -1117,16 +1121,16 @@ a {
     overflow-x: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    line-height: 24px;
-    display: flex;
-    flex-direction: column;
+    /*line-height: 24px;*/
+    /*display: flex;*/
+    /*flex-direction: column;*/
 }
 
 /deep/ .el-table__row .cell span {
     overflow-x: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    line-height: 24px;
+    /*line-height: 24px;*/
 }
 
 .table_wrap /deep/ .el-table__row td:nth-child(5) .cell,
@@ -1175,6 +1179,13 @@ a {
 }
 
 /*操作*/
+.el-dropdown-link {
+    cursor: pointer;
+    color: #409EFF;
+}
+.el-icon-arrow-down {
+    font-size: 12px;
+}
 /deep/ .el-button--mini,
 .el-button--small {
     font-size: 14px !important;

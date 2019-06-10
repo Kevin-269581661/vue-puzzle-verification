@@ -183,180 +183,179 @@
                         </el-row>
                     </div>
                 </div>
-            </div>
-            <!--媒介载体-->
-            <div class="ad_ad">
-                <el-tabs v-model="activeMedia">
-                    <el-tab-pane label="广告门" name="first">
-                        <div class="ad_adPanel">
-                            <div>
-                                <el-button  size="small" type="primary" class="ad_adPanelBtn"
-                                            v-if="haveEdit" @click="connectDoorFun">设置连排门</el-button>
-                            </div>
-                            <div class="table_wrap">
-                                <el-table
-                                    v-loading="mediaLoading"
-                                    element-loading-text="玩命加载中.."
-                                    element-loading-spinner="el-icon-loading"
-                                    border
-                                    :data="mediaList"
-                                    style="width: 100%">
-                                    <el-table-column
-                                        prop="mTitle"
-                                        label="媒体名称"
-                                        min-width="8.6%"
-                                    >
-                                    </el-table-column>
-                                    <el-table-column
-                                        prop="grade"
-                                        label="媒体等级"
-                                        min-width="7%">
-                                        <template slot-scope="scope">
-                                            {{scope.row.grade || '--'}}
-                                        </template>
-                                    </el-table-column>
-                                    <el-table-column
-                                        prop="mType"
-                                        label="门体类型"
-                                        min-width="7%"
-                                    >
-                                    </el-table-column>
-                                    <el-table-column
-                                        prop="mState"
-                                        label="状态"
-                                        min-width="7%" >
-                                        <template slot-scope="scope">
-                                            {{scope.row.mState == 1 ? '正常' : scope.row.mState == 2 ? '待安装' : scope.row.mState == 0 ? '禁用' : '待维修'}}
-                                        </template>
-                                    </el-table-column>
-                                    <el-table-column
-                                        label="资产编号"
-                                        min-width="10.2%">
-                                        <template slot-scope="scope">
-                                            {{ scope.row.assetTag || '&#45;&#45;' }}
-                                        </template>
-                                    </el-table-column>
-                                    <el-table-column
-                                        prop="adSize"
-                                        label="广告尺寸"
-                                        min-width="7%"
-                                    >
-                                    </el-table-column>
-                                    <el-table-column
-                                        prop="adViewSize"
-                                        label="可视画面"
-                                        min-width="7%"
-                                    >
-                                    </el-table-column>
-                                    <el-table-column
-                                        label="广告限制"
-                                        min-width="10%"
-                                        class="tar">
-                                        <template slot-scope="scope">
-                                           <!-- {{ scope.row.notPush || '&#45;&#45;' }}-->
-                                            <el-tooltip v-if="scope.row.notPush" class="item" effect="dark" :content="scope.row.notPush"
-                                                        placement="bottom">
-                                                <span>{{ scope.row.notPush}}</span>
-                                            </el-tooltip>
-                                            <span v-else>{{ scope.row.notPush || '--' }}</span>
-                                        </template>
-                                    </el-table-column>
-                                    <el-table-column
-                                        label="备注"
-                                        min-width="12%">
-                                        <template slot-scope="scope">
-                                            {{ scope.row.mRemark || '--' }}
-                                        </template>
-                                    </el-table-column>
-                                    <el-table-column
-                                        label="门禁图片"
-                                        min-width="6%">
-                                        <template slot-scope="scope">
-                                            <div style="color: #108EE9;cursor: pointer;" @click="showMediaImg(scope.row.mID)">查看</div>
-                                        </template>
-                                    </el-table-column>
-                                </el-table>
-                            </div>
-                        </div>
-                    </el-tab-pane>
-                    <el-tab-pane label="道闸" name="second">
-                        <div class="ad_adPanel">
-                            <div class="table_wrap">
-                                <el-table
-                                    border
-                                    :data="roadGateList"
-                                    style="width: 100%">
-                                    <el-table-column
-                                        prop="mTitle"
-                                        label="媒体名称"
-                                        min-width="133"
-                                    >
-                                    </el-table-column>
-                                    <el-table-column
-                                        prop="mState"
-                                        label="状态"
-                                        min-width="113"
-                                    >
-                                        <template slot-scope="scope">
-                                            {{scope.row.mState == 1 ? '正常' : scope.row.mState == 2 ? '待安装' : scope.row.mState == 0 ? '禁用' : '待维修'}}
-                                        </template>
-                                    </el-table-column>
-                                    <el-table-column
-                                        label="资产编号"
-                                        min-width="163"
-                                    >
-                                        <template slot-scope="scope">
-                                            {{ scope.row.assetTag || '--' }}
-                                        </template>
-                                    </el-table-column>
-                                    <el-table-column
-                                        prop="picSize"
-                                        label="画面尺寸"
-                                        min-width="114"
-                                    >
-                                    </el-table-column>
-                                    <el-table-column
-                                        prop="lightBoxSize"
-                                        label="灯箱尺寸"
-                                        min-width="114"
-                                    >
-                                    </el-table-column>
-                                    <el-table-column
-                                        label="广告限制"
-                                        min-width="163"
-                                        class="tar"
-                                    >
-                                        <template slot-scope="scope">
-                                            {{ scope.row.notPush || '--' }}
-                                        </template>
-                                    </el-table-column>
-                                    <el-table-column
-                                        label="备注"
-                                        min-width="196"
-                                    >
-                                        <template slot-scope="scope">
-                                            <div class="tableRemark">
+                <!--媒介载体-->
+                <div class="ad_ad">
+                    <el-tabs v-model="activeMedia">
+                        <el-tab-pane label="广告门" name="first">
+                            <div class="ad_adPanel">
+                                <div>
+                                    <el-button  size="small" type="primary" class="ad_adPanelBtn"
+                                                v-if="haveEdit" @click="connectDoorFun">设置连排门</el-button>
+                                </div>
+                                <div class="table_wrap">
+                                    <el-table
+                                        v-loading="mediaLoading"
+                                        element-loading-text="玩命加载中.."
+                                        element-loading-spinner="el-icon-loading"
+                                        border
+                                        :data="mediaList"
+                                        style="width: 100%">
+                                        <el-table-column
+                                            prop="mTitle"
+                                            label="媒体名称"
+                                            min-width="8.6%"
+                                        >
+                                        </el-table-column>
+                                        <el-table-column
+                                            prop="grade"
+                                            label="媒体等级"
+                                            min-width="7%">
+                                            <template slot-scope="scope">
+                                                {{scope.row.grade || '--'}}
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column
+                                            prop="mType"
+                                            label="门体类型"
+                                            min-width="7%"
+                                        >
+                                        </el-table-column>
+                                        <el-table-column
+                                            prop="mState"
+                                            label="状态"
+                                            min-width="7%" >
+                                            <template slot-scope="scope">
+                                                {{scope.row.mState == 1 ? '正常' : scope.row.mState == 2 ? '待安装' : scope.row.mState == 0 ? '禁用' : '待维修'}}
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column
+                                            label="资产编号"
+                                            min-width="10.2%">
+                                            <template slot-scope="scope">
+                                                {{ scope.row.assetTag || '&#45;&#45;' }}
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column
+                                            prop="adSize"
+                                            label="广告尺寸"
+                                            min-width="7%"
+                                        >
+                                        </el-table-column>
+                                        <el-table-column
+                                            prop="adViewSize"
+                                            label="可视画面"
+                                            min-width="7%"
+                                        >
+                                        </el-table-column>
+                                        <el-table-column
+                                            label="广告限制"
+                                            min-width="10%"
+                                            class="tar">
+                                            <template slot-scope="scope">
+                                                <!-- {{ scope.row.notPush || '&#45;&#45;' }}-->
+                                                <el-tooltip v-if="scope.row.notPush" class="item" effect="dark" :content="scope.row.notPush"
+                                                            placement="bottom">
+                                                    <span>{{ scope.row.notPush}}</span>
+                                                </el-tooltip>
+                                                <span v-else>{{ scope.row.notPush || '--' }}</span>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column
+                                            label="备注"
+                                            min-width="12%">
+                                            <template slot-scope="scope">
                                                 {{ scope.row.mRemark || '--' }}
-                                            </div>
-                                        </template>
-                                    </el-table-column>
-                                    <el-table-column
-                                        label="门禁图片"
-                                        min-width="100"
-                                    >
-                                        <template slot-scope="scope">
-                                            <div style="color: #108EE9;cursor: pointer;" @click="showRGImg(scope.row.mID)">查看</div>
-                                        </template>
-                                    </el-table-column>
-                                </el-table>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column
+                                            label="门禁图片"
+                                            min-width="6%">
+                                            <template slot-scope="scope">
+                                                <div style="color: #108EE9;cursor: pointer;" @click="showMediaImg(scope.row.mID)">查看</div>
+                                            </template>
+                                        </el-table-column>
+                                    </el-table>
+                                </div>
                             </div>
-                        </div>
-                    </el-tab-pane>
-                </el-tabs>
-            </div>
-
-            <div class="content_bottom_btn">
-                <el-button type="default" @click="goBack">返回</el-button>
+                        </el-tab-pane>
+                        <el-tab-pane label="道闸" name="second">
+                            <div class="ad_adPanel">
+                                <div class="table_wrap">
+                                    <el-table
+                                        border
+                                        :data="roadGateList"
+                                        style="width: 100%">
+                                        <el-table-column
+                                            prop="mTitle"
+                                            label="媒体名称"
+                                            min-width="133"
+                                        >
+                                        </el-table-column>
+                                        <el-table-column
+                                            prop="mState"
+                                            label="状态"
+                                            min-width="113"
+                                        >
+                                            <template slot-scope="scope">
+                                                {{scope.row.mState == 1 ? '正常' : scope.row.mState == 2 ? '待安装' : scope.row.mState == 0 ? '禁用' : '待维修'}}
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column
+                                            label="资产编号"
+                                            min-width="163"
+                                        >
+                                            <template slot-scope="scope">
+                                                {{ scope.row.assetTag || '--' }}
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column
+                                            prop="picSize"
+                                            label="画面尺寸"
+                                            min-width="114"
+                                        >
+                                        </el-table-column>
+                                        <el-table-column
+                                            prop="lightBoxSize"
+                                            label="灯箱尺寸"
+                                            min-width="114"
+                                        >
+                                        </el-table-column>
+                                        <el-table-column
+                                            label="广告限制"
+                                            min-width="163"
+                                            class="tar"
+                                        >
+                                            <template slot-scope="scope">
+                                                {{ scope.row.notPush || '--' }}
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column
+                                            label="备注"
+                                            min-width="196"
+                                        >
+                                            <template slot-scope="scope">
+                                                <div class="tableRemark">
+                                                    {{ scope.row.mRemark || '--' }}
+                                                </div>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column
+                                            label="门禁图片"
+                                            min-width="100"
+                                        >
+                                            <template slot-scope="scope">
+                                                <div style="color: #108EE9;cursor: pointer;" @click="showRGImg(scope.row.mID)">查看</div>
+                                            </template>
+                                        </el-table-column>
+                                    </el-table>
+                                </div>
+                            </div>
+                        </el-tab-pane>
+                    </el-tabs>
+                </div>
+                <div class="content_bottom_btn">
+                    <el-button type="default" @click="goBack">返回</el-button>
+                </div>
             </div>
         </div>
         <!--资源图片模态框-->
@@ -425,6 +424,7 @@
 <script>
     import api from '../../api/api'
     import areaToText_new from '../../commonFun/areaToText_new'
+    import sessFun from '../../commonFun/sessFun.js'
     import {Button, Table, TableColumn, Row, Col, Message} from 'element-ui';
 
     export default {
@@ -472,7 +472,7 @@
                 mediaImgTitle:'',       // 当前图片的媒体名称
                 roadGateImgSrc: [{mid: '', src: ''}],
                 mediaImgSrcIndex: 0,
-                sessionData: JSON.parse(sessionStorage.getItem('session_data')),
+                sessionData: sessFun.getSess(),
                 ConnectDoorDialogVisible: false, // 连排门Dialog
                 connectAdBox:[
                     {
@@ -1013,7 +1013,6 @@
 
 <style scoped>
     .resImg{
-        /*width:auto;*/
         max-width: 100%;
         width: auto;
         height: 550px;
@@ -1024,21 +1023,21 @@
     /deep/ .el-dialog__body{
         text-align: center;
     }
+
     /*面包屑导航*/
     .ad_mediaDetail_nav{
-        position: relative;
-        height:30px;
-        width: 1246px;
+        width: 92%;
+        height: 42px;
         margin: 0 auto;
+        position: relative;
     }
 
     .ad_mediaDetail_nav p {
-        /*padding-left: 57px;*/
         position: absolute;
         left: 0;
+        top: 12px;
         font-size: 14px;
-        line-height: 30px;
-        text-align: left;
+        line-height: 18px;
     }
 
     .ad_mediaDetail_nav p em{
@@ -1056,24 +1055,20 @@
     }
 
     .ad_mediaDetail_wrap{
-        margin-bottom: 40px;
         position: relative;
     }
 
-
     /*媒体信息*/
     .ad_mediaInfo{
-        width: 1246px;
-        /*height: 266px;*/
+        width: 92%;
         background: #FFFFFF;
         border: 1px solid #E6E7E9;
-        margin: 10px auto;
+        margin: 10px auto 32px;
+        padding-bottom: 24px;
     }
 
     .ad_mediaInfo_head{
-        /*width: 100%;*/
         padding: 32px 0;
-        /*border-bottom: 1px solid #DEDEDE;*/
         display: flex;
         flex-flow: row;
     }
@@ -1106,14 +1101,12 @@
         font-size: 16px;
         font-weight:600;
         color: #333333;
-        /*margin-bottom: 16px;*/
         padding-left: 16px;
         height: 42px;
         line-height: 42px;
         background:rgba(245,246,250,1);
     }
     .ad_mediaInfoPanel_row{
-        /*border-bottom: 1px solid rgb(245,246,250);*/
         margin-bottom: 20px;
         border-left: 1px solid rgb(245,246,250);
         border-right: 1px solid rgb(245,246,250);
@@ -1152,20 +1145,16 @@
         max-height: 40px;
     }
     .show_all_aetail .ad_mediaInfoPanel_row_content{
-        /*overflow: hidden;*/
         display: inherit;
         word-break: break-all;
-        /*height: auto;*/
         max-height: none;
         padding: 0 16px 0 0;
     }
     .ad_mediaInfoPanel_row .showAllText{
         position: relative;
-        /*top: 19px;*/
         left: 227px;
         font-size: 14px;
         background: #fff;
-        /*padding-right: 10px;*/
     }
     /deep/ .el-table th > .cell {
         font-size: 14px;
@@ -1183,12 +1172,10 @@
 
     /*广告*/
     .ad_ad{
-        width: 1246px;
         padding-bottom: 30px;
         background: #FFFFFF;
         border: 1px solid #E6E7E9;
-        margin: 0 auto;
-        margin-bottom: 50px;
+        margin: 0 32px 32px;
     }
     /deep/ .ad_ad .el-tabs__header{
         padding: 0 32px;
@@ -1208,7 +1195,6 @@
         width: 100%;
         height: 24px;
         border-bottom: 1px solid #DEDEDE;
-        width: 100%;
         padding: 12px 0;
     }
     .ad_ad .ad_adHeader .ad_tab{
@@ -1235,10 +1221,8 @@
     }
 
     .ad_ad .ad_adPanel .table_wrap{
-        /*width:1210px;*/
         border-radius: 4px;
         margin: 10px auto 0;
-        /*margin-top: 10px;*/
         padding: 0 32px;
     }
 
@@ -1254,7 +1238,6 @@
         border-radius: 4px;
         /*允许设置列宽*/
         table-layout: fixed;
-
     }
 
     .ad_ad .ad_adPanel .adPanel_table th{
@@ -1295,7 +1278,6 @@
         margin-right: 6px;
     }
 
-
     /*按钮*/
     .content_bottom_btn{
         text-align: center;
@@ -1335,7 +1317,6 @@
     }
     .tableRemark::-webkit-scrollbar {
         width: 4px;
-        /*height: 8px;*/
         background: #FAFAFA;
     }
     .tableRemark::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
@@ -1372,25 +1353,9 @@
         background: #C1C1C1;
         border-radius: 4px;
     }
-    /*1440*/
-    @media all and (min-width: 1420px) {
-      .ad_mediaInfo,.ad_ad,.ad_mediaDetail_nav{
-            width: 1320px;
-        }
+    @media all and (min-width: 1900px){
         .ad_mediaInfoPanel_row .showAllText{
-            left: 240px;
+            left: 332px;
         }
     }
-
-    /*1920*/
-    @media all and (min-width: 1900px) {
-        .ad_mediaInfo,.ad_ad,.ad_mediaDetail_nav{
-            width: 1800px;
-        }
-        .ad_mediaInfoPanel_row .showAllText{
-            left: 340px;
-        }
-    }
-
-
 </style>

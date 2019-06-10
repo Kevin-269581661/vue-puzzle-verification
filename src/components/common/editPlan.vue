@@ -749,12 +749,9 @@
             <el-button @click="prev" v-if="active == 2" type="default">上一步</el-button>
             <el-button @click="goBack" v-if="active == 1" type="default">取消</el-button>
             <!--<el-button @click="clearData" v-if="active === 0" type="default">取消</el-button>-->
-            <el-button style="margin-top: 12px;padding: 12px" @click="next"
-                       v-if="active == 0 || active == 1" type="primary">下一步
-            </el-button>
-            <el-button style="margin-top: 12px;padding: 12px" @click="next"
-                       v-if="active == 2" type="primary">创建方案 </el-button>
-            <el-button style="padding: 12px" @click="next('workInSync')" v-if="active == 2">协同选点</el-button>
+            <el-button @click="next" v-if="active == 0 || active == 1" type="primary">下一步</el-button>
+            <el-button @click="next" v-if="active == 2" type="primary">创建方案 </el-button>
+            <el-button @click="next('workInSync')" v-if="active == 2">协同选点</el-button>
             <div class="finishBtn" v-if="active == 3">
                 <el-button type="primary" @click="continueCreate">继续创建</el-button>
                 <el-button type="default" @click="ToDetail">查看方案</el-button>
@@ -1029,6 +1026,7 @@
     import api from '../../api/api'
     import areaArr from '../../commonFun/areaPackage_new'
     import commaFormat from '../../commonFun/commaFormat'
+    import sessFun from '../../commonFun/sessFun.js'
     // 时间格式化
     import timeFormat from "../../commonFun/timeFormat.js";
     import apQuotation from './components/apQuotation'
@@ -1493,16 +1491,16 @@
                     }else{
                         this.messageFun('warning',res.data.MSG)
                     }
-                    Loading.close();                                        
+                    Loading.close();
                 }).catch(res =>{
                     console.log(res);
-                    Loading.close();                                        
+                    Loading.close();
                 });
             },
             // 取消导入
             cancelImport(){
                 this.showUploadFail = false;
-                this.isImport = false;                
+                this.isImport = false;
             },
             // 确定导入
             confirmImport(arr){
@@ -1793,7 +1791,7 @@
             },
             // 获取浏览器session数据
             getsessionData() {
-                this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
+                this.sessionData = sessFun.getSess();
                 if (this.sessionData.uType === 'BD') {
                     this.BDData.realName = this.sessionData.username //sessionStorage.getItem('username')
                     this.planForm.ownerSales = this.BDData.realName
@@ -5245,16 +5243,9 @@
     }
 
     /*下一步按钮*/
-
     /deep/ .map.el-button--primary {
         background: #FF7721;
         border-color: #FF7721;
-    }
-
-    /deep/ .el-button--primary span {
-        position: relative;
-        left: -2px;
-        top: -2px;
     }
 
     /*创建方案表单*/
@@ -5292,7 +5283,7 @@
         border-top-left-radius: 0;
     }
 
-    .search-wrap /deep/ .el-button {
+    /deep/ .el-button {
         width: 76px;
         height: 34px;
     }
@@ -5342,47 +5333,22 @@
         font-weight: 700;
     }
 
-    /*step2 四个按钮*/
-    .searchBtn, .map {
-        position: relative;
-        /*left: 5px;*/
-    }
     .oneKeyPointBtn{
         text-align: center;
         /*margin-left: 6px;*/
-        height: 34px;
+        height: 32px;
         padding: 0;
-        line-height: 34px;
-    }
-
-    /deep/ .el-button.searchBtn span {
-        left: -10px;
-    }
-
-    .searchBtn.el-button + .el-button {
-        margin-left: 0;
+        line-height: 32px;
     }
 
     .importXle.el-button--success{
         background: #51E171;
         border-color: #51E171;
-        /*margin-left: 11px;*/
-    }
-
-    /deep/ .importXle.el-button [class*=el-icon-]+span{
-        top:0;
-        left: 0;
     }
 
     /deep/ .map.el-button--primary {
         background: #FF8F49;
         border-color: #FF8F49;
-    }
-
-    /deep/ .el-button--primary span {
-        position: relative;
-        left: -2px;
-        top: -2px;
     }
 
     /*下拉搜索框*/
@@ -5412,8 +5378,6 @@
 
     /deep/ .el-input__inner {
         height: 34px;
-        /*position: relative;
-    top: -1px;*/
     }
 
     /*按钮*/
@@ -5423,17 +5387,8 @@
         background-color: #fcfcfc;
     }
 
-    .content_bottom_btn /deep/ .el-button span {
-        position: relative;
-        top: -2px;
-    }
-
     .content_bottom_btn /deep/ .el-button span a {
         color: #606266;
-    }
-
-    .finishBtn /deep/ .el-button span {
-        left: -8px;
     }
 
     .map {
@@ -5444,19 +5399,6 @@
         cursor: pointer;
         text-align: center;
         font-size: 14px;
-        /*margin-left: 5px;*/
-    }
-
-    /deep/ .searchBtn .el-icon-search,/deep/ .map .el-icon-location-outline {
-        position: relative;
-        top: -2px;
-        left: -9px;
-    }
-
-    /deep/ .el-button.map span {
-        position: relative;
-        left: -10px;
-        top: -2px;
     }
 
     .search-wrap {
@@ -5480,18 +5422,6 @@
         top: 75px;
         z-index: 998;
     }
-
-    /*.cart_box {*/
-    /*color: #fff;*/
-    /*background: #108EE9;*/
-    /*border-radius: 50%;*/
-    /*display: inline-block;*/
-    /*width: 50px;*/
-    /*height: 50px;*/
-    /*vertial-align: middle;*/
-    /*text-align: center;*/
-    /*line-height: 50px;*/
-    /*}*/
 
     /deep/ .shopcar .el-badge__content.is-fixed {
         position: absolute;
@@ -5609,9 +5539,7 @@
         border-radius: 0;
 
     }
-    /deep/ .input-wrap-Btn.el-button--primary span{
-        left: 0;
-    }
+
     /*筛选条件*/
     .filter-condition{
         width: 100%;
@@ -5699,7 +5627,6 @@
     }
 
     /deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
-
         -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
         background: #C1C1C1;
         border-radius: 4px;
@@ -5721,10 +5648,6 @@
 
     .step3 /deep/ .el-dialog {
         width: 388px !important;
-    }
-
-    /deep/ .car-list .el-button {
-        /* width: 100px; */
     }
 
     /*购物车列表*/
@@ -5880,11 +5803,6 @@
         margin-left: 20px;
         font-size: 14px;
         color: #666666;
-    }
-
-    /deep/ .el-button.el-button--text span {
-        position: relative;
-        top: -5px;
     }
 
     /*确认报价单修改框*/
@@ -6069,21 +5987,6 @@
     }
 
     /* 方案导入 */
-    /* .import_box{
-        display: flex;
-        height: 35px;
-        line-height: 35px;
-        margin-bottom: 20px;
-    }
-    .import_box .aButton{
-        display: inline-block;
-        color: #666;
-        height: 26px;
-        padding: 3px;
-        line-height: 26px;
-        border-radius: 4px;
-        border: 1px solid #dedede;
-    } */
     /deep/.import_fanan .el-row{
         height: 40px;
     }
@@ -6094,16 +5997,11 @@
         text-align: right;
         margin-right: 20px;
     }
-    .import_file{
-        /* margin-left: 20px; */
-    }
+
     .import_file .upload_file{
         display: inline-block;
     }
-    /* /deep/ .import_file  .el-button{
-        width: auto;
-        padding: 5px;
-    } */
+
     .upload_box{
         text-align: center;
         margin-top: 20px
@@ -6111,11 +6009,7 @@
     /deep/ .upload_box .el-button{
         width: auto;
     }
-    /deep/.import_fanan .el-button [class*="el-icon-"] + span,
-    .select-wrap button .el-icon-search{
-        left: 0;
-        top: 0;
-    }
+
     /*一键更换排期*/
     .table_box{
         position: relative;
@@ -6234,9 +6128,6 @@
         .input-wrap.focus{
             width: 170px;
         }
-        .filter-input .input-wrap .el-button--mini {
-            left: 1px;
-        }
 
         .tbody .tr li:nth-of-type(1) {
             width: 3.25%;
@@ -6299,17 +6190,6 @@
             text-indent: 1em;
             font-size: 14px;
             color: #666;
-        }
-
-        .filter-input .input-wrap .el-button--mini {
-            width: 52px;
-            height: 26px;
-        }
-
-        .input-wrap /deep/ .el-button--mini span {
-            position: relative;
-            top: -1px;
-            left: -3px;
         }
 
         .tbody .tr li:nth-of-type(1) {

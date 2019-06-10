@@ -43,6 +43,8 @@ const settingPrice = () => import('../components/common/settingPrice.vue')
 const maintainList = () => import('../components/common/maintainList.vue')
 const companyList = () => import('../components/common/companyList.vue')
 const compact = () => import('../components/common/compact.vue')
+const paintedPath = () => import('../components/common/paintedPath.vue')
+// const adsDialPlate = () => import('../components/common/adsDialPlate.vue')
 //地图选点中转页面
 const mapMessage = () => import('../components/common/mapMessage.vue')
 
@@ -59,6 +61,8 @@ const operateCommon = () => import('../components/operate/operate_common.vue')
 //媒介
 const mediaIndex = () => import('../components/media/media_index.vue')
 const mediaCommon = () => import('../components/media/media_common.vue')
+const projectList = () => import('../components/common/projectList.vue')
+const projectDetail = () => import('../components/common/projectDetail.vue')
 
 //销售
 const saleIndex = () => import('../components/sale/sale_index.vue')
@@ -194,6 +198,10 @@ export default new Router({
                 {path: '/media/maintainList', component: maintainList},
                 {path: '/media/myInfo', component: myInfo},
                 {path: '/media/compact', component: compact},
+                {path: '/media/paintedPath', component: paintedPath},
+                // {path: '/media/adsDialPlate', component: adsDialPlate},
+                {path: '/media/projectList', component: projectList},
+                {path: '/media/projectDetail', component: projectDetail},
             ]
         },
         //销售

@@ -94,6 +94,7 @@
 </template>
 
 <script>
+    import sessFun from "../../commonFun/sessFun.js";
     import {
         Form,
         FormItem,
@@ -287,7 +288,7 @@
         methods: {
             // 登录信息及角色数据
             getSession(){
-                this.sessionData = JSON.parse(sessionStorage.getItem("session_data"));
+                this.sessionData = sessFun.getSess();
                 let {ascType} = this.sessionData;
                 this.type = ascType;
                 console.log(this.roleArr);

@@ -49,7 +49,7 @@
                 </el-row>
                 
                 <div class="table_wrap">
-                    <el-table border :data="projectList" height="450" v-loading="loading" 
+                    <el-table border :data="projectList" v-loading="loading" 
                         element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                         <el-table-column label="上画时间" min-width="11.8%" prop="photoTime">
                         </el-table-column>
@@ -88,6 +88,7 @@
                 </div>
                 <div class="ad_pagination">
                     <el-pagination
+                        v-if="paginationShow"
                         @size-change="sizeChange"
                         @current-change="changePage"
                         :current-page.sync="currPage"
@@ -159,6 +160,7 @@
                 },
                 isSearch: true,
                 isReset: true,
+                paginationShow: true,
                 // 线路
                 lineArr: [],
                 // 工程人员
@@ -175,7 +177,7 @@
                 // 表格数据
                 projectList: [],
                 loadingOrder: false,
-                loading: false,
+                loading: true,
                 // 分页信息
                 pageSize: 10,
                 pageSizes: [10, 20, 30, 40],
@@ -193,10 +195,8 @@
             // 每页条数切换
             sizeChange(val) {
                 this.pageSize = val;
-                if (this.currPage == 1) {
-                    this.searchFun();
-                }
                 this.currPage = 1;
+                this.searchFun();
             },
             // 转变日期类型
             changeDateType(){
@@ -299,8 +299,13 @@
                 }
             },
             searchFun(){
+                this.paginationShow = false;
+                this.loading = true;
                 let info = this.searchFormat();
                 this.getData(info);
+                this.$nextTick(function () {
+                    this.paginationShow = true;
+                });
             },
             // 滚动获取列表数据
             getData(params){
@@ -357,8 +362,8 @@
                 }
                 if(rangeDate){
                     if(rangeDate.length){
-                        info.startDate = rangeDate[0];
-                        info.endDate = rangeDate[1];
+                        info.startDate = timeFormat.toDate(rangeDate[0]);
+                        info.endDate = timeFormat.toDate(rangeDate[1]);
                     }
                 }
                 return info;
@@ -367,7 +372,7 @@
             setTableData(item){
                 let obj = {
                     photoId: item.publishId,
-                    photoTime: item.publishDate,
+                    photoTime: timeFormat.toDate(item.publishDate, '/'),
                     line: item.lineId,
                     lineName: item.lineName,
                     orderId: item.orderId,
@@ -505,6 +510,7 @@
     /*面包屑导航*/
     .ad_mediaDetail_wrap {
         position: relative;
+        margin-bottom: 50px;
     }
     .ad_mediaDetail_nav{
         width: 92%;

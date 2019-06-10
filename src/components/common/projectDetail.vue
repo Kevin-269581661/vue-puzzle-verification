@@ -174,6 +174,7 @@
     import dateFormat from "../../commonFun/timeFormat.js";
     import sessFun from '../../commonFun/sessFun.js'    
     import api from "../../api/api.js";
+import timeFormat from '../../commonFun/timeFormat.js';
     export default {
         data(){
             return{
@@ -258,9 +259,17 @@
                     token: sess.token,
                     publishId: sessionStorage.getItem('taskId'),
                 };
-                api.getApi_file(this.apiVar.publishPaintTask+"/export", info).then(res =>{
+                api.getApi_file(this.apiVar.publishPaintTask+"/taskDetailsReport", info).then(res =>{
                     console.log(res.data);
-
+                    let blob = new Blob([res.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
+                    let downloadElement = document.createElement('a');
+                    let href = window.URL.createObjectURL(blob); //创建下载的链接
+                    downloadElement.href = href;
+                    downloadElement.download = res.headers['content-disposition'].split('=')[1]; //下载后文件名
+                    document.body.appendChild(downloadElement);
+                    downloadElement.click(); //点击下载
+                    document.body.removeChild(downloadElement); //下载完成移除元素
+                    window.URL.revokeObjectURL(href); //释放掉blob对象
                 }).catch(err =>{
                     console.log(err);
                 });
@@ -456,7 +465,7 @@
             setData(item){
                 let obj = {
                     photoId: item.publishId,
-                    photoTime: item.publishDate,
+                    photoTime: timeFormat.toDate(item.publishDate, '/'),
                     line: item.lineId,
                     lineName: item.lineName,
                     adsNum: item.publishPaintCount,

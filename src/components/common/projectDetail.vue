@@ -282,7 +282,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     let downloadElement = document.createElement('a');
                     let href = window.URL.createObjectURL(blob); //创建下载的链接
                     downloadElement.href = href;
-                    downloadElement.download = res.headers['content-disposition'].split('=')[1]; //下载后文件名
+                    downloadElement.download = decodeURI(res.headers['content-disposition'].split('=')[1]); //下载后文件名
                     document.body.appendChild(downloadElement);
                     downloadElement.click(); //点击下载
                     document.body.removeChild(downloadElement); //下载完成移除元素
@@ -322,7 +322,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{
-                        Message.warning(res.data.MSG);
+                        this.messageFun('warning', res.data.MSG);
                     }
                 }).catch(err =>{
                     console.log(err);
@@ -352,7 +352,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{
-                        Message.warning(res.data.MSG);
+                        this.messageFun('warning', res.data.MSG);
                     }
                 }).catch(err =>{
                     console.log(err);
@@ -389,7 +389,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{
-                        Message.warning(res.data.MSG);
+                        this.messageFun('warning', res.data.MSG);
                     }
                 }).catch(err =>{
                     console.log(err);
@@ -418,7 +418,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{
-                        Message.warning(res.data.MSG);
+                        this.messageFun('warning', res.data.MSG);
                     }
                 }).catch(err =>{
                     console.log(err);
@@ -447,7 +447,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{
-                        Message.warning(res.data.MSG);
+                        this.messageFun('warning', res.data.MSG);
                     }
                 });
             },
@@ -473,7 +473,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{
-                        Message.warning(res.data.MSG);
+                        this.messageFun('warning', res.data.MSG);
                     }
                 }).catch(err =>{
                     console.log(err);
@@ -521,12 +521,6 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     let info = {
                         orderId: item.orderId,
                         orderName: item.orderName,
-
-                        // resNum: item.resNum,
-                        // mediaNum: item.mediaNum,
-                        // adsNum: item.adsNum,
-                        // finishNum: item.finishNum,
-                        // progress: item.progress,
                     };
                     return info;
                 });
@@ -540,7 +534,6 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     uid: sess.uID,
                     token: sess.token,
                     taskId: sessionStorage.getItem('taskId'),                    
-                    // taskId: 23,
                     orderId: orderId
                 };
                 api.getApi(this.apiVar.publishPaintTask+"/getOrderDetail", info).then(res =>{
@@ -558,7 +551,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{
-                        Message.warning(res.data.MSG);
+                        this.messageFun('warning', res.data.MSG);
                     }
                 }).catch(err =>{
                     console.log(err);
@@ -612,6 +605,19 @@ import timeFormat from '../../commonFun/timeFormat.js';
             // 返回
             goBack() {
                 this.$router.push("./projectList");
+            },
+            // 操作提示统一方法
+            messageFun(mesType, mes){
+                this.$message({
+                    message: mes,
+                    type: mesType,
+                    showClose: true,
+                })
+            },
+            // 登录超时
+            loginTimeout() {
+                Message.warning("登录超时,请重新登录");
+                this.$router.push("/login");
             },
         },
         mounted(){

@@ -229,22 +229,21 @@
                 let info = {
                     uid: sess.uID,
                     token: sess.token,
-                    getAll: 1,
                 };
-                api.getApi(this.apiVar.engineer+"/list", info).then(res =>{
+                api.getApi(this.apiVar.engineer+"/listLine", info).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 200200){
-                        let resinfo = res.data.data.data;
+                        let resinfo = res.data.data;
                         this.lineArr = resinfo ? resinfo.map(item =>{
                             return {
-                                label: item.lineName,
-                                value: item.lineId,
+                                label: item.name,
+                                value: item.id,
                             };
                         }): [];
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{
-                        Message.warning(res.data.MSG);
+                        this.messageFun('warning', res.data.MSG);
                     }
                 }).catch(err =>{
                     console.log(err);
@@ -273,7 +272,7 @@
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{
-                        Message.warning(res.data.MSG);
+                        this.messageFun('warning', res.data.MSG);
                     }
                 }).catch(err =>{
                     console.log(err);
@@ -329,10 +328,10 @@
                             this.projectList = this.funcData(dataArr);
                             this.loading = false;
                             if(dataInfo.total == 0){
-                                Message.warning('暂无数据');
+                                this.messageFun('warning', '暂无数据');
                             }
                         }else{
-                            Message.warning(res.data.MSG);
+                        this.messageFun('warning', res.data.MSG);
                         }
                     }
                 });
@@ -417,7 +416,7 @@
                     this.currPage = 1;
                     this.searchFun();
                 }else{
-                    Message.warning('请输入搜索条件');
+                    this.messageFun('warning', '请输入搜索条件');
                 }
             },
             // 重置
@@ -495,13 +494,21 @@
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{
-                        Message.warning(res.data.MSG);
+                        this.messageFun('warning', res.data.MSG);
                     }
                 });
             },
             loginTimeout() {
-                Message.warning("登录超时,请重新登录");
+                this.messageFun('warning', "登录超时,请重新登录");
                 this.$router.push("/login");
+            },
+            // 操作提示统一方法
+            messageFun(mesType, mes){
+                this.$message({
+                    message: mes,
+                    type: mesType,
+                    showClose: true,
+                })
             },
         },
         mounted(){

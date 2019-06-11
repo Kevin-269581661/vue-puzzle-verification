@@ -12,14 +12,6 @@
                     <li class="handel_ul_li handel_ul_li_area">
                         <span class="handel_ul_li_title">所属线路:</span>
                         <el-input v-model="selectPath" size="small" placeholder="请输入线路名称"></el-input>
-                    <!--    <el-select v-model="selectPath" filterable placeholder="请选择线路" :clearable="true"
-                                   size="small" @change="">
-                            <el-option v-for="item in pathList"
-                                       :key="item.value"
-                                       :label="item.label"
-                                       :value="item.value">
-                            </el-option>
-                        </el-select>-->
                     </li>
                     <li class="handel_ul_li handel_ul_li_btn">
                         <el-button type="primary" :disabled="searchBtnAbled" @click="searchFun">搜索</el-button>
@@ -108,7 +100,8 @@
                     </el-form-item>
                     <el-form-item label="选择小区:" prop="resName">
                         <el-select v-model="createData.resName" filterable multiple placeholder="请选择小区" :clearable="true"
-                                   :loading="resLoading" style="width: 100%" size="small" @focus="selectResFocus">
+                                   :loading="resLoading" style="width: 100%" size="small">
+                            <!--@focus="selectResFocus"-->
                             <el-option
                                 v-for="item in resList"
                                 :key="item.value"
@@ -293,12 +286,11 @@
                         {validator: validatereLineName, trigger: ['blur', 'change'] },
                     ],
                     city: [
-                        { required: true, message: '请输入选择城市', trigger: 'change' },
+                        { required: true, message: '请选择城市', trigger: 'change' },
                     ],
-                    resName:[
-                        {validator: validateresName, trigger: ['blur', 'change'] },
-                        // { required: true, message: '请输入路线名称', trigger: 'blur' },
-                    ]
+                    // resName:[
+                    //     {validator: validateresName, trigger: 'blur' },
+                    // ]
                 },
                 // 可选择的小区列表
                 resList:[],
@@ -636,27 +628,49 @@
             changeRes(row){
                 console.log('选择的小区',row)
                 if(row.resourceId !== '' && row.resourceId !== null){
-                    let params = {
-                        uid: this.sessionData.uID,
-                        token: this.sessionData.token,
-                        resId: row.resourceId
-                    }
-                    api.getApi(this.apiVar.engineer + '/resInfoByResId', params).then(res=>{
-                        console.log('获取选择小区的信息',res)
-                        if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
-                            let resData = res.data.data
-                            row.type = resData.cType || '--'
-                            row.address = resData.resAddress || '--'
-                            row.resourceName = resData.resName || '--'
-                            row.tradingArea = resData.tradingArea || '--'
-                            row.regionId = resData.rID
-                        } else if (res.data.SysCode == 100302) {
-                            this.loginTimeout()
-                        } else {
-                            this.messageFun('warning', res.data.MSG)
+                    let isHave = this.isHaveDiffRes(row.resourceId)
+                    if(!isHave){
+                        let params = {
+                            uid: this.sessionData.uID,
+                            token: this.sessionData.token,
+                            resId: row.resourceId
                         }
-                    })
+                        api.getApi(this.apiVar.engineer + '/resInfoByResId', params).then(res=>{
+                            console.log('获取选择小区的信息',res)
+                            if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
+                                let resData = res.data.data
+                                row.type = resData.cType || '--'
+                                row.address = resData.resAddress || '--'
+                                row.resourceName = resData.resName || '--'
+                                row.tradingArea = resData.tradingArea || '--'
+                                row.regionId = resData.rID
+                            } else if (res.data.SysCode == 100302) {
+                                this.loginTimeout()
+                            } else {
+                                this.messageFun('warning', res.data.MSG)
+                            }
+                        })
+                    }else{
+                        this.messageFun('warning', '请勿重复选择相同小区！')
+                        row.resourceId = ''
+                    }
+
+                }else{
+                    row.type = ''
+                    row.address = ''
+                    row.resourceName = ''
+                    row.regionId = ''
+                    row.tradingArea = ''
                 }
+            },
+            // 编辑时-选择小区判断是否重复
+            isHaveDiffRes(resourceId){
+                for(let key of this.detailList){
+                    if(key.resourceId == resourceId && key.regionId){
+                        return true
+                    }
+                }
+                return false
             },
             // 编辑线路-选择区域
             changeArea(row){
@@ -666,6 +680,7 @@
                 // 重新选择区域则初始化行数据
                 row.type = ''
                 row.address = ''
+                row.resourceId = ''
                 row.resourceName = ''
                 row.regionId = ''
                 row.tradingArea = ''
@@ -688,12 +703,13 @@
                     let resourceIds = ''
                     let isAdd = false
                     for(let key of this.detailList){
-                        if(key.isInput){
+                        if(key.isInput && key.resourceId){
                             isAdd = true
                             resourceIds += key.resourceId + ','
                         }
                     }
-                    if(isAdd){
+                    console.log('resourceIds',resourceIds)
+                    if(isAdd && resourceIds){
                         let params = {
                             uid: this.sessionData.uID,
                             token: this.sessionData.token,
@@ -705,6 +721,7 @@
                             if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
                                 this.messageFun('success', '保存成功')
                                 this.getTableList()
+                                this.detailDialogVisible = false
                             } else if (res.data.SysCode == 100302) {
                                 this.loginTimeout()
                             } else {
@@ -712,12 +729,13 @@
                             }
                         })
                     }else{
-                        this.messageFun('warning','暂无新增资源需保存！')
+                        this.messageFun('warning','暂无新增小区需保存！')
                     }
                 } else {
                     console.log('关闭')
+                    this.detailDialogVisible = false
                 }
-                this.detailDialogVisible = false
+
             },
             // 新建线路
             createPath(){
@@ -735,15 +753,15 @@
                 //获取小区下拉
                 this.getResList()
             },
-            // 新建方案-小区选择
-            selectResFocus(){
-                if (!this.createData.city) {
-                    this.resLoading = false
-                    this.$refs.createData.validateField('resName')  // 手动触发校验
-                } else {
-                    this.$refs.createData.clearValidate('resName') // 清除验证
-                }
-            },
+            // // 新建方案-小区选择
+            // selectResFocus(){
+            //     if (!this.createData.city) {
+            //         this.resLoading = false
+            //         this.$refs.createData.validateField('resName')  // 手动触发校验
+            //     } else {
+            //         this.$refs.createData.clearValidate('resName') // 清除验证
+            //     }
+            // },
             //创建的表单验证
             submitForm(formName) {
                 console.log('formName',formName)

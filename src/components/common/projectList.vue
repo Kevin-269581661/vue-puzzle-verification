@@ -55,7 +55,7 @@
                         </el-table-column>
                         <el-table-column prop="lineName" label="所属线路" min-width="8.1%">
                         </el-table-column>
-                        <el-table-column prop="order" label="订单" min-width="9.8%" >
+                        <el-table-column prop="order" label="订单" min-width="10.8%" >
                         </el-table-column>
                         <el-table-column prop="photoNum" label="上画面数" min-width="8.9%" align="right">
                         </el-table-column>

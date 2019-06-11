@@ -71,7 +71,7 @@
                             <el-button plain v-if="showNewBtn" @click="isOpenDownload=true">导空位</el-button>
                         </span>
                         <span>
-                            <el-button type="primary" v-if="showNewBtn" @click="goToDiaPlate">点位表盘</el-button>
+                            <el-button type="primary" v-if="!isNation" @click="goToDiaPlate">点位表盘</el-button>
                         </span>
                     </div>
                 </el-row>
@@ -348,6 +348,8 @@ export default {
             continueEditLoading:'',
             // 空位导出
             isOpenDownload: false,
+            // 判断是否为全国媒介
+            isNation: true,
         };
     },
     created() {
@@ -512,6 +514,9 @@ export default {
             console.log(role);
             if (role == "MD") {
                 this.isDisable = false;
+                if(this.sessionData.mediaManageLevel == 0){
+                    this.isNation = false
+                }
             }
             if (role != "BD" && role != "MD") {
                 this.showNewBtn = false;

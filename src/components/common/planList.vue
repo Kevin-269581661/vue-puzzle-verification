@@ -1357,6 +1357,8 @@ a {
 /deep/ .el-table td .cell {
     display: flex;
     flex-direction: column;
+    height: auto;
+    line-height: 22px;
 }
 
 /deep/ .el-table--border {

@@ -228,6 +228,9 @@
         methods:{
             getSessionData(){
                 this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
+                if (this.sessionData.mediaManageLevel == 1) {
+                    this.$router.push('/*')
+                }
             },
             setTime(){
                 let starTime, endTime
@@ -428,6 +431,14 @@
                     type: mesType,
                     showClose: true,
                 })
+            },
+            // 登录超时
+            loginTimeout() {
+                this.$message({
+                    message: '登录超时或权限异常,请重新登录',
+                    type: 'warning'
+                })
+                this.$router.push('/login')
             },
         },
     }

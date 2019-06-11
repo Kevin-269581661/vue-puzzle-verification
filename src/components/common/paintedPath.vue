@@ -85,7 +85,7 @@
             <div>
                 <el-form :model="createData" :rules="createRules" ref="createData" label-width="92px" class="demo-ruleForm">
                     <el-form-item label="线路名称:" prop="pathLine">
-                        <el-input v-model="createData.pathLine" placeholder="请选择输入线路名称" @change="changeLineName"></el-input>
+                        <el-input v-model="createData.pathLine" placeholder="请选择输入线路名称" @change="changeLineName" size="small"></el-input>
                     </el-form-item>
                     <el-form-item label="选择城市:" prop="city">
                         <el-select v-model="createData.city" filterable placeholder="请选择城市" :clearable="true"

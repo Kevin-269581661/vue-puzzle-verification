@@ -502,10 +502,10 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     finishNum: item.publishCount,
                     orderNum: item.orderList.length,
                 };
-                obj.engineer = item.engineerMember?item.engineerMember.map(data =>{
+                obj.engineer = item.engineerMembers?item.engineerMembers.map(data =>{
                     return data.userName;
                 }).join('/'): '';
-                obj.engineerArr = item.engineerMember?item.engineerMember.map(data =>{
+                obj.engineerArr = item.engineerMembers?item.engineerMembers.map(data =>{
                     return {
                         label: data.userName,
                         value: data.userId,

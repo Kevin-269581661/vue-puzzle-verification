@@ -522,7 +522,7 @@
         width: 100%;
     }
 
-    /deep/ .el-date-editor{
+    /deep/ .tab_conten .el-date-editor{
         width: calc(100% - 67px);
     }
 

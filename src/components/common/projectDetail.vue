@@ -40,7 +40,7 @@
                         <span>{{projectInfo.adsNum}}</span>
                     </el-col>
                     <el-col :span="4" class="text_right">
-                        <span>上画状态</span>
+                        <span>上画进度</span>
                     </el-col>
                 </el-row>
                 <el-row class="same_padding">
@@ -67,7 +67,7 @@
                         <span>{{projectInfo.finishNum}}</span>
                     </el-col>
                     <el-col :span="4"  class="text_right state_text">
-                        <b>{{projectInfo.progress}}</b>
+                        <b>{{projectInfo.progress}}%</b>
                     </el-col>
                 </el-row>
             </div>

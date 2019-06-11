@@ -1,7 +1,10 @@
 <template>
     <div class="ad_main">
         <div class="ad_breadcrumb">
-            <p><a href="#">方案管理</a><em> / </em><a href="#">点位表盘</a></p>
+            <p>
+                <a href="#">方案管理</a><em> / </em><a href="#">点位表盘</a>
+                <span class="ad_breadcrumb_time">数据统计截止至{{checkDate}}</span>
+            </p>
         </div>
         <div class="mediaList_wrap">
             <el-tabs v-model="activeTabName" @tab-click="handleClick">
@@ -57,25 +60,33 @@
                         :data="adsTableList"
                         style="width: 100%">
                         <el-table-column
+                            class-name="el-table-column-resName"
                             prop="resName"
                             label="资源名称"
-                            min-width="120">
+                            min-width="120"
+                            fixed>
                         </el-table-column>
                         <el-table-column
+                            class-name="el-table-column-mediaName"
                             prop="mediaName"
                             label="媒体名称"
                             min-width="120"
+                            fixed
                             :show-overflow-tooltip="true">
                         </el-table-column>
                         <el-table-column
+                            class-name="el-table-column-districtName"
                             prop="districtName"
                             label="区域"
-                            min-width="120">
+                            min-width="120"
+                            fixed>
                         </el-table-column>
                         <el-table-column
+                            class-name="el-table-column-asLab"
                             prop="asLab"
                             label="投方面"
-                            min-width="90">
+                            min-width="90"
+                            fixed>
                         </el-table-column>
                         <el-table-column
                             v-for="(item,index) in tableHeader"
@@ -156,6 +167,7 @@
                     pageSize: 10,
                     totalSize: 0,
                 },
+                checkDate: '',
                 // 点位表盘loading
                 tableLoading: true,
                 // 当前tab
@@ -209,18 +221,20 @@
         },
         mounted(){
             this.getSessionData()
+            this.setTime()
             this.getTableData()
             this.getCity()
         },
         methods:{
             getSessionData(){
                 this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
+            },
+            setTime(){
                 let starTime, endTime
                 starTime = timeFormat.returnDayCount(0,'/')
                 endTime = timeFormat.returnDayCount(30,'/')
                 this.dateInput = [starTime, endTime]                // 设置默认时间
                 this.beforDate = [starTime, endTime]
-                // this.firstTime = starTime
             },
             // tab切换
             handleClick(){
@@ -303,11 +317,13 @@
                     console.log('点位表盘列表',res)
                     if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
                         this.pageData.totalSize = res.data.data.totalCount
+                        this.checkDate = res.data.data.checkDate
                         this.setTableData(res.data.data)
                     } else if (res.data.SysCode == 100302) {
                         this.loginTimeout()
                     } else {
                         this.messageFun('warning', res.data.MSG)
+                        this.adsTableList = []
                     }
                     this.tableLoading = false
                 })
@@ -348,7 +364,9 @@
                 if(val && val.length > 0){
                     let dayNum = this.GetDateDiff(val[0],val[1])
                     if(dayNum < 30){
-                        this.dateInput = this.beforDate.concat()
+                        // this.dateInput = this.beforDate.concat()
+                        this.dateInput[1] = timeFormat.returnDayCount(30,'/',new Date(this.dateInput[0]))
+                        console.log('this.dateInput',this.dateInput)
                         this.messageFun('warning','最短周期为30天')
                     }else if(dayNum > 90){
                         this.dateInput = this.beforDate.concat()
@@ -376,6 +394,8 @@
             clearSearch(){
                 this.resName = ''
                 this.areaRid = ''
+                this.pageData.pageNum = 1
+                this.setTime()
                 this.getTableData()
             },
             // 分页
@@ -431,7 +451,10 @@
     .ad_breadcrumb p a{
         color: #999;
     }
-
+    .ad_breadcrumb_time{
+        display: inline-block;
+        float: right;
+    }
     /*tag颜色覆盖*/
     /deep/ .mediaList_wrap .el-tabs__header{
         padding: 0 20px;
@@ -496,8 +519,10 @@
         margin: 16px auto 0;
     }
     /deep/ .el-table{
-        border-left: 1px solid #ebeef5;
-        border-right: 1px solid #ebeef5;
+        border-left: 1px solid rgba(233,233,233,0.5);
+        border-right: 1px solid rgba(233,233,233,0.5);
+        /*box-shadow:4px 0 0 0 rgba(0,0,0,0.1);*/
+        border-radius:4px 0px 0px 0px;
     }
     /deep/ .el-table tr th{
         height: 42px;
@@ -599,5 +624,18 @@
         -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
         background: #C1C1C1;
         border-radius: 4px;
+    }
+    /*safari下表头错位*/
+    /deep/ .el-table .el-table-column-resName .cell{
+        min-width: 120px;
+    }
+    /deep/ .el-table .el-table-column-mediaName .cell{
+        min-width: 120px;
+    }
+    /deep/ .el-table .el-table-column-districtName .cell{
+        min-width: 120px;
+    }
+    /deep/ .el-table .el-table-column-asLab .cell{
+        min-width: 90px;
     }
 </style>

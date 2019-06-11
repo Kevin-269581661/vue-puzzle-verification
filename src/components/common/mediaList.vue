@@ -394,7 +394,7 @@
                 cityOptions: [],             //城市数组
                 selectedOptions: [],        // 当前选择的城市rid数组
                 regionOpt: [],              // 地区
-                selectRName: [],        // 当前选择的区域rid
+                selectRName: '',        // 当前选择的区域rid
                 cityArea:{cName:'',rName:''},   // 当前选择的城市名称和区域名称
                 loadScroll: true,
                 provinceCity: [],     //省份及其地级市
@@ -893,7 +893,8 @@
             clearSearch(){
                 this.keyword = ''
                 this.selectedOptions = []
-                this.selectRName = []
+                this.selectRName = ''
+                this.regionOpt = [];
                 this.setPageNoAndTableData()
                 this.cityArea = {cName:'',rName:''}
                 this.getData({"pageNo": this.pageNo,"pageSize":50})

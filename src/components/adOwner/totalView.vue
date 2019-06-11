@@ -3,8 +3,8 @@
         <div class="right-content-wrap">
             <div class="right-title">
                 <h1>整体概览: <span class="date">{{bdDay}}-{{edDay}}</span></h1>
-            </div>
-            <div class="right-data">
+            </div> 
+            <div class="right-data" >
                 <!--<ul class="right-data-wrap" v-if="chooseHouse">-->
                     <!--&lt;!&ndash;<li>&ndash;&gt;-->
                     <!--&lt;!&ndash;<span>人流量</span>&ndash;&gt;-->

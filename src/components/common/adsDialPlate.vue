@@ -535,18 +535,22 @@
         /*box-shadow:4px 0 0 0 rgba(0,0,0,0.1);*/
         border-radius:4px 0px 0px 0px;
     }
-    /deep/ .el-table tr th{
+    /deep/ .tab_conten .el-table tr th{
         height: 42px;
         padding: 0;
         background-color: #f7f7f7;
     }
-    /deep/ .el-table tr td{
+    /deep/ .tab_conten .el-table tr td{
         height: 42px;
     }
-    /deep/ .el-table td {
+    /deep/ .tab_conten .el-table td {
         padding: 6px 0;
         color: rgba(102,102,102,1);
         text-overflow: ellipsis;
+    }
+    /deep/ .tab_conten .el-table td .cell {
+        height: 32px;
+        line-height: 32px;
     }
     /deep/ .el-table th.el-table-column-dayTime .cell{
         font-size: 12px;

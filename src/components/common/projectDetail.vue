@@ -67,7 +67,7 @@
                         <span>{{projectInfo.finishNum}}</span>
                     </el-col>
                     <el-col :span="4"  class="text_right state_text">
-                        <b>{{projectInfo.progress*100}}%</b>
+                        <b>{{projectInfo.progress}}%</b>
                     </el-col>
                 </el-row>
             </div>
@@ -86,7 +86,7 @@
                         媒体:<span>{{tableNumInfo.mediaNum}}</span>
                         点位:<span>{{tableNumInfo.adsNum}}</span>
                         已上画:<span>{{tableNumInfo.finishNum}}</span>
-                        上画率:<span>{{tableNumInfo.progress*100}}%</span>
+                        上画率:<span>{{tableNumInfo.progress}}%</span>
                     </el-row>
                     <el-table border :data="currAsidList">
                         <el-table-column type="index" label="序号" width="60">

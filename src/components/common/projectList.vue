@@ -70,7 +70,7 @@
                         </el-table-column>
                         <el-table-column prop="progress" label="上画进度" min-width="8.9%" align="right">
                             <template slot-scope="scope">
-                                <span>{{scope.row.progress*100}}%</span>
+                                <span>{{scope.row.progress}}%</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="操作" min-width="7.1%">
@@ -392,7 +392,7 @@
                     resNum: item.resourceCount,
                     engineerArr: [],
                     engineer: "",
-                    progress: item.publishProgress
+                    progress: item.publishProgress*100
                 };
                 obj.engineer = item.engineerMember.map(data =>{
                     return data.userName;

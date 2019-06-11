@@ -6239,7 +6239,7 @@
     }
 
     .select-wrap button {
-        width: 76px;
+        /*width: 76px;*/
         height: 34px;
     }
 

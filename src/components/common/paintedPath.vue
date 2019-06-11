@@ -647,7 +647,7 @@
                             let resData = res.data.data
                             row.type = resData.cType || '--'
                             row.address = resData.resAddress || '--'
-                            row.resourceName = resData.resName
+                            row.resourceName = resData.resName || '--'
                             row.tradingArea = resData.tradingArea || '--'
                             row.regionId = resData.rID
                         } else if (res.data.SysCode == 100302) {

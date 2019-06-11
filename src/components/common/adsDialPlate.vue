@@ -5,95 +5,137 @@
         </div>
         <div class="mediaList_wrap">
             <el-tabs v-model="activeTabName" @tab-click="handleClick">
-                <el-tab-pane label="广告门" name="adDoor">
-                    <div class="tab_conten">
-                        <el-row :gutter="32" class="tab_conten_row">
-                            <el-col :span="6">
-                                <span class="search_label">资源名称:</span>
-                                <el-input v-model="resName" size="small" placeholder="请输入内容"></el-input>
-                            </el-col>
-                            <el-col :span="6">
-                                <span class="search_label">城市区域:</span>
-                                <el-input v-model="resName" size="small" placeholder="请输入内容"></el-input>
-                            </el-col>
-                            <el-col :span="7">
-                                <span class="search_label">查询范围:</span>
-                             <!--   <el-date-picker
-                                    v-model="dateInput"
-                                    type="date"
-                                    size="small"
-                                    placeholder="选择日期">
-                                </el-date-picker>-->
-                                  <el-date-picker
-                                    v-model="dateInput"
-                                    type="daterange"
-                                    size="small"
-                                    start-placeholder="开始日期"
-                                    end-placeholder="结束日期"
-                                    value-format="yyyy/MM/dd"
-                                    format="yyyy/MM/dd"
-                                    class="date-select"
-                                >
-                                </el-date-picker>
-                            </el-col>
-                            <el-col :span="5">
-                                <el-button type="primary" :disabled="searchBtnAbled" @click="searchFun">搜索</el-button>
-                                <el-button @click="clearSearch">重置</el-button>
-                            </el-col>
-                        </el-row>
-                        <div class="table_wrap">
-                            <el-table
-                                v-loading="tableLoading"
-                                element-loading-text="拼命加载中..."
-                                element-loading-spinner="el-icon-loading"
-                                :data="adsTableList"
-                                style="width: 100%">
-                                <el-table-column
-                                    prop="resName"
-                                    label="资源名称"
-                                    min-width="120">
-                                </el-table-column>
-                                <el-table-column
-                                    prop="mediaName"
-                                    label="媒体名称"
-                                    min-width="120">
-                                </el-table-column>
-                                <el-table-column
-                                    prop="districtName"
-                                    label="区域"
-                                    min-width="120">
-                                </el-table-column>
-                                <el-table-column
-                                    prop="asLab"
-                                    label="投方面"
-                                    min-width="90">
-                                </el-table-column>
-                                <el-table-column
-                                    v-for="(item,index) in tableHeader"
-                                    :prop="item.dayOfMonth"
-                                    :key="index"
-                                    width="55"
-                                    :label="item.dayOfMonth + item.dayOfWeek">
-                                    <template slot-scope="scope">
-                                        <div class="color_chunk color_chunk_3" v-if="scope.row[item.dayOfMonth].status === -1"></div>
-                                        <el-tooltip placement="bottom" v-else>
-                                            <div slot="content">
-                                                {{scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].apName}}
-                                            </div>
-                                            <div class="color_chunk"
-                                                 :class="scope.row[item.dayOfMonth].status== 0 ? 'color_chunk_0' : scope.row[item.dayOfMonth].status == 1 ? 'color_chunk_1' : 'color_chunk_3'">
-                                            </div>
-                                        </el-tooltip>
-                                    </template>
-                                </el-table-column>
-                            </el-table>
-                        </div>
-                    </div>
+                <el-tab-pane label="广告门" name="广告门">
+
                 </el-tab-pane>
-                <el-tab-pane label="道闸" name="roadGate">
-                    道闸
+                <el-tab-pane label="道闸" name="道闸">
+
                 </el-tab-pane>
             </el-tabs>
+            <div class="tab_conten">
+                <el-row :gutter="32" class="tab_conten_row">
+                    <el-col :span="6">
+                        <span class="search_label">资源名称:</span>
+                        <el-input v-model="resName" size="small" placeholder="请输入内容"></el-input>
+                    </el-col>
+                    <el-col :span="6">
+                        <span class="search_label">城市区域:</span>
+                        <el-select v-model="areaRid" filterable placeholder="区域" :clearable="true" size="small" @change="changeArea">
+                            <el-option
+                                v-for="(item,index) in areaList"
+                                :key="index"
+                                :label="item.label"
+                                :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </el-col>
+                    <el-col :span="7">
+                        <span class="search_label">查询范围:</span>
+                        <el-date-picker
+                            v-model="dateInput"
+                            type="daterange"
+                            size="small"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期"
+                            value-format="yyyy/MM/dd"
+                            format="yyyy/MM/dd"
+                            class="date-select"
+                            @change="dateChange"
+                            :picker-options="pickerOptions">
+                        </el-date-picker>
+                    </el-col>
+                    <el-col :span="5">
+                        <el-button type="primary" :disabled="searchBtnAbled" @click="searchFun">搜索</el-button>
+                        <el-button @click="clearSearch">重置</el-button>
+                    </el-col>
+                </el-row>
+                <div class="table_wrap">
+                    <el-table
+                        v-loading="tableLoading"
+                        element-loading-text="拼命加载中..."
+                        element-loading-spinner="el-icon-loading"
+                        :data="adsTableList"
+                        style="width: 100%">
+                        <el-table-column
+                            prop="resName"
+                            label="资源名称"
+                            min-width="120">
+                        </el-table-column>
+                        <el-table-column
+                            prop="mediaName"
+                            label="媒体名称"
+                            min-width="120"
+                            :show-overflow-tooltip="true">
+                        </el-table-column>
+                        <el-table-column
+                            prop="districtName"
+                            label="区域"
+                            min-width="120">
+                        </el-table-column>
+                        <el-table-column
+                            prop="asLab"
+                            label="投方面"
+                            min-width="90">
+                        </el-table-column>
+                        <el-table-column
+                            v-for="(item,index) in tableHeader"
+                            :prop="item.dayOfMonth"
+                            :key="index"
+                            width="50"
+                            :label="item.dayOfMonth + item.dayOfWeek"
+                            class-name="el-table-column-dayTime">
+                            <template slot-scope="scope">
+                                <div class="color_chunk color_chunk_2" v-if="scope.row[item.dayOfMonth] && scope.row[item.dayOfMonth].status === -1"></div>
+                                <el-popover
+                                    v-else
+                                    placement="top-start"
+                                    width="310"
+                                    trigger="hover">
+                                    <div>
+                                        <p class="propmt_message_p">占点方案：{{scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].apName}}</p>
+                                        <p class="propmt_message_p">占点排期：{{scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].lStar + '-' + scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].lEnd}}</p>
+                                    </div>
+                                    <div slot="reference" class="color_chunk"
+                                         :class="scope.row[item.dayOfMonth] && scope.row[item.dayOfMonth].status == 0 ? 'color_chunk_0' : scope.row[item.dayOfMonth] && scope.row[item.dayOfMonth].status == 1 ? 'color_chunk_1' : 'color_chunk_2'">
+                                                <span v-if="scope.row[item.dayOfMonth] && scope.row[item.dayOfMonth].isStartPoint == 1"
+                                                      class="warningInfoColor beginWarningInfo color_chunk_3">
+                                                </span>
+                                    </div>
+                                </el-popover>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+            </div>
+            <el-row class="table_bottom">
+                <el-col :span="9">
+                    <p class="warningInfo">
+                        <span class="warningInfoColor beginWarningInfo"></span>
+                        <span class="warningInfoName">排期开始日期</span>
+                        <span style="background: rgba(255,144,97,1)" class="warningInfoColor"></span>
+                        <span class="warningInfoName">被占点位</span>
+                        <span style="background: rgba(255,226,129,1)" class="warningInfoColor"></span>
+                        <span class="warningInfoName">预锁点位</span>
+                        <span style="background: rgba(235,237,240,1)" class="warningInfoColor"></span>
+                        <span class="warningInfoName">空闲点位</span>
+                    </p>
+                </el-col>
+                <el-col :span="15">
+                    <div class="ad_pagination">
+                        <el-pagination
+                            background
+                            layout="total, prev, pager, next, sizes, jumper"
+                            @current-change="changePage"
+                            @size-change="changeSize"
+                            :page-sizes="[10, 20, 30, 40]"
+                            :total="pageData.totalSize">
+                        </el-pagination>
+                    </div>
+                </el-col>
+            </el-row>
+        </div>
+        <div class="ad_footer">
+            <el-button size="small" @click="returnBefore">返回</el-button>
         </div>
     </div>
 </template>
@@ -102,6 +144,7 @@
     import api from '../../api/api'
     // 时间格式化
     import timeFormat from '../../commonFun/timeFormat'
+    import areaArr from '../../commonFun/areaPackage_new'
     export default {
         name: "adsDialPlate",
         data() {
@@ -113,18 +156,61 @@
                     pageSize: 10,
                     totalSize: 0,
                 },
-                tableLoading: false,
-                activeTabName: 'adDoor',
+                // 点位表盘loading
+                tableLoading: true,
+                // 当前tab
+                activeTabName: '广告门',
+                // 搜索的资源名称
                 resName: '',
-                dateInput:'',
+                cityRid: '',
+                // 选择的区域
+                areaRid:'',
+                // 城市列表
+                cityList:'',
+                // 区域下拉
+                areaList: '',
+                // 日期区间
+                dateInput: [],
+                beforDate: [],
                 searchBtnAbled: false,
                 adsTableList: [],
-                tableHeader:[]
+                // 表格头部
+                tableHeader:[],
+                // 选择的第一个日期
+                firstTime: '',
+                // 时间限制
+                pickerOptions:{
+                    disabledDate:(time) =>{
+                        if (!this.firstTime) {
+                            // console.log('toDay',toDay)
+                            // return true
+                        } else {
+                            // 过去
+                            let passDay = timeFormat.returnDayCount(-90,'/',new Date(this.firstTime))
+                            // 未来
+                            let toDay = timeFormat.returnDayCount(90,'/',new Date(this.firstTime))
+                            // console.log('toDay',toDay,'passDay',passDay)
+                            return  time.getTime() > Date.parse(toDay) || time.getTime() < Date.parse(passDay)
+                        }
+
+                    },
+                    onPick:(time) =>{
+                        //当第一时间选中才设置禁用
+                        if(time.minDate){
+                            this.firstTime = time.minDate;
+                            // console.log('this.firstTime',this.firstTime,time.maxDate)
+                        }
+                        // if(time.maxDate){
+                        //     vue.timeOptionRange = null;
+                        // }
+                    }
+                }
             }
         },
         mounted(){
             this.getSessionData()
             this.getTableData()
+            this.getCity()
         },
         methods:{
             getSessionData(){
@@ -133,66 +219,195 @@
                 starTime = timeFormat.returnDayCount(0,'/')
                 endTime = timeFormat.returnDayCount(30,'/')
                 this.dateInput = [starTime, endTime]                // 设置默认时间
+                this.beforDate = [starTime, endTime]
+                // this.firstTime = starTime
             },
             // tab切换
             handleClick(){
-
+                console.log('tab切换',this.activeTabName)
+                this.pageData.pageNum = 1
+                this.resName = ''
+                this.areaRid = ''
+                this.getTableData()
+            },
+            // 获取城市
+            getCity(){
+                let info = {
+                    "token": this.sessionData.token,
+                    "uid": this.sessionData.uID
+                };
+                api.postApi(this.apiVar.Advertisement + '/GetAuthorCity', info).then(res =>{
+                    console.log(res.data);
+                    if(res.data.SysCode == 300200){
+                        let resinfo = res.data.data;
+                        let result = [];
+                        for(let data of resinfo){
+                            let obj = {
+                                label: data.rName,
+                                value: data.rID.toString()
+                            };
+                            result.push(obj);
+                        }
+                        this.cityList = result;
+                        this.getAreaByRID()
+                    }else if(res.data.SysCode == 100302){
+                        this.loginTimeout();
+                    }else{
+                        Message.warning(res.data.MSG);
+                    }
+                });
+            },
+            // 获取区域
+            getAreaByRID(){
+                let areaList = []
+                for(let key of this.cityList){
+                    let areaTempArr = areaArr.findArea(key.value)
+                    console.log('areaTempArr',areaTempArr)
+                    for(let aKey of areaTempArr){
+                        areaList.push({
+                            label: aKey.rName,
+                            value: aKey.rID
+                        })
+                    }
+                }
+                this.areaList = areaList;
             },
             // 获取表盘数据
             getTableData(){
+                if (!this.dateInput) {
+                    this.messageFun('warning', '日期区间不能为空！')
+                    this.searchBtnAbled = false
+                    return
+                }
+                this.tableLoading = true
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                     pageNum: this.pageData.pageNum,
                     pageSize: this.pageData.pageSize,
-                    mVehicle: '广告门',
+                    mVehicle: this.activeTabName,
                     startTime: this.dateInput[0],
                     endTime: this.dateInput[1],
+                    resName: this.resName,
+                    cityId: this.cityRid,
+                    districtId: this.areaRid,
+                }
+                if(!params.resName){
+                    delete params.resName
+                }
+                if(!params.districtId){
+                    delete params.cityId
+                    delete params.districtId
                 }
                 api.getApi(this.apiVar.Advertisement + '/VisualizeAds',params).then(res=>{
                     console.log('点位表盘列表',res)
                     if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
+                        this.pageData.totalSize = res.data.data.totalCount
                         this.setTableData(res.data.data)
                     } else if (res.data.SysCode == 100302) {
                         this.loginTimeout()
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }
+                    this.tableLoading = false
                 })
             },
             // 设置表格数据
             setTableData(tableData){
-                this.tableHeader = tableData.tableHeader
-                let arr = []
+                this.tableHeader = tableData.tableHeader.concat()
+                let adsArr = []
                 if (tableData.adsList.length) {
                     for (let key of tableData.adsList) {
                         let obj = {
                             resName: key.resName,
                             mID: key.mID,
-                            mediaName: key.mediaName,
+                            mediaName: key.mTitle || '--',
                             asID: key.asID,
                             cityName: key.cityName,
-                            districtName: key.districtName,
+                            districtName: key.districtName || '--',
                             asLab: key.asLab,
                             occupyingPlanList: key.occupyingPlanList
                         }
                         for (let oKey of key.occupyInfos) {
-                            obj[oKey.dayOfMonth] = oKey
+                            obj[oKey.dayOfMonth] = oKey; //JSON.parse(JSON.stringify(oKey));
                         }
-                        arr.push(obj)
+                        adsArr.push(obj)
                     }
-                    this.adsTableList = arr.concat()
-                    console.log('adsTableList',this.adsTableList)
+                    this.adsTableList = adsArr.concat()
+                    console.log('adsTableList',this.adsTableList,this.tableHeader)
+                }
+            },
+            // 区域选择
+            changeArea(val){
+                console.log('选择的区域val',val)
+                this.cityRid = this.areaRid.substr(0,4) + '00'
+            },
+            // 时间选择
+            dateChange(val){
+                console.log('时间选择',val)
+                if(val && val.length > 0){
+                    let dayNum = this.GetDateDiff(val[0],val[1])
+                    if(dayNum < 30){
+                        this.dateInput = this.beforDate.concat()
+                        this.messageFun('warning','最短周期为30天')
+                    }else if(dayNum > 90){
+                        this.dateInput = this.beforDate.concat()
+                        this.messageFun('warning','最长周期为90天')
+                    }else{
+                        this.beforDate = this.dateInput.concat()
+                    }
+                    this.firstTime = ''
                 }
             },
             // 搜索
             searchFun(){
                 console.log('this.dateInput',this.dateInput)
+                this.searchBtnAbled = true
+                this.pageData.pageNum = 1
                 this.getTableData()
+                let timer = setTimeout(()=>{
+                    if(this.searchBtnAbled){
+                        this.searchBtnAbled = false
+                    }
+                    clearTimeout(timer)
+                },350)
             },
             // 重置搜索
             clearSearch(){
-
+                this.resName = ''
+                this.areaRid = ''
+                this.getTableData()
+            },
+            // 分页
+            changePage(val){
+                console.log('当前页',val)
+                this.pageData.pageNum = val
+                this.getTableData()
+            },
+            // 每页的条数
+            changeSize(val){
+                console.log('每页的条数',val)
+                this.pageData.pageSize = val
+                this.getTableData()
+            },
+            // 返回上一页
+            returnBefore(){
+                this.$router.go(-1);
+                // this.$router.push("./planList");
+            },
+            GetDateDiff(startDate, endDate) {
+                let startTime = new Date(Date.parse(startDate.replace(/-/g, "/"))).getTime();
+                let endTime = new Date(Date.parse(endDate.replace(/-/g, "/"))).getTime();
+                let dates = Math.abs((startTime - endTime)) / (1000 * 60 * 60 * 24);
+                return dates;
+            },
+            // 操作提示统一方法
+            messageFun(mesType,mes){
+                this.$message({
+                    message: mes,
+                    type: mesType,
+                    showClose: true,
+                })
             },
         },
     }
@@ -215,10 +430,6 @@
 
     .ad_breadcrumb p a{
         color: #999;
-    }
-
-    .mediaList_wrap{
-
     }
 
     /*tag颜色覆盖*/
@@ -255,7 +466,7 @@
     }
 
     .tab_conten{
-        padding: 24px;
+        padding: 24px 32px;
     }
 
     /*搜索块*/
@@ -265,36 +476,115 @@
         display: inline-block;
     }
 
-    /deep/ .el-input{
+    /deep/ .tab_conten_row .el-input{
         width: calc(100% - 67px);
     }
+    /*区域下拉*/
+    /deep/ .tab_conten_row .el-select{
+        width: calc(100% - 67px);
+    }
+    /*区域下拉*/
+    /deep/ .tab_conten_row .el-select .el-input{
+        width: 100%;
+    }
+
     /deep/ .el-date-editor{
         width: calc(100% - 67px);
     }
+
     .table_wrap{
-        margin-top: 16px;
+        margin: 16px auto 0;
+    }
+    /deep/ .el-table{
+        border-left: 1px solid #ebeef5;
+        border-right: 1px solid #ebeef5;
+    }
+    /deep/ .el-table tr th{
+        height: 42px;
+        padding: 0;
+        background-color: #f7f7f7;
+    }
+    /deep/ .el-table tr td{
+        height: 42px;
+    }
+    /deep/ .el-table td {
+        padding: 6px 0;
+        color: rgba(102,102,102,1);
+        text-overflow: ellipsis;
+    }
+    /deep/ .el-table th.el-table-column-dayTime .cell{
+        font-size: 12px;
+        line-height: 18px;
+    }
+    .propmt_message_p{
+        line-height: 24px;
+        font-size: 14px;
+        color: #666;
     }
     /*方块颜色*/
     .color_chunk{
         width: 32px;
         height: 32px;
-        background: #EBEDF0;
         border-radius: 3px
     }
+    /*被占*/
     .color_chunk_0{
         background: #FF9061;
     }
+    /*预锁*/
     .color_chunk_1{
         background: #FFE281;
     }
-    /deep/ th.el-table-column-daytime .cell{
-        font-size: 12px;
-        line-height: 18px;
+    /*空闲*/
+    .color_chunk_2{
+        background: #EBEDF0;
+    }
+    /*被占或预锁开始时间*/
+    .table_wrap .color_chunk_3{
+        position: relative;
+        top: -10px;
+        border: 10px solid rgba(93,173,255,1);
+        border-right: 10px solid transparent;
+        border-bottom: 10px solid transparent;
+    }
+    /*表格样式提示信息*/
+    .warningInfo{
+        line-height: 32px;
     }
 
+    .warningInfoColor{
+        display: inline-block;
+        height: 10px;
+        width: 10px;
+        border-radius: 2px;
+        vertical-align: middle;
+    }
+
+    .warningInfo .warningInfoName{
+        color: rgba(0,0,0,0.45);
+        font-size: 12px;
+        margin-right: 16px;
+    }
+    /* 直角三角形（箭头左上）*/
+    .beginWarningInfo{
+        width: 0;
+        height: 0;
+        border: 5px solid rgba(93,173,255,1);
+        border-right: 5px solid transparent;
+        border-bottom: 5px solid transparent;
+    }
+    /*颜色信息、分页*/
+    .table_bottom{
+        padding: 0 32px 16px;
+    }
+    .ad_footer{
+        text-align: center;
+        margin-top: 24px;
+        font-size: 14px;
+    }
     /*滚动条*/
     /deep/ .el-table__body-wrapper {
-        /*height: 440px;*/
+        min-height: 440px;
         overflow-y: auto;
         overflow-x: auto;
     }

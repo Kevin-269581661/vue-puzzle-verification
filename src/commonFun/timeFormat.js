@@ -214,8 +214,8 @@ timeFormat.returnTimeArr = function (timeString,firstString,secondString){
     return arr
 }
 //获取当前时间并计算N天后的日期
-timeFormat.returnDayCount = function (AddDayCount,format) {     // format: . 或 - 或 /
-    let dd = new Date();
+timeFormat.returnDayCount = function (AddDayCount,format,toDay = new Date()) {     // format: . 或 - 或 /
+    let dd = toDay //new Date();
     dd.setDate(dd.getDate() + AddDayCount)    // 获取AddDayCount天后的日期
     let y = dd.getFullYear();
     let m = (dd.getMonth() + 1) < 10 ? "0" + (dd.getMonth() + 1) : (dd.getMonth() + 1)  // 获取当前月份的日期，不足10补0

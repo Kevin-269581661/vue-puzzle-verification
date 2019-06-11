@@ -1929,12 +1929,12 @@
                             "rID": key.rid,
                             "asrID": key.asrID,
                             "pdDays":  key.priceMsg[i].tfl,
-                            "pdFreeNum": key.priceMsg[i].GMDate,                                // 赠送面*天
+                            "pdFreeNum": key.priceMsg[i].GMDate,                                  // 赠送面*天
                             "pdStar": minTime.split(".").join('-'),
                             "pdEnd": maxTime.split(".").join('-'),
                             "pdAdFee": parseInt(key.priceMsg[i].advertyPrice * 100),              // 广告费用
-                            "pdNum": key.priceMsg[i].ADNumber,                                   // 点位数
-                            "pdAdMake": Number((key.priceMsg[i].makePrice * 100).toFixed(0)),   // 实计制作费用
+                            "pdNum": key.priceMsg[i].ADNumber,                                    // 点位数
+                            "pdAdMake": Number((key.priceMsg[i].makePrice * 100).toFixed(0)),     // 实计制作费用
                             "pdTotal": Number((key.priceMsg[i].cash * 100).toFixed(0)),
                             "pdSendFee": Number((key.priceMsg[i].zyzh * 100).toFixed(0)),
                             "pdOtherFee": Number((key.priceMsg[i].other * 100).toFixed(0)),

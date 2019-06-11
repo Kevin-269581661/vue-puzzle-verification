@@ -69,6 +69,9 @@
                             </template>
                         </el-table-column>
                         <el-table-column prop="progress" label="上画进度" min-width="8.9%" align="right">
+                            <template slot-scope="scope">
+                                <span>{{scope.row.progress*100}}%</span>
+                            </template>
                         </el-table-column>
                         <el-table-column label="操作" min-width="7.1%">
                             <template slot-scope="scope">

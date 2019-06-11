@@ -2246,12 +2246,12 @@
                         apName: query,
                     };
                     this.loadingOrder = true;
-                    api.getApi(this.apiVar.publishPaintTask+"/orderList", info).then(res =>{
+                    api.getApi(this.apiVar.Advertisement+"/orderList", info).then(res =>{
                         console.log(res.data);
                         this.loadingOrder = false;
                         this.orderArr = res.data.data.map(item => {
                             return {
-                                label: item.apName,
+                                label: item.apName+'--'+item.companyName+'--'+item.createTime,
                                 value: item.apID
                             };
                         });
@@ -4150,10 +4150,10 @@
             // 获取事件
             getEventList(){
                 let arr = [
-                        // {
-                        //     label: '移除被占点位',
-                        //     value: 1,
-                        // },
+                        {
+                            label: '移除被占点位',
+                            value: 1,
+                        },
                         // {
                         //     label: '移除非客户的选点',
                         //     value: 2,
@@ -4201,6 +4201,9 @@
                 console.log('val', val);
                 if(this.shopShowList.length){
                     switch (val){
+                        case 1:
+                            this.clearADLock();
+                            break;
                         case 3:
                             this.removeCommentIndustryAds('res');
                             break;
@@ -4224,6 +4227,41 @@
                     let active = this.activeName;
                     this.messageFun('warning', `没有${active=='1'?'广告门':'道闸'}数据`);
                 }
+            },
+            // 清空被占的点位
+            clearADLock() {
+                //this.shopingList
+                this.$confirm('移除所有被占点位!', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    showClose: false,
+                    type: 'warning '
+                }).then(() => {
+                    let list = this.shopingList
+                    let haveADLock = false
+                    for (let i = 0; i < list.length;) {
+                        if (list[i].lState !== undefined && list[i].lState.length > 0) {
+                            list.splice(i, 1)
+                            haveADLock = true
+                        } else {
+                            i++
+                        }
+                    }
+                    this.typeShopList = this.getTypeList();
+                    this.getShowList();
+
+                    if (haveADLock) {
+                        this.messageFun('success','移除成功')
+                        this.computeMedia_AD()
+                    } else {
+                        this.messageFun('warning','暂无被占点位')
+                    }
+                }).catch(() => {
+                    this.eventType = '';
+                    this.messageFun('info','取消成功')
+                })
+                // this.ADLockNum = 0
+                this.resetPlanList()
             },
             // 同资源保留个数
             containNuminRes(num){

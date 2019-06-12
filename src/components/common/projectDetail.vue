@@ -522,7 +522,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     resNum: item.resourceCount,
                     engineerArr: [],
                     engineer: "",
-                    progress: (item.publishProgress*100).toFixed(2),
+                    progress: (item.publishProgress*100).toFixed(0),
                     finishNum: item.publishCount,
                     orderNum: item.orderList.length,
                 };
@@ -571,7 +571,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
                             mediaNum: resinfo.mediaCount,
                             adsNum: resinfo.publishPaintCount,
                             finishNum: resinfo.publishCount,
-                            progress: (resinfo.publishProgress*100).toFixed(2),
+                            progress: (resinfo.publishProgress*100).toFixed(0),
                         };
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
@@ -897,6 +897,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
     }
     .imgPreview /deep/ .el-dialog img{
         width: 100%;
+        min-height: 500px;
     }
 </style>
 

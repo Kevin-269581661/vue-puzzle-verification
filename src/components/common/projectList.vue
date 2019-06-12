@@ -386,7 +386,7 @@
                     resNum: item.resourceCount,
                     engineerArr: [],
                     engineer: "",
-                    progress: (item.publishProgress*100).toFixed(2)
+                    progress: (item.publishProgress*100).toFixed(0)
                 };
                 obj.engineer = item.engineerMember.map(data =>{
                     return data.userName;

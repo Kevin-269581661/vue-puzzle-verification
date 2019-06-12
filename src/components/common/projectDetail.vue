@@ -897,7 +897,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
     }
     .imgPreview /deep/ .el-dialog img{
         width: 100%;
-        min-height: 500px;
+        max-height: 660px;
     }
 </style>
 

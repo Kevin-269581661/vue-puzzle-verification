@@ -385,7 +385,7 @@
                         regionInfo: '',
                         mediaInfo: '',
                         pointCount: key.pointCount,
-                        updateTime: key.updateTime
+                        updateTime: key.updateTime || '--'
                     }
                     // 覆盖小区
                     if(Array.isArray(key.regionInfo)){
@@ -470,6 +470,7 @@
                 console.log('小区列表',this.resList)
                 // if(!this.resList.length){
                 this.resLoading = true
+                this.detailResLoading  = true
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
@@ -533,6 +534,7 @@
                 })
                 //获取小区下拉
                 this.createData.city = ''
+                this.regionID = ''
                 this.resList = []
                 this.getResList()
                 // 获取城市区域
@@ -695,6 +697,7 @@
                 this.getResList()
                 // 重新选择区域则初始化行数据
                 this.clearRowData(row)
+                row.regionId = this.regionID
             },
             // 取消编辑
             cancelEdit(){

@@ -602,6 +602,7 @@
                             if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
                                 this.detailDeletRow('2', row.resourceId)
                                 this.messageFun('success', '删除成功')
+                                this.getTableList();
                             } else if (res.data.SysCode == 100302) {
                                 this.loginTimeout()
                             } else {

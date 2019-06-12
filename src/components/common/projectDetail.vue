@@ -437,7 +437,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{
-                        this.messageFun('warning', res.data.MSG);
+                        // this.messageFun('warning', res.data.MSG);
                     }
                 }).catch(err =>{
                     console.log(err);
@@ -626,8 +626,12 @@ import timeFormat from '../../commonFun/timeFormat.js';
             },
             // 查看素材
             toShowImg(row){
-                this.dialogImageUrl = row.materialUrl;
-                this.isShowImg = true;
+                if(row.materialUrl){
+                    this.dialogImageUrl = row.materialUrl;
+                    this.isShowImg = true;
+                }else{
+                    this.messageFun('warning', '暂无素材');
+                }
             },
             // 返回
             goBack() {

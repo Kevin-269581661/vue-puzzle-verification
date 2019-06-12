@@ -277,7 +277,7 @@
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{
-                        this.messageFun('warning', res.data.MSG);
+                        // this.messageFun('warning', res.data.MSG);
                     }
                 }).catch(err =>{
                     console.log(err);
@@ -588,13 +588,10 @@
         width: 100%;
     }
     /*表格*/
-    /deep/.project_container .el-table th{
+    /deep/.project_container .el-table th {
+        height: 44px;
         padding: 0;
         background-color: #f7f7f7;
-    }
-    
-    /deep/.project_container .el-table tr {
-        height: 54px;
     }
     /deep/.project_container .el-table td {
         padding: 8px 0;
@@ -607,18 +604,12 @@
     }
 
     /deep/.project_container .el-table th > .cell {
-        font-family: PingFangSC-Medium;
         font-size: 14px;
-        font-weight: 500;
-        color: rgba(0,0,0,0.85);
-        height: 22px;
-        line-height: 22px;
+        color: #666666;
+        font-weight: bold;
     }
-    /deep/.project_container .el-table .cell {
-        font-size:14px;
-        font-family:PingFangSC-Regular;
-        font-weight:400;
-        color:rgba(0,0,0,0.65);
+    /deep/.project_container .el-table tr {
+        height: 54px;
     }
     /* 操作 */
     .el-dropdown-link {

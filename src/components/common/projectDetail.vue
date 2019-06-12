@@ -102,14 +102,14 @@
                         </el-table-column>
                         <el-table-column prop="assetTag" label="资产编号">
                         </el-table-column>
-                        <el-table-column prop="resAddress" label="详情地址" min-width="250">
+                        <el-table-column prop="resAddress" label="详情地址" min-width="250" show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <span>
                                     {{scope.row.resAddress || '--'}}
                                 </span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="mRemark" label="点位备注">
+                        <el-table-column prop="mRemark" label="点位备注" show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <span>
                                     {{scope.row.mRemark || '--'}}

@@ -55,7 +55,7 @@
                         </el-table-column>
                         <el-table-column prop="lineName" label="所属线路" min-width="8.1%">
                         </el-table-column>
-                        <el-table-column prop="order" label="订单" min-width="10.8%" >
+                        <el-table-column prop="order" label="订单" min-width="10.8%" show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column prop="photoNum" label="上画面数" min-width="8.9%" align="right">
                         </el-table-column>
@@ -63,7 +63,7 @@
                         </el-table-column>
                         <el-table-column prop="resNum" label="小区数" min-width="8.9%" align="right">
                         </el-table-column>
-                        <el-table-column prop="engineer" label="工程人员" min-width="8.9%">
+                        <el-table-column prop="engineer" label="工程人员" min-width="8.9%" show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <span>{{scope.row.engineer || '--'}}</span>
                             </template>

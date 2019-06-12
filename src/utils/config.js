@@ -12,7 +12,7 @@ if(process.env.NODE_ENV == 'development'){
     jsonLink = 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes-dev/';
 }
 const apiRoot = {
-    devURL: '"http://192.168.1.248/"',
+    devURL: '"http://192.168.1.239/"',
     // devURL: '"https://beta.qinlinad.com/"',
     testURL: '"https://test-qadn.qinlindmp.com/"',
     grayURL: '"https://beta-qadn.qinlindmp.com/"',

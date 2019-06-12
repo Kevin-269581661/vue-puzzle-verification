@@ -138,7 +138,7 @@
                         <template slot-scope="scope">
                             <span v-if="!scope.row.isInput">{{scope.row.resourceName}}</span>
                             <el-select v-else v-model="scope.row.resourceId" filterable placeholder="请选择资源" :clearable="true"
-                                       v-loading="detailResLoading" style="width: 100%" size="small" @change="changeRes(scope.row)">
+                                       :loading="detailResLoading" style="width: 100%" size="small" @change="changeRes(scope.row)">
                                 <el-option
                                     v-for="item in resList"
                                     :key="item.value"
@@ -146,7 +146,6 @@
                                     :value="item.value">
                                 </el-option>
                             </el-select>
-                      <!--      <el-input v-else v-model="scope.row.resourceName" placeholder="小区名称" size="small"></el-input>-->
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -587,6 +586,7 @@
                     this.detailDeletRow('1',row.addRowIndex)
                 } else {
                     this.$confirm('确定删除该小区？','提示').then(_ => {
+                        this.pathDetaiLoading = true
                         let params = {
                             uid: this.sessionData.uID,
                             token: this.sessionData.token,
@@ -603,6 +603,9 @@
                             } else {
                                 this.messageFun('warning', res.data.MSG)
                             }
+                            this.pathDetaiLoading = false
+                        }).catch(err=>{
+                            this.pathDetaiLoading = false
                         })
                     }).catch(_ => {
                         this.messageFun('info', '已取消')
@@ -906,6 +909,10 @@
         border-bottom: 1px solid rgba(0,0,0,0.09);
     }
     /*详情*/
+    .path_detail_box /deep/ .el-table td .cell{
+        height: 30px;
+        line-height: 30px;
+    }
     .path_detail_box /deep/ .el-input--small .el-input__inner{
         height: 30px;
         line-height: 30px;

@@ -6,8 +6,8 @@ pipeline {
         stage('Build') {
             steps {
                 sh '''
-                    /usr/bin/cnpm install
-                    /usr/bin/cnpm run build
+                    /usr/bin/npm install
+                    /usr/bin/npm run build
                 '''
             }
         }

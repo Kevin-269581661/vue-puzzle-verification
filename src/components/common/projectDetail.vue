@@ -522,7 +522,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     resNum: item.resourceCount,
                     engineerArr: [],
                     engineer: "",
-                    progress: item.publishProgress*100,
+                    progress: (item.publishProgress*100).toFixed(2),
                     finishNum: item.publishCount,
                     orderNum: item.orderList.length,
                 };
@@ -571,7 +571,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
                             mediaNum: resinfo.mediaCount,
                             adsNum: resinfo.publishPaintCount,
                             finishNum: resinfo.publishCount,
-                            progress: resinfo.publishProgress*100,
+                            progress: (resinfo.publishProgress*100).toFixed(2),
                         };
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();

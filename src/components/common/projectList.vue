@@ -673,6 +673,28 @@
         border-top: 1px solid #E8E8E8;
         padding: 16px;
     }
+    /*滚动条*/
+    /deep/ .el-table__body-wrapper {
+        min-height: 400px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    /deep/ .el-table__body-wrapper::-webkit-scrollbar {
+        width: 4px;
+        background: #FAFAFA;
+    }
+
+    /deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        background: #C1C1C1;
+        border-radius: 4px;
+    }
+    .el-table th, .el-table tr{
+        height: 44px;
+        padding: 0;
+        background-color: #f7f7f7;
+    }
 </style>
 
 

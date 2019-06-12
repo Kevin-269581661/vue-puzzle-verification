@@ -885,6 +885,19 @@ import timeFormat from '../../commonFun/timeFormat.js';
         padding: 0;
         background-color: #f7f7f7;
     }
+
+    .imgPreview /deep/ .el-dialog{
+        max-width: 42%;
+    }
+    .imgPreview /deep/ .el-dialog__body{
+        max-height: 640px;
+    }
+    .imgPreview /deep/ .el-dialog {
+        max-height: 750px;
+    }
+    .imgPreview /deep/ .el-dialog img{
+        width: 100%;
+    }
 </style>
 
 

@@ -155,7 +155,7 @@ export default {
             }
         };
         var validatePhone = (rule, value, callback) => {
-            let szReg = /^1[34578]\d{9}$/;
+            let szReg = /^1[345678]\d{9}$/;
             let HKszReg = /^\d{8}$/;        // 香港号码
             // console.log('szReg',szReg,'HKszReg',HKszReg)
             if (!szReg.test(value) && !HKszReg.test(value)) {

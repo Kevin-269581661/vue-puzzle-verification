@@ -47,7 +47,7 @@
                     <el-col :span="5">
                         <b>上画时间：</b>
                         <span>{{projectInfo.photoTime}}</span>
-                        <el-tooltip placement="top" width="200" trigger="hover" effect="dark" v-if="projectInfo.photoTime>new Date()">
+                        <el-tooltip placement="top" width="200" trigger="hover" effect="dark" v-if="projectInfo.photoTime>this.timeformat(new Date())">
                             <div slot="content">
                                 距离上画剩余 <span :style="remainDay<=3?'color:red;':''">{{remainDay}}</span> 天
                             </div>
@@ -265,6 +265,9 @@ import timeFormat from '../../commonFun/timeFormat.js';
             }
         },
         methods:{
+            timeformat(date){
+                return dateFormat.toDate(date, '/');
+            },
             handleClick(){
                 console.log(this.currentOrder);
                 this.getTableData(this.currentOrder);

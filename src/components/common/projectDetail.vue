@@ -18,7 +18,7 @@
                     </el-col>
                     <el-col :span="12" class="text_right">
                         <el-button size="small" @click="toSetLine()" v-if="!projectInfo.line">设置线路</el-button>
-                        <el-button size="small" @click="download()">导出清单</el-button>
+                        <el-button size="small" @click="download()" :loading="downLoading">导出清单</el-button>
                         <el-button type="primary" size="small" @click="toDistribute()">分配人员</el-button>
                     </el-col>
                 </el-row>
@@ -86,7 +86,7 @@
                         媒体:<span>{{tableNumInfo.mediaNum}}</span>
                         点位:<span>{{tableNumInfo.adsNum}}</span>
                         已上画:<span>{{tableNumInfo.finishNum}}</span>
-                        上画率:<span>{{tableNumInfo.progress}}</span>
+                        上画率:<span>{{tableNumInfo.progress}}%</span>
                     </el-row>
                     <el-table border :data="currAsidList">
                         <el-table-column type="index" label="序号" width="60">
@@ -156,7 +156,7 @@
             </el-table>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="isShowLine = false" size="small">取 消</el-button>
-                <el-button type="primary" @click="updateLine()" size="small">更 新</el-button>
+                <el-button type="primary" @click="updateLine()" size="small" :loading="updateLoading">更 新</el-button>
             </span>
         </el-dialog>
 
@@ -170,7 +170,7 @@
             </el-select>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="isShowDistri = false" size="small">取 消</el-button>
-                <el-button type="primary" @click="confirmDistribute" size="small">确 定</el-button>
+                <el-button type="primary" @click="confirmDistribute" size="small" :loading="disTriLoading">确 定</el-button>
             </span>
         </el-dialog>
 
@@ -253,6 +253,12 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     finishNum: 5,
                     progress: 0.83,
                 },
+                // 更新loading
+                updateLoading: false,
+                // 导出loading
+                downLoading: false,
+                // 分配人员loading
+                disTriLoading: false,
             }
         },
         methods:{
@@ -276,6 +282,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     token: sess.token,
                     taskId: sessionStorage.getItem('taskId'),
                 };
+                this.downLoading = true;
                 api.getApi_file(this.apiVar.publishPaintTask+"/taskDetailsReport", info).then(res =>{
                     console.log(res.data);
                     let blob = new Blob([res.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
@@ -287,8 +294,10 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     downloadElement.click(); //点击下载
                     document.body.removeChild(downloadElement); //下载完成移除元素
                     window.URL.revokeObjectURL(href); //释放掉blob对象
+                    this.downLoading = false;
                 }).catch(err =>{
                     console.log(err);
+                    this.downLoading = false;
                 });
             },
             // 分配人员
@@ -371,29 +380,36 @@ import timeFormat from '../../commonFun/timeFormat.js';
                         resId: item.resID
                     };
                 });
-                let sess = this.sessionData;
-                let info = {
-                    uid: sess.uID,
-                    token: sess.token,
-                    resources: JSON.stringify(arr)
-                };
-                api.postApi(this.apiVar.engineer+"/updateResourceLine", info).then(res =>{
-                    console.log(res.data);
-                    if(res.data.SysCode == 200200){
-                        this.isShowLine = false;
-                        if(result.length >= this.resList.length){
-                            this.$router.push('./projectList');
+                if(arr.length){
+                    let sess = this.sessionData;
+                    let info = {
+                        uid: sess.uID,
+                        token: sess.token,
+                        resources: JSON.stringify(arr)
+                    };
+                    this.updateLoading = true;
+                    api.postApi(this.apiVar.engineer+"/updateResourceLine", info).then(res =>{
+                        console.log(res.data);
+                        if(res.data.SysCode == 200200){
+                            this.isShowLine = false;
+                            if(result.length >= this.resList.length){
+                                this.$router.push('./projectList');
+                            }else{
+                                location.reload(false);
+                            }
+                        }else if(res.data.SysCode == 100302){
+                            this.loginTimeout();
                         }else{
-                            location.reload(false);
+                            this.messageFun('warning', res.data.MSG);
                         }
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
-                    }else{
-                        this.messageFun('warning', res.data.MSG);
-                    }
-                }).catch(err =>{
-                    console.log(err);
-                });
+                        this.updateLoading = false;
+                    }).catch(err =>{
+                        console.log(err);
+                        this.updateLoading = false;
+                    });
+                }else{
+                    this.messageFun('warning', '请先关联小区再更新');
+                }
             },
             // 工程人员列表
             getEngineer(){
@@ -433,6 +449,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     taskId: this.projectInfo.photoId,
                     userIds: this.currEngineer.join(','),
                 };
+                this.disTriLoading = true;
                 api.postApi(this.apiVar.publishPaintTask+"/setEngineerUser", info).then(res =>{
                     if(res.data.SysCode == 200200){
                         let updateArr = this.engineerArr.filter(ele =>{
@@ -449,6 +466,10 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     }else{
                         this.messageFun('warning', res.data.MSG);
                     }
+                    this.disTriLoading = false;
+                }).catch(err =>{
+                    this.disTriLoading = false;
+                    console.log(err);
                 });
             },
             // 获取详情

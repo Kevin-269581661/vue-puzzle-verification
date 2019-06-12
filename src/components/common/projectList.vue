@@ -69,6 +69,9 @@
                             </template>
                         </el-table-column>
                         <el-table-column prop="progress" label="上画进度" min-width="8.9%" align="right">
+                            <template slot-scope="scope">
+                                <span>{{scope.row.progress}}%</span>
+                            </template>
                         </el-table-column>
                         <el-table-column label="操作" min-width="7.1%">
                             <template slot-scope="scope">
@@ -114,7 +117,7 @@
             </el-select>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="isShowDistri = false" size="small">取 消</el-button>
-                <el-button type="primary" @click="confirmDistribute" size="small">确 定</el-button>
+                <el-button type="primary" @click="confirmDistribute" size="small" :loading="disTriLoading">确 定</el-button>
             </span>
         </el-dialog>
 
@@ -185,7 +188,9 @@
                 pageSize: 10,
                 pageSizes: [10, 20, 30, 40],
                 currPage: 1,
-                totalNum: 0,      
+                totalNum: 0,
+                // 分配人员loading
+                disTriLoading: false,    
             }
         },
         methods:{
@@ -357,20 +362,12 @@
                     pageSize: this.pageSize
                 };
                 let { line, engineer, order, rangeDate } = this.searchInfo;
-                if(line){
-                    info.lineId = line;
-                }
-                if(engineer){
-                    info.userId = engineer;
-                }
-                if(order){
-                    info.orderId = order;
-                }
-                if(rangeDate){
-                    if(rangeDate.length){
-                        info.startDate = timeFormat.toDate(rangeDate[0]);
-                        info.endDate = timeFormat.toDate(rangeDate[1]);
-                    }
+                info = {
+                    ...info,
+                    ...(line && {lineId: line}),
+                    ...(engineer && {userId: engineer}),
+                    ...(order && {orderId: order}),
+                    ...(rangeDate && {startDate: timeFormat.toDate(rangeDate[0]), endDate: timeFormat.toDate(rangeDate[1])}),
                 }
                 return info;
             },
@@ -389,7 +386,7 @@
                     resNum: item.resourceCount,
                     engineerArr: [],
                     engineer: "",
-                    progress: item.publishProgress
+                    progress: item.publishProgress*100
                 };
                 obj.engineer = item.engineerMember.map(data =>{
                     return data.userName;
@@ -475,6 +472,7 @@
                     taskId: this.currTaskId,
                     userIds: this.currEngineer.join(','),
                 };
+                this.disTriLoading = true;                
                 api.postApi(this.apiVar.publishPaintTask+"/setEngineerUser", info).then(res =>{
                     if(res.data.SysCode == 200200){
                         let updateArr = this.engineerArr.filter(ele=>{
@@ -496,6 +494,10 @@
                     }else{
                         this.messageFun('warning', res.data.MSG);
                     }
+                    this.disTriLoading = false;
+                }).catch(err =>{
+                    this.disTriLoading = false;
+                    console.log(err);
                 });
             },
             loginTimeout() {

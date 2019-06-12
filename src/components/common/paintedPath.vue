@@ -326,6 +326,7 @@
             },
             // 搜索按钮
             searchFun() {
+                this.pageData.pageNum = 1                
                 this.getTableList()
             },
             // 重置搜索 selectPath

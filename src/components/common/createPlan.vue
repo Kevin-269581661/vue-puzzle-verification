@@ -2244,17 +2244,24 @@
                         uid: sess.uID,
                         token: sess.token,
                         apName: query,
+                        suId: this.BDData.uid,
                     };
                     this.loadingOrder = true;
-                    api.getApi(this.apiVar.Advertisement+"/orderList", info).then(res =>{
+                    api.getApi(this.apiVar.Advertisement+"/GetSaleAdPlan", info).then(res =>{
                         console.log(res.data);
                         this.loadingOrder = false;
-                        this.orderArr = res.data.data.map(item => {
-                            return {
-                                label: item.apName+'--'+item.companyName+'--'+item.createTime,
-                                value: item.apID
-                            };
-                        });
+                        if(res.data.SysCode == 200200){
+                            this.orderArr = res.data.data.map(item => {
+                                return {
+                                    label: item.apName,
+                                    value: item.apID
+                                };
+                            });
+                        }else if(res.data.SysCode == 100302){
+                            this.loginTimeout();
+                        }else{
+                            this.messageFun('warning',res.data.MSG)
+                        }
                     }).catch(err =>{
                         console.log(err);
                     });
@@ -2264,7 +2271,31 @@
             },
             // 确定复制
             confirmCopy(){
-                // api.postApi();
+                let sess = this.sessionData;
+                let info = {
+                    uid: sess.uID,
+                    token: sess.token,
+                    apId: this.orderName,
+                    startTime: this.dateInput[0],
+                    endTime: this.dateInput[1]
+                };
+                api.getApi(this.apiVar.Advertisement+"/GetAdsFromCopiedAdPlan", info).then(res =>{
+                    console.log(res.data);
+                    if(res.data.SysCode == 200200){
+                        let resinfo = res.data.data;
+                        for(let data of resinfo){
+                            this.isHaveDiffPush(info);                            
+                        }
+                    }else if(res.data.SysCode == 100302){
+                        this.loginTimeout();
+                    }else{
+                        this.messageFun('warning',res.data.MSG)
+                    }
+                    this.isCopy = false;
+                }).catch(err =>{
+                    console.log(err);
+                    this.isCopy = false;
+                });
             },            
             // 第四步的导出方案
             downLoadFanan(){

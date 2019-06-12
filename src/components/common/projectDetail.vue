@@ -88,7 +88,8 @@
                         已上画:<span>{{tableNumInfo.finishNum}}</span>
                         上画率:<span>{{tableNumInfo.progress}}%</span>
                     </el-row>
-                    <el-table border :data="currAsidList">
+                    <el-table border :data="currAsidList" v-loading="loading" 
+                        element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                         <el-table-column type="index" label="序号" width="60">
                         </el-table-column>
                         <el-table-column prop="resName" label="小区" min-width="120">
@@ -253,6 +254,8 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     finishNum: 5,
                     progress: 0.83,
                 },
+                // 表格loading
+                loading: true,                
                 // 更新loading
                 updateLoading: false,
                 // 导出loading
@@ -557,6 +560,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     taskId: sessionStorage.getItem('taskId'),
                     orderId: orderId
                 };
+                this.loading = true;
                 api.getApi(this.apiVar.publishPaintTask+"/getOrderDetail", info).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 200200){
@@ -574,8 +578,10 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     }else{
                         this.messageFun('warning', res.data.MSG);
                     }
+                    this.loading = false;
                 }).catch(err =>{
                     console.log(err);
+                    this.loading = false;
                 });
             },
             // 设置表格数据

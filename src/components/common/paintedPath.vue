@@ -208,7 +208,7 @@
             <div slot="footer" class="dialog-footer path_detail_footer">
                 <el-button v-if="isEdit" @click="cancelEdit">取 消</el-button>
                 <el-button v-if="!isEdit && showCreateBtn" @click="isEdit = true">编 辑</el-button>
-                <el-button type="primary" @click="saveResToLine">{{isEdit ? '保 存' : '关 闭'}}</el-button>
+                <el-button type="primary" @click="saveResToLine" :loading="saveLoading">{{isEdit ? '保 存' : '关 闭'}}</el-button>
             </div>
         </el-dialog>
     </div>
@@ -310,6 +310,8 @@
                 addRowIndex: 0,
                 // 上一次选择的小区id
                 beforeResourceId: '',
+                // 保存时loading
+                saveLoading: false,
             }
         },
         mounted(){
@@ -727,6 +729,7 @@
                             lineId: this.detailLineId,
                             resourceIds: resourceIds.substr(0,resourceIds.length-1)
                         }
+                        this.saveLoading = true;                        
                         api.postApi(this.apiVar.engineer + '/addResource',params).then(res=>{
                             console.log('线路新增资源',res)
                             if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
@@ -738,9 +741,10 @@
                             } else {
                                 this.messageFun('warning', res.data.MSG)
                             }
+                            this.saveLoading = false;
                         })
                     }else{
-                        this.messageFun('warning','暂无新增小区需保存！')
+                        this.messageFun('warning','暂无新增小区关联！')
                     }
                 } else {
                     console.log('关闭')

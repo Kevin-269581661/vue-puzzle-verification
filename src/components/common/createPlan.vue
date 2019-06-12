@@ -1440,6 +1440,7 @@
                 beOccupiedNumber: 0,             // 第一次搜索记录时提前保存 planList
                 isOccupied: true,                // 被占搜索时隐藏过滤条件
                 beOccupiedAdsData: [],           // 当前点击行的被占信息{beOccupieApName:'',lState: '',schedules: ''}
+                shopDelRowClick: false,                
                 pageNo: 1,                       // 页码
                 totalPage: 1,                    // 总页数
                 getAdsParamsData: {},            //　获取点位列表的参数data
@@ -2283,8 +2284,12 @@
                     console.log(res.data);
                     if(res.data.SysCode == 200200){
                         let resinfo = res.data.data;
+                        let result = [];
                         for(let data of resinfo){
-                            this.isHaveDiffPush(info);                            
+                            result.push(this.setCopyData(data));
+                        }
+                        for(let item of result){
+                            this.isHaveDiffPush(item);
                         }
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
@@ -2296,7 +2301,60 @@
                     console.log(err);
                     this.isCopy = false;
                 });
-            },            
+            },
+            // 构建复制方案数据格式
+            setCopyData(info){
+                let importInfo = {
+                    mID: info.mID,
+                    resType: info.resType,
+                    resID: info.resID,
+                    asID: info.asID,
+                    asIDs: info.asID,
+                    asLabs: info.asLab,
+                    resName: info.resName,
+                    city: info.prName,
+                    rid: info.prID,
+                    origin: info.rName,
+                    buildType: info.cType,
+                    houseNum: info.hNum,
+                    buildPrice: (info.hPrice / 100),
+                    mediaName: info.mTitle || '',
+                    mVehicle: info.mVehicle,
+                    buildNum: info.fNum,
+                    schedules: this.dateInput[0] + '-' + this.dateInput[1],
+                    tradingArea: info.tradingArea,
+                    assetTag: info.assetTag,
+                    liveYear: info.chDay,
+                    mediaRemark: info.mRemark || '--',
+                    mapCenter: info.reference || '--',      // 地图中心点
+                    address: info.resAddress || '',
+                    dNum: info.dNum || '',       // 出入口数
+                    adLimit: info.notPush || '',
+                    checkBox: {A: false, B: false, ABC: false},
+                    connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
+                    connID: info.connID || '',        // 连排门id
+                    industryInfos: info.industryInfos || [],   // 同行业资源回避
+                    mediaLevel: info.grade || '',
+                    adPrice: info.mVehicle === '道闸' ? info.asPrice / 100 || 0 : info.asPrice / 700 || 0,
+                    asName: info.asName || '',         // 点位所属公司名称
+                    asrID: info.asrID,                 // 所属公司id
+                };
+                if(info.mVehicle == '广告门'){
+                    if(info.asLab === 'A'){
+                        importInfo.checkBox.A = true;
+                        importInfo.A_B = 'A';
+                    }
+                    if(info.asLab === 'B'){
+                        importInfo.checkBox.B = true;
+                        importInfo.A_B = 'B';
+                    }
+                }else if(info.mVehicle =='道闸'){
+                    importInfo.checkBox.ABC = true;
+                    importInfo.A_B = 'ABC';
+                    importInfo.asID = importInfo.asIDs.toString().split(',');
+                }
+                return importInfo;
+            },      
             // 第四步的导出方案
             downLoadFanan(){
                 let arr = this.excelData(this.shopingList)
@@ -4489,11 +4547,37 @@
             // 购物车行被点击
             shopRowClick(row, event, column){
                 console.log('购物车行被点击row',row,column)
-                if(row.connData.connectResName !== '' || row.connData.commentWorkRes !=='' || row.connData.connectMedia !==''){
+                if (row.lState !== undefined && row.lState.length > 0) {
+                    let dataArr = row.lState
+                    console.log('row.asID', row.asID)
+                    let arr = []
+                    for(let key of dataArr){
+                        let star = timeFormat.toDate(key.lStar, '/')
+                        let end = timeFormat.toDate(key.lEnd, '/')
+                        arr.push({
+                            beOccupieApName: key.apName,
+                            schedules: star + '-' + end,
+                            lState: key.lState,
+                        })
+                    }
+                    this.beOccupiedAdsData = arr
+                    console.log('this.beOccupiedAdsData', this.beOccupiedAdsData)
+                    if (!this.shopDelRowClick) {
+                        this.beOccupiedDialogVisible = true
+                    } else {
+                        this.shopDelRowClick = false
+                    }
+                }else if(row.connData.connectResName !== '' || row.connData.commentWorkRes !=='' || row.connData.connectMedia !==''){
                     this.ActiveConnectADList = row.connData
                     console.log('this.ActiveConnectADList',this.ActiveConnectADList)
                     this.connectAdDialogVisible = true
                 }
+                // console.log('购物车行被点击row',row,column)
+                // if(row.connData.connectResName !== '' || row.connData.commentWorkRes !=='' || row.connData.connectMedia !==''){
+                //     this.ActiveConnectADList = row.connData
+                //     console.log('this.ActiveConnectADList',this.ActiveConnectADList)
+                //     this.connectAdDialogVisible = true
+                // }
             },
             // 添加到购物车
             AddShopingInfo(info, letter) {

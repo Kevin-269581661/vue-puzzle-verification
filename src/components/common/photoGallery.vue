@@ -30,7 +30,7 @@
                                     <el-option label="B面" value="B"></el-option>
                                 </el-select>
                             </span>
-                            <el-cascader :options="bussiness" class="plan-select" v-model="industryIdArr" change-on-select @change="handleChange" v-if="(activeName=='first')||(activeName=='second')" filterable></el-cascader>
+                            <el-cascader :options="bussiness" class="plan-select" placeholder="请选择行业信息" v-model="industryIdArr" change-on-select @change="handleChange" v-if="(activeName=='first')||(activeName=='second')" filterable></el-cascader>
                             <span v-if="(activeName=='first')||(activeName=='second')">
                                 <div class="block">
                                     <el-date-picker v-model="date" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">

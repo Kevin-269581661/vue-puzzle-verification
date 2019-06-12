@@ -12,7 +12,7 @@
                 <el-row class="top_row">
                     <el-col :span="12">
                         <h4>
-                            <img src="../../assets/images/planlogo.png" alt="">                                
+                            <img src="../../assets/images/planlogo.png" alt="">
                             上画清单
                         </h4>
                     </el-col>
@@ -81,7 +81,7 @@
                 </el-tabs>
                 <div class="table_wrap">
                     <el-row class="car-title">
-                        <i class="el-icon-info" style="color: #1890FF;"></i>                            
+                        <i class="el-icon-info" style="color: #1890FF;"></i>
                         小区:<span>{{tableNumInfo.resNum}}</span>
                         媒体:<span>{{tableNumInfo.mediaNum}}</span>
                         点位:<span>{{tableNumInfo.adsNum}}</span>
@@ -132,7 +132,7 @@
                 </div>
 
                 <div class="content_bottom_btn">
-                    <el-button class="cancel" @click="goBack()" size="small">返回</el-button>                
+                    <el-button class="cancel" @click="goBack()" size="small">返回</el-button>
                 </div>
             </div>
         </div>
@@ -163,7 +163,7 @@
         <!-- 分配人员弹出框 -->
         <el-dialog title="分配上画人员"
             :visible.sync="isShowDistri"
-            custom-class="size_detail_dialog"            
+            custom-class="size_detail_dialog"
             width="400px">
             <el-select v-model="currEngineer" placeholder="请选择" size="small" multiple>
                 <el-option v-for="item of engineerArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -188,7 +188,7 @@
     } from "element-ui";
     // 时间控件格式化
     import dateFormat from "../../commonFun/timeFormat.js";
-    import sessFun from '../../commonFun/sessFun.js'    
+    import sessFun from '../../commonFun/sessFun.js'
     import api from "../../api/api.js";
 import timeFormat from '../../commonFun/timeFormat.js';
     export default {
@@ -227,7 +227,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
                         resID: 2,
                         resName: '小区二',
                         area: '天河区',
-                        lineId: '',                        
+                        lineId: '',
                         lineName: '',
                     },
                 ],
@@ -243,7 +243,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
                 orderArr: [],
                 // tab数据
                 tabOrderList: [],
-                // 表格数据       
+                // 表格数据
                 currAsidList: [],
                 // 表格数据统计
                 tableNumInfo:{
@@ -443,7 +443,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
                             return data.label;
                         }).join('/');
                         Message.success(res.data.MSG);
-                        this.isShowDistri = false;                        
+                        this.isShowDistri = false;
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{
@@ -533,7 +533,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
                 let info = {
                     uid: sess.uID,
                     token: sess.token,
-                    taskId: sessionStorage.getItem('taskId'),                    
+                    taskId: sessionStorage.getItem('taskId'),
                     orderId: orderId
                 };
                 api.getApi(this.apiVar.publishPaintTask+"/getOrderDetail", info).then(res =>{
@@ -703,7 +703,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
     .pro_detail_container{
         margin: 24px 0;
         padding: 0;
-        
+
     }
     .el-col-24{
         width: auto;
@@ -766,7 +766,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
     }
     .pro_content_top .state_text b{
         color:rgba(0,0,0,0.85);
-        font-size: 20px;        
+        font-size: 20px;
     }
     .table_wrap{
         margin: 0 32px;
@@ -832,7 +832,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
         height: 8px;
         border-radius: 50%;
     }
-    /deep/ .line_box .el-input--small .el-input__inner{
+    /deep/ .line_box .el-input--small .el-input__inner,/deep/ .line_box .el-table td .cell{
         height: 30px;
         line-height: 30px;
     }

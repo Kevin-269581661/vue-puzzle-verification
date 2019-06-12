@@ -308,6 +308,8 @@
                 activePathName:'',
                 // 新增行下标
                 addRowIndex: 0,
+                // 上一次选择的小区id
+                beforeResourceId: '',
             }
         },
         mounted(){
@@ -326,7 +328,7 @@
             },
             // 搜索按钮
             searchFun() {
-                this.pageData.pageNum = 1                
+                this.pageData.pageNum = 1
                 this.getTableList()
             },
             // 重置搜索 selectPath
@@ -449,12 +451,12 @@
                     if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
                         let resData = res.data.data;
                         let areaArr = [];
-                         for(let key of resData){
-                             areaArr.push({
-                                 label: key.rName,
-                                 value: key.rID
-                             })
-                         }
+                        for(let key of resData){
+                            areaArr.push({
+                                label: key.rName,
+                                value: key.rID
+                            })
+                        }
                         this.areaList = areaArr;
                     } else if (res.data.SysCode == 100302) {
                         this.loginTimeout();
@@ -467,44 +469,44 @@
             getResList(){
                 console.log('小区列表',this.resList)
                 // if(!this.resList.length){
-                    this.resLoading = true
-                    let params = {
-                        uid: this.sessionData.uID,
-                        token: this.sessionData.token,
-                        districtId: this.regionID,
-                        cityId: this.createData.city,
-                        // resName: '',
-                    }
-                    if(!params.districtId){
-                        delete params.districtId;
-                    }
-                    if(!params.cityId){
-                        delete params.cityId;
-                    }
-                    api.getApi(this.apiVar.engineer + '/resInfoListByDistrictId',params).then(res=>{
-                        console.log('小区下拉选项res',res);
-                        if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
-                            let resData = res.data.data;
-                            let resArr = [];
-                            for(let key of resData){
-                                if(!key.resID){
-                                    console.log('key.resID',key)
-                                }
-                                resArr.push({
-                                    label: key.resName,
-                                    value: key.resID.toString()
-                                });
+                this.resLoading = true
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    districtId: this.regionID,
+                    cityId: this.createData.city,
+                    // resName: '',
+                }
+                if(!params.districtId){
+                    delete params.districtId;
+                }
+                if(!params.cityId){
+                    delete params.cityId;
+                }
+                api.getApi(this.apiVar.engineer + '/resInfoListByDistrictId',params).then(res=>{
+                    console.log('小区下拉选项res',res);
+                    if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
+                        let resData = res.data.data;
+                        let resArr = [];
+                        for(let key of resData){
+                            if(!key.resID){
+                                console.log('key.resID',key)
                             }
-                            this.resList = resArr;
-                            console.log('this.resList',this.resList)
-                            this.resLoading = false
-                            this.detailResLoading = false
-                        } else if (res.data.SysCode == 100302) {
-                            this.loginTimeout();
-                        } else {
-                            this.messageFun('warning', res.data.MSG);
+                            resArr.push({
+                                label: key.resName,
+                                value: key.resID.toString()
+                            });
                         }
-                    })
+                        this.resList = resArr;
+                        console.log('this.resList',this.resList)
+                        this.resLoading = false
+                        this.detailResLoading = false
+                    } else if (res.data.SysCode == 100302) {
+                        this.loginTimeout();
+                    } else {
+                        this.messageFun('warning', res.data.MSG);
+                    }
+                })
                 // }
             },
             // 查看详情 detailList
@@ -632,7 +634,7 @@
             changeRes(row){
                 console.log('选择的小区',row)
                 if(row.resourceId !== '' && row.resourceId !== null){
-                    let isHave = this.isHaveDiffRes(row.resourceId)
+                    let isHave = this.isHaveDiffRes(row)
                     if(!isHave){
                         let params = {
                             uid: this.sessionData.uID,
@@ -648,6 +650,8 @@
                                 row.resourceName = resData.resName || '--'
                                 row.tradingArea = resData.tradingArea || '--'
                                 row.regionId = resData.rID
+                                // 记录成功选择的小区id
+                                this.beforeResourceId = row.resourceId
                             } else if (res.data.SysCode == 100302) {
                                 this.loginTimeout()
                             } else {
@@ -656,25 +660,33 @@
                         })
                     }else{
                         this.messageFun('warning', '请勿重复选择相同小区！')
-                        row.resourceId = ''
+                        if(row.regionId || row.type || row.tradingArea){
+                            row.resourceId = this.beforeResourceId
+                        }else{
+                            this.clearRowData(row)
+                        }
                     }
-
                 }else{
-                    row.type = ''
-                    row.address = ''
-                    row.resourceName = ''
-                    row.regionId = ''
-                    row.tradingArea = ''
+                    this.clearRowData(row)
                 }
             },
             // 编辑时-选择小区判断是否重复
-            isHaveDiffRes(resourceId){
+            isHaveDiffRes(row){
                 for(let key of this.detailList){
-                    if(key.resourceId == resourceId && key.regionId){
+                    if(key.resourceId == row.resourceId && row.addRowIndex !== key.addRowIndex){
                         return true
                     }
                 }
                 return false
+            },
+            // 行数据初始化
+            clearRowData(row){
+                row.type = ''
+                row.address = ''
+                row.resourceId = ''
+                row.resourceName = ''
+                row.regionId = ''
+                row.tradingArea = ''
             },
             // 编辑线路-选择区域
             changeArea(row){
@@ -682,12 +694,7 @@
                 this.resList = []
                 this.getResList()
                 // 重新选择区域则初始化行数据
-                row.type = ''
-                row.address = ''
-                row.resourceId = ''
-                row.resourceName = ''
-                row.regionId = ''
-                row.tradingArea = ''
+                this.clearRowData(row)
             },
             // 取消编辑
             cancelEdit(){
@@ -787,31 +794,31 @@
                     spinner: 'el-icon-loading',
                     background: 'rgba(0, 0, 0, 0.7)'
                 })
-              let params = {
-                  uid: this.sessionData.uID,
-                  token: this.sessionData.token,
-                  cityId: this.createData.city,
-                  name: this.createData.pathLine,
-                  resourceIds: this.createData !== '' ? this.createData.resName.join(',') : '',
-              }
-              console.log('新建线路params',params)
-              api.postApi(this.apiVar.engineer + '/create', params).then(res=>{
-                  console.log('新建线路res',res)
-                  if (res.data.System == 200200 || res.data.MSG === "成功") {
-                      this.messageFun('success', '新建成功')
-                      this.createDialogVisible = false
-                      this.getTableList()
-                      this.setFormData()
-                  } else if (res.data.SysCode == 100302) {
-                      this.loginTimeout()
-                  } else if(res.data.SysCode == 200500){
-                      this.repetLineName = true
-                      this.$refs.createData.validateField('pathLine')  // 手动触发校验
-                  } else {
-                      this.messageFun('warning', res.data.MSG)
-                  }
-                  this.createloading.close()
-              })
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    cityId: this.createData.city,
+                    name: this.createData.pathLine,
+                    resourceIds: this.createData !== '' ? this.createData.resName.join(',') : '',
+                }
+                console.log('新建线路params',params)
+                api.postApi(this.apiVar.engineer + '/create', params).then(res=>{
+                    console.log('新建线路res',res)
+                    if (res.data.System == 200200 || res.data.MSG === "成功") {
+                        this.messageFun('success', '新建成功')
+                        this.createDialogVisible = false
+                        this.getTableList()
+                        this.setFormData()
+                    } else if (res.data.SysCode == 100302) {
+                        this.loginTimeout()
+                    } else if(res.data.SysCode == 200500){
+                        this.repetLineName = true
+                        this.$refs.createData.validateField('pathLine')  // 手动触发校验
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                    this.createloading.close()
+                })
             },
             // 新建成功后数据初始
             setFormData(){

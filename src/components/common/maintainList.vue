@@ -394,22 +394,14 @@ export default {
                 pageNum: this.currPage,
                 pageSize: this.pageSize,
             };
-            if(company){
-                data.asrID  = company;
-            }
-            if(keyword){
-                data.resName = keyword;
-            }
-            if(state){
-                data.status = state;
-            }
-            if(date){
-                data.bt = timeFormat.toDate(date[0], '-');
-                data.et = timeFormat.toDate(date[1], '-');
-            }
-            if(engineer){
-                data.epID = engineer;
-            }
+            data = {
+                ...data,
+                ...(company && {asrID: company}),
+                ...(keyword && {resName: keyword}),
+                ...(state && {status: state}),
+                ...(date && {bt: timeFormat.toDate(date[0], '-'), et: timeFormat.toDate(date[1], '-')}),
+                ...(engineer && {epID: engineer}),
+            };
             info.data = data;
             return info;
         },

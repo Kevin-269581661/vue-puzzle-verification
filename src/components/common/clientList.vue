@@ -251,24 +251,12 @@ export default {
                 pageSize: this.pageSize
             };
             let { date, select, keyword, company } = this.searchInfo;
-            if(date){
-                info.beginTime = date[0];
-                info.endTime = date[1]+' 23:59:59';
-            }
-            if(keyword){
-                if(select == '1'){
-                    info.brandName = keyword;
-                }
-                if(select == '2'){
-                    info.companyName = keyword;
-                }
-                if(select == '3'){
-                    info.contactName = keyword;
-                }
-            }
-            if(company){
-                info.asrID = company;
-            }
+            info = {
+                ...info,
+                ...(date && {beginTime: date[0], endTime: date[1]+' 23:59:59'}),
+                ...(keyword && (select=='1' && {brandName: keyword}) || (select=='2' && {companyName: keyword}) || (select=='3' && {contactName: keyword})),
+                ...(company && { asrID: company})
+            };
             return info;
         },
         searchFun(){

@@ -1021,26 +1021,15 @@ export default {
                 pagesize: this.pageSize
             };
             let { select, keyword, rangeDate, status, company, cityWord, Lock } = this.searchInfo;
-            if(keyword){
-                info.keywordType = select;
-                info.keyword = keyword;
-            }
-            if(rangeDate){
-                info.starttime = rangeDate[0];
-                info.andtime = rangeDate[1];
-            }
-            if((status!=='') && status>=0){
-                info.apstate = status;
-            }
-            if(company){
-                info.asrID = company;
-            }
-            if(cityWord){
-                info.rname = cityWord;
-            }
-            if(Lock){
-                info.onyusuo = Lock;
-            }
+            info = {
+                ...info,
+                ...(keyword && {keywordType: select, keyword}),
+                ...(rangeDate && {starttime: rangeDate[0], andtime: rangeDate[1]}),
+                ...(status!=='' && status>=0 && {apstate: status}),
+                ...(company && {asrID: company}),
+                ...(cityWord && {rname: cityWord}),
+                ...(Lock && {onyusuo: Lock}),
+            };
             return info;
         },
         // 设置表格数据

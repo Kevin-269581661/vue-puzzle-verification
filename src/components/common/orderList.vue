@@ -393,31 +393,15 @@ export default {
                 pageNum: this.currPage,
                 pageSize: this.pageSize
             };
-            let { select, keyword, rangeDate, company, cityWord, status } = this.searchInfo;            
-            if(keyword){
-                if(select == '1'){
-                    info.orderName = keyword;
-                }
-                if(select == '2'){
-                    info.customerName = keyword;
-                }
-                if(select == '3'){
-                    info.contractNum = keyword;
-                }
-            }
-            if(rangeDate){
-                info.beginTime = rangeDate[0];
-                info.endTime = rangeDate[1];
-            }
-            if((status!=='') && status>=0){
-                info.state = status;
-            }
-            if(company){
-                info.asrID = company;
-            }
-            if(cityWord){
-                info.rID = cityWord;
-            }
+            let { select, keyword, rangeDate, company, cityWord, status } = this.searchInfo;
+            info = {
+                ...info,
+                ...(keyword && (select == '1' && {orderName: keyword}) || (select == '2' && {customerName: keyword}) || (select == '3' && {contractNum: keyword})),
+                ...(rangeDate && {beginTime: rangeDate[0], endTime: rangeDate[1]}),
+                ...(status!=='' && status>=0 && {state: status}),
+                ...(company && {asrID: company}),
+                ...(cityWord && {rID: cityWord})
+            };
             return info;
         },
         // 滚动加载获取数据(无搜索数据)

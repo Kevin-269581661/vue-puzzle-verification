@@ -299,19 +299,13 @@
                     pagesize: this.pageSize
                 };
                 let { keyword, role, state, select, company } = this.searchInfo;
-                if(keyword){
-                    info.keywordType = select;
-                    info.keyword = keyword;
-                }
-                if(state){
-                    info.ustate = state;
-                }
-                if(role){
-                    info.uType = role;
-                }
-                if(company){
-                    info.asrID = company;
-                }
+                info = {
+                    ...info,
+                    ...(keyword && {keywordType: select, keyword}),
+                    ...(state && {ustate: state}),
+                    ...(role && {uType: role}),
+                    ...(company && {asrID: company})
+                };
                 return info;
             },
             // 设置表格数据

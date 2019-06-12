@@ -240,15 +240,12 @@
                     pagesize: this.pageSize
                 };
                 let { keyword, type, state } = this.searchInfo;
-                if(keyword){
-                    info.ascName = keyword;
-                }
-                if(state>=0){
-                    info.astate = state;
-                }
-                if(type>=0){
-                    info.asType = type;
-                }
+                info = {
+                    ...info,
+                    ...(keyword && {ascName: keyword}),
+                    ...(state>=0 && {astate: state}),
+                    ...(type>=0 && {asType: type}),
+                };
                 return info;
             },
             // 设置表格数据

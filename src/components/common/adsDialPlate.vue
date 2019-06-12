@@ -84,7 +84,7 @@
                         <el-table-column
                             class-name="el-table-column-asLab"
                             prop="asLab"
-                            label="投方面"
+                            label="投放面"
                             min-width="90"
                             fixed>
                         </el-table-column>
@@ -103,8 +103,13 @@
                                     width="310"
                                     trigger="hover">
                                     <div>
-                                        <p class="propmt_message_p">占点方案：{{scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].apName}}</p>
-                                        <p class="propmt_message_p">占点排期：{{scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].lStar + '-' + scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].lEnd}}</p>
+                                        <p class="propmt_message_p">
+                                            占点方案：{{scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].apName}}
+                                        </p>
+                                        <p class="propmt_message_p">
+                                            占点排期：{{scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].lStar + '-'
+                                            + (scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].lEnd)}}
+                                        </p>
                                     </div>
                                     <div slot="reference" class="color_chunk"
                                          :class="scope.row[item.dayOfMonth] && scope.row[item.dayOfMonth].status == 0 ? 'color_chunk_0' : scope.row[item.dayOfMonth] && scope.row[item.dayOfMonth].status == 1 ? 'color_chunk_1' : 'color_chunk_2'">
@@ -567,13 +572,14 @@
         height: 32px;
         border-radius: 3px
     }
-    /*被占*/
-    .color_chunk_0{
-        background: #FF9061;
-    }
     /*预锁*/
-    .color_chunk_1{
+    .color_chunk_0{
+
         background: #FFE281;
+    }
+    /*被占*/
+    .color_chunk_1{
+        background: #FF9061;
     }
     /*空闲*/
     .color_chunk_2{

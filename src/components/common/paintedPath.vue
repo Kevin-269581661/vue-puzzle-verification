@@ -384,6 +384,7 @@
                     let obj = {
                         lineId: key.lineId,
                         lineName: key.lineName,
+                        cityId: key.cityId,
                         regionInfo: '',
                         mediaInfo: '',
                         pointCount: key.pointCount,
@@ -438,15 +439,15 @@
                 });
             },
             // 获取区域
-            getAreaByRID(){
-                let cityIds = ''
-                for(let key of this.cityList){
-                    cityIds += key.value + ','
-                }
+            getAreaByRID(row){
+                // let cityIds = ''
+                // for(let key of this.cityList){
+                //     cityIds += key.value + ','
+                // }
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    cityIds: cityIds.substr(0,cityIds.length-1)
+                    cityIds: row.cityId //cityIds.substr(0,cityIds.length-1)
                 }
                 api.getApi(this.apiVar.engineer + '/districtList', params).then(res=>{
                     console.log('获取区域',res);
@@ -468,7 +469,7 @@
                 })
             },
             // 小区下拉选项
-            getResList(){
+            getResList(cityId){
                 console.log('小区列表',this.resList)
                 // if(!this.resList.length){
                 this.resLoading = true
@@ -477,7 +478,7 @@
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                     districtId: this.regionID,
-                    cityId: this.createData.city,
+                    cityId: cityId || this.createData.city,
                     // resName: '',
                 }
                 if(!params.districtId){
@@ -538,11 +539,11 @@
                 this.createData.city = ''
                 this.regionID = ''
                 this.resList = []
-                this.getResList()
+                this.getResList(row.cityId)
                 // 获取城市区域
-                if(!this.areaList.length){
-                    this.getAreaByRID();
-                }
+                // if(!this.areaList.length){
+                    this.getAreaByRID(row);
+                // }
                 this.detailDialogVisible = true;
             },
             // 线路详情
@@ -697,7 +698,7 @@
             changeArea(row){
                 this.regionID = row.regionId
                 this.resList = []
-                this.getResList()
+                this.getResList(row.cityId)
                 // 重新选择区域则初始化行数据
                 this.clearRowData(row)
                 row.regionId = this.regionID
@@ -733,7 +734,7 @@
                             lineId: this.detailLineId,
                             resourceIds: resourceIds.substr(0,resourceIds.length-1)
                         }
-                        this.saveLoading = true;                        
+                        this.saveLoading = true;
                         api.postApi(this.apiVar.engineer + '/addResource',params).then(res=>{
                             console.log('线路新增资源',res)
                             if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
@@ -772,15 +773,6 @@
                 //获取小区下拉
                 this.getResList()
             },
-            // // 新建方案-小区选择
-            // selectResFocus(){
-            //     if (!this.createData.city) {
-            //         this.resLoading = false
-            //         this.$refs.createData.validateField('resName')  // 手动触发校验
-            //     } else {
-            //         this.$refs.createData.clearValidate('resName') // 清除验证
-            //     }
-            // },
             //创建的表单验证
             submitForm(formName) {
                 console.log('formName',formName)

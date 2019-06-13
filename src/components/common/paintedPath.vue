@@ -338,7 +338,7 @@
             // 重置搜索 selectPath
             clearSearch(){
                 this.selectPath = '';
-                // this.pageData.pageNum = 1
+                this.pageData.pageNum = 1
                 this.getTableList()
             },
             // 分页

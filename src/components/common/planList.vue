@@ -70,9 +70,9 @@
                         <span>
                             <el-button plain v-if="showNewBtn" @click="isOpenDownload=true">导空位</el-button>
                         </span>
-                        <span>
+                        <!-- <span>
                             <el-button type="primary" v-if="!isNation" @click="goToDiaPlate">点位表盘</el-button>
-                        </span>
+                        </span> -->
                     </div>
                 </el-row>
                 <div class="table_wrap">

@@ -48,7 +48,7 @@
                         <el-row class="row-bg row_box">
                             <el-col :span="6" style="position: relative">
                                 <div class="ad_mediaInfoPanel_row_box" style="cursor: pointer" :class="showAllDetail.des ? 'show_all_aetail' : ''"
-                                     @click="showDetailFun('des')"><!--showAllDetail.des = !showAllDetail.des-->
+                                     @click="showDetailFun('des')">
                                     <div class="ad_mediaInfoPanel_row_title">
                                         具体描述：
                                         <div class="showAllText showAllTextDes" v-show="judgeShowBtn.des">
@@ -975,7 +975,7 @@
                     setTimeout(()=>{
                         let des = document.getElementsByClassName('ad_mediaInfoPanel_row_content_des')[0]
                         let btn = document.getElementsByClassName('showAllTextDes')[0]
-                        let top = des.offsetHeight - 39
+                        let top = des.offsetHeight - 20
                         btn.style.top = top + "px"
                         console.log('top',top)
                     },10)
@@ -984,7 +984,7 @@
                     setTimeout(()=>{
                         let des = document.getElementsByClassName('ad_mediaInfoPanel_row_content_sfs')[0]
                         let btn = document.getElementsByClassName('showAllTextSfs')[0]
-                        let top = des.offsetHeight - 39
+                        let top = des.offsetHeight - 20
                         btn.style.top = top + "px"
                         console.log('top',top)
                     },10)
@@ -993,7 +993,7 @@
                     setTimeout(()=>{
                         let des = document.getElementsByClassName('ad_mediaInfoPanel_row_content_tpt')[0]
                         let btn = document.getElementsByClassName('showAllTextTpt')[0]
-                        let top = des.offsetHeight - 39
+                        let top = des.offsetHeight - 20
                         btn.style.top = top + "px"
                         console.log('top',top)
                     },10)
@@ -1123,6 +1123,7 @@
         color: #333333;
     }
     .ad_mediaInfoPanel_row_box{
+        position: relative;
         width: 97%;
         display: flex;
     }
@@ -1151,8 +1152,10 @@
         padding: 0 16px 0 0;
     }
     .ad_mediaInfoPanel_row .showAllText{
-        position: relative;
-        left: 227px;
+        position: absolute;
+        /*left: 227px;*/
+        right: 0;
+        top: 18px;
         font-size: 14px;
         background: #fff;
     }
@@ -1353,9 +1356,9 @@
         background: #C1C1C1;
         border-radius: 4px;
     }
-    @media all and (min-width: 1900px){
-        .ad_mediaInfoPanel_row .showAllText{
-            left: 332px;
-        }
-    }
+    /*@media all and (min-width: 1900px){*/
+        /*.ad_mediaInfoPanel_row .showAllText{*/
+            /*left: 332px;*/
+        /*}*/
+    /*}*/
 </style>

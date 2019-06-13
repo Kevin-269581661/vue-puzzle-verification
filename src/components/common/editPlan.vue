@@ -4190,6 +4190,7 @@
             selectScheduled(index){
                 console.log('触发时间下标index',index,this.changeDateTemp)
                 this.cityAdsScheduled[index].newTime = this.changeDateTemp[0] + '-' + this.changeDateTemp[1]
+                this.changeDateTemp = ''
             },
             // 删除当前选择的排期
             deleteScheduled(index){

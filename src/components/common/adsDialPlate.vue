@@ -57,6 +57,7 @@
                         v-loading="tableLoading"
                         element-loading-text="拼命加载中..."
                         element-loading-spinner="el-icon-loading"
+                        :key="tableKey"
                         :data="adsTableList"
                         style="width: 100%">
                         <el-table-column
@@ -84,7 +85,7 @@
                         <el-table-column
                             class-name="el-table-column-asLab"
                             prop="asLab"
-                            label="投方面"
+                            label="投放面"
                             min-width="90"
                             fixed>
                         </el-table-column>
@@ -103,8 +104,13 @@
                                     width="310"
                                     trigger="hover">
                                     <div>
-                                        <p class="propmt_message_p">占点方案：{{scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].apName}}</p>
-                                        <p class="propmt_message_p">占点排期：{{scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].lStar + '-' + scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].lEnd}}</p>
+                                        <p class="propmt_message_p">
+                                            占点方案：{{scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].apName}}
+                                        </p>
+                                        <p class="propmt_message_p">
+                                            占点排期：{{scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].lStar + '-'
+                                            + (scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].lEnd)}}
+                                        </p>
                                     </div>
                                     <div slot="reference" class="color_chunk"
                                          :class="scope.row[item.dayOfMonth] && scope.row[item.dayOfMonth].status == 0 ? 'color_chunk_0' : scope.row[item.dayOfMonth] && scope.row[item.dayOfMonth].status == 1 ? 'color_chunk_1' : 'color_chunk_2'">
@@ -139,6 +145,8 @@
                             @current-change="changePage"
                             @size-change="changeSize"
                             :page-sizes="[10, 20, 30, 40]"
+                            :current-page.sync="pageData.pageNum"
+                            :page-size="pageData.pageSize"
                             :total="pageData.totalSize">
                         </el-pagination>
                     </div>
@@ -186,6 +194,8 @@
                 beforDate: [],
                 searchBtnAbled: false,
                 adsTableList: [],
+                // 表格key值用于强制刷新渲染
+                tableKey: 1,
                 // 表格头部
                 tableHeader:[],
                 // 选择的第一个日期
@@ -353,6 +363,11 @@
                         adsArr.push(obj)
                     }
                     this.adsTableList = adsArr.concat()
+                    if(this.tableKey === 1){
+                        this.tableKey = 2
+                    }else{
+                        this.tableKey = 1
+                    }
                     console.log('adsTableList',this.adsTableList,this.tableHeader)
                 }
             },
@@ -567,13 +582,14 @@
         height: 32px;
         border-radius: 3px
     }
-    /*被占*/
-    .color_chunk_0{
-        background: #FF9061;
-    }
     /*预锁*/
-    .color_chunk_1{
+    .color_chunk_0{
+
         background: #FFE281;
+    }
+    /*被占*/
+    .color_chunk_1{
+        background: #FF9061;
     }
     /*空闲*/
     .color_chunk_2{

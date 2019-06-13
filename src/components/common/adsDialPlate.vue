@@ -57,6 +57,7 @@
                         v-loading="tableLoading"
                         element-loading-text="拼命加载中..."
                         element-loading-spinner="el-icon-loading"
+                        :key="tableKey"
                         :data="adsTableList"
                         style="width: 100%">
                         <el-table-column
@@ -144,6 +145,8 @@
                             @current-change="changePage"
                             @size-change="changeSize"
                             :page-sizes="[10, 20, 30, 40]"
+                            :current-page.sync="pageData.pageNum"
+                            :page-size="pageData.pageSize"
                             :total="pageData.totalSize">
                         </el-pagination>
                     </div>
@@ -191,6 +194,8 @@
                 beforDate: [],
                 searchBtnAbled: false,
                 adsTableList: [],
+                // 表格key值用于强制刷新渲染
+                tableKey: 1,
                 // 表格头部
                 tableHeader:[],
                 // 选择的第一个日期
@@ -358,6 +363,11 @@
                         adsArr.push(obj)
                     }
                     this.adsTableList = adsArr.concat()
+                    if(this.tableKey === 1){
+                        this.tableKey = 2
+                    }else{
+                        this.tableKey = 1
+                    }
                     console.log('adsTableList',this.adsTableList,this.tableHeader)
                 }
             },

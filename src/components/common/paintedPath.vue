@@ -72,6 +72,8 @@
                         @current-change="changePage"
                         @size-change="changeSize"
                         :page-sizes="[10, 20, 30, 40]"
+                        :current-page.sync="pageData.pageNum"
+                        :page-size="pageData.pageSize"
                         :total="pageData.totalSize">
                     </el-pagination>
                 </div>

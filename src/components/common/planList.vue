@@ -74,44 +74,21 @@
                 </el-row>
                 <div class="table_wrap">
                     <el-table border :data="currentPlan" style="width: 100%" v-loadmore="pointLoadMore" v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
-                        <el-table-column prop="apName" label="方案名称" min-width="14.9%" :show-overflow-tooltip="true">
-                            <!-- <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.apName" placement="bottom" v-if="scope.row.apName.length>15">
-                                    <a href="javascript:void(0);" @click="ToDetail(scope.row)">{{scope.row.apName}}</a>
-                                </el-tooltip>
-                                <a href="javascript:void(0);" @click="ToDetail(scope.row)" v-else>{{scope.row.apName}}</a>
-                            </template> -->
+                        <el-table-column prop="apName" label="方案名称" min-width="14.9%" show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <a href="javascript:void(0);" @click="ToDetail(scope.row)">{{scope.row.apName}}</a>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="cName" label="客户名称" min-width="12.6%" :show-overflow-tooltip="true">
-                            <!-- <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.cName" placement="bottom" v-if="scope.row.cName.length>9">
-                                    <span title="">{{scope.row.cName}}</span>
-                                </el-tooltip>
-                                <span v-else title="">{{scope.row.cName}}</span>
-                            </template> -->
+                        <el-table-column prop="cName" label="客户名称" min-width="12.6%" show-overflow-tooltip>
                         </el-table-column>
-                        <el-table-column prop="bTitle" label="品牌名称" min-width="6.6%">
-                            <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.bTitle" placement="bottom" v-if="scope.row.bTitle.length>4">
-                                    <span>{{scope.row.bTitle||'--'}}</span>
-                                </el-tooltip>
-                                <span v-else>{{scope.row.bTitle||'--'}}</span>
-                            </template>
+                        <el-table-column prop="bTitle" label="品牌名称" min-width="6.6%" show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column label="方案价格" sortable :sort-method="sortPrice" width="120px" align="right">
                             <template slot-scope="scope">
                                 <span>&yen;{{scope.row.apTotal?priceFormat(scope.row.apTotal/100):0}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="realName" label="所有人" min-width="6.1%"  v-if="!(role=='AD')">
-                            <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.realName" placement="bottom">
-                                    <span>{{scope.row.realName}}</span>
-                                </el-tooltip>
-                            </template>
+                        <el-table-column prop="realName" label="所有人" min-width="6.1%"  v-if="!(role=='AD')" show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column label="投放城市(点位面数,排期)"
                             prop="cityArea"
@@ -1041,7 +1018,7 @@ export default {
                 apState: item.apState ? item.apState : '',
                 apTotal: item.apTotal ? item.apTotal : '',
                 apcTime: item.apcTime ? item.apcTime : '',
-                bTitle: item.bTitle ? item.bTitle : '',
+                bTitle: item.bTitle ? item.bTitle : '--',
                 cName: item.cName ? item.cName : '',
                 realName: item.realName ? item.realName : '',
                 cityArea: [],
@@ -1389,41 +1366,6 @@ a {
 
 /deep/ .el-table-filter__list-item {
     color: rgb(102, 102, 102);
-}
-
-/*超出省略*/
-/deep/ .el-table .cell {
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/deep/ .el-table .cell span {
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/deep/ .el-table .cell a {
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/deep/ .el-table__row td:nth-child(7) .cell span {
-    width: 85px;
-}
-
-/deep/ .el-table__row td:nth-child(3) .cell span {
-    width: 62px;
-}
-
-/deep/ .el-table__row td:nth-child(2) .cell span {
-    width: 148px;
-}
-
-/deep/ .el-table__row td:nth-child(1) .cell a {
-    width: 180px;
 }
 
 /*筛选*/

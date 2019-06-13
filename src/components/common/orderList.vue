@@ -60,34 +60,16 @@
                 </el-row>
                 <div class="table_wrap">
                     <el-table border :data="currentOrder" style="width: 100%" v-loadmore="orderLoadMore" v-loading="loading" element-loading-text="玩命加载中" element-loading-spinner="el-icon-loading" :default-sort="{prop: 'apcTime', order: 'descending'}">
-                        <el-table-column label="订单名称" min-width="14.6%">
+                        <el-table-column label="订单名称" min-width="14.6%" show-overflow-tooltip>
                             <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.apName" placement="bottom" v-if="scope.row.apName.length>12">
-                                    <a href="javascript:void(0);" @click="ToDetail(scope.row)">{{scope.row.apName}}</a>
-                                </el-tooltip>
-                                <a href="javascript:void(0);" v-else @click="ToDetail(scope.row)">{{scope.row.apName}}</a>
+                                <a href="javascript:void(0);" @click="ToDetail(scope.row)">{{scope.row.apName}}</a>
                             </template>
                         </el-table-column>
-                        <el-table-column label="客户名称" min-width="10.4%">
-                            <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.cName" placement="bottom" v-if="scope.row.cName.length>9">
-                                    <span title="">{{scope.row.cName}}</span>
-                                </el-tooltip>
-                                <span v-else title="">{{scope.row.cName}}</span>
-                            </template>
+                        <el-table-column prop="cName" label="客户名称" min-width="10.4%"  show-overflow-tooltip>
                         </el-table-column>
-                        <el-table-column prop="bTitle" label="品牌名称" min-width="6.0%">
-                            <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.bTitle" placement="bottom" v-if="scope.row.bTitle.length>5">
-                                    <span title="">{{scope.row.bTitle||'--'}}</span>
-                                </el-tooltip>
-                                <span v-else title="">{{scope.row.bTitle||'--'}}</span>
-                            </template>
+                        <el-table-column prop="bTitle" label="品牌名称" min-width="6.0%" show-overflow-tooltip>
                         </el-table-column>
-                        <el-table-column label="合同编号" width="180px">
-                            <template slot-scope="scope">
-                                <span>{{scope.row.apQC}}</span>
-                            </template>
+                        <el-table-column prop="apQC" label="合同编号" width="180px">
                         </el-table-column>
                         <el-table-column sortable :sort-method="sortPrice" label="订单总价" width="120px" align="right">
                             <template slot-scope="scope">
@@ -470,7 +452,7 @@ export default {
                 apState: item.apState ? item.apState : '',
                 apTotal: item.apTotal ? item.apTotal : '',
                 apcTime: item.apcTime ? item.apcTime : '',
-                bTitle: item.bTitle ? item.bTitle : '',
+                bTitle: item.bTitle ? item.bTitle : '--',
                 cName: item.cName ? item.cName : '',
                 realName: item.realName ? item.realName : '',
                 companyList: [],

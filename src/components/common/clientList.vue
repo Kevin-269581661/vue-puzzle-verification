@@ -49,52 +49,21 @@
 				</el-row>
 				<div class="table_wrap">
 					<el-table border :data="currentPlan" v-loading="loading" v-loadmore="userLoadMore" element-loading-text="玩命加载中..." element-loading-spinner="el-icon-loading" style="width: 100%" :default-sort="{prop: 'joinTime', order: 'descending'}">
-						<el-table-column label="联系人" min-width="6%">
-							<template slot-scope="scope">
-								<el-tooltip class="item" effect="dark" :content="scope.row.realName" placement="bottom"  v-if="scope.row.realName.length>18">
-									<span>{{scope.row.realName}}</span>
-								</el-tooltip>
-                                <span v-else>{{scope.row.realName}}</span>
-							</template>
+						<el-table-column prop="realName" label="联系人" min-width="6%" show-overflow-tooltip>
 						</el-table-column>
 						<!--<el-table-column prop="clientRName" label="所在地" min-width="7.2%">-->
 						<!--</el-table-column>-->
-						<el-table-column label="职位" class="tar" min-width="7.2%">
-							<template slot-scope="scope">
-								<el-tooltip class="item" effect="dark" :content="scope.row.position" placement="bottom" v-if="scope.row.position.length>18">
-									<span>{{scope.row.position||'--'}}</span>
-								</el-tooltip>
-                                <span v-else>{{scope.row.position||'--'}}</span>
-							</template>
-
+						<el-table-column prop="position" label="职位" class="tar" min-width="7.2%" show-overflow-tooltip>
 						</el-table-column>
 						<el-table-column prop="phone" label="手机号码" min-width="9.5%">
 						</el-table-column>
-						<el-table-column label="公司名称" min-width="18.4%">
-							<template slot-scope="scope">
-								<el-tooltip class="item" effect="dark" :content="scope.row.cName" placement="bottom" v-if="scope.row.cName.length>18">
-									<span>{{scope.row.cName||'--'}}</span>
-								</el-tooltip>
-                                <span v-else>{{scope.row.cName||'--'}}</span>
-							</template>
+						<el-table-column prop="cName" label="公司名称" min-width="18.4%" show-overflow-tooltip>
 						</el-table-column>
 						<el-table-column prop="rName" label="所在城市" min-width="8%">
-                            <template slot-scope="scope">
-                                <span>{{scope.row.rName||'--'}}</span>
-							</template>
 						</el-table-column>
-						<el-table-column label="公司品牌" min-width="12.1%">
-							<template slot-scope="scope">
-								<el-tooltip class="item" effect="dark" :content="scope.row.cBrand" placement="bottom" v-if="scope.row.cBrand.length>18">
-									<span>{{scope.row.cBrand||'--'}}</span>
-								</el-tooltip>
-                                <span v-else>{{scope.row.cBrand||'--'}}</span>
-							</template>
+						<el-table-column prop="cBrand" label="公司品牌" min-width="12.1%" show-overflow-tooltip>
 						</el-table-column>
 						<el-table-column prop="puName" label="所有人" min-width="6.1%">
-                            <template slot-scope="scope">
-                                <span>{{scope.row.puName||'--'}}</span>
-                            </template>
 						</el-table-column>
 						<el-table-column label="创建日期" min-width="8.3%" sortable :sort-by="sortData">
 							<template slot-scope="scope">
@@ -318,17 +287,17 @@ export default {
         // 设置表格数据
         setTableData(item){
             let obj = {
-                cBrand: item.cBrand ? item.cBrand : '',
+                cBrand: item.cBrand ? item.cBrand : '--',
                 cID: item.cID ? item.cID:'',
-                cName: item.cName ? item.cName : '',
+                cName: item.cName ? item.cName : '--',
                 crID: item.crID ? item.crID : '',
                 iID: item.iID ? item.iID : '',
                 joinTime: item.joinTime ? item.joinTime : '',
                 phone: item.phone ? item.phone : '',
-                position: item.position ? item.position : '',
-                puName: item.puName ? item.puName : '',
+                position: item.position ? item.position : '--',
+                puName: item.puName ? item.puName : '--',
                 rID: item.rID ? item.rID : '',
-                rName: item.rName ? item.rName : '',
+                rName: item.rName ? item.rName : '--',
                 realName: item.realName ? item.realName : '',
                 sName: item.sName ? item.sName : '',
                 uID: item.uID ? item.uID : '',

@@ -62,23 +62,9 @@
                                 <a href="javascript:void(0);" @click="ToEdit(scope.row)">{{scope.row.sName}}</a>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="realName" label="姓名" min-width="7.8%">
-                            <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.realName" placement="bottom"
-                                            v-if="scope.row.realName.length>8">
-                                    <span>{{scope.row.realName||'--'}}</span>
-                                </el-tooltip>
-                                <span v-else>{{scope.row.realName||'--'}}</span>
-                            </template>
+                        <el-table-column prop="realName" label="姓名" min-width="7.8%" show-overflow-tooltip>
                         </el-table-column>
-                        <el-table-column prop="company" label="所属公司" min-width="14.2%">
-                            <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.company" placement="bottom"
-                                            v-if="scope.row.company.length>18">
-                                    <span>{{scope.row.company||'--'}}</span>
-                                </el-tooltip>
-                                <span v-else>{{scope.row.company||'--'}}</span>
-                            </template>
+                        <el-table-column prop="company" label="所属公司" min-width="14.2%" show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column prop="uType" label="账号角色" min-width="8.1%">
                             <template slot-scope="scope">
@@ -86,9 +72,6 @@
                             </template>
                         </el-table-column>
                         <el-table-column prop="puName" label="上级" min-width="7.8%">
-                            <template slot-scope="scope">
-                                <span>{{scope.row.puName||'--'}}</span>
-                            </template>
                         </el-table-column>
                         <el-table-column label="创建日期" min-width="9.8%" sortable :sort-by="sortData">
                             <template slot-scope="scope">
@@ -313,11 +296,11 @@
                 let obj = {
                     uID: item.uID ? item.uID : '',
                     sName: item.sName ? item.sName : '',
-                    realName: item.realName ? item.realName:'',
-                    company: item.asName ? item.asName : '', 
+                    realName: item.realName ? item.realName:'--',
+                    company: item.asName ? item.asName : '--', 
                     asrID: item.asrID ? item.asrID : '', 
                     uType: item.uType ? item.uType : '',
-                    puName: item.puName ? item.puName : '',
+                    puName: item.puName ? item.puName : '--',
                     joinTime: item.joinTime ? item.joinTime : '',
                     uState: item.uState ? item.uState : '',
                     position: item.position ? item.position : '',

@@ -2288,6 +2288,7 @@
                         for(let data of resinfo){
                             result.push(this.setCopyData(data));
                         }
+                        console.log('result----', result);
                         for(let item of result){
                             this.isHaveDiffPush(item);
                         }
@@ -2304,16 +2305,24 @@
             },
             // 构建复制方案数据格式
             setCopyData(info){
+                let checkBox = {A: false, B: false,ABC:false}
+                if (info.asLab === 'A') {
+                    checkBox.A = true
+                } else if (info.asLab === 'B') {
+                    checkBox.B = true
+                } else if (info.asLab === 'ABC') {
+                    checkBox.ABC = true
+                }
                 let importInfo = {
                     mID: info.mID,
                     resType: info.resType,
                     resID: info.resID,
-                    asID: info.asID,
+                    asID: '',
                     asIDs: info.asID,
                     asLabs: info.asLab,
                     resName: info.resName,
-                    city: info.prName,
-                    rid: info.prID,
+                    city: info.city,
+                    rid: info.rID,
                     origin: info.rName,
                     buildType: info.cType,
                     houseNum: info.hNum,
@@ -2330,28 +2339,21 @@
                     address: info.resAddress || '',
                     dNum: info.dNum || '',       // 出入口数
                     adLimit: info.notPush || '',
-                    checkBox: {A: false, B: false, ABC: false},
+                    A_B: info.asLab,
+                    checkBox: checkBox,
                     connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
                     connID: info.connID || '',        // 连排门id
                     industryInfos: info.industryInfos || [],   // 同行业资源回避
                     mediaLevel: info.grade || '',
                     adPrice: info.mVehicle === '道闸' ? info.asPrice / 100 || 0 : info.asPrice / 700 || 0,
                     asName: info.asName || '',         // 点位所属公司名称
-                    asrID: info.asrID,                 // 所属公司id
+                    asrID: info.asrID,                 // 所属公司id,
+                    lState: info.adlInfo ? info.adlInfo : '',   // 是否被占
                 };
-                if(info.mVehicle == '广告门'){
-                    if(info.asLab === 'A'){
-                        importInfo.checkBox.A = true;
-                        importInfo.A_B = 'A';
-                    }
-                    if(info.asLab === 'B'){
-                        importInfo.checkBox.B = true;
-                        importInfo.A_B = 'B';
-                    }
-                }else if(info.mVehicle =='道闸'){
-                    importInfo.checkBox.ABC = true;
-                    importInfo.A_B = 'ABC';
-                    importInfo.asID = importInfo.asIDs.toString().split(',');
+                if(info.mVehicle === '道闸'){
+                    importInfo.asID = info.asIDs.split(',')
+                }else if(info.mVehicle === '广告门'){
+                    importInfo.asID = info.asID
                 }
                 return importInfo;
             },      
@@ -4473,12 +4475,13 @@
                 this.shopingList = other.concat(resultArr);
                 this.shopShowList = resultArr;
             },
-            // 根据connID高亮行数据
-            tableRowClassName({row}){
-                // console.log('row',row)
-                if (row.connData.connectResName !== '' || row.connData.commentWorkRes !=='' || row.connData.connectMedia !=='') {
+            // 当前行是否高亮
+            tableRowClassName({row}) {
+                if (row.lState !== undefined && row.lState.length > 0) {
+                    return "warning-row";
+                } else if (row.connData.connectResName !== '' || row.connData.commentWorkRes !=='' || row.connData.connectMedia !=='') {
                     return "warning-row-conncet";
-                } else {
+                }else {
                     return "";
                 }
             },

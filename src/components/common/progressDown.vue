@@ -9,6 +9,8 @@
 </template>
 
 <script>
+import api from "../../api/api.js";
+
 export default {
     data(){
         return{
@@ -18,17 +20,30 @@ export default {
     },
     methods:{
         getProcess(){
-            console.log(JSON.parse(sessionStorage.getItem('session_data')));
-            
-            if(this.currper == 100){
-                this.$alert('请在下载工具里查看文件', '文件成功生成', {
-                    confirmButtonText: '知道了',
-                });
-            }
+            api.getApi(this.apiVar.Advertisement+'/DownloadImgPackage', this.$route.query).then(res =>{
+                console.log(res.data);
+                if(res.data.SysCode == 200200){
+                    let resinfo = res.data.data;
+                    this.currper = parseInt(Number(resinfo.rate));
+                    if(this.currper == 100){
+                        clearInterval(this.myInterval);
+                        let tempwindow = window.open();
+                        tempwindow.location = resinfo.url;
+                        this.$alert('请在下载工具里查看文件', '文件成功生成', {
+                            confirmButtonText: '知道了',
+                        });
+                    }
+                }
+            }).catch(res =>{
+                console.log(res);
+            });
         },
     },
+    created(){
+        this.getProcess();
+    },
     mounted(){
-        this.myInterval = window.setInterval(() => {
+        this.myInterval = setInterval(() => {
             setTimeout(() => {
                 //调用接口的方法
                 this.getProcess();

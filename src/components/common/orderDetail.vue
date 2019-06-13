@@ -177,6 +177,7 @@
                                             <el-radio-button label="广告门"></el-radio-button>
                                             <el-radio-button label="道闸"></el-radio-button>
                                         </el-radio-group>
+                                        <el-button type="primary" @click="downloadImg()" >导出图片</el-button>
                                         <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
                                     </template>
 
@@ -191,7 +192,6 @@
                                             <el-option label="已上传" value="2"></el-option>
                                             <el-option label="未上传" value="3"></el-option>
                                         </el-select>
-                                        <el-button type="primary" @click="downloadImg()" >导出图片</el-button>
                                         <!--进度条-->
                                         <div class="progress">
                                             <el-progress :percentage="upImgPercent"></el-progress>
@@ -2290,9 +2290,19 @@ export default {
         },
         // 导出图片
         downloadImg(){
-            api.getApi_file(this.apiVar.Advertisement, info);
+            let info = {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                apId: this.orderDetail.apID,
+                type: (this.planPanel == 'forth') ? 0 : 1,
+                apName: this.orderDetail.apName,
+            };
+            api.getApi(this.apiVar.Advertisement+'/DownloadImgPackage', info).then(res =>{
+                console.log(res.data.data.rate);
+            });
             let routeUrl = this.$router.resolve({
                 path: "/progressDown",
+                query: info,
             });
             window.open(routeUrl .href, '_blank');
         },

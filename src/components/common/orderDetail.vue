@@ -1501,8 +1501,6 @@ export default {
         },
         // 获取上刊图片数据
         getUpImgInfo(params) {
-            this.UpReportLoading = false
-            
             api.postApi(this.apiVar.Advertisement+"/GetImg", params)
                 .then(res => {
                     if (!res.data.SysCode) {
@@ -1528,7 +1526,7 @@ export default {
                             Message.warning('暂无数据');
                         }
                     } else if (res.data.SysCode == 100302) {
-                        // this.loginTimeout();
+                        this.loginTimeout();
                     } else {
                         Message.warning(res.data.MSG);
                     }
@@ -2299,12 +2297,14 @@ export default {
             };
             api.getApi(this.apiVar.Advertisement+'/DownloadImgPackage', info).then(res =>{
                 console.log(res.data.data.rate);
+                if(res.data.SysCode == 200200){
+                    let routeUrl = this.$router.resolve({
+                        path: "/progressDown",
+                        query: info,
+                    });
+                    window.open(routeUrl .href, '_blank');
+                }
             });
-            let routeUrl = this.$router.resolve({
-                path: "/progressDown",
-                query: info,
-            });
-            window.open(routeUrl .href, '_blank');
         },
     },
 };

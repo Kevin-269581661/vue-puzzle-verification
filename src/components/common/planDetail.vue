@@ -58,7 +58,7 @@
 
                                         <el-table-column label="资源名称" min-width="16.1%" prop="resName">
                                         </el-table-column>
-                                        <el-table-column prop="mTitle" label="媒体名称" min-width="10.3%" class="tar">
+                                        <el-table-column prop="mTitle" label="媒体名称" min-width="10.3%">
                                         </el-table-column>
                                         <el-table-column prop="asLab" label="投放面" min-width="8.8%">
                                         </el-table-column>
@@ -71,9 +71,9 @@
                                                 <span>{{scope.row.cType||'--'}}</span>
                                             </template>
                                         </el-table-column>
-                                        <el-table-column prop="hNum" label="小区户数" min-width="6.0%" class="tar">
+                                        <el-table-column prop="hNum" label="小区户数" min-width="6.0%" align="right">
                                         </el-table-column>
-                                        <el-table-column label="楼盘价格" min-width="9.0%">
+                                        <el-table-column label="楼盘价格" min-width="9.0%" align="right">
                                             <template slot-scope="scope">
                                                 <span>&yen;{{scope.row.hPrice?priceFormat(scope.row.hPrice/100):0}}</span>
                                             </template>
@@ -221,14 +221,16 @@ export default {
                     chDay: data.chDay,
                     adSize: data.mVehicle == "广告门" ? data.adSize: data.picSize,
                     adViewSize: data.mVehicle == "广告门" ? data.adViewSize: data.lightBoxSize,
+                    notPush: data.notPush,
+                    mRemark: data.mRemark,
                     resAddress: data.resAddress,
                 };
                 resultArr.push(obj);
-            }
+            } 
             require.ensure([], () => {
                 const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
-                const tHeader = ['资源名称', '市', '区域', '媒介载体', '媒体名称', '资产编号', '投放面', '投放日期', '终止日期', '商圈', '楼盘类型/写字楼类型', '楼盘价格', '住户数量/办公室数量', '楼栋数量', '入住年份/建成年份', '广告尺寸/画面尺寸', '可视画面/灯箱尺寸', '详细地址'];
-                const filterVal = ['resName', 'city', 'rName', 'mVehicle', 'mTitle', 'assetTag', 'asLab', 'timeRange', 'finishTimeRange', 'tradingArea', 'cType', 'hPrice', 'hNum', 'fNum', 'chDay', 'adSize', 'adViewSize', 'resAddress'];
+                const tHeader = ['资源名称', '市', '区域', '媒介载体', '媒体名称', '资产编号', '投放面', '投放日期', '终止日期', '商圈', '楼盘类型/写字楼类型', '楼盘价格', '住户数量/办公室数量', '楼栋数量', '入住年份/建成年份', '广告尺寸/画面尺寸', '可视画面/灯箱尺寸', '广告限制', '媒体备注', '详细地址'];
+                const filterVal = ['resName', 'city', 'rName', 'mVehicle', 'mTitle', 'assetTag', 'asLab', 'timeRange', 'finishTimeRange', 'tradingArea', 'cType', 'hPrice', 'hNum', 'fNum', 'chDay', 'adSize', 'adViewSize', 'notPush', 'mRemark', 'resAddress'];
                 const list = resultArr;
                 const data = this.formatJson(filterVal, list);
                 export_json_to_excel(tHeader, data, name);
@@ -526,13 +528,6 @@ export default {
     color: rgba(51, 51, 51, 0.85);
     line-height: 55px;
     font-weight: bold;
-}
-
-/deep/ .el-table__row td:nth-child(8),
-/deep/ .el-table__row td:nth-child(9),
-/deep/ .has-gutter th:nth-child(8),
-/deep/ .has-gutter th:nth-child(9) {
-    text-align: right;
 }
 
 /deep/ .el-table__column-filter-trigger {

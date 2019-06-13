@@ -97,6 +97,10 @@
                                             <el-button type="text" @click="showImg(scope.row)">查看监播</el-button>
                                         </template>
                                     </el-table-column>
+
+                                    <div slot="empty">
+                                        <no-search-result></no-search-result>
+                                    </div>
                                 </el-table>
                             </div>
                         </div>
@@ -171,6 +175,10 @@
                                     </el-table-column>
                                     <el-table-column prop="resolveNum" label="问题解决数" min-width="19.8%">
                                     </el-table-column>
+                                    
+                                    <div slot="empty">
+                                        <no-search-result></no-search-result>
+                                    </div>
                                 </el-table>
                             </div>
                         </div>
@@ -214,6 +222,8 @@ import commaFormat from "../../commonFun/commaFormat.js";
 import filterFormat from "../../commonFun/filterTableData.js";
 // 时间格式化
 import dateFormat from "../../commonFun/timeFormat.js";
+import noSearchResult from "../common/components/noSearchResult.vue";    
+
 import {
     Dialog,
     Tabs,
@@ -241,6 +251,7 @@ import {
 export default {
     name: "Report",
     components: {
+        noSearchResult,
         elDialog: Dialog,
         elTabs: Tabs,
         elTabPane: TabPane,

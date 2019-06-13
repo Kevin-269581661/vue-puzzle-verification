@@ -55,30 +55,16 @@
                 </el-row>
                 <div class="table_wrap">
                     <el-table border :data="currAccount" style="width: 100%" v-loading="loading" v-loadmore="accountLoadMore"
-                              element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading"
+                              element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading" 
                               :default-sort="{prop: 'joinTime', order: 'descending'}">
                         <el-table-column label="账号" min-width="11.8%">
                             <template slot-scope="scope">
                                 <a href="javascript:void(0);" @click="ToEdit(scope.row)">{{scope.row.sName}}</a>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="realName" label="姓名" min-width="7.8%">
-                            <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.realName" placement="bottom"
-                                            v-if="scope.row.realName.length>8">
-                                    <span>{{scope.row.realName||'--'}}</span>
-                                </el-tooltip>
-                                <span v-else>{{scope.row.realName||'--'}}</span>
-                            </template>
+                        <el-table-column prop="realName" label="姓名" min-width="7.8%" show-overflow-tooltip>
                         </el-table-column>
-                        <el-table-column prop="company" label="所属公司" min-width="14.2%">
-                            <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.company" placement="bottom"
-                                            v-if="scope.row.company.length>18">
-                                    <span>{{scope.row.company||'--'}}</span>
-                                </el-tooltip>
-                                <span v-else>{{scope.row.company||'--'}}</span>
-                            </template>
+                        <el-table-column prop="company" label="所属公司" min-width="14.2%" show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column prop="uType" label="账号角色" min-width="8.1%">
                             <template slot-scope="scope">
@@ -86,9 +72,6 @@
                             </template>
                         </el-table-column>
                         <el-table-column prop="puName" label="上级" min-width="7.8%">
-                            <template slot-scope="scope">
-                                <span>{{scope.row.puName||'--'}}</span>
-                            </template>
                         </el-table-column>
                         <el-table-column label="创建日期" min-width="9.8%" sortable :sort-by="sortData">
                             <template slot-scope="scope">
@@ -107,6 +90,10 @@
                                 <span v-if="scope.row.uState ==0" style="color: #108EE9;cursor: pointer;" @click="isForbidden(scope.row)">开通</span>
                             </template>
                         </el-table-column>
+
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
                     </el-table>
                 </div>
             </div>
@@ -133,17 +120,19 @@
     import sessFun from "../../commonFun/sessFun.js";
     // 角色转换为中文
     import uTypeToText from "../../commonFun/uTypeToText.js";
+    import noSearchResult from "./components/noSearchResult.vue";
 
     export default {
         name: "customList",
         components: {
+            noSearchResult,
             elRow: Row,
             elInput: Input,
             elButton: Button,
             elTable: Table,
             elTableColumn: TableColumn,
             elSelect: Select,
-            elOption: Option
+            elOption: Option,
         },
         data() {
             return {
@@ -294,19 +283,13 @@
                     pagesize: this.pageSize
                 };
                 let { keyword, role, state, select, company } = this.searchInfo;
-                if(keyword){
-                    info.keywordType = select;
-                    info.keyword = keyword;
-                }
-                if(state){
-                    info.ustate = state;
-                }
-                if(role){
-                    info.uType = role;
-                }
-                if(company){
-                    info.asrID = company;
-                }
+                info = {
+                    ...info,
+                    ...(keyword && {keywordType: select, keyword}),
+                    ...(state && {ustate: state}),
+                    ...(role && {uType: role}),
+                    ...(company && {asrID: company})
+                };
                 return info;
             },
             // 设置表格数据
@@ -314,11 +297,11 @@
                 let obj = {
                     uID: item.uID ? item.uID : '',
                     sName: item.sName ? item.sName : '',
-                    realName: item.realName ? item.realName:'',
-                    company: item.asName ? item.asName : '', 
+                    realName: item.realName ? item.realName:'--',
+                    company: item.asName ? item.asName : '--', 
                     asrID: item.asrID ? item.asrID : '', 
                     uType: item.uType ? item.uType : '',
-                    puName: item.puName ? item.puName : '',
+                    puName: item.puName ? item.puName : '--',
                     joinTime: item.joinTime ? item.joinTime : '',
                     uState: item.uState ? item.uState : '',
                     position: item.position ? item.position : '',
@@ -335,7 +318,7 @@
             },
             // 时间格式化
             formatTime(time) {
-                return dateFormat.toDate(time);
+                return dateFormat.toDate(time, '/');
             },
             // 角色格式化
             roleToText(role) {

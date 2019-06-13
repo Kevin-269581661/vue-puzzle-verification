@@ -60,7 +60,7 @@
                                 <span v-else title="">{{scope.row.bTitle||'--'}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column sortable :sort-method="sortPrice" label="方案价格" min-width="7.5%">
+                        <el-table-column sortable :sort-method="sortPrice" label="方案价格" min-width="7.5%" align="right">
                             <template slot-scope="scope">
                                 <el-tooltip class="item" effect="dark" :content="(scope.row.apTotal)?priceFormat(scope.row.apTotal):0" placement="bottom" v-if="scope.row.apTotal?scope.row.apTotal.toString().length>8:0">
                                     <span>&yen; {{(scope.row.apTotal)?priceFormat(scope.row.apTotal):0}}</span>
@@ -100,6 +100,10 @@
                                 </el-dropdown>
                             </template>
                         </el-table-column>
+
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
                     </el-table>
                 </div>
             </div>
@@ -114,6 +118,8 @@ import dateFormat from "../../commonFun/timeFormat.js";
 // 价格格式化
 import commaFormat from "../../commonFun/commaFormat.js";
 import sessFun from "../../commonFun/sessFun.js";
+import noSearchResult from "./components/noSearchResult.vue";
+
 import {
     Button,
     CheckboxGroup,
@@ -137,6 +143,7 @@ import {
 export default {
     name: "projectList",
     components: {
+        noSearchResult,
         elButton: Button,
         elCheckboxGroup: CheckboxGroup,
         elCheckbox: Checkbox,
@@ -212,7 +219,7 @@ export default {
         },
         // 时间格式规范
         formatTime(val) {
-            return dateFormat.toDate(val);
+            return dateFormat.toDate(val, '/');
         },
         // 价格排序
         sortPrice(a, b) {
@@ -714,11 +721,6 @@ a {
     line-height: 24px;
 }
 
-.table_wrap /deep/ .el-table__row td:nth-child(4) .cell,
-.table_wrap /deep/ .has-gutter tr th:nth-child(4) .cell {
-    text-align: right;
-}
-
 /deep/ .el-table__row td:nth-child(5) .cell span {
     width: 85px;
 }
@@ -774,11 +776,6 @@ a {
     color: #666;
     border-color: #d8d8d8;
     background-color: #fff;
-}
-
-.tar {
-    text-align: right !important;
-    padding-right: 10px;
 }
 
 /deep/ .el-dropdown .el-button-group .el-button {

@@ -45,6 +45,10 @@ const companyList = () => import('../components/common/companyList.vue')
 const compact = () => import('../components/common/compact.vue')
 const paintedPath = () => import('../components/common/paintedPath.vue')
 const adsDialPlate = () => import('../components/common/adsDialPlate.vue')
+
+// 下载进度页面
+const progressDown = () => import('../components/common/progressDown.vue')
+
 //地图选点中转页面
 const mapMessage = () => import('../components/common/mapMessage.vue')
 
@@ -97,6 +101,7 @@ export default new Router({
         {path: '/', redirect: '/login'},
         {path: '/login', name: 'login', component: login},
         {path: '/mapMessage', name: 'mapMessage', component: mapMessage},
+        {path: '/progressDown', name: 'progressDown', component: progressDown},
         {path: '/shareADList', name: 'shareADList', component: shareADList},
         {path: '/emptyPoint', name: 'emptyPoint', component: emptyPoint},
         //上下刊报告h5页面

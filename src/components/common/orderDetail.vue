@@ -191,7 +191,7 @@
                                             <el-option label="已上传" value="2"></el-option>
                                             <el-option label="未上传" value="3"></el-option>
                                         </el-select>
-                                        <el-button type="primary" @click="downloadImg()">导出图片</el-button>
+                                        <el-button type="primary" @click="downloadImg()" >导出图片</el-button>
                                         <!--进度条-->
                                         <div class="progress">
                                             <el-progress :percentage="upImgPercent"></el-progress>
@@ -1501,6 +1501,8 @@ export default {
         },
         // 获取上刊图片数据
         getUpImgInfo(params) {
+            this.UpReportLoading = false
+            
             api.postApi(this.apiVar.Advertisement+"/GetImg", params)
                 .then(res => {
                     if (!res.data.SysCode) {
@@ -1526,7 +1528,7 @@ export default {
                             Message.warning('暂无数据');
                         }
                     } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
+                        // this.loginTimeout();
                     } else {
                         Message.warning(res.data.MSG);
                     }
@@ -2288,7 +2290,11 @@ export default {
         },
         // 导出图片
         downloadImg(){
-            // api.getApi_file(this.apiVar.Advertisement, info);
+            api.getApi_file(this.apiVar.Advertisement, info);
+            let routeUrl = this.$router.resolve({
+                path: "/progressDown",
+            });
+            window.open(routeUrl .href, '_blank');
         },
     },
 };

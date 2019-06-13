@@ -5265,10 +5265,10 @@
         height: 34px;
     }
 
-    .el-button+.el-button{
+    /deep/ .el-button+.el-button{
         margin-left: 3px;
     }
-    .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
+    /deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
         position: relative;
         left: -2px;
         top: 0px;

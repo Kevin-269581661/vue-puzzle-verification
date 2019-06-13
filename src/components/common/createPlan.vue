@@ -5261,13 +5261,16 @@
     }
 
      /deep/ .el-button {
-        width: 76px;
-        height: 34px;
+         width: 76px;
+         height: 34px;
+         text-align: center;
+         padding: 0;
     }
 
     /deep/ .el-button+.el-button{
         margin-left: 3px;
     }
+
     /deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
         position: relative;
         left: -2px;

@@ -13,11 +13,13 @@ export default {
     data(){
         return{
             currper: 20,
+            myInterval: '',
         }
     },
     methods:{
         getProcess(){
             console.log(JSON.parse(sessionStorage.getItem('session_data')));
+            
             if(this.currper == 100){
                 this.$alert('请在下载工具里查看文件', '文件成功生成', {
                     confirmButtonText: '知道了',
@@ -26,7 +28,15 @@ export default {
         },
     },
     mounted(){
-        this.getProcess();
+        this.myInterval = window.setInterval(() => {
+            setTimeout(() => {
+                //调用接口的方法
+                this.getProcess();
+            }, 1)
+        }, 5000);
+    },
+    destroyed(){
+        clearInterval(this.myInterval)
     },
 }
 </script>

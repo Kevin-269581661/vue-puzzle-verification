@@ -465,7 +465,7 @@ import timeFormat from '../../commonFun/timeFormat.js';
                         this.projectInfo.engineer = updateArr.map(data =>{
                             return data.label;
                         }).join('/');
-                        Message.success(res.data.MSG);
+                        this.messageFun('success', res.data.MSG);
                         this.isShowDistri = false;
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();

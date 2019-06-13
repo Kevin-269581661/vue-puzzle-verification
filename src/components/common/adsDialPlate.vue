@@ -336,6 +336,9 @@
                         this.loginTimeout()
                     } else {
                         this.messageFun('warning', res.data.MSG)
+                        this.pageData.pageNum = 0
+                        this.pageData.pageSize = 10
+                        this.pageData.totalSize = 0
                         this.adsTableList = []
                     }
                     this.tableLoading = false

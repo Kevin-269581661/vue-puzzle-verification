@@ -5265,6 +5265,15 @@
         height: 34px;
     }
 
+    .el-button+.el-button{
+        margin-left: 3px;
+    }
+    .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
+        position: relative;
+        left: -2px;
+        top: 0px;
+    }
+
     /deep/ .date-select.el-input__inner {
         width: 260px;
         position: relative;

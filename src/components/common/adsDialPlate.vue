@@ -537,6 +537,13 @@
         width: 100%;
     }
 
+    /deep/ .el-button {
+        width: 76px;
+        height: 32px;
+        text-align: center;
+        padding: 0;
+    }
+
     /deep/ .tab_conten .el-date-editor{
         width: calc(100% - 67px);
     }

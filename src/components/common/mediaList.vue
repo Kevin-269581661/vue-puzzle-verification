@@ -1187,11 +1187,11 @@
         text-align: center;
         padding: 0;
     }
-    /*/deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{*/
-        /*position: relative;*/
-        /*left: -2px;*/
-        /*top: 0px;*/
-    /*}*/
+    /deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
+        position: relative;
+        left: -2px;
+        top: 0px;
+    }
 
     .mediaList_wrap .mediaList_container .table_wrap {
         margin: 24px auto;

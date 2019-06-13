@@ -203,7 +203,7 @@
     background-color: #ecf5ff;
 }
 /*按钮样式覆盖*/
-.el-button {
+/* .el-button {
     width: 76px;
     height: 32px;
     text-align: center;
@@ -219,7 +219,7 @@
     position: relative;
     left: -2px;
     top: 0px;
-}
+} */
 /*分页样式覆盖*/
 .el-pagination.is-background .btn-next,
 .el-pagination.is-background .btn-prev,

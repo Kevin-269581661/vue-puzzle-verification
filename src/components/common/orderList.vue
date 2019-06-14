@@ -1061,6 +1061,12 @@ a {
 /deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
     background-color: #ecf5ff;
 }
+/deep/ .el-table td .cell {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    line-height: 22px;
+}
 
 /*滚动条*/
 /deep/ .el-table__body-wrapper {

@@ -2304,6 +2304,10 @@ export default {
                         query: info,
                     });
                     window.open(routeUrl .href, '_blank');
+                }else if(res.data.SysCode == 100302){
+                    this.loginTimeout();
+                }else{
+                    Message.warning(res.data.MSG);
                 }
             });
         },

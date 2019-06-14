@@ -4,7 +4,13 @@
             <div class="mediaMana_content_top">
                 <div class="content_top_wrap">
                     <div class="title">
-                        <h1>{{upReport.apName}}{{(Info.name =='SK')?'上刊':'下刊'}}报告</h1>
+                        <h1>{{upReport.apName}}{{(Info.name =='SK')?'上刊':'下刊'}}报告 
+                            <span class="button_box">
+                                <!-- <el-button class="down_btn" @click="getPTTx()">导出PPTx</el-button> -->
+                                <el-button @click="getPTT()" size="small">导出PPT</el-button>
+                                <el-button @click="getPDF()" size="small">导出PDF</el-button>
+                            </span>
+                        </h1>
                         <h3>{{upReport.bTitle}} &nbsp;&nbsp;{{formatTime(upReport.apcTime)}}</h3>
                     </div>
                     <div class="detail">
@@ -41,12 +47,12 @@
                                 </span>
                                 <span>
                                     <!-- <el-button class="down_btn" @click="getPTTx()">导出PPTx</el-button> -->
-                                    <el-button @click="getPTT()"  class="down_btn">导出PPT</el-button>
-                                    <el-button @click="getPDF()"  class="down_btn">导出PDF</el-button>
+                                    <!-- <el-button @click="getPTT()"  class="down_btn">导出PPT</el-button> -->
+                                    <!-- <el-button @click="getPDF()"  class="down_btn">导出PDF</el-button> -->
                                 </span>
-                                <p class="search_p">
-                                    <!-- *备注：若订单点位数量过多，请点击  “导出pptx”  按钮 ，导出的 “pptx” 文件使用正版软件打开后可再另存为“ppt”格式即可发给客户 -->
-                                </p>
+                                <!-- <p class="search_p">
+                                    *备注：若订单点位数量过多，请点击  “导出pptx”  按钮 ，导出的 “pptx” 文件使用正版软件打开后可再另存为“ppt”格式即可发给客户
+                                </p> -->
                             </div>
                             <div class="table_wrap">
                                 <el-table border :data="currPutDetail" style="width: 100%" :default-sort="{prop: 'recName', order: 'descending'}" v-loading="loading" element-loading-text="玩命加载中" element-loading-spinner="el-icon-loading">
@@ -779,7 +785,6 @@ export default {
 
 .title {
     border-bottom: 1px solid #d8d8d8;
-    margin-right: 200px;
 }
 
 .title h1 {
@@ -794,6 +799,9 @@ export default {
     margin-bottom: 19px;
 }
 
+.button_box{
+    float: right;
+}
 .detail p {
     margin-top: 23px;
 }
@@ -848,8 +856,9 @@ export default {
 }
 .search-wrap{
     margin-left: -30px;
-    position: relative;
-    margin-bottom: 20px;
+    height: 40px;
+    line-height: 40px;
+    margin-bottom: 16px;
 }
 .search-wrap span {
     float: left;
@@ -1031,9 +1040,9 @@ export default {
     width: 40%;
 }
 
-/deep/ .el-tabs__header{
+/* /deep/ .el-tabs__header{
   margin-bottom: 10px;
-}
+} */
 
 .tabs {
     padding-left: 38px;
@@ -1211,7 +1220,7 @@ export default {
     flex-wrap: wrap;
 }
 
-.down_btn{
+/* .down_btn{
     margin-left: 10px;
     border-radius: 4px;
     width: 76px;
@@ -1219,7 +1228,7 @@ export default {
     position: relative;
     left: 16px;
     padding: 0;
-}
+} */
 .search_p{
     clear: both;
     padding-left: 28px;

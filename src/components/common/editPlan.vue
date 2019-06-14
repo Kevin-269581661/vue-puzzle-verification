@@ -58,6 +58,7 @@
                                         <el-dropdown-menu slot="dropdown">
                                             <el-dropdown-item @click.native.prevent="importFanan('res')">导入小区</el-dropdown-item>
                                             <el-dropdown-item @click.native.prevent="importFanan('ads')">导入点位</el-dropdown-item>
+                                            <el-dropdown-item @click.native.prevent="importFanan('copy')">复制方案</el-dropdown-item>                                            
                                         </el-dropdown-menu>
                                     </el-dropdown>
                                 </div>
@@ -1015,6 +1016,27 @@
                            class="defead_scheduled_footer_btn">确 定</el-button>
             </div>
         </el-dialog>
+        <!-- 复制方案弹出框 -->
+        <el-dialog
+            :visible.sync="isCopy"
+            title="复制方案"
+            width="450px"
+            >
+            <el-select v-model="orderName" size="small"
+                filterable
+                remote
+                reserve-keyword
+                placeholder="请输入关键词"
+                :remote-method="remoteGetOrder"
+                :loading="loadingOrder"
+            >
+                <el-option v-for="item of orderArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
+            </el-select>
+            <span slot="footer" class="dialog-footer">
+                <el-button size="small" @click="isCopy = false">取 消</el-button>
+                <el-button size="small" type="primary" @click="confirmCopy()">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -1277,6 +1299,14 @@
                 importInfoData: {},
                 // 导入excel之后返回的数组
                 excelDataUpload:[],
+                // 复制方案
+                isCopy: false,
+                // 搜索方案时的loading
+                loadingOrder: false,
+                // 搜索方案名称
+                orderName: '',
+                // 返回的订单列表
+                orderArr: [],
                 shareADUrl: '',                // 协同选点url地址
                 workInSync: false,              // 是否点击协同选点按钮
                 dialogOneKeyPoint: false,    // 一键选点模态框
@@ -1394,18 +1424,22 @@
         methods: {
             // 导入方案弹出框
             importFanan(type){
-                this.showUploadFail = false;
+                if(type == 'res'){
+                    this.importType = '1';
+                    this.doUpload = '/advertisement/AdPlanResImport'
+                }else if(type == 'ads'){
+                    this.importType = '2';
+                    this.doUpload = '/advertisement/AnalysisExcelAdBaseInfo';
+                }else if(type == 'copy'){
+                    this.orderName = '';
+                    this.orderArr = [];
+                    this.isCopy = true;
+                    return;
+                }
                 this.isImport = true;
                 this.fileData = [];
                 this.fileNameTags = [];
                 this.importInfoData = {};
-                if(type == 'res'){
-                    this.importType = '1';
-                    this.doUpload = '/advertisement/AdPlanResImport'
-                }else{
-                    this.importType = '2';
-                    this.doUpload = '/advertisement/AnalysisExcelAdBaseInfo';
-                }
             },
             // 自定义上传
             uploadFile(params){
@@ -1705,6 +1739,130 @@
                     resultarr[1].showList.push(obj);
                 }
                 return resultarr;
+            },
+            // 获取订单
+            remoteGetOrder(query){
+                if (query !== '') {
+                    let sess = this.sessionData;
+                    let info = {
+                        uid: sess.uID,
+                        token: sess.token,
+                        apName: query,
+                        suId: this.BDData.uid,
+                    };
+                    this.loadingOrder = true;
+                    api.getApi(this.apiVar.Advertisement+"/GetSaleAdPlan", info).then(res =>{
+                        console.log(res.data);
+                        this.loadingOrder = false;
+                        if(res.data.SysCode == 200200){
+                            this.orderArr = res.data.data.map(item => {
+                                return {
+                                    label: item.apName,
+                                    value: item.apID
+                                };
+                            });
+                        }else if(res.data.SysCode == 100302){
+                            this.loginTimeout();
+                        }else{
+                            this.messageFun('warning',res.data.MSG)
+                        }
+                    }).catch(err =>{
+                        console.log(err);
+                    });
+                } else {
+                    this.orderArr = [];
+                }
+            },
+            // 确定复制
+            confirmCopy(){
+                if(this.orderName){
+                    let sess = this.sessionData;
+                    let info = {
+                        uid: sess.uID,
+                        token: sess.token,
+                        apId: this.orderName,
+                        startTime: this.dateInput[0],
+                        endTime: this.dateInput[1]
+                    };
+                    api.getApi(this.apiVar.Advertisement+"/GetAdsFromCopiedAdPlan", info).then(res =>{
+                        console.log(res.data);
+                        if(res.data.SysCode == 200200){
+                            let resinfo = res.data.data;
+                            let result = [];
+                            for(let data of resinfo){
+                                result.push(this.setCopyData(data));
+                            }
+                            console.log('result----', result);
+                            for(let item of result){
+                                this.isHaveDiffPush(item);
+                            }
+                        }else if(res.data.SysCode == 100302){
+                            this.loginTimeout();
+                        }else{
+                            this.messageFun('warning',res.data.MSG)
+                        }
+                        this.isCopy = false;
+                    }).catch(err =>{
+                        console.log(err);
+                        this.isCopy = false;
+                    });
+                }else{
+                    Message.warning('请先选择要复制的方案');                    
+                }
+            },
+            // 构建复制方案数据格式
+            setCopyData(info){
+                let checkBox = {A: false, B: false,ABC:false}
+                if (info.asLab === 'A') {
+                    checkBox.A = true
+                } else if (info.asLab === 'B') {
+                    checkBox.B = true
+                } else if (info.asLab === 'ABC') {
+                    checkBox.ABC = true
+                }
+                let importInfo = {
+                    mID: info.mID,
+                    resType: info.resType,
+                    resID: info.resID,
+                    asID: '',
+                    asIDs: info.asID,
+                    asLabs: info.asLab,
+                    resName: info.resName,
+                    city: info.city,
+                    rid: info.rID,
+                    origin: info.rName,
+                    buildType: info.cType,
+                    houseNum: info.hNum,
+                    buildPrice: (info.hPrice / 100),
+                    mediaName: info.mTitle || '',
+                    mVehicle: info.mVehicle,
+                    buildNum: info.fNum,
+                    schedules: this.dateInput[0] + '-' + this.dateInput[1],
+                    tradingArea: info.tradingArea,
+                    assetTag: info.assetTag,
+                    liveYear: info.chDay,
+                    mediaRemark: info.mRemark || '--',
+                    mapCenter: info.reference || '--',      // 地图中心点
+                    address: info.resAddress || '',
+                    dNum: info.dNum || '',       // 出入口数
+                    adLimit: info.notPush || '',
+                    A_B: info.asLab,
+                    checkBox: checkBox,
+                    connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
+                    connID: info.connID || '',        // 连排门id
+                    industryInfos: info.industryInfos || [],   // 同行业资源回避
+                    mediaLevel: info.grade || '',
+                    adPrice: info.mVehicle === '道闸' ? info.asPrice / 100 || 0 : info.asPrice / 700 || 0,
+                    asName: info.asName || '',         // 点位所属公司名称
+                    asrID: info.asrID,                 // 所属公司id,
+                    lState: info.adlInfo ? info.adlInfo : '',   // 是否被占
+                };
+                if(info.mVehicle === '道闸'){
+                    importInfo.asID = info.asIDs.split(',')
+                }else if(info.mVehicle === '广告门'){
+                    importInfo.asID = info.asID
+                }
+                return importInfo;
             },
             // 第四步的导出方案
             downLoadFanan(){

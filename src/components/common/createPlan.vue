@@ -1930,6 +1930,8 @@
                     this.importType = '2';
                     this.doUpload = '/advertisement/AnalysisExcelAdBaseInfo';
                 }else if(type == 'copy'){
+                    this.orderName = '';
+                    this.orderArr = [];
                     this.isCopy = true;
                     return;
                 }
@@ -2270,36 +2272,40 @@
             },
             // 确定复制
             confirmCopy(){
-                let sess = this.sessionData;
-                let info = {
-                    uid: sess.uID,
-                    token: sess.token,
-                    apId: this.orderName,
-                    startTime: this.dateInput[0],
-                    endTime: this.dateInput[1]
-                };
-                api.getApi(this.apiVar.Advertisement+"/GetAdsFromCopiedAdPlan", info).then(res =>{
-                    console.log(res.data);
-                    if(res.data.SysCode == 200200){
-                        let resinfo = res.data.data;
-                        let result = [];
-                        for(let data of resinfo){
-                            result.push(this.setCopyData(data));
+                if(this.orderName){
+                    let sess = this.sessionData;
+                    let info = {
+                        uid: sess.uID,
+                        token: sess.token,
+                        apId: this.orderName,
+                        startTime: this.dateInput[0],
+                        endTime: this.dateInput[1]
+                    };
+                    api.getApi(this.apiVar.Advertisement+"/GetAdsFromCopiedAdPlan", info).then(res =>{
+                        console.log(res.data);
+                        if(res.data.SysCode == 200200){
+                            let resinfo = res.data.data;
+                            let result = [];
+                            for(let data of resinfo){
+                                result.push(this.setCopyData(data));
+                            }
+                            console.log('result----', result);
+                            for(let item of result){
+                                this.isHaveDiffPush(item);
+                            }
+                        }else if(res.data.SysCode == 100302){
+                            this.loginTimeout();
+                        }else{
+                            this.messageFun('warning',res.data.MSG)
                         }
-                        console.log('result----', result);
-                        for(let item of result){
-                            this.isHaveDiffPush(item);
-                        }
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
-                    }else{
-                        this.messageFun('warning',res.data.MSG)
-                    }
-                    this.isCopy = false;
-                }).catch(err =>{
-                    console.log(err);
-                    this.isCopy = false;
-                });
+                        this.isCopy = false;
+                    }).catch(err =>{
+                        console.log(err);
+                        this.isCopy = false;
+                    });
+                }else{
+                    Message.warning('请先选择要复制的方案');
+                }
             },
             // 构建复制方案数据格式
             setCopyData(info){

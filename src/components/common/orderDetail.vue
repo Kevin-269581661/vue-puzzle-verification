@@ -2298,7 +2298,6 @@ export default {
                 apName: this.orderDetail.apName,
             };
             api.getApi(this.apiVar.Advertisement+'/DownloadImgPackage', info).then(res =>{
-                console.log(res.data.data.rate);
                 if(res.data.SysCode == 200200){
                     let routeUrl = this.$router.resolve({
                         path: "/progressDown",

@@ -177,7 +177,7 @@
                                             <el-radio-button label="广告门"></el-radio-button>
                                             <el-radio-button label="道闸"></el-radio-button>
                                         </el-radio-group>
-                                        <el-button type="primary" @click="downloadImg()" >导出图片</el-button>
+                                        <el-button type="primary" @click="downloadImg('SK')" >导出图片</el-button>
                                         <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
                                     </template>
 
@@ -268,6 +268,7 @@
                                             <el-radio-button label="广告门"></el-radio-button>
                                             <el-radio-button label="道闸"></el-radio-button>
                                         </el-radio-group>
+                                        <el-button type="primary" @click="downloadImg('XK')" >导出图片</el-button>                                        
                                         <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
                                     </template>
 
@@ -2288,12 +2289,12 @@ export default {
             return Y + M + D + h + m + s;
         },
         // 导出图片
-        downloadImg(){
+        downloadImg(type){
             let info = {
                 uid: this.sessionData.uID,
                 token: this.sessionData.token,
                 apId: this.orderDetail.apID,
-                type: (this.planPanel == 'forth') ? 0 : 1,
+                type: type=='SK' ? 0 : 1,
                 apName: this.orderDetail.apName,
             };
             api.getApi(this.apiVar.Advertisement+'/DownloadImgPackage', info).then(res =>{

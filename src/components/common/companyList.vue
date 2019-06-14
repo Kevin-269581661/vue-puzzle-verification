@@ -60,6 +60,10 @@
                                 <span style="color: #108EE9;cursor: pointer; margin-left:10px;" @click="isEdit(scope.row)">编辑</span>
                             </template>
                         </el-table-column>
+
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
                     </el-table>
                 </div>
             </div>
@@ -97,7 +101,11 @@
     import dateFormat from "../../commonFun/timeFormat.js";
     import sessFun from "../../commonFun/sessFun.js";
     import api from "../../api/api.js";
+    import noSearchResult from "./components/noSearchResult.vue";    
     export default {
+        components: {
+            noSearchResult,
+        },
         data(){
             return{
                 // 登录信息
@@ -233,15 +241,12 @@
                     pagesize: this.pageSize
                 };
                 let { keyword, type, state } = this.searchInfo;
-                if(keyword){
-                    info.ascName = keyword;
-                }
-                if(state>=0){
-                    info.astate = state;
-                }
-                if(type>=0){
-                    info.asType = type;
-                }
+                info = {
+                    ...info,
+                    ...(keyword && {ascName: keyword}),
+                    ...(state>=0 && {astate: state}),
+                    ...(type>=0 && {asType: type}),
+                };
                 return info;
             },
             // 设置表格数据
@@ -363,7 +368,7 @@
             },
             // 时间格式化
             formatTime(time) {
-                return dateFormat.toDate(time);
+                return dateFormat.toDate(time, '/');
             },
             // 角色格式化
             roleToText(type) {

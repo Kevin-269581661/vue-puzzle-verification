@@ -60,45 +60,20 @@
                 </el-row>
                 <div class="table_wrap">
                     <el-table border :data="currentOrder" style="width: 100%" v-loadmore="orderLoadMore" v-loading="loading" element-loading-text="玩命加载中" element-loading-spinner="el-icon-loading" :default-sort="{prop: 'apcTime', order: 'descending'}">
-                        <el-table-column label="订单名称" min-width="14.6%">
+                        <el-table-column label="订单名称" min-width="14.6%" show-overflow-tooltip>
                             <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.apName" placement="bottom" v-if="scope.row.apName.length>12">
-                                    <a href="javascript:void(0);" @click="ToDetail(scope.row)">{{scope.row.apName}}</a>
-                                </el-tooltip>
-                                <a href="javascript:void(0);" v-else @click="ToDetail(scope.row)">{{scope.row.apName}}</a>
+                                <a href="javascript:void(0);" @click="ToDetail(scope.row)">{{scope.row.apName}}</a>
                             </template>
                         </el-table-column>
-                        <el-table-column label="客户名称" min-width="10.4%">
-                            <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.cName" placement="bottom" v-if="scope.row.cName.length>9">
-                                    <span title="">{{scope.row.cName}}</span>
-                                </el-tooltip>
-                                <span v-else title="">{{scope.row.cName}}</span>
-                            </template>
+                        <el-table-column prop="cName" label="客户名称" min-width="10.4%"  show-overflow-tooltip>
                         </el-table-column>
-                        <el-table-column prop="bTitle" label="品牌名称" min-width="6.0%">
-                            <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.bTitle" placement="bottom" v-if="scope.row.bTitle.length>5">
-                                    <span title="">{{scope.row.bTitle||'--'}}</span>
-                                </el-tooltip>
-                                <span v-else title="">{{scope.row.bTitle||'--'}}</span>
-                            </template>
+                        <el-table-column prop="bTitle" label="品牌名称" min-width="6.0%" show-overflow-tooltip>
                         </el-table-column>
-                        <el-table-column label="合同编号" class="tar" min-width="8.5%">
-                            <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.apQC" placement="bottom" v-if="scope.row.apQC.length>10">
-                                    <span title="">{{scope.row.apQC}}</span>
-                                </el-tooltip>
-                                <span v-else title="">{{scope.row.apQC}}</span>
-                            </template>
+                        <el-table-column prop="apQC" label="合同编号" width="180px">
                         </el-table-column>
-                        <el-table-column sortable :sort-method="sortPrice" label="订单总价" min-width="7.5%">
+                        <el-table-column sortable :sort-method="sortPrice" label="订单总价" width="120px" align="right">
                             <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="(scope.row.apTotal)?priceFormat(scope.row.apTotal/100):0" placement="bottom" v-if="scope.row.apTotal?scope.row.apTotal.toString().length>8:0">
-                                    <span>&yen; {{(scope.row.apTotal)?priceFormat(scope.row.apTotal/100):0}}</span>
-                                </el-tooltip>
-                                <span v-else>&yen; {{(scope.row.apTotal)?priceFormat(scope.row.apTotal/100):0}}</span>
-
+                                <span>&yen;{{(scope.row.apTotal)?priceFormat(scope.row.apTotal/100):0}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="投放城市(点位面数，排期)" prop="cityArea" min-width="20.2%">
@@ -126,7 +101,7 @@
                                 <span>{{ stateToText(scope.row.apState) }}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作" min-width="7.0%" v-if="!(role=='OP' || role=='AD')">
+                        <el-table-column label="操作" width="100px" v-if="!(role=='OP' || role=='AD')">
                             <template slot-scope="scope">
                                 <el-dropdown size="small" trigger="click" placement="bottom-start">
                                     <span class="el-dropdown-link">
@@ -143,6 +118,10 @@
                                 </el-dropdown>
                             </template>
                         </el-table-column>
+
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
                     </el-table>
                 </div>
             </div>
@@ -166,6 +145,8 @@ import sessFun from "../../commonFun/sessFun.js";
 
 // 画像申请
 import applyphoto from './components/applyPhoto.vue';
+import noSearchResult from "./components/noSearchResult.vue";
+
 import {
     Button,
     CheckboxGroup,
@@ -190,6 +171,7 @@ export default {
     name: "projectList",
     components: {
         applyphoto,
+        noSearchResult,
         elButton: Button,
         elCheckboxGroup: CheckboxGroup,
         elCheckbox: Checkbox,
@@ -204,7 +186,7 @@ export default {
         elTooltip: Tooltip,
         elDialog: Dialog,
         elSelect: Select,
-        elOption: Option
+        elOption: Option,
     },
     data() {
         return {
@@ -398,30 +380,14 @@ export default {
                 pageSize: this.pageSize
             };
             let { select, keyword, rangeDate, company, cityWord, status } = this.searchInfo;
-            if(keyword){
-                if(select == '1'){
-                    info.orderName = keyword;
-                }
-                if(select == '2'){
-                    info.customerName = keyword;
-                }
-                if(select == '3'){
-                    info.contractNum = keyword;
-                }
-            }
-            if(rangeDate){
-                info.beginTime = rangeDate[0];
-                info.endTime = rangeDate[1];
-            }
-            if((status!=='') && status>=0){
-                info.state = status;
-            }
-            if(company){
-                info.asrID = company;
-            }
-            if(cityWord){
-                info.rID = cityWord;
-            }
+            info = {
+                ...info,
+                ...(keyword && (select == '1' && {orderName: keyword}) || (select == '2' && {customerName: keyword}) || (select == '3' && {contractNum: keyword})),
+                ...(rangeDate && {beginTime: rangeDate[0], endTime: rangeDate[1]}),
+                ...(status!=='' && status>=0 && {state: status}),
+                ...(company && {asrID: company}),
+                ...(cityWord && {rID: cityWord})
+            };
             return info;
         },
         // 滚动加载获取数据(无搜索数据)
@@ -490,7 +456,7 @@ export default {
                 apState: item.apState ? item.apState : '',
                 apTotal: item.apTotal ? item.apTotal : '',
                 apcTime: item.apcTime ? item.apcTime : '',
-                bTitle: item.bTitle ? item.bTitle : '',
+                bTitle: item.bTitle ? item.bTitle : '--',
                 cName: item.cName ? item.cName : '',
                 realName: item.realName ? item.realName : '',
                 companyList: [],
@@ -552,7 +518,7 @@ export default {
         },
         // 时间格式规范
         formatTime(val) {
-            return dateFormat.toDate(val);
+            return dateFormat.toDate(val, '/');
         },
         // 价格排序
         sortPrice(a, b) {
@@ -1095,6 +1061,12 @@ a {
 /deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
     background-color: #ecf5ff;
 }
+/deep/ .el-table td .cell {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    line-height: 22px;
+}
 
 /*滚动条*/
 /deep/ .el-table__body-wrapper {
@@ -1133,21 +1105,8 @@ a {
     /*line-height: 24px;*/
 }
 
-.table_wrap /deep/ .el-table__row td:nth-child(5) .cell,
-.table_wrap /deep/ .has-gutter tr th:nth-child(5) .cell {
-    text-align: right;
-}
-
-/deep/ .el-table__row td:nth-child(5) .cell span {
-    width: 85px;
-}
-
 /deep/ .el-table__row td:nth-child(7) .cell span {
     width: 87px;
-}
-
-/deep/ .el-table__row td:nth-child(4) .cell span {
-    width: 95px;
 }
 
 /deep/ .el-table__row td:nth-child(3) .cell span {
@@ -1203,11 +1162,6 @@ a {
     color: #666;
     border-color: #d8d8d8;
     background-color: #fff;
-}
-
-.tar {
-    text-align: right !important;
-    padding-right: 10px;
 }
 
 /deep/ .el-dropdown .el-button-group .el-button {

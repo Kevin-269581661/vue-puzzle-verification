@@ -205,6 +205,10 @@
                                 </el-dropdown>
                             </template>
                         </el-table-column>
+
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
                     </el-table>
                 </div>
              <!--   <div>
@@ -333,6 +337,8 @@
     import areaPackageNew from '../../commonFun/areaPackage_new'
     import areaToTextNew from '../../commonFun/areaToText_new'
     import sessFun from "../../commonFun/sessFun.js";
+    import noSearchResult from "./components/noSearchResult.vue";    
+    
     import {
         Form,
         FormItem,
@@ -354,6 +360,7 @@
     export default {
         name: "mediaList",
         components: {
+            noSearchResult,
             elForm: Form,
             elFormItem: FormItem,
             elTable: Table,

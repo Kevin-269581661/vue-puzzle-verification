@@ -19,18 +19,33 @@
                         </el-table-column>
                         <el-table-column label="城市级别" prop="cityLevel">
                             <template slot-scope="scope">
-                                <span>{{levelToText(scope.row.cityLevel)}}</span>
+                                <span>{{levelToText(scope.row.cityLevel) || '--'}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="原刊例价(/周/面)" prop="oldPrice">
+                        <el-table-column label="原刊例价(/周/面)" prop="oldPrice" align="right">
+                            <template slot-scope="scope">
+                                <span>{{priceFormat(scope.row.oldPrice)}}</span>
+                            </template>
                         </el-table-column>
-                        <el-table-column label="广告门A级(/周/面)" prop="levelAprice">
+                        <el-table-column label="广告门A级(/周/面)" prop="levelAprice" align="right">
+                            <template slot-scope="scope">
+                                <span>{{priceFormat(scope.row.levelAprice)}}</span>
+                            </template>
                         </el-table-column>
-                        <el-table-column label="广告门B级(/周/面)" prop="levelBprice">
+                        <el-table-column label="广告门B级(/周/面)" prop="levelBprice" align="right">
+                            <template slot-scope="scope">
+                                <span>{{priceFormat(scope.row.levelBprice)}}</span>
+                            </template>
                         </el-table-column>
-                        <el-table-column label="广告门C级(/周/面)" prop="levelCprice">
+                        <el-table-column label="广告门C级(/周/面)" prop="levelCprice" align="right">
+                            <template slot-scope="scope">
+                                <span>{{priceFormat(scope.row.levelCprice)}}</span>
+                            </template>
                         </el-table-column>
-                        <el-table-column label="道闸(/月/杆)" prop="barrierPrice">
+                        <el-table-column label="道闸(/月/杆)" prop="barrierPrice" align="right">
+                            <template slot-scope="scope">
+                                <span>{{priceFormat(scope.row.barrierPrice)}}</span>
+                            </template>
                         </el-table-column>
                         <el-table-column label="操作" v-if="session_data.uType=='SM'" >
                             <template slot-scope="scope">
@@ -42,6 +57,10 @@
                                 </el-button>
                             </template>
                         </el-table-column>
+
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
                     </el-table>
                 </div>
             </div>
@@ -127,6 +146,10 @@
 
 <script>
 import api from "../../api/api.js";
+// 价格格式化
+import commaFormat from "../../commonFun/commaFormat.js";
+import noSearchResult from "./components/noSearchResult.vue";
+
 import {
     Table,
     TableColumn,
@@ -142,6 +165,7 @@ import {
 export default {
     name: "publishPriceList",
     components: {
+        noSearchResult,
         elTable: Table,
         elTableColumn: TableColumn,
         elInput: Input,
@@ -214,6 +238,10 @@ export default {
         this.getCompany();
     },
     methods: {
+        // 价格加上逗号
+        priceFormat(price) {
+            return commaFormat.format(price);
+        },
         // 公司数据
         getCompany(){
             let sess = this.session_data;

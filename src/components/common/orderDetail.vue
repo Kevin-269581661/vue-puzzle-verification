@@ -173,11 +173,11 @@
                             <div class="panel" v-loading="UpReportLoading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                                 <div class="up-report">
                                     <template>
-                                        <el-radio-group v-model="mediaUpType" size="medium" @change="changeUpMedia()">
+                                        <el-radio-group v-model="mediaUpType" size="medium" @change="changeUpMedia()" class="radio_style">
                                             <el-radio-button label="广告门"></el-radio-button>
                                             <el-radio-button label="道闸"></el-radio-button>
                                         </el-radio-group>
-                                        <el-button type="primary" @click="downloadImg('SK')" >导出图片</el-button>
+                                        <el-button @click="downloadImg('SK')" >导出图片</el-button>
                                         <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
                                     </template>
 
@@ -264,11 +264,11 @@
                             <div class="panel" v-loading="DownReportLoading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                                 <div class="up-report">
                                     <template>
-                                        <el-radio-group v-model="mediaDownType" size="medium" @change="changeDownMedia()">
+                                        <el-radio-group v-model="mediaDownType" size="medium" @change="changeDownMedia()" class="radio_style">
                                             <el-radio-button label="广告门"></el-radio-button>
                                             <el-radio-button label="道闸"></el-radio-button>
                                         </el-radio-group>
-                                        <el-button type="primary" @click="downloadImg('XK')" >导出图片</el-button>                                        
+                                        <el-button @click="downloadImg('XK')" >导出图片</el-button>                                        
                                         <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
                                     </template>
 
@@ -2476,7 +2476,7 @@ export default {
 }
 
 /*按钮*/
-.first-wrap /deep/ .el-button {
+/* .first-wrap /deep/ .el-button {
     width: 76px;
     position: relative;
 }
@@ -2488,7 +2488,7 @@ export default {
 
 .first-wrap /deep/ .el-button span a {
     color: #606266;
-}
+} */
 
 /*报价单*/
 
@@ -2502,7 +2502,7 @@ export default {
     width: 100%;
 }
 .panel {
-    padding: 10px 17px;
+    padding: 0 30px;
 }
 
 .step3 {
@@ -2985,8 +2985,11 @@ export default {
 
 /deep/ .el-button {
     height: 34px;
-    margin-left: 2px;
+    line-height: 34px;
+    min-width: 80px;
+    padding: 0 8px;
 }
+
 
 /deep/ .date-select.el-input__inner {
     width: 237px;
@@ -3001,7 +3004,7 @@ export default {
     left: -3px;
 }
 
-.searchBtn {
+/* .searchBtn {
     position: relative;
 }
 
@@ -3019,7 +3022,7 @@ export default {
 
 .searchBtn.el-button + .el-button {
     margin-left: 0;
-}
+} */
 
 /*表格*/
 /deep/ .el-table th,
@@ -3243,11 +3246,11 @@ export default {
 }
 
 /*1440*/
-@media all and (min-width: 1420px) {
+/* @media all and (min-width: 1420px) {
     .panel {
         padding: 20px 30px;
     }
-}
+} */
 
 /*1920*/
 @media all and (min-width: 1900px) {
@@ -3279,5 +3282,9 @@ export default {
 }
 /deep/ .el-tabs__item:focus.is-active.is-focus:not(:active){
     box-shadow: none;
+}
+
+.radio_style{
+    vertical-align: top;
 }
 </style>

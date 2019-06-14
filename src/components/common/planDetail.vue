@@ -581,25 +581,6 @@ export default {
     font-weight: bold;
 }
 
-.searchBtn {
-    position: relative;
-}
-
-/deep/ .searchBtn .el-icon-search {
-    position: relative;
-    top: -2px;
-    left: -9px !important;
-}
-
-/deep/ .el-button.searchBtn span {
-    position: relative;
-    left: -5px;
-    top: -2px;
-}
-/deep/ .el-button {
-    height: 34px;
-    margin-left: 2px;
-}
 /*报价单*/
 
 /deep/ .el-tabs--border-card {
@@ -765,6 +746,7 @@ export default {
 .content_bottom_btn button {
     width: 80px;
     height: 34px;
+    line-height: 34px;
     outline: none;
     cursor: pointer;
     border: 1px solid #d9d9d9;
@@ -818,5 +800,9 @@ export default {
 }
 /deep/ .el-tabs__item:focus.is-active.is-focus:not(:active){
     box-shadow: none;
+}
+
+/deep/ .content_bottom_btn .el-button{
+    padding: 0;
 }
 </style>

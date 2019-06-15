@@ -2288,7 +2288,7 @@ export default {
             let s = date.getSeconds();
             return Y + M + D + h + m + s;
         },
-        // 导出图片
+        // 导出图片包
         downloadImg(type){
             let info = {
                 uid: this.sessionData.uID,
@@ -2296,6 +2296,7 @@ export default {
                 apId: this.orderDetail.apID,
                 type: type=='SK' ? 0 : 1,
                 apName: this.orderDetail.apName,
+                downtype: 1 
             };
             api.getApi(this.apiVar.Advertisement+'/DownloadImgPackage', info).then(res =>{
                 if(res.data.SysCode == 200200){

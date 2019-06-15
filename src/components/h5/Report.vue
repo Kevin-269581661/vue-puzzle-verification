@@ -347,86 +347,152 @@ export default {
                 this.searchFun();
             }
         },
+        // // 获取ppt
+        // getPTT(){
+        //     let name = this.Info.name.toString().toLowerCase();
+        //     let val = this.Info.val;
+        //     let info = {
+        //         [name]: val
+        //     };
+        //     let addload = this.$loading({
+        //         lock: true,
+        //         text: '加急下载中...',
+        //         spinner: 'el-icon-loading',
+        //         background: 'rgba(0, 0, 0, 0.7)'
+        //     });
+        //     let tempwindow = window.open();
+        //     tempwindow.document.body.style.color = 'red';
+        //     tempwindow.document.body.style.textAlign = 'center';
+        //     tempwindow.document.body.style.marginTop = '200';
+        //     tempwindow.document.body.innerHTML="正在奋力下载ppt,请稍后！"
+        //     api.getApi(this.apiVar.Advertisement+'/GetPPTReport', info).then(res =>{
+        //         console.log(res.data);
+        //         addload.close();
+        //         if(res.data.code == 300200){
+        //             tempwindow.location = res.data.data;
+        //         }else if(res.data.code == 200200){
+        //             Message.warning(res.data.data);
+        //             tempwindow.document.body.innerHTML = res.data.data;
+        //         }
+        //     }).catch(error =>{
+        //         if (error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1) {
+        //             Message.warning('系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。');
+        //             tempwindow.document.body.innerHTML = '系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。';
+        //         }else{
+        //             if(error.toString().includes('Network Error') || error.toString().includes('504')){
+        //                 Message.warning('系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。');
+        //                 tempwindow.document.body.innerHTML = '系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。';
+        //             }
+        //             console.log('error---', error);
+        //         }
+        //         addload.close();
+        //     });
+        // },
+        // // 获取pptx
+        // getPTTx(){
+        //     let name = this.Info.name.toString().toLowerCase();
+        //     let val = this.Info.val;
+        //     let info = {
+        //         [name]: val
+        //     };
+        //     let addload = this.$loading({
+        //         lock: true,
+        //         text: '加急下载中...',
+        //         spinner: 'el-icon-loading',
+        //         background: 'rgba(0, 0, 0, 0.7)'
+        //     });
+        //     let tempwindow = window.open();
+        //     tempwindow.document.body.style.color = 'red';
+        //     tempwindow.document.body.style.textAlign = 'center';
+        //     tempwindow.document.body.style.marginTop = '200';
+        //     tempwindow.document.body.innerHTML="正在奋力下载ppt,请稍后！"
+        //     api.getApi(this.apiVar.Advertisement+'/GetPPTXReport', info).then(res =>{
+        //         console.log(res.data);
+        //         addload.close();
+        //         if(res.data.code == 300200){
+        //             tempwindow.location = res.data.data;
+        //         }else if(res.data.code == 200200){
+        //             Message.warning(res.data.data);
+        //             tempwindow.document.body.innerHTML = res.data.data;
+        //         }
+        //     }).catch(error =>{
+        //         if (error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1) {
+        //             Message.warning('系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。');
+        //             tempwindow.document.body.innerHTML = '系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。';
+        //         }else{
+        //             if(error.toString().includes('Network Error') || error.toString().includes('504')){
+        //                 Message.warning('系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。');
+        //                 tempwindow.document.body.innerHTML = '系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。';
+        //             }
+        //             console.log('error---', error);
+        //         }
+        //         addload.close();
+        //     });
+        // },
+        // // 获取pdf
+        // getPDF(){
+        //     let name = this.Info.name.toString().toLowerCase();
+        //     let val = this.Info.val;
+        //     let info = {
+        //         [name]: val
+        //     };
+        //     let addload = this.$loading({
+        //         lock: true,
+        //         text: '加急下载中...',
+        //         spinner: 'el-icon-loading',
+        //         background: 'rgba(0, 0, 0, 0.7)'
+        //     });
+        //     let tempwindow = window.open();
+        //     tempwindow.document.body.style.color = 'red';
+        //     tempwindow.document.body.style.textAlign = 'center';
+        //     tempwindow.document.body.style.marginTop = '200';
+        //     tempwindow.document.body.innerHTML="正在奋力下载pdf,请稍后！"
+        //     api.getApi(this.apiVar.Advertisement+'/GetPdfReport', info).then(res =>{
+        //         console.log(res.data);
+        //         addload.close();
+        //         if(res.data.code == 300200){
+        //             tempwindow.location = res.data.data;
+        //         }else if(res.data.code == 300504){
+        //             Message.warning(res.data.data);
+        //             tempwindow.document.body.innerHTML = res.data.data;
+        //         }
+        //     }).catch(error =>{
+        //         if (error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1) {
+        //             Message.warning('系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。');
+        //             tempwindow.document.body.innerHTML = '系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。';
+        //         }else{
+        //             if(error.toString().includes('Network Error') || error.toString().includes('504')){
+        //                 Message.warning('系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。');
+        //                 tempwindow.document.body.innerHTML = '系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。';
+        //             }
+        //             console.log('error---', error);
+        //         }
+        //         addload.close();
+        //     });
+        // },
+
         // 获取ppt
-        getPTT(){
+        getPPT(){
             let name = this.Info.name.toString().toLowerCase();
             let val = this.Info.val;
             let info = {
-                [name]: val
+                key: val,
+                type: name=='sk' ? 0 : 1,
             };
-            let addload = this.$loading({
-                lock: true,
-                text: '加急下载中...',
-                spinner: 'el-icon-loading',
-                background: 'rgba(0, 0, 0, 0.7)'
-            });
-            let tempwindow = window.open();
-            tempwindow.document.body.style.color = 'red';
-            tempwindow.document.body.style.textAlign = 'center';
-            tempwindow.document.body.style.marginTop = '200';
-            tempwindow.document.body.innerHTML="正在奋力下载ppt,请稍后！"
-            api.getApi(this.apiVar.Advertisement+'/GetPPTReport', info).then(res =>{
-                console.log(res.data);
-                addload.close();
-                if(res.data.code == 300200){
-                    tempwindow.location = res.data.data;
-                }else if(res.data.code == 200200){
-                    Message.warning(res.data.data);
-                    tempwindow.document.body.innerHTML = res.data.data;
-                }
-            }).catch(error =>{
-                if (error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1) {
-                    Message.warning('系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。');
-                    tempwindow.document.body.innerHTML = '系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。';
+            api.getApi(this.apiVar.Advertisement+"/process", info).then(res =>{
+                if(res.data.SysCode == 200200){
+                    let routeUrl = this.$router.resolve({
+                        path: "/progressDown",
+                        query: info,
+                    });
+                    window.open(routeUrl .href, '_blank');
+                }else if(res.data.SysCode == 100302){
+                    this.loginTimeout();
                 }else{
-                    if(error.toString().includes('Network Error') || error.toString().includes('504')){
-                        Message.warning('系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。');
-                        tempwindow.document.body.innerHTML = '系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。';
-                    }
-                    console.log('error---', error);
+                    Message.warning(res.data.MSG);
                 }
-                addload.close();
-            });
-        },
-        // 获取pptx
-        getPTTx(){
-            let name = this.Info.name.toString().toLowerCase();
-            let val = this.Info.val;
-            let info = {
-                [name]: val
-            };
-            let addload = this.$loading({
-                lock: true,
-                text: '加急下载中...',
-                spinner: 'el-icon-loading',
-                background: 'rgba(0, 0, 0, 0.7)'
-            });
-            let tempwindow = window.open();
-            tempwindow.document.body.style.color = 'red';
-            tempwindow.document.body.style.textAlign = 'center';
-            tempwindow.document.body.style.marginTop = '200';
-            tempwindow.document.body.innerHTML="正在奋力下载ppt,请稍后！"
-            api.getApi(this.apiVar.Advertisement+'/GetPPTXReport', info).then(res =>{
-                console.log(res.data);
-                addload.close();
-                if(res.data.code == 300200){
-                    tempwindow.location = res.data.data;
-                }else if(res.data.code == 200200){
-                    Message.warning(res.data.data);
-                    tempwindow.document.body.innerHTML = res.data.data;
-                }
-            }).catch(error =>{
-                if (error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1) {
-                    Message.warning('系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。');
-                    tempwindow.document.body.innerHTML = '系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。';
-                }else{
-                    if(error.toString().includes('Network Error') || error.toString().includes('504')){
-                        Message.warning('系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。');
-                        tempwindow.document.body.innerHTML = '系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。';
-                    }
-                    console.log('error---', error);
-                }
-                addload.close();
+            }).catch(err =>{
+                console.log(err);
             });
         },
         // 获取pdf
@@ -434,40 +500,23 @@ export default {
             let name = this.Info.name.toString().toLowerCase();
             let val = this.Info.val;
             let info = {
-                [name]: val
+                key: val,
+                type: name=='sk' ? 2 : 3,
             };
-            let addload = this.$loading({
-                lock: true,
-                text: '加急下载中...',
-                spinner: 'el-icon-loading',
-                background: 'rgba(0, 0, 0, 0.7)'
-            });
-            let tempwindow = window.open();
-            tempwindow.document.body.style.color = 'red';
-            tempwindow.document.body.style.textAlign = 'center';
-            tempwindow.document.body.style.marginTop = '200';
-            tempwindow.document.body.innerHTML="正在奋力下载pdf,请稍后！"
-            api.getApi(this.apiVar.Advertisement+'/GetPdfReport', info).then(res =>{
-                console.log(res.data);
-                addload.close();
-                if(res.data.code == 300200){
-                    tempwindow.location = res.data.data;
-                }else if(res.data.code == 300504){
-                    Message.warning(res.data.data);
-                    tempwindow.document.body.innerHTML = res.data.data;
-                }
-            }).catch(error =>{
-                if (error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1) {
-                    Message.warning('系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。');
-                    tempwindow.document.body.innerHTML = '系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。';
+            api.getApi(this.apiVar.Advertisement+"/process", info).then(res =>{
+                if(res.data.SysCode == 200200){
+                    let routeUrl = this.$router.resolve({
+                        path: "/progressDown",
+                        query: info,
+                    });
+                    window.open(routeUrl .href, '_blank');
+                }else if(res.data.SysCode == 100302){
+                    this.loginTimeout();
                 }else{
-                    if(error.toString().includes('Network Error') || error.toString().includes('504')){
-                        Message.warning('系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。');
-                        tempwindow.document.body.innerHTML = '系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。';
-                    }
-                    console.log('error---', error);
+                    Message.warning(res.data.MSG);
                 }
-                addload.close();
+            }).catch(err =>{
+                console.log(err);
             });
         },
         // 页数大小改变
@@ -754,18 +803,18 @@ export default {
             this.$router.push("/login");
         }
     },
-    mounted() {
-        $(function() {
-            $(".tabs")
-                .find("button")
-                .click(function() {
-                    $(this)
-                        .addClass("active")
-                        .siblings()
-                        .removeClass("active");
-                });
-        });
-    }
+    // mounted() {
+    //     $(function() {
+    //         $(".tabs")
+    //             .find("button")
+    //             .click(function() {
+    //                 $(this)
+    //                     .addClass("active")
+    //                     .siblings()
+    //                     .removeClass("active");
+    //             });
+    //     });
+    // }
 };
 </script>
 

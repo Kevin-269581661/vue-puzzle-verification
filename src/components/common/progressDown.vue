@@ -19,8 +19,29 @@ export default {
         }
     },
     methods:{
+        // 导出订单图片包
         getProcess(){
             api.getApi(this.apiVar.Advertisement+'/DownloadImgPackage', this.$route.query).then(res =>{
+                console.log(res.data);
+                if(res.data.SysCode == 200200){
+                    let resinfo = res.data.data;
+                    this.currper = parseInt(Number(resinfo.rate));
+                    if(this.currper == 100){
+                        clearInterval(this.myInterval);
+                        let tempwindow = window.open();
+                        tempwindow.location = resinfo.url;
+                        this.$alert('请在下载工具里查看文件', '文件成功生成', {
+                            confirmButtonText: '知道了',
+                        });
+                    }
+                }
+            }).catch(res =>{
+                console.log(res);
+            });
+        },
+        // 导出ppt/pdf
+        getPPTProcess(){
+            api.getApi(this.apiVar.Advertisement+'/process', this.$route.query).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 200200){
                     let resinfo = res.data.data;
@@ -46,7 +67,11 @@ export default {
         this.myInterval = setInterval(() => {
             setTimeout(() => {
                 //调用接口的方法
-                this.getProcess();
+                if(this.$route.query.downtype == 1){
+                    this.getProcess();
+                }else if(this.$route.query.downtype == 2){
+                    this.getPPTProcess();
+                }
             }, 1)
         }, 5000);
     },

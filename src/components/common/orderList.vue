@@ -119,9 +119,9 @@
                             </template>
                         </el-table-column>
 
-                        <div slot="empty">
+                        <!-- <div slot="empty">
                             <no-search-result></no-search-result>
-                        </div>
+                        </div> -->
                     </el-table>
                 </div>
             </div>
@@ -145,7 +145,7 @@ import sessFun from "../../commonFun/sessFun.js";
 
 // 画像申请
 import applyphoto from './components/applyPhoto.vue';
-import noSearchResult from "./components/noSearchResult.vue";
+// import noSearchResult from "./components/noSearchResult.vue";
 
 import {
     Button,
@@ -171,7 +171,7 @@ export default {
     name: "projectList",
     components: {
         applyphoto,
-        noSearchResult,
+        // noSearchResult,
         elButton: Button,
         elCheckboxGroup: CheckboxGroup,
         elCheckbox: Checkbox,

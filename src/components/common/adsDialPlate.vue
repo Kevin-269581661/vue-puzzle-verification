@@ -215,9 +215,9 @@
                             // return true
                         } else {
                             // 过去
-                            let passDay = timeFormat.returnDayCount(-90,'/',new Date(this.firstTime))
+                            let passDay = timeFormat.returnDayCount(-89,'/',new Date(this.firstTime))
                             // 未来
-                            let toDay = timeFormat.returnDayCount(90,'/',new Date(this.firstTime))
+                            let toDay = timeFormat.returnDayCount(89,'/',new Date(this.firstTime))
                             // console.log('toDay',toDay,'passDay',passDay)
                             return  time.getTime() > Date.parse(toDay) || time.getTime() < Date.parse(passDay)
                         }
@@ -254,7 +254,7 @@
             setTime(){
                 let starTime, endTime
                 starTime = timeFormat.returnDayCount(0,'/')
-                endTime = timeFormat.returnDayCount(30,'/')
+                endTime = timeFormat.returnDayCount(29,'/')
                 this.dateInput = [starTime, endTime]                // 设置默认时间
                 this.beforDate = [starTime, endTime]
             },
@@ -412,7 +412,7 @@
                     let dayNum = this.GetDateDiff(val[0],val[1])
                     if(dayNum < 30){
                         // this.dateInput = this.beforDate.concat()
-                        this.dateInput[1] = timeFormat.returnDayCount(30,'/',new Date(this.dateInput[0]))
+                        this.dateInput[1] = timeFormat.returnDayCount(29,'/',new Date(this.dateInput[0]))
                         console.log('this.dateInput',this.dateInput)
                         this.messageFun('warning','最短周期为30天')
                     }else if(dayNum > 90){

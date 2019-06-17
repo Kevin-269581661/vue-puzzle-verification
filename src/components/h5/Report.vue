@@ -963,38 +963,6 @@ export default {
     text-align: right !important;
 }
 
-/*滚动条*/
-/deep/ .el-table__body-wrapper {
-    /* height: 450px;
-    overflow-y: scroll;
-    overflow-x: hidden; */
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar {
-    width: 4px;
-    background: #fafafa;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
-
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #c1c1c1;
-    border-radius: 4px;
-}
-
-.el-table {
-    border-radius: 4px;
-}
-
-/deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
-    background-color: #ecf5ff;
-}
-
-/deep/ .el-tabs__item.is-active {
-    font-weight: bold;
-}
-
 .ad_index_footer {
     font-size: 14px;
     color: #8a8a8a;
@@ -1064,11 +1032,6 @@ export default {
 
 /*图片切换*/
 .typeOfRec .pic_box{
-    /* width: 30%;
-    margin-top: 18px;
-    display: inline-block;
-    margin-right: 3.1%;
-    display: inline-block; */
     width: 30%;
     margin-top: 18px;
     margin-right: 1.6%;

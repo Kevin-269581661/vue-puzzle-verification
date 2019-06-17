@@ -692,17 +692,6 @@ export default {
     }
 }
 
-/deep/ .el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active{
-    background-color: transparent;
-    border: none;
-}
-/deep/ .el-tabs--border-card>.el-tabs__header .el-tabs__item{
-    border: none;
-}
-/deep/ .el-tabs__item:focus.is-active.is-focus:not(:active){
-    box-shadow: none;
-}
-
 /deep/ .content_bottom_btn .el-button{
     padding: 0;
 }

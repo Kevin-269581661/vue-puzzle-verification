@@ -388,7 +388,7 @@ export default {
 					this.dataArr[1].data = resInfo.orderCount;
 					this.dataArr[2].data = resInfo.apTotal/100;
 
-					this.userInfo.endTime = timeFormat.toDate(resInfo.time);
+					this.userInfo.endTime = timeFormat.toDate(resInfo.time, '/');
 				}else if(res.data.SysCode == 100302){
 					this.loginTimeout();
 				}else{

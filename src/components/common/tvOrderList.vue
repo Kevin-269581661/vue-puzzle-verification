@@ -544,11 +544,11 @@ a {
     margin-left: 2px;
 }
 
-/deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
+/* /deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
   position: relative;
   left: -2px;
   top: 0px;
-}
+} */
 
 
 .mediaList_wrap .mediaList_container .table_wrap {

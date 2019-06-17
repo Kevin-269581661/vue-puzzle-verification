@@ -118,15 +118,12 @@
                         </el-table-column>
                         <el-table-column prop="state" label="状态" width="80">
                             <template slot-scope="scope">
-                                <span class="point">
-                                    <b :style="{background:scope.row.state==1?'rgba(82,196,26,1)':'rgba(250,173,20,1)'}"></b>
-                                    {{(scope.row.state == 1?'已上画':'未上画')}}
-                                </span>
+                                <point-state :state-text="stateToText(scope.row.state).text" :color="stateToText(scope.row.state).color"></point-state>                                                                
                             </template>
                         </el-table-column>
                         <el-table-column label="素材" width="60" >
                             <template slot-scope="scope">
-                                    <span @click="toShowImg(scope.row)" class="link_text">查看</span>
+                                <span @click="toShowImg(scope.row)" class="link_text">查看</span>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -191,8 +188,12 @@
     import dateFormat from "../../commonFun/timeFormat.js";
     import sessFun from '../../commonFun/sessFun.js'
     import api from "../../api/api.js";
-import timeFormat from '../../commonFun/timeFormat.js';
+    import timeFormat from '../../commonFun/timeFormat.js';
+    import pointState from './components/pointState.vue';
     export default {
+        components:{
+            pointState,
+        },
         data(){
             return{
                 // 当前订单
@@ -634,6 +635,18 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     this.isShowImg = true;
                 }else{
                     this.messageFun('warning', '暂无素材');
+                }
+            },
+            // 状态转换
+            stateToText(status) {
+                let statusText = [
+                    {text: "已上画", status: 1, color: 'rgba(82,196,26,1)'},
+                    {text: "未上画", status: 0, color: 'rgba(250,173,20,1)'}
+                ];
+                for (let data of statusText) {
+                    if (data.status == status) {
+                        return data;
+                    }
                 }
             },
             // 返回

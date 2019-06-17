@@ -168,11 +168,13 @@ export default {
 }
 
 .button_box button{
+    height: 48px;
+    line-height: 48px;
     display: block;
     margin: 24px 0;
     text-align: left;
     min-width: 250px;
-    padding: 10px;
+    padding: 0 10px;
 }
 .button_box button a{
     display: inline-block;
@@ -186,6 +188,8 @@ export default {
 }
 /deep/ .button_box .el-icon-download {
     float: right;
+    height: 48px;
+    line-height: 48px;
     font-size: 18px;
     color: rgba(216,216,216,1);
 }

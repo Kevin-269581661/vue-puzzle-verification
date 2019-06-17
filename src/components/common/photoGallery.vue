@@ -33,7 +33,7 @@
                             <el-cascader :options="bussiness" class="plan-select" v-model="industryIdArr" change-on-select @change="handleChange" v-if="(activeName=='first')||(activeName=='second')" filterable></el-cascader>
                             <span v-if="(activeName=='first')||(activeName=='second')">
                                 <div class="block">
-                                    <el-date-picker v-model="date" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
+                                    <el-date-picker v-model="date" type="daterange" range-separator="-" format="yyyy/MM/dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
                                     </el-date-picker>
                                 </div>
                             </span>
@@ -703,7 +703,7 @@ export default {
     height: 34px;
 }
 
-/deep/ .el-button {
+/* /deep/ .el-button {
     width: 76px;
     height: 34px;
 }
@@ -711,7 +711,7 @@ export default {
   position: relative;
   left: -2px;
   top: 0px;
-}
+} */
 
 .searchInput /deep/ .el-input__inner,
 .searchInput {
@@ -731,7 +731,7 @@ export default {
     width: 160px;
 }
 
-.searchBtn,
+/* .searchBtn,
 .map {
     position: relative;
     left: -3px;
@@ -739,7 +739,7 @@ export default {
 
 .map {
     left: -12px;
-}
+} */
 .search-wrap {
     /* position: relative;
     height: 40px; */
@@ -881,21 +881,21 @@ export default {
     margin-top: 20px;
 }
 
-.up-report-bottom-checkbox .el-button {
+/* .up-report-bottom-checkbox .el-button {
     position: relative;
     top: 5px;
     left: 0;
-}
+} */
 
 /deep/ .el-pager .number {
     background-color: transparent;
 }
 
-.up-report-bottom-btns .el-button {
+/* .up-report-bottom-btns .el-button {
     width: 74px;
     height: 32px;
     padding: 0;
-}
+} */
 
 /deep/ .el-pagination .el-select .el-input .el-input__inner {
     height: 28px !important;
@@ -934,20 +934,20 @@ export default {
     line-height: 34px;
 }
 
-.el-button {
+/* .el-button {
     width: 76px;
     height: 34px;
     text-align: center;
-    /*line-height: 34px;*/
+    line-height: 34px;
     padding: 0;
     position: relative;
-    /*top: 1px;*/
+    top: 1px;
     left: 0;
-}
+} */
 
-/deep/ .el-button + .el-button {
+/* /deep/ .el-button + .el-button {
     margin-left: 0;
-}
+} */
 
 /deep/ .el-date-editor .el-range-separator {
     line-height: 26px;
@@ -1038,7 +1038,7 @@ export default {
 }
 
 /*操作*/
-/deep/ .el-button--mini,
+/* /deep/ .el-button--mini,
 .el-button--small {
     font-size: 14px !important;
 }
@@ -1053,7 +1053,7 @@ export default {
 
 /deep/ .el-dropdown .el-button-group .el-button {
     height: 28px;
-}
+} */
 
 .bottom-btn {
     text-align: center;
@@ -1165,14 +1165,14 @@ export default {
     line-height: 19px;
 }
 
-.content_bottom_btn /deep/ .el-button span {
+/* .content_bottom_btn /deep/ .el-button span {
     position: relative;
     top: -2px;
 }
 
 .content_bottom_btn /deep/ .el-button span a {
     color: #606266;
-}
+} */
 
 .clearfix:before,
 .clearfix:after {
@@ -1189,6 +1189,6 @@ export default {
 }
 .search-wrap /deep/ .el-date-editor--daterange.el-input__inner{
     /* width: 300px; */
-    max-width: 240px;
+    max-width: 238px;
 }
 </style>

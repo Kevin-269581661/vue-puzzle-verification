@@ -146,7 +146,7 @@
                                     <el-table-column label="操作" min-width="4.3%" v-if="showHandel">
                                         <template slot-scope="scope">
                                             <span style="color:#999;" v-if="scope.row.lState==2">终止</span>
-                                            <el-button type="text" v-else @click="disContinue(scope.row)">终止</el-button>
+                                            <span style="color:#409EFF;" v-else @click="disContinue(scope.row)">终止</span>
                                         </template>
                                     </el-table-column>
 
@@ -243,11 +243,11 @@
                                         </el-pagination>
                                     </div>
                                     <div class="up-report-bottom">
-                                        <div class="up-report-bottom-checkbox">
+                                        <!-- <div class="up-report-bottom-checkbox"> -->
                                             <!--<el-checkbox v-model="sendReportchecked">生成报告同时发送至客户邮箱：444094173@qq.com-->
                                             <!--<el-button type="text">修改</el-button>-->
                                             <!--</el-checkbox>-->
-                                        </div>
+                                        <!-- </div> -->
                                         <div class="up-report-bottom-btns">
                                             <el-button type="primary" @click="submitUpload('SK')">保存</el-button>
                                             <!-- <el-button plain @click="downloadUp">下载PDF</el-button> -->
@@ -2384,11 +2384,11 @@ export default {
     margin-left: 10px;
 }
 
-/deep/ .changeDWBtn span {
+/* /deep/ .changeDWBtn span {
     position: relative;
     left: -9px !important;
     top: -2px;
-}
+} */
 
 /deep/ .el-table th,
 .el-table tr {
@@ -2471,7 +2471,7 @@ export default {
 
 /deep/ .el-input__inner {
     font-size: 14px;
-    height: 34px;
+    height: 32px;
     vertical-align: middle;
 }
 
@@ -2528,10 +2528,10 @@ export default {
     box-sizing: border-box;
 }
 
-/deep/ .el-button.el-button--text span {
+/* /deep/ .el-button.el-button--text span {
     position: relative;
     top: -5px;
-}
+} */
 
 .price ul li {
     font-size: 14px;
@@ -2725,7 +2725,7 @@ export default {
 }
 
 /deep/ .up-loader-header .el-input__inner {
-    height: 34px;
+    height: 32px;
     width: 180px;
 }
 
@@ -2859,14 +2859,14 @@ export default {
 }
 .up-report-bottom {
     text-align: center;
-    margin-top: 20px;
+    margin: 20px;
 }
 
 .up-report-bottom-checkbox {
     margin-bottom: 10px;
 }
 
-.up-report-bottom-checkbox .el-button {
+/* .up-report-bottom-checkbox .el-button {
     position: relative;
     top: 5px;
     left: 0;
@@ -2876,7 +2876,7 @@ export default {
     width: 74px;
     height: 32px;
     padding: 0;
-}
+} */
 
 /*面包屑导航*/
 .tip {
@@ -2938,7 +2938,7 @@ export default {
 
 .content_bottom_btn button {
     width: 80px;
-    height: 34px;
+    height: 32px;
     line-height: 10px;
 }
 
@@ -2980,22 +2980,22 @@ export default {
     border-bottom-right-radius: 0;
     padding-right: 0;
     padding-left: 10px;
-    height: 34px;
+    height: 32px;
 }
 
-/deep/ .el-button {
-    height: 34px;
-    line-height: 34px;
+/* /deep/ .el-button {
+    height: 32px;
+    line-height: 32px;
     min-width: 80px;
     padding: 0 8px;
-}
+} */
 
 
 /deep/ .date-select.el-input__inner {
     width: 237px;
     position: relative;
     left: 1px;
-    height: 34px;
+    height: 32px;
 }
 
 /deep/ .el-date-editor .el-range__icon {
@@ -3111,7 +3111,7 @@ export default {
 /deep/ .plan-select .el-input__inner {
     width: 180px;
     margin-left: -13px;
-    height: 34px;
+    height: 32px;
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
 }
@@ -3151,8 +3151,8 @@ export default {
 
 /deep/ .el-input__inner {
     width: 260px;
-    height: 34px;
-    line-height: 34px;
+    height: 32px;
+    line-height: 32px;
 }
 
 /deep/ .el-range-editor .el-range-input {

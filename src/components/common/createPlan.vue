@@ -2247,6 +2247,7 @@
                         token: sess.token,
                         apName: query,
                         suId: this.BDData.uid,
+                        rIds: this.planForm.throwCity.join(',')
                     };
                     this.loadingOrder = true;
                     api.getApi(this.apiVar.Advertisement+"/GetSaleAdPlan", info).then(res =>{
@@ -2280,7 +2281,8 @@
                         token: sess.token,
                         apId: this.orderName,
                         startTime: this.dateInput[0],
-                        endTime: this.dateInput[1]
+                        endTime: this.dateInput[1],
+                        rIds: this.planForm.throwCity.join(',')                        
                     };
                     api.getApi(this.apiVar.Advertisement+"/GetAdsFromCopiedAdPlan", info).then(res =>{
                         console.log(res.data);
@@ -5260,9 +5262,9 @@
         left: 0;
         z-index: 99;
     }
-    .urlBtn {
+    /* .urlBtn {
         padding: 10px;
-    }
+    } */
 
     .mapBtn {
         min-width: 110px;
@@ -5487,7 +5489,7 @@
         border-top-left-radius: 0;
     }
 
-     /deep/ .el-button {
+     /* /deep/ .el-button {
          width: 76px;
          height: 34px;
          text-align: center;
@@ -5496,7 +5498,7 @@
 
     /deep/ .el-button+.el-button{
         margin-left: 3px;
-    }
+    } */
 
     /* /deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
         position: relative;
@@ -5707,9 +5709,9 @@
         color: #1890FF;
     }
     .otherBtn.el-button{
-        width: 76px;
+        /* width: 76px;
         height: 30px;
-        padding: 0;
+        padding: 0; */
         border-radius: 0;
         color:rgba(0,0,0,0.35);
     }
@@ -6202,9 +6204,9 @@
         text-align: center;
         margin-top: 20px
     }
-    /deep/ .upload_box .el-button{
+    /* /deep/ .upload_box .el-button{
         width: auto;
-    }
+    } */
 
     /*safari下表头错位*/
     /deep/ .el-table .el-table-column-checkbox .cell{

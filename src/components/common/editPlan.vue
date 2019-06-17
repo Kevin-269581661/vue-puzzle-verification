@@ -1744,12 +1744,18 @@
             // 获取订单
             remoteGetOrder(query){
                 if (query !== '') {
+                    let ridsArr = [];
+                    for(let data of this.city){
+                        ridsArr.push(data.rid);
+                    }
+                    let rids =  ridsArr.join(',');
                     let sess = this.sessionData;
                     let info = {
                         uid: sess.uID,
                         token: sess.token,
                         apName: query,
                         suId: this.BDData.uid,
+                        rIds: rids,
                     };
                     this.loadingOrder = true;
                     api.getApi(this.apiVar.Advertisement+"/GetSaleAdPlan", info).then(res =>{
@@ -1777,13 +1783,19 @@
             // 确定复制
             confirmCopy(){
                 if(this.orderName){
+                    let ridsArr = [];
+                    for(let data of this.city){
+                        ridsArr.push(data.rid);
+                    }
+                    let rids =  ridsArr.join(',');
                     let sess = this.sessionData;
                     let info = {
                         uid: sess.uID,
                         token: sess.token,
                         apId: this.orderName,
                         startTime: this.dateInput[0],
-                        endTime: this.dateInput[1]
+                        endTime: this.dateInput[1],
+                        rIds: rids
                     };
                     api.getApi(this.apiVar.Advertisement+"/GetAdsFromCopiedAdPlan", info).then(res =>{
                         console.log(res.data);
@@ -5444,7 +5456,7 @@
         border-top-left-radius: 0;
     }
 
-    /deep/ .el-button {
+    /* /deep/ .el-button {
         width: 76px;
         height: 34px;
         text-align: center;
@@ -5453,7 +5465,7 @@
 
     /deep/ .el-button+.el-button{
         margin-left: 3px;
-    }
+    } */
     /* /deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
         position: relative;
         left: -2px;
@@ -5677,9 +5689,9 @@
         color: #1890FF;
     }
     .otherBtn.el-button{
-        width: 76px;
+        /* width: 76px;
         height: 30px;
-        padding: 0;
+        padding: 0; */
         border-radius: 0;
         color:rgba(0,0,0,0.35);
     }
@@ -6178,9 +6190,9 @@
         text-align: center;
         margin-top: 20px
     }
-    /deep/ .upload_box .el-button{
+    /* /deep/ .upload_box .el-button{
         width: auto;
-    }
+    } */
 
     /*一键更换排期*/
     .table_box{
@@ -6405,9 +6417,9 @@
         }
     }
 
-    .urlBtn {
+    /* .urlBtn {
         padding: 10px;
-    }
+    } */
 
     /deep/ .el-badge__content.is-fixed.is-dot {
         left: -15px;

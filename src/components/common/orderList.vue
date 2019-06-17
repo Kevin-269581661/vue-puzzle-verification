@@ -43,19 +43,13 @@
                                 </el-select>
                             </div>
                         </span>
-                        <span>
-                            <div class="block block_box">
-                                <el-select v-model="searchInfo.status" placeholder="请选择状态">
-                                    <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
-                                </el-select>
-                            </div>
-                        </span>
-                        <span>
-                            <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
-                        </span>
-                        <span>
-                            <el-button @click="reset()" :disabled="!isReset">重置</el-button>
-                        </span>
+                        <div class="block block_box">
+                            <el-select v-model="searchInfo.status" placeholder="请选择状态">
+                                <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
+                            </el-select>
+                        </div>
+                        <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
+                        <el-button @click="reset()" :disabled="!isReset">重置</el-button>
                     </div>
                 </el-row>
                 <div class="table_wrap">
@@ -98,7 +92,7 @@
                         </el-table-column>
                         <el-table-column class="Status" prop="apState" label="状态" min-width="6%" >
                             <template slot-scope="scope">
-                                <span>{{ stateToText(scope.row.apState) }}</span>
+                                <point-state :state-text="stateToText(scope.row.apState).text" :color="stateToText(scope.row.apState).color"></point-state>                                                                
                             </template>
                         </el-table-column>
                         <el-table-column label="操作" width="100px" v-if="!(role=='OP' || role=='AD')">
@@ -146,6 +140,8 @@ import sessFun from "../../commonFun/sessFun.js";
 // 画像申请
 import applyphoto from './components/applyPhoto.vue';
 import noSearchResult from "./components/noSearchResult.vue";
+import pointState from './components/pointState.vue';    
+
 
 import {
     Button,
@@ -172,6 +168,7 @@ export default {
     components: {
         applyphoto,
         noSearchResult,
+        pointState,
         elButton: Button,
         elCheckboxGroup: CheckboxGroup,
         elCheckbox: Checkbox,
@@ -505,14 +502,14 @@ export default {
         // 状态转换成文本
         stateToText(val) {
             let state = [
-                { text: "已完成", value: 0 },
-                { text: "未投放", value: 2 },
-                { text: "投放中", value: 3 },
-                { text: "强制结束", value: 5 }
+                { text: "已完成", value: 0, color: 'rgba(196,203,211,1)' },
+                { text: "未投放", value: 2, color: 'rgba(82,196,26,1)' },
+                { text: "投放中", value: 3, color: 'rgba(24,144,255,1)' },
+                { text: "强制结束", value: 5, color: 'rgba(245,34,45,1)' }
             ];
             for (let data of state) {
                 if (val == data.value) {
-                    return data.text;
+                    return data;
                 }
             }
         },
@@ -910,7 +907,7 @@ a {
     border-radius: 4px;
 }
 
-.el-button {
+/* .el-button {
     width: 76px;
     height: 34px;
     text-align: center;
@@ -922,7 +919,7 @@ a {
   position: relative;
   left: -2px;
   top: 0px;
-}
+} */
 
 
 .mediaList_wrap .mediaList_container .table_wrap {
@@ -1012,14 +1009,14 @@ a {
     background-color: #fcfcfc;
 }
 
-.content_bottom_btn /deep/ .el-button span {
+/* .content_bottom_btn /deep/ .el-button span {
     position: relative;
     top: -2px;
 }
 
 .content_bottom_btn /deep/ .el-button span a {
     color: #606266;
-}
+} */
 
 /*表格*/
 /deep/ .el-date-editor .el-range-separator {
@@ -1105,7 +1102,7 @@ a {
     /*line-height: 24px;*/
 }
 
-/deep/ .el-table__row td:nth-child(7) .cell span {
+/* /deep/ .el-table__row td:nth-child(7) .cell span {
     width: 87px;
 }
 
@@ -1118,7 +1115,7 @@ a {
 }
 /deep/ .el-table__row td:nth-child(1) .cell a {
     width: 195px;
-}
+} */
 
 /*筛选*/
 /deep/ .el-table__column-filter-trigger {
@@ -1142,7 +1139,7 @@ a {
     cursor: pointer;
     color: #409EFF;
 }
-.el-icon-arrow-down {
+/* .el-icon-arrow-down {
     font-size: 12px;
 }
 /deep/ .el-button--mini,
@@ -1183,7 +1180,7 @@ a {
 
 /deep/ .popper__arrow {
     display: none;
-}
+} */
 
 .mediaList_handel span {
     float: left !important;

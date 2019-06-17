@@ -142,8 +142,8 @@ export default {
             </div>
         </div>
         <!--缩略图对话框-->
-        <el-dialog :visible.sync="dialogVisible" width="500px;">
-            <img style="width: 50%;height: auto;" :src="dialogImageUrl" alt="">
+        <el-dialog :visible.sync="dialogVisible" class="imgPreview">
+            <img :src="dialogImageUrl" alt="">
         </el-dialog>
     </div>
 </template>
@@ -356,5 +356,17 @@ export default {
     position: relative;
     top: 5px;
 }
-
+.imgPreview /deep/ .el-dialog{
+    max-width: 42%;
+}
+.imgPreview /deep/ .el-dialog__body{
+    max-height: 640px;
+}
+.imgPreview /deep/ .el-dialog {
+    max-height: 750px;
+}
+.imgPreview /deep/ .el-dialog img{
+    width: 100%;
+    max-height: 660px;
+}
 </style>

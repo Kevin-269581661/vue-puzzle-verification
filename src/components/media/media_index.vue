@@ -386,7 +386,7 @@ export default {
 					this.dataArr[2].data = resInfo.publishedAdPlanCount;
 					this.dataArr[3].data = resInfo.asCount;
 
-					this.userInfo.endTime = timeFormat.toDate(resInfo.time);
+					this.userInfo.endTime = timeFormat.toDate(resInfo.time, '/');
 				}else if(res.data.SysCode == 100302){
 					this.loginTimeout();
 				}else{

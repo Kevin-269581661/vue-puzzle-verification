@@ -181,9 +181,11 @@
                             width="112"
                         >
                             <template slot-scope="scope">
-                                <el-dropdown size="small" split-button class="handel_btn" trigger="click"
+                                <el-dropdown size="small" trigger="click" placement="bottom-start"
                                              :hide-on-click="true">
-                                    操作
+                                    <span class="el-dropdown-link">
+                                        操作<i class="el-icon-arrow-down el-icon--right"></i>
+                                    </span>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item
                                             @click.native.prevent="confirmBox($event,scope.$index, scope.row)"
@@ -865,7 +867,7 @@
                 this.searchBtnAbled = true
                 if ((this.keyword === '' || this.keyword === null) && this.cityArea.cName === '') {
                     Message.warning({
-                        message: '搜索条件为空',
+                        message: '请先输入搜索条件',
                         duration: 1000
                     })
                     this.searchBtnAbled = false
@@ -1171,9 +1173,9 @@
     .handel_ul_li_btn{
         width: 32%;
     }
-    .handel_ul_li .el-button{
+    /* .handel_ul_li .el-button{
         margin: 0 2px 0 0;
-    }
+    } */
     /*下拉搜索框*/
     /deep/ .el-input-group__prepend {
         width: 64px;
@@ -1188,7 +1190,7 @@
         border-bottom-right-radius: 0;
     }
 
-    .el-button {
+    /* .el-button {
         width: 76px;
         height: 32px;
         text-align: center;
@@ -1198,7 +1200,7 @@
         position: relative;
         left: -2px;
         top: 0px;
-    }
+    } */
 
     .mediaList_wrap .mediaList_container .table_wrap {
         margin: 24px auto;
@@ -1306,8 +1308,12 @@
     }
 
     /*操作*/
+    .el-dropdown-link {
+        cursor: pointer;
+        color: #409EFF;
+    }
 
-    /deep/ .el-button--mini,
+    /* /deep/ .el-button--mini,
     .el-button--small {
         font-size: 14px !important;
     }
@@ -1350,7 +1356,7 @@
 
     /deep/ .popper__arrow {
         display: none;
-    }
+    } */
 
     /*提示框*/
     /deep/ .el-message {
@@ -1374,9 +1380,9 @@
         color: #606266;
     }
 
-    .handel_btn {
+    /* .handel_btn {
         position: relative;
-    }
+    } */
     /deep/ .mStatueDialog{
         width: 285px;
     }

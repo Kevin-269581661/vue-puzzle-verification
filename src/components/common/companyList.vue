@@ -50,7 +50,7 @@
                         </el-table-column>
                         <el-table-column prop="state" label="状态" min-width="8.9%">
                             <template slot-scope="scope">
-                                <span>{{stateToText(scope.row.state)}}</span>
+                                <point-state :state-text="stateToText(scope.row.state).label" :color="stateToText(scope.row.state).color"></point-state>                                                                
                             </template>
                         </el-table-column>
                         <el-table-column label="操作" min-width="7.1%">
@@ -101,10 +101,13 @@
     import dateFormat from "../../commonFun/timeFormat.js";
     import sessFun from "../../commonFun/sessFun.js";
     import api from "../../api/api.js";
-    import noSearchResult from "./components/noSearchResult.vue";    
+    import noSearchResult from "./components/noSearchResult.vue";  
+    import pointState from './components/pointState.vue';    
+      
     export default {
         components: {
             noSearchResult,
+            pointState,
         },
         data(){
             return{
@@ -123,10 +126,12 @@
                     {
                         label: '正常',
                         value: 1,
+                        color: 'rgba(82,196,26,1)'
                     },
                     {
                         label: '禁用',
-                        value: 0
+                        value: 0,
+                        color: 'rgba(245,34,45,1)'
                     }
                 ],
                 // 公司类型
@@ -268,7 +273,7 @@
                     this.isSearch = true;
                     clearTimeout(timer);
                 }, 1000);
-                if(keyword || (type>=0) || (state>=0)){
+                if(keyword || (type!=='') || (state!=='')){
                     this.companyList = [];
                     this.loading = true;
                     this.loading_point = false;
@@ -382,7 +387,7 @@
             stateToText(state) {
                 for (let data of this.stateArr) {
                     if (data.value == state) {
-                        return data.label;
+                        return data;
                     }
                 }
             },
@@ -543,11 +548,11 @@
     a{
         color: #108ee9;
     }
-    /deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
+    /* /deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
         position: relative;
         left: -2px;
         top: 0px;
-    }
+    } */
 </style>
 
 

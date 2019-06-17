@@ -1334,9 +1334,9 @@ a {
     width: 22px;
 }
 
-/deep/ thead th:nth-child(4) .cell {
+/* /deep/ thead th:nth-child(4) .cell {
     text-align: right !important;
-}
+} */
 
 /deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
     background-color: #ecf5ff;

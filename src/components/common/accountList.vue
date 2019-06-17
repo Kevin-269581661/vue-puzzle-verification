@@ -568,9 +568,9 @@
         top: 0px;
     } */
 
-    /deep/ .el-button + .el-button {
+    /* /deep/ .el-button + .el-button {
         margin-left: 0;
-    }
+    } */
 
     .mediaList_wrap .mediaList_container .table_wrap {
         width: 98%;

@@ -215,9 +215,9 @@
                             // return true
                         } else {
                             // 过去
-                            let passDay = timeFormat.returnDayCount(-90,'/',new Date(this.firstTime))
+                            let passDay = timeFormat.returnDayCount(-89,'/',new Date(this.firstTime))
                             // 未来
-                            let toDay = timeFormat.returnDayCount(90,'/',new Date(this.firstTime))
+                            let toDay = timeFormat.returnDayCount(89,'/',new Date(this.firstTime))
                             // console.log('toDay',toDay,'passDay',passDay)
                             return  time.getTime() > Date.parse(toDay) || time.getTime() < Date.parse(passDay)
                         }
@@ -241,6 +241,8 @@
             this.setTime()
             this.getTableData()
             this.getCity()
+            // 设置表格左侧定位的高度
+            this.setFixedTableHieght()
         },
         methods:{
             getSessionData(){
@@ -252,9 +254,18 @@
             setTime(){
                 let starTime, endTime
                 starTime = timeFormat.returnDayCount(0,'/')
-                endTime = timeFormat.returnDayCount(30,'/')
+                endTime = timeFormat.returnDayCount(29,'/')
                 this.dateInput = [starTime, endTime]                // 设置默认时间
                 this.beforDate = [starTime, endTime]
+            },
+            // 表格左侧定位的高度
+            setFixedTableHieght(){
+                let timer = setTimeout(()=>{
+                    let fixedTable = document.querySelector('.el-table__fixed')
+                    console.log('fixedTable',fixedTable)
+                    fixedTable.style.height = 490 + (this.pageData.pageSize / 10 - 1) * 450  + 'px'
+                    clearTimeout(timer)
+                },1000)
             },
             // tab切换
             handleClick(){
@@ -401,7 +412,7 @@
                     let dayNum = this.GetDateDiff(val[0],val[1])
                     if(dayNum < 30){
                         // this.dateInput = this.beforDate.concat()
-                        this.dateInput[1] = timeFormat.returnDayCount(30,'/',new Date(this.dateInput[0]))
+                        this.dateInput[1] = timeFormat.returnDayCount(29,'/',new Date(this.dateInput[0]))
                         console.log('this.dateInput',this.dateInput)
                         this.messageFun('warning','最短周期为30天')
                     }else if(dayNum > 90){
@@ -445,6 +456,7 @@
                 console.log('每页的条数',val)
                 this.pageData.pageSize = val
                 this.getTableData()
+                this.setFixedTableHieght()
             },
             // 返回上一页
             returnBefore(){
@@ -683,6 +695,7 @@
         background: #C1C1C1;
         border-radius: 4px;
     }
+
     /*safari下表头错位*/
     /deep/ .el-table .el-table-column-resName .cell{
         min-width: 120px;

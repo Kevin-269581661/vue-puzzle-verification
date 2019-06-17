@@ -1795,12 +1795,12 @@ export default {
     margin-left: 0;
 }
 
-/deep/ .el-button [class*="el-icon-"] + span,
+/* /deep/ .el-button [class*="el-icon-"] + span,
 .select-wrap button .el-icon-search {
     position: relative;
     left: -2px;
     top: 0px;
-}
+} */
 
 .searchInput /deep/ .el-input__inner,
 .searchInput {

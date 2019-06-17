@@ -85,7 +85,7 @@
                         </div>
                     </div>
                     <div class="content_bottom_btn">
-                        <el-button type="primary" @click="submitData">修改</el-button>
+                        <el-button type="primary" @click="submitData">保存</el-button>
                         <el-button @click="goBack">取消</el-button>
                     </div>
                 </div>
@@ -553,7 +553,8 @@ export default {
                             if(this.isChangeUser()){
                                 this.updateUser(mes.SysCode);
                             }else{
-                                this.changRoute('修改公司信息成功,是否跳转到列表页面');
+                                // this.changRoute('修改公司信息成功,是否跳转到列表页面');
+                                this.$router.push("./clientDetail");
                             }
                         } else if(mes.SysCode == 100403) {
                             // Message.warning(mes.MSG);
@@ -646,7 +647,8 @@ export default {
                     let userMsg = res.data;
                     if (userMsg.SysCode == 100200) {
                         if(code==300200){
-                            this.changRoute('成功修改客户和公司信息,是否跳转到列表页面');
+                            // this.changRoute('成功修改客户和公司信息,是否跳转到列表页面');
+                            this.$router.push("./clientDetail");                            
                         }else if(code == 100403){
                            this.changRoute('成功修改客户信息,没有权限修改公司信息,是否跳转到列表页面');
                         }else{
@@ -797,19 +799,20 @@ export default {
 
 /*按钮*/
 .mediaMana_content_bottom .content_bottom_btn {
-    position: absolute;
+    /* position: absolute;
     bottom: -66px;
     margin-bottom: 22px;
-    left: 45.3%;
-}
+    left: 45.3%; */
+    text-align: center;
+    margin-top: 30px;
+} 
 
-.mediaMana_content_bottom .content_bottom_btn button {
-    width: 80px;
+/deep/.content_bottom_btn .el-button {
     height: 34px;
-    outline: none;
-    cursor: pointer;
+    line-height: 34px;
+    min-width: 80px;
+    padding: 0 8px;
 }
-
 .mediaMana_content_bottom .content_bottom_btn button.create {
     background: #108ee9;
     border-radius: 2px;

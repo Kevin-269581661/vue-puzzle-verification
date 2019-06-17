@@ -271,7 +271,7 @@ export default {
                             apName: info.apName,
                             apState: info.apState,
                             apTotal: info.apTotal,
-                            apcTime: dateFormat.toDateTime(info.apcTime),
+                            apcTime: dateFormat.toDateTime(info.apcTime, '/'),
                             bTitle: info.bTitle,
                             cName: info.cName,
                             cuName: info.cuName,

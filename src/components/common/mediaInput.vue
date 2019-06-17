@@ -2820,7 +2820,11 @@
         top: 0;
     }
     /*按钮*/
-    .mediaMana_content_bottom .content_bottom_btn {
+    .content_bottom_btn{
+        text-align: center;
+        margin-top: 20px;
+    }
+    /* .mediaMana_content_bottom .content_bottom_btn {
         position: absolute;
         bottom: -66px;
         margin-bottom: 22px;
@@ -2832,7 +2836,7 @@
         height: 32px;
         text-align: center;
         padding: 0;
-    }
+    } */
 
     /deep/ .mediaMana_content_bottom .el-form-item__error {
         top: 92%;
@@ -2978,11 +2982,11 @@
 
     /*1920*/
     @media screen and (min-width: 1900px) {
-        .mediaMana_content_bottom .content_bottom_btn {
+        /* .mediaMana_content_bottom .content_bottom_btn {
             position: absolute;
             bottom: -66px;
             left: 896px;
-        }
+        } */
 
         .mediaMana_content_bottom .content_bottom_upload {
             width: 442px;

@@ -50,29 +50,17 @@
                                 </el-select>
                             </div>
                         </span>
-                        <span>
-                            <div class="block">
-                                <el-select v-model="searchInfo.Lock" placeholder="是否预锁">
-                                    <el-option label="已预锁" value="2"></el-option>
-                                    <el-option label="未预锁" value="1"></el-option>
-                                </el-select>
-                            </div>
-                        </span>
-                        <span>
-                            <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
-                        </span>
-                        <span>
-                            <el-button @click="reset()" :disabled="!isReset">重置</el-button>
-                        </span>
-                        <span>
-                            <el-button plain v-if="showNewBtn" @click="addOne()">新建</el-button>
-                        </span>
-                        <span>
-                            <el-button plain v-if="showNewBtn" @click="isOpenDownload=true">导空位</el-button>
-                        </span>
-                        <span>
-                            <el-button type="primary" v-if="!isNation" @click="goToDiaPlate">点位表盘</el-button>
-                        </span>
+                        <div class="block">
+                            <el-select v-model="searchInfo.Lock" placeholder="是否预锁">
+                                <el-option label="已预锁" value="2"></el-option>
+                                <el-option label="未预锁" value="1"></el-option>
+                            </el-select>
+                        </div>
+                        <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
+                        <el-button @click="reset()" :disabled="!isReset">重置</el-button>
+                        <el-button plain v-if="showNewBtn" @click="addOne()">新建</el-button>
+                        <el-button plain v-if="showNewBtn" @click="isOpenDownload=true">导空位</el-button>
+                        <el-button type="primary" v-if="!isNation" @click="goToDiaPlate">点位表盘</el-button>
                     </div>
                 </el-row>
                 <div class="table_wrap">
@@ -124,7 +112,7 @@
                         </el-table-column>
                         <el-table-column class="tac" prop="apState" label="状态" min-width="6.1%">
                             <template slot-scope="scope">
-                                <span>{{ stateToText(scope.row.apState) }}</span>
+                                <point-state :state-text="stateToText(scope.row.apState).text" :color="stateToText(scope.row.apState).color"></point-state>                                                                
                             </template>
                         </el-table-column>
                         <el-table-column label="操作" width="100px" v-if="!(role=='OP' || role=='AD')">
@@ -215,6 +203,8 @@ import sessFun from "../../commonFun/sessFun.js";
 import cacheAdPlan from "../../commonFun/cacheAdPlan"
 import downloadVacancy from "../../components/common/components/vacancyDownload.vue"
 import noSearchResult from "./components/noSearchResult.vue";
+import pointState from './components/pointState.vue';    
+
 
 import {
     Button,
@@ -243,6 +233,7 @@ export default {
     components: {
         downloadVacancy,
         noSearchResult,
+        pointState,
         elButton: Button,
         elCheckboxGroup: CheckboxGroup,
         elCheckbox: Checkbox,
@@ -512,15 +503,15 @@ export default {
         // 状态转换成文本
         stateToText(val) {
             let state = [
-                { text: "已完成", value: 0 },
-                { text: "进行中", value: 1 },
-                { text: "未投放", value: 2 },
-                { text: "投放中", value: 3 },
-                { text: "强制结束", value: 5 }
+                { text: "已完成", value: 0, color: 'rgba(196,203,211,1)' },
+                { text: "进行中", value: 1, color: 'rgba(250,173,20,1)' },
+                { text: "未投放", value: 2, color: 'rgba(82,196,26,1)' },
+                { text: "投放中", value: 3, color: 'rgba(24,144,255,1)' },
+                { text: "强制结束", value: 5, color: 'rgba(245,34,45,1)' }
             ];
             for (let data of state) {
                 if (val == data.value) {
-                    return data.text;
+                    return data;
                 }
             }
         },
@@ -1241,25 +1232,25 @@ a {
     border-radius: 4px;
 }
 
-/deep/ .el-button {
-    width: 76px;
-    height: 34px;
-    text-align: center;
-    padding: 0;
-    position: relative;
-    left: 0;
-    margin-left: 2px;
-}
-/deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
+/* /deep/ .el-button { */
+    /* width: 76px; */
+    /* height: 34px; */
+    /* text-align: center; */
+    /* padding: 0; */
+    /* position: relative; */
+    /* left: 0; */
+    /* margin-left: 2px; */
+/* } */
+/* /deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
   position: relative;
   left: -2px;
   top: 0px;
-}
+} */
 
 
-/deep/ .el-button + .el-button {
+/* /deep/ .el-button + .el-button {
     margin-left: 0;
-}
+} */
 
 .mediaList_wrap .mediaList_container .table_wrap {
     margin: 24px auto;
@@ -1414,7 +1405,15 @@ a {
     cursor: pointer;
     color: #409EFF;
 }
-.el-icon-arrow-down {
+/* /deep/ button.el-button.el-button--default.el-button--small:hover {
+    color: #666;
+    border-color: #d8d8d8;
+    background-color: #fff;
+}
+/deep/ .popper__arrow {
+    display: none;
+}  */
+/* .el-icon-arrow-down {
     font-size: 12px;
 }
 
@@ -1455,7 +1454,7 @@ a {
 
 /deep/ .popper__arrow {
     display: none;
-}
+} */
 
 /*按钮*/
 /deep/ .el-button--default:focus,

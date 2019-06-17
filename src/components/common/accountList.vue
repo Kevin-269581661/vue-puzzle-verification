@@ -80,7 +80,7 @@
                         </el-table-column>
                         <el-table-column prop="uState" label="状态" min-width="8.9%">
                             <template slot-scope="scope">
-                                <span>{{stateToText(scope.row.uState)}}</span>
+                                <point-state :state-text="stateToText(scope.row.uState).text" :color="stateToText(scope.row.uState).color"></point-state>                                
                             </template>
                         </el-table-column>
 
@@ -121,11 +121,13 @@
     // 角色转换为中文
     import uTypeToText from "../../commonFun/uTypeToText.js";
     import noSearchResult from "./components/noSearchResult.vue";
+    import pointState from './components/pointState.vue';    
 
     export default {
         name: "customList",
         components: {
             noSearchResult,
+            pointState,
             elRow: Row,
             elInput: Input,
             elButton: Button,
@@ -327,12 +329,12 @@
             // 状态转换
             stateToText(status) {
                 let statusText = [
-                    {text: "正常", status: 1},
-                    {text: "禁用", status: 0}
+                    {text: "正常", status: 1, color: 'rgba(82,196,26,1)'},
+                    {text: "禁用", status: 0, color: 'rgba(245,34,45,1)'}
                 ];
                 for (let data of statusText) {
                     if (data.status == status) {
-                        return data.text;
+                        return data;
                     }
                 }
             },
@@ -559,12 +561,12 @@
         margin-left: 2px;
     }
 
-    /deep/ .el-button [class*="el-icon-"] + span,
+    /* /deep/ .el-button [class*="el-icon-"] + span,
     .select-wrap button .el-icon-search {
         position: relative;
         left: -2px;
         top: 0px;
-    }
+    } */
 
     /deep/ .el-button + .el-button {
         margin-left: 0;

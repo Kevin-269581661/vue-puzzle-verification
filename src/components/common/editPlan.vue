@@ -5456,7 +5456,7 @@
         border-top-left-radius: 0;
     }
 
-    /deep/ .el-button {
+    /* /deep/ .el-button {
         width: 76px;
         height: 34px;
         text-align: center;
@@ -5465,7 +5465,7 @@
 
     /deep/ .el-button+.el-button{
         margin-left: 3px;
-    }
+    } */
     /* /deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
         position: relative;
         left: -2px;
@@ -5689,9 +5689,9 @@
         color: #1890FF;
     }
     .otherBtn.el-button{
-        width: 76px;
+        /* width: 76px;
         height: 30px;
-        padding: 0;
+        padding: 0; */
         border-radius: 0;
         color:rgba(0,0,0,0.35);
     }
@@ -6190,9 +6190,9 @@
         text-align: center;
         margin-top: 20px
     }
-    /deep/ .upload_box .el-button{
+    /* /deep/ .upload_box .el-button{
         width: auto;
-    }
+    } */
 
     /*一键更换排期*/
     .table_box{
@@ -6417,9 +6417,9 @@
         }
     }
 
-    .urlBtn {
+    /* .urlBtn {
         padding: 10px;
-    }
+    } */
 
     /deep/ .el-badge__content.is-fixed.is-dot {
         left: -15px;

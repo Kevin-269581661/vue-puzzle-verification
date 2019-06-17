@@ -1285,16 +1285,16 @@
     .content_bottom_btn{
         text-align: center;
     }
-    .content_bottom_btn button{
+    /* .content_bottom_btn button{
         width: 72px;
         height: 34px;
     }
     .content_bottom_btn /deep/ .el-button span{
         position: relative;
         top: -2px;
-    }
+    } */
     /*按钮*/
-    /deep/ .el-button--default:focus, .el-button--default:hover{
+    /* /deep/ .el-button--default:focus, .el-button--default:hover{
         color: #606266;
         border-color: #dcdfe6;
         background-color: #fcfcfc;
@@ -1305,7 +1305,7 @@
     }
     .content_bottom_btn /deep/ .el-button span a{
         color: #606266;
-    }
+    } */
     /*表格高亮*/
     /deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
         background-color: #ecf5ff;

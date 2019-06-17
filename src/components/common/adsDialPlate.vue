@@ -410,7 +410,7 @@
                 console.log('时间选择',val)
                 if(val && val.length > 0){
                     let dayNum = this.GetDateDiff(val[0],val[1])
-                    if(dayNum < 30){
+                    if(dayNum < 29){
                         // this.dateInput = this.beforDate.concat()
                         this.dateInput[1] = timeFormat.returnDayCount(29,'/',new Date(this.dateInput[0]))
                         console.log('this.dateInput',this.dateInput)

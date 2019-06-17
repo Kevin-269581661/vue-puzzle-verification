@@ -66,6 +66,7 @@
                         element-loading-spinner="el-icon-loading"
                         :key="tableKey"
                         :data="adsTableList"
+                        class="ads_table"
                         style="width: 100%">
                         <el-table-column
                             class-name="el-table-column-resName"
@@ -242,7 +243,7 @@
             this.getTableData()
             this.getCity()
             // 设置表格左侧定位的高度
-            this.setFixedTableHieght()
+            // this.setFixedTableHieght()
         },
         methods:{
             getSessionData(){
@@ -259,21 +260,29 @@
                 this.beforDate = [starTime, endTime]
             },
             // 表格左侧定位的高度
-            setFixedTableHieght(){
-                let timer = setTimeout(()=>{
-                    let fixedTable = document.querySelector('.el-table__fixed')
-                    console.log('fixedTable',fixedTable)
-                    fixedTable.style.height = 490 + (this.pageData.pageSize / 10 - 1) * 450  + 'px'
-                    clearTimeout(timer)
-                },1000)
-            },
+            // setFixedTableHieght(){
+                // let timer = setTimeout(()=>{
+                //     let fixedTable = document.querySelector('.el-table__fixed')
+                //     console.log('fixedTable',fixedTable)
+                //     clearTimeout(timer)
+                //     if(fixedTable){
+                //         fixedTable.style.height = 490 + (this.pageData.pageSize / 10 - 1) * 450  + 'px'
+                //         // clearTimeout(timer)
+                //     }else{
+                //         this.setFixedTableHieght()
+                //     }
+                // },1000)
+                // 1350+490= 1840
+            // },
             // tab切换
             handleClick(){
                 console.log('tab切换',this.activeTabName)
                 this.pageData.pageNum = 1
+                this.pageData.pageSize = 10
                 this.resName = ''
                 this.areaRid = []
                 this.getTableData()
+                // this.setFixedTableHieght()
             },
             // 获取城市
             getCity(){
@@ -444,6 +453,7 @@
                 this.pageData.pageNum = 1
                 this.setTime()
                 this.getTableData()
+                // this.setFixedTableHieght()
             },
             // 分页
             changePage(val){
@@ -456,7 +466,7 @@
                 console.log('每页的条数',val)
                 this.pageData.pageSize = val
                 this.getTableData()
-                this.setFixedTableHieght()
+                // this.setFixedTableHieght()
             },
             // 返回上一页
             returnBefore(){
@@ -694,6 +704,10 @@
         -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
         background: #C1C1C1;
         border-radius: 4px;
+    }
+
+    /deep/ .ads_table .el-table__fixed{
+        height: 1840px !important;
     }
 
     /*safari下表头错位*/

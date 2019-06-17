@@ -675,30 +675,6 @@
     };
 </script>
 <style scoped>
-    /*面包屑导航*/
-    .ad_mediaDetail_wrap {
-        position: relative;
-    }
-    .ad_mediaDetail_nav{
-        width: 92%;
-        margin: 0 auto;
-    }
-    .ad_mediaDetail_nav p {
-        position: absolute;
-        left: 0;
-        top: 12px;
-        font-size: 14px;
-        line-height: 18px;
-    }
-
-    .ad_mediaDetail_nav p a {
-        color: #666;
-    }
-
-    .ad_mediaDetail_nav {
-        height: 42px;
-        position: relative;
-    }
     /deep/.comList_container .el-input{
         max-width: 180px;
     }
@@ -754,30 +730,6 @@
     }
     .el-col-24{
         width: auto;
-    }
-    /*表格*/
-    /deep/.pro_detail_container .el-table th {
-        height: 44px;
-        padding: 0;
-        background-color: #f7f7f7;
-    }
-    /deep/.pro_detail_container .el-table td {
-        padding: 8px 0;
-        overflow-x: hidden;
-        text-overflow: ellipsis;
-    }
-
-    /deep/.pro_detail_container .el-table--border {
-        border-radius: 4px;
-    }
-
-    /deep/.pro_detail_container .el-table th > .cell {
-        font-size: 14px;
-        color: #666666;
-        font-weight: bold;
-    }
-    /deep/.pro_detail_container .el-table tr {
-        height: 54px;
     }
     /* 各个属性个数等 */
     .car-title {
@@ -886,24 +838,6 @@
     /*滚动条*/
     /deep/ .el-table__body-wrapper {
         min-height: 400px;
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-
-    /deep/ .el-table__body-wrapper::-webkit-scrollbar {
-        width: 4px;
-        background: #FAFAFA;
-    }
-
-    /deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
-        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-        background: #C1C1C1;
-        border-radius: 4px;
-    }
-    .el-table th, .el-table tr{
-        height: 44px;
-        padding: 0;
-        background-color: #f7f7f7;
     }
 
     .imgPreview /deep/ .el-dialog{

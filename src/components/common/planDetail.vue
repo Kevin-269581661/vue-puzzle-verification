@@ -1,7 +1,7 @@
 <template>
-    <div>
-        <div class="ad_mediaMana_wrap">
-            <div class="ad_mediaMana_nav clearfix">
+    <div class="mediaDetail">
+        <div class="ad_mediaDetail_wrap clearfix">
+            <div class="ad_mediaDetail_nav">
                 <p>
                     <a href="#">方案管理</a>
                     <em> / </em>
@@ -534,51 +534,8 @@ export default {
     left: 5px;
 }
 
-/*选点排期*/
-/deep/ .el-table th,
-.el-table tr {
-    background: #f7f7f7;
-    padding: 10px 0;
-}
-
-/deep/ .el-table th > .cell {
-    color: #666666;
-    line-height: 14px;
-    font-weight: bold;
-}
-
-/deep/ .el-checkbox + .el-checkbox {
-    margin-left: 10px;
-}
-
-/deep/ .el-table__expanded-cell[class*="cell"] {
-    padding: 0 46px;
-    background-color: #f7f7f7;
-}
-
-/deep/ .el-table__expanded-cell[class*="cell"] .el-form {
-    height: 44px;
-    line-height: 44px;
-}
-
-/deep/ .el-form-item__content {
-    line-height: 46px;
-}
-
-/deep/ .el-form-item__label {
-    padding: 0 0 0 12px;
-}
-
 .table_wrap {
     padding: 10px 24px;
-}
-
-/deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
-    background-color: #ecf5ff;
-}
-
-/deep/ .el-tabs__item.is-active {
-    font-weight: bold;
 }
 
 /*报价单*/
@@ -610,25 +567,6 @@ export default {
 /*滚动条*/
 /deep/ .el-table__body-wrapper {
     height: 480px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar {
-    width: 4px;
-    background: #fafafa;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
-
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #c1c1c1;
-    border-radius: 4px;
-}
-
-/deep/ .el-table th > .cell {
-    font-weight: bold;
 }
 
 /*详情头部*/
@@ -694,46 +632,9 @@ export default {
     top: 12px;
 }
 
-.ad_mediaMana_nav {
-    position: relative;
-    height: 0;
-}
-
-.ad_mediaMana_nav p {
-    padding-left: 57px;
-    position: absolute;
-    left: 0;
-    top: 12px;
-    font-size: 14px;
-    line-height: 18px;
-}
-
-.ad_mediaMana_nav p em {
-    font-size: 14px;
-    color: #d9d9d9;
-    line-height: 18px;
-}
-
-.ad_mediaMana_nav p a {
-    color: #666;
-}
-
-.ad_mediaMana_nav p a:nth-of-type(1) {
-    color: #999;
-}
-
-.ad_mediaMana_wrap {
-    margin-bottom: 109px;
-    position: relative;
-}
-
-.ad_mediaMana_nav p a:nth-of-type(1) {
-    color: #999;
-}
-
 /*资源信息*/
 .mediaMana_content_top {
-    padding: 42px 60px 0 60px;
+    padding: 8px 60px 0 60px;
 }
 
 /*按钮*/

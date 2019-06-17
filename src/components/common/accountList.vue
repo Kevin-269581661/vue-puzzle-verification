@@ -501,129 +501,18 @@
         position: relative;
     }
 
-    /*wrap*/
-    .mediaList_wrap {
-        width: 92%;
-        background: #ffffff;
-        border: 1px solid #e6e7e9;
-        margin: 0 auto;
-    }
-
-    .mediaList_wrap .mediaList_head {
-        width: 100%;
-        height: 24px;
-        padding: 12px 0;
-        border-bottom: 1px solid #e6e7e9;
-    }
-
-    .mediaList_wrap .mediaList_head h2 {
-        font-size: 16px;
-        color: #2c313c;
-        height: 24px;
-
-        padding-left: 14px;
-        font-weight: bold;
-    }
-
-    .mediaList_wrap .mediaList_container {
-        width: 98%;
-        /* padding: 18px 18px 28px 18px; */
-        margin: 24px auto;
-    }
-
     .el-input {
         width: 180px;
-        height: 34px !important;
         border-radius: 4px;
-    }
-
-    .el-button {
-        width: 76px;
-        height: 34px;
-        text-align: center;
-        padding: 0;
-        position: relative;
-        left: 0;
-        margin-left: 2px;
-    }
-
-    .mediaList_wrap .mediaList_container .table_wrap {
-        width: 98%;
-        margin: 24px auto; 
-        border-radius: 4px;
-    }
-    .mediaList_handel {
-        width: 98%;
-        margin: 0 auto;
-    }
-    .mediaList_handel span {
-        float: left;
-        margin-left: 2px;
     }
 
     /deep/ .el-date-editor .el-range-separator {
         line-height: 26px;
     }
 
-    /*表格*/
-    /deep/ .el-date-editor .el-range-separator {
-        line-height: 26px;
-    }
-
-    /deep/ .el-table th,
-    .el-table tr {
-        height: 44px;
-        padding: 0;
-        background-color: #f7f7f7;
-    }
-
-    /deep/ .el-table td {
-        padding: 10px 0;
-        overflow-x: hidden;
-        text-overflow: ellipsis;
-    }
-
-    /deep/ .el-table__row td:nth-child(2) .cell {
-        width: 124px;
-    }
-
-    /deep/ .el-table--border {
-        border-radius: 4px;
-        height: 445px;
-    }
-
-    /deep/ .el-table th > .cell {
-        font-size: 14px;
-        color: #666666;
-        font-weight: bold;
-    }
-
-    /deep/ .el-table .caret-wrapper {
-        width: 22px;
-    }
-
-    /deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
-        background-color: #ecf5ff;
-    }
-
-    /*滚动条*/
+    /* 表格高度 */
     /deep/ .el-table__body-wrapper {
         height: 405px;
-        overflow-y: scroll;
-        overflow-x: hidden;
-    }
-
-    /deep/ .el-table__body-wrapper::-webkit-scrollbar {
-        width: 4px;
-        background: #fafafa;
-    }
-
-    /deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-        /*滚动条里面小方块*/
-
-        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-        background: #c1c1c1;
-        border-radius: 4px;
     }
 
     /*超出省略*/
@@ -631,37 +520,6 @@
         white-space: nowrap;
         max-width: 300px;
         text-overflow: ellipsis;
-    }
-
-    /*筛选*/
-    /deep/ .el-table__column-filter-trigger {
-        margin-left: 10px;
-    }
-
-    /deep/ .el-table th > .cell.highlight {
-        color: #409eff !important;
-    }
-
-    /deep/ div.el-table-filter {
-        left: 1106px !important;
-    }
-
-    /*操作*/
-    /deep/ .el-button--mini,
-    .el-button--small {
-        font-size: 14px !important;
-    }
-
-    /deep/ .el-button .el-button--primary .el-button--mini {
-        width: 51px;
-    }
-
-    /deep/ .el-dropdown-menu--mini .el-dropdown-menu__item {
-        width: 65px;
-    }
-
-    /deep/ .el-dropdown .el-button-group .el-button {
-        height: 28px;
     }
 
     /*下拉搜索框*/
@@ -684,32 +542,6 @@
     }
 
     .el-input {
-        height: 34px !important;
         border-radius: 4px;
-    }
-
-    /deep/ .el-input__inner {
-        height: 34px;
-    }
-
-    /*按钮*/
-    /deep/ .el-button--default:focus,
-    .el-button--default:hover {
-        color: #606266;
-        border-color: #dcdfe6;
-        background-color: #fcfcfc;
-    }
-
-    .content_bottom_btn /deep/ .el-button span {
-        position: relative;
-        top: -2px;
-    }
-
-    .content_bottom_btn /deep/ .el-button span a {
-        color: #606266;
-    }
-
-    .handel_btn {
-        position: relative;
     }
 </style>

@@ -849,11 +849,6 @@ export default {
     background-color: transparent;
 }
 
-/*录单*/
-/deep/ .el-table {
-    width: 98% !important;
-}
-
 .el-input {
     width: 240px;
     border-radius: 4px;
@@ -861,86 +856,6 @@ export default {
 
 /deep/ .el-date-editor .el-range-separator {
     line-height: 26px;
-}
-
-/*表格*/
-/deep/ .el-date-editor .el-range-separator {
-    line-height: 26px;
-}
-
-/deep/ .el-table th,
-.el-table tr {
-    height: 44px;
-    padding: 0;
-    background-color: #f7f7f7;
-}
-
-/deep/ .el-table td {
-    padding: 12px 0;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-}
-
-/deep/ .el-table--border {
-    border-radius: 4px;
-}
-
-/deep/ .el-table th > .cell {
-    font-size: 14px;
-    color: #666666;
-    font-weight: bold;
-}
-
-/deep/ .el-table .caret-wrapper {
-    width: 22px;
-}
-
-/deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
-    background-color: #ecf5ff;
-}
-
-/*滚动条*/
-/deep/ .el-table__body-wrapper {
-    height: 480px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar {
-    width: 4px;
-    background: #fafafa;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
-
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #c1c1c1;
-    border-radius: 4px;
-}
-
-/*超出省略*/
-/deep/ .el-table .cell {
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/deep/ .el-table .el-table_1_column_3 .cell {
-    width: 95px;
-}
-
-/*筛选*/
-/deep/ .el-table__column-filter-trigger {
-    margin-left: 10px;
-}
-
-/deep/ .el-table th > .cell.highlight {
-    color: #409eff !important;
-}
-
-/deep/ div.el-table-filter {
-    left: 1106px !important;
 }
 
 .bottom-btn {
@@ -979,7 +894,7 @@ export default {
 }
 
 /deep/ .el-input__inner {
-    width: 260px;
+    /* width: 260px; */
 }
 
 /deep/ .el-date-editor i,

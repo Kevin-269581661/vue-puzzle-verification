@@ -48,8 +48,8 @@
                                 <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
                             </el-select>
                         </div>
-                        <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch" size="small">搜索</el-button>
-                        <el-button @click="reset()" :disabled="!isReset" size="small">重置</el-button>
+                        <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
+                        <el-button @click="reset()" :disabled="!isReset">重置</el-button>
                     </div>
                 </el-row>
                 <div class="table_wrap">
@@ -85,7 +85,7 @@
                                 </p>
                             </template>
                         </el-table-column>
-                        <el-table-column label="发布日期" min-width="7.3%" sortable :sort-by="sortData">
+                        <el-table-column label="发布日期" min-width="8.3%" sortable :sort-by="sortData">
                             <template slot-scope="scope">
                                 <span>{{formatTime(scope.row.apcTime)}}</span>
                             </template>
@@ -838,68 +838,8 @@ a {
     position: relative;
 }
 
-    /*面包屑导航*/
-    .ad_mediaDetail_wrap {
-        position: relative;
-    }
-    .ad_mediaDetail_nav{
-        width: 92%;
-        margin: 0 auto;
-    }
-    .ad_mediaDetail_nav p {
-        position: absolute;
-        left: 0;
-        top: 12px;
-        font-size: 14px;
-        line-height: 18px;
-    }
-
-    .ad_mediaDetail_nav p a {
-        color: #666;
-    }
-
-    .ad_mediaDetail_nav {
-        height: 42px;
-        position: relative;
-    }
-
-    /*wrap*/
-    .mediaList_wrap {
-        width: 92%;
-        background: #ffffff;
-        border: 1px solid #e6e7e9;
-        margin: 0 auto;
-    }
-
-    .mediaList_wrap .mediaList_head {
-        width: 100%;
-        height: 24px;
-        padding: 12px 0;
-        border-bottom: 1px solid #e6e7e9;
-    }
-
-    .mediaList_wrap .mediaList_head h2 {
-        font-size: 16px;
-        color: #2c313c;
-        height: 24px;
-
-        padding-left: 14px;
-        font-weight: bold;
-    }
-
-    .mediaList_wrap .mediaList_container {
-        width: 96%;
-        margin: 24px auto;
-    }
-
 .el-input {
     width: 180px;
-    border-radius: 4px;
-}
-
-
-.mediaList_wrap .mediaList_container .table_wrap {
-    margin: 24px auto;
     border-radius: 4px;
 }
 
@@ -955,66 +895,9 @@ a {
     background-color: #fcfcfc;
 }
 
-/*表格*/
-/deep/ .el-date-editor .el-range-separator {
-    line-height: 26px;
-}
-
-/deep/ .el-table th,
-.el-table tr {
-    height: 44px;
-    padding: 0;
-    background-color: #f7f7f7;
-}
-
-/deep/ .el-table td {
-    padding: 8px 0;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-}
-
-/deep/ .el-table--border {
-    border-radius: 4px;
-}
-
-/deep/ .el-table th > .cell {
-    font-size: 14px;
-    color: #666666;
-    font-weight: bold;
-}
-
-/deep/ .el-table .caret-wrapper {
-    width: 22px;
-}
-
-/deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
-    background-color: #ecf5ff;
-}
-/deep/ .el-table td .cell {
-    display: flex;
-    flex-direction: column;
-    height: auto;
-    line-height: 22px;
-}
-
 /*滚动条*/
 /deep/ .el-table__body-wrapper {
     height: 405px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar {
-    width: 4px;
-    background: #fafafa;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
-
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #c1c1c1;
-    border-radius: 4px;
 }
 
 /*超出省略*/
@@ -1029,32 +912,11 @@ a {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-/*筛选*/
-/deep/ .el-table__column-filter-trigger {
-    margin-left: 10px;
-}
-
-/deep/ .el-table th > .cell.highlight {
-    color: #409eff !important;
-}
-
-/deep/ div.el-table-filter {
-    left: 1106px !important;
-}
-
-/deep/ .el-table-filter__list-item {
-    color: #666;
-}
 
 /*操作*/
 .el-dropdown-link {
     cursor: pointer;
     color: #409EFF;
-}
-
-.mediaList_handel span {
-    float: left !important;
-    margin-left: 4px;
 }
 
 </style>

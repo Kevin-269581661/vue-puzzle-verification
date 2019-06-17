@@ -53,7 +53,7 @@
 						</el-table-column>
 						<!--<el-table-column prop="clientRName" label="所在地" min-width="7.2%">-->
 						<!--</el-table-column>-->
-						<el-table-column prop="position" label="职位" class="tar" min-width="7.2%" show-overflow-tooltip>
+						<el-table-column prop="position" label="职位" min-width="7.2%" show-overflow-tooltip>
 						</el-table-column>
 						<el-table-column prop="phone" label="手机号码" min-width="9.5%">
 						</el-table-column>
@@ -377,7 +377,6 @@ export default {
     display: inline-block;
     margin-left: 2px;
     position: relative;
-    /*top: 3px;*/
 }
 
 /deep/ .el-range-separator {
@@ -396,38 +395,8 @@ export default {
     position: relative;
 }
 
-   /*面包屑导航*/
-    .ad_mediaDetail_wrap {
-        position: relative;
-    }
-    .ad_mediaDetail_nav{
-        width: 92%;
-        margin: 0 auto;
-    }
-    .ad_mediaDetail_nav p {
-        position: absolute;
-        left: 0;
-        top: 12px;
-        font-size: 14px;
-        line-height: 18px;
-    }
-
-    .ad_mediaDetail_nav p a {
-        color: #666;
-    }
-
-    .ad_mediaDetail_nav {
-        height: 42px;
-        position: relative;
-    }
-
 .el-input {
     width: 240px;
-    border-radius: 4px;
-}
-
-.mediaList_wrap .mediaList_container .table_wrap {
-    margin: 24px auto;
     border-radius: 4px;
 }
 
@@ -450,144 +419,14 @@ export default {
     width: 185px;
 }
 
-/*表格*/
-
-/deep/ .el-table th,
-.el-table tr {
-    height: 44px;
-    padding: 0;
-    background-color: #f7f7f7;
-}
-
-/deep/ .el-table td {
-    padding: 8px 0;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-}
-
-/deep/ .el-table--border {
-    border-radius: 4px;
-}
-
-/deep/ .el-table th > .cell {
-    font-size: 14px;
-    color: #666666;
-    font-weight: bold;
-}
-
-/deep/ .el-table .caret-wrapper {
-    width: 22px;
-}
-
-/deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
-    background-color: #ecf5ff;
-}
-
-/*滚动条*/
+/* 表格高度 */
 /deep/ .el-table__body-wrapper {
     height: 405px;
-    overflow-y: scroll;
-    overflow-x: hidden;
 }
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar {
-    width: 4px;
-    background: #fafafa;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #c1c1c1;
-    border-radius: 4px;
-}
-
 /*超出省略*/
 /deep/ .el-table .cell {
     overflow-x: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-}
-
-/deep/ .el-table__row td:nth-child(1) .cell {
-    width: 90px;
-}
-
-/deep/ .el-table__row td:nth-child(2) .cell {
-    width: 114px;
-}
-
-/deep/ .el-table__row td:nth-child(4) .cell {
-    width: 247px;
-}
-
-/deep/ .el-table__row td:nth-child(6) .cell {
-    width: 180px;
-}
-
-/deep/ .el-table__row td:nth-child(8) .cell {
-    width: 108px;
-}
-
-/*筛选*/
-/deep/ .el-table__column-filter-trigger {
-    margin-left: 10px;
-}
-
-/deep/ .el-table th > .cell.highlight {
-    color: #409eff !important;
-}
-
-/deep/ div.el-table-filter {
-    left: 1106px !important;
-}
-
-/*操作*/
-/deep/ .el-button--mini,
-.el-button--small {
-    font-size: 14px !important;
-}
-
-/deep/ .el-button .el-button--primary .el-button--mini {
-    width: 51px;
-}
-
-/deep/ .el-dropdown-menu--mini .el-dropdown-menu__item {
-    width: 65px;
-}
-
-/deep/ .el-button-group .el-button:not(:last-child) {
-    margin-top: -1px;
-}
-
-.tar {
-    text-align: right !important;
-    padding-right: 10px;
-}
-
-/deep/ .el-dropdown .el-button-group .el-button {
-    height: 28px;
-}
-
-/*按钮*/
-/deep/ .el-button--default:focus,
-.el-button--default:hover {
-    color: #606266;
-    border-color: #dcdfe6;
-    background-color: #fcfcfc;
-}
-
-.content_bottom_btn /deep/ .el-button span {
-    position: relative;
-    top: -2px;
-}
-
-.content_bottom_btn /deep/ .el-button span a {
-    color: #606266;
-}
-
-.mediaList_handel span {
-    float: left;
-    margin-left: 2px;
 }
 </style>

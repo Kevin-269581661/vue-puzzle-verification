@@ -1023,41 +1023,7 @@
     /deep/ .el-dialog__body{
         text-align: center;
     }
-
-    /*面包屑导航*/
-    .ad_mediaDetail_nav{
-        width: 92%;
-        height: 42px;
-        margin: 0 auto;
-        position: relative;
-    }
-
-    .ad_mediaDetail_nav p {
-        position: absolute;
-        left: 0;
-        top: 12px;
-        font-size: 14px;
-        line-height: 18px;
-    }
-
-    .ad_mediaDetail_nav p em{
-        font-size: 14px;
-        color: #D9D9D9;
-        line-height: 30px;
-    }
-
-    .ad_mediaDetail_nav p a{
-        color: #666;
-    }
-
-    .ad_mediaDetail_nav p a:nth-of-type(1){
-        color: #999;
-    }
-
-    .ad_mediaDetail_wrap{
-        position: relative;
-    }
-
+    
     /*媒体信息*/
     .ad_mediaInfo{
         width: 92%;

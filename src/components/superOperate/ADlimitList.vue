@@ -72,26 +72,7 @@ export default {
             session_data:{},
             role: "",
             //表格
-            ADlist: [
-                // {
-                //     nID: 1,
-                //     nTitle: "医疗",
-                //     ndescript: "医疗类型的广告",
-                //     showInput: false,
-                //     changeBtn: false,
-                //     typeUpdate: "",
-                //     detailUpdate: ""
-                // },
-                // {
-                //     nID: 2,
-                //     nTitle: "物理",
-                //     ndescript: "物理类型的广告",
-                //     showInput: false,
-                //     changeBtn: false,
-                //     typeUpdate: "",
-                //     detailUpdate: ""
-                // }
-            ]
+            ADlist: []
         };
     },
     created() {
@@ -349,159 +330,15 @@ export default {
     height: 32px;
 }
 
-/*面包屑导航*/
-.ad_mediaDetail_wrap {
-    position: relative;
-}
-.ad_mediaDetail_nav{
-    width: 92%;
-    margin: 0 auto;
-}
-.ad_mediaDetail_nav p {
-    position: absolute;
-    left: 0;
-    top: 12px;
-    font-size: 14px;
-    line-height: 18px;
-}
-
-.ad_mediaDetail_nav p a {
-    color: #666;
-}
-
-.ad_mediaDetail_nav {
-    height: 42px;
-    position: relative;
-}
-
-/*wrap*/
-.mediaList_wrap {
-    width: 92%;
-    background: #ffffff;
-    border: 1px solid #e6e7e9;
-    margin: 0 auto;
-    /*margin-bottom: 90px;*/
-}
-
-.mediaList_wrap .mediaList_head {
-    width: 100%;
-    height: 24px;
-    padding: 12px 0;
-    border-bottom: 1px solid #e6e7e9;
-}
-
-.mediaList_wrap .mediaList_head h2 {
-    font-size: 16px;
-    color: #2c313c;
-    height: 24px;
-    padding-left: 14px;
-    font-weight: bold;
-}
-.mediaList_wrap .mediaList_container {
-    width: 100%;
-}
-
-.mediaList_wrap .mediaList_container .table_wrap {
-    width: 96%;
-    margin: 20px auto;
-    border-radius: 4px;
-}
-
-.table_wrap {
-    width: 1210px;
-    border-radius: 4px;
-
-    margin: 0 auto;
-    margin-top: 20px;
-}
-
-/*表格*/
-/deep/.el-date-editor .el-range-separator {
-    line-height: 26px;
-}
-
-/deep/.el-table th,
-.el-table tr {
-    height: 44px;
-    padding: 0;
-    background-color: #f7f7f7;
-}
-/deep/ .el-table td {
-    padding: 5px 0;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-}
-/deep/.el-table--border {
-    border-radius: 4px;
-}
-
-/deep/ .el-table th > .cell {
-    font-size: 14px;
-    color: #666666;
-    font-weight: bold;
-}
-/deep/ .el-table .caret-wrapper {
-    width: 22px;
-}
-
-/deep/.el-table--enable-row-hover .el-table__body tr:hover > td {
-    background-color: #ecf5ff;
-}
-
 /*滚动条*/
 /deep/ .el-table__body-wrapper {
     height: 405px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-/deep/ .el-table__body-wrapper::-webkit-scrollbar {
-    width: 4px;
-    background: #fafafa;
-}
-/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
-
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #c1c1c1;
-    border-radius: 4px;
 }
 /*超出省略*/
 /deep/ .el-table .cell {
     overflow-x: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-}
-/*筛选*/
-/deep/ .el-table__column-filter-trigger {
-    margin-left: 10px;
-}
-/deep/.el-table th > .cell.highlight {
-    color: #409eff !important;
-}
-
-/deep/ div.el-table-filter {
-    left: 1106px !important;
-}
-/*操作*/
-/deep/.el-button--mini,
-.el-button--small {
-    font-size: 14px !important;
-}
-
-/deep/.el-button .el-button--primary .el-button--mini {
-    width: 51px;
-}
-/deep/.el-dropdown-menu--mini .el-dropdown-menu__item {
-    width: 65px;
-}
-
-.tar {
-    text-align: right !important;
-    padding-right: 10px;
-}
-
-/deep/ .el-dropdown .el-button-group .el-button {
-    height: 28px;
 }
 
 /*新增刊例价*/

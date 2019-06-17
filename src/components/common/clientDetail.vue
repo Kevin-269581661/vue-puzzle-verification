@@ -9,11 +9,11 @@
         </div>
 
         <!--媒体信息-->
-        <div class="ad_mediaInfo">
-            <div class="ad_mediaInfo_head">
+        <div class="mediaList_wrap">
+            <div class="mediaList_head">
                 <h2>客户详情</h2>
             </div>
-            <div class="ad_mediaInfoPanel">
+            <div class="mediaList_handel">
                 <div class="clientInfo">
                     <h4>客户信息</h4>
                     <ul>
@@ -189,62 +189,8 @@ export default {
 </script>
 
 <style scoped>
-/*面包屑导航*/
-    .ad_mediaDetail_wrap {
-        position: relative;
-    }
-    .ad_mediaDetail_nav{
-        width: 92%;
-        margin: 0 auto;
-    }
-    .ad_mediaDetail_nav p {
-        position: absolute;
-        left: 0;
-        top: 12px;
-        font-size: 14px;
-        line-height: 18px;
-    }
-
-    .ad_mediaDetail_nav p a {
-        color: #666;
-    }
-
-    .ad_mediaDetail_nav {
-        height: 42px;
-        position: relative;
-    }
-
-    /*wrap*/
-    .mediaList_wrap {
-        width: 92%;
-        background: #ffffff;
-        border: 1px solid #e6e7e9;
-        margin: 0 auto;
-    }
-
-    .mediaList_wrap .mediaList_head {
-        width: 100%;
-        height: 24px;
-        padding: 12px 0;
-        border-bottom: 1px solid #e6e7e9;
-    }
-
-    .mediaList_wrap .mediaList_head h2 {
-        font-size: 16px;
-        color: #2c313c;
-        height: 24px;
-
-        padding-left: 14px;
-        font-weight: bold;
-    }
-
-    .mediaList_wrap .mediaList_container {
-        width: 98%;
-        margin: 24px auto;
-    }
-
 /*客户信息*/
-.ad_mediaInfo {
+.mediaList_wrap {
     width: 92%;
     margin: 0 auto;
     height: 346px;
@@ -252,13 +198,13 @@ export default {
     border: 1px solid #e6e7e9;
 }
 
-.ad_mediaInfo_head {
+.mediaList_head {
     width: 100%;
     padding: 12px 0;
     border-bottom: 1px solid #dedede;
 }
 
-.ad_mediaInfo_head h2 {
+.mediaList_head h2 {
     font-size: 16px;
     color: #2c313c;
     font-weight: bold;
@@ -267,21 +213,17 @@ export default {
     border-left: 2px solid #465d89;
 }
 
-.ad_mediaInfo .ad_mediaInfoPanel {
+.mediaList_handel {
     padding: 18px 24px;
 }
 
-.ad_mediaInfo .ad_mediaInfoPanel h4 {
+.mediaList_handel h4 {
     font-size: 14px;
     color: #333333;
     font-weight: bold;
 }
 
-.ad_mediaInfo .ad_mediaInfoPanel ul.ml157 {
-    margin-left: 20%;
-}
-
-.ad_mediaInfo .ad_mediaInfoPanel ul li {
+.mediaList_handel ul li {
     width: 33.2%;
     font-size: 14px;
     color: #666666;
@@ -303,11 +245,11 @@ export default {
     float: left;
 }
 
-.ad_mediaInfoPanel ul li,
+.mediaList_handel ul li,
 .remarkBox p {
     font-size: 14px;
 }
-.ad_mediaInfoPanel ul li em,
+.mediaList_handel ul li em,
 .remarkBox em {
     color: #333333;
 }

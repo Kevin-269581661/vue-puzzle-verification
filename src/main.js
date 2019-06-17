@@ -33,6 +33,7 @@ Vue.prototype.apiVar = apiVar;
 
 //引入全局css
 import '../static/css/reset.css'
+import '../static/css/public.css'
 import '../static/css/index.css'
 import '../static/css/header.css'
 import '../static/css/footer.css'

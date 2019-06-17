@@ -1097,34 +1097,6 @@
         height: 180px;
     }
 
-    /*面包屑导航*/
-    .ad_mediaDetail_wrap {
-        position: relative;
-    }
-
-    .ad_mediaDetail_nav{
-        width: 92%;
-        height: 42px;
-        margin: 0 auto;
-        position: relative;
-    }
-
-    .ad_mediaDetail_nav p {
-        position: absolute;
-        left: 0;
-        top: 12px;
-        font-size: 14px;
-        line-height: 18px;
-    }
-
-    .ad_mediaDetail_nav p a {
-        color: #666;
-    }
-
-    .ad_mediaMana_nav p a:nth-of-type(1) {
-        color: #999;
-    }
-
     /*过滤条件样式*/
     .handel_ul{
         list-style:none;
@@ -1160,39 +1132,9 @@
         border-bottom-right-radius: 0;
     }
 
-    .mediaList_wrap .mediaList_container .table_wrap {
-        margin: 24px auto;
-        border-radius: 4px;
-    }
-
-    /*表格*/
-    /deep/ .el-date-editor .el-range-separator {
-        line-height: 26px;
-    }
-
-    /deep/ .el-table th, .el-table tr {
-        height: 44px;
-        padding: 0;
-        background-color: #f7f7f7;
-    }
-
     /*滚动条*/
     /deep/ .el-table__body-wrapper {
         height: 405px;
-        overflow-y: scroll;
-        overflow-x: hidden;
-    }
-
-    /deep/ .el-table__body-wrapper::-webkit-scrollbar {
-        width: 4px;
-        background: #FAFAFA;
-
-    }
-
-    /deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
-        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-        background: #C1C1C1;
-        border-radius: 4px;
     }
 
     /*超出省略*/
@@ -1200,26 +1142,6 @@
         overflow-x: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-    }
-
-    /deep/ .el-table__row td:nth-child(9) .cell , /deep/ .has-gutter th:nth-child(9) .cell {
-        text-align: right !important;
-    }
-
-    /deep/ .el-table__row td:nth-child(1) .cell {
-        width: 155px;
-    }
-
-    /deep/ .el-table__row td:nth-child(5) .cell span {
-        width: 126px;
-    }
-
-    /deep/ .el-table__row td:nth-child(7) .cell span {
-        width: 96px;
-    }
-
-    /deep/ .el-table__row td:nth-child(8) .cell span {
-        width: 156px;
     }
 
     /*筛选*/

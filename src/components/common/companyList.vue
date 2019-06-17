@@ -5,12 +5,12 @@
                 <a href="#" style="color: #999">公司管理</a>
             </p>
         </div>
-        <div class="comList_wrap">
-            <div class="comList_head">
+        <div class="mediaList_wrap">
+            <div class="mediaList_head">
                 <h2>公司列表</h2>
             </div>
-            <div class="comList_container">
-                <el-row>
+            <div class="mediaList_container">
+                <el-row class="mediaList_handel">
                     <el-col :span="6">
                         <span>公司名称:</span>
                         <el-input v-model="searchInfo.keyword" placeholder="请输入" size="small"></el-input>
@@ -28,9 +28,9 @@
                         </el-select>
                     </el-col>
                     <el-col :span="6">
-                        <el-button type="primary" icon="el-icon-search" @click="search()" size="small" :disabled="!isSearch">查询</el-button>
-                        <el-button @click="reset()" size="small">重置</el-button>
-                        <el-button @click="newCom()" size="small" v-if="showNewBtn">新建</el-button>
+                        <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">查询</el-button>
+                        <el-button @click="reset()">重置</el-button>
+                        <el-button @click="newCom()" v-if="showNewBtn">新建</el-button>
                     </el-col>
 				</el-row>
                 <div class="table_wrap">
@@ -85,8 +85,8 @@
                 </el-select>
             </p>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="isShowNew = false" size="small">取 消</el-button>
-                <el-button type="primary" @click="handleCompany()" size="small">确 定</el-button>
+                <el-button @click="isShowNew = false">取 消</el-button>
+                <el-button type="primary" @click="handleCompany()">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -453,100 +453,23 @@
     };
 </script>
 <style scoped>
-    /*面包屑导航*/
-    .ad_mediaDetail_wrap {
-        position: relative;
-    }
-    .ad_mediaDetail_nav{
-        width: 92%;
-        margin: 0 auto;
-    }
-    .ad_mediaDetail_nav p {
-        position: absolute;
-        left: 0;
-        top: 12px;
-        font-size: 14px;
-        line-height: 18px;
-    }
-
-    .ad_mediaDetail_nav p a {
-        color: #666;
-    }
-
-    .ad_mediaDetail_nav {
-        height: 42px;
-        position: relative;
-    }
-    /deep/.comList_container .el-input{
+    /deep/.mediaList_container .el-input{
         max-width: 180px;
-    }
-
-    .comList_wrap {
-        width: 92%;
-        background: #ffffff;
-        border: 1px solid #e6e7e9;
-        margin: 0 auto;
-    }
-
-    .comList_wrap .comList_head {
-        width: 100%;
-        height: 24px;
-        padding: 12px 0;
-        border-bottom: 1px solid #e6e7e9;
-    }
-
-    .comList_wrap .comList_head h2 {
-        font-size: 16px;
-        color: #2c313c;
-        height: 24px;
-        padding-left: 14px;
-        font-weight: bold;
-    }
-
-    .comList_wrap .comList_container {
-        width: 96%;
-        margin: 24px auto;
-    }
-    .table_wrap{
-        margin: 24px auto;
-        width: 100%;
-    }
-    /*表格*/
-    /deep/ .el-table th,
-    .el-table tr {
-        height: 44px;
-        padding: 0;
-        background-color: #f7f7f7;
-    }
-    /deep/ .el-table td {
-        padding: 8px 0;
-        overflow-x: hidden;
-        text-overflow: ellipsis;
-    }
-
-    /deep/ .el-table--border {
-        border-radius: 4px;
-    }
-
-    /deep/ .el-table th > .cell {
-        font-size: 14px;
-        color: #666666;
-        font-weight: bold;
-    }
-    
-    /deep/ .el-table__body-wrapper::-webkit-scrollbar {
-        width: 4px;
-        background: #fafafa;
-    }
-
-    /deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-        /*滚动条里面小方块*/
-        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-        background: #c1c1c1;
-        border-radius: 4px;
     }
     a{
         color: #108ee9;
+    }
+    
+    /* 表格高度 */
+    /deep/ .el-table__body-wrapper {
+        height: 405px;
+    }
+
+    /*超出省略*/
+    /deep/ .el-table .cell {
+        white-space: nowrap;
+        max-width: 300px;
+        text-overflow: ellipsis;
     }
 </style>
 

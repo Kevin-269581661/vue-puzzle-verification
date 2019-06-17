@@ -1,7 +1,7 @@
 <template>
-    <div>
-        <div class="ad_mediaMana_wrap">
-            <div class="ad_mediaMana_nav clearfix">
+    <div class="mediaDetail">
+        <div class="ad_mediaDetail_wrap clearfix">
+            <div class="ad_mediaDetail_nav">
                 <p>
                     <a href="#">订单管理</a>
                     <em> / </em>
@@ -2384,65 +2384,8 @@ export default {
     margin-left: 10px;
 }
 
-/* /deep/ .changeDWBtn span {
-    position: relative;
-    left: -9px !important;
-    top: -2px;
-} */
-
-/deep/ .el-table th,
-.el-table tr {
-    background: #f7f7f7;
-    padding: 10px 0;
-}
-
-/deep/ .el-table th > .cell {
-    color: #666666;
-    line-height: 14px;
-    font-weight: bold;
-}
-
-/deep/ .el-checkbox + .el-checkbox {
-    margin-left: 10px;
-}
-
-/deep/ .el-table__expanded-cell[class*="cell"] {
-    padding: 0 46px;
-    background-color: #f7f7f7;
-}
-
-/deep/ .el-table__expanded-cell[class*="cell"] .el-form {
-    height: 44px;
-    line-height: 44px;
-}
-
-/deep/ .el-table th,
-.el-table tr {
-    height: 44px;
-}
-
-/deep/ .el-form-item__content {
-    line-height: 46px;
-}
-
-/deep/ .el-form-item__label {
-    padding: 0 0 0 12px;
-}
-
 .table_wrap {
     padding: 10px 28px 28px 28px;
-}
-
-/deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
-    background-color: #ecf5ff;
-}
-
-/deep/ .el-tabs__item.is-active {
-    font-weight: bold;
-}
-
-/deep/ .el-table--border {
-    border-radius: 4px;
 }
 
 /*下拉搜索框*/
@@ -2536,25 +2479,6 @@ export default {
 /*滚动条*/
 /deep/ .el-table__body-wrapper {
     height: 480px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar {
-    width: 4px;
-    background: #fafafa;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
-
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #c1c1c1;
-    border-radius: 4px;
-}
-
-/deep/ .el-table th > .cell {
-    font-weight: bold;
 }
 
 /*详情头部*/
@@ -2805,31 +2729,9 @@ export default {
 }
 /*页码*/
 .pager {
-    position: relative;
     height: 32px;
     margin-top: 30px;
-}
-
-/deep/ .el-pagination {
-    position: absolute;
-    right: 0;
-    top: 0;
-}
-
-/deep/ .el-pagination.is-background .el-pager li {
-    font-weight: normal;
-    font-size: 13px;
-}
-
-/deep/ span.el-pagination__sizes {
-    position: relative;
-    top: -3px;
-}
-
-/deep/ span.el-pagination__jump {
-    position: relative;
-    top: -3px;
-    margin-left: 20px;
+    text-align: right;
 }
 
 /deep/ .el-radio-group{
@@ -2844,54 +2746,9 @@ export default {
     margin-bottom: 10px;
 }
 
-/*面包屑导航*/
-.tip {
-    position: absolute;
-    right: 88px;
-    font-size: 14px;
-    color: #999999;
-    top: 12px;
-}
-
-.ad_mediaMana_nav {
-    position: relative;
-    height: 0;
-}
-
-.ad_mediaMana_nav p {
-    padding-left: 57px;
-    position: absolute;
-    left: 0;
-    top: 12px;
-    font-size: 14px;
-    line-height: 18px;
-}
-
-.ad_mediaMana_nav p em {
-    font-size: 14px;
-    color: #d9d9d9;
-    line-height: 18px;
-}
-
-.ad_mediaMana_nav p a {
-    color: #666;
-}
-
-.ad_mediaMana_nav p a:nth-of-type(1) {
-    color: #999;
-}
-
-.ad_mediaMana_wrap {
-    position: relative;
-}
-
-.ad_mediaMana_nav p a:nth-of-type(1) {
-    color: #999;
-}
-
 /*资源信息*/
 .mediaMana_content_top {
-    padding: 42px 60px 0 60px;
+    padding: 8px 60px 0 60px;
 }
 
 /*按钮*/
@@ -2963,18 +2820,6 @@ export default {
 }
 
 /*表格*/
-/deep/ .el-table th,
-.el-table tr {
-    background: #f7f7f7;
-    padding: 7px 0;
-}
-
-/deep/ .el-table th > .cell {
-    color: #666666;
-    line-height: 14px;
-    font-weight: bold;
-}
-
 /deep/ .el-checkbox + .el-checkbox {
     margin-left: 10px;
 }
@@ -3000,33 +2845,10 @@ export default {
 /*滚动条*/
 /deep/ .el-table__body-wrapper {
     height: 480px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar {
-    width: 4px;
-    background: #fafafa;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
-
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #c1c1c1;
-    border-radius: 4px;
 }
 
 /deep/ .el-form--inline .el-form-item {
     margin-right: 45px;
-}
-
-/deep/ .el-table_3_column_26,
-/deep/ .el-table_3_column_27,
-/deep/ .el-table_1_column_9,
-.el-table_1_column_18,
-/deep/ .el-table_2_column_19 {
-    text-align: right;
 }
 
 /deep/ .table_wrap.car-list {

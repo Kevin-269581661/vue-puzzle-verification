@@ -1744,12 +1744,18 @@
             // 获取订单
             remoteGetOrder(query){
                 if (query !== '') {
+                    let ridsArr = [];
+                    for(let data of this.city){
+                        ridsArr.push(data.rid);
+                    }
+                    let rids =  ridsArr.join(',');
                     let sess = this.sessionData;
                     let info = {
                         uid: sess.uID,
                         token: sess.token,
                         apName: query,
                         suId: this.BDData.uid,
+                        rIds: rids,
                     };
                     this.loadingOrder = true;
                     api.getApi(this.apiVar.Advertisement+"/GetSaleAdPlan", info).then(res =>{
@@ -1777,13 +1783,19 @@
             // 确定复制
             confirmCopy(){
                 if(this.orderName){
+                    let ridsArr = [];
+                    for(let data of this.city){
+                        ridsArr.push(data.rid);
+                    }
+                    let rids =  ridsArr.join(',');
                     let sess = this.sessionData;
                     let info = {
                         uid: sess.uID,
                         token: sess.token,
                         apId: this.orderName,
                         startTime: this.dateInput[0],
-                        endTime: this.dateInput[1]
+                        endTime: this.dateInput[1],
+                        rIds: rids
                     };
                     api.getApi(this.apiVar.Advertisement+"/GetAdsFromCopiedAdPlan", info).then(res =>{
                         console.log(res.data);

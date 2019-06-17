@@ -2247,6 +2247,7 @@
                         token: sess.token,
                         apName: query,
                         suId: this.BDData.uid,
+                        rIds: this.planForm.throwCity.join(',')
                     };
                     this.loadingOrder = true;
                     api.getApi(this.apiVar.Advertisement+"/GetSaleAdPlan", info).then(res =>{
@@ -2280,7 +2281,8 @@
                         token: sess.token,
                         apId: this.orderName,
                         startTime: this.dateInput[0],
-                        endTime: this.dateInput[1]
+                        endTime: this.dateInput[1],
+                        rIds: this.planForm.throwCity.join(',')                        
                     };
                     api.getApi(this.apiVar.Advertisement+"/GetAdsFromCopiedAdPlan", info).then(res =>{
                         console.log(res.data);

@@ -1,7 +1,7 @@
 <template>
-    <div>
-        <div class="ad_mediaMana_wrap">
-            <div class="ad_mediaMana_nav clearfix">
+    <div class="mediaDetail">
+        <div class="ad_mediaMana_wrap clearfix">
+            <div class="ad_mediaMana_nav">
                 <p>
                     <a href="#">电视广告</a>
                     <em> / </em>
@@ -833,14 +833,6 @@ export default {
     margin-bottom: 12px;
 }
 
-.plan-detail-left ul li:nth-child(3n-2) {
-    /*width: 350px;*/
-}
-
-.plan-detail-left ul li:nth-child(3n-1) {
-    /*width: 248px;*/
-}
-
 .plan-detail-left ul li em {
     font-size: 14px;
     color: #666666;
@@ -907,36 +899,11 @@ export default {
     font-weight: bold;
 }
 
-.price_box /deep/ .el-table__row td:nth-child(2),
-.price_box /deep/ .el-table__row td:nth-child(3),
-.price_box /deep/ .el-table__row td:nth-child(4),
-.price_box /deep/ .el-table__row td:nth-child(5),
-.price_box /deep/ .el-table__row td:nth-child(6),
-.price_box /deep/ .has-gutter th:nth-child(2),
-.price_box /deep/ .has-gutter th:nth-child(3),
-.price_box /deep/ .has-gutter th:nth-child(4),
-.price_box /deep/ .has-gutter th:nth-child(5),
-.price_box /deep/ .has-gutter th:nth-child(6) {
-    text-align: right;
-}
-
 /deep/ .el-table__column-filter-trigger {
     left: 5px;
 }
 
 /*选点排期*/
-/deep/ .el-table th,
-.el-table tr {
-    background: #f7f7f7;
-    padding: 10px 0;
-}
-
-/deep/ .el-table th > .cell {
-    color: #666666;
-    line-height: 14px;
-    font-weight: bold;
-}
-
 /deep/ .el-checkbox + .el-checkbox {
     margin-left: 10px;
 }
@@ -1216,25 +1183,6 @@ export default {
 /*滚动条*/
 /deep/ .el-table__body-wrapper {
     height: 480px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar {
-    width: 4px;
-    background: #fafafa;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
-    width: 4px;
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #c1c1c1;
-    border-radius: 4px;
-}
-
-/deep/ .el-table th > .cell {
-    font-weight: bold;
 }
 
 /*详情头部*/
@@ -1301,46 +1249,9 @@ export default {
     top: 12px;
 }
 
-.ad_mediaMana_nav {
-    position: relative;
-    height: 0;
-}
-
-.ad_mediaMana_nav p {
-    padding-left: 57px;
-    position: absolute;
-    left: 0;
-    top: 12px;
-    font-size: 14px;
-    line-height: 18px;
-}
-
-.ad_mediaMana_nav p em {
-    font-size: 14px;
-    color: #d9d9d9;
-    line-height: 18px;
-}
-
-.ad_mediaMana_nav p a {
-    color: #666;
-}
-
-.ad_mediaMana_nav p a:nth-of-type(1) {
-    color: #999;
-}
-
-.ad_mediaMana_wrap {
-    margin-bottom: 109px;
-    position: relative;
-}
-
-.ad_mediaMana_nav p a:nth-of-type(1) {
-    color: #999;
-}
-
 /*资源信息*/
 .mediaMana_content_top {
-    padding: 42px 60px 0 60px;
+    padding: 8px 60px 0 60px;
 }
 
 .mediaMana_content_bottom {
@@ -1409,37 +1320,4 @@ export default {
     width: 200px;
     display: inline-block;
 }
-  .areanum_box .el-table__body-wrapper {
-    /* overflow-y: hidden; */
-    overflow-y: scroll;
-    overflow-x: scroll;
-  }
-
-  .areanum_box .el-table__body-wrapper::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-    background: #fafafa;
-  }
-
-  .el-table__body-wrapper {
-    overflow-y: scroll;
-    overflow-x: hidden;
-  }
-
-  .areanum_box .el-table__body-wrapper::-webkit-scrollbar {
-    width: 4px;
-    background: #fafafa;
-  }
-
-  .el-table__body-wrapper::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
-    width: 4px;
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #c1c1c1;
-    border-radius: 4px;
-  }
-
-  .areanum_box .el-table__fixed-right::before, .el-table__fixed::before {
-    height: 0px;
-  }
 </style>

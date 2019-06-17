@@ -1,7 +1,7 @@
 <template>
-    <div>
-        <div class="ad_mediaMana_wrap">
-            <div class="ad_mediaMana_nav clearfix">
+    <div class="mediaDetail">
+        <div class="ad_mediaDetail_wrap clearfix">
+            <div class="ad_mediaDetail_nav">
                 <p>
                     <a href="#">订单管理</a>
                     <em> / </em>
@@ -109,7 +109,7 @@
                                             <span>{{scope.row.resName||'--'}}</span>
                                         </template>
                                     </el-table-column>
-                                    <el-table-column prop="mTitle" label="媒体名称" min-width="10.3%" class="tar">
+                                    <el-table-column prop="mTitle" label="媒体名称" min-width="10.3%">
                                     </el-table-column>
                                     <el-table-column prop="asLab" label="投放面" min-width="8.8%">
                                     </el-table-column>
@@ -122,9 +122,9 @@
                                             <span>{{scope.row.cType||'--'}}</span>
                                         </template>
                                     </el-table-column>
-                                    <el-table-column prop="hNum" label="小区户数" min-width="7.3%" class="tar">
+                                    <el-table-column prop="hNum" label="小区户数" min-width="7.3%" align="right">
                                     </el-table-column>
-                                    <el-table-column label="楼盘价格" min-width="7.3%">
+                                    <el-table-column label="楼盘价格" min-width="7.3%" align="right">
                                         <template slot-scope="scope">
                                             <span>&yen;{{(scope.row.hPrice)?priceFormat(scope.row.hPrice/100): 0 }}</span>
                                         </template>
@@ -146,9 +146,13 @@
                                     <el-table-column label="操作" min-width="4.3%" v-if="showHandel">
                                         <template slot-scope="scope">
                                             <span style="color:#999;" v-if="scope.row.lState==2">终止</span>
-                                            <el-button type="text" v-else @click="disContinue(scope.row)">终止</el-button>
+                                            <span style="color:#409EFF;" v-else @click="disContinue(scope.row)">终止</span>
                                         </template>
                                     </el-table-column>
+
+                                    <div slot="empty">
+                                        <no-search-result></no-search-result>
+                                    </div>
                                 </el-table>
                                 <p style="font-size: 12px;color: #666666;margin-top: 10px">提示：带*号的为新增点位</p>
                             </div>
@@ -169,10 +173,11 @@
                             <div class="panel" v-loading="UpReportLoading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                                 <div class="up-report">
                                     <template>
-                                        <el-radio-group v-model="mediaUpType" size="medium" @change="changeUpMedia()">
+                                        <el-radio-group v-model="mediaUpType" size="medium" @change="changeUpMedia()" class="radio_style">
                                             <el-radio-button label="广告门"></el-radio-button>
                                             <el-radio-button label="道闸"></el-radio-button>
                                         </el-radio-group>
+                                        <el-button @click="downloadImg('SK')" >导出图片</el-button>
                                         <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
                                     </template>
 
@@ -238,11 +243,11 @@
                                         </el-pagination>
                                     </div>
                                     <div class="up-report-bottom">
-                                        <div class="up-report-bottom-checkbox">
+                                        <!-- <div class="up-report-bottom-checkbox"> -->
                                             <!--<el-checkbox v-model="sendReportchecked">生成报告同时发送至客户邮箱：444094173@qq.com-->
                                             <!--<el-button type="text">修改</el-button>-->
                                             <!--</el-checkbox>-->
-                                        </div>
+                                        <!-- </div> -->
                                         <div class="up-report-bottom-btns">
                                             <el-button type="primary" @click="submitUpload('SK')">保存</el-button>
                                             <!-- <el-button plain @click="downloadUp">下载PDF</el-button> -->
@@ -259,10 +264,11 @@
                             <div class="panel" v-loading="DownReportLoading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                                 <div class="up-report">
                                     <template>
-                                        <el-radio-group v-model="mediaDownType" size="medium" @change="changeDownMedia()">
+                                        <el-radio-group v-model="mediaDownType" size="medium" @change="changeDownMedia()" class="radio_style">
                                             <el-radio-button label="广告门"></el-radio-button>
                                             <el-radio-button label="道闸"></el-radio-button>
                                         </el-radio-group>
+                                        <el-button @click="downloadImg('XK')" >导出图片</el-button>                                        
                                         <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
                                     </template>
 
@@ -437,6 +443,10 @@
                                 <el-button size="small" icon="el-icon-delete" :style="{'color':scope.row.imgUrl?'#108DE7':''}" @click="deleteOneImg(scope.row, scope.$index)" :disabled="!scope.row.imgUrl"></el-button>
                             </template>
                         </el-table-column>
+
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
                     </el-table>
                     <p style="text-align:center;margin-top:20px;">
                         <el-button type="primary" size="small" @click="saveAll()">保存</el-button>
@@ -476,6 +486,8 @@ import apQuotation from './components/apQuotation.vue'
 import material from "./components/materialInfo.vue";
 import detail from "./components/detailInfo.vue";
 import addAds from "./components/addAds"
+import noSearchResult from "./components/noSearchResult.vue";
+
 import {
     Table,
     TableColumn,
@@ -508,6 +520,7 @@ export default {
         material,
         detail,
         addAds,
+        noSearchResult,
         elTable: Table,
         elTableColumn: TableColumn,
         elTabs: Tabs,
@@ -812,16 +825,17 @@ export default {
                     chDay: data.chDay,
                     adSize: data.mVehicle == "广告门" ? data.adSize: data.picSize,
                     adViewSize: data.mVehicle == "广告门" ? data.adViewSize: data.lightBoxSize,
+                    notPush: data.notPush,
+                    mRemark: data.mRemark,
                     resAddress: data.resAddress,
-                    notPush: data.notPush
                 };
                 resultArr.push(obj);
             }
 
             require.ensure([], () => {
                 const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
-                const tHeader = ['资源名称', '市', '区域', '媒介载体', '媒体名称', '资产编号', '投放面', '投放日期', '终止日期', '商圈', '楼盘类型/写字楼类型', '楼盘价格', '住户数量/办公室数量', '楼栋数量', '入住年份/建成年份', '广告尺寸/画面尺寸', '可视画面/灯箱尺寸', '广告限制', '详细地址'];
-                const filterVal = ['resName', 'city', 'rName', 'mVehicle', 'mTitle', 'assetTag', 'asLab', 'timeRange', 'finishTimeRange', 'tradingArea', 'cType', 'hPrice', 'hNum', 'fNum', 'chDay', 'adSize', 'adViewSize', 'notPush', 'resAddress'];
+                const tHeader = ['资源名称', '市', '区域', '媒介载体', '媒体名称', '资产编号', '投放面', '投放日期', '终止日期', '商圈', '楼盘类型/写字楼类型', '楼盘价格', '住户数量/办公室数量', '楼栋数量', '入住年份/建成年份', '广告尺寸/画面尺寸', '可视画面/灯箱尺寸', '广告限制', '媒体备注', '详细地址'];
+                const filterVal = ['resName', 'city', 'rName', 'mVehicle', 'mTitle', 'assetTag', 'asLab', 'timeRange', 'finishTimeRange', 'tradingArea', 'cType', 'hPrice', 'hNum', 'fNum', 'chDay', 'adSize', 'adViewSize', 'notPush', 'mRemark', 'resAddress'];
                 const list = resultArr;
                 const data = this.formatJson(filterVal, list);
                 export_json_to_excel(tHeader, data, name);
@@ -2274,6 +2288,29 @@ export default {
             let s = date.getSeconds();
             return Y + M + D + h + m + s;
         },
+        // 导出图片
+        downloadImg(type){
+            let info = {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                apId: this.orderDetail.apID,
+                type: type=='SK' ? 0 : 1,
+                apName: this.orderDetail.apName,
+            };
+            api.getApi(this.apiVar.Advertisement+'/DownloadImgPackage', info).then(res =>{
+                if(res.data.SysCode == 200200){
+                    let routeUrl = this.$router.resolve({
+                        path: "/progressDown",
+                        query: info,
+                    });
+                    window.open(routeUrl .href, '_blank');
+                }else if(res.data.SysCode == 100302){
+                    this.loginTimeout();
+                }else{
+                    Message.warning(res.data.MSG);
+                }
+            });
+        },
     },
 };
 </script>
@@ -2337,13 +2374,6 @@ export default {
     font-weight: bold;
 }
 
-/deep/ .el-table__row td:nth-child(8),
-/deep/ .el-table__row td:nth-child(9),
-/deep/ .has-gutter th:nth-child(8),
-/deep/ .has-gutter th:nth-child(9) {
-    text-align: right;
-}
-
 /deep/ .el-table__column-filter-trigger {
     position: relative;
     left: 5px;
@@ -2354,65 +2384,8 @@ export default {
     margin-left: 10px;
 }
 
-/deep/ .changeDWBtn span {
-    position: relative;
-    left: -9px !important;
-    top: -2px;
-}
-
-/deep/ .el-table th,
-.el-table tr {
-    background: #f7f7f7;
-    padding: 10px 0;
-}
-
-/deep/ .el-table th > .cell {
-    color: #666666;
-    line-height: 14px;
-    font-weight: bold;
-}
-
-/deep/ .el-checkbox + .el-checkbox {
-    margin-left: 10px;
-}
-
-/deep/ .el-table__expanded-cell[class*="cell"] {
-    padding: 0 46px;
-    background-color: #f7f7f7;
-}
-
-/deep/ .el-table__expanded-cell[class*="cell"] .el-form {
-    height: 44px;
-    line-height: 44px;
-}
-
-/deep/ .el-table th,
-.el-table tr {
-    height: 44px;
-}
-
-/deep/ .el-form-item__content {
-    line-height: 46px;
-}
-
-/deep/ .el-form-item__label {
-    padding: 0 0 0 12px;
-}
-
 .table_wrap {
     padding: 10px 28px 28px 28px;
-}
-
-/deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
-    background-color: #ecf5ff;
-}
-
-/deep/ .el-tabs__item.is-active {
-    font-weight: bold;
-}
-
-/deep/ .el-table--border {
-    border-radius: 4px;
 }
 
 /*下拉搜索框*/
@@ -2435,29 +2408,12 @@ export default {
 }
 
 .el-input {
-    height: 34px !important;
     border-radius: 4px;
 }
 
 /deep/ .el-input__inner {
     font-size: 14px;
-    height: 34px;
     vertical-align: middle;
-}
-
-/*按钮*/
-.first-wrap /deep/ .el-button {
-    width: 76px;
-    position: relative;
-}
-
-.first-wrap /deep/ .el-button span,
-.first-wrap /deep/ .el-button i {
-    left: -23px;
-}
-
-.first-wrap /deep/ .el-button span a {
-    color: #606266;
 }
 
 /*报价单*/
@@ -2472,7 +2428,7 @@ export default {
     width: 100%;
 }
 .panel {
-    padding: 10px 17px;
+    padding: 0 30px;
 }
 
 .step3 {
@@ -2496,11 +2452,6 @@ export default {
     float: right;
     padding-left: 66px;
     box-sizing: border-box;
-}
-
-/deep/ .el-button.el-button--text span {
-    position: relative;
-    top: -5px;
 }
 
 .price ul li {
@@ -2528,25 +2479,6 @@ export default {
 /*滚动条*/
 /deep/ .el-table__body-wrapper {
     height: 480px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar {
-    width: 4px;
-    background: #fafafa;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
-
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #c1c1c1;
-    border-radius: 4px;
-}
-
-/deep/ .el-table th > .cell {
-    font-weight: bold;
 }
 
 /*详情头部*/
@@ -2695,7 +2627,7 @@ export default {
 }
 
 /deep/ .up-loader-header .el-input__inner {
-    height: 34px;
+    height: 32px;
     width: 180px;
 }
 
@@ -2797,31 +2729,9 @@ export default {
 }
 /*页码*/
 .pager {
-    position: relative;
     height: 32px;
     margin-top: 30px;
-}
-
-/deep/ .el-pagination {
-    position: absolute;
-    right: 0;
-    top: 0;
-}
-
-/deep/ .el-pagination.is-background .el-pager li {
-    font-weight: normal;
-    font-size: 13px;
-}
-
-/deep/ span.el-pagination__sizes {
-    position: relative;
-    top: -3px;
-}
-
-/deep/ span.el-pagination__jump {
-    position: relative;
-    top: -3px;
-    margin-left: 20px;
+    text-align: right;
 }
 
 /deep/ .el-radio-group{
@@ -2829,73 +2739,16 @@ export default {
 }
 .up-report-bottom {
     text-align: center;
-    margin-top: 20px;
+    margin: 20px;
 }
 
 .up-report-bottom-checkbox {
     margin-bottom: 10px;
 }
 
-.up-report-bottom-checkbox .el-button {
-    position: relative;
-    top: 5px;
-    left: 0;
-}
-
-.up-report-bottom-btns .el-button {
-    width: 74px;
-    height: 32px;
-    padding: 0;
-}
-
-/*面包屑导航*/
-.tip {
-    position: absolute;
-    right: 88px;
-    font-size: 14px;
-    color: #999999;
-    top: 12px;
-}
-
-.ad_mediaMana_nav {
-    position: relative;
-    height: 0;
-}
-
-.ad_mediaMana_nav p {
-    padding-left: 57px;
-    position: absolute;
-    left: 0;
-    top: 12px;
-    font-size: 14px;
-    line-height: 18px;
-}
-
-.ad_mediaMana_nav p em {
-    font-size: 14px;
-    color: #d9d9d9;
-    line-height: 18px;
-}
-
-.ad_mediaMana_nav p a {
-    color: #666;
-}
-
-.ad_mediaMana_nav p a:nth-of-type(1) {
-    color: #999;
-}
-
-.ad_mediaMana_wrap {
-    position: relative;
-}
-
-.ad_mediaMana_nav p a:nth-of-type(1) {
-    color: #999;
-}
-
 /*资源信息*/
 .mediaMana_content_top {
-    padding: 42px 60px 0 60px;
+    padding: 8px 60px 0 60px;
 }
 
 /*按钮*/
@@ -2908,7 +2761,7 @@ export default {
 
 .content_bottom_btn button {
     width: 80px;
-    height: 34px;
+    height: 32px;
     line-height: 10px;
 }
 
@@ -2950,19 +2803,14 @@ export default {
     border-bottom-right-radius: 0;
     padding-right: 0;
     padding-left: 10px;
-    height: 34px;
-}
-
-/deep/ .el-button {
-    height: 34px;
-    margin-left: 2px;
+    height: 32px;
 }
 
 /deep/ .date-select.el-input__inner {
     width: 237px;
     position: relative;
     left: 1px;
-    height: 34px;
+    height: 32px;
 }
 
 /deep/ .el-date-editor .el-range__icon {
@@ -2971,39 +2819,7 @@ export default {
     left: -3px;
 }
 
-.searchBtn {
-    position: relative;
-}
-
-/deep/ .searchBtn .el-icon-search {
-    position: relative;
-    top: -2px;
-    left: -9px !important;
-}
-
-/deep/ .el-button.searchBtn span {
-    position: relative;
-    left: -5px;
-    top: -2px;
-}
-
-.searchBtn.el-button + .el-button {
-    margin-left: 0;
-}
-
 /*表格*/
-/deep/ .el-table th,
-.el-table tr {
-    background: #f7f7f7;
-    padding: 7px 0;
-}
-
-/deep/ .el-table th > .cell {
-    color: #666666;
-    line-height: 14px;
-    font-weight: bold;
-}
-
 /deep/ .el-checkbox + .el-checkbox {
     margin-left: 10px;
 }
@@ -3026,41 +2842,13 @@ export default {
     padding: 0 0 0 12px;
 }
 
-/deep/ .tar .cell {
-    text-align: right !important;
-    padding-right: 10px;
-}
-
 /*滚动条*/
 /deep/ .el-table__body-wrapper {
     height: 480px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar {
-    width: 4px;
-    background: #fafafa;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
-
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #c1c1c1;
-    border-radius: 4px;
 }
 
 /deep/ .el-form--inline .el-form-item {
     margin-right: 45px;
-}
-
-/deep/ .el-table_3_column_26,
-/deep/ .el-table_3_column_27,
-/deep/ .el-table_1_column_9,
-.el-table_1_column_18,
-/deep/ .el-table_2_column_19 {
-    text-align: right;
 }
 
 /deep/ .table_wrap.car-list {
@@ -3083,7 +2871,7 @@ export default {
 /deep/ .plan-select .el-input__inner {
     width: 180px;
     margin-left: -13px;
-    height: 34px;
+    height: 32px;
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
 }
@@ -3110,12 +2898,6 @@ export default {
     position: relative;
 }
 
-/deep/ .el-date-editor .el-range__icon {
-    position: relative;
-    top: -3px;
-    margin-right: 2px;
-}
-
 /deep/ .el-range-separator {
     position: relative;
     top: -2px;
@@ -3123,13 +2905,10 @@ export default {
 
 /deep/ .el-input__inner {
     width: 260px;
-    height: 34px;
-    line-height: 34px;
+    height: 32px;
+    line-height: 32px;
 }
 
-/deep/ .el-range-editor .el-range-input {
-    line-height: 20px;
-}
 
 /deep/ .el-dialog__body {
     padding: 5px 20px;
@@ -3146,7 +2925,7 @@ export default {
 }
 
 
-/deep/ .el-dialog__body img{
+/deep/.imgPreview .el-dialog__body img{
   width: 100%;
   max-height: 640px;
 }
@@ -3217,13 +2996,6 @@ export default {
     margin: 0;
 }
 
-/*1440*/
-@media all and (min-width: 1420px) {
-    .panel {
-        padding: 20px 30px;
-    }
-}
-
 /*1920*/
 @media all and (min-width: 1900px) {
     .plan-title .handleBtn {
@@ -3254,5 +3026,9 @@ export default {
 }
 /deep/ .el-tabs__item:focus.is-active.is-focus:not(:active){
     box-shadow: none;
+}
+
+.radio_style{
+    vertical-align: top;
 }
 </style>

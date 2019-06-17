@@ -132,11 +132,16 @@
                                     <el-button type="primary" style="background: #1890FF" icon="el-icon-search"
                                                class="searchBtn" @click="searchFun" :disabled="searchBtnAbled">搜索</el-button>
                                 </div>
-                                <div>
-                                    <el-button type="primary" class="map" icon="el-icon-location-outline" @click="mapAD">地图</el-button>
+                                
+                                <div class="shopcar" @click="dialogVisible()">
+                                    <el-badge :value="nowPointNum" class="item">
+                                        <img src="../../assets/images/shopCar.png" alt="">
+                                    </el-badge>
                                 </div>
-                                <div>
-                                    <!-- <el-button type="success" class="oneKeyPointBtn importXle" icon="el-icon-upload2" @click="importFanan">导入</el-button> -->
+                            </div>
+                            <el-row class="button_row">
+                                <el-col>
+                                    <el-button type="primary" class="map" icon="el-icon-location-outline" @click="mapAD">地图</el-button>
                                     <el-dropdown>
                                         <el-button type="success" class="oneKeyPointBtn importXle">
                                             导入<i class="el-icon-arrow-down el-icon--right"></i>
@@ -146,16 +151,10 @@
                                             <el-dropdown-item @click.native.prevent="importFanan('ads')">导入点位</el-dropdown-item>
                                         </el-dropdown-menu>
                                     </el-dropdown>
-                                </div>
-                                <div>
+                                    <el-button type="primary" @click="importFanan('copy')">复制方案</el-button>
                                     <el-button class="oneKeyPointBtn" @click="dialogOneKeyPoint = true">一键选点</el-button>
-                                </div>
-                                <div class="shopcar" @click="dialogVisible()">
-                                    <el-badge :value="nowPointNum" class="item">
-                                        <img src="../../assets/images/shopCar.png" alt="">
-                                    </el-badge>
-                                </div>
-                            </div>
+                                </el-col>
+                            </el-row>
                         </div>
                         <!--类型区域选择面板-->
                         <div class="dw-panel" v-show="isOccupied">
@@ -1073,6 +1072,27 @@
                 </el-table>
             </template>
         </el-dialog>
+        <!-- 复制方案弹出框 -->
+        <el-dialog
+            :visible.sync="isCopy"
+            title="复制方案"
+            width="450px"
+            >
+            <el-select v-model="orderName" size="small"
+                filterable
+                remote
+                reserve-keyword
+                placeholder="请输入关键词"
+                :remote-method="remoteGetOrder"
+                :loading="loadingOrder"
+            >
+                <el-option v-for="item of orderArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
+            </el-select>
+            <span slot="footer" class="dialog-footer">
+                <el-button size="small" @click="isCopy = false">取 消</el-button>
+                <el-button size="small" type="primary" @click="confirmCopy()">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -1381,6 +1401,14 @@
                 importInfoData: {},
                 // 导入excel之后返回的数组
                 excelDataUpload:[],
+                // 复制方案
+                isCopy: false,
+                // 搜索方案时的loading
+                loadingOrder: false,
+                // 搜索方案名称
+                orderName: '',
+                // 返回的订单列表
+                orderArr: [],
                 apAicode:'',                  // 方案的协同aicode
                 shareADUrl: '',               // 协同选点的url https://beta.qinlinad.com/shareADList?apid=649&aicode=0DDD2685D9D3842ECB0DDC45D79D2131
                 dialogOneKeyPoint: false,    // 一键选点模态框
@@ -1408,6 +1436,7 @@
                 beOccupiedNumber: 0,             // 第一次搜索记录时提前保存 planList
                 isOccupied: true,                // 被占搜索时隐藏过滤条件
                 beOccupiedAdsData: [],           // 当前点击行的被占信息{beOccupieApName:'',lState: '',schedules: ''}
+                shopDelRowClick: false,                
                 pageNo: 1,                       // 页码
                 totalPage: 1,                    // 总页数
                 getAdsParamsData: {},            //　获取点位列表的参数data
@@ -1895,9 +1924,14 @@
                 if(type == 'res'){
                     this.importType = '1';
                     this.doUpload = '/advertisement/AdPlanResImport'
-                }else{
+                }else if(type == 'ads'){
                     this.importType = '2';
                     this.doUpload = '/advertisement/AnalysisExcelAdBaseInfo';
+                }else if(type == 'copy'){
+                    this.orderName = '';
+                    this.orderArr = [];
+                    this.isCopy = true;
+                    return;
                 }
                 this.isImport = true;
                 this.fileData = [];
@@ -2008,6 +2042,7 @@
                 }
                 this.isImport = false;
                 // this.dialogTableVisible = true;
+                this.judgeByselect();                
                 this.dialogVisible();
                 console.log('inport----data----shoplist', this.shopingList);
             },
@@ -2201,6 +2236,133 @@
                 }
                 return resultarr;
             },
+            // 获取订单
+            remoteGetOrder(query){
+                if (query !== '') {
+                    let sess = this.sessionData;
+                    let info = {
+                        uid: sess.uID,
+                        token: sess.token,
+                        apName: query,
+                        suId: this.BDData.uid,
+                        rIds: this.planForm.throwCity.join(',')
+                    };
+                    this.loadingOrder = true;
+                    api.getApi(this.apiVar.Advertisement+"/GetSaleAdPlan", info).then(res =>{
+                        console.log(res.data);
+                        this.loadingOrder = false;
+                        if(res.data.SysCode == 200200){
+                            this.orderArr = res.data.data.map(item => {
+                                return {
+                                    label: item.apName,
+                                    value: item.apID
+                                };
+                            });
+                        }else if(res.data.SysCode == 100302){
+                            this.loginTimeout();
+                        }else{
+                            this.messageFun('warning',res.data.MSG)
+                        }
+                    }).catch(err =>{
+                        console.log(err);
+                    });
+                } else {
+                    this.orderArr = [];
+                }
+            },
+            // 确定复制
+            confirmCopy(){
+                if(this.orderName){
+                    let sess = this.sessionData;
+                    let info = {
+                        uid: sess.uID,
+                        token: sess.token,
+                        apId: this.orderName,
+                        startTime: this.dateInput[0],
+                        endTime: this.dateInput[1],
+                        rIds: this.planForm.throwCity.join(',')                        
+                    };
+                    api.getApi(this.apiVar.Advertisement+"/GetAdsFromCopiedAdPlan", info).then(res =>{
+                        console.log(res.data);
+                        if(res.data.SysCode == 200200){
+                            let resinfo = res.data.data;
+                            let result = [];
+                            for(let data of resinfo){
+                                result.push(this.setCopyData(data));
+                            }
+                            console.log('result----', result);
+                            for(let item of result){
+                                this.isHaveDiffPush(item);
+                            }
+                            this.judgeByselect();
+                        }else if(res.data.SysCode == 100302){
+                            this.loginTimeout();
+                        }else{
+                            this.messageFun('warning',res.data.MSG)
+                        }
+                        this.isCopy = false;
+                    }).catch(err =>{
+                        console.log(err);
+                        this.isCopy = false;
+                    });
+                }else{
+                    Message.warning('请先选择要复制的方案');
+                }
+            },
+            // 构建复制方案数据格式
+            setCopyData(info){
+                let checkBox = {A: false, B: false,ABC:false}
+                if (info.asLab === 'A') {
+                    checkBox.A = true
+                } else if (info.asLab === 'B') {
+                    checkBox.B = true
+                } else if (info.asLab === 'ABC') {
+                    checkBox.ABC = true
+                }
+                let importInfo = {
+                    mID: info.mID,
+                    resType: info.resType,
+                    resID: info.resID,
+                    asID: '',
+                    asIDs: info.asID,
+                    asLabs: info.asLab,
+                    resName: info.resName,
+                    city: info.city,
+                    rid: info.rID,
+                    origin: info.rName,
+                    buildType: info.cType,
+                    houseNum: info.hNum,
+                    buildPrice: (info.hPrice / 100),
+                    mediaName: info.mTitle || '',
+                    mVehicle: info.mVehicle,
+                    buildNum: info.fNum,
+                    schedules: this.dateInput[0] + '-' + this.dateInput[1],
+                    tradingArea: info.tradingArea,
+                    assetTag: info.assetTag,
+                    liveYear: info.chDay,
+                    mediaRemark: info.mRemark || '--',
+                    mapCenter: info.reference || '--',      // 地图中心点
+                    address: info.resAddress || '',
+                    dNum: info.dNum || '',       // 出入口数
+                    adLimit: info.notPush || '',
+                    A_B: info.asLab,
+                    checkBox: checkBox,
+                    connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
+                    connID: info.connID || '',        // 连排门id
+                    industryInfos: info.industryInfos || [],   // 同行业资源回避
+                    mediaLevel: info.grade || '',
+                    adPrice: info.mVehicle === '道闸' ? info.asPrice / 100 || 0 : info.asPrice / 700 || 0,
+                    asName: info.asName || '',         // 点位所属公司名称
+                    asrID: info.asrID,                 // 所属公司id,
+                    lState: info.adlInfo ? info.adlInfo : '',   // 是否被占
+                };
+                if(info.mVehicle === '道闸'){
+                    importInfo.asID = info.asIDs.split(',')
+                }else if(info.mVehicle === '广告门'){
+                    importInfo.asID = info.asID
+                }
+                return importInfo;
+            },      
             // 第四步的导出方案
             downLoadFanan(){
                 let arr = this.excelData(this.shopingList)
@@ -4085,10 +4247,10 @@
             // 获取事件
             getEventList(){
                 let arr = [
-                        // {
-                        //     label: '移除被占点位',
-                        //     value: 1,
-                        // },
+                        {
+                            label: '移除被占点位',
+                            value: 1,
+                        },
                         // {
                         //     label: '移除非客户的选点',
                         //     value: 2,
@@ -4136,6 +4298,9 @@
                 console.log('val', val);
                 if(this.shopShowList.length){
                     switch (val){
+                        case 1:
+                            this.clearADLock();
+                            break;
                         case 3:
                             this.removeCommentIndustryAds('res');
                             break;
@@ -4159,6 +4324,41 @@
                     let active = this.activeName;
                     this.messageFun('warning', `没有${active=='1'?'广告门':'道闸'}数据`);
                 }
+            },
+            // 清空被占的点位
+            clearADLock() {
+                //this.shopingList
+                this.$confirm('移除所有被占点位!', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    showClose: false,
+                    type: 'warning '
+                }).then(() => {
+                    let list = this.shopingList
+                    let haveADLock = false
+                    for (let i = 0; i < list.length;) {
+                        if (list[i].lState !== undefined && list[i].lState.length > 0) {
+                            list.splice(i, 1)
+                            haveADLock = true
+                        } else {
+                            i++
+                        }
+                    }
+                    this.typeShopList = this.getTypeList();
+                    this.getShowList();
+
+                    if (haveADLock) {
+                        this.messageFun('success','移除成功')
+                        this.computeMedia_AD()
+                    } else {
+                        this.messageFun('warning','暂无被占点位')
+                    }
+                }).catch(() => {
+                    this.eventType = '';
+                    this.messageFun('info','取消成功')
+                })
+                // this.ADLockNum = 0
+                this.resetPlanList()
             },
             // 同资源保留个数
             containNuminRes(num){
@@ -4281,12 +4481,13 @@
                 this.shopingList = other.concat(resultArr);
                 this.shopShowList = resultArr;
             },
-            // 根据connID高亮行数据
-            tableRowClassName({row}){
-                // console.log('row',row)
-                if (row.connData.connectResName !== '' || row.connData.commentWorkRes !=='' || row.connData.connectMedia !=='') {
+            // 当前行是否高亮
+            tableRowClassName({row}) {
+                if (row.lState !== undefined && row.lState.length > 0) {
+                    return "warning-row";
+                } else if (row.connData.connectResName !== '' || row.connData.commentWorkRes !=='' || row.connData.connectMedia !=='') {
                     return "warning-row-conncet";
-                } else {
+                }else {
                     return "";
                 }
             },
@@ -4355,11 +4556,37 @@
             // 购物车行被点击
             shopRowClick(row, event, column){
                 console.log('购物车行被点击row',row,column)
-                if(row.connData.connectResName !== '' || row.connData.commentWorkRes !=='' || row.connData.connectMedia !==''){
+                if (row.lState !== undefined && row.lState.length > 0) {
+                    let dataArr = row.lState
+                    console.log('row.asID', row.asID)
+                    let arr = []
+                    for(let key of dataArr){
+                        let star = timeFormat.toDate(key.lStar, '/')
+                        let end = timeFormat.toDate(key.lEnd, '/')
+                        arr.push({
+                            beOccupieApName: key.apName,
+                            schedules: star + '-' + end,
+                            lState: key.lState,
+                        })
+                    }
+                    this.beOccupiedAdsData = arr
+                    console.log('this.beOccupiedAdsData', this.beOccupiedAdsData)
+                    if (!this.shopDelRowClick) {
+                        this.beOccupiedDialogVisible = true
+                    } else {
+                        this.shopDelRowClick = false
+                    }
+                }else if(row.connData.connectResName !== '' || row.connData.commentWorkRes !=='' || row.connData.connectMedia !==''){
                     this.ActiveConnectADList = row.connData
                     console.log('this.ActiveConnectADList',this.ActiveConnectADList)
                     this.connectAdDialogVisible = true
                 }
+                // console.log('购物车行被点击row',row,column)
+                // if(row.connData.connectResName !== '' || row.connData.commentWorkRes !=='' || row.connData.connectMedia !==''){
+                //     this.ActiveConnectADList = row.connData
+                //     console.log('this.ActiveConnectADList',this.ActiveConnectADList)
+                //     this.connectAdDialogVisible = true
+                // }
             },
             // 添加到购物车
             AddShopingInfo(info, letter) {
@@ -5033,9 +5260,9 @@
         left: 0;
         z-index: 99;
     }
-    .urlBtn {
+    /* .urlBtn {
         padding: 10px;
-    }
+    } */
 
     .mapBtn {
         min-width: 110px;
@@ -5049,7 +5276,9 @@
         margin-bottom: 5px;
         cursor: pointer;
     }
-
+    .button_row{
+        margin-top: 12px;
+    }
     /deep/ .el-form--inline .el-form-item {
         margin-right: 7px !important;
     }
@@ -5260,11 +5489,6 @@
         border-top-left-radius: 0;
     }
 
-     /deep/ .el-button {
-        width: 76px;
-        height: 34px;
-    }
-
     /deep/ .date-select.el-input__inner {
         width: 260px;
         position: relative;
@@ -5468,9 +5692,6 @@
         color: #1890FF;
     }
     .otherBtn.el-button{
-        width: 76px;
-        height: 30px;
-        padding: 0;
         border-radius: 0;
         color:rgba(0,0,0,0.35);
     }
@@ -5962,9 +6183,6 @@
     .upload_box{
         text-align: center;
         margin-top: 20px
-    }
-    /deep/ .upload_box .el-button{
-        width: auto;
     }
 
     /*safari下表头错位*/

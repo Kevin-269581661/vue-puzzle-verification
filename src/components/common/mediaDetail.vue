@@ -50,7 +50,7 @@
                         <el-row class="row-bg row_box">
                             <el-col :span="6" style="position: relative">
                                 <div class="ad_mediaInfoPanel_row_box" style="cursor: pointer" :class="showAllDetail.des ? 'show_all_aetail' : ''"
-                                     @click="showDetailFun('des')"><!--showAllDetail.des = !showAllDetail.des-->
+                                     @click="showDetailFun('des')">
                                     <div class="ad_mediaInfoPanel_row_title">
                                         具体描述：
                                         <div class="showAllText showAllTextDes" v-show="judgeShowBtn.des">
@@ -985,7 +985,7 @@
                     setTimeout(()=>{
                         let des = document.getElementsByClassName('ad_mediaInfoPanel_row_content_des')[0]
                         let btn = document.getElementsByClassName('showAllTextDes')[0]
-                        let top = des.offsetHeight - 39
+                        let top = des.offsetHeight - 20
                         btn.style.top = top + "px"
                         console.log('top',top)
                     },10)
@@ -994,7 +994,7 @@
                     setTimeout(()=>{
                         let des = document.getElementsByClassName('ad_mediaInfoPanel_row_content_sfs')[0]
                         let btn = document.getElementsByClassName('showAllTextSfs')[0]
-                        let top = des.offsetHeight - 39
+                        let top = des.offsetHeight - 20
                         btn.style.top = top + "px"
                         console.log('top',top)
                     },10)
@@ -1003,7 +1003,7 @@
                     setTimeout(()=>{
                         let des = document.getElementsByClassName('ad_mediaInfoPanel_row_content_tpt')[0]
                         let btn = document.getElementsByClassName('showAllTextTpt')[0]
-                        let top = des.offsetHeight - 39
+                        let top = des.offsetHeight - 20
                         btn.style.top = top + "px"
                         console.log('top',top)
                     },10)
@@ -1033,41 +1033,7 @@
     /deep/ .el-dialog__body{
         text-align: center;
     }
-
-    /*面包屑导航*/
-    .ad_mediaDetail_nav{
-        width: 92%;
-        height: 42px;
-        margin: 0 auto;
-        position: relative;
-    }
-
-    .ad_mediaDetail_nav p {
-        position: absolute;
-        left: 0;
-        top: 12px;
-        font-size: 14px;
-        line-height: 18px;
-    }
-
-    .ad_mediaDetail_nav p em{
-        font-size: 14px;
-        color: #D9D9D9;
-        line-height: 30px;
-    }
-
-    .ad_mediaDetail_nav p a{
-        color: #666;
-    }
-
-    .ad_mediaDetail_nav p a:nth-of-type(1){
-        color: #999;
-    }
-
-    .ad_mediaDetail_wrap{
-        position: relative;
-    }
-
+    
     /*媒体信息*/
     .ad_mediaInfo{
         width: 92%;
@@ -1133,6 +1099,7 @@
         color: #333333;
     }
     .ad_mediaInfoPanel_row_box{
+        position: relative;
         width: 97%;
         display: flex;
     }
@@ -1161,8 +1128,10 @@
         padding: 0 16px 0 0;
     }
     .ad_mediaInfoPanel_row .showAllText{
-        position: relative;
-        left: 227px;
+        position: absolute;
+        /*left: 227px;*/
+        right: 0;
+        top: 18px;
         font-size: 14px;
         background: #fff;
     }
@@ -1296,27 +1265,6 @@
     .content_bottom_btn{
         text-align: center;
     }
-    .content_bottom_btn button{
-        width: 72px;
-        height: 34px;
-    }
-    .content_bottom_btn /deep/ .el-button span{
-        position: relative;
-        top: -2px;
-    }
-    /*按钮*/
-    /deep/ .el-button--default:focus, .el-button--default:hover{
-        color: #606266;
-        border-color: #dcdfe6;
-        background-color: #fcfcfc;
-    }
-    .content_bottom_btn /deep/ .el-button span{
-        position: relative;
-        top: -2px;
-    }
-    .content_bottom_btn /deep/ .el-button span a{
-        color: #606266;
-    }
     /*表格高亮*/
     /deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
         background-color: #ecf5ff;
@@ -1366,10 +1314,5 @@
         -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
         background: #C1C1C1;
         border-radius: 4px;
-    }
-    @media all and (min-width: 1900px){
-        .ad_mediaInfoPanel_row .showAllText{
-            left: 332px;
-        }
     }
 </style>

@@ -118,15 +118,12 @@
                         </el-table-column>
                         <el-table-column prop="state" label="状态" width="80">
                             <template slot-scope="scope">
-                                <span class="point">
-                                    <b :style="{background:scope.row.state==1?'rgba(82,196,26,1)':'rgba(250,173,20,1)'}"></b>
-                                    {{(scope.row.state == 1?'已上画':'未上画')}}
-                                </span>
+                                <point-state :state-text="stateToText(scope.row.state).text" :color="stateToText(scope.row.state).color"></point-state>                                                                
                             </template>
                         </el-table-column>
                         <el-table-column label="素材" width="60" >
                             <template slot-scope="scope">
-                                    <span @click="toShowImg(scope.row)" class="link_text">查看</span>
+                                <span @click="toShowImg(scope.row)" class="link_text">查看</span>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -191,8 +188,12 @@
     import dateFormat from "../../commonFun/timeFormat.js";
     import sessFun from '../../commonFun/sessFun.js'
     import api from "../../api/api.js";
-import timeFormat from '../../commonFun/timeFormat.js';
+    import timeFormat from '../../commonFun/timeFormat.js';
+    import pointState from './components/pointState.vue';
     export default {
+        components:{
+            pointState,
+        },
         data(){
             return{
                 // 当前订单
@@ -636,6 +637,18 @@ import timeFormat from '../../commonFun/timeFormat.js';
                     this.messageFun('warning', '暂无素材');
                 }
             },
+            // 状态转换
+            stateToText(status) {
+                let statusText = [
+                    {text: "已上画", status: 1, color: 'rgba(82,196,26,1)'},
+                    {text: "未上画", status: 0, color: 'rgba(250,173,20,1)'}
+                ];
+                for (let data of statusText) {
+                    if (data.status == status) {
+                        return data;
+                    }
+                }
+            },
             // 返回
             goBack() {
                 this.$router.push("./projectList");
@@ -662,30 +675,6 @@ import timeFormat from '../../commonFun/timeFormat.js';
     };
 </script>
 <style scoped>
-    /*面包屑导航*/
-    .ad_mediaDetail_wrap {
-        position: relative;
-    }
-    .ad_mediaDetail_nav{
-        width: 92%;
-        margin: 0 auto;
-    }
-    .ad_mediaDetail_nav p {
-        position: absolute;
-        left: 0;
-        top: 12px;
-        font-size: 14px;
-        line-height: 18px;
-    }
-
-    .ad_mediaDetail_nav p a {
-        color: #666;
-    }
-
-    .ad_mediaDetail_nav {
-        height: 42px;
-        position: relative;
-    }
     /deep/.comList_container .el-input{
         max-width: 180px;
     }
@@ -741,30 +730,6 @@ import timeFormat from '../../commonFun/timeFormat.js';
     }
     .el-col-24{
         width: auto;
-    }
-    /*表格*/
-    /deep/.pro_detail_container .el-table th {
-        height: 44px;
-        padding: 0;
-        background-color: #f7f7f7;
-    }
-    /deep/.pro_detail_container .el-table td {
-        padding: 8px 0;
-        overflow-x: hidden;
-        text-overflow: ellipsis;
-    }
-
-    /deep/.pro_detail_container .el-table--border {
-        border-radius: 4px;
-    }
-
-    /deep/.pro_detail_container .el-table th > .cell {
-        font-size: 14px;
-        color: #666666;
-        font-weight: bold;
-    }
-    /deep/.pro_detail_container .el-table tr {
-        height: 54px;
     }
     /* 各个属性个数等 */
     .car-title {
@@ -873,24 +838,6 @@ import timeFormat from '../../commonFun/timeFormat.js';
     /*滚动条*/
     /deep/ .el-table__body-wrapper {
         min-height: 400px;
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-
-    /deep/ .el-table__body-wrapper::-webkit-scrollbar {
-        width: 4px;
-        background: #FAFAFA;
-    }
-
-    /deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
-        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-        background: #C1C1C1;
-        border-radius: 4px;
-    }
-    .el-table th, .el-table tr{
-        height: 44px;
-        padding: 0;
-        background-color: #f7f7f7;
     }
 
     .imgPreview /deep/ .el-dialog{

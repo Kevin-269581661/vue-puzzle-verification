@@ -14,7 +14,7 @@
                     <div class="mediaList_handel">
                         <span>
                             <div style="display:inline-block" class="min_input">
-                                <el-input placeholder="请输入内容" v-model="searchInfo.keyword" class="input-with-select">
+                                <el-input placeholder="请输入内容" v-model="searchInfo.keyword" size="small" class="input-with-select">
                                     <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
                                         <el-option label="方案名称" value="1"></el-option>
                                         <el-option label="客户名称" value="2"></el-option>
@@ -25,96 +25,61 @@
                         </span>
                         <span>
                             <div class="block">
-                                <el-date-picker class="input-with-select" v-model="searchInfo.rangeDate" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
+                                <el-date-picker size="small" class="input-with-select" v-model="searchInfo.rangeDate" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
                                 </el-date-picker>
                             </div>
                         </span>
                         <span>
                             <div class="block">
-                                <el-select v-model="searchInfo.status" placeholder="请选择状态">
+                                <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small">
                                     <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
                                 </el-select>
                             </div>
                         </span>
                         <span v-if="isAll">
                             <div class="block">
-                                <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable >
+                                <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable size="small">
                                     <el-option v-for="item of companyData" :key="item.value" :label="item.label" :value="item.value"></el-option>
                                 </el-select>
                             </div>
                         </span>
                         <span>
                             <div class="block">
-                                <el-select v-model="searchInfo.cityWord" placeholder="请选择投放城市" filterable>
+                                <el-select v-model="searchInfo.cityWord" placeholder="请选择投放城市" filterable size="small">
                                     <el-option v-for="item of filterCityData" :key="item.rID" :label="item.text" :value="item.text"></el-option>
                                 </el-select>
                             </div>
                         </span>
-                        <span>
-                            <div class="block">
-                                <el-select v-model="searchInfo.Lock" placeholder="是否预锁">
-                                    <el-option label="已预锁" value="2"></el-option>
-                                    <el-option label="未预锁" value="1"></el-option>
-                                </el-select>
-                            </div>
-                        </span>
-                        <span>
-                            <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
-                        </span>
-                        <span>
-                            <el-button @click="reset()" :disabled="!isReset">重置</el-button>
-                        </span>
-                        <span>
-                            <el-button plain v-if="showNewBtn" @click="addOne()">新建</el-button>
-                        </span>
-                        <span>
-                            <el-button plain v-if="showNewBtn" @click="isOpenDownload=true">导空位</el-button>
-                        </span>
-                      <!--  <span>
-                            <el-button type="primary" v-if="!isNation" @click="goToDiaPlate">点位表盘</el-button>
-                        </span>-->
+                        <div class="block">
+                            <el-select v-model="searchInfo.Lock" placeholder="是否预锁" size="small">
+                                <el-option label="已预锁" value="2"></el-option>
+                                <el-option label="未预锁" value="1"></el-option>
+                            </el-select>
+                        </div>
+                        <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
+                        <el-button @click="reset()" :disabled="!isReset">重置</el-button>
+                        <el-button plain v-if="showNewBtn" @click="addOne()">新建</el-button>
+                        <el-button plain v-if="showNewBtn" @click="isOpenDownload=true">导空位</el-button>
+                        <el-button type="primary" v-if="!isNation" @click="goToDiaPlate">点位表盘</el-button>
                     </div>
                 </el-row>
                 <div class="table_wrap">
                     <el-table border :data="currentPlan" style="width: 100%" v-loadmore="pointLoadMore" v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
-                        <el-table-column label="方案名称" min-width="14.9%">
+                        <el-table-column prop="apName" label="方案名称" min-width="14.9%" show-overflow-tooltip>
                             <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.apName" placement="bottom" v-if="scope.row.apName.length>15">
-                                    <a href="javascript:void(0);" @click="ToDetail(scope.row)">{{scope.row.apName}}</a>
-                                </el-tooltip>
-                                <a href="javascript:void(0);" @click="ToDetail(scope.row)" v-else>{{scope.row.apName}}</a>
+                                <a href="javascript:void(0);" @click="ToDetail(scope.row)">{{scope.row.apName}}</a>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="cName" label="客户名称" min-width="12.6%">
+                        <el-table-column prop="cName" label="客户名称" min-width="12.6%" show-overflow-tooltip>
+                        </el-table-column>
+                        <el-table-column prop="bTitle" label="品牌名称" min-width="6.6%" show-overflow-tooltip>
+                        </el-table-column>
+                        <el-table-column label="方案价格" sortable :sort-method="sortPrice" width="120px" align="right">
                             <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.cName" placement="bottom" v-if="scope.row.cName.length>9">
-                                    <span title="">{{scope.row.cName}}</span>
-                                </el-tooltip>
-                                <span v-else title="">{{scope.row.cName}}</span>
+                                <span>&yen;{{scope.row.apTotal?priceFormat(scope.row.apTotal/100):0}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="bTitle" label="品牌名称" min-width="6.6%">
-                            <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.bTitle" placement="bottom" v-if="scope.row.bTitle.length>4">
-                                    <span>{{scope.row.bTitle||'--'}}</span>
-                                </el-tooltip>
-                                <span v-else>{{scope.row.bTitle||'--'}}</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="方案价格" sortable :sort-method="sortPrice" class="tar" min-width="8.3%">
-                            <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.apTotal?priceFormat(scope.row.apTotal/100):0" placement="bottom" v-if="scope.row.apTotal?scope.row.apTotal.toString().length>8:0">
-                                    <span>&yen; {{scope.row.apTotal?priceFormat(scope.row.apTotal/100):0}}</span>
-                                </el-tooltip>
-                                <span v-else>&yen; {{scope.row.apTotal?priceFormat(scope.row.apTotal/100):0}}</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="realName" label="所有人" min-width="6.1%"  v-if="!(role=='AD')">
-                            <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.realName" placement="bottom">
-                                    <span>{{scope.row.realName}}</span>
-                                </el-tooltip>
-                            </template>
+                        <el-table-column prop="realName" label="所有人" min-width="6.1%"  v-if="!(role=='AD')" show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column label="投放城市(点位面数,排期)"
                             prop="cityArea"
@@ -147,10 +112,10 @@
                         </el-table-column>
                         <el-table-column class="tac" prop="apState" label="状态" min-width="6.1%">
                             <template slot-scope="scope">
-                                <span>{{ stateToText(scope.row.apState) }}</span>
+                                <point-state :state-text="stateToText(scope.row.apState).text" :color="stateToText(scope.row.apState).color"></point-state>                                                                
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作" min-width="8.4%" v-if="!(role=='OP' || role=='AD')">
+                        <el-table-column label="操作" width="100px" v-if="!(role=='OP' || role=='AD')">
                             <template slot-scope="scope">
                                 <el-dropdown size="small" trigger="click" placement="bottom-start">
                                     <span class="el-dropdown-link">
@@ -169,6 +134,10 @@
                                 </el-dropdown>
                             </template>
                         </el-table-column>
+
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
                     </el-table>
                 </div>
 
@@ -233,6 +202,10 @@ import sessFun from "../../commonFun/sessFun.js";
 // 方案缓存
 import cacheAdPlan from "../../commonFun/cacheAdPlan"
 import downloadVacancy from "../../components/common/components/vacancyDownload.vue"
+import noSearchResult from "./components/noSearchResult.vue";
+import pointState from './components/pointState.vue';    
+
+
 import {
     Button,
     CheckboxGroup,
@@ -259,6 +232,8 @@ export default {
     name: "projectList",
     components: {
         downloadVacancy,
+        noSearchResult,
+        pointState,
         elButton: Button,
         elCheckboxGroup: CheckboxGroup,
         elCheckbox: Checkbox,
@@ -528,21 +503,21 @@ export default {
         // 状态转换成文本
         stateToText(val) {
             let state = [
-                { text: "已完成", value: 0 },
-                { text: "进行中", value: 1 },
-                { text: "未投放", value: 2 },
-                { text: "投放中", value: 3 },
-                { text: "强制结束", value: 5 }
+                { text: "已完成", value: 0, color: 'rgba(196,203,211,1)' },
+                { text: "进行中", value: 1, color: 'rgba(250,173,20,1)' },
+                { text: "未投放", value: 2, color: 'rgba(82,196,26,1)' },
+                { text: "投放中", value: 3, color: 'rgba(24,144,255,1)' },
+                { text: "强制结束", value: 5, color: 'rgba(245,34,45,1)' }
             ];
             for (let data of state) {
                 if (val == data.value) {
-                    return data.text;
+                    return data;
                 }
             }
         },
         // 时间格式规范
         formatTime(val) {
-            return dateFormat.toDate(val);
+            return dateFormat.toDate(val, '/');
         },
         // 价格加上逗号
         priceFormat(price) {
@@ -599,10 +574,10 @@ export default {
             })
         },
         // 点位表盘
-     /*   goToDiaPlate(){
+        goToDiaPlate(){
             console.log('this.$router',this.$router)
             this.$router.push('./adsDialPlate')
-        },*/
+        },
         // 显示缓存方案的信息
         showCookeAdPlan(adPlan){
             this.planInfo = {
@@ -623,7 +598,7 @@ export default {
             let result = "QC";
             result = result + dateFormat.toDate(date, "");
             result = result + rid.toString().substring(0, 4);
-            result = result + "00" + Math.round(Math.random() * 10);
+            result = result + "00" + Math.round(Math.random() * 9);
             return result;
         },
         // 发布
@@ -1031,26 +1006,15 @@ export default {
                 pagesize: this.pageSize
             };
             let { select, keyword, rangeDate, status, company, cityWord, Lock } = this.searchInfo;
-            if(keyword){
-                info.keywordType = select;
-                info.keyword = keyword;
-            }
-            if(rangeDate){
-                info.starttime = rangeDate[0];
-                info.andtime = rangeDate[1];
-            }
-            if((status!=='') && status>=0){
-                info.apstate = status;
-            }
-            if(company){
-                info.asrID = company;
-            }
-            if(cityWord){
-                info.rname = cityWord;
-            }
-            if(Lock){
-                info.onyusuo = Lock;
-            }
+            info = {
+                ...info,
+                ...(keyword && {keywordType: select, keyword}),
+                ...(rangeDate && {starttime: rangeDate[0], andtime: rangeDate[1]}),
+                ...(status!=='' && status>=0 && {apstate: status}),
+                ...(company && {asrID: company}),
+                ...(cityWord && {rname: cityWord}),
+                ...(Lock && {onyusuo: Lock}),
+            };
             return info;
         },
         // 设置表格数据
@@ -1062,7 +1026,7 @@ export default {
                 apState: item.apState ? item.apState : '',
                 apTotal: item.apTotal ? item.apTotal : '',
                 apcTime: item.apcTime ? item.apcTime : '',
-                bTitle: item.bTitle ? item.bTitle : '',
+                bTitle: item.bTitle ? item.bTitle : '--',
                 cName: item.cName ? item.cName : '',
                 realName: item.realName ? item.realName : '',
                 cityArea: [],
@@ -1204,98 +1168,12 @@ a {
 }
 
 .el-input {
-    height: 34px !important;
-    border-radius: 4px;
-}
-
-    /*面包屑导航*/
-    .ad_mediaDetail_wrap {
-        position: relative;
-    }
-    .ad_mediaDetail_nav{
-        width: 92%;
-        margin: 0 auto;
-    }
-    .ad_mediaDetail_nav p {
-        position: absolute;
-        left: 0;
-        top: 12px;
-        font-size: 14px;
-        line-height: 18px;
-    }
-
-    .ad_mediaDetail_nav p a {
-        color: #666;
-    }
-
-    .ad_mediaDetail_nav {
-        height: 42px;
-        position: relative;
-    }
-
-    /*wrap*/
-    .mediaList_wrap {
-        width: 92%;
-        background: #ffffff;
-        border: 1px solid #e6e7e9;
-        margin: 0 auto;
-    }
-
-    .mediaList_wrap .mediaList_head {
-        width: 100%;
-        height: 24px;
-        padding: 12px 0;
-        border-bottom: 1px solid #e6e7e9;
-    }
-
-    .mediaList_wrap .mediaList_head h2 {
-        font-size: 16px;
-        color: #2c313c;
-        height: 24px;
-
-        padding-left: 14px;
-        font-weight: bold;
-    }
-
-    .mediaList_wrap .mediaList_container {
-        width: 96%;
-        margin: 24px auto;
-    }
-
-.el-input {
     width: 180px;
-    height: 34px !important;
-    border-radius: 4px;
-}
-
-/deep/ .el-button {
-    width: 76px;
-    height: 34px;
-    text-align: center;
-    padding: 0;
-    position: relative;
-    left: 0;
-    margin-left: 2px;
-}
-/deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
-  position: relative;
-  left: -2px;
-  top: 0px;
-}
-
-
-/deep/ .el-button + .el-button {
-    margin-left: 0;
-}
-
-.mediaList_wrap .mediaList_container .table_wrap {
-    margin: 24px auto;
     border-radius: 4px;
 }
 
 .input-with-select /deep/ .el-input__inner {
     font-size: 14px;
-    height: 34px;
     vertical-align: middle;
 }
 
@@ -1310,12 +1188,6 @@ a {
     position: relative;
 }
 
-/deep/ .el-date-editor .el-range__icon {
-    position: relative;
-    top: -3px;
-    margin-right: 2px;
-}
-
 /deep/ .el-range-separator {
     position: relative;
     top: -2px;
@@ -1323,8 +1195,6 @@ a {
 
 /deep/ .el-input__inner {
     width: 140px;
-    height: 34px;
-    line-height: 34px;
 }
 /deep/ .el-date-editor{
     width: 245px;
@@ -1336,138 +1206,9 @@ a {
     position: relative;
 }
 
-/deep/ .el-range-editor .el-range-input {
-    line-height: 20px;
-}
-
-/*表格*/
-/deep/ .el-table th,
-.el-table tr {
-    height: 44px;
-    padding: 0;
-    background-color: #f7f7f7;
-}
-
-/deep/ .el-table td {
-    padding: 8px 0;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-}
-
-/deep/ .el-table td .cell {
-    display: flex;
-    flex-direction: column;
-    height: auto;
-    line-height: 22px;
-}
-
-/deep/ .el-table--border {
-    border-radius: 4px;
-}
-
-/deep/ .el-table th > .cell {
-    font-size: 14px;
-    color: #666666;
-    font-weight: bold;
-}
-
-/deep/ .el-table .caret-wrapper {
-    width: 22px;
-}
-
-/deep/ thead th:nth-child(4) .cell {
-    text-align: right !important;
-}
-
-/deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
-    background-color: #ecf5ff;
-}
-
-/deep/ .el-table__column-filter-trigger {
-    display: inline-block;
-    line-height: 15px;
-    cursor: pointer;
-    overflow-y: hidden;
-}
-
 /*滚动条*/
 /deep/ .el-table__body-wrapper {
     height: 405px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar {
-    width: 4px;
-    background: #fafafa;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
-
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #c1c1c1;
-    border-radius: 4px;
-}
-
-/deep/ .el-table-filter__list-item {
-    color: rgb(102, 102, 102);
-}
-
-/*超出省略*/
-/deep/ .el-table .cell {
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/deep/ .el-table .cell span {
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/deep/ .el-table .cell a {
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/deep/ .el-table__row td:nth-child(4) {
-    text-align: right;
-}
-
-/deep/ .el-table__row td:nth-child(4) .cell span {
-    width: 90px;
-}
-
-/deep/ .el-table__row td:nth-child(7) .cell span {
-    width: 85px;
-}
-
-/deep/ .el-table__row td:nth-child(3) .cell span {
-    width: 62px;
-}
-
-/deep/ .el-table__row td:nth-child(2) .cell span {
-    width: 148px;
-}
-
-/deep/ .el-table__row td:nth-child(1) .cell a {
-    width: 180px;
-}
-
-/*筛选*/
-/deep/ .el-table__column-filter-trigger {
-    margin-left: 10px;
-}
-
-/deep/ .el-table th > .cell.highlight {
-    color: #409eff !important;
-}
-
-/deep/ div.el-table-filter {
-    left: 1106px !important;
 }
 
 /*锁*/
@@ -1484,53 +1225,6 @@ a {
     cursor: pointer;
     color: #409EFF;
 }
-.el-icon-arrow-down {
-    font-size: 12px;
-}
-
-/deep/ .el-button--mini,
-.el-button--small {
-    font-size: 14px !important;
-}
-
-/deep/ .el-button .el-button--primary .el-button--mini {
-    width: 51px;
-}
-
-/deep/ .el-dropdown-menu--mini .el-dropdown-menu__item {
-    width: 65px;
-}
-
-/deep/ button.el-button.el-button--default.el-button--small:hover {
-    color: #666;
-    border-color: #d8d8d8;
-    background-color: #fff;
-}
-
-.tar {
-    text-align: right !important;
-    padding-right: 10px;
-}
-
-/deep/ .el-dropdown .el-button-group .el-button {
-    height: 28px;
-    width: 48px;
-    font-size: 14px;
-    padding: 0;
-}
-/deep/ .el-button-group button {
-    float: left !important;
-}
-
-/deep/ .el-dropdown .el-button-group .el-button:last-child {
-    width: 30px;
-    position: relative;
-    top: 0px;
-}
-
-/deep/ .popper__arrow {
-    display: none;
-}
 
 /*按钮*/
 /deep/ .el-button--default:focus,
@@ -1540,19 +1234,6 @@ a {
     background-color: #fcfcfc;
 }
 
-.content_bottom_btn /deep/ .el-button span {
-    position: relative;
-    top: -2px;
-}
-
-.content_bottom_btn /deep/ .el-button span a {
-    color: #606266;
-}
-
-.mediaList_container span {
-    float: left !important;
-    margin-left: 2px;
-}
 .table_wrap .city_p span{
     float: none !important;
 }

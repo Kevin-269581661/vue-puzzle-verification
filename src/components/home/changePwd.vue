@@ -151,6 +151,7 @@ export default {
 <style scoped>
 .pass_box{
     padding: 20px;
+    background: #fff;
 }
 h4 {
     font-size: 20px;

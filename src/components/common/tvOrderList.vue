@@ -14,7 +14,7 @@
                     <div class="mediaList_handel">
                         <span>
                             <div style="display:inline-block">
-                                <el-input placeholder="请输入内容" v-model="keyword" class="input-with-select" @change="initData">
+                                <el-input placeholder="请输入内容" v-model="keyword" size="small" class="input-with-select" @change="initData">
                                     <el-select v-model="select" slot="prepend" placeholder="请选择">
                                         <el-option label="方案名称" value="1"></el-option>
                                         <el-option label="客户名" value="2"></el-option>
@@ -24,7 +24,7 @@
                         </span>
                         <span>
                             <div class="block">
-                                <el-date-picker v-model="rangeDate" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="创建日期" end-placeholder="创建日期" @change="initData">
+                                <el-date-picker size="small" v-model="rangeDate" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="创建日期" end-placeholder="创建日期" @change="initData">
                                 </el-date-picker>
                             </div>
                         </span>
@@ -60,7 +60,7 @@
                                 <span v-else title="">{{scope.row.bTitle||'--'}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column sortable :sort-method="sortPrice" label="方案价格" min-width="7.5%">
+                        <el-table-column sortable :sort-method="sortPrice" label="方案价格" min-width="7.5%" align="right">
                             <template slot-scope="scope">
                                 <el-tooltip class="item" effect="dark" :content="(scope.row.apTotal)?priceFormat(scope.row.apTotal):0" placement="bottom" v-if="scope.row.apTotal?scope.row.apTotal.toString().length>8:0">
                                     <span>&yen; {{(scope.row.apTotal)?priceFormat(scope.row.apTotal):0}}</span>
@@ -100,6 +100,10 @@
                                 </el-dropdown>
                             </template>
                         </el-table-column>
+
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
                     </el-table>
                 </div>
             </div>
@@ -114,6 +118,8 @@ import dateFormat from "../../commonFun/timeFormat.js";
 // 价格格式化
 import commaFormat from "../../commonFun/commaFormat.js";
 import sessFun from "../../commonFun/sessFun.js";
+import noSearchResult from "./components/noSearchResult.vue";
+
 import {
     Button,
     CheckboxGroup,
@@ -137,6 +143,7 @@ import {
 export default {
     name: "projectList",
     components: {
+        noSearchResult,
         elButton: Button,
         elCheckboxGroup: CheckboxGroup,
         elCheckbox: Checkbox,
@@ -212,7 +219,7 @@ export default {
         },
         // 时间格式规范
         formatTime(val) {
-            return dateFormat.toDate(val);
+            return dateFormat.toDate(val, '/');
         },
         // 价格排序
         sortPrice(a, b) {
@@ -458,8 +465,6 @@ a {
 
 /deep/ .el-input__inner {
     width: 350px;
-    height: 34px;
-    line-height: 34px;
 }
 
 /deep/ .el-date-editor i,
@@ -469,90 +474,13 @@ a {
     position: relative;
 }
 
-/*面包屑导航*/
-    .ad_mediaDetail_wrap {
-        position: relative;
-    }
-    .ad_mediaDetail_nav{
-        width: 92%;
-        margin: 0 auto;
-    }
-    .ad_mediaDetail_nav p {
-        position: absolute;
-        left: 0;
-        top: 12px;
-        font-size: 14px;
-        line-height: 18px;
-    }
-
-    .ad_mediaDetail_nav p a {
-        color: #666;
-    }
-
-    .ad_mediaDetail_nav {
-        height: 42px;
-        position: relative;
-    }
-
-    /*wrap*/
-    .mediaList_wrap {
-        width: 92%;
-        background: #ffffff;
-        border: 1px solid #e6e7e9;
-        margin: 0 auto;
-    }
-
-    .mediaList_wrap .mediaList_head {
-        width: 100%;
-        height: 24px;
-        padding: 12px 0;
-        border-bottom: 1px solid #e6e7e9;
-    }
-
-    .mediaList_wrap .mediaList_head h2 {
-        font-size: 16px;
-        color: #2c313c;
-        height: 24px;
-
-        padding-left: 14px;
-        font-weight: bold;
-    }
-
-    .mediaList_wrap .mediaList_container {
-        width: 98%;
-        margin: 24px auto;
-    }
-
 .el-input {
     width: 180px;
-    height: 34px !important;
-    border-radius: 4px;
-}
-
-.el-button {
-    width: 76px;
-    height: 34px;
-    text-align: center;
-    padding: 0;
-    margin-left: 2px;
-}
-
-/deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
-  position: relative;
-  left: -2px;
-  top: 0px;
-}
-
-
-.mediaList_wrap .mediaList_container .table_wrap {
-    width: 98%;
-    margin: 24px auto; 
     border-radius: 4px;
 }
 
 .input-with-select /deep/ .el-input__inner {
     font-size: 14px;
-    height: 34px;
     vertical-align: middle;
 }
 
@@ -564,36 +492,17 @@ a {
 
 /deep/ .el-input__inner {
     width: 300px;
-    height: 34px;
 }
 
 /deep/ .el-range-input {
     font-size: 14px;
     padding: 10px 10px;
-    height: 32px;
     line-height: 14px;
     box-sizing: border-box;
 }
 
-/deep/ .el-date-editor .el-range__icon {
-    position: relative;
-    top: -3px;
-    left: 0;
-    margin-right: 2px;
-}
-
-/deep/ .el-date-editor .el-range__close-icon {
-    position: relative;
-    top: -2px;
-    left: 3px;
-}
-
 /deep/ .el-picker-panel .el-date-range-picker .el-popper {
     left: 335px !important;
-}
-
-/deep/ .el-range-editor .el-range-input {
-    line-height: 20px;
 }
 
 /*下拉搜索框*/
@@ -616,12 +525,7 @@ a {
 }
 
 .el-input {
-    height: 34px !important;
     border-radius: 4px;
-}
-
-/deep/ .el-input__inner {
-    height: 34px;
 }
 
 /*按钮*/
@@ -714,11 +618,6 @@ a {
     line-height: 24px;
 }
 
-.table_wrap /deep/ .el-table__row td:nth-child(4) .cell,
-.table_wrap /deep/ .has-gutter tr th:nth-child(4) .cell {
-    text-align: right;
-}
-
 /deep/ .el-table__row td:nth-child(5) .cell span {
     width: 85px;
 }
@@ -776,11 +675,6 @@ a {
     background-color: #fff;
 }
 
-.tar {
-    text-align: right !important;
-    padding-right: 10px;
-}
-
 /deep/ .el-dropdown .el-button-group .el-button {
     height: 28px;
     width: 48px;
@@ -799,11 +693,6 @@ a {
 
 /deep/ .popper__arrow {
     display: none;
-}
-
-.mediaList_handel span {
-    float: left !important;
-    margin-left: 4px;
 }
 
 </style>

@@ -181,9 +181,11 @@
                             width="112"
                         >
                             <template slot-scope="scope">
-                                <el-dropdown size="small" split-button class="handel_btn" trigger="click"
+                                <el-dropdown size="small" trigger="click" placement="bottom-start"
                                              :hide-on-click="true">
-                                    操作
+                                    <span class="el-dropdown-link">
+                                        操作<i class="el-icon-arrow-down el-icon--right"></i>
+                                    </span>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item
                                             @click.native.prevent="confirmBox($event,scope.$index, scope.row)"
@@ -205,6 +207,10 @@
                                 </el-dropdown>
                             </template>
                         </el-table-column>
+
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
                     </el-table>
                 </div>
              <!--   <div>
@@ -333,6 +339,8 @@
     import areaPackageNew from '../../commonFun/areaPackage_new'
     import areaToTextNew from '../../commonFun/areaToText_new'
     import sessFun from "../../commonFun/sessFun.js";
+    import noSearchResult from "./components/noSearchResult.vue";    
+    
     import {
         Form,
         FormItem,
@@ -354,6 +362,7 @@
     export default {
         name: "mediaList",
         components: {
+            noSearchResult,
             elForm: Form,
             elFormItem: FormItem,
             elTable: Table,
@@ -858,7 +867,7 @@
                 this.searchBtnAbled = true
                 if ((this.keyword === '' || this.keyword === null) && this.cityArea.cName === '') {
                     Message.warning({
-                        message: '搜索条件为空',
+                        message: '请先输入搜索条件',
                         duration: 1000
                     })
                     this.searchBtnAbled = false
@@ -1088,61 +1097,6 @@
         height: 180px;
     }
 
-    /*面包屑导航*/
-    .ad_mediaDetail_wrap {
-        position: relative;
-    }
-
-    .ad_mediaDetail_nav{
-        width: 92%;
-        height: 42px;
-        margin: 0 auto;
-        position: relative;
-    }
-
-    .ad_mediaDetail_nav p {
-        position: absolute;
-        left: 0;
-        top: 12px;
-        font-size: 14px;
-        line-height: 18px;
-    }
-
-    .ad_mediaDetail_nav p a {
-        color: #666;
-    }
-
-    .ad_mediaMana_nav p a:nth-of-type(1) {
-        color: #999;
-    }
-
-    /*媒体列表*/
- /*   .mediaList_wrap {
-        width: 92%;
-        background: #ffffff;
-        border: 1px solid #e6e7e9;
-        margin: 0 auto;
-    }
-
-    .mediaList_wrap .mediaList_head {
-        width: 100%;
-        height: 24px;
-        padding: 12px 0;
-        border-bottom: 1px solid #E6E7E9;
-    }
-
-    .mediaList_wrap .mediaList_head h2 {
-        font-size: 16px;
-        color: #2C313C;
-        height: 24px;
-        padding-left: 14px;
-        font-weight: bold;
-    }
-
-    .mediaList_wrap .mediaList_container {
-        width: 96%;
-        margin: 24px auto;
-    }*/
     /*过滤条件样式*/
     .handel_ul{
         list-style:none;
@@ -1164,9 +1118,6 @@
     .handel_ul_li_btn{
         width: 32%;
     }
-    .handel_ul_li .el-button{
-        margin: 0 2px 0 0;
-    }
     /*下拉搜索框*/
     /deep/ .el-input-group__prepend {
         width: 64px;
@@ -1181,79 +1132,9 @@
         border-bottom-right-radius: 0;
     }
 
-    .el-button {
-        width: 76px;
-        height: 32px;
-        text-align: center;
-        padding: 0;
-    }
-    /*/deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{*/
-        /*position: relative;*/
-        /*left: -2px;*/
-        /*top: 0px;*/
-    /*}*/
-
-    .mediaList_wrap .mediaList_container .table_wrap {
-        margin: 24px auto;
-        border-radius: 4px;
-    }
-
-    /*表格*/
-    /deep/ .el-date-editor .el-range-separator {
-        line-height: 26px;
-    }
-
-    /deep/ .el-table th, .el-table tr {
-        height: 44px;
-        padding: 0;
-        background-color: #f7f7f7;
-    }
-
-/*    /deep/ .el-table td {
-        padding: 8px 0;
-        text-overflow: ellipsis;
-    }
-
-    /deep/ .el-table td .cell {
-        height: 30px;
-        line-height: 30px;
-    }
-
-    /deep/ .el-table--border {
-        border-radius: 4px;
-    }
-
-    /deep/ .el-table th > .cell {
-        font-size: 14px;
-        color: #666666;
-        font-weight: bold;
-    }
-
-    /deep/ .el-table .caret-wrapper {
-        width: 22px;
-    }
-
-    /deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
-        background-color: #ecf5ff;
-    }*/
-
     /*滚动条*/
     /deep/ .el-table__body-wrapper {
         height: 405px;
-        overflow-y: scroll;
-        overflow-x: hidden;
-    }
-
-    /deep/ .el-table__body-wrapper::-webkit-scrollbar {
-        width: 4px;
-        background: #FAFAFA;
-
-    }
-
-    /deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
-        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-        background: #C1C1C1;
-        border-radius: 4px;
     }
 
     /*超出省略*/
@@ -1261,26 +1142,6 @@
         overflow-x: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-    }
-
-    /deep/ .el-table__row td:nth-child(9) .cell , /deep/ .has-gutter th:nth-child(9) .cell {
-        text-align: right !important;
-    }
-
-    /deep/ .el-table__row td:nth-child(1) .cell {
-        width: 155px;
-    }
-
-    /deep/ .el-table__row td:nth-child(5) .cell span {
-        width: 126px;
-    }
-
-    /deep/ .el-table__row td:nth-child(7) .cell span {
-        width: 96px;
-    }
-
-    /deep/ .el-table__row td:nth-child(8) .cell span {
-        width: 156px;
     }
 
     /*筛选*/
@@ -1299,50 +1160,9 @@
     }
 
     /*操作*/
-
-    /deep/ .el-button--mini,
-    .el-button--small {
-        font-size: 14px !important;
-    }
-
-    /deep/ .el-button .el-button--primary .el-button--mini {
-        width: 51px;
-    }
-
-    /deep/  .el-dropdown-menu__item {
-        width: 45px !important;
-    }
-
-    /deep/ button.el-button.el-button--default.el-button--small:hover {
-        color: #666;
-        border-color: #d8d8d8;
-        background-color: #fff;
-    }
-
-    .tar {
-        text-align: right !important;
-        padding-right: 10px;
-    }
-
-    /deep/ .el-dropdown .el-button-group .el-button {
-        height: 28px;
-        width: 48px;
-        font-size: 14px;
-        padding: 0;
-    }
-
-    /deep/ .el-button-group button {
-        float: left !important;
-    }
-
-    /deep/ .el-dropdown .el-button-group .el-button:last-child {
-        width: 30px;
-        position: relative;
-        top: 0px;
-    }
-
-    /deep/ .popper__arrow {
-        display: none;
+    .el-dropdown-link {
+        cursor: pointer;
+        color: #409EFF;
     }
 
     /*提示框*/
@@ -1366,10 +1186,7 @@
     .content_bottom_btn /deep/ .el-button span a {
         color: #606266;
     }
-
-    .handel_btn {
-        position: relative;
-    }
+    
     /deep/ .mStatueDialog{
         width: 285px;
     }

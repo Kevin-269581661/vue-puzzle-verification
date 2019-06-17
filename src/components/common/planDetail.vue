@@ -1,7 +1,7 @@
 <template>
-    <div>
-        <div class="ad_mediaMana_wrap">
-            <div class="ad_mediaMana_nav clearfix">
+    <div class="mediaDetail">
+        <div class="ad_mediaDetail_wrap clearfix">
+            <div class="ad_mediaDetail_nav">
                 <p>
                     <a href="#">方案管理</a>
                     <em> / </em>
@@ -58,7 +58,7 @@
 
                                         <el-table-column label="资源名称" min-width="16.1%" prop="resName">
                                         </el-table-column>
-                                        <el-table-column prop="mTitle" label="媒体名称" min-width="10.3%" class="tar">
+                                        <el-table-column prop="mTitle" label="媒体名称" min-width="10.3%">
                                         </el-table-column>
                                         <el-table-column prop="asLab" label="投放面" min-width="8.8%">
                                         </el-table-column>
@@ -71,9 +71,9 @@
                                                 <span>{{scope.row.cType||'--'}}</span>
                                             </template>
                                         </el-table-column>
-                                        <el-table-column prop="hNum" label="小区户数" min-width="6.0%" class="tar">
+                                        <el-table-column prop="hNum" label="小区户数" min-width="6.0%" align="right">
                                         </el-table-column>
-                                        <el-table-column label="楼盘价格" min-width="9.0%">
+                                        <el-table-column label="楼盘价格" min-width="9.0%" align="right">
                                             <template slot-scope="scope">
                                                 <span>&yen;{{scope.row.hPrice?priceFormat(scope.row.hPrice/100):0}}</span>
                                             </template>
@@ -221,14 +221,16 @@ export default {
                     chDay: data.chDay,
                     adSize: data.mVehicle == "广告门" ? data.adSize: data.picSize,
                     adViewSize: data.mVehicle == "广告门" ? data.adViewSize: data.lightBoxSize,
+                    notPush: data.notPush,
+                    mRemark: data.mRemark,
                     resAddress: data.resAddress,
                 };
                 resultArr.push(obj);
-            }
+            } 
             require.ensure([], () => {
                 const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
-                const tHeader = ['资源名称', '市', '区域', '媒介载体', '媒体名称', '资产编号', '投放面', '投放日期', '终止日期', '商圈', '楼盘类型/写字楼类型', '楼盘价格', '住户数量/办公室数量', '楼栋数量', '入住年份/建成年份', '广告尺寸/画面尺寸', '可视画面/灯箱尺寸', '详细地址'];
-                const filterVal = ['resName', 'city', 'rName', 'mVehicle', 'mTitle', 'assetTag', 'asLab', 'timeRange', 'finishTimeRange', 'tradingArea', 'cType', 'hPrice', 'hNum', 'fNum', 'chDay', 'adSize', 'adViewSize', 'resAddress'];
+                const tHeader = ['资源名称', '市', '区域', '媒介载体', '媒体名称', '资产编号', '投放面', '投放日期', '终止日期', '商圈', '楼盘类型/写字楼类型', '楼盘价格', '住户数量/办公室数量', '楼栋数量', '入住年份/建成年份', '广告尺寸/画面尺寸', '可视画面/灯箱尺寸', '广告限制', '媒体备注', '详细地址'];
+                const filterVal = ['resName', 'city', 'rName', 'mVehicle', 'mTitle', 'assetTag', 'asLab', 'timeRange', 'finishTimeRange', 'tradingArea', 'cType', 'hPrice', 'hNum', 'fNum', 'chDay', 'adSize', 'adViewSize', 'notPush', 'mRemark', 'resAddress'];
                 const list = resultArr;
                 const data = this.formatJson(filterVal, list);
                 export_json_to_excel(tHeader, data, name);
@@ -269,7 +271,7 @@ export default {
                             apName: info.apName,
                             apState: info.apState,
                             apTotal: info.apTotal,
-                            apcTime: dateFormat.toDateTime(info.apcTime),
+                            apcTime: dateFormat.toDateTime(info.apcTime, '/'),
                             bTitle: info.bTitle,
                             cName: info.cName,
                             cuName: info.cuName,
@@ -528,83 +530,14 @@ export default {
     font-weight: bold;
 }
 
-/deep/ .el-table__row td:nth-child(8),
-/deep/ .el-table__row td:nth-child(9),
-/deep/ .has-gutter th:nth-child(8),
-/deep/ .has-gutter th:nth-child(9) {
-    text-align: right;
-}
-
 /deep/ .el-table__column-filter-trigger {
     left: 5px;
-}
-
-/*选点排期*/
-/deep/ .el-table th,
-.el-table tr {
-    background: #f7f7f7;
-    padding: 10px 0;
-}
-
-/deep/ .el-table th > .cell {
-    color: #666666;
-    line-height: 14px;
-    font-weight: bold;
-}
-
-/deep/ .el-checkbox + .el-checkbox {
-    margin-left: 10px;
-}
-
-/deep/ .el-table__expanded-cell[class*="cell"] {
-    padding: 0 46px;
-    background-color: #f7f7f7;
-}
-
-/deep/ .el-table__expanded-cell[class*="cell"] .el-form {
-    height: 44px;
-    line-height: 44px;
-}
-
-/deep/ .el-form-item__content {
-    line-height: 46px;
-}
-
-/deep/ .el-form-item__label {
-    padding: 0 0 0 12px;
 }
 
 .table_wrap {
     padding: 10px 24px;
 }
 
-/deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
-    background-color: #ecf5ff;
-}
-
-/deep/ .el-tabs__item.is-active {
-    font-weight: bold;
-}
-
-.searchBtn {
-    position: relative;
-}
-
-/deep/ .searchBtn .el-icon-search {
-    position: relative;
-    top: -2px;
-    left: -9px !important;
-}
-
-/deep/ .el-button.searchBtn span {
-    position: relative;
-    left: -5px;
-    top: -2px;
-}
-/deep/ .el-button {
-    height: 34px;
-    margin-left: 2px;
-}
 /*报价单*/
 
 /deep/ .el-tabs--border-card {
@@ -634,25 +567,6 @@ export default {
 /*滚动条*/
 /deep/ .el-table__body-wrapper {
     height: 480px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar {
-    width: 4px;
-    background: #fafafa;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
-
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #c1c1c1;
-    border-radius: 4px;
-}
-
-/deep/ .el-table th > .cell {
-    font-weight: bold;
 }
 
 /*详情头部*/
@@ -718,46 +632,9 @@ export default {
     top: 12px;
 }
 
-.ad_mediaMana_nav {
-    position: relative;
-    height: 0;
-}
-
-.ad_mediaMana_nav p {
-    padding-left: 57px;
-    position: absolute;
-    left: 0;
-    top: 12px;
-    font-size: 14px;
-    line-height: 18px;
-}
-
-.ad_mediaMana_nav p em {
-    font-size: 14px;
-    color: #d9d9d9;
-    line-height: 18px;
-}
-
-.ad_mediaMana_nav p a {
-    color: #666;
-}
-
-.ad_mediaMana_nav p a:nth-of-type(1) {
-    color: #999;
-}
-
-.ad_mediaMana_wrap {
-    margin-bottom: 109px;
-    position: relative;
-}
-
-.ad_mediaMana_nav p a:nth-of-type(1) {
-    color: #999;
-}
-
 /*资源信息*/
 .mediaMana_content_top {
-    padding: 42px 60px 0 60px;
+    padding: 8px 60px 0 60px;
 }
 
 /*按钮*/
@@ -770,6 +647,7 @@ export default {
 .content_bottom_btn button {
     width: 80px;
     height: 34px;
+    line-height: 34px;
     outline: none;
     cursor: pointer;
     border: 1px solid #d9d9d9;
@@ -823,5 +701,9 @@ export default {
 }
 /deep/ .el-tabs__item:focus.is-active.is-focus:not(:active){
     box-shadow: none;
+}
+
+/deep/ .content_bottom_btn .el-button{
+    padding: 0;
 }
 </style>

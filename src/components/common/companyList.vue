@@ -5,12 +5,12 @@
                 <a href="#" style="color: #999">公司管理</a>
             </p>
         </div>
-        <div class="comList_wrap">
-            <div class="comList_head">
+        <div class="mediaList_wrap">
+            <div class="mediaList_head">
                 <h2>公司列表</h2>
             </div>
-            <div class="comList_container">
-                <el-row>
+            <div class="mediaList_container">
+                <el-row class="mediaList_handel">
                     <el-col :span="6">
                         <span>公司名称:</span>
                         <el-input v-model="searchInfo.keyword" placeholder="请输入" size="small"></el-input>
@@ -28,9 +28,9 @@
                         </el-select>
                     </el-col>
                     <el-col :span="6">
-                        <el-button type="primary" icon="el-icon-search" @click="search()" size="small" :disabled="!isSearch">查询</el-button>
-                        <el-button @click="reset()" size="small">重置</el-button>
-                        <el-button @click="newCom()" size="small" v-if="showNewBtn">新建</el-button>
+                        <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">查询</el-button>
+                        <el-button @click="reset()">重置</el-button>
+                        <el-button @click="newCom()" v-if="showNewBtn">新建</el-button>
                     </el-col>
 				</el-row>
                 <div class="table_wrap">
@@ -50,7 +50,7 @@
                         </el-table-column>
                         <el-table-column prop="state" label="状态" min-width="8.9%">
                             <template slot-scope="scope">
-                                <span>{{stateToText(scope.row.state)}}</span>
+                                <point-state :state-text="stateToText(scope.row.state).label" :color="stateToText(scope.row.state).color"></point-state>                                                                
                             </template>
                         </el-table-column>
                         <el-table-column label="操作" min-width="7.1%">
@@ -60,6 +60,10 @@
                                 <span style="color: #108EE9;cursor: pointer; margin-left:10px;" @click="isEdit(scope.row)">编辑</span>
                             </template>
                         </el-table-column>
+
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
                     </el-table>
                 </div>
             </div>
@@ -81,8 +85,8 @@
                 </el-select>
             </p>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="isShowNew = false" size="small">取 消</el-button>
-                <el-button type="primary" @click="handleCompany()" size="small">确 定</el-button>
+                <el-button @click="isShowNew = false">取 消</el-button>
+                <el-button type="primary" @click="handleCompany()">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -97,7 +101,14 @@
     import dateFormat from "../../commonFun/timeFormat.js";
     import sessFun from "../../commonFun/sessFun.js";
     import api from "../../api/api.js";
+    import noSearchResult from "./components/noSearchResult.vue";  
+    import pointState from './components/pointState.vue';    
+      
     export default {
+        components: {
+            noSearchResult,
+            pointState,
+        },
         data(){
             return{
                 // 登录信息
@@ -115,10 +126,12 @@
                     {
                         label: '正常',
                         value: 1,
+                        color: 'rgba(82,196,26,1)'
                     },
                     {
                         label: '禁用',
-                        value: 0
+                        value: 0,
+                        color: 'rgba(245,34,45,1)'
                     }
                 ],
                 // 公司类型
@@ -233,15 +246,12 @@
                     pagesize: this.pageSize
                 };
                 let { keyword, type, state } = this.searchInfo;
-                if(keyword){
-                    info.ascName = keyword;
-                }
-                if(state>=0){
-                    info.astate = state;
-                }
-                if(type>=0){
-                    info.asType = type;
-                }
+                info = {
+                    ...info,
+                    ...(keyword && {ascName: keyword}),
+                    ...(state>=0 && {astate: state}),
+                    ...(type>=0 && {asType: type}),
+                };
                 return info;
             },
             // 设置表格数据
@@ -263,7 +273,7 @@
                     this.isSearch = true;
                     clearTimeout(timer);
                 }, 1000);
-                if(keyword || (type>=0) || (state>=0)){
+                if(keyword || (type!=='') || (state!=='')){
                     this.companyList = [];
                     this.loading = true;
                     this.loading_point = false;
@@ -363,7 +373,7 @@
             },
             // 时间格式化
             formatTime(time) {
-                return dateFormat.toDate(time);
+                return dateFormat.toDate(time, '/');
             },
             // 角色格式化
             roleToText(type) {
@@ -377,7 +387,7 @@
             stateToText(state) {
                 for (let data of this.stateArr) {
                     if (data.value == state) {
-                        return data.label;
+                        return data;
                     }
                 }
             },
@@ -443,105 +453,23 @@
     };
 </script>
 <style scoped>
-    /*面包屑导航*/
-    .ad_mediaDetail_wrap {
-        position: relative;
-    }
-    .ad_mediaDetail_nav{
-        width: 92%;
-        margin: 0 auto;
-    }
-    .ad_mediaDetail_nav p {
-        position: absolute;
-        left: 0;
-        top: 12px;
-        font-size: 14px;
-        line-height: 18px;
-    }
-
-    .ad_mediaDetail_nav p a {
-        color: #666;
-    }
-
-    .ad_mediaDetail_nav {
-        height: 42px;
-        position: relative;
-    }
-    /deep/.comList_container .el-input{
+    /deep/.mediaList_container .el-input{
         max-width: 180px;
-    }
-
-    .comList_wrap {
-        width: 92%;
-        background: #ffffff;
-        border: 1px solid #e6e7e9;
-        margin: 0 auto;
-    }
-
-    .comList_wrap .comList_head {
-        width: 100%;
-        height: 24px;
-        padding: 12px 0;
-        border-bottom: 1px solid #e6e7e9;
-    }
-
-    .comList_wrap .comList_head h2 {
-        font-size: 16px;
-        color: #2c313c;
-        height: 24px;
-        padding-left: 14px;
-        font-weight: bold;
-    }
-
-    .comList_wrap .comList_container {
-        width: 96%;
-        margin: 24px auto;
-    }
-    .table_wrap{
-        margin: 24px auto;
-        width: 100%;
-    }
-    /*表格*/
-    /deep/ .el-table th,
-    .el-table tr {
-        height: 44px;
-        padding: 0;
-        background-color: #f7f7f7;
-    }
-    /deep/ .el-table td {
-        padding: 8px 0;
-        overflow-x: hidden;
-        text-overflow: ellipsis;
-    }
-
-    /deep/ .el-table--border {
-        border-radius: 4px;
-    }
-
-    /deep/ .el-table th > .cell {
-        font-size: 14px;
-        color: #666666;
-        font-weight: bold;
-    }
-    
-    /deep/ .el-table__body-wrapper::-webkit-scrollbar {
-        width: 4px;
-        background: #fafafa;
-    }
-
-    /deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-        /*滚动条里面小方块*/
-        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-        background: #c1c1c1;
-        border-radius: 4px;
     }
     a{
         color: #108ee9;
     }
-    /deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
-        position: relative;
-        left: -2px;
-        top: 0px;
+    
+    /* 表格高度 */
+    /deep/ .el-table__body-wrapper {
+        height: 405px;
+    }
+
+    /*超出省略*/
+    /deep/ .el-table .cell {
+        white-space: nowrap;
+        max-width: 300px;
+        text-overflow: ellipsis;
     }
 </style>
 

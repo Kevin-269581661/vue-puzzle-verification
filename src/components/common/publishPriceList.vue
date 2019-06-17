@@ -19,18 +19,33 @@
                         </el-table-column>
                         <el-table-column label="城市级别" prop="cityLevel">
                             <template slot-scope="scope">
-                                <span>{{levelToText(scope.row.cityLevel)}}</span>
+                                <span>{{levelToText(scope.row.cityLevel) || '--'}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="原刊例价(/周/面)" prop="oldPrice">
+                        <el-table-column label="原刊例价(/周/面)" prop="oldPrice" align="right">
+                            <template slot-scope="scope">
+                                <span>{{priceFormat(scope.row.oldPrice)}}</span>
+                            </template>
                         </el-table-column>
-                        <el-table-column label="广告门A级(/周/面)" prop="levelAprice">
+                        <el-table-column label="广告门A级(/周/面)" prop="levelAprice" align="right">
+                            <template slot-scope="scope">
+                                <span>{{priceFormat(scope.row.levelAprice)}}</span>
+                            </template>
                         </el-table-column>
-                        <el-table-column label="广告门B级(/周/面)" prop="levelBprice">
+                        <el-table-column label="广告门B级(/周/面)" prop="levelBprice" align="right">
+                            <template slot-scope="scope">
+                                <span>{{priceFormat(scope.row.levelBprice)}}</span>
+                            </template>
                         </el-table-column>
-                        <el-table-column label="广告门C级(/周/面)" prop="levelCprice">
+                        <el-table-column label="广告门C级(/周/面)" prop="levelCprice" align="right">
+                            <template slot-scope="scope">
+                                <span>{{priceFormat(scope.row.levelCprice)}}</span>
+                            </template>
                         </el-table-column>
-                        <el-table-column label="道闸(/月/杆)" prop="barrierPrice">
+                        <el-table-column label="道闸(/月/杆)" prop="barrierPrice" align="right">
+                            <template slot-scope="scope">
+                                <span>{{priceFormat(scope.row.barrierPrice)}}</span>
+                            </template>
                         </el-table-column>
                         <el-table-column label="操作" v-if="session_data.uType=='SM'" >
                             <template slot-scope="scope">
@@ -42,6 +57,10 @@
                                 </el-button>
                             </template>
                         </el-table-column>
+
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
                     </el-table>
                 </div>
             </div>
@@ -127,6 +146,10 @@
 
 <script>
 import api from "../../api/api.js";
+// 价格格式化
+import commaFormat from "../../commonFun/commaFormat.js";
+import noSearchResult from "./components/noSearchResult.vue";
+
 import {
     Table,
     TableColumn,
@@ -142,6 +165,7 @@ import {
 export default {
     name: "publishPriceList",
     components: {
+        noSearchResult,
         elTable: Table,
         elTableColumn: TableColumn,
         elInput: Input,
@@ -214,6 +238,10 @@ export default {
         this.getCompany();
     },
     methods: {
+        // 价格加上逗号
+        priceFormat(price) {
+            return commaFormat.format(price);
+        },
         // 公司数据
         getCompany(){
             let sess = this.session_data;
@@ -599,31 +627,6 @@ export default {
 };
 </script>
 <style scoped>
-/*下拉框*/
-.el-table-filter {
-    height: 176px;
-    overflow-x: hidden;
-    overflow-y: scroll;
-}
-
-.el-table-filter .el-table-filter__list {
-    /*修改源代码*/
-    max-height: 176px;
-    overflow-y: scroll;
-}
-
-/deep/ .el-table-filter__list::-webkit-scrollbar {
-    width: 4px;
-    background: #fafafa;
-}
-
-/deep/ .el-table-filter__list::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #c1c1c1;
-    border-radius: 4px;
-}
-
 .changeInput {
     width: 150px;
     display: none;
@@ -656,140 +659,13 @@ export default {
     min-width: 9.6% !important;
 }
 
-/*面包屑导航*/
-.ad_mediaDetail_wrap {
-    position: relative;
-}
-.ad_mediaDetail_nav{
-    width: 92%;
-    margin: 0 auto;
-}
-.ad_mediaDetail_nav p {
-    position: absolute;
-    left: 0;
-    top: 12px;
-    font-size: 14px;
-    line-height: 18px;
-}
-
-.ad_mediaDetail_nav p a {
-    color: #666;
-}
-
-.ad_mediaDetail_nav {
-    height: 42px;
-    position: relative;
-}
-
-/*wrap*/
-.mediaList_wrap {
-    width: 92%;
-    background: #ffffff;
-    border: 1px solid #e6e7e9;
-    margin: 0 auto;
-    margin-bottom: 90px;
-}
-
-.mediaList_wrap .mediaList_head {
-    width: 100%;
-    height: 24px;
-    padding: 12px 0;
-    border-bottom: 1px solid #e6e7e9;
-}
-
-.mediaList_wrap .mediaList_head h2 {
-    font-size: 16px;
-    color: #2c313c;
-    height: 24px;
-    padding-left: 14px;
-    font-weight: bold;
-}
-
-.mediaList_wrap .mediaList_container {
-    width: 100%;
-}
-
-.mediaList_wrap .mediaList_container .table_wrap {
-    width: 96%;
-    margin: 20px auto;
-    border-radius: 4px;
-}
-
-/*表格*/
-/*select选中*/
-/deep/ .el-select-dropdown__item.selected {
-    color: #666666;
-    font-weight: normal;
-}
-
-/deep/ .el-date-editor .el-range-separator {
-    line-height: 26px;
-}
-
-/deep/ .el-table th,
-.el-table tr {
-    height: 44px;
-    padding: 0;
-    background-color: #f7f7f7;
-}
-
-/deep/ .el-table td {
-    padding: 10px 0;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-}
-/deep/ .has-gutter tr th:nth-child(3) {
-    text-align: right;
-    padding-right: 12px;
-}
-/deep/ .el-table__row td:nth-child(3) {
-    text-align: right;
-    padding-right: 12px;
-}
-
-/deep/ .el-table--border {
-    border-radius: 4px;
-}
-
-/deep/ .el-table th > .cell {
-    font-size: 14px;
-    color: #666666;
-    font-weight: bold;
-}
-
-/deep/ .el-table .caret-wrapper {
-    width: 22px;
-}
-
-/deep/ .el-input {
-    width: 150px;
-}
-
-/deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
-    background-color: #ecf5ff;
-}
-
-/*滚动条*/
+/*表格高度*/
 /deep/ .el-table__body-wrapper {
     height: 405px;
-    overflow-y: scroll;
-    overflow-x: hidden;
 }
 
-/deep/ .el-table__body-wrapper::-webkit-scrollbar {
-    width: 4px;
-    background: #fafafa;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #c1c1c1;
-    border-radius: 4px;
-}
 /deep/ .priceInfo_box .el-row{
     margin-bottom: 10px;
-    /* margin-top: -20px; */
 }
 /deep/ .priceInfo_box .el-input-number--small{
     width: 89%;

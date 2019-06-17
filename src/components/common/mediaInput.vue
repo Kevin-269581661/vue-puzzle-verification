@@ -3251,18 +3251,9 @@
         top: 0;
     }
     /*按钮*/
-    .mediaMana_content_bottom .content_bottom_btn {
-        position: absolute;
-        bottom: -66px;
-        margin-bottom: 22px;
-        left: 45.3%;
-    }
-
-    .mediaMana_content_bottom .content_bottom_btn .el-button {
-        width: 76px;
-        height: 32px;
+    .content_bottom_btn{
         text-align: center;
-        padding: 0;
+        margin-top: 20px;
     }
 
     /deep/ .mediaMana_content_bottom .el-form-item__error {

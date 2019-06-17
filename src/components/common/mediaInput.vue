@@ -11,234 +11,308 @@
                         <el-form :model="recForm" status-icon :rules="recRules" ref="recForm" label-width="100px"
                                  class="demo-ruleForm resFrom">
                             <el-form-item label="基本信息" class="baseInfo firstInfo"></el-form-item>
-                            <el-form-item label="资源类型" prop="rt" class="left_form_item">
-                                <div class="select_wrap">
-                                    <el-select v-model="recForm.rt" @change="selectRec" placeholder="请选择" :disabled="PathHaveEdit">
-                                        <el-option label="写字楼" value="2"></el-option>
-                                        <el-option label="社区" value="1"></el-option>
-                                    </el-select>
-                                </div>
-                            </el-form-item>
-                            <el-form-item label="所属城市" prop="city">
-                                <el-cascader
-                                    v-if="cityOther"
-                                    :options="cityOptions"
-                                    v-model="recForm.city"
-                                    separator="-"
-                                    :show-all-levels="false"
-                                    placeholder="请选择"
-                                    @change="handleChange"
-                                >
-                                </el-cascader>
-                             <!--   <el-select v-else v-model="recForm.city" placeholder="请选择" @change="recFormCity">
-                                    <el-option
-                                        v-for="item in throwCity"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>-->
-                            </el-form-item>
-                            <el-form-item label="所属区域" prop="region">
-                                <el-select v-model="recForm.region" placeholder="请选择" :clearable="true" @change="getRegion">
-                                    <el-option v-for="item in regionOpt"
-                                               :key="item.value"
-                                               :label="item.label"
-                                               :value="item.value"
-                                    >
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item label="资源名称" prop="resname" class="res_name_form_item right_form_item">
-                                <div style="position: relative">
-                                    <el-autocomplete
-                                        v-model="recForm.resname"
-                                        :fetch-suggestions="getResNameByFangJiaWang"
-                                        placeholder=""
-                                        @select="changeResName">
-                                    </el-autocomplete>
-                                    <span style="position: absolute;left: 176px;top: 0">
-                                        <el-button size="small" type="primary" @click="getResBasicData">检索</el-button>
-                                    </span>
-                                </div>
-                            </el-form-item>
+                            <el-row :gutter="76" class="from_row">
+                                <el-col :span="6" >
+                                    <el-form-item label="资源类型" prop="rt">
+                                        <el-select v-model="recForm.rt" placeholder="请选择资源类型"
+                                                   :disabled="PathHaveEdit"
+                                                   @change="selectRec"
+                                                   @blur="blurFun('rt')">
+                                            <el-option label="写字楼" value="2"></el-option>
+                                            <el-option label="社区" value="1"></el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="所属城市" prop="city">
+                                        <el-cascader
+                                            v-if="cityOther"
+                                            :options="cityOptions"
+                                            v-model="recForm.city"
+                                            separator="-"
+                                            :show-all-levels="false"
+                                            placeholder="请选择所属城市"
+                                            @blur="blurFun('city')"
+                                            @change="handleChange">
+                                        </el-cascader>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="所属区域" prop="region">
+                                        <el-select v-model="recForm.region" placeholder="请选择所属区域" :clearable="true"
+                                                   @change="getRegion"
+                                                   @blur="blurFun('region')">
+                                            <el-option v-for="item in regionOpt"
+                                                       :key="item.value"
+                                                       :label="item.label"
+                                                       :value="item.value"
+                                            >
+                                            </el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6" class="el_col_resName">
+                                    <el-form-item label="资源名称" prop="resname">
+                                        <el-autocomplete
+                                            v-model="recForm.resname"
+                                            :fetch-suggestions="getResNameByFangJiaWang"
+                                            placeholder=""
+                                            @select="changeResName"
+                                            @blur="blurFun('resname')">
+                                        </el-autocomplete>
+                                       <el-button size="small" type="primary" @click="getResBasicData"
+                                                               class="get_resName_btn">检索</el-button>
+                                    </el-form-item>
+                                    <!--<p v-show="isResError" class="res_error">-->
+                                        <el-tooltip class="item" effect="dark" placement="bottom-end" v-show="isResError">
+                                            <div slot="content">
+                                                <ul style="font-size: 12px;color: #fff">
+                                                    <li>资源：{{resCommentData.resName}}</li>
+                                                    <li>媒体数：{{resCommentData.mediaNum}}</li>
+                                                    <li>创建时间：{{resCommentData.updateTime}}</li>
+                                                </ul>
+                                            </div>
+                                            <p class="res_error">这个小区名称已存在 <i class="el-icon-warning"></i></p>
+                                        </el-tooltip>
+                                    <!--</p>-->
+                                </el-col>
+                            </el-row>
+                            <el-row :gutter="76" class="from_row">
+                                <el-col :span="6">
+                                    <el-form-item label="资源别名" prop="resAlias">
+                                        <el-input v-model="recForm.resAlias" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
                             <el-form-item label="位置信息" class="baseInfo"></el-form-item>
-                            <el-form-item label="资源地址" prop="resaddr" class="left_form_item">
-                              <!--  <el-input v-model="recForm.resaddr" placeholder=""
-                                          :disabled="returnBool(FangJiaWangData.resaddr)"></el-input>-->
-                                   <el-autocomplete
-                                       v-model="recForm.resaddr"
-                                       :fetch-suggestions="querySearchAsync"
-                                       placeholder="例：工业大道53号"
-                                       class="el-from-item-address"
-                                   >
-                                   </el-autocomplete>
-                            </el-form-item>
-                            <el-form-item label="地址别名" prop="addressAlias">
-                                <el-input v-model="recForm.addressAlias" placeholder=""
-                                          :disabled="returnBool(FangJiaWangData.addressAlias)"></el-input>
-                            </el-form-item>
-                            <el-form-item label="经纬度" required class="lng_lat_form_item">
-                                <el-form-item prop="lat" class="min_form_item">
-                                    <el-input v-model.trim="recForm.lat" placeholder="" :disabled="returnBool(FangJiaWangData.lat)"></el-input>
-                                </el-form-item>
-                                <el-form-item prop="lng" class="min_form_item min_form_item_right">
-                                    <el-input v-model.trim="recForm.lng" placeholder="" :disabled="returnBool(FangJiaWangData.lng)"></el-input>
-                                </el-form-item>
-                            </el-form-item>
-                            <el-form-item label="所属商圈" prop="business" class="right_form_item">
-                                <el-input v-model.trim="recForm.business" placeholder=""></el-input>
-                            </el-form-item>
-                            <el-form-item label="描述" prop="description" class="left_form_item">
-                                <el-input type="textarea" v-model="recForm.description" placeholder=""
-                                          :disabled="returnBool(FangJiaWangData.description)"></el-input>
-                            </el-form-item>
-                            <el-form-item label="周边配套" prop="supportingFacilities">
-                                <el-input type="textarea" v-model="recForm.supportingFacilities" placeholder=""
-                                          :disabled="returnBool(FangJiaWangData.supportingFacilities)"></el-input>
-                            </el-form-item>
-                            <el-form-item label="交通状况" prop="transportation">
-                                <el-input type="textarea" v-model="recForm.transportation" placeholder=""
-                                          :disabled="returnBool(FangJiaWangData.transportation)"></el-input>
-                            </el-form-item>
+                            <el-row :gutter="76" class="from_row">
+                                <el-col :span="6">
+                                    <el-form-item label="资源地址" prop="resaddr">
+                                            <el-autocomplete
+                                                v-model="recForm.resaddr"
+                                                :fetch-suggestions="querySearchAsync"
+                                                placeholder=""
+                                                @blur="blurFun('resaddr')"
+                                                style="width: 100%"
+                                                class="el-from-item-address">
+                                            </el-autocomplete>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="地址别名" prop="addressAlias">
+                                        <el-input v-model="recForm.addressAlias" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6" class="col_lng_lat">
+                                    <div class="lng_lat_map_btn" @click="openBmap">
+                                        <i class="el-icon-location-outline"></i>
+                                        地图获取
+                                    </div>
+                                    <el-form-item label="经纬度" required class="lng_lat_form_item">
+                                            <div class="form_item_box_son">
+                                                <el-form-item prop="lat" class="">
+                                                    <el-input v-model.trim="recForm.lat" placeholder=""></el-input>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="form_item_box_son">
+                                                <el-form-item prop="lng">
+                                                    <el-input v-model.trim="recForm.lng" placeholder=""></el-input>
+                                                </el-form-item>
+                                            </div>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="所属商圈" prop="business" class="right_form_item">
+                                        <el-input v-model.trim="recForm.business" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row :gutter="76" class="from_row">
+                                <el-col :span="6">
+                                    <el-form-item label="具体描述" prop="description">
+                                        <el-input type="textarea" v-model="recForm.description" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="周边配套" prop="supportingFacilities">
+                                        <el-input type="textarea" v-model="recForm.supportingFacilities" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="交通状况" prop="transportation">
+                                        <el-input type="textarea" v-model="recForm.transportation" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
                             <el-form-item label="属性信息" class="baseInfo"></el-form-item>
-                            <el-form-item label="楼盘价格" prop="buildingPrice" class="rmb left_form_item">
-                                <div class="mm">
-                                    <el-input v-model="recForm.buildingPrice" placeholder=""
-                                              :disabled="returnBool(FangJiaWangData.buildingPrice)"></el-input>
-                                    <span style="left: 15px">￥</span>
-                                </div>
-                            </el-form-item>
-                            <el-form-item :label="rt_village?'楼盘类型':'写字楼类型'" prop="floorType" :class="rt_village ? '' : 'floor_house_item'">
-                                <el-select v-model="recForm.floorType" placeholder="">
-                                    <el-option v-for="item in floorType"
-                                               :key="item.value"
-                                               :label="item.label"
-                                               :value="item.value"
-                                    >
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item :label="rt_village?'小区户数':'办公室数量'" prop="households"  :class="rt_village ? '' : 'floor_house_item'">
-                                <el-input v-model="recForm.households" controls-position="right"
-                                          :disabled="returnBool(FangJiaWangData.households)"></el-input>
-                            </el-form-item>
-                            <el-form-item label="楼栋数量" prop="buildingNum" class="right_form_item">
-                                <el-input-number v-model="recForm.buildingNum" controls-position="right" :min="1"
-                                                 :max="9999999" :disabled="returnBool(FangJiaWangData.buildingNum)"></el-input-number>
-                            </el-form-item>
-                            <el-form-item label="建筑类型" prop="buildingType" class="left_form_item">
-                                <el-input v-model="recForm.buildingType" placeholder=""
-                                          :disabled="returnBool(FangJiaWangData.buildingType)"></el-input>
-                            </el-form-item>
-                            <el-form-item :label="rt_village?'入住年份':'建成年份'" prop="liveTime">
-                                <el-date-picker
-                                    v-model="recForm.liveTime"
-                                    :disabled="returnBool(FangJiaWangData.liveTime)"
-                                    type="year"
-                                    @change="getTime"
-                                    value-format="yyyy"
-                                    format="yyyy 年"
-                                    :editable="false"
-                                    placeholder="">
-                                </el-date-picker>
-                            </el-form-item>
-                            <el-form-item label="占地面积（m²）" prop="floorSpace">
-                                <div class="el-form-item_unit">
-                                    <el-input v-model="recForm.floorSpace" placeholder=""
-                                              :disabled="returnBool(FangJiaWangData.floorSpace)">
-                                    </el-input>
-                                    <!--<span></span>-->
-                                </div>
-                            </el-form-item>
-                            <el-form-item label="建筑面积（m²）" prop="constructionSpace" class="right_form_item">
-                                <div class="el-form-item_unit">
-                                    <el-input v-model="recForm.constructionSpace" placeholder=""
-                                              :disabled="returnBool(FangJiaWangData.constructionSpace)"></el-input>
-                                    <!--<span>m²</span>-->
-                                </div>
-                            </el-form-item>
-                            <el-form-item label="建筑结构" prop="buildingStructure" class="left_form_item">
-                                <el-input v-model="recForm.buildingStructure" placeholder=""
-                                          :disabled="returnBool(FangJiaWangData.buildingStructure)"></el-input>
-                            </el-form-item>
-                            <el-form-item label="容积率" prop="plotRatio">
-                                <el-input v-model="recForm.plotRatio" placeholder=""
-                                          :disabled="returnBool(FangJiaWangData.plotRatio)"></el-input>
-                            </el-form-item>
-                            <el-form-item label="绿化率" prop="greenPercentage">
-                                <el-input v-model="recForm.greenPercentage" placeholder=""
-                                          :disabled="returnBool(FangJiaWangData.greenPercentage)"></el-input>
-                            </el-form-item>
-                            <el-form-item label="产权年限（年）" prop="ownershipPeriod" class="right_form_item">
-                                <div class="el-form-item_unit">
-                                    <el-input v-model="recForm.ownershipPeriod" placeholder=""
-                                              :disabled="returnBool(FangJiaWangData.ownershipPeriod)"></el-input>
-                                    <!--<span>年</span>-->
-                                </div>
-                            </el-form-item>
-                            <el-form-item label="车位数" prop="carNumber" class="left_form_item">
-                                <el-input v-model="recForm.carNumber" controls-position="right" placeholder=""
-                                          :disabled="returnBool(FangJiaWangData.carNumber)"></el-input>
-                            </el-form-item>
-                            <el-form-item label="人流量（人次/日）" prop="peopleFlowrate">
-                                <el-input v-model="recForm.peopleFlowrate" placeholder=""></el-input>
-                            </el-form-item>
-                            <el-form-item label="车流量（车次/日）" prop="carFlowrate" class="right_form_item">
-                                <el-input v-model="recForm.carFlowrate" placeholder=""></el-input>
-                            </el-form-item>
+                            <el-row :gutter="76" class="from_row">
+                                <el-col :span="6">
+                                    <el-form-item label="楼盘价格(元/m²)" prop="buildingPrice">
+                                        <el-input v-model="recForm.buildingPrice" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item :label="rt_village?'楼盘类型':'写字楼类型'" prop="floorType"
+                                                  :class="rt_village ? '' : 'floor_house_item'">
+                                        <el-select v-model="recForm.floorType" placeholder=""
+                                                   @blur="blurFun('floorType')">
+                                            <el-option v-for="item in floorType"
+                                                       :key="item.value"
+                                                       :label="item.label"
+                                                       :value="item.value">
+                                            </el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item :label="rt_village?'小区户数':'办公室数量'" prop="households"
+                                                  :class="rt_village ? '' : 'floor_house_item'">
+                                        <el-input v-model="recForm.households" controls-position="right"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="楼栋数量" prop="buildingNum">
+                                        <el-input-number v-model="recForm.buildingNum" controls-position="right" :min="1" :max="9999999"></el-input-number>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row :gutter="76" class="from_row">
+                                <el-col :span="6">
+                                    <el-form-item label="建筑类型" prop="buildingType">
+                                        <el-input v-model="recForm.buildingType" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item :label="rt_village?'入住年份':'建成年份'" prop="liveTime">
+                                        <el-date-picker
+                                            v-model="recForm.liveTime"
+                                            type="year"
+                                            value-format="yyyy"
+                                            format="yyyy 年"
+                                            :editable="false"
+                                            placeholder=""
+                                            @blur="blurFun('liveTime')">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="占地面积（m²）" prop="floorSpace">
+                                        <el-input v-model="recForm.floorSpace" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="建筑面积（m²）" prop="constructionSpace">
+                                        <el-input v-model="recForm.constructionSpace" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row :gutter="76" class="from_row">
+                                <el-col :span="6">
+                                    <el-form-item label="建筑结构" prop="buildingStructure">
+                                        <el-input v-model="recForm.buildingStructure" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="容积率" prop="plotRatio">
+                                        <el-input v-model="recForm.plotRatio" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="绿化率（%）" prop="greenPercentage">
+                                        <el-input v-model="recForm.greenPercentage" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="产权年限（年）" prop="ownershipPeriod">
+                                        <el-input v-model="recForm.ownershipPeriod" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row :gutter="76" class="from_row">
+                                <el-col :span="6">
+                                    <el-form-item label="车位数" prop="carNumber">
+                                        <el-input v-model="recForm.carNumber" controls-position="right" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="人流量（人次/日）" prop="peopleFlowrate">
+                                        <el-input v-model="recForm.peopleFlowrate" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="车流量（车次/日）" prop="carFlowrate">
+                                        <el-input v-model="recForm.carFlowrate" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
                             <el-form-item label="物业信息" class="baseInfo"></el-form-item>
-                            <el-form-item label="开发商" prop="developer" class="left_form_item">
-                                <el-input v-model="recForm.developer" placeholder=""
-                                          :disabled="returnBool(FangJiaWangData.developer)"></el-input>
-                            </el-form-item>
-                            <el-form-item label="物业公司" prop="pmc">
-                                <el-input v-model="recForm.pmc" placeholder=""
-                                          :disabled="returnBool(FangJiaWangData.pmc)"></el-input>
-                            </el-form-item>
-                            <el-form-item label="物业费（元/m²/月）" prop="managementFee">
-                                <el-input v-model="recForm.managementFee" placeholder=""
-                                          :disabled="returnBool(FangJiaWangData.managementFee)"></el-input>
-                            </el-form-item>
-                            <el-form-item label="售楼地址" prop="salesOfficeAdd" class="right_form_item">
-                                <el-input v-model="recForm.salesOfficeAdd" placeholder=""
-                                          :disabled="returnBool(FangJiaWangData.salesOfficeAdd)"></el-input>
-                            </el-form-item>
-                            <el-form-item label="售楼电话" prop="salesPhoneNumber" class="left_form_item">
-                                <el-input v-model="recForm.salesPhoneNumber" placeholder=""
-                                          :disabled="returnBool(FangJiaWangData.salesPhoneNumber)"></el-input>
-                            </el-form-item>
-                            <el-form-item label="折扣信息" prop="discount">
-                                <el-input v-model="recForm.discount" placeholder=""
-                                          :disabled="returnBool(FangJiaWangData.discount)"></el-input>
-                            </el-form-item>
-                            <el-form-item label="预售许可证" prop="preSalePermit">
-                                <el-input v-model="recForm.preSalePermit" placeholder=""
-                                          :disabled="returnBool(FangJiaWangData.preSalePermit)"></el-input>
-                            </el-form-item>
-                            <el-form-item label="产权性质" prop="ownershipType" class="right_form_item">
-                                <el-input v-model="recForm.ownershipType" placeholder=""
-                                          :disabled="returnBool(FangJiaWangData.ownershipType)"></el-input>
-                            </el-form-item>
+                            <el-row :gutter="76" class="from_row">
+                                <el-col :span="6">
+                                    <el-form-item label="开发商" prop="developer">
+                                        <el-input v-model="recForm.developer" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="物业公司" prop="pmc">
+                                        <el-input v-model="recForm.pmc" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="物业费（元/m²/月）" prop="managementFee">
+                                            <el-input v-model="recForm.managementFee" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="售楼地址" prop="salesOfficeAdd">
+                                        <el-input v-model="recForm.salesOfficeAdd" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row :gutter="76" class="from_row">
+                                <el-col :span="6">
+                                    <el-form-item label="售楼电话" prop="salesPhoneNumber">
+                                        <el-input v-model="recForm.salesPhoneNumber" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="折扣信息" prop="discount">
+                                        <el-input v-model="recForm.discount" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="预售许可证" prop="preSalePermit">
+                                        <el-input v-model="recForm.preSalePermit" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="产权性质" prop="ownershipType">
+                                        <el-input v-model="recForm.ownershipType" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
                             <el-form-item label="小区照片" class="baseInfo"></el-form-item>
-                            <el-form-item label="" prop="mImg" class="left_form_item">
-                                <div class="upload_img_wrap" style="width: 120px;"><!--:auto-upload = 'false'-->
-                                    <el-upload
-                                        :action="doUpload"
-                                        list-type="picture-card"
-                                        :file-list="resUpdata"
-                                        :limit = '1'
-                                        :on-success="handleDownSuccess"
-                                        :on-preview="handlePictureCardPreview_res"
-                                        :before-upload="beforeUpload_res"
-                                        :on-remove="handleRemoveR">
-                                        <i class="el-icon-plus"></i>
-                                    </el-upload>
-                                    <el-dialog :visible.sync="resImgDialog">
-                                        <img width="100%" :src="resImgUrl" alt="">
-                                    </el-dialog>
-                                </div>
-                            </el-form-item>
+                            <el-row :gutter="76" class="from_row">
+                                <el-col :span="6">
+                                    <el-form-item label="" prop="mImg" class="left_form_item">
+                                        <div class="upload_img_wrap" style="width: 120px;">
+                                            <el-upload
+                                                :action="doUpload"
+                                                list-type="picture-card"
+                                                :file-list="resUpdata"
+                                                :limit = '1'
+                                                :on-success="handleDownSuccess"
+                                                :on-preview="handlePictureCardPreview_res"
+                                                :before-upload="beforeUpload_res"
+                                                :on-remove="handleRemoveR">
+                                                <i class="el-icon-plus"></i>
+                                            </el-upload>
+                                            <el-dialog :visible.sync="resImgDialog">
+                                                <img width="100%" :src="resImgUrl" alt="">
+                                            </el-dialog>
+                                        </div>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
                         </el-form>
                     </div>
                 </div>
@@ -251,111 +325,159 @@
                             <div class="content_bottom_wrap" v-for="(item,key) in arrMedia" :key="key">
                                 <div class="content_bottom_head">
                                     <h2>{{item.text}}</h2>
-                                    <el-button type="danger" size="small" class="media_deleBtn" @click="mediaDelBtnFun(key)" :disabled="(key + 1) <= editMediaLength">删除</el-button>
+                                    <div class="media_deleBtn" @click="mediaDelBtnFun(key)" v-show="(key + 1) > editMediaLength">
+                                        <i class="el-icon-remove"></i>
+                                    </div>
+                                    <!--<el-button type="danger" size="small" class="media_deleBtn" @click="mediaDelBtnFun(key)"-->
+                                               <!--:disabled="(key + 1) <= editMediaLength">删除</el-button>-->
                                 </div>
                                 <div class="content_bottom_form_wrap">
                                     <el-form :model="item.mediaForm" status-icon :rules="mediaRules" ref="mediaForm" label-width="100px"
                                              class="demo-ruleForm">
-                                        <el-form-item label="媒体名称" prop="mediaName">
-                                            <el-input v-model="item.mediaForm.mediaName" placeholder="例：东门"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="可投面数" prop="usableNum">
-                                            <el-input-number v-model.number="item.mediaForm.usableNum" :min="1" :max="26"
-                                                             controls-position="right" :disabled="(PathHaveEdit && key <= editMediaLength - 1)">
-                                            </el-input-number>
-                                        </el-form-item>
-                                        <el-form-item label="媒体状态" prop="mstate">
-                                            <el-select v-model="item.mediaForm.mstate" placeholder="请选择媒体状态" @change="selectMstate(item.mediaForm)">
-                                                <el-option label="禁用" :value="'0' + key"></el-option>
-                                                <el-option label="正常" :value="'1' + key"></el-option>
-                                                <el-option label="待安装" :value="'2' + key"></el-option>
-                                                <el-option label="待维修" :value="'3' + key"></el-option>
-                                            </el-select>
-                                        </el-form-item>
-                                        <el-form-item label="资产编号" prop="assetId" ref="ResAssetId" class="right_form_item"
-                                                      :rules="item.mediaForm.assetIdBolean ? assetIdRules: mediaRules.assetId">
-                                            <el-input v-model.trim="item.mediaForm.assetId" placeholder="例:0034FASF342-X21" :disabled="item.mediaForm.assetIdBolean"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label=" 媒体类型" prop="doorType">
-                                            <el-input v-model="item.mediaForm.doorType" placeholder="例:消防门"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="广告尺寸" required>
-                                            <el-form-item prop="adSizeW" class="min_form_item">
-                                                <div class="mm">
-                                                    <el-input v-model="item.mediaForm.adSizeW" placeholder="宽度"></el-input>
-                                                    <span>mm</span>
-                                                </div>
-                                            </el-form-item>
-                                            <el-form-item prop="adSizeH" class="min_form_item min_form_item_right">
-                                                <div class="mm">
-                                                    <el-input v-model="item.mediaForm.adSizeH" placeholder="高度">
-                                                    </el-input>
-                                                    <span>mm</span>
-                                                </div>
-                                            </el-form-item>
-                                        </el-form-item>
-                                        <el-form-item label="可视画面" required>
-                                            <el-form-item prop="visualW" class="min_form_item">
-                                                <div class="mm">
-                                                    <el-input v-model="item.mediaForm.visualW" placeholder="宽度"></el-input>
-                                                    <span>mm</span>
-                                                </div>
-                                            </el-form-item>
-                                            <el-form-item prop="visualH" class="min_form_item min_form_item_right">
-                                                <div class="mm">
-                                                    <el-input v-model="item.mediaForm.visualH" placeholder="高度">
-                                                    </el-input>
-                                                    <span>mm</span>
-                                                </div>
-                                            </el-form-item>
-                                        </el-form-item>
-                                        <el-form-item label="广告限制" prop="adLimit" class="right_form_item">
-                                            <el-select v-model="item.mediaForm.adLimit" multiple collapse-tags placeholder="请选择广告限制"
-                                                       @focus="adLimitFocus(key)" @change="changeAdLimit">
-                                                <el-option
-                                                    v-for="(limit, index) in adLimit"
-                                                    :key="index"
-                                                    :label="limit.label"
-                                                    :value="limit.value">
-                                                </el-option>
-                                            </el-select>
-                                        </el-form-item>
-                                        <el-form-item label="媒体等级" prop="adDoorLevel" v-if="PathHaveEdit && classified">
-                                            <el-select v-model="item.mediaForm.adDoorLevel" placeholder="请选择媒体等级">
-                                                <el-option
-                                                    v-for="(level,index) in mediaLevel"
-                                                    :key="index"
-                                                    :label="level.label"
-                                                    :value="level.value">
-                                                </el-option>
-                                            </el-select>
-                                            <br><span style="font-size: 12px;color: #FF8282">*媒体等级涉及该广告门定价，请勿随意更改。</span>
-                                        </el-form-item>
-                                        <el-form-item label="备注" prop="mediaRemark">
-                                            <el-input type="textarea" v-model.trim="item.mediaForm.mediaRemark" placeholder="请填写备注信息"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="门禁照片:" prop="mImg">
-                                            <div class="upload_img_wrap"><!-- @click="saveImgInfo(item.text)"-->
-                                                <el-upload
-                                                    :disabled = "isUpload"
-                                                    :action="doUpload"
-                                                    list-type="picture-card"
-                                                    :limit='2'
-                                                    :file-list="item.mediaForm.updataImg"
-                                                    :before-upload="beforeUpload_ad"
-                                                    :on-success="adUploadSuccess"
-                                                    :on-remove="adHandleRemove"
-                                                    :on-preview="handlePictureCardPreview"
-                                                    @click.native="saveImgInfo(item.text)">
-                                                    <i class="el-icon-plus" ></i>
-                                                </el-upload>
-                                            </div>
-                                        </el-form-item>
+                                        <el-row :gutter="76" class="from_row">
+                                            <el-col :span="6">
+                                                <el-form-item label="媒体名称" prop="mediaName">
+                                                    <el-input v-model="item.mediaForm.mediaName" placeholder="例：东门"></el-input>
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="6">
+                                                <el-form-item label="可投面数" prop="usableNum">
+                                                    <el-input-number v-model.number="item.mediaForm.usableNum" :min="1" :max="26"
+                                                                         controls-position="right" :disabled="(PathHaveEdit && key <= editMediaLength - 1)">
+                                                    </el-input-number>
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="6">
+                                                <el-form-item label="媒体状态" prop="mstate">
+                                                    <el-select v-model="item.mediaForm.mstate" placeholder="请选择媒体状态"
+                                                               @blur="adDoorBlur('mstate',key)"
+                                                               @change="selectMstate(item.mediaForm)">
+                                                        <el-option label="禁用" :value="'0' + key"></el-option>
+                                                        <el-option label="正常" :value="'1' + key"></el-option>
+                                                        <el-option label="待安装" :value="'2' + key"></el-option>
+                                                        <el-option label="待维修" :value="'3' + key"></el-option>
+                                                    </el-select>
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="6">
+                                                <el-form-item label="资产编号" prop="assetId" ref="ResAssetId"
+                                                              :rules="item.mediaForm.assetIdBolean ? assetIdRules: mediaRules.assetId">
+                                                    <el-input v-model.trim="item.mediaForm.assetId" placeholder="例:0034FASF342-X21"
+                                                              :disabled="item.mediaForm.assetIdBolean"></el-input>
+                                                </el-form-item>
+                                            </el-col>
+                                        </el-row>
+                                        <el-row :gutter="76" class="from_row">
+                                            <el-col :span="6">
+                                                <el-form-item label=" 媒体类型" prop="doorType">
+                                                    <el-input v-model="item.mediaForm.doorType" placeholder="例:消防门"></el-input>
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="6">
+                                                <el-form-item label="广告尺寸" required>
+                                                    <div class="form_item_box_son">
+                                                        <el-form-item prop="adSizeW" class="">
+                                                            <div class="mm">
+                                                                <el-input v-model="item.mediaForm.adSizeW"
+                                                                          placeholder="宽度"></el-input>
+                                                                <span>mm</span>
+                                                            </div>
+                                                        </el-form-item>
+                                                    </div>
+                                                    <div class="form_item_box_son">
+                                                        <el-form-item prop="adSizeH">
+                                                            <div class="mm">
+                                                                <el-input v-model="item.mediaForm.adSizeH"
+                                                                          placeholder="高度">
+                                                                </el-input>
+                                                                <span>mm</span>
+                                                            </div>
+                                                        </el-form-item>
+                                                    </div>
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="6">
+                                                <el-form-item label="可视画面" required>
+                                                    <div class="form_item_box_son">
+                                                        <el-form-item prop="visualW">
+                                                            <div class="mm">
+                                                                <el-input v-model="item.mediaForm.visualW" placeholder="宽度"></el-input>
+                                                                <span>mm</span>
+                                                            </div>
+                                                        </el-form-item>
+                                                    </div>
+                                                    <div class="form_item_box_son">
+                                                        <el-form-item prop="visualH">
+                                                            <div class="mm">
+                                                                <el-input v-model="item.mediaForm.visualH" placeholder="高度"></el-input>
+                                                                <span>mm</span>
+                                                            </div>
+                                                        </el-form-item>
+                                                    </div>
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="6">
+                                                <el-form-item label="广告限制" prop="adLimit" class="right_form_item">
+                                                    <el-select v-model="item.mediaForm.adLimit" multiple collapse-tags placeholder="请选择广告限制"
+                                                               @focus="adLimitFocus(key)" @change="changeAdLimit">
+                                                        <el-option
+                                                            v-for="(limit, index) in adLimit"
+                                                            :key="index"
+                                                            :label="limit.label"
+                                                            :value="limit.value">
+                                                        </el-option>
+                                                    </el-select>
+                                                </el-form-item>
+                                            </el-col>
+                                        </el-row>
+                                        <el-row :gutter="76" class="from_row">
+                                            <el-col :span="6">
+                                                <el-form-item label="媒体等级" prop="adDoorLevel"
+                                                              v-if="PathHaveEdit && classified">
+                                                    <el-select v-model="item.mediaForm.adDoorLevel"
+                                                               placeholder="请选择媒体等级">
+                                                        <el-option
+                                                            v-for="(level,index) in mediaLevel"
+                                                            :key="index"
+                                                            :label="level.label"
+                                                            :value="level.value">
+                                                        </el-option>
+                                                    </el-select>
+                                                    <!--<br>-->
+                                                    <span style="display:inline-block;font-size: 12px;color: #FF8282;line-height: 20px">
+                                                        *媒体等级涉及该广告门定价，请勿随意更改。
+                                                    </span>
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="6">
+                                                <el-form-item label="备注" prop="mediaRemark">
+                                                    <el-input type="textarea" v-model.trim="item.mediaForm.mediaRemark" placeholder="请填写备注信息"></el-input>
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="6">
+                                                <el-form-item label="门禁照片:" prop="mImg">
+                                                    <div class="upload_img_wrap"><!-- @click="saveImgInfo(item.text)"-->
+                                                        <el-upload
+                                                            :disabled = "isUpload"
+                                                            :action="doUpload"
+                                                            list-type="picture-card"
+                                                            :limit='2'
+                                                            :file-list="item.mediaForm.updataImg"
+                                                            :before-upload="beforeUpload_ad"
+                                                            :on-success="adUploadSuccess"
+                                                            :on-remove="adHandleRemove"
+                                                            :on-preview="handlePictureCardPreview"
+                                                            @click.native="saveImgInfo(item.text)">
+                                                            <i class="el-icon-plus" ></i>
+                                                        </el-upload>
+                                                    </div>
+                                                </el-form-item>
+                                            </el-col>
+                                        </el-row>
                                     </el-form>
                                 </div>
                             </div>
                         </div>
-
                         <div class="addMedia">
                             <div class="addMediaBtn" @click="mediaAddFun()">+ 新增媒体</div>
                         </div>
@@ -365,92 +487,132 @@
                             <div class="content_bottom_wrap" v-for="(item,key) in roadGateMedia" :key="key">
                                 <div class="content_bottom_head">
                                     <h2>{{item.text}}</h2>
-                                    <el-button type="danger" size="small" class="media_deleBtn" @click="roadGateDelBtnFun(key)" :disabled="(key + 1) <= editRoadGateLength">删除</el-button>
+                                    <div class="media_deleBtn" @click="roadGateDelBtnFun(key)" v-show="(key + 1) > editRoadGateLength">
+                                        <i class="el-icon-remove"></i>
+                                    </div>
+                               <!--     <el-button type="danger" size="small" class="media_deleBtn" @click="roadGateDelBtnFun(key)" :disabled="(key + 1) <= editRoadGateLength">删除</el-button>-->
                                 </div>
                                 <div class="content_bottom_form_wrap">
                                     <el-form :model="item.roadGateForm" status-icon :rules="roadGateRules" ref="roadGateForm" label-width="100px"
                                              class="demo-ruleForm">
-                                        <el-form-item label="媒体名称" prop="mediaName">
-                                            <el-input v-model="item.roadGateForm.mediaName" placeholder="例：东门"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="资产编号" prop="assetId" ref="ResAssetId" :rules="item.roadGateForm.assetIdBolean ? assetIdRules: mediaRules.assetId">
-                                            <el-input v-model.trim="item.roadGateForm.assetId" placeholder="例:0034FASF342-X21" :disabled="item.roadGateForm.assetIdBolean"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="可投面数" prop="usableNum">
-                                            <el-input-number v-model.number="item.roadGateForm.usableNum" :min="1" :max="3" :disabled="true"
-                                                             controls-position="right"> <!--:disabled="(PathHaveEdit && key <= editRoadGateLength - 1)"-->
-                                            </el-input-number>
-                                        </el-form-item>
-                                        <el-form-item label="媒体状态" prop="mstate" class="right_form_item">
-                                            <el-select v-model="item.roadGateForm.mstate" placeholder="请选择媒体状态" @change="selectMstate(item.roadGateForm)">
-                                                <el-option label="禁用" :value="'0' + key"></el-option>
-                                                <el-option label="正常" :value="'1' + key"></el-option>
-                                                <el-option label="待安装" :value="'2' + key"></el-option>
-                                                <el-option label="待维修" :value="'3' + key"></el-option>
-                                            </el-select>
-                                        </el-form-item>
-                                        <el-form-item label="广告限制" prop="adLimit">
-                                            <el-select v-model="item.roadGateForm.adLimit" multiple collapse-tags
-                                                       placeholder="请选择广告限制" @focus="adLimitFocus(key)" @change="changeAdLimit">
-                                                <el-option
-                                                    v-for="(limit, index) in adLimit"
-                                                    :key="index"
-                                                    :label="limit.label"
-                                                    :value="limit.value">
-                                                </el-option>
-                                            </el-select>
-                                        </el-form-item>
-                                        <el-form-item label="画面尺寸" required>
-                                            <el-form-item prop="visualW" class="min_form_item">
-                                                <div class="mm">
-                                                    <el-input v-model="item.roadGateForm.visualW" placeholder="宽度"></el-input>
-                                                    <span>mm</span>
-                                                </div>
-                                            </el-form-item>
-                                            <el-form-item prop="visualH" class="min_form_item min_form_item_right">
-                                                <div class="mm">
-                                                    <el-input v-model="item.roadGateForm.visualH" placeholder="高度">
-                                                    </el-input>
-                                                    <span>mm</span>
-                                                </div>
-                                            </el-form-item>
-                                        </el-form-item>
-                                        <el-form-item label="灯箱尺寸" required>
-                                            <el-form-item prop="LBSizeW" class="min_form_item">
-                                                <div class="mm">
-                                                    <el-input v-model="item.roadGateForm.LBSizeW" placeholder="宽度"></el-input>
-                                                    <span>mm</span>
-                                                </div>
-                                            </el-form-item>
-                                            <el-form-item prop="LBSizeH" class="min_form_item min_form_item_right">
-                                                <div class="mm">
-                                                    <el-input v-model="item.roadGateForm.LBSizeH" placeholder="高度">
-                                                    </el-input>
-                                                    <span>mm</span>
-                                                </div>
-                                            </el-form-item>
-                                        </el-form-item>
-                                        <el-form-item class="right_form_item"></el-form-item>
-                                        <el-form-item label="备注" prop="mediaRemark">
-                                            <el-input type="textarea" v-model.trim="item.roadGateForm.mediaRemark" placeholder="请填写备注信息"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="门禁照片:" prop="mImg">
-                                            <div class="upload_img_wrap" ><!--@click="saveImgInfo(item.text)"-->
-                                                <el-upload
-                                                    :disabled = "isUpload"
-                                                    :action="doUpload"
-                                                    list-type="picture-card"
-                                                    :limit='2'
-                                                    :file-list="item.roadGateForm.updataImg"
-                                                    :before-upload="beforeUpload_rg"
-                                                    :on-success="rgUploadSuccess"
-                                                    :on-remove="rgHandleRemove"
-                                                    :on-preview="rgHandlePictureCardPreview"
-                                                    @click.native="saveImgRGInfo(item.text)">
-                                                    <i class="el-icon-plus" ></i>
-                                                </el-upload>
-                                            </div>
-                                        </el-form-item>
+                                        <el-row :gutter="76" class="from_row">
+                                            <el-col :span="6">
+                                                <el-form-item label="媒体名称" prop="mediaName">
+                                                    <el-input v-model="item.roadGateForm.mediaName" placeholder="例：东门"></el-input>
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="6">
+                                                <el-form-item label="资产编号" prop="assetId" ref="ResAssetId" :rules="item.roadGateForm.assetIdBolean ? assetIdRules: mediaRules.assetId">
+                                                        <el-input v-model.trim="item.roadGateForm.assetId" placeholder="例:0034FASF342-X21"
+                                                                  :disabled="item.roadGateForm.assetIdBolean"></el-input>
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="6">
+                                                <el-form-item label="可投面数" prop="usableNum">
+                                                        <el-input-number v-model.number="item.roadGateForm.usableNum" :min="1" :max="3" :disabled="true"
+                                                                         controls-position="right">
+                                                        </el-input-number>
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="6">
+                                                <el-form-item label="媒体状态" prop="mstate">
+                                                    <el-select v-model="item.roadGateForm.mstate" placeholder="请选择媒体状态"
+                                                               @change="selectMstate(item.roadGateForm)">
+                                                        <el-option label="禁用" :value="'0' + key"></el-option>
+                                                        <el-option label="正常" :value="'1' + key"></el-option>
+                                                        <el-option label="待安装" :value="'2' + key"></el-option>
+                                                        <el-option label="待维修" :value="'3' + key"></el-option>
+                                                    </el-select>
+                                                </el-form-item>
+                                            </el-col>
+                                        </el-row>
+                                        <el-row :gutter="76" class="from_row">
+                                            <el-col :span="6">
+                                                <el-form-item label="广告限制" prop="adLimit">
+                                                    <el-select v-model="item.roadGateForm.adLimit" multiple collapse-tags
+                                                               placeholder="请选择广告限制" @focus="adLimitFocus(key)"
+                                                               @change="changeAdLimit">
+                                                        <el-option
+                                                            v-for="(limit, index) in adLimit"
+                                                            :key="index"
+                                                            :label="limit.label"
+                                                            :value="limit.value">
+                                                        </el-option>
+                                                    </el-select>
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="6">
+                                                <el-form-item label="画面尺寸" required>
+                                                        <div class="form_item_box_son">
+                                                            <el-form-item prop="visualW">
+                                                                <div class="mm">
+                                                                    <el-input v-model="item.roadGateForm.visualW"
+                                                                              placeholder="宽度"></el-input>
+                                                                    <span>mm</span>
+                                                                </div>
+                                                            </el-form-item>
+                                                        </div>
+                                                        <div class="form_item_box_son">
+                                                            <el-form-item prop="visualH">
+                                                                <div class="mm">
+                                                                    <el-input v-model="item.roadGateForm.visualH"
+                                                                              placeholder="高度">
+                                                                    </el-input>
+                                                                    <span>mm</span>
+                                                                </div>
+                                                            </el-form-item>
+                                                        </div>
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="6">
+                                                <el-form-item label="灯箱尺寸" required>
+                                                        <div class="form_item_box_son">
+                                                            <el-form-item prop="LBSizeW">
+                                                                <div class="mm">
+                                                                    <el-input v-model="item.roadGateForm.LBSizeW" placeholder="宽度"></el-input>
+                                                                    <span>mm</span>
+                                                                </div>
+                                                            </el-form-item>
+                                                        </div>
+                                                        <div class="form_item_box_son">
+                                                            <el-form-item prop="LBSizeH">
+                                                                <div class="mm">
+                                                                    <el-input v-model="item.roadGateForm.LBSizeH"
+                                                                              placeholder="高度">
+                                                                    </el-input>
+                                                                    <span>mm</span>
+                                                                </div>
+                                                            </el-form-item>
+                                                        </div>
+                                                </el-form-item>
+                                            </el-col>
+                                        </el-row>
+                                        <el-row :gutter="76" class="from_row">
+                                            <el-col :span="6">
+                                                <el-form-item label="备注" prop="mediaRemark">
+                                                    <el-input type="textarea" v-model.trim="item.roadGateForm.mediaRemark" placeholder="请填写备注信息"></el-input>
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="6">
+                                                <el-form-item label="门禁照片:" prop="mImg">
+                                                    <div class="upload_img_wrap" ><!--@click="saveImgInfo(item.text)"-->
+                                                        <el-upload
+                                                            :disabled = "isUpload"
+                                                            :action="doUpload"
+                                                            list-type="picture-card"
+                                                            :limit='2'
+                                                            :file-list="item.roadGateForm.updataImg"
+                                                            :before-upload="beforeUpload_rg"
+                                                            :on-success="rgUploadSuccess"
+                                                            :on-remove="rgHandleRemove"
+                                                            :on-preview="rgHandlePictureCardPreview"
+                                                            @click.native="saveImgRGInfo(item.text)">
+                                                            <i class="el-icon-plus" ></i>
+                                                        </el-upload>
+                                                    </div>
+                                                </el-form-item>
+                                            </el-col>
+                                        </el-row>
                                     </el-form>
                                 </div>
                             </div>
@@ -462,8 +624,8 @@
                     </el-tab-pane>
                 </el-tabs>
                 <div class="content_bottom_btn">
-                    <el-button type="primary" class="create" :disabled="submitBtnIsAble" @click="submitForm('recForm','mediaForm','roadGateForm')">{{PathHaveEdit?'保存':'创建'}}</el-button>
-                    <!--<button v-if='PathHaveEdit' @click="editReturn">返回</button>-->
+                    <el-button type="primary" class="create" :disabled="submitBtnIsAble"
+                               @click="submitForm('recForm','mediaForm','roadGateForm')">{{PathHaveEdit?'保存':'创建'}}</el-button>
                     <el-button class="cancel" @click="clearData">取消</el-button>
                 </div>
             </div>
@@ -478,6 +640,31 @@
                     </el-carousel-item>
                 </el-carousel>
             </div>
+        </el-dialog>
+        <el-dialog
+            :visible.sync="mapVisible"
+            :close-on-click-modal="false"
+            custom-class="map_dialog"
+            title="地图"
+            top="10vh"
+            width="85%">
+            <div
+                v-loading="mapLoading"
+                element-loading-text="拼命加载中..."
+                element-loading-spinner="el-icon-loading">
+                <el-input placeholder="请输入小区地址" style="width: 240px" size="small" v-model="searchResName"/>
+                <el-button size="small" type="primary" @click="searchFun">搜索</el-button>
+                <span style="font-size: 14px;color: #333333;display: inline-block;margin-top: 10px">当前选择信息:
+                   城市:{{searchResData.city || '--'}} 区域:{{searchResData.district || '--'}}
+                    名称:{{searchResData.title || '--'}} 经纬度:{{searchResData.lat + ',' + searchResData.lng}}
+                </span>
+                <!--百度地图-->
+                <div id="resMap" ref="resMap"  style="height: 500px;margin-top: 14px"></div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button size="small" @click="mapVisible = false">取 消</el-button>
+                <el-button size="small" type="primary" @click="addLatLngByBmap()">确定</el-button>
+            </span>
         </el-dialog>
     </div>
 </template>
@@ -543,6 +730,7 @@
                 }
             };
             let validateSpace = (rule, value, callback) => {
+                this.isResError = false
                 if (value) {
                     if (value.match(/^\s+$/)) {
                         callback(new Error('所填内容不能为空格'))
@@ -680,6 +868,14 @@
                     {value: '金融', label: '金融'},
                     {value: '低俗', label: '低俗'},
                 ],
+                // 判断资源名称是否有重名
+                isResError: false,
+                // 重新信息
+                resCommentData: {
+                    resName:'',
+                    mediaNum:'',
+                    updateTime:''
+                },
                 //资源表单
                 recForm: {
                     rt: '',                //资源类型
@@ -718,103 +914,109 @@
                     salesOfficeAdd: '',         // 售楼地址
                     preSalePermit: '',          // 预售许可证
                     ownershipType: '',          // 产权性质
+                    resAlias: '',               // 资源别名
                 },
                 resAddres: {city:'',area:'',},  // 市区域地址获取经纬度
                 recRules: {
                     rt: [
-                        {required: true, message: '请选择资源类型', trigger: 'blur'},
+                        {required: true, message: '请选择资源类型!', trigger: ['blur','change']},
                     ],
                     resname: [
-                        {required: true, message: '资源名称不能为空', trigger: 'blur'},
-                        {validator: validateSpace, trigger: 'blur'},
-                        {max: 40, message: '最多只能输入40个字节', trigger: 'blur'}
+                        {required: true, message: '资源名称不能为空!', trigger: ['blur','change']},
+                        {validator: validateSpace, trigger: ['blur','change']},
+                        {validator: this.isHaveCommenName,trigger: 'blur'},
+                        {max: 40, message: '最多只能输入40个字节', trigger: 'change'}
                     ],
                     city: [
-                        {required: true, message: '请选择所属城市', trigger: 'change'},
+                        {required: true, message: '请选择所属城市!', trigger: 'change'},
                     ],
                     region: [
-                        {required: true, message: '请选择所属区域', trigger: 'change'},
+                        {required: true, message: '请选择所属区域!', trigger: ['blur','change']},
+                    ],
+                    addressAlias: [
+                        {validator: validateSpace, trigger: 'blur'},
+                        {min: 0, max: 40, message: '最多只能输入40个字节', trigger: 'change'}
                     ],
                     business: [
                         {validator: validateSpace, trigger: 'blur'},
-                        {min: 0, max: 40, message: '最多只能输入40个字节', trigger: 'blur'}
+                        {min: 0, max: 40, message: '最多只能输入40个字节', trigger: 'change'}
                     ],
                     resaddr: [
-                        {required: true, message: '具体地址不能为空', trigger: 'blur'},
+                        {required: true, message: '具体地址不能为空', trigger: ['blur','change']},
                         {validator: validateSpace, trigger: 'blur'},
-                        {min: 0, max: 70, message: '最多只能输入70个字节', trigger: 'blur'}
+                        {min: 0, max: 70, message: '最多只能输入70个字节', trigger: 'change'}
                     ],
                     floorType: [
                         {required: true, message: '请选择楼盘类型', trigger: 'change'},
                     ],
                     buildingNum: [
-                        {required: true, message: '楼栋数量不能为空', trigger: 'blur'},
+                        {required: true, message: '楼栋数量不能为空', trigger: 'change'},
                     ],
                     households: [
-                        {required: true, message: '住户数量不能为空', trigger: 'blur'},
+                        {required: true, message: '住户数量不能为空', trigger: ['blur','change']},
                         {validator: validatePrice, trigger: 'change'},
                     ],
                     buildingPrice: [
-                        {validator: validatePrice, trigger: 'change'},
+                        {validator: validatePrice, trigger: 'blur'},
                     ],
                     liveTime: [
                         {required: true, message: '请选择年份', trigger: 'change'},
                     ],
                     lat: [
-                        {required: true, message: '经度不能为空', trigger: 'blur'},
-                        {required: true,validator: validateLat, trigger: 'blur'},
+                        {required: true, message: '经度不能为空', trigger: ['blur','change']},
+                        {required: true,validator: validateLat, trigger: ['blur','change']},
                     ],
                     lng: [
-                        {required: true, message: '纬度不能为空', trigger: 'change'},
-                        {required: true,validator: validateLng, trigger: 'change'},
+                        {required: true, message: '纬度不能为空', trigger: ['blur','change']},
+                        {required: true,validator: validateLng, trigger: ['blur','change']},
                     ],
                     pmc: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'change'}
+                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
                     ],
                     carNumber: [
-                        {validator: validatePrice, trigger: 'change'},
+                        {validator: validatePrice, trigger: 'blur'},
                     ],
                     carFlowrate: [
-                        {validator: validatePrice, trigger: 'change'},
+                        {validator: validatePrice, trigger: 'blur'},
                     ],
                     peopleFlowrate: [
-                        {validator: validatePrice, trigger: 'change'},
+                        {validator: validatePrice, trigger: 'blur'},
                     ],
                     greenPercentage: [  // 绿化率
-                        {validator: validateGreenP, trigger: 'change'},
+                        {validator: validateGreenP, trigger: 'blur'},
                     ],
                     plotRatio: [        // 容积率
-                        {validator: validateGreenP, trigger: 'change'},
+                        {validator: validateGreenP, trigger: 'blur'},
                     ],
                     developer: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'change'}
+                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
                     ],
                     managementFee: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'change'}
+                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
                     ],
                     salesOfficeAdd: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'change'}
+                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
                     ],
                     salesPhoneNumber: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'change'}
+                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
                     ],
                     preSalePermit: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'change'}
+                        {max: 250, message: '最多只能输入250个字符', trigger: 'blur'}
                     ],
                     ownershipType: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'change'}
+                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
                     ],
                     discount: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'change'}
+                        {max: 250, message: '最多只能输入250个字符', trigger: 'blur'}
                     ],
                     buildingStructure: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'change'}
+                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
                     ],
                     ownershipPeriod: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'change'}
+                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
                     ],
                     constructionSpace: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'change'}
+                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
                     ],
                 },
                 assetIdRules: [
@@ -823,67 +1025,67 @@
                 ],
                 mediaRules: {
                     mediaName: [
-                        {required: true, message: '媒体名称不能为空', trigger: 'blur'},
-                        {validator: validateSpace, trigger: 'blur'},
-                        {max: 40, message: '最多只能输入40个字节', trigger: 'blur'}
+                        {required: true, message: '媒体名称不能为空', trigger: ['blur','change']},
+                        {validator: validateSpace, trigger: ['blur','change']},
+                        {max: 40, message: '最多只能输入40个字节', trigger: ['blur','change']}
                     ],
                     usableNum: [
                         {validator: validateNum, trigger: 'blur'},
-                        {required: true, message: '可投面数不能为空', trigger: 'blur'},
+                        {required: true, message: '可投面数不能为空', trigger: 'change'},
                     ],
                     mstate: [
                         {required: true, message: '请选择媒体状态', trigger: 'change'},
                     ],
                     assetId: [
-                        {required: true, message: '资产编号不能为空', trigger: 'blur'},
-                        {validator: validateAssetId, trigger: 'blur'},
-                        {max: 40, message: '最多只能输入40个字节', trigger: 'blur'}
+                        {required: true, message: '资产编号不能为空', trigger: ['blur','change']},
+                        {validator: validateAssetId, trigger: 'change'},
+                        {max: 40, message: '最多只能输入40个字节', trigger: ['blur','change']}
                     ],
                     doorType: [
-                        {required: true, message: '媒体类型不能为空', trigger: 'blur'},
-                        {validator: validateSpace, trigger: 'blur'},
-                        {required: true, min: 1, max: 20, message: '最多只能输入20个字节', trigger: 'blur'}
+                        {required: true, message: '媒体类型不能为空', trigger: ['blur','change']},
+                        {validator: validateSpace, trigger: ['blur','change']},
+                        {required: true, min: 1, max: 20, message: '最多只能输入20个字节', trigger: ['blur','change']}
                     ],
                     adSizeW: [
-                        {required: true, type: 'string', message: '宽度不能为空', trigger: 'change'},
-                        {validator: validatePrice, trigger: 'change'},
+                        {required: true, type: 'string', message: '不能为空且只能输入数字', trigger: ['blur','change']},
+                        {validator: validatePrice, trigger: ['blur','change']},
                     ],
                     adSizeH: [
-                        {required: true, type: 'string', message: '高度不能为空且只能为数字', trigger: 'change'},
+                        {required: true, type: 'string', message: '不能为空且只能输入数字', trigger: ['blur','change']},
                         // {type: 'number', min: 1, max: 9999999, message: '最大值9999999', trigger: 'blur'},
-                        {validator: validatePrice, trigger: 'change'},
+                        {validator: validatePrice, trigger: ['blur','change']},
                     ],
                     visualW: [
-                        {required: true, type: 'string', message: '不能为空且只能输入数字', trigger: 'change'},
+                        {required: true, type: 'string', message: '不能为空且只能输入数字', trigger: ['blur','change']},
                         {validator: validatePrice, trigger: 'change'},
                     ],
                     visualH: [
-                        {required: true, type: 'string', message: '不能为空且只能输入数字', trigger: 'change'},
-                        {validator: validatePrice, trigger: 'change'},
+                        {required: true, type: 'string', message: '不能为空且只能输入数字', trigger: ['blur','change']},
+                        {validator: validatePrice, trigger: ['blur','change']},
                     ],
-                    mediaRemark: [
-                        {max: 200, message: '最多只能输入200个字符', trigger: 'blur'}
-                    ],
+                    // mediaRemark: [
+                    //     {max: 200, message: '最多只能输入200个字符', trigger: 'change'}
+                    // ],
                 },
                 //道闸表单验证
                 roadGateRules:{
                     mediaName: [
-                        {required: true, message: '媒体名称不能为空', trigger: 'blur'},
+                        {required: true, message: '媒体名称不能为空', trigger: 'change'},
                         {validator: validateSpace, trigger: 'blur'},
-                        {max: 40, message: '最多只能输入40个字节', trigger: 'blur'}
+                        {max: 40, message: '最多只能输入40个字节', trigger: 'change'}
                     ],
                     usableNum: [
-                        {validator: validateNum, trigger: 'blur'},
-                        {required: true, message: '可投面数不能为空', trigger: 'blur'},
+                        {validator: validateNum, trigger: 'change'},
+                        {required: true, message: '可投面数不能为空', trigger: 'change'},
                         // { type:'number', min:1, max:26, message:'最多可投26面',trigger:'blur'},
                     ],
                     mstate: [
                         {required: true, message: '请选择媒体状态', trigger: 'change'},
                     ],
                     assetId: [
-                        {required: true, message: '资产编号不能为空', trigger: 'blur'},
-                        {validator: validateAssetId, trigger: 'blur'},
-                        {max: 40, message: '最多只能输入40个字节', trigger: 'blur'}
+                        {required: true, message: '资产编号不能为空', trigger: 'change'},
+                        {validator: validateAssetId, trigger: 'change'},
+                        {max: 40, message: '最多只能输入40个字节', trigger: 'change'}
                     ],
                     LBSizeW: [
                         {required: true, type: 'string', message: '宽度不能为空且只能为数字', trigger: 'change'},
@@ -901,9 +1103,9 @@
                         {required: true, type: 'string', message: '不能为空且只能输入数字', trigger: 'change'},
                         {validator: validatePrice, trigger: 'change'},
                     ],
-                    mediaRemark: [
-                        {max: 200, message: '最多只能输入200个字符', trigger: 'blur'}
-                    ],
+                    // mediaRemark: [
+                    //     {max: 200, message: '最多只能输入200个字符', trigger: 'change'}
+                    // ],
                 },
                 recFormImg: '',              // 资源图片
                 mediaFormImg: '',            // 媒体图片
@@ -990,6 +1192,13 @@
                 ],
                 FangJiaWangData: {},            // 记录房价网拉回来的数据
                 classified: false,
+                mapLoading: true,
+                mapVisible: false,              // 地图弹出框
+                initMap: false,                 // 地图是否已初始化
+                // 当前选择的搜索信息
+                searchResData:{province:'',city:'',district:'',title:'',lat:'',lng:''},
+                searchResName:'',               // 搜索的社区名
+                resMap:'',                      // 百度地图
             };
         },
         mounted: function () {
@@ -1090,7 +1299,6 @@
             },
             // 根据所选的资源名称拉取房价网数据
             getResBasicData(){
-                // recForm.resname
                 if(this.recForm.resname !== '' && this.resAddres.area !== '' && this.resAddres.city !== ''){
                     let params = {
                         // uid: this.sessionData.uID,
@@ -1105,41 +1313,8 @@
                             this.loginTimeout()
                         } else {
                             if(res.data !== ''){
-                                let obj = res.data.data
-                                this.recForm.resaddr = obj.address || ''                    // 资源地址
-                                this.recForm.business = obj.commercialArea || ''            // 商圈
-                                this.recForm.floorType = obj.propertyType                   // 楼盘类型
-                                // this.recForm.doorwayNum = obj.doorwayNum                 // 出入数
-                                this.recForm.buildingNum = obj.buildingCount                // 楼栋数量
-                                this.recForm.households = obj.totalUnitCount                // 住户数量
-                                this.recForm.peopleFlowrate = obj.peopleFlowrate || ''      // 人流量
-                                this.recForm.carNumber = obj.parking || ''                  // 车位数
-                                this.recForm.carFlowrate = obj.carFlowrate || ''            // 车流量
-                                this.recForm.buildingPrice = obj.avgPrice                   // 楼盘价格
-                                this.recForm.liveTime = obj.finishYear ? obj.finishYear.toString() : ''           // 入住年份
-                                this.recForm.lng = obj.lat                                  // 纬度
-                                this.recForm.lat = obj.lng                                  // 经度
-                                //
-                                this.recForm.addressAlias = obj.addressAlias[0]                         // 地址别名
-                                this.recForm.description = obj.description || ''                     // 描述
-                                this.recForm.supportingFacilities = obj.supportingFacilities || ''   // 周边配套
-                                this.recForm.buildingType = obj.buildingType || ''                   // 建筑类型
-                                this.recForm.transportation = obj.transportation || ''               // 交通状况
-                                this.recForm.floorSpace = obj.floorSpace || ''                       // 占地面积
-                                this.recForm.constructionSpace = obj.constructionSpace || ''         // 建筑面积
-                                this.recForm.buildingStructure = obj.buildingStructure || ''         // 建筑结构
-                                this.recForm.greenPercentage = obj.greenPercentage || ''             // 绿化率
-                                this.recForm.ownershipPeriod = obj.ownershipPeriod || ''             // 产权年限
-                                this.recForm.plotRatio = obj.plotRatio || ''                         // 容积率
-                                this.recForm.developer = obj.developer || ''                         // 开发商
-                                this.recForm.pmc = obj.propertyManagement || ''                      // 物业公司
-                                this.recForm.managementFee = obj.managementFee || ''                 // 物业费
-                                this.recForm.salesOfficeAdd = obj.salesOfficeAdd || ''               // 售楼地址
-                                this.recForm.preSalePermit = obj.preSalePermit || ''                 // 预售许可证
-                                this.recForm.ownershipType = obj.ownershipType || ''                 // 产权性质
-                                this.recForm.salesPhoneNumber = obj.salesPhoneNumber || ''           // 售楼电话
-
-                                this.FangJiaWangData = JSON.parse(JSON.stringify(this.recForm)) //
+                                this.setFangjiaData(res.data.data)
+                                // let obj = res.data.data
                             }else{
                                 this.$message.warning('数据获取异常,暂无该小区数据！')
                             }
@@ -1148,6 +1323,60 @@
                 } else {
                     this.$message.warning('资源名称及市区域都不能为空！')
                 }
+            },
+            // 房价网数据填充
+            setFangjiaData(obj){
+                let ii = '<p style="font-weight: 600;font-size: 16px;color: color:rgba(0,0,0,0.85);">' +
+                    '<i class="el-icon-circle-check" style="font-size: 22px;color:#52C41A;margin-right: 8px"></i>' +
+                    ' 资源检索成功</p>' +
+                    '<p style="font-size: 14px;padding-left: 34px;color: color:rgba(0,0,0,0.65)">将自动填入信息，可手动修改。</p>'
+                MessageBox.confirm(ii,'', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    dangerouslyUseHTMLString: true,
+                    showClose: false,
+                    closeOnClickModal: false,
+                }).then(() => {
+                    this.recForm.resaddr = obj.address || ''                    // 资源地址
+                    this.recForm.business = obj.commercialArea || ''            // 商圈
+                    this.recForm.floorType = obj.propertyType                   // 楼盘类型
+                    // this.recForm.doorwayNum = obj.doorwayNum                 // 出入数
+                    this.recForm.buildingNum = obj.buildingCount                // 楼栋数量
+                    this.recForm.households = obj.totalUnitCount                // 住户数量
+                    this.recForm.peopleFlowrate = obj.peopleFlowrate || ''      // 人流量
+                    this.recForm.carNumber = obj.parking || ''                  // 车位数
+                    this.recForm.carFlowrate = obj.carFlowrate || ''            // 车流量
+                    this.recForm.buildingPrice = obj.avgPrice                   // 楼盘价格
+                    this.recForm.liveTime = obj.finishYear ? obj.finishYear.toString() : ''           // 入住年份
+                    this.recForm.lng = obj.lat                                  // 纬度
+                    this.recForm.lat = obj.lng                                  // 经度
+                    //
+                    this.recForm.resAlias = obj.alias.join(',')                         // 资源别名
+                    this.recForm.addressAlias = obj.addressAlias[0]                      // 地址别名
+                    this.recForm.description = obj.description || ''                     // 描述
+                    this.recForm.supportingFacilities = obj.supportingFacilities || ''   // 周边配套
+                    this.recForm.buildingType = obj.buildingType || ''                   // 建筑类型
+                    this.recForm.transportation = obj.transportation || ''               // 交通状况
+                    this.recForm.floorSpace = obj.floorSpace || ''                       // 占地面积
+                    this.recForm.constructionSpace = obj.constructionSpace || ''         // 建筑面积
+                    this.recForm.buildingStructure = obj.buildingStructure || ''         // 建筑结构
+                    this.recForm.greenPercentage = obj.greenPercentage || ''             // 绿化率
+                    this.recForm.ownershipPeriod = obj.ownershipPeriod || ''             // 产权年限
+                    this.recForm.plotRatio = obj.plotRatio || ''                         // 容积率
+                    this.recForm.developer = obj.developer || ''                         // 开发商
+                    this.recForm.pmc = obj.propertyManagement || ''                      // 物业公司
+                    this.recForm.managementFee = obj.managementFee || ''                 // 物业费
+                    this.recForm.salesOfficeAdd = obj.salesOfficeAdd || ''               // 售楼地址
+                    this.recForm.preSalePermit = obj.preSalePermit || ''                 // 预售许可证
+                    this.recForm.ownershipType = obj.ownershipType || ''                 // 产权性质
+                    this.recForm.salesPhoneNumber = obj.salesPhoneNumber || ''           // 售楼电话
+                    this.FangJiaWangData = JSON.parse(JSON.stringify(this.recForm))      //
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '取消成功'
+                    });
+                });
             },
             // 根据填写的具体地址去获取经纬度
             querySearchAsync(queryString, callback) {
@@ -1172,6 +1401,123 @@
                         }
                     });
                 }
+            },
+            openBmap(){
+                this.mapVisible = true
+                if(!this.initMap){
+                    let timer = setTimeout(()=>{
+                        this.getMap()
+                        clearTimeout(timer)
+                        this.initMap = true
+                    },300)
+                }else{
+
+                }
+            },
+            //百度地图
+            getMap() {
+                this.resMap = new BMap.Map("resMap");    // 创建Map实例
+                console.log('this.resMap',this.resMap)
+                var geolocation = new BMap.Geolocation();
+                let that = this
+                //获取当前位置
+                geolocation.getCurrentPosition(function (r) {
+                    if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+                        let point = new BMap.Point(r.point.lng, r.point.lat);                 //定位位置
+                        that.resMap.centerAndZoom(point, 16);                                 // 初始化地图
+                        console.log('******************************')
+                    } else {
+                        that.resMap.centerAndZoom(new BMap.Point(113.369838,22.949325), 16);  // 初始化地图
+                        that.resMap.setCurrentCity("广州")                                     // 设置地图显示的城市 此项是必须设置的
+                    }
+                    that.resMap.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+                    if(that.recForm.resname){
+                        // setTimeout(()=>{
+                            that.searchResName =  that.recForm.resname
+                            that.searchFun()
+                        // },500)
+                    }
+                    that.mapLoading = false
+                })
+            },
+            // 地图获取经纬度
+            searchFun(){
+                console.log('1百度地图搜索',this.recForm.resname)
+                let lnglat = ''
+                let that = this
+                let options = {
+                    renderOptions:{
+                        map: this.resMap,
+                        autoViewport: false,
+                        // selectFirstResult: true
+                    },
+                    onSearchComplete: function(results){
+                        console.log('2results',results)
+                        // 判断状态是否正确
+                        if (local.getStatus() == 0){
+                            console.log(results.getPoi(0));  // 这就是我们想要的地址
+                            that.searchResData.city = results.getPoi(0).city
+                            that.searchResData.title = results.getPoi(0).title
+                            let point = results.getPoi(0).point
+                            lnglat = results.getPoi(0).point
+                            console.log('point',point,that.searchResData)
+                            that.getResDataInfoByPoint(point)
+                        } else {
+                            console.log('没有搜索到该地址！')
+                        }
+                    },
+                    onMarkersSet: function(pois) {      // 给创建的标注添加点击事件
+                        console.log('onMarkersSet', pois)
+                        that.markerArr = pois
+                        for (let key of pois) {
+                            key.marker.addEventListener('click', that.showInfo);
+                        }
+                    }
+                };
+                console.log('3options',options)
+                let local = new BMap.LocalSearch(this.resMap,options)
+                local.search(this.resAddres.city + this.recForm.resname)
+                console.log('4')
+            },
+            //获取点击标注的坐标
+            showInfo(e) {
+                for(let mkey of this.markerArr){
+                    if(mkey.marker == e.target){
+                        this.searchResData.address =mkey.address
+                        this.searchResData.title = mkey.title
+                        console.log('点击到相同的标注',mkey) // searchInfowindow target address title
+                    }else{
+                        console.log('不相同的标注',mkey)
+                    }
+                }
+                let addr = {lng:e.point.lng,lat:e.point.lat} // lng经度；lat纬度
+                let point = new BMap.Point(addr.lng,addr.lat)
+                this.getResDataInfoByPoint(point)
+                console.log('点击事件e',e,addr)
+            },
+            // 根据坐标获取省市区、地址
+            getResDataInfoByPoint(point){
+                console.log('坐标',point)
+                let geoc = new BMap.Geocoder()
+                let that = this
+                geoc.getLocation(point, function (rs) {
+                    console.log('根据坐标获取省市区、地址',rs)
+                    let addComp = rs.addressComponents
+                    console.log(addComp.province + "- " + addComp.city + ", " + addComp.district + "- " + addComp.street + "- " + addComp.streetNumber);
+                    that.searchResData.province = addComp.province
+                    that.searchResData.city = addComp.city
+                    that.searchResData.district = addComp.district
+                    that.searchResData.lat = point.lat
+                    that.searchResData.lng = point.lng
+                    console.log(that.searchResData,point.lat,point.lng)
+                })
+            },
+            // 地图选择的经纬度
+            addLatLngByBmap(){
+                // lat:经度  lng:纬度
+                this.recForm.lat = this.searchResData.lng
+                this.recForm.lng = this.searchResData.lat
+                this.mapVisible = false
             },
             // 广告限制，当选择为不限时
             changeAdLimit(val) {
@@ -1303,21 +1649,79 @@
                 this.regionOpt = region
                 console.log('this.regionOpt', this.regionOpt)
             },
-            // uWho不为全国时，根据市级城市rid，获取它的下属区、县
-            recFormCity(val) {
-                // this.recForm.region = ''
-                // console.log('val', val)
-                // console.log('资源所在城市', this.recForm.city)
-                // this.resAddres.city = areaToTextNew.toTextCity(val)
-                // let regionArr = areaPackageNew.findArea(val)
-                // console.log('获取选中城市的区域', regionArr)
-                // let region = []
-                // for (let i = 0; i < regionArr.length; i++) {
-                //     let obj = {label: regionArr[i].rName, value: regionArr[i].rID}
-                //     region.push(obj)
-                // }
-                // this.regionOpt = region
-                // console.log('this.regionOpt', this.regionOpt)
+            // 资源输入框和下拉框失去光标validateIsHaveComment
+            blurFun(name){
+                console.log('name',name)
+                if (name === 'resname') {
+                    // this.isHaveCommenName()
+                } else {
+                    // 手动触发校验 validateField
+                    this.$refs.recForm.validateField(name,(valid)=>{
+                        console.log('错误提示信息',valid)
+                        if (!valid){
+                            console.log('校验通过')
+                        }else{
+                            console.log('校验不通过')
+                        }
+                    })
+                }
+            },
+            // 按所属公司的城市区域检查是否有重复的资源名称
+            isHaveCommenName(rule, value, callback){
+                // recForm.resname
+                if(this.recForm.resname !== '' && this.resAddres.area !== '' && this.resAddres.city !== ''){
+                    let params = {
+                        uid: this.sessionData.uID,
+                        token: this.sessionData.token,
+                        "service":"GetResInfoByName",
+                        "data":{
+                            "prId": this.recForm.city[1],
+                            "rId": this.recForm.region,
+                            "name": this.recForm.resname
+                        }
+                    }
+                    console.log('params',params)
+                    api.postApi_new(this.apiVar.Media,params).then(res=>{
+                        console.log('资源名称查重res',res)
+                        if (res.data.SysCode == 200200) {
+                            let resData = res.data.data
+                            if (JSON.stringify(resData) == "{}") {
+                                callback();
+                            } else {
+                                if(resData.resId == this.recForm.resID){
+                                    callback();
+                                }else{
+                                    this.isResError = true
+                                    this.resCommentData.mediaNum = resData.mediaCount
+                                    this.resCommentData.resName = resData.resName
+                                    this.resCommentData.updateTime = resData.createTime
+                                    callback(new Error(''))
+                                }
+
+                            }
+                        } else if (res.data.SysCode == 100302){
+                            this.loginTimeout()
+                        } else {
+                            Message({
+                                type: 'warning',
+                                message: '资源名称查重异常'
+                            });
+                        }
+                    })
+                }
+            },
+            // 广告门输入框和下拉框失去光标
+            adDoorBlur(name,index){
+                console.log('name',name)
+                // 手动触发校验 validateField
+                this.$refs.mediaForm[index].validateField(name,(valid)=>{
+                    console.log('错误提示信息',valid)
+                    if (!valid){
+                        console.log('校验通过')
+                    }else{
+                        console.log('校验不通过')
+                    }
+                })
             },
             // 选择资源类型时的修改资源字段显示
             selectRec(val) {
@@ -1330,11 +1734,6 @@
                     this.floorType = this.officeBuilding
                 }
             },
-            // 选择入住时间,修改时间格式
-            getTime(date) {
-                console.log('入住时间', date);
-                console.log('this.recForm.liveTime', this.recForm.liveTime, '数据类型为:', typeof(this.recForm.liveTime))
-            },
             // 选择媒体状态为待安装时修改资源编号的验证为非必填
             selectMstate(val) {
                 console.log('选择了', val)
@@ -1343,31 +1742,8 @@
                 let i = Number(valArr[1])
                 if(this.PathHaveEdit){
                     if(val.mediaType === '广告门' && i <= this.editMediaLength - 1){
-                        // console.log('判断记录编辑广告门媒体的状态')
-                        // if (this.arrMediaStatue[i] == 2 || this.arrMediaStatue[i] === '待安装') {
-                        //     this.arrMedia[i].mediaForm.assetIdBolean = true
-                        //     Message({
-                        //         type: 'warning',
-                        //         message: '请在亲邻助手中完成安装任务',
-                        //     })
-                        //     this.arrMedia[i].mediaForm.mstate = '2' + i
-                        // } else if (valArr[0] === '2') {
-                        //     this.arrMedia[i].mediaForm.assetIdBolean = false
-                        //     Message({
-                        //         type: 'warning',
-                        //         message: '请按正常流程走，当前媒体已安装'
-                        //     })
-                        //     if (this.arrMediaStatue[i] === '禁用' || this.arrMediaStatue[i] == 0) {
-                        //         this.arrMedia[i].mediaForm.mstate = '0' + i
-                        //     } else if (this.arrMediaStatue[i] === '正常' || this.arrMediaStatue[i] == 1) {
-                        //         this.arrMedia[i].mediaForm.mstate = '1' + i
-                        //     } else if (this.arrMediaStatue[i] === '待维修' || this.arrMediaStatue[i] == 3) {
-                        //         this.arrMedia[i].mediaForm.mstate = '3' + i
-                        //     }
-                        // } else {
-                            this.arrMedia[i].mediaForm.assetIdBolean = false
-                            this.editMState(val.mid,valArr[0])
-                        // }
+                        this.arrMedia[i].mediaForm.assetIdBolean = false
+                        this.editMState(val.mid,valArr[0])
                     }else if(val.mediaType === '道闸' && i <= this.editRoadGateLength - 1){
                         console.log('判断记录编辑道闸媒体的状态')
                         if (this.editRoadGateStatue[i] == 2 || this.editRoadGateStatue[i] === '待安装') {
@@ -1468,6 +1844,7 @@
 
                     city: this.resAddres.city,
                     district: this.resAddres.area,
+                    resAlias: this.recForm.resAlias,                           // 资源别名
                     addressAlias: this.recForm.addressAlias,                   // 地址别名
                     description: this.recForm.description,                     // 描述
                     supportingFacilities: this.recForm.supportingFacilities,   // 周边配套
@@ -1833,35 +2210,50 @@
                     clearTimeout(timer)
                 },100)
             },
-            // 表单验证
-            submitForm(r_item, m_item,rt_Item) {
+            // 表单验证 r_item:资源表单、m_item：广告门的表单、rt_item：道闸的表单
+            submitForm(r_item, m_item,rt_item) {
                 this.submitBtnIsAble = true
                 let timer = setTimeout(()=>{
                     this.submitBtnIsAble = false
                     clearTimeout(timer)
                 },500)
-                let r_boolean = false
-                this.$refs[r_item].validate((valid) => {
-                    if (valid) {
-                        r_boolean = true
-                    } else {
-                        console.log('error submit!!')
-                        return false;
-                    }
-                })
+                let r_boolean = true
+                // this.$refs[r_item].validate((valid) => {
+                //     if (valid) {
+                //         r_boolean = true
+                //     } else {
+                //         console.log('error submit!!')
+                //         return false;
+                //     }
+                // })
+                // recRules
+                let validateResArr = ['rt','city','region','resname','resaddr','lat','lng','floorType','households','buildingNum','liveTime']
+                for (let key of validateResArr) {
+                    this.$refs.recForm.validateField(key, (valid) => {
+                        console.log('错误提示信息', valid)
+                        if (!valid) {
+                            console.log('校验通过')
+                        } else {
+                            console.log('校验不通过')
+                            r_boolean = false
+                        }
+                    })
+                }
                 if(!r_boolean){
                     return
                 }
                 for(let key of this.arrMedia){
-                    if(key.mediaForm.mediaName !== '' || key.mediaForm.mstate !== '' || key.mediaForm.doorType !== '' || key.mediaForm.adSizeW !== ''){
+                    if(key.mediaForm.mediaName !== '' || key.mediaForm.mstate !== ''
+                        || key.mediaForm.doorType !== '' || key.mediaForm.adSizeW !== ''){
                         this.m_boolean = this.submitAdDoorFrom(m_item)
                         console.log('m_boolean',this.m_boolean)
                         break
                     }
                 }
                 for(let key of this.roadGateMedia){
-                    if(key.roadGateForm.mediaName !== '' || key.roadGateForm.mstate !== '' || key.roadGateForm.LBSizeW !== '' || key.roadGateForm.visualW !== ''){
-                        this.rt_boolean = this.submitRoadGateForm(rt_Item)
+                    if(key.roadGateForm.mediaName !== '' || key.roadGateForm.mstate !== ''
+                        || key.roadGateForm.LBSizeW !== '' || key.roadGateForm.visualW !== ''){
+                        this.rt_boolean = this.submitRoadGateForm(rt_item)
                         break
                     }
                 }
@@ -1887,10 +2279,6 @@
                 } else {
                     if(!this.m_boolean && !this.rt_boolean){
                         this.submitAdDoorFrom(m_item)
-                        // Message({
-                        //     message: '至少填写一种媒介载体的信息！',
-                        //     type: 'warning'
-                        // })
                     }
                     Message({
                         message: '信息填写有误！',
@@ -1919,10 +2307,10 @@
                 return isBoolean
             },
             // 道闸校验
-            submitRoadGateForm(rt_Item){
+            submitRoadGateForm(rt_item){
                 let isBoolean = false
-                for (let i = 0; i < this.$refs[rt_Item].length; i++) {
-                    this.$refs[rt_Item][i].validate((valid) => {
+                for (let i = 0; i < this.$refs[rt_item].length; i++) {
+                    this.$refs[rt_item][i].validate((valid) => {
                         if (valid) {
                             console.log('成功道闸验证!!')
                             isBoolean = true
@@ -1960,10 +2348,33 @@
                     this.editRoadGateStatue[i] = mStatue
                 }
             },
+            // 清除表单校验
+            clearFromValidate(){
+                let timer = setTimeout(()=>{
+                    this.$refs['recForm'].clearValidate();
+                    for (let i = 0; i < this.arrMedia.length; i++) {
+                        this.$refs['mediaForm'][i].clearValidate();
+                    }
+                    for (let j = 0; j < this.roadGateMedia.length; j++) {
+                        this.$refs['roadGateForm'][j].clearValidate();
+                    }
+                    clearTimeout(timer)
+                },500)
+            },
+            // 通过点击添加媒体跳转而来直接滚动到底部
+            scrollBottom(){
+                let timer = setTimeout(()=>{
+                    console.log('来源于点击添加媒体',document.body.scrollHeight)//clientHeight
+                    window.scrollTo(0,document.body.scrollHeight);
+                    this.mediaAddFun()
+                    clearTimeout(timer)
+                },500)
+            },
             // 媒体详情跳转过来，获取信息并编辑 添加
             editFun() {
-                let inputPath = this.$route.fullPath
-                if (inputPath.indexOf('edit=y') !== -1) {
+                let routePath = this.$route.path
+                console.log('routePath',routePath, this.$route.query);
+                if (routePath.indexOf('media/mediaEdit') !== -1) {
                     let recObj = JSON.parse(sessionStorage.getItem('recDetail'))
                     let mediaObj = JSON.parse(sessionStorage.getItem('mediaList'))
                     this.resData.resID = sessionStorage.getItem('resID')
@@ -1977,6 +2388,7 @@
                         this.resAddres.area = recObj.cityArea
                         // 获取设置资源信息 resAddres
                         let tempObj = {
+                            resID: recObj.resID,
                             rt: recObj.cType,
                             resname: recObj.resName,
                             city: this.recForm.city, //recObj.city,
@@ -1999,6 +2411,7 @@
                             // 房价网信息
                             // city: recObj.city,
                             district: recObj.district,
+                            resAlias: recObj.resAlias,                                  // 资源别名
                             addressAlias: recObj.addressAlias,                          // 地址别名
                             description: recObj.description || '',                     // 描述
                             supportingFacilities: recObj.supportingFacilities || '',   // 周边配套
@@ -2101,6 +2514,13 @@
                         }
                         console.log(' 编辑状态媒体数据', this.arrMedia)
                         this.fillRoadGateData()     // 道闸数据填充
+
+                        if(this.$route.query.add){
+                            // console.log('来源于点击添加媒体')
+                            this.scrollBottom()
+                        }
+                        // 清除表单校验
+                        this.clearFromValidate()
                     } else {
                         this.$router.push('./mediaInput')
                         this.PathHaveEdit = false
@@ -2252,6 +2672,7 @@
                     parkSpaceNum: recObj.carNumber,
                     fullViewUrl: recObj.fullViewUrl || '',
                     // 房价网信息
+                    resAlias: resObj.resAlias || '',                            // 资源别名
                     addressAlias: recObj.addressAlias,                          // 地址别名
                     description : recObj.description || '',                     // 描述
                     supportingFacilities : recObj.supportingFacilities || '',   // 周边配套
@@ -2498,14 +2919,7 @@
                     }
                 })
             },
-            // 返回true or false
-            returnBool(temp){
-                if (!temp || temp === '' || temp === '0') {
-                    return false
-                } else {
-                    return true
-                }
-            },
+            // 取消
             clearData() {
                 this.resetForm()
                 window.history.go(-1);
@@ -2592,7 +3006,6 @@
         margin-top: 0;
         background: #FFFFFF;
         padding-top: 3px;
-        /*margin-top: 10px;*/
     }
 
     .content_bottom_wrap_box{
@@ -2608,44 +3021,117 @@
     }
 
     .content_bottom_wrap .content_bottom_head {
-        width: 100%;
         height: 35px;
         line-height: 35px;
-        margin-top: 24px;
+        width: calc(100% - 80px);
+        margin: 18px 32px 10px;
+        padding-left: 16px;
+        background: rgba(245,246,250,1)
     }
 
     .content_top_wrap .content_top_head h2, .content_bottom_wrap .content_bottom_head h2 {
+        float: left;
         font-size: 16px;
         color: #333;
-        /*color:rgba(51,51,51,0.85);*/
         font-weight: bold;
-        padding-left: 32px;
-        height: 24px;
         width: 70%;
-        margin-top: 8px;
+    }
+
+    /*媒体删除按钮*/
+    .media_deleBtn {
+        float: right;
+        width: 50px;
+        line-height: 40px;
+        text-align: center;
+        cursor: pointer;
+    }
+    .media_deleBtn >i{
+        color: rgba(255,0,0,0.85);
+        font-size: 24px;
+        font-weight: 500;
     }
 
     .content_top_wrap .content_top_form_wrap{
-        padding: 26px 32px 16px;
-    }
-    .content_bottom_wrap .content_bottom_form_wrap{
-        padding:  0 32px;
+        padding: 26px 0 16px;
     }
 
     /deep/ .el-form.demo-ruleForm {
         display: flex;
-        /*justify-content: space-between;*/
         flex-wrap: wrap;
     }
 
-    /*资源信息表单*/
+    .from_row{
+        width: 100%;
+        margin: 0 10px !important;
+    }
+
+    /deep/ .from_row .el-form-item{
+        width: 100%;
+    }
+
+    /deep/ .el-cascader{
+        width: 100%;
+    }
+
+    /deep/ .el-select{
+        width: 100%;
+    }
+
+    /deep/ .el-input-number{
+        padding-right: 0;
+    }
+
+    .el_col_resName{
+        position: relative;
+    }
+
+    /deep/ .el_col_resName .el-autocomplete{
+        width: calc(100% - 82px);
+    }
+    .res_error{
+        position: absolute;
+        bottom: -2px;
+        left: 38px;
+        font-size: 12px;
+        color: rgb(245, 108, 108);
+        font-family: "PingFangSC-Regular","Microsoft YaHei"
+    }
+    .res_error > i{
+        font-size: 12px;
+        color: rgb(245, 108, 108);
+    }
+
+    .get_resName_btn{
+        width: 66px;
+    }
+
+    /*经纬度*/
+    .form_item_box_son{
+        width: 49%;
+        margin-right: 1%;
+        float: left;
+    }
+
+    .col_lng_lat{
+        position: relative;
+    }
+
+    .lng_lat_map_btn{
+        position: absolute;
+        left: 100px;
+        top: 6px;
+        color:rgba(24,144,255,1);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
     .el-input {
-        width: 240px;
+        width: 100%;
         height: 34px;
     }
 
     /deep/ .el-input__inner, .el-input-number {
-        width: 240px;
         height: 32px;
         text-align: left;
         line-height: 35px;
@@ -2653,6 +3139,7 @@
         text-align: left;
     }
     /deep/ .el-input-number{
+        width: 100%;
         padding-right: 0;
     }
     /deep/ .el-input__suffix{
@@ -2678,15 +3165,8 @@
         top: 2px;
     }
 
-    /*经纬度*/
-    /deep/ .rmb .el-input__inner {
-        padding-left: 30px;
-    }
-
     /deep/ .el-form-item {
         margin-bottom: 12px;
-        min-width: 26%;
-        max-width: 26%;
     }
     /deep/ .el-form-item.is-required .el-form-item__label:before{
         margin-right: -6px;
@@ -2699,31 +3179,6 @@
     /deep/ .el-form-item.lng_lat_form_item.is-required .el-form-item__label:before{
         left: 46px;
     }
-    /deep/ .el-form-item.left_form_item{
-        padding-left: 16px;
-    }
-    /deep/ .el-form-item.right_form_item{
-        min-width: 20.5%;
-        max-width: 20.5%;
-    }
-
-    /deep/ .el-form-item.min_form_item{
-        width: 120px;
-        float: left;
-        margin-bottom: 0;
-    }
-
-    /deep/ .el-form-item.min_form_item_right{
-        margin-left: 44px;
-    }
-
-    /deep/ .min_form_item .el-input{
-        width: 118px;
-    }
-
-    /deep/ .min_form_item .el-input__inner{
-        width: 118px;
-    }
 
     /deep/ .el-form-item.baseInfo.firstInfo{
         padding-top: 0;
@@ -2732,8 +3187,8 @@
     }
 
     /deep/ .el-form-item.baseInfo{
-        min-width: 99%;
-        margin: 18px 0 10px;
+        width: calc(100% - 64px);
+        margin: 18px 32px 10px;
         padding-left: 16px;
         background:rgba(245,246,250,1);
     }
@@ -2746,21 +3201,8 @@
         color:rgba(44,49,60,1);
     }
 
-    .res_name_form_item /deep/ .el-input__inner,
-    .res_name_form_item /deep/ .el-input{
-        width: 170px;
-    }
-
     /deep/ .el-popper[x-placement^=bottom] {
         margin-top: 3px !important;
-    }
-
-    /deep/ .el-textarea__inner {
-        width: 240px;
-        height: 78px !important;
-        resize: none;
-        position: relative;
-        top: 3px;
     }
 
     /deep/ .mediaMana_content_top .el-form-item__error {
@@ -2784,19 +3226,6 @@
         line-height: 810px;
         cursor: pointer;
     }
-
-    .media_deleBtn {
-        float: right;
-        width: 64px;
-        height: 28px;
-        background-color: #FF8282;
-        margin-right: 10px;
-        font-size: 14px;
-        color: #FFFFFF;
-        line-height: 10px;
-        border: none;
-        margin-top: -26px;
-    }
     /*广告尺寸单位等*/
     .mm {
         display: inline-block;
@@ -2805,7 +3234,8 @@
 
     .mm span {
         position: absolute;
-        left: 68px;
+        /*left: 68px;*/
+        right: 20px;
         top: 0;
         color: #666666;
     }
@@ -2813,6 +3243,7 @@
     .el-form-item_unit{
         position: relative;
     }
+
     .el-form-item_unit span{
         position: absolute;
         left: 212px;
@@ -2862,7 +3293,6 @@
     .upload_img_wrap {
         width: 236px;
         height: 125px;
-        /* overflow:auto*/
         overflow: hidden;
     }
     .el-checkbox-group {
@@ -2893,7 +3323,7 @@
     /deep/ .el-form-item__label{
         float: none;
         line-height: 32px;
-        color: #666666;
+        color: rgba(0,0,0,0.85);
     }
     /deep/ .el-form-item__content{
         margin-left: 0 !important;
@@ -2906,7 +3336,6 @@
         border:1px solid rgba(230,231,233,1)
     }
     /deep/ .el-tabs__item{
-        /*padding: 0;*/
         width: 80px;
         font-size: 16px;
         text-align: center;
@@ -2924,6 +3353,23 @@
     /deep/ .el-carousel__item{
         text-align: center;
     }
+    /*地图弹出框*/
+    .map_dialog{
+
+    }
+    /deep/ .map_dialog .el-dialog__header{
+        text-align: left;
+    }
+    /deep/ .map_dialog .el-dialog__body{
+        padding: 10px 20px;
+    }
+
+    /deep/ .el-textarea__inner {
+        height: 78px !important;
+        resize: none;
+        position: relative;
+        top: 3px;
+    }
 
     /deep/ .el-textarea .el-textarea__inner::-webkit-scrollbar{
         width: 6px;
@@ -2937,7 +3383,7 @@
     }
 
     /deep/ .el-cascader{
-        line-height: 32px;
+        line-height: 40px;
     }
 
     /deep/ .el-tabs__nav{
@@ -2947,60 +3393,5 @@
 
     /deep/ .el-input-number .el-input__inner{
         text-align: left !important;
-    }
-
-    @media screen and (min-width: 980px) and (max-width: 1280px){
-        /deep/ .el-form-item.left_form_item{
-            padding-left: 0;
-        }
-    }
-
-    /*1440*/
-    @media screen and (min-width: 1420px) {
-        .mediaMana_content_bottom .content_bottom_upload {
-            width: 433px;
-            text-align: center;
-        }
-
-        /deep/ .el-form-item.min_form_item_right{
-            margin-left: 38px;
-        }
-
-    }
-
-    /*1660*/
-    @media screen and (min-width: 1600px) {
-        /deep/ .el-form-item.min_form_item_right{
-            margin-left: 28px;
-        }
-
-    }
-
-    /*1920*/
-    @media screen and (min-width: 1900px) {
-        .mediaMana_content_bottom .content_bottom_btn {
-            position: absolute;
-            bottom: -66px;
-            left: 896px;
-        }
-
-        .mediaMana_content_bottom .content_bottom_upload {
-            width: 442px;
-            text-align: center;
-        }
-
-        /deep/ .el-form-item {
-            margin-bottom: 12px;
-            min-width: 26%;
-            max-width: 26%;
-        }
-
-        /deep/ .el-form-item.min_form_item{
-            width: 120px;
-        }
-
-        /deep/ .el-form-item.min_form_item_right{
-            margin-left: 16px;
-        }
     }
 </style>

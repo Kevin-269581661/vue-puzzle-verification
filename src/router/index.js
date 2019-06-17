@@ -122,7 +122,7 @@ export default new Router({
             children: [
                 {path: '/superOperate', component: adminIndex},
                 {path: '/superOperate/ADlimitList', component: ADlimitList},
-                {path: '/superOperate/mediaInput', component: mediaInput},
+                // {path: '/superOperate/mediaInput', component: mediaInput},
                 {path: '/superOperate/mediaList', component: mediaList},
                 {path: '/superOperate/mediaDetail', component: mediaDetail},
                 {path: '/superOperate/clientList', component: clientList},
@@ -179,6 +179,7 @@ export default new Router({
                 {path: '/media', component: mediaIndex},
                 {path: '/media/mediaList', component: mediaList},
                 {path: '/media/mediaInput', component: mediaInput},
+                {path: '/media/mediaEdit', component: mediaInput},
                 {path: '/media/mediaDetail', component: mediaDetail},
                 {path: '/media/planList', component: planList},
                 {path: '/media/publishPriceList', component: publishPriceList},

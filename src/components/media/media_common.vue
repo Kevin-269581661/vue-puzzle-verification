@@ -253,6 +253,7 @@ export default {
                 case 'mediaList':
                 case 'mediaDetail':
                 case 'mediaInput':
+                case 'mediaEdit':
                     $('#mediaMana').css({
                         "color": "#fff",
                         "border-bottom": "3px solid #fff"

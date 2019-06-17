@@ -241,6 +241,8 @@
             this.setTime()
             this.getTableData()
             this.getCity()
+            // 设置表格左侧定位的高度
+            this.setFixedTableHieght()
         },
         methods:{
             getSessionData(){
@@ -255,6 +257,15 @@
                 endTime = timeFormat.returnDayCount(30,'/')
                 this.dateInput = [starTime, endTime]                // 设置默认时间
                 this.beforDate = [starTime, endTime]
+            },
+            // 表格左侧定位的高度
+            setFixedTableHieght(){
+                let timer = setTimeout(()=>{
+                    let fixedTable = document.querySelector('.el-table__fixed')
+                    console.log('fixedTable',fixedTable)
+                    fixedTable.style.height = 490 + (this.pageData.pageSize / 10 - 1) * 450  + 'px'
+                    clearTimeout(timer)
+                },1000)
             },
             // tab切换
             handleClick(){
@@ -445,6 +456,7 @@
                 console.log('每页的条数',val)
                 this.pageData.pageSize = val
                 this.getTableData()
+                this.setFixedTableHieght()
             },
             // 返回上一页
             returnBefore(){
@@ -683,6 +695,7 @@
         background: #C1C1C1;
         border-radius: 4px;
     }
+
     /*safari下表头错位*/
     /deep/ .el-table .el-table-column-resName .cell{
         min-width: 120px;

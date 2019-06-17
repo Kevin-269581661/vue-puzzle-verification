@@ -817,7 +817,6 @@ export default {
 }
 /deep/ .priceInfo_box .el-row{
     margin-bottom: 10px;
-    /* margin-top: -20px; */
 }
 /deep/ .priceInfo_box .el-input-number--small{
     width: 89%;

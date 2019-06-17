@@ -5456,26 +5456,9 @@
         border-top-left-radius: 0;
     }
 
-    /* /deep/ .el-button {
-        width: 76px;
-        height: 34px;
-        text-align: center;
-        padding: 0;
-    }
-
-    /deep/ .el-button+.el-button{
-        margin-left: 3px;
-    } */
-    /* /deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
-        position: relative;
-        left: -2px;
-        top: 0px;
-    } */
-
     /deep/ .date-select.el-input__inner {
         width: 260px;
         position: relative;
-        /*left: -6px;*/
     }
 
     /*日期*/
@@ -5484,7 +5467,6 @@
         display: inline-block;
         margin-left: 2px;
         position: relative;
-        /*top: 3px;*/
     }
 
     /deep/ .el-date-editor .el-range__icon {
@@ -5519,7 +5501,6 @@
 
     .oneKeyPointBtn{
         text-align: center;
-        /*margin-left: 6px;*/
         height: 32px;
         padding: 0;
         line-height: 32px;
@@ -5594,7 +5575,6 @@
     .search-wrap > div {
         float: left;
         margin-right: 7px;
-        /*margin-bottom: 18px;*/
     }
 
     .shopcar {
@@ -5622,7 +5602,6 @@
     /*面板*/
     .dw-panel {
         border: 1px solid #D8D8D8;
-        /*margin-top: 30px;*/
         margin-top: 18px;
         padding: 0 18px 0 18px;
     }
@@ -5689,9 +5668,6 @@
         color: #1890FF;
     }
     .otherBtn.el-button{
-        /* width: 76px;
-        height: 30px;
-        padding: 0; */
         border-radius: 0;
         color:rgba(0,0,0,0.35);
     }
@@ -5784,8 +5760,6 @@
     }
 
     /deep/ .selectAdsTable .el-table__body-wrapper{
-        /*min-width: 1744px;*/
-        /*max-width: 1744px;*/
         overflow-x: auto !important;
     }
     /deep/ .selectAdsTable .el-checkbox__label{
@@ -5822,7 +5796,6 @@
 
     /deep/ .el-dialog {
         width: 1000px;
-        /*height: 680px;*/
     }
 
     .step2 /deep/ .el-dialog {
@@ -5845,7 +5818,6 @@
 
     .car-title h4 {
         font-size: 14px;
-        /*font-weight: bold;*/
         display: inline-block;
     }
 
@@ -6190,9 +6162,6 @@
         text-align: center;
         margin-top: 20px
     }
-    /* /deep/ .upload_box .el-button{
-        width: auto;
-    } */
 
     /*一键更换排期*/
     .table_box{
@@ -6203,8 +6172,6 @@
     }
     .button_point{
         text-align: right;
-        /* position: absolute; */
-        /* right: 0; */
     }
     .change_scheduling{
         color: #1890ff;
@@ -6243,7 +6210,6 @@
     }
     .defead_scheduled_box ul{
         max-height: 160px;
-        /*padding: 0 0 12px 0;*/
         overflow-y: auto;
     }
     .defead_scheduled_box ul::-webkit-scrollbar{
@@ -6416,10 +6382,6 @@
             width: 331px;
         }
     }
-
-    /* .urlBtn {
-        padding: 10px;
-    } */
 
     /deep/ .el-badge__content.is-fixed.is-dot {
         left: -15px;

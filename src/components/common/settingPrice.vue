@@ -706,17 +706,12 @@ export default {
 /*wrap*/
 .mediaList_wrap {
     width: 90%;
-    /* background: #ffffff; */
-    /* border: 1px solid #e6e7e9; */
     margin: 0 auto;
     margin-bottom: 90px;
 }
 
 .mediaList_wrap .mediaList_head {
     width: 100%;
-    /* height: 24px; */
-    /* padding: 12px 0; */
-    /* margin-bottom: 20px; */
     border-bottom: 1px solid #e6e7e9;
 }
 
@@ -740,7 +735,6 @@ export default {
 .main_box {
     width: 100%;
     background: #fff;
-    /* padding: 20px; */
     border-radius: 4px;
     border: 1px solid #e6e7e9;
 }

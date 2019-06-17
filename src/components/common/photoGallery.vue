@@ -618,7 +618,6 @@ export default {
 
 /*面包屑导航*/
 .ad_mediaMana_wrap {
-    /* position: relative; */
     margin-bottom: 50px;
 }
 
@@ -700,18 +699,7 @@ export default {
     border-bottom-right-radius: 0;
     padding-right: 0;
     padding-left: 10px;
-    /* height: 34px; */
 }
-
-/* /deep/ .el-button {
-    width: 76px;
-    height: 34px;
-}
-/deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
-  position: relative;
-  left: -2px;
-  top: 0px;
-} */
 
 .searchInput /deep/ .el-input__inner,
 .searchInput {
@@ -719,7 +707,6 @@ export default {
     position: relative;
     left: -7px;
     top: 0;
-    /* height: 34px; */
     border-left: none !important;
     border-bottom-left-radius: 0;
     border-top-left-radius: 0;
@@ -727,42 +714,19 @@ export default {
 
 /deep/ .plan-select .el-input,
 /deep/ .plan-select .el-input__inner {
-    /* width: 180px; */
     width: 160px;
 }
-
-/* .searchBtn,
-.map {
-    position: relative;
-    left: -3px;
-}
-
-.map {
-    left: -12px;
-} */
-.search-wrap {
-    /* position: relative;
-    height: 40px; */
-}
-
 /deep/ .el-input-group .el-input__suffix {
     right: 5px;
 }
-
-/deep/ .el-input__icon {
-    /* line-height: 34px; */
-}
-
 /*搜索到的图片列表*/
 .input-with-select /deep/ .el-input__inner {
     font-size: 14px;
-    /* height: 34px; */
     vertical-align: middle;
 }
 
 /deep/ .plan-select .el-input__inner {
     font-size: 14px;
-    /* height: 34px; */
     vertical-align: middle;
 }
 
@@ -881,42 +845,9 @@ export default {
     margin-top: 20px;
 }
 
-/* .up-report-bottom-checkbox .el-button {
-    position: relative;
-    top: 5px;
-    left: 0;
-} */
-
 /deep/ .el-pager .number {
     background-color: transparent;
 }
-
-/* .up-report-bottom-btns .el-button {
-    width: 74px;
-    height: 32px;
-    padding: 0;
-} */
-
-/* /deep/ .el-pagination .el-select .el-input .el-input__inner {
-    height: 28px !important;
-}
-
-/deep/ .el-pagination__editor.el-input .el-input__inner {
-    height: 28px !important;
-}
-
-/deep/ .el-pagination span:not([class*="suffix"]) {
-    position: relative;
-    top: -4px;
-}
-
-/deep/ .el-pagination span:not([class*="suffix"]) .el-input__inner {
-    width: 100px;
-}
-
-/deep/ .el-pagination__editor.el-input .el-input__inner {
-    width: 50px !important;
-} */
 
 /*录单*/
 /deep/ .el-table {
@@ -925,29 +856,8 @@ export default {
 
 .el-input {
     width: 240px;
-    /* height: 34px !important; */
     border-radius: 4px;
 }
-
-/deep/ .el-input__inner {
-    /* height: 34px !important; */
-    /* line-height: 34px; */
-}
-
-/* .el-button {
-    width: 76px;
-    height: 34px;
-    text-align: center;
-    line-height: 34px;
-    padding: 0;
-    position: relative;
-    top: 1px;
-    left: 0;
-} */
-
-/* /deep/ .el-button + .el-button {
-    margin-left: 0;
-} */
 
 /deep/ .el-date-editor .el-range-separator {
     line-height: 26px;
@@ -984,10 +894,6 @@ export default {
 /deep/ .el-table .caret-wrapper {
     width: 22px;
 }
-
-/*/deep/ .el-table_1_column_3, /deep/ .el-table_1_column_4 {
-          text-align: right;
-        }*/
 
 /deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
     background-color: #ecf5ff;
@@ -1037,24 +943,6 @@ export default {
     left: 1106px !important;
 }
 
-/*操作*/
-/* /deep/ .el-button--mini,
-.el-button--small {
-    font-size: 14px !important;
-}
-
-/deep/ .el-button .el-button--primary .el-button--mini {
-    width: 51px;
-}
-
-/deep/ .el-dropdown-menu--mini .el-dropdown-menu__item {
-    width: 65px;
-}
-
-/deep/ .el-dropdown .el-button-group .el-button {
-    height: 28px;
-} */
-
 .bottom-btn {
     text-align: center;
     margin-bottom: 30px;
@@ -1078,23 +966,11 @@ export default {
     color: #8a8a8a;
 }
 
-/deep/ .el-date-editor .el-range__close-icon {
-    position: relative;
-    top: -1px;
-}
-
 /*日期控件*/
 .block {
     display: inline-block;
     margin-left: 2px;
     position: relative;
-    /*top: 3px;*/
-}
-
-/deep/ .el-date-editor .el-range__icon {
-    position: relative;
-    top: -3px;
-    margin-right: 2px;
 }
 
 /deep/ .el-range-separator {
@@ -1104,8 +980,6 @@ export default {
 
 /deep/ .el-input__inner {
     width: 260px;
-    /* height: 34px; */
-    /* line-height: 34px; */
 }
 
 /deep/ .el-date-editor i,
@@ -1113,10 +987,6 @@ export default {
 /deep/ .el-date-editor span {
     float: left;
     position: relative;
-}
-
-/deep/ .el-range-editor .el-range-input {
-    line-height: 20px;
 }
 
 /*下拉搜索框*/
@@ -1139,7 +1009,6 @@ export default {
 }
 
 .el-input {
-    /* height: 34px !important; */
     border-radius: 4px;
 }
 
@@ -1165,15 +1034,6 @@ export default {
     line-height: 19px;
 }
 
-/* .content_bottom_btn /deep/ .el-button span {
-    position: relative;
-    top: -2px;
-}
-
-.content_bottom_btn /deep/ .el-button span a {
-    color: #606266;
-} */
-
 .clearfix:before,
 .clearfix:after {
     display: table;
@@ -1188,7 +1048,6 @@ export default {
     height: 1px;
 }
 .search-wrap /deep/ .el-date-editor--daterange.el-input__inner{
-    /* width: 300px; */
     max-width: 238px;
 }
 </style>

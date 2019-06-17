@@ -357,10 +357,6 @@ export default {
 
 .input-with-select /deep/ .el-input__inner {
     font-size: 14px;
-    /*padding: 10px 10px;*/
-    /* height: 32px; */
-    /* line-height: 19px; */
-    /*vertical-align: middle;*/
 }
 
 .typeBox p {
@@ -384,12 +380,6 @@ export default {
     /*top: 3px;*/
 }
 
-/deep/ .el-date-editor .el-range__icon {
-    position: relative;
-    top: -3px;
-    margin-right: 2px;
-}
-
 /deep/ .el-range-separator {
     position: relative;
     top: -3px;
@@ -397,13 +387,8 @@ export default {
 
 /deep/ .el-input__inner {
     width: 260px;
-    /* height: 32px; */
-    /*line-height: 34px;*/
 }
 
-/deep/ .el-range-editor .el-range-input {
-    line-height: 20px;
-}
 /deep/ .el-date-editor i,
 /deep/ .el-date-editor input,
 /deep/ .el-date-editor span {
@@ -436,55 +421,10 @@ export default {
         position: relative;
     }
 
-    /*wrap*/
- /*   .mediaList_wrap {
-        width: 92%;
-        background: #ffffff;
-        border: 1px solid #e6e7e9;
-        margin: 0 auto;
-    }
-
-    .mediaList_wrap .mediaList_head {
-        width: 100%;
-        height: 24px;
-        padding: 12px 0;
-        border-bottom: 1px solid #e6e7e9;
-    }
-
-    .mediaList_wrap .mediaList_head h2 {
-        font-size: 16px;
-        color: #2c313c;
-        height: 24px;
-
-        padding-left: 14px;
-        font-weight: bold;
-    }
-
-    .mediaList_wrap .mediaList_container {
-        width: 96%;
-        margin: 24px auto;
-    }*/
-
 .el-input {
     width: 240px;
     border-radius: 4px;
 }
-
-/* .el-button {
-    width: 76px;
-    height: 34px;
-    text-align: center;
-    padding: 0;
-    margin-left: 2px;
-    position: relative;
-    left: 0;
-} */
-/* /deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
-  position: relative;
-  left: -2px;
-  top: 0px;
-} */
-
 
 .mediaList_wrap .mediaList_container .table_wrap {
     margin: 24px auto;
@@ -509,11 +449,6 @@ export default {
 /deep/ .el-input-group--prepend .el-input__inner {
     width: 185px;
 }
-
-/* .el-input {
-    height: 32px !important;
-    border-radius: 4px;
-} */
 
 /*表格*/
 

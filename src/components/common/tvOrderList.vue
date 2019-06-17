@@ -14,7 +14,7 @@
                     <div class="mediaList_handel">
                         <span>
                             <div style="display:inline-block">
-                                <el-input placeholder="请输入内容" v-model="keyword" class="input-with-select" @change="initData">
+                                <el-input placeholder="请输入内容" v-model="keyword" size="small" class="input-with-select" @change="initData">
                                     <el-select v-model="select" slot="prepend" placeholder="请选择">
                                         <el-option label="方案名称" value="1"></el-option>
                                         <el-option label="客户名" value="2"></el-option>
@@ -24,7 +24,7 @@
                         </span>
                         <span>
                             <div class="block">
-                                <el-date-picker v-model="rangeDate" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="创建日期" end-placeholder="创建日期" @change="initData">
+                                <el-date-picker size="small" v-model="rangeDate" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="创建日期" end-placeholder="创建日期" @change="initData">
                                 </el-date-picker>
                             </div>
                         </span>
@@ -465,8 +465,6 @@ a {
 
 /deep/ .el-input__inner {
     width: 350px;
-    height: 34px;
-    line-height: 34px;
 }
 
 /deep/ .el-date-editor i,
@@ -532,24 +530,8 @@ a {
 
 .el-input {
     width: 180px;
-    height: 34px !important;
     border-radius: 4px;
 }
-
-.el-button {
-    width: 76px;
-    height: 34px;
-    text-align: center;
-    padding: 0;
-    margin-left: 2px;
-}
-
-/* /deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
-  position: relative;
-  left: -2px;
-  top: 0px;
-} */
-
 
 .mediaList_wrap .mediaList_container .table_wrap {
     width: 98%;
@@ -559,7 +541,6 @@ a {
 
 .input-with-select /deep/ .el-input__inner {
     font-size: 14px;
-    height: 34px;
     vertical-align: middle;
 }
 
@@ -571,36 +552,17 @@ a {
 
 /deep/ .el-input__inner {
     width: 300px;
-    height: 34px;
 }
 
 /deep/ .el-range-input {
     font-size: 14px;
     padding: 10px 10px;
-    height: 32px;
     line-height: 14px;
     box-sizing: border-box;
 }
 
-/deep/ .el-date-editor .el-range__icon {
-    position: relative;
-    top: -3px;
-    left: 0;
-    margin-right: 2px;
-}
-
-/deep/ .el-date-editor .el-range__close-icon {
-    position: relative;
-    top: -2px;
-    left: 3px;
-}
-
 /deep/ .el-picker-panel .el-date-range-picker .el-popper {
     left: 335px !important;
-}
-
-/deep/ .el-range-editor .el-range-input {
-    line-height: 20px;
 }
 
 /*下拉搜索框*/
@@ -623,12 +585,7 @@ a {
 }
 
 .el-input {
-    height: 34px !important;
     border-radius: 4px;
-}
-
-/deep/ .el-input__inner {
-    height: 34px;
 }
 
 /*按钮*/

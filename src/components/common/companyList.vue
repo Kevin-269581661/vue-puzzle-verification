@@ -548,11 +548,6 @@
     a{
         color: #108ee9;
     }
-    /* /deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
-        position: relative;
-        left: -2px;
-        top: 0px;
-    } */
 </style>
 
 

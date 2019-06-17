@@ -344,30 +344,9 @@ export default {
     color: #8a8a8a;
 }
 
-/*日期控件*/
-.block {
-    display: inline-block;
-    position: relative;
-    top: 0px;
-    margin-left: 63px;
-}
-
 /deep/ .el-input__inner {
     width: 100%;
     height: 32px;
-}
-
-/deep/ .el-range-editor .el-range-input {
-    line-height: 20px;
-}
-
-/deep/ .el-date-editor .el-range__icon {
-    position: absolute;
-    right: 10px;
-    top: 0;
-}
-/deep/.el-picker-panel .el-date-range-picker .el-popper {
-    left: 335px !important;
 }
 
 /*面包屑导航*/

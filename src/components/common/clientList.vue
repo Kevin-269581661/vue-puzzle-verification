@@ -14,7 +14,7 @@
 					<div class="mediaList_handel">
 						<span>
 							<div style="display:inline-block">
-								<el-input placeholder="请输入内容" v-model="searchInfo.keyword" class="input-with-select">
+								<el-input placeholder="请输入内容" v-model="searchInfo.keyword" class="input-with-select" size="small">
 									<el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
 										<el-option label="公司品牌" value="1"></el-option>
 										<el-option label="公司名称" value="2"></el-option>
@@ -25,13 +25,13 @@
 						</span>
 						<span>
 							<div class="block">
-								<el-date-picker class="input-with-select" v-model="searchInfo.date" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="创建日期" end-placeholder="创建日期">
+								<el-date-picker class="input-with-select" size="small" v-model="searchInfo.date" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="创建日期" end-placeholder="创建日期">
 								</el-date-picker>
 							</div>
 						</span>
                         <span v-if="sessionData.uType !='BD'">
 							<div class="block">
-                                <el-select v-model="searchInfo.company" placeholder="请选择公司">
+                                <el-select v-model="searchInfo.company" placeholder="请选择公司" size="small">
                                     <el-option v-for="item of companyArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                                 </el-select>
 							</div>
@@ -358,8 +358,8 @@ export default {
 .input-with-select /deep/ .el-input__inner {
     font-size: 14px;
     /*padding: 10px 10px;*/
-    height: 34px;
-    line-height: 19px;
+    /* height: 32px; */
+    /* line-height: 19px; */
     /*vertical-align: middle;*/
 }
 
@@ -397,7 +397,7 @@ export default {
 
 /deep/ .el-input__inner {
     width: 260px;
-    height: 34px;
+    /* height: 32px; */
     /*line-height: 34px;*/
 }
 
@@ -510,10 +510,10 @@ export default {
     width: 185px;
 }
 
-.el-input {
-    height: 34px !important;
+/* .el-input {
+    height: 32px !important;
     border-radius: 4px;
-}
+} */
 
 /*表格*/
 

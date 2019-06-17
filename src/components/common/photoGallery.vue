@@ -13,7 +13,7 @@
                         <div class="search-wrap clearfix" v-if="!ludan">
                             <span>
                                 <div style="display:inline-block">
-                                    <el-input placeholder="请输入内容" v-model="keyword" class="input-with-select">
+                                    <el-input placeholder="请输入内容" v-model="keyword" class="input-with-select" size="small">
                                         <el-select v-model="select" slot="prepend" placeholder="请选择">
                                             <el-option label="方案名称" value="1" v-if="(activeName=='first')||(activeName=='second')"></el-option>
                                             <!-- <el-option label="账号名称" value="2"></el-option> -->
@@ -22,29 +22,29 @@
                                     </el-input>
                                 </div>
                             </span>
-                            <el-cascader :options="citys" v-model="citySelect" :show-all-levels='false' class="plan-select" placeholder="选择地区" change-on-select filterable>
+                            <el-cascader :options="citys" v-model="citySelect" :show-all-levels='false' size="small" class="plan-select" placeholder="选择地区" change-on-select filterable>
                             </el-cascader>
                             <span v-if="(activeName=='first')||(activeName=='second')">
-                                <el-select v-model="LabSelect" placeholder="选择投放面" class="plan-select">
+                                <el-select v-model="LabSelect" placeholder="选择投放面" class="plan-select" size="small">
                                     <el-option label="A面" value="A"></el-option>
                                     <el-option label="B面" value="B"></el-option>
                                 </el-select>
                             </span>
-                            <el-cascader :options="bussiness" class="plan-select" v-model="industryIdArr" change-on-select @change="handleChange" v-if="(activeName=='first')||(activeName=='second')" filterable></el-cascader>
+                            <el-cascader :options="bussiness" size="small" class="plan-select" v-model="industryIdArr" change-on-select @change="handleChange" v-if="(activeName=='first')||(activeName=='second')" filterable></el-cascader>
                             <span v-if="(activeName=='first')||(activeName=='second')">
                                 <div class="block">
-                                    <el-date-picker v-model="date" type="daterange" range-separator="-" format="yyyy/MM/dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
+                                    <el-date-picker size="small" v-model="date" type="daterange" range-separator="-" format="yyyy/MM/dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
                                     </el-date-picker>
                                 </div>
                             </span>
                             <span>
-                                <el-button type="primary" icon="el-icon-search" class="searchBtn" @click="searchPic()" :disabled="!isSearch">搜索</el-button>
+                                <el-button type="primary" size="small" icon="el-icon-search" class="searchBtn" @click="searchPic()" :disabled="!isSearch">搜索</el-button>
                             </span>
                             <span>
-                                <el-button plain class="map" @click="reset()">重置</el-button>
+                                <el-button plain size="small" @click="reset()">重置</el-button>
                             </span>
                             <span>
-                                <el-button plain class="map" @click="allDownLoad()">一键导出</el-button>
+                                <el-button plain size="small" @click="allDownLoad()">一键导出</el-button>
                             </span>
                         </div>
                         <el-tab-pane label="上刊" name="first">
@@ -613,7 +613,7 @@ export default {
 
 <style scoped>
 /deep/ .el-cascader__label {
-    line-height: 34px;
+    line-height: 32px;
 }
 
 /*面包屑导航*/
@@ -700,7 +700,7 @@ export default {
     border-bottom-right-radius: 0;
     padding-right: 0;
     padding-left: 10px;
-    height: 34px;
+    /* height: 34px; */
 }
 
 /* /deep/ .el-button {
@@ -719,7 +719,7 @@ export default {
     position: relative;
     left: -7px;
     top: 0;
-    height: 34px;
+    /* height: 34px; */
     border-left: none !important;
     border-bottom-left-radius: 0;
     border-top-left-radius: 0;
@@ -750,19 +750,19 @@ export default {
 }
 
 /deep/ .el-input__icon {
-    line-height: 34px;
+    /* line-height: 34px; */
 }
 
 /*搜索到的图片列表*/
 .input-with-select /deep/ .el-input__inner {
     font-size: 14px;
-    height: 34px;
+    /* height: 34px; */
     vertical-align: middle;
 }
 
 /deep/ .plan-select .el-input__inner {
     font-size: 14px;
-    height: 34px;
+    /* height: 34px; */
     vertical-align: middle;
 }
 
@@ -897,7 +897,7 @@ export default {
     padding: 0;
 } */
 
-/deep/ .el-pagination .el-select .el-input .el-input__inner {
+/* /deep/ .el-pagination .el-select .el-input .el-input__inner {
     height: 28px !important;
 }
 
@@ -916,7 +916,7 @@ export default {
 
 /deep/ .el-pagination__editor.el-input .el-input__inner {
     width: 50px !important;
-}
+} */
 
 /*录单*/
 /deep/ .el-table {
@@ -925,13 +925,13 @@ export default {
 
 .el-input {
     width: 240px;
-    height: 34px !important;
+    /* height: 34px !important; */
     border-radius: 4px;
 }
 
 /deep/ .el-input__inner {
-    height: 34px !important;
-    line-height: 34px;
+    /* height: 34px !important; */
+    /* line-height: 34px; */
 }
 
 /* .el-button {
@@ -1104,8 +1104,8 @@ export default {
 
 /deep/ .el-input__inner {
     width: 260px;
-    height: 34px;
-    line-height: 34px;
+    /* height: 34px; */
+    /* line-height: 34px; */
 }
 
 /deep/ .el-date-editor i,
@@ -1139,7 +1139,7 @@ export default {
 }
 
 .el-input {
-    height: 34px !important;
+    /* height: 34px !important; */
     border-radius: 4px;
 }
 

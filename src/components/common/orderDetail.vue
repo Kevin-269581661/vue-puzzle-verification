@@ -2465,13 +2465,13 @@ export default {
 }
 
 .el-input {
-    height: 34px !important;
+    /* height: 34px !important; */
     border-radius: 4px;
 }
 
 /deep/ .el-input__inner {
     font-size: 14px;
-    height: 32px;
+    /* height: 32px; */
     vertical-align: middle;
 }
 

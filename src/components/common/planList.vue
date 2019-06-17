@@ -14,7 +14,7 @@
                     <div class="mediaList_handel">
                         <span>
                             <div style="display:inline-block" class="min_input">
-                                <el-input placeholder="请输入内容" v-model="searchInfo.keyword" class="input-with-select">
+                                <el-input placeholder="请输入内容" v-model="searchInfo.keyword" size="small" class="input-with-select">
                                     <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
                                         <el-option label="方案名称" value="1"></el-option>
                                         <el-option label="客户名称" value="2"></el-option>
@@ -25,42 +25,42 @@
                         </span>
                         <span>
                             <div class="block">
-                                <el-date-picker class="input-with-select" v-model="searchInfo.rangeDate" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
+                                <el-date-picker size="small" class="input-with-select" v-model="searchInfo.rangeDate" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
                                 </el-date-picker>
                             </div>
                         </span>
                         <span>
                             <div class="block">
-                                <el-select v-model="searchInfo.status" placeholder="请选择状态">
+                                <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small">
                                     <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
                                 </el-select>
                             </div>
                         </span>
                         <span v-if="isAll">
                             <div class="block">
-                                <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable >
+                                <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable size="small">
                                     <el-option v-for="item of companyData" :key="item.value" :label="item.label" :value="item.value"></el-option>
                                 </el-select>
                             </div>
                         </span>
                         <span>
                             <div class="block">
-                                <el-select v-model="searchInfo.cityWord" placeholder="请选择投放城市" filterable>
+                                <el-select v-model="searchInfo.cityWord" placeholder="请选择投放城市" filterable size="small">
                                     <el-option v-for="item of filterCityData" :key="item.rID" :label="item.text" :value="item.text"></el-option>
                                 </el-select>
                             </div>
                         </span>
                         <div class="block">
-                            <el-select v-model="searchInfo.Lock" placeholder="是否预锁">
+                            <el-select v-model="searchInfo.Lock" placeholder="是否预锁" size="small">
                                 <el-option label="已预锁" value="2"></el-option>
                                 <el-option label="未预锁" value="1"></el-option>
                             </el-select>
                         </div>
-                        <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
-                        <el-button @click="reset()" :disabled="!isReset">重置</el-button>
-                        <el-button plain v-if="showNewBtn" @click="addOne()">新建</el-button>
-                        <el-button plain v-if="showNewBtn" @click="isOpenDownload=true">导空位</el-button>
-                        <el-button type="primary" v-if="!isNation" @click="goToDiaPlate">点位表盘</el-button>
+                        <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch" size="small">搜索</el-button>
+                        <el-button @click="reset()" :disabled="!isReset" size="small">重置</el-button>
+                        <el-button plain v-if="showNewBtn" @click="addOne()" size="small">新建</el-button>
+                        <el-button plain v-if="showNewBtn" @click="isOpenDownload=true" size="small">导空位</el-button>
+                        <el-button type="primary" v-if="!isNation" @click="goToDiaPlate" size="small">点位表盘</el-button>
                     </div>
                 </el-row>
                 <div class="table_wrap">
@@ -1167,11 +1167,6 @@ a {
     width: 110px;
 }
 
-.el-input {
-    height: 34px !important;
-    border-radius: 4px;
-}
-
     /*面包屑导航*/
     .ad_mediaDetail_wrap {
         position: relative;
@@ -1228,7 +1223,7 @@ a {
 
 .el-input {
     width: 180px;
-    height: 34px !important;
+    /* height: 34px !important; */
     border-radius: 4px;
 }
 
@@ -1259,7 +1254,7 @@ a {
 
 .input-with-select /deep/ .el-input__inner {
     font-size: 14px;
-    height: 34px;
+    /* height: 34px; */
     vertical-align: middle;
 }
 
@@ -1287,8 +1282,8 @@ a {
 
 /deep/ .el-input__inner {
     width: 140px;
-    height: 34px;
-    line-height: 34px;
+    /* height: 34px; */
+    /* line-height: 34px; */
 }
 /deep/ .el-date-editor{
     width: 245px;
@@ -1301,7 +1296,7 @@ a {
 }
 
 /deep/ .el-range-editor .el-range-input {
-    line-height: 20px;
+    /* line-height: 20px; */
 }
 
 /*表格*/

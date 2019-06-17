@@ -354,7 +354,7 @@ export default {
 
 /deep/ .el-input__inner {
     width: 100%;
-    height: 30px;
+    height: 32px;
 }
 
 /deep/ .el-range-editor .el-range-input {

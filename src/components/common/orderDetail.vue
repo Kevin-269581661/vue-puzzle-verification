@@ -2465,30 +2465,13 @@ export default {
 }
 
 .el-input {
-    height: 34px !important;
     border-radius: 4px;
 }
 
 /deep/ .el-input__inner {
     font-size: 14px;
-    height: 32px;
     vertical-align: middle;
 }
-
-/*按钮*/
-/* .first-wrap /deep/ .el-button {
-    width: 76px;
-    position: relative;
-}
-
-.first-wrap /deep/ .el-button span,
-.first-wrap /deep/ .el-button i {
-    left: -23px;
-}
-
-.first-wrap /deep/ .el-button span a {
-    color: #606266;
-} */
 
 /*报价单*/
 
@@ -2527,11 +2510,6 @@ export default {
     padding-left: 66px;
     box-sizing: border-box;
 }
-
-/* /deep/ .el-button.el-button--text span {
-    position: relative;
-    top: -5px;
-} */
 
 .price ul li {
     font-size: 14px;
@@ -2866,18 +2844,6 @@ export default {
     margin-bottom: 10px;
 }
 
-/* .up-report-bottom-checkbox .el-button {
-    position: relative;
-    top: 5px;
-    left: 0;
-}
-
-.up-report-bottom-btns .el-button {
-    width: 74px;
-    height: 32px;
-    padding: 0;
-} */
-
 /*面包屑导航*/
 .tip {
     position: absolute;
@@ -2983,14 +2949,6 @@ export default {
     height: 32px;
 }
 
-/* /deep/ .el-button {
-    height: 32px;
-    line-height: 32px;
-    min-width: 80px;
-    padding: 0 8px;
-} */
-
-
 /deep/ .date-select.el-input__inner {
     width: 237px;
     position: relative;
@@ -3003,26 +2961,6 @@ export default {
     top: -2px;
     left: -3px;
 }
-
-/* .searchBtn {
-    position: relative;
-}
-
-/deep/ .searchBtn .el-icon-search {
-    position: relative;
-    top: -2px;
-    left: -9px !important;
-}
-
-/deep/ .el-button.searchBtn span {
-    position: relative;
-    left: -5px;
-    top: -2px;
-}
-
-.searchBtn.el-button + .el-button {
-    margin-left: 0;
-} */
 
 /*表格*/
 /deep/ .el-table th,
@@ -3138,12 +3076,6 @@ export default {
     position: relative;
 }
 
-/deep/ .el-date-editor .el-range__icon {
-    position: relative;
-    top: -3px;
-    margin-right: 2px;
-}
-
 /deep/ .el-range-separator {
     position: relative;
     top: -2px;
@@ -3155,9 +3087,6 @@ export default {
     line-height: 32px;
 }
 
-/deep/ .el-range-editor .el-range-input {
-    line-height: 20px;
-}
 
 /deep/ .el-dialog__body {
     padding: 5px 20px;
@@ -3244,13 +3173,6 @@ export default {
     border-bottom: 1px solid #e4e7ed;
     margin: 0;
 }
-
-/*1440*/
-/* @media all and (min-width: 1420px) {
-    .panel {
-        padding: 20px 30px;
-    }
-} */
 
 /*1920*/
 @media all and (min-width: 1900px) {

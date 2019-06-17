@@ -2093,12 +2093,6 @@ export default {
     /*top: 3px;*/
 }
 
-/deep/ .el-date-editor .el-range__icon {
-    position: relative;
-    top: -3px;
-    margin-right: 2px;
-}
-
 /deep/ .el-range-separator {
     position: relative;
     top: -2px;
@@ -2117,10 +2111,6 @@ export default {
 /deep/ .el-date-editor span {
     /* float: left;
         position: relative; */
-}
-
-/deep/ .el-range-editor .el-range-input {
-    line-height: 20px;
 }
 
 /deep/ .el-dialog__body {

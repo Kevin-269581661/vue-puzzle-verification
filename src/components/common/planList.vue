@@ -14,7 +14,7 @@
                     <div class="mediaList_handel">
                         <span>
                             <div style="display:inline-block" class="min_input">
-                                <el-input placeholder="请输入内容" v-model="searchInfo.keyword" class="input-with-select">
+                                <el-input placeholder="请输入内容" v-model="searchInfo.keyword" size="small" class="input-with-select">
                                     <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
                                         <el-option label="方案名称" value="1"></el-option>
                                         <el-option label="客户名称" value="2"></el-option>
@@ -25,42 +25,42 @@
                         </span>
                         <span>
                             <div class="block">
-                                <el-date-picker class="input-with-select" v-model="searchInfo.rangeDate" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
+                                <el-date-picker size="small" class="input-with-select" v-model="searchInfo.rangeDate" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
                                 </el-date-picker>
                             </div>
                         </span>
                         <span>
                             <div class="block">
-                                <el-select v-model="searchInfo.status" placeholder="请选择状态">
+                                <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small">
                                     <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
                                 </el-select>
                             </div>
                         </span>
                         <span v-if="isAll">
                             <div class="block">
-                                <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable >
+                                <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable size="small">
                                     <el-option v-for="item of companyData" :key="item.value" :label="item.label" :value="item.value"></el-option>
                                 </el-select>
                             </div>
                         </span>
                         <span>
                             <div class="block">
-                                <el-select v-model="searchInfo.cityWord" placeholder="请选择投放城市" filterable>
+                                <el-select v-model="searchInfo.cityWord" placeholder="请选择投放城市" filterable size="small">
                                     <el-option v-for="item of filterCityData" :key="item.rID" :label="item.text" :value="item.text"></el-option>
                                 </el-select>
                             </div>
                         </span>
                         <div class="block">
-                            <el-select v-model="searchInfo.Lock" placeholder="是否预锁">
+                            <el-select v-model="searchInfo.Lock" placeholder="是否预锁" size="small">
                                 <el-option label="已预锁" value="2"></el-option>
                                 <el-option label="未预锁" value="1"></el-option>
                             </el-select>
                         </div>
-                        <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
-                        <el-button @click="reset()" :disabled="!isReset">重置</el-button>
-                        <el-button plain v-if="showNewBtn" @click="addOne()">新建</el-button>
-                        <el-button plain v-if="showNewBtn" @click="isOpenDownload=true">导空位</el-button>
-                        <el-button type="primary" v-if="!isNation" @click="goToDiaPlate">点位表盘</el-button>
+                        <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch" size="small">搜索</el-button>
+                        <el-button @click="reset()" :disabled="!isReset" size="small">重置</el-button>
+                        <el-button plain v-if="showNewBtn" @click="addOne()" size="small">新建</el-button>
+                        <el-button plain v-if="showNewBtn" @click="isOpenDownload=true" size="small">导空位</el-button>
+                        <el-button type="primary" v-if="!isNation" @click="goToDiaPlate" size="small">点位表盘</el-button>
                     </div>
                 </el-row>
                 <div class="table_wrap">
@@ -1167,11 +1167,6 @@ a {
     width: 110px;
 }
 
-.el-input {
-    height: 34px !important;
-    border-radius: 4px;
-}
-
     /*面包屑导航*/
     .ad_mediaDetail_wrap {
         position: relative;
@@ -1228,29 +1223,8 @@ a {
 
 .el-input {
     width: 180px;
-    height: 34px !important;
     border-radius: 4px;
 }
-
-/* /deep/ .el-button { */
-    /* width: 76px; */
-    /* height: 34px; */
-    /* text-align: center; */
-    /* padding: 0; */
-    /* position: relative; */
-    /* left: 0; */
-    /* margin-left: 2px; */
-/* } */
-/* /deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
-  position: relative;
-  left: -2px;
-  top: 0px;
-} */
-
-
-/* /deep/ .el-button + .el-button {
-    margin-left: 0;
-} */
 
 .mediaList_wrap .mediaList_container .table_wrap {
     margin: 24px auto;
@@ -1259,7 +1233,6 @@ a {
 
 .input-with-select /deep/ .el-input__inner {
     font-size: 14px;
-    height: 34px;
     vertical-align: middle;
 }
 
@@ -1274,12 +1247,6 @@ a {
     position: relative;
 }
 
-/deep/ .el-date-editor .el-range__icon {
-    position: relative;
-    top: -3px;
-    margin-right: 2px;
-}
-
 /deep/ .el-range-separator {
     position: relative;
     top: -2px;
@@ -1287,8 +1254,6 @@ a {
 
 /deep/ .el-input__inner {
     width: 140px;
-    height: 34px;
-    line-height: 34px;
 }
 /deep/ .el-date-editor{
     width: 245px;
@@ -1298,10 +1263,6 @@ a {
 /deep/ .el-date-editor span {
     float: left;
     position: relative;
-}
-
-/deep/ .el-range-editor .el-range-input {
-    line-height: 20px;
 }
 
 /*表格*/
@@ -1337,10 +1298,6 @@ a {
 
 /deep/ .el-table .caret-wrapper {
     width: 22px;
-}
-
-/deep/ thead th:nth-child(4) .cell {
-    text-align: right !important;
 }
 
 /deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
@@ -1405,56 +1362,6 @@ a {
     cursor: pointer;
     color: #409EFF;
 }
-/* /deep/ button.el-button.el-button--default.el-button--small:hover {
-    color: #666;
-    border-color: #d8d8d8;
-    background-color: #fff;
-}
-/deep/ .popper__arrow {
-    display: none;
-}  */
-/* .el-icon-arrow-down {
-    font-size: 12px;
-}
-
-/deep/ .el-button--mini,
-.el-button--small {
-    font-size: 14px !important;
-}
-
-/deep/ .el-button .el-button--primary .el-button--mini {
-    width: 51px;
-}
-
-/deep/ .el-dropdown-menu--mini .el-dropdown-menu__item {
-    width: 65px;
-}
-
-/deep/ button.el-button.el-button--default.el-button--small:hover {
-    color: #666;
-    border-color: #d8d8d8;
-    background-color: #fff;
-}
-
-/deep/ .el-dropdown .el-button-group .el-button {
-    height: 28px;
-    width: 48px;
-    font-size: 14px;
-    padding: 0;
-}
-/deep/ .el-button-group button {
-    float: left !important;
-}
-
-/deep/ .el-dropdown .el-button-group .el-button:last-child {
-    width: 30px;
-    position: relative;
-    top: 0px;
-}
-
-/deep/ .popper__arrow {
-    display: none;
-} */
 
 /*按钮*/
 /deep/ .el-button--default:focus,
@@ -1462,15 +1369,6 @@ a {
     color: #606266;
     border-color: #dcdfe6;
     background-color: #fcfcfc;
-}
-
-.content_bottom_btn /deep/ .el-button span {
-    position: relative;
-    top: -2px;
-}
-
-.content_bottom_btn /deep/ .el-button span a {
-    color: #606266;
 }
 
 .mediaList_container span {

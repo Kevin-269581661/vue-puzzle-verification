@@ -475,21 +475,7 @@
         width: 180px;
         height: 34px;
     }
-
-    /deep/ .el-date-editor .el-range__icon {
-        position: absolute;
-        right: 10px;
-        top: 0;
-    }
-
-    /deep/ .el-picker-panel .el-date-range-picker .el-popper {
-        left: 335px !important;
-    }
-
-    /deep/ .el-range-editor .el-range-input {
-        line-height: 20px;
-    }
-
+    
     /*面包屑导航*/
     .ad_mediaDetail_wrap {
         position: relative;
@@ -559,17 +545,6 @@
         position: relative;
         left: 0;
         margin-left: 2px;
-    }
-
-    /* /deep/ .el-button [class*="el-icon-"] + span,
-    .select-wrap button .el-icon-search {
-        position: relative;
-        left: -2px;
-        top: 0px;
-    } */
-
-    /deep/ .el-button + .el-button {
-        margin-left: 0;
     }
 
     .mediaList_wrap .mediaList_container .table_wrap {
@@ -653,9 +628,6 @@
 
     /*超出省略*/
     /deep/ .el-table .cell {
-        /* overflow-x: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap; */
         white-space: nowrap;
         max-width: 300px;
         text-overflow: ellipsis;
@@ -687,11 +659,6 @@
     /deep/ .el-dropdown-menu--mini .el-dropdown-menu__item {
         width: 65px;
     }
-
-    /* .tar {
-        text-align: right !important;
-        padding-right: 10px;
-    } */
 
     /deep/ .el-dropdown .el-button-group .el-button {
         height: 28px;
@@ -745,47 +712,4 @@
     .handel_btn {
         position: relative;
     }
-
-    /* .tar /deep/ .el-table-filter__content {
-        overflow-x: hidden;
-        min-width: 100px;
-        overflow-y: scroll;
-        height: 172px;
-    }
-
-    .tar /deep/ .el-table-filter__content::-webkit-scrollbar {
-        width: 4px;
-        background: #fafafa;
-    }
-
-    .tar /deep/ .el-table-filter__content::-webkit-scrollbar-thumb {
-        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-        background: #c1c1c1;
-        border-radius: 4px;
-    } */
-</style>
-
-<style>
-    /* .tar .el-table-filter__content {
-        overflow-x: hidden;
-        min-width: 100px;
-        overflow-y: scroll;
-        height: 196px;
-    }
-
-    .tar .el-table-filter__content::-webkit-scrollbar {
-        width: 4px;
-        background: #fafafa;
-    }
-
-    .tar .el-table-filter__content::-webkit-scrollbar-thumb {
-        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-        background: #c1c1c1;
-        border-radius: 4px;
-    }
-
-    .el-table-filter__list-item {
-        color: #606266;
-    } */
-
 </style>

@@ -14,7 +14,7 @@
                     <div class="mediaList_handel">
                         <span>
                             <div style="display:inline-block">
-                                <el-input placeholder="请输入内容" v-model="searchInfo.keyword" class="input-with-select">
+                                <el-input placeholder="请输入内容" v-model="searchInfo.keyword" class="input-with-select" size="small">
                                     <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
                                         <el-option label="订单名" value="1"></el-option>
                                         <el-option label="客户名" value="2"></el-option>
@@ -25,31 +25,31 @@
                         </span>
                         <span>
                             <div class="block">
-                                <el-date-picker v-model="searchInfo.rangeDate" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
+                                <el-date-picker size="small" v-model="searchInfo.rangeDate" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
                                 </el-date-picker>
                             </div>
                         </span>
                         <span v-if="isAll">
                             <div class="block">
-                                <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable >
+                                <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable size="small">
                                     <el-option v-for="item of companyData" :key="item.value" :label="item.label" :value="item.value"></el-option>
                                 </el-select>
                             </div>
                         </span>
                         <span>
                             <div class="block block_box">
-                                <el-select v-model="searchInfo.cityWord" placeholder="请选择城市" filterable>
+                                <el-select v-model="searchInfo.cityWord" placeholder="请选择城市" filterable size="small">
                                     <el-option v-for="item of filterCityData" :key="item.rID" :label="item.text" :value="item.value"></el-option>
                                 </el-select>
                             </div>
                         </span>
                         <div class="block block_box">
-                            <el-select v-model="searchInfo.status" placeholder="请选择状态">
+                            <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small">
                                 <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
                             </el-select>
                         </div>
-                        <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
-                        <el-button @click="reset()" :disabled="!isReset">重置</el-button>
+                        <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch" size="small">搜索</el-button>
+                        <el-button @click="reset()" :disabled="!isReset" size="small">重置</el-button>
                     </div>
                 </el-row>
                 <div class="table_wrap">
@@ -820,22 +820,13 @@ a {
     position: relative;
 }
 
-/deep/ .el-date-editor .el-range__icon {
-    position: relative;
-    top: -3px;
-    margin-right: 2px;
-}
-
 /deep/ .el-range-separator {
     position: relative;
     top: -2px;
 }
 
 /deep/ .el-input__inner {
-    /* width: 260px; */
     width: 140px;
-    height: 34px;
-    line-height: 34px;
 }
 /deep/ .block_box .el-input__inner{
     width: 150px;
@@ -903,23 +894,8 @@ a {
 
 .el-input {
     width: 180px;
-    height: 34px !important;
     border-radius: 4px;
 }
-
-/* .el-button {
-    width: 76px;
-    height: 34px;
-    text-align: center;
-    padding: 0;
-    margin-left: 2px;
-}
-
-/deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
-  position: relative;
-  left: -2px;
-  top: 0px;
-} */
 
 
 .mediaList_wrap .mediaList_container .table_wrap {
@@ -929,7 +905,6 @@ a {
 
 .input-with-select /deep/ .el-input__inner {
     font-size: 14px;
-    height: 34px;
     vertical-align: middle;
 }
 
@@ -941,36 +916,16 @@ a {
 
 /deep/ .el-date-editor--daterange.el-input__inner {
     width: 240px;
-    height: 34px;
 }
 
-/deep/ .el-range-input {
-    font-size: 14px;
-    padding: 10px 10px;
-    height: 32px;
-    line-height: 14px;
-    box-sizing: border-box;
+/deep/ .el-date-editor{
+    width: 245px;
 }
-
-/deep/ .el-date-editor .el-range__icon {
+/deep/ .el-date-editor i,
+/deep/ .el-date-editor input,
+/deep/ .el-date-editor span {
+    float: left;
     position: relative;
-    top: -3px;
-    left: 0;
-    margin-right: 2px;
-}
-
-/deep/ .el-date-editor .el-range__close-icon {
-    position: relative;
-    top: -2px;
-    left: 3px;
-}
-
-/deep/ .el-picker-panel .el-date-range-picker .el-popper {
-    left: 335px !important;
-}
-
-/deep/ .el-range-editor .el-range-input {
-    line-height: 20px;
 }
 
 /*下拉搜索框*/
@@ -992,15 +947,6 @@ a {
     width: 185px;
 }
 
-.el-input {
-    height: 34px !important;
-    border-radius: 4px;
-}
-
-/deep/ .el-input__inner {
-    height: 34px;
-}
-
 /*按钮*/
 /deep/ .el-button--default:focus,
 .el-button--default:hover {
@@ -1008,15 +954,6 @@ a {
     border-color: #dcdfe6;
     background-color: #fcfcfc;
 }
-
-/* .content_bottom_btn /deep/ .el-button span {
-    position: relative;
-    top: -2px;
-}
-
-.content_bottom_btn /deep/ .el-button span a {
-    color: #606266;
-} */
 
 /*表格*/
 /deep/ .el-date-editor .el-range-separator {
@@ -1034,11 +971,6 @@ a {
     padding: 8px 0;
     overflow-x: hidden;
     text-overflow: ellipsis;
-}
-/deep/ .el-table td a{
-    /*padding: 8px 0;*/
-    /*overflow-x: hidden;*/
-    /*text-overflow: ellipsis;*/
 }
 
 /deep/ .el-table--border {
@@ -1090,33 +1022,13 @@ a {
     overflow-x: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    /*line-height: 24px;*/
-    /*display: flex;*/
-    /*flex-direction: column;*/
 }
 
 /deep/ .el-table__row .cell span {
     overflow-x: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    /*line-height: 24px;*/
 }
-
-/* /deep/ .el-table__row td:nth-child(7) .cell span {
-    width: 87px;
-}
-
-/deep/ .el-table__row td:nth-child(3) .cell span {
-    width: 70px;
-}
-
-/deep/ .el-table__row td:nth-child(2) .cell span {
-    width: 130px;
-}
-/deep/ .el-table__row td:nth-child(1) .cell a {
-    width: 195px;
-} */
-
 /*筛选*/
 /deep/ .el-table__column-filter-trigger {
     margin-left: 10px;
@@ -1139,48 +1051,6 @@ a {
     cursor: pointer;
     color: #409EFF;
 }
-/* .el-icon-arrow-down {
-    font-size: 12px;
-}
-/deep/ .el-button--mini,
-.el-button--small {
-    font-size: 14px !important;
-}
-
-/deep/ .el-button .el-button--primary .el-button--mini {
-    width: 51px;
-}
-
-/deep/ .el-dropdown-menu--mini .el-dropdown-menu__item {
-    width: 65px;
-}
-
-/deep/ button.el-button.el-button--default.el-button--small:hover {
-    color: #666;
-    border-color: #d8d8d8;
-    background-color: #fff;
-}
-
-/deep/ .el-dropdown .el-button-group .el-button {
-    height: 28px;
-    width: 48px;
-    font-size: 14px;
-    padding: 0;
-}
-
-/deep/ .el-dropdown .el-button-group .el-button:last-child {
-    width: 30px;
-  position: relative;
-  top: 0px;
-}
-
-/deep/ .el-button-group button {
-    float: left !important;
-}
-
-/deep/ .popper__arrow {
-    display: none;
-} */
 
 .mediaList_handel span {
     float: left !important;

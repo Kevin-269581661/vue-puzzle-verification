@@ -90,6 +90,10 @@
                                 </el-dropdown>
                             </template>
                         </el-table-column>
+                        
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
                     </el-table>
                 </div>
                 <div class="ad_pagination">
@@ -149,7 +153,12 @@
     import api from "../../api/api.js";
     import timeFormat from '../../commonFun/timeFormat.js';
     import sessFun from '../../commonFun/sessFun.js';
+    import noSearchResult from "./components/noSearchResult.vue";
+    
     export default {
+        components:{
+            noSearchResult,
+        },
         data(){
             return{
                 // 登录信息
@@ -666,7 +675,7 @@
     }
     /*滚动条*/
     /deep/ .el-table__body-wrapper {
-        min-height: 400px;
+        height: 405px;
         overflow-y: auto;
         overflow-x: hidden;
     }

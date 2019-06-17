@@ -103,7 +103,6 @@
     .questionAndAnswer {
         position: absolute;
         width: 100%;
-        /*height: 93%;*/
         bottom: 60px;
         top: 60px;
 

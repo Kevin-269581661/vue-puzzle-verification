@@ -574,16 +574,13 @@ export default {
 
 /deep/ .el-input__inner {
     max-width: 200px;
-    height: 34px;
+    height: 32px;
 }
 /deep/ .el-date-editor{
     max-width: 300px;
     width: 300px;
 }
 
-/deep/ .el-range-editor .el-range-input {
-    line-height: 20px;
-}
 /deep/ .el-date-editor i,
 /deep/ .el-date-editor input,
 /deep/ .el-date-editor span {
@@ -648,21 +645,6 @@ export default {
 .el-input {
     width: 240px;
     border-radius: 4px;
-}
-
-.el-button {
-    width: 76px;
-    height: 34px;
-    text-align: center;
-    padding: 0;
-    margin-left: 2px;
-    position: relative;
-    left: 0;
-}
-/deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
-  position: relative;
-  left: -2px;
-  top: 0px;
 }
 
 .table_wrap {

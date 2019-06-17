@@ -132,11 +132,16 @@
                                     <el-button type="primary" style="background: #1890FF" icon="el-icon-search"
                                                class="searchBtn" @click="searchFun" :disabled="searchBtnAbled">搜索</el-button>
                                 </div>
-                                <div>
-                                    <el-button type="primary" class="map" icon="el-icon-location-outline" @click="mapAD">地图</el-button>
+                                
+                                <div class="shopcar" @click="dialogVisible()">
+                                    <el-badge :value="nowPointNum" class="item">
+                                        <img src="../../assets/images/shopCar.png" alt="">
+                                    </el-badge>
                                 </div>
-                                <div>
-                                    <!-- <el-button type="success" class="oneKeyPointBtn importXle" icon="el-icon-upload2" @click="importFanan">导入</el-button> -->
+                            </div>
+                            <el-row class="button_row">
+                                <el-col>
+                                    <el-button type="primary" class="map" icon="el-icon-location-outline" @click="mapAD">地图</el-button>
                                     <el-dropdown>
                                         <el-button type="success" class="oneKeyPointBtn importXle">
                                             导入<i class="el-icon-arrow-down el-icon--right"></i>
@@ -144,19 +149,12 @@
                                         <el-dropdown-menu slot="dropdown">
                                             <el-dropdown-item @click.native.prevent="importFanan('res')">导入小区</el-dropdown-item>
                                             <el-dropdown-item @click.native.prevent="importFanan('ads')">导入点位</el-dropdown-item>
-                                            <el-dropdown-item @click.native.prevent="importFanan('copy')">复制方案</el-dropdown-item>
                                         </el-dropdown-menu>
                                     </el-dropdown>
-                                </div>
-                                <div>
+                                    <el-button type="primary" @click="importFanan('copy')">复制方案</el-button>
                                     <el-button class="oneKeyPointBtn" @click="dialogOneKeyPoint = true">一键选点</el-button>
-                                </div>
-                                <div class="shopcar" @click="dialogVisible()">
-                                    <el-badge :value="nowPointNum" class="item">
-                                        <img src="../../assets/images/shopCar.png" alt="">
-                                    </el-badge>
-                                </div>
-                            </div>
+                                </el-col>
+                            </el-row>
                         </div>
                         <!--类型区域选择面板-->
                         <div class="dw-panel" v-show="isOccupied">
@@ -5278,7 +5276,9 @@
         margin-bottom: 5px;
         cursor: pointer;
     }
-
+    .button_row{
+        margin-top: 12px;
+    }
     /deep/ .el-form--inline .el-form-item {
         margin-right: 7px !important;
     }

@@ -2044,6 +2044,7 @@
                 }
                 this.isImport = false;
                 // this.dialogTableVisible = true;
+                this.judgeByselect();                
                 this.dialogVisible();
                 console.log('inport----data----shoplist', this.shopingList);
             },
@@ -2293,6 +2294,7 @@
                             for(let item of result){
                                 this.isHaveDiffPush(item);
                             }
+                            this.judgeByselect();
                         }else if(res.data.SysCode == 100302){
                             this.loginTimeout();
                         }else{
@@ -5496,11 +5498,11 @@
         margin-left: 3px;
     }
 
-    /deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
+    /* /deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
         position: relative;
         left: -2px;
         top: 0px;
-    }
+    } */
 
     /deep/ .date-select.el-input__inner {
         width: 260px;

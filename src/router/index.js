@@ -204,7 +204,7 @@ export default new Router({
                 {path: '/media/myInfo', component: myInfo},
                 {path: '/media/compact', component: compact},
                 {path: '/media/paintedPath', component: paintedPath},
-                // {path: '/media/adsDialPlate', component: adsDialPlate},
+                {path: '/media/adsDialPlate', component: adsDialPlate},
                 {path: '/media/projectList', component: projectList},
                 {path: '/media/projectDetail', component: projectDetail},
             ]

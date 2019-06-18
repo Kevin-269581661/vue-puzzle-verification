@@ -2755,12 +2755,6 @@ export default {
     margin-top: 20px;
 }
 
-.content_bottom_btn button {
-    width: 80px;
-    height: 32px;
-    line-height: 10px;
-}
-
 /deep/ .el-button--default:focus,
 .el-button--default:hover {
     color: #606266;
@@ -2815,42 +2809,10 @@ export default {
     left: -3px;
 }
 
-/*表格*/
-/deep/ .el-checkbox + .el-checkbox {
-    margin-left: 10px;
-}
-
-/deep/ .el-table__expanded-cell[class*="cell"] {
-    padding: 0 44px;
-    background-color: #f7f7f7;
-}
-
-/deep/ .el-table__expanded-cell[class*="cell"] .el-form {
-    height: 44px;
-    line-height: 44px;
-}
-
-/deep/ .el-form-item__content {
-    line-height: 46px;
-}
-
-/deep/ .el-form-item__label {
-    padding: 0 0 0 12px;
-}
-
 /*滚动条*/
 /deep/ .el-table__body-wrapper {
     height: 480px;
 }
-
-/deep/ .el-form--inline .el-form-item {
-    margin-right: 45px;
-}
-
-/deep/ .table_wrap.car-list {
-    margin-top: 0 !important;
-}
-
 /*超出省略*/
 /deep/ .el-table .cell {
     overflow-x: hidden;

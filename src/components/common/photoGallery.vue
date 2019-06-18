@@ -603,9 +603,6 @@ export default {
         filterCaseType(value, row) {
             return row.tag === value;
         },
-        newPath() {
-            this.$router.push("./ludanReport");
-        }
     },
 
 };

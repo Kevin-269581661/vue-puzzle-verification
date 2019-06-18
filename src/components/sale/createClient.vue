@@ -46,7 +46,7 @@
                                         <!-- <el-select v-model="clientForm.rid" placeholder="请选择活动区域">
                                             <el-option :label="item.rName" :value="item.rID" v-for="item of allProvince" :key="item.rID"></el-option>
                                         </el-select> -->
-                                        <el-cascader :options="allProvince" v-model="clientForm.cityArr" separator="-" :show-all-levels="false" @change="seleProClient" @active-item-change="handleItemChange"></el-cascader>
+                                        <el-cascader :options="allProvince" v-model="clientForm.cityArr" separator="-" :show-all-levels="false" @change="seleProClient" @active-item-change="handleItemChange" filterable></el-cascader>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="6">
@@ -97,14 +97,14 @@
                                         </el-select> -->
                                         <!-- <el-cascader v-else :options="allProvince" v-model="companyForm.cityArr" separator="-" :show-all-levels="false" @change="seleProCom" @active-item-change="handleItemChange"></el-cascader> -->
                                         <!-- <el-cascader :options="allProvince" v-model="companyForm.cityArr" separator="-" :show-all-levels="false" @change="seleProCom" @active-item-change="handleItemChange"></el-cascader> -->
-                                        <el-cascader :options="allProvince" v-model="companyForm.cityArr" separator="-" :show-all-levels="false" @change="seleProCom" @active-item-change="handleItemChange"></el-cascader>
+                                        <el-cascader :options="allProvince" v-model="companyForm.cityArr" separator="-" :show-all-levels="false" @change="seleProCom" @active-item-change="handleItemChange" filterable></el-cascader>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="6">
                                     <el-form-item label="行业分类:" prop="industryIdArr">
                                         <!-- <span v-if="isFill">{{companyForm.iName}}</span> -->
                                         <!-- <el-cascader v-else placeholder="试试搜索：互联网" :options="bussiness" v-model="companyForm.industryIdArr" filterable change-on-select @change="handleChange"></el-cascader> -->
-                                        <el-cascader :options="bussiness" v-model="companyForm.industryIdArr" change-on-select @change="handleChange"></el-cascader>
+                                        <el-cascader :options="bussiness" v-model="companyForm.industryIdArr" change-on-select @change="handleChange" filterable></el-cascader>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="6">

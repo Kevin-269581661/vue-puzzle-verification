@@ -25,7 +25,7 @@
                                 </el-autocomplete>
                             </el-form-item>
                             <el-form-item label="公司名称：" prop="companyName">
-                                <el-select v-model="planForm.companyName" @change="GetBrandByCid" placeholder="请选择公司名称">
+                                <el-select v-model="planForm.companyName" @change="GetBrandByCid" placeholder="请选择公司名称" filterable>
                                     <el-option
                                         v-for="item in companyName"
                                         :key="item.value"
@@ -36,7 +36,7 @@
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="公司品牌：" prop="companyBrand">
-                                <el-select v-model="planForm.companyBrand" placeholder="请选择公司品牌">
+                                <el-select v-model="planForm.companyBrand" placeholder="请选择公司品牌" filterable>
                                     <el-option
                                         v-for="item in companyBrand"
                                         :key="item.value"
@@ -46,7 +46,7 @@
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="联系人：" prop="ownerBU">
-                                <el-select v-model="planForm.ownerBU" placeholder="请选择所属联系人">
+                                <el-select v-model="planForm.ownerBU" placeholder="请选择所属联系人" filterable>
                                     <el-option
                                         v-for="item in ownerBU"
                                         :key="item.value"

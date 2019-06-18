@@ -42,7 +42,7 @@
                                 <el-col :span="6">
                                     <el-form-item label="所在地:" prop="cityArr">
                                         <!-- <el-cascader :options="allProvince" v-model="clientForm.cityArr" separator="-" :show-all-levels="false" @change="seleProClient" @active-item-change="handleItemChange"></el-cascader> -->
-                                        <el-cascader :options="allProvince" v-model="clientForm.cityArr" separator="-" :show-all-levels="false" @change="seleProClient" ></el-cascader>
+                                        <el-cascader :options="allProvince" v-model="clientForm.cityArr" separator="-" :show-all-levels="false" @change="seleProClient" filterable></el-cascader>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="6">
@@ -82,12 +82,12 @@
                                 <el-col :span="6">
                                     <el-form-item label="所在城市:" prop="cityArr">
                                         <!-- <el-cascader :options="allProvince" v-model="companyForm.cityArr" separator="-" :show-all-levels="false" @change="seleProCom" @active-item-change="handleItemChange"></el-cascader> -->
-                                        <el-cascader :options="allProvince" v-model="companyForm.cityArr" separator="-" :show-all-levels="false" @change="seleProCom" ></el-cascader>
+                                        <el-cascader :options="allProvince" v-model="companyForm.cityArr" separator="-" :show-all-levels="false" @change="seleProCom" filterable></el-cascader>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="6">
                                     <el-form-item label="行业分类:" prop="industryIdArr">
-                                        <el-cascader placeholder="试试搜索：互联网" :options="bussiness" change-on-select v-model="companyForm.industryIdArr" @change="handleChange"></el-cascader>
+                                        <el-cascader placeholder="试试搜索：互联网" :options="bussiness" change-on-select v-model="companyForm.industryIdArr" @change="handleChange" filterable></el-cascader>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="6">

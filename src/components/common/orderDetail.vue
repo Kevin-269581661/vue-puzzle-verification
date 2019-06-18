@@ -177,7 +177,7 @@
                                             <el-radio-button label="广告门"></el-radio-button>
                                             <el-radio-button label="道闸"></el-radio-button>
                                         </el-radio-group>
-                                        <el-button @click="downloadImg('SK')" >导出图片</el-button>
+                                        <!-- <el-button @click="downloadImg('SK')" >导出图片</el-button> -->
                                         <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
                                     </template>
 
@@ -268,7 +268,7 @@
                                             <el-radio-button label="广告门"></el-radio-button>
                                             <el-radio-button label="道闸"></el-radio-button>
                                         </el-radio-group>
-                                        <el-button @click="downloadImg('XK')" >导出图片</el-button>                                        
+                                        <!-- <el-button @click="downloadImg('XK')" >导出图片</el-button>                                         -->
                                         <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
                                     </template>
 

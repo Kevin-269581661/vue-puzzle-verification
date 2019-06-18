@@ -8,12 +8,8 @@
         </div>
         <div class="mediaList_wrap">
             <el-tabs v-model="activeTabName" @tab-click="handleClick">
-                <el-tab-pane label="广告门" name="广告门">
-
-                </el-tab-pane>
-                <el-tab-pane label="道闸" name="道闸">
-
-                </el-tab-pane>
+                <el-tab-pane label="广告门" name="广告门"></el-tab-pane>
+                <el-tab-pane label="道闸" name="道闸"></el-tab-pane>
             </el-tabs>
             <div class="tab_conten">
                 <el-row :gutter="32" class="tab_conten_row">
@@ -23,14 +19,25 @@
                     </el-col>
                     <el-col :span="6">
                         <span class="search_label">城市区域:</span>
-                        <el-select v-model="areaRid" filterable placeholder="区域" :clearable="true" size="small" @change="changeArea">
-                            <el-option
-                                v-for="(item,index) in areaList"
-                                :key="index"
-                                :label="item.label"
-                                :value="item.value">
-                            </el-option>
-                        </el-select>
+                        <el-cascader
+                            :options="areaList"
+                            v-model="areaRid"
+                            separator="-"
+                            :show-all-levels="false"
+                            placeholder="请选择区域"
+                            filterable
+                            :clearable="true"
+                            size="small"
+                            @change="changeArea">
+                        </el-cascader>
+                        <!--<el-select v-model="areaRid" filterable placeholder="区域" :clearable="true" size="small" @change="changeArea">-->
+                            <!--<el-option-->
+                                <!--v-for="(item,index) in areaList"-->
+                                <!--:key="index"-->
+                                <!--:label="item.label"-->
+                                <!--:value="item.value">-->
+                            <!--</el-option>-->
+                        <!--</el-select>-->
                     </el-col>
                     <el-col :span="7">
                         <span class="search_label">查询范围:</span>
@@ -59,6 +66,7 @@
                         element-loading-spinner="el-icon-loading"
                         :key="tableKey"
                         :data="adsTableList"
+                        class="ads_table"
                         style="width: 100%">
                         <el-table-column
                             class-name="el-table-column-resName"
@@ -184,11 +192,11 @@
                 resName: '',
                 cityRid: '',
                 // 选择的区域
-                areaRid:'',
+                areaRid:[],
                 // 城市列表
                 cityList:'',
                 // 区域下拉
-                areaList: '',
+                areaList: [],
                 // 日期区间
                 dateInput: [],
                 beforDate: [],
@@ -208,9 +216,9 @@
                             // return true
                         } else {
                             // 过去
-                            let passDay = timeFormat.returnDayCount(-90,'/',new Date(this.firstTime))
+                            let passDay = timeFormat.returnDayCount(-89,'/',new Date(this.firstTime))
                             // 未来
-                            let toDay = timeFormat.returnDayCount(90,'/',new Date(this.firstTime))
+                            let toDay = timeFormat.returnDayCount(89,'/',new Date(this.firstTime))
                             // console.log('toDay',toDay,'passDay',passDay)
                             return  time.getTime() > Date.parse(toDay) || time.getTime() < Date.parse(passDay)
                         }
@@ -234,6 +242,8 @@
             this.setTime()
             this.getTableData()
             this.getCity()
+            // 设置表格左侧定位的高度
+            // this.setFixedTableHieght()
         },
         methods:{
             getSessionData(){
@@ -245,17 +255,34 @@
             setTime(){
                 let starTime, endTime
                 starTime = timeFormat.returnDayCount(0,'/')
-                endTime = timeFormat.returnDayCount(30,'/')
+                endTime = timeFormat.returnDayCount(29,'/')
                 this.dateInput = [starTime, endTime]                // 设置默认时间
                 this.beforDate = [starTime, endTime]
             },
+            // 表格左侧定位的高度
+            // setFixedTableHieght(){
+                // let timer = setTimeout(()=>{
+                //     let fixedTable = document.querySelector('.el-table__fixed')
+                //     console.log('fixedTable',fixedTable)
+                //     clearTimeout(timer)
+                //     if(fixedTable){
+                //         fixedTable.style.height = 490 + (this.pageData.pageSize / 10 - 1) * 450  + 'px'
+                //         // clearTimeout(timer)
+                //     }else{
+                //         this.setFixedTableHieght()
+                //     }
+                // },1000)
+                // 1350+490= 1840
+            // },
             // tab切换
             handleClick(){
                 console.log('tab切换',this.activeTabName)
                 this.pageData.pageNum = 1
+                this.pageData.pageSize = 10
                 this.resName = ''
-                this.areaRid = ''
+                this.areaRid = []
                 this.getTableData()
+                // this.setFixedTableHieght()
             },
             // 获取城市
             getCity(){
@@ -284,20 +311,28 @@
                     }
                 });
             },
-            // 获取区域
+            // 获取区域 children
             getAreaByRID(){
                 let areaList = []
+                // console.log('cityList',this.cityList)
                 for(let key of this.cityList){
+                    let obj = {
+                        label: key.label,
+                        value: key.value,
+                        children:[],
+                    }
                     let areaTempArr = areaArr.findArea(key.value)
-                    console.log('areaTempArr',areaTempArr)
+                    // console.log('areaTempArr',areaTempArr)
                     for(let aKey of areaTempArr){
-                        areaList.push({
+                        obj.children.push({
                             label: aKey.rName,
                             value: aKey.rID
                         })
                     }
+                    areaList.push(obj)
                 }
                 this.areaList = areaList;
+                // console.log('areaList',areaList)
             },
             // 获取表盘数据
             getTableData(){
@@ -316,8 +351,8 @@
                     startTime: this.dateInput[0],
                     endTime: this.dateInput[1],
                     resName: this.resName,
-                    cityId: this.cityRid,
-                    districtId: this.areaRid,
+                    cityId: this.areaRid[0],//this.cityRid,
+                    districtId: this.areaRid[1],
                 }
                 if(!params.resName){
                     delete params.resName
@@ -377,16 +412,16 @@
             // 区域选择
             changeArea(val){
                 console.log('选择的区域val',val)
-                this.cityRid = this.areaRid.substr(0,4) + '00'
+                // this.cityRid = this.areaRid.substr(0,4) + '00'
             },
             // 时间选择
             dateChange(val){
                 console.log('时间选择',val)
                 if(val && val.length > 0){
                     let dayNum = this.GetDateDiff(val[0],val[1])
-                    if(dayNum < 30){
+                    if(dayNum < 29){
                         // this.dateInput = this.beforDate.concat()
-                        this.dateInput[1] = timeFormat.returnDayCount(30,'/',new Date(this.dateInput[0]))
+                        this.dateInput[1] = timeFormat.returnDayCount(29,'/',new Date(this.dateInput[0]))
                         console.log('this.dateInput',this.dateInput)
                         this.messageFun('warning','最短周期为30天')
                     }else if(dayNum > 90){
@@ -414,10 +449,11 @@
             // 重置搜索
             clearSearch(){
                 this.resName = ''
-                this.areaRid = ''
+                this.areaRid = []
                 this.pageData.pageNum = 1
                 this.setTime()
                 this.getTableData()
+                // this.setFixedTableHieght()
             },
             // 分页
             changePage(val){
@@ -430,6 +466,7 @@
                 console.log('每页的条数',val)
                 this.pageData.pageSize = val
                 this.getTableData()
+                // this.setFixedTableHieght()
             },
             // 返回上一页
             returnBefore(){
@@ -532,11 +569,11 @@
         width: calc(100% - 67px);
     }
     /*区域下拉*/
-    /deep/ .tab_conten_row .el-select{
+    /deep/ .tab_conten_row .el-cascader{
         width: calc(100% - 67px);
     }
     /*区域下拉*/
-    /deep/ .tab_conten_row .el-select .el-input{
+    /deep/ .tab_conten_row .el-cascader .el-input{
         width: 100%;
     }
 
@@ -580,6 +617,8 @@
     /deep/ .el-table th.el-table-column-dayTime .cell{
         font-size: 12px;
         line-height: 18px;
+        padding: 0 4px;
+        text-align: center;
     }
     .propmt_message_p{
         line-height: 24px;
@@ -666,6 +705,11 @@
         background: #C1C1C1;
         border-radius: 4px;
     }
+
+    /deep/ .ads_table .el-table__fixed{
+        height: 1840px !important;
+    }
+
     /*safari下表头错位*/
     /deep/ .el-table .el-table-column-resName .cell{
         min-width: 120px;

@@ -55,30 +55,16 @@
                 </el-row>
                 <div class="table_wrap">
                     <el-table border :data="currAccount" style="width: 100%" v-loading="loading" v-loadmore="accountLoadMore"
-                              element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading"
+                              element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading" 
                               :default-sort="{prop: 'joinTime', order: 'descending'}">
                         <el-table-column label="账号" min-width="11.8%">
                             <template slot-scope="scope">
                                 <a href="javascript:void(0);" @click="ToEdit(scope.row)">{{scope.row.sName}}</a>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="realName" label="姓名" min-width="7.8%">
-                            <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.realName" placement="bottom"
-                                            v-if="scope.row.realName.length>8">
-                                    <span>{{scope.row.realName||'--'}}</span>
-                                </el-tooltip>
-                                <span v-else>{{scope.row.realName||'--'}}</span>
-                            </template>
+                        <el-table-column prop="realName" label="姓名" min-width="7.8%" show-overflow-tooltip>
                         </el-table-column>
-                        <el-table-column prop="company" label="所属公司" min-width="14.2%">
-                            <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.company" placement="bottom"
-                                            v-if="scope.row.company.length>18">
-                                    <span>{{scope.row.company||'--'}}</span>
-                                </el-tooltip>
-                                <span v-else>{{scope.row.company||'--'}}</span>
-                            </template>
+                        <el-table-column prop="company" label="所属公司" min-width="14.2%" show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column prop="uType" label="账号角色" min-width="8.1%">
                             <template slot-scope="scope">
@@ -86,9 +72,6 @@
                             </template>
                         </el-table-column>
                         <el-table-column prop="puName" label="上级" min-width="7.8%">
-                            <template slot-scope="scope">
-                                <span>{{scope.row.puName||'--'}}</span>
-                            </template>
                         </el-table-column>
                         <el-table-column label="创建日期" min-width="9.8%" sortable :sort-by="sortData">
                             <template slot-scope="scope">
@@ -97,7 +80,7 @@
                         </el-table-column>
                         <el-table-column prop="uState" label="状态" min-width="8.9%">
                             <template slot-scope="scope">
-                                <span>{{stateToText(scope.row.uState)}}</span>
+                                <point-state :state-text="stateToText(scope.row.uState).text" :color="stateToText(scope.row.uState).color"></point-state>                                
                             </template>
                         </el-table-column>
 
@@ -107,6 +90,10 @@
                                 <span v-if="scope.row.uState ==0" style="color: #108EE9;cursor: pointer;" @click="isForbidden(scope.row)">开通</span>
                             </template>
                         </el-table-column>
+
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
                     </el-table>
                 </div>
             </div>
@@ -133,17 +120,21 @@
     import sessFun from "../../commonFun/sessFun.js";
     // 角色转换为中文
     import uTypeToText from "../../commonFun/uTypeToText.js";
+    import noSearchResult from "./components/noSearchResult.vue";
+    import pointState from './components/pointState.vue';    
 
     export default {
         name: "customList",
         components: {
+            noSearchResult,
+            pointState,
             elRow: Row,
             elInput: Input,
             elButton: Button,
             elTable: Table,
             elTableColumn: TableColumn,
             elSelect: Select,
-            elOption: Option
+            elOption: Option,
         },
         data() {
             return {
@@ -294,19 +285,13 @@
                     pagesize: this.pageSize
                 };
                 let { keyword, role, state, select, company } = this.searchInfo;
-                if(keyword){
-                    info.keywordType = select;
-                    info.keyword = keyword;
-                }
-                if(state){
-                    info.ustate = state;
-                }
-                if(role){
-                    info.uType = role;
-                }
-                if(company){
-                    info.asrID = company;
-                }
+                info = {
+                    ...info,
+                    ...(keyword && {keywordType: select, keyword}),
+                    ...(state && {ustate: state}),
+                    ...(role && {uType: role}),
+                    ...(company && {asrID: company})
+                };
                 return info;
             },
             // 设置表格数据
@@ -314,11 +299,11 @@
                 let obj = {
                     uID: item.uID ? item.uID : '',
                     sName: item.sName ? item.sName : '',
-                    realName: item.realName ? item.realName:'',
-                    company: item.asName ? item.asName : '', 
+                    realName: item.realName ? item.realName:'--',
+                    company: item.asName ? item.asName : '--', 
                     asrID: item.asrID ? item.asrID : '', 
                     uType: item.uType ? item.uType : '',
-                    puName: item.puName ? item.puName : '',
+                    puName: item.puName ? item.puName : '--',
                     joinTime: item.joinTime ? item.joinTime : '',
                     uState: item.uState ? item.uState : '',
                     position: item.position ? item.position : '',
@@ -335,7 +320,7 @@
             },
             // 时间格式化
             formatTime(time) {
-                return dateFormat.toDate(time);
+                return dateFormat.toDate(time, '/');
             },
             // 角色格式化
             roleToText(role) {
@@ -344,12 +329,12 @@
             // 状态转换
             stateToText(status) {
                 let statusText = [
-                    {text: "正常", status: 1},
-                    {text: "禁用", status: 0}
+                    {text: "正常", status: 1, color: 'rgba(82,196,26,1)'},
+                    {text: "禁用", status: 0, color: 'rgba(245,34,45,1)'}
                 ];
                 for (let data of statusText) {
                     if (data.status == status) {
-                        return data.text;
+                        return data;
                     }
                 }
             },
@@ -490,21 +475,7 @@
         width: 180px;
         height: 34px;
     }
-
-    /deep/ .el-date-editor .el-range__icon {
-        position: absolute;
-        right: 10px;
-        top: 0;
-    }
-
-    /deep/ .el-picker-panel .el-date-range-picker .el-popper {
-        left: 335px !important;
-    }
-
-    /deep/ .el-range-editor .el-range-input {
-        line-height: 20px;
-    }
-
+    
     /*面包屑导航*/
     .ad_mediaDetail_wrap {
         position: relative;
@@ -530,186 +501,25 @@
         position: relative;
     }
 
-    /*wrap*/
-    .mediaList_wrap {
-        width: 92%;
-        background: #ffffff;
-        border: 1px solid #e6e7e9;
-        margin: 0 auto;
-    }
-
-    .mediaList_wrap .mediaList_head {
-        width: 100%;
-        height: 24px;
-        padding: 12px 0;
-        border-bottom: 1px solid #e6e7e9;
-    }
-
-    .mediaList_wrap .mediaList_head h2 {
-        font-size: 16px;
-        color: #2c313c;
-        height: 24px;
-
-        padding-left: 14px;
-        font-weight: bold;
-    }
-
-    .mediaList_wrap .mediaList_container {
-        width: 98%;
-        /* padding: 18px 18px 28px 18px; */
-        margin: 24px auto;
-    }
-
     .el-input {
         width: 180px;
-        height: 34px !important;
         border-radius: 4px;
-    }
-
-    .el-button {
-        width: 76px;
-        height: 34px;
-        text-align: center;
-        padding: 0;
-        position: relative;
-        left: 0;
-        margin-left: 2px;
-    }
-
-    /deep/ .el-button [class*="el-icon-"] + span,
-    .select-wrap button .el-icon-search {
-        position: relative;
-        left: -2px;
-        top: 0px;
-    }
-
-    /deep/ .el-button + .el-button {
-        margin-left: 0;
-    }
-
-    .mediaList_wrap .mediaList_container .table_wrap {
-        width: 98%;
-        margin: 24px auto; 
-        border-radius: 4px;
-    }
-    .mediaList_handel {
-        width: 98%;
-        margin: 0 auto;
-    }
-    .mediaList_handel span {
-        float: left;
-        margin-left: 2px;
     }
 
     /deep/ .el-date-editor .el-range-separator {
         line-height: 26px;
     }
 
-    /*表格*/
-    /deep/ .el-date-editor .el-range-separator {
-        line-height: 26px;
-    }
-
-    /deep/ .el-table th,
-    .el-table tr {
-        height: 44px;
-        padding: 0;
-        background-color: #f7f7f7;
-    }
-
-    /deep/ .el-table td {
-        padding: 10px 0;
-        overflow-x: hidden;
-        text-overflow: ellipsis;
-    }
-
-    /deep/ .el-table__row td:nth-child(2) .cell {
-        width: 124px;
-    }
-
-    /deep/ .el-table--border {
-        border-radius: 4px;
-        height: 445px;
-    }
-
-    /deep/ .el-table th > .cell {
-        font-size: 14px;
-        color: #666666;
-        font-weight: bold;
-    }
-
-    /deep/ .el-table .caret-wrapper {
-        width: 22px;
-    }
-
-    /deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
-        background-color: #ecf5ff;
-    }
-
-    /*滚动条*/
+    /* 表格高度 */
     /deep/ .el-table__body-wrapper {
         height: 405px;
-        overflow-y: scroll;
-        overflow-x: hidden;
-    }
-
-    /deep/ .el-table__body-wrapper::-webkit-scrollbar {
-        width: 4px;
-        background: #fafafa;
-    }
-
-    /deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-        /*滚动条里面小方块*/
-
-        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-        background: #c1c1c1;
-        border-radius: 4px;
     }
 
     /*超出省略*/
     /deep/ .el-table .cell {
-        /* overflow-x: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap; */
         white-space: nowrap;
         max-width: 300px;
         text-overflow: ellipsis;
-    }
-
-    /*筛选*/
-    /deep/ .el-table__column-filter-trigger {
-        margin-left: 10px;
-    }
-
-    /deep/ .el-table th > .cell.highlight {
-        color: #409eff !important;
-    }
-
-    /deep/ div.el-table-filter {
-        left: 1106px !important;
-    }
-
-    /*操作*/
-    /deep/ .el-button--mini,
-    .el-button--small {
-        font-size: 14px !important;
-    }
-
-    /deep/ .el-button .el-button--primary .el-button--mini {
-        width: 51px;
-    }
-
-    /deep/ .el-dropdown-menu--mini .el-dropdown-menu__item {
-        width: 65px;
-    }
-
-    /* .tar {
-        text-align: right !important;
-        padding-right: 10px;
-    } */
-
-    /deep/ .el-dropdown .el-button-group .el-button {
-        height: 28px;
     }
 
     /*下拉搜索框*/
@@ -732,75 +542,6 @@
     }
 
     .el-input {
-        height: 34px !important;
         border-radius: 4px;
     }
-
-    /deep/ .el-input__inner {
-        height: 34px;
-    }
-
-    /*按钮*/
-    /deep/ .el-button--default:focus,
-    .el-button--default:hover {
-        color: #606266;
-        border-color: #dcdfe6;
-        background-color: #fcfcfc;
-    }
-
-    .content_bottom_btn /deep/ .el-button span {
-        position: relative;
-        top: -2px;
-    }
-
-    .content_bottom_btn /deep/ .el-button span a {
-        color: #606266;
-    }
-
-    .handel_btn {
-        position: relative;
-    }
-
-    /* .tar /deep/ .el-table-filter__content {
-        overflow-x: hidden;
-        min-width: 100px;
-        overflow-y: scroll;
-        height: 172px;
-    }
-
-    .tar /deep/ .el-table-filter__content::-webkit-scrollbar {
-        width: 4px;
-        background: #fafafa;
-    }
-
-    .tar /deep/ .el-table-filter__content::-webkit-scrollbar-thumb {
-        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-        background: #c1c1c1;
-        border-radius: 4px;
-    } */
-</style>
-
-<style>
-    /* .tar .el-table-filter__content {
-        overflow-x: hidden;
-        min-width: 100px;
-        overflow-y: scroll;
-        height: 196px;
-    }
-
-    .tar .el-table-filter__content::-webkit-scrollbar {
-        width: 4px;
-        background: #fafafa;
-    }
-
-    .tar .el-table-filter__content::-webkit-scrollbar-thumb {
-        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-        background: #c1c1c1;
-        border-radius: 4px;
-    }
-
-    .el-table-filter__list-item {
-        color: #606266;
-    } */
-
 </style>

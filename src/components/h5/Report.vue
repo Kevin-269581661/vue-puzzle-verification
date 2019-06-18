@@ -97,6 +97,10 @@
                                             <el-button type="text" @click="showImg(scope.row)">查看监播</el-button>
                                         </template>
                                     </el-table-column>
+
+                                    <div slot="empty">
+                                        <no-search-result></no-search-result>
+                                    </div>
                                 </el-table>
                             </div>
                         </div>
@@ -171,6 +175,10 @@
                                     </el-table-column>
                                     <el-table-column prop="resolveNum" label="问题解决数" min-width="19.8%">
                                     </el-table-column>
+                                    
+                                    <div slot="empty">
+                                        <no-search-result></no-search-result>
+                                    </div>
                                 </el-table>
                             </div>
                         </div>
@@ -214,6 +222,8 @@ import commaFormat from "../../commonFun/commaFormat.js";
 import filterFormat from "../../commonFun/filterTableData.js";
 // 时间格式化
 import dateFormat from "../../commonFun/timeFormat.js";
+import noSearchResult from "../common/components/noSearchResult.vue";    
+
 import {
     Dialog,
     Tabs,
@@ -241,6 +251,7 @@ import {
 export default {
     name: "Report",
     components: {
+        noSearchResult,
         elDialog: Dialog,
         elTabs: Tabs,
         elTabPane: TabPane,
@@ -952,38 +963,6 @@ export default {
     text-align: right !important;
 }
 
-/*滚动条*/
-/deep/ .el-table__body-wrapper {
-    /* height: 450px;
-    overflow-y: scroll;
-    overflow-x: hidden; */
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar {
-    width: 4px;
-    background: #fafafa;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
-
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #c1c1c1;
-    border-radius: 4px;
-}
-
-.el-table {
-    border-radius: 4px;
-}
-
-/deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
-    background-color: #ecf5ff;
-}
-
-/deep/ .el-tabs__item.is-active {
-    font-weight: bold;
-}
-
 .ad_index_footer {
     font-size: 14px;
     color: #8a8a8a;
@@ -1053,11 +1032,6 @@ export default {
 
 /*图片切换*/
 .typeOfRec .pic_box{
-    /* width: 30%;
-    margin-top: 18px;
-    display: inline-block;
-    margin-right: 3.1%;
-    display: inline-block; */
     width: 30%;
     margin-top: 18px;
     margin-right: 1.6%;

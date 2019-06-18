@@ -5,8 +5,8 @@
                 <a href="#" style="color: #999">工程管理</a>
             </p>
         </div>
-        <div class="comList_wrap">
-            <div class="comList_head">
+        <div class="mediaList_wrap">
+            <div class="mediaList_head">
                 <h2>上画任务</h2>
             </div>
             <el-row class="fix_date">
@@ -15,7 +15,7 @@
                     </el-date-picker>
                 </el-col>
             </el-row>
-            <div class="mediaList_container project_container">
+            <div class="mediaList_container">
                 <el-row :gutter="32">
                     <el-col>
                         <span>所属线路:</span>
@@ -43,8 +43,8 @@
                         </el-select>
                     </el-col>
                     <el-col>
-                        <el-button type="primary" @click="search()" size="small" :disabled="!isSearch">查询</el-button>
-                        <el-button @click="reset()" size="small">重置</el-button>
+                        <el-button type="primary" @click="search()" :disabled="!isSearch">查询</el-button>
+                        <el-button @click="reset()">重置</el-button>
                     </el-col>
                 </el-row>
                 
@@ -90,6 +90,10 @@
                                 </el-dropdown>
                             </template>
                         </el-table-column>
+                        
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
                     </el-table>
                 </div>
                 <div class="ad_pagination">
@@ -149,7 +153,12 @@
     import api from "../../api/api.js";
     import timeFormat from '../../commonFun/timeFormat.js';
     import sessFun from '../../commonFun/sessFun.js';
+    import noSearchResult from "./components/noSearchResult.vue";
+    
     export default {
+        components:{
+            noSearchResult,
+        },
         data(){
             return{
                 // 登录信息
@@ -523,93 +532,13 @@
     };
 </script>
 <style scoped>
-    /*面包屑导航*/
-    .ad_mediaDetail_wrap {
+    .mediaList_wrap{
         position: relative;
-        margin-bottom: 50px;
-    }
-    .ad_mediaDetail_nav{
-        width: 92%;
-        margin: 0 auto;
-    }
-    .ad_mediaDetail_nav p {
-        position: absolute;
-        left: 0;
-        top: 12px;
-        font-size: 14px;
-        line-height: 18px;
-    }
-
-    .ad_mediaDetail_nav p a {
-        color: #666;
-    }
-
-    .ad_mediaDetail_nav {
-        height: 42px;
-        position: relative;
-    }
-    /deep/.project_container .el-row{
-        margin-top:24px;
-    }
-
-    .comList_wrap {
-        width: 92%;
-        background: #ffffff;
-        border: 1px solid #e6e7e9;
-        margin: 0 auto;
-        position: relative;
-    }
-
-    .comList_wrap .comList_head {
-        width: 100%;
-        height: 24px;
-        padding: 12px 0;
-        border-bottom: 1px solid #e6e7e9;
-    }
-
-    .comList_wrap .comList_head h2 {
-        font-size: 16px;
-        color: #2c313c;
-        height: 24px;
-        padding-left: 14px;
-        font-weight: bold;
     }
     .fix_date{
         position: absolute;
         right: 32px;
         top: 8px;
-    }
-
-    .comList_wrap .project_container {
-        margin: 24px 32px;
-    }
-    .table_wrap{
-        margin: 24px auto;
-        width: 100%;
-    }
-    /*表格*/
-    /deep/.project_container .el-table th {
-        height: 44px;
-        padding: 0;
-        background-color: #f7f7f7;
-    }
-    /deep/.project_container .el-table td {
-        padding: 8px 0;
-        overflow-x: hidden;
-        text-overflow: ellipsis;
-    }
-
-    /deep/.project_container .el-table--border {
-        border-radius: 4px;
-    }
-
-    /deep/.project_container .el-table th > .cell {
-        font-size: 14px;
-        color: #666666;
-        font-weight: bold;
-    }
-    /deep/.project_container .el-table tr {
-        height: 54px;
     }
     /* 操作 */
     .el-dropdown-link {
@@ -666,25 +595,7 @@
     }
     /*滚动条*/
     /deep/ .el-table__body-wrapper {
-        min-height: 400px;
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-
-    /deep/ .el-table__body-wrapper::-webkit-scrollbar {
-        width: 4px;
-        background: #FAFAFA;
-    }
-
-    /deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
-        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-        background: #C1C1C1;
-        border-radius: 4px;
-    }
-    .el-table th, .el-table tr{
-        height: 44px;
-        padding: 0;
-        background-color: #f7f7f7;
+        height: 405px;
     }
 </style>
 

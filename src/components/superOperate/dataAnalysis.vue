@@ -6241,6 +6241,7 @@
     .select-wrap button {
         /*width: 76px;*/
         height: 34px;
+        vertical-align: text-bottom;
     }
 
     .upPercent-wrap {
@@ -6531,7 +6532,7 @@
         border-top-left-radius: 0;
     }
 
-    .select-wrap button .el-icon-search {
+    /* .select-wrap button .el-icon-search {
         position: relative;
         left: -10px;
         top: -3px;
@@ -6541,12 +6542,12 @@
         position: relative;
         left: -10px;
         top: -3px;
-    }
+    } */
 
-    .select-wrap .el-button span {
+    /* .select-wrap .el-button span {
         position: relative;
         top: -2px;
-    }
+    } */
 
     .select2 .el-range-editor--mini.el-input__inner {
         width: 220px;

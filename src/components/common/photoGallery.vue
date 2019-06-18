@@ -13,7 +13,7 @@
                         <div class="search-wrap clearfix" v-if="!ludan">
                             <span>
                                 <div style="display:inline-block">
-                                    <el-input placeholder="请输入内容" v-model="keyword" class="input-with-select">
+                                    <el-input placeholder="请输入内容" v-model="keyword" class="input-with-select" size="small">
                                         <el-select v-model="select" slot="prepend" placeholder="请选择">
                                             <el-option label="方案名称" value="1" v-if="(activeName=='first')||(activeName=='second')"></el-option>
                                             <!-- <el-option label="账号名称" value="2"></el-option> -->
@@ -22,29 +22,29 @@
                                     </el-input>
                                 </div>
                             </span>
-                            <el-cascader :options="citys" v-model="citySelect" :show-all-levels='false' class="plan-select" placeholder="选择地区" change-on-select filterable>
+                            <el-cascader :options="citys" v-model="citySelect" :show-all-levels='false' size="small" class="plan-select" placeholder="选择地区" change-on-select filterable>
                             </el-cascader>
                             <span v-if="(activeName=='first')||(activeName=='second')">
-                                <el-select v-model="LabSelect" placeholder="选择投放面" class="plan-select">
+                                <el-select v-model="LabSelect" placeholder="选择投放面" class="plan-select" size="small">
                                     <el-option label="A面" value="A"></el-option>
                                     <el-option label="B面" value="B"></el-option>
                                 </el-select>
                             </span>
-                            <el-cascader :options="bussiness" class="plan-select" v-model="industryIdArr" change-on-select @change="handleChange" v-if="(activeName=='first')||(activeName=='second')" filterable></el-cascader>
+                            <el-cascader :options="bussiness" size="small" class="plan-select" v-model="industryIdArr" change-on-select @change="handleChange" v-if="(activeName=='first')||(activeName=='second')" filterable></el-cascader>
                             <span v-if="(activeName=='first')||(activeName=='second')">
                                 <div class="block">
-                                    <el-date-picker v-model="date" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
+                                    <el-date-picker size="small" v-model="date" type="daterange" range-separator="-" format="yyyy/MM/dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
                                     </el-date-picker>
                                 </div>
                             </span>
                             <span>
-                                <el-button type="primary" icon="el-icon-search" class="searchBtn" @click="searchPic()" :disabled="!isSearch">搜索</el-button>
+                                <el-button type="primary" size="small" icon="el-icon-search" class="searchBtn" @click="searchPic()" :disabled="!isSearch">搜索</el-button>
                             </span>
                             <span>
-                                <el-button plain class="map" @click="reset()">重置</el-button>
+                                <el-button plain size="small" @click="reset()">重置</el-button>
                             </span>
                             <span>
-                                <el-button plain class="map" @click="allDownLoad()">一键导出</el-button>
+                                <el-button plain size="small" @click="allDownLoad()">一键导出</el-button>
                             </span>
                         </div>
                         <el-tab-pane label="上刊" name="first">
@@ -613,12 +613,11 @@ export default {
 
 <style scoped>
 /deep/ .el-cascader__label {
-    line-height: 34px;
+    line-height: 32px;
 }
 
 /*面包屑导航*/
 .ad_mediaMana_wrap {
-    /* position: relative; */
     margin-bottom: 50px;
 }
 
@@ -700,17 +699,6 @@ export default {
     border-bottom-right-radius: 0;
     padding-right: 0;
     padding-left: 10px;
-    height: 34px;
-}
-
-/deep/ .el-button {
-    width: 76px;
-    height: 34px;
-}
-/deep/ .el-button [class*=el-icon-]+span, .select-wrap button .el-icon-search{
-  position: relative;
-  left: -2px;
-  top: 0px;
 }
 
 .searchInput /deep/ .el-input__inner,
@@ -719,7 +707,6 @@ export default {
     position: relative;
     left: -7px;
     top: 0;
-    height: 34px;
     border-left: none !important;
     border-bottom-left-radius: 0;
     border-top-left-radius: 0;
@@ -727,42 +714,19 @@ export default {
 
 /deep/ .plan-select .el-input,
 /deep/ .plan-select .el-input__inner {
-    /* width: 180px; */
     width: 160px;
 }
-
-.searchBtn,
-.map {
-    position: relative;
-    left: -3px;
-}
-
-.map {
-    left: -12px;
-}
-.search-wrap {
-    /* position: relative;
-    height: 40px; */
-}
-
 /deep/ .el-input-group .el-input__suffix {
     right: 5px;
 }
-
-/deep/ .el-input__icon {
-    line-height: 34px;
-}
-
 /*搜索到的图片列表*/
 .input-with-select /deep/ .el-input__inner {
     font-size: 14px;
-    height: 34px;
     vertical-align: middle;
 }
 
 /deep/ .plan-select .el-input__inner {
     font-size: 14px;
-    height: 34px;
     vertical-align: middle;
 }
 
@@ -881,178 +845,17 @@ export default {
     margin-top: 20px;
 }
 
-.up-report-bottom-checkbox .el-button {
-    position: relative;
-    top: 5px;
-    left: 0;
-}
-
 /deep/ .el-pager .number {
     background-color: transparent;
 }
 
-.up-report-bottom-btns .el-button {
-    width: 74px;
-    height: 32px;
-    padding: 0;
-}
-
-/deep/ .el-pagination .el-select .el-input .el-input__inner {
-    height: 28px !important;
-}
-
-/deep/ .el-pagination__editor.el-input .el-input__inner {
-    height: 28px !important;
-}
-
-/deep/ .el-pagination span:not([class*="suffix"]) {
-    position: relative;
-    top: -4px;
-}
-
-/deep/ .el-pagination span:not([class*="suffix"]) .el-input__inner {
-    width: 100px;
-}
-
-/deep/ .el-pagination__editor.el-input .el-input__inner {
-    width: 50px !important;
-}
-
-/*录单*/
-/deep/ .el-table {
-    width: 98% !important;
-}
-
 .el-input {
     width: 240px;
-    height: 34px !important;
     border-radius: 4px;
-}
-
-/deep/ .el-input__inner {
-    height: 34px !important;
-    line-height: 34px;
-}
-
-.el-button {
-    width: 76px;
-    height: 34px;
-    text-align: center;
-    /*line-height: 34px;*/
-    padding: 0;
-    position: relative;
-    /*top: 1px;*/
-    left: 0;
-}
-
-/deep/ .el-button + .el-button {
-    margin-left: 0;
 }
 
 /deep/ .el-date-editor .el-range-separator {
     line-height: 26px;
-}
-
-/*表格*/
-/deep/ .el-date-editor .el-range-separator {
-    line-height: 26px;
-}
-
-/deep/ .el-table th,
-.el-table tr {
-    height: 44px;
-    padding: 0;
-    background-color: #f7f7f7;
-}
-
-/deep/ .el-table td {
-    padding: 12px 0;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-}
-
-/deep/ .el-table--border {
-    border-radius: 4px;
-}
-
-/deep/ .el-table th > .cell {
-    font-size: 14px;
-    color: #666666;
-    font-weight: bold;
-}
-
-/deep/ .el-table .caret-wrapper {
-    width: 22px;
-}
-
-/*/deep/ .el-table_1_column_3, /deep/ .el-table_1_column_4 {
-          text-align: right;
-        }*/
-
-/deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
-    background-color: #ecf5ff;
-}
-
-/*滚动条*/
-/deep/ .el-table__body-wrapper {
-    height: 480px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar {
-    width: 4px;
-    background: #fafafa;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
-
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #c1c1c1;
-    border-radius: 4px;
-}
-
-/*超出省略*/
-/deep/ .el-table .cell {
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/deep/ .el-table .el-table_1_column_3 .cell {
-    width: 95px;
-}
-
-/*筛选*/
-/deep/ .el-table__column-filter-trigger {
-    margin-left: 10px;
-}
-
-/deep/ .el-table th > .cell.highlight {
-    color: #409eff !important;
-}
-
-/deep/ div.el-table-filter {
-    left: 1106px !important;
-}
-
-/*操作*/
-/deep/ .el-button--mini,
-.el-button--small {
-    font-size: 14px !important;
-}
-
-/deep/ .el-button .el-button--primary .el-button--mini {
-    width: 51px;
-}
-
-/deep/ .el-dropdown-menu--mini .el-dropdown-menu__item {
-    width: 65px;
-}
-
-/deep/ .el-dropdown .el-button-group .el-button {
-    height: 28px;
 }
 
 .bottom-btn {
@@ -1078,23 +881,11 @@ export default {
     color: #8a8a8a;
 }
 
-/deep/ .el-date-editor .el-range__close-icon {
-    position: relative;
-    top: -1px;
-}
-
 /*日期控件*/
 .block {
     display: inline-block;
     margin-left: 2px;
     position: relative;
-    /*top: 3px;*/
-}
-
-/deep/ .el-date-editor .el-range__icon {
-    position: relative;
-    top: -3px;
-    margin-right: 2px;
 }
 
 /deep/ .el-range-separator {
@@ -1103,9 +894,7 @@ export default {
 }
 
 /deep/ .el-input__inner {
-    width: 260px;
-    height: 34px;
-    line-height: 34px;
+    /* width: 260px; */
 }
 
 /deep/ .el-date-editor i,
@@ -1113,10 +902,6 @@ export default {
 /deep/ .el-date-editor span {
     float: left;
     position: relative;
-}
-
-/deep/ .el-range-editor .el-range-input {
-    line-height: 20px;
 }
 
 /*下拉搜索框*/
@@ -1139,7 +924,6 @@ export default {
 }
 
 .el-input {
-    height: 34px !important;
     border-radius: 4px;
 }
 
@@ -1165,15 +949,6 @@ export default {
     line-height: 19px;
 }
 
-.content_bottom_btn /deep/ .el-button span {
-    position: relative;
-    top: -2px;
-}
-
-.content_bottom_btn /deep/ .el-button span a {
-    color: #606266;
-}
-
 .clearfix:before,
 .clearfix:after {
     display: table;
@@ -1188,7 +963,6 @@ export default {
     height: 1px;
 }
 .search-wrap /deep/ .el-date-editor--daterange.el-input__inner{
-    /* width: 300px; */
-    max-width: 240px;
+    max-width: 238px;
 }
 </style>

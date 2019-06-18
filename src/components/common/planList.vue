@@ -1244,6 +1244,11 @@ a {
 .el-dialog__footer span {
     float: none !important;
 }
+
+/deep/ .el-table td .cell{
+    height: auto;
+    line-height: 28px;
+}
     /*未完成方案*/
     /deep/ .unfinished_plan_dialog .el-dialog__header{
         padding: 20px 20px;

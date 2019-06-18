@@ -72,17 +72,17 @@
                         </el-table-column>
                         <el-table-column label="投放城市(点位面数，排期)" prop="cityArea" min-width="20.2%">
                             <template slot-scope="scope">
-                                <p v-if="isAll" v-for="(item, index) of scope.row.companyList" :key="index" class="city_p">
-                                    {{item.asName}} <br>
-                                    <span v-for="city of item.cityList" :key="city.city">
+                                <div v-if="isAll" v-for="(item, index) of scope.row.companyList" :key="index" class="city_p">
+                                    {{item.asName}}
+                                    <p v-for="city of item.cityList" :key="city.city">
                                         {{city.city+'('+city.num+'面,'+formatTime(city.pdStart)+'至'+formatTime(city.pdEnd)+')'}}
-                                    </span>
-                                </p>
-                                <p v-if="!isAll" v-for="item of scope.row.companyList" :key="item.rid" class="city_p">
-                                    <span v-for="city of item.cityList" :key="city.city">
+                                    </p>
+                                </div>
+                                <div v-if="!isAll" v-for="item of scope.row.companyList" :key="item.rid" class="city_p">
+                                    <p v-for="city of item.cityList" :key="city.city">
                                         {{city.city+'('+city.num+'面,'+formatTime(city.pdStart)+'至'+formatTime(city.pdEnd)+')'}}
-                                    </span>
-                                </p>
+                                    </p>
+                                </div>
                             </template>
                         </el-table-column>
                         <el-table-column label="发布日期" min-width="8.3%" sortable :sort-by="sortData">
@@ -919,4 +919,8 @@ a {
     color: #409EFF;
 }
 
+/deep/ .el-table td .cell{
+    height: auto;
+    line-height: 28px;
+}
 </style>

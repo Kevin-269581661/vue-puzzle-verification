@@ -1,5 +1,5 @@
 <template>
-    <div class="mediaDetail">
+    <div>
         <div class="ad_mediaDetail_wrap clearfix">
             <div class="ad_mediaDetail_nav">
                 <p>
@@ -10,7 +10,7 @@
                 <div class="tip">该方案由 {{planDetail.realName}} 创建于 {{planDetail.apcTime}}</div>
             </div>
             <!--资源信息-->
-            <div class="mediaMana_content_top">
+            <div class="mediaList_wrap">
                 <div class="content_top_wrap" v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                     <div class="plan-title">
                         <h4>
@@ -28,86 +28,86 @@
 
                     </div>
                 </div>
-                <div class="plan-panel">
-                    <el-tabs v-model="planPanel" @tab-click="handleClick()">
-                        <el-tab-pane label="选点排期" name="first">
-                            <div class="first-wrap box-wrap">
-                                <div class="table_wrap">
-                                    <el-table border :data="setpointArr" style="width: 100%" :default-sort="{prop: 'recName', order: 'descending'}"  v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
-                                        <el-table-column type="expand">
-                                            <template slot-scope="props">
-                                                <el-form label-position="left" inline class="demo-table-expand">
-                                                    <el-form-item label="商圈：">
-                                                        <span>{{ props.row.tradingArea}}</span>
-                                                    </el-form-item>
-                                                    <el-form-item label="楼栋数量：">
-                                                        <span>{{ props.row.fNum }}</span>
-                                                    </el-form-item>
-                                                    <el-form-item label="资产编号：">
-                                                        <span>{{ props.row.assetTag }}</span>
-                                                    </el-form-item>
-                                                    <el-form-item label="入住年份：">
-                                                        <span>{{ props.row.chDay }}</span>
-                                                    </el-form-item>
-                                                    <el-form-item label="广告限制：">
-                                                        <span>{{ props.row.notPush }}</span>
-                                                    </el-form-item>
-                                                </el-form>
-                                            </template>
-                                        </el-table-column>
+            </div>
+            <div class="mediaList_content">
+                <el-tabs v-model="planPanel" @tab-click="handleClick()">
+                    <el-tab-pane label="选点排期" name="first">
+                        <div class="first-wrap box-wrap">
+                            <div class="table_wrap">
+                                <el-table border :data="setpointArr" style="width: 100%" :default-sort="{prop: 'recName', order: 'descending'}"  v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
+                                    <el-table-column type="expand">
+                                        <template slot-scope="props">
+                                            <el-form label-position="left" inline class="demo-table-expand">
+                                                <el-form-item label="商圈：">
+                                                    <span>{{ props.row.tradingArea}}</span>
+                                                </el-form-item>
+                                                <el-form-item label="楼栋数量：">
+                                                    <span>{{ props.row.fNum }}</span>
+                                                </el-form-item>
+                                                <el-form-item label="资产编号：">
+                                                    <span>{{ props.row.assetTag }}</span>
+                                                </el-form-item>
+                                                <el-form-item label="入住年份：">
+                                                    <span>{{ props.row.chDay }}</span>
+                                                </el-form-item>
+                                                <el-form-item label="广告限制：">
+                                                    <span>{{ props.row.notPush }}</span>
+                                                </el-form-item>
+                                            </el-form>
+                                        </template>
+                                    </el-table-column>
 
-                                        <el-table-column label="资源名称" min-width="16.1%" prop="resName">
-                                        </el-table-column>
-                                        <el-table-column prop="mTitle" label="媒体名称" min-width="10.3%">
-                                        </el-table-column>
-                                        <el-table-column prop="asLab" label="投放面" min-width="8.8%">
-                                        </el-table-column>
-                                        <el-table-column prop="city" label="城市" min-width="6%" :filters="filterCityData" :filter-method="filterCity">
-                                        </el-table-column>
-                                        <el-table-column prop="rName" label="区域" min-width="7.4%" :filters="filtersArea" :filter-method="filterOrigin">
-                                        </el-table-column>
-                                        <el-table-column prop="cType" label="楼盘类型" min-width="8.8%">
-                                            <template slot-scope="scope">
-                                                <span>{{scope.row.cType||'--'}}</span>
+                                    <el-table-column label="资源名称" min-width="16.1%" prop="resName">
+                                    </el-table-column>
+                                    <el-table-column prop="mTitle" label="媒体名称" min-width="10.3%">
+                                    </el-table-column>
+                                    <el-table-column prop="asLab" label="投放面" min-width="8.8%">
+                                    </el-table-column>
+                                    <el-table-column prop="city" label="城市" min-width="6%" :filters="filterCityData" :filter-method="filterCity">
+                                    </el-table-column>
+                                    <el-table-column prop="rName" label="区域" min-width="7.4%" :filters="filtersArea" :filter-method="filterOrigin">
+                                    </el-table-column>
+                                    <el-table-column prop="cType" label="楼盘类型" min-width="8.8%">
+                                        <template slot-scope="scope">
+                                            <span>{{scope.row.cType||'--'}}</span>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column prop="hNum" label="小区户数" min-width="6.0%" align="right">
+                                    </el-table-column>
+                                    <el-table-column label="楼盘价格" min-width="9.0%" align="right">
+                                        <template slot-scope="scope">
+                                            <span>&yen;{{scope.row.hPrice?priceFormat(scope.row.hPrice/100):0}}</span>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column prop="timeRange" label="排期" min-width="14.2%" :filters="filtersData" :filter-method="filterTimeRange">
+                                        <template slot-scope="scope">
+                                            <template v-if="scope.row.lState==2">
+                                                <span>{{scope.row.finishTimeRange}}</span>
+                                                <el-tooltip placement="top">
+                                                    <div slot="content">
+                                                        <span>{{scope.row.timeRange}}</span>
+                                                    </div>
+                                                    <i class="el-icon-question"> </i>
+                                                </el-tooltip>
                                             </template>
-                                        </el-table-column>
-                                        <el-table-column prop="hNum" label="小区户数" min-width="6.0%" align="right">
-                                        </el-table-column>
-                                        <el-table-column label="楼盘价格" min-width="9.0%" align="right">
-                                            <template slot-scope="scope">
-                                                <span>&yen;{{scope.row.hPrice?priceFormat(scope.row.hPrice/100):0}}</span>
-                                            </template>
-                                        </el-table-column>
-                                        <el-table-column prop="timeRange" label="排期" min-width="14.2%" :filters="filtersData" :filter-method="filterTimeRange">
-                                            <template slot-scope="scope">
-                                                <template v-if="scope.row.lState==2">
-                                                    <span>{{scope.row.finishTimeRange}}</span>
-                                                    <el-tooltip placement="top">
-                                                        <div slot="content">
-                                                            <span>{{scope.row.timeRange}}</span>
-                                                        </div>
-                                                        <i class="el-icon-question"> </i>
-                                                    </el-tooltip>
-                                                </template>
-                                                <span v-else>{{scope.row.timeRange}}</span>
-                                            </template>
-                                        </el-table-column>
-                                    </el-table>
-                                </div>
+                                            <span v-else>{{scope.row.timeRange}}</span>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
                             </div>
-                        </el-tab-pane>
-                        <el-tab-pane label="报价单" name="second">
-                            <ap-quotation @detailInfo="setInfo" :quotationData="quotation" :copydata="copyAsidArr" :shopingList="[]" class="price_quo"></ap-quotation>
-                        </el-tab-pane>
-                        <el-tab-pane label="物料信息" name="third">
-                            <material :material="materialInfo" :daomater="daoInfo" :loading="maLoading"></material>
-                        </el-tab-pane>
-                    </el-tabs>
-                </div>
-                <div class="content_bottom_btn">
-                    <el-button type="default" icon="el-icon-download" class="searchBtn" v-if="planPanel=='first'" @click="export2Excel(planDetail.apName)" :disabled="isDown">导出</el-button>
-                    <el-button class="cancel" @click="goBack()">返回</el-button>
-                </div>
+                        </div>
+                    </el-tab-pane>
+                    <el-tab-pane label="报价单" name="second">
+                        <ap-quotation @detailInfo="setInfo" :quotationData="quotation" :copydata="copyAsidArr" :shopingList="[]" class="price_quo"></ap-quotation>
+                    </el-tab-pane>
+                    <el-tab-pane label="物料信息" name="third">
+                        <material :material="materialInfo" :daomater="daoInfo" :loading="maLoading"></material>
+                    </el-tab-pane>
+                </el-tabs>
+            </div>
+            <div class="content_bottom_btn">
+                <el-button type="default" icon="el-icon-download" class="searchBtn" v-if="planPanel=='first'" @click="export2Excel(planDetail.apName)" :disabled="isDown">导出</el-button>
+                <el-button class="cancel" @click="goBack()">返回</el-button>
             </div>
         </div>
     </div>
@@ -483,6 +483,13 @@ export default {
 </script>
 
 <style scoped>
+.mediaList_content{
+    width: 92%;
+    background: #ffffff;
+    margin: 24px auto;
+    padding-bottom: 24px;
+    border: 1px solid #dedede;
+}
 /*状态行*/
 /deep/ .el-table .warning-row {
     background: #fff1f1;
@@ -499,12 +506,6 @@ export default {
 
 .box-wrap {
     background-color: #fff;
-}
-
-.plan-panel {
-    background-color: #fff;
-    margin-top: 24px;
-    border: 1px solid #e6e7e9;
 }
 .price_quo{
     margin: 0 auto;
@@ -573,7 +574,6 @@ export default {
 .content_top_wrap {
     padding: 34px 28px;
     background: #ffffff;
-    border: 1px solid #dedede;
     height: 145px;
     position: relative;
 }
@@ -625,16 +625,10 @@ export default {
 
 /*面包屑导航*/
 .tip {
-    position: absolute;
-    right: 88px;
     font-size: 14px;
     color: #999999;
-    top: 12px;
-}
-
-/*资源信息*/
-.mediaMana_content_top {
-    padding: 8px 60px 0 60px;
+    text-align: right;
+    line-height: 50px;
 }
 
 /*按钮*/
@@ -657,12 +651,12 @@ export default {
     color: #666666;
 }
 
-/deep/ .plan-panel .el-tabs__header{
+/deep/ .mediaList_content .el-tabs__header{
     border-bottom: 1px solid #e6e7e9;
     height: 53px;
     line-height: 54px;
 }
-/deep/.plan-panel  .baojiadan .el-tabs__header{
+/deep/.mediaList_content  .baojiadan .el-tabs__header{
     border-bottom: none;
     height: 38px;
     line-height: 38px;

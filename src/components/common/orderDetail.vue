@@ -1,5 +1,5 @@
 <template>
-    <div class="mediaDetail">
+    <div>
         <div class="ad_mediaDetail_wrap clearfix">
             <div class="ad_mediaDetail_nav">
                 <p>
@@ -8,8 +8,8 @@
                     <a href="#">订单详情</a>
                 </p>
             </div>
-            <!--资源信息-->
-            <div class="mediaMana_content_top">
+            <!--资源信息mediaMana_content_top-->
+            <div class="mediaList_wrap">
                 <div class="content_top_wrap" v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                     <div class="plan-title">
                         <h4>
@@ -44,7 +44,7 @@
                     </div>
                 </div>
             </div>
-            <div class="plan-panel">
+            <div class="mediaList_content">
                 <el-tabs v-model="planPanel" @tab-click="handleClick()">
                     <el-tab-pane label="选点排期" name="first">
                         <div class="first-wrap box-wrap">
@@ -2316,6 +2316,13 @@ export default {
 </script>
 
 <style scoped>
+.mediaList_content{
+    width: 92%;
+    background: #ffffff;
+    margin: 24px auto;
+    padding-bottom: 24px;
+    border: 1px solid #dedede;
+}
 /*修改合同号*/
 .changeCID {
     color: #1890ff;
@@ -2342,12 +2349,6 @@ export default {
     font-weight: normal;
     float: right;
     margin-right: 35px;
-}
-
-.plan-panel {
-    margin: 24px 60px;
-    background: #fff;
-    border: 1px solid #dedede;
 }
 
 .price_quo{
@@ -2485,7 +2486,7 @@ export default {
 .content_top_wrap {
     padding: 34px 28px;
     background: #ffffff;
-    border: 1px solid #dedede;
+    /* border: 1px solid #dedede; */
     height: 145px;
     position: relative;
 }
@@ -2746,11 +2747,6 @@ export default {
     margin-bottom: 10px;
 }
 
-/*资源信息*/
-.mediaMana_content_top {
-    padding: 8px 60px 0 60px;
-}
-
 /*按钮*/
 .content_bottom_btn {
     width: 100%;
@@ -2982,12 +2978,12 @@ export default {
     width: 50px;
 }
 
-/deep/ .plan-panel .el-tabs__header{
+/deep/ .mediaList_content .el-tabs__header{
     border-bottom: 1px solid #e6e7e9;
     height: 53px;
     line-height: 54px;
 }
-/deep/.plan-panel  .baojiadan .el-tabs__header{
+/deep/.mediaList_content  .baojiadan .el-tabs__header{
     border-bottom: none;
     height: 38px;
     line-height: 38px;

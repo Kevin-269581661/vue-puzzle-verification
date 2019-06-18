@@ -1695,9 +1695,8 @@
                                     this.resCommentData.mediaNum = resData.mediaCount
                                     this.resCommentData.resName = resData.resName
                                     this.resCommentData.updateTime = resData.createTime
-                                    callback(new Error(''))
+                                    callback(new Error(' '))
                                 }
-
                             }
                         } else if (res.data.SysCode == 100302){
                             this.loginTimeout()

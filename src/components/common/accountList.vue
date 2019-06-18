@@ -11,47 +11,27 @@
             </div>
             <div class="mediaList_container">
                 <el-row>
-                    <div class="mediaList_handel">
-                        <span>
-                            <div style="display:inline-block">
-                                <el-input placeholder="请输入内容" v-model="searchInfo.keyword" class="input-with-select">
-                                    <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
-                                        <el-option label="姓名" value="1"></el-option>
-                                        <el-option label="账号" value="2"></el-option>
-                                    </el-select>
-                                </el-input>
-                            </div>
-                        </span>
-                        <span>
-                            <div class="block">
-                                <el-select v-model="searchInfo.role" placeholder="请选择账号角色">
-                                    <el-option v-for="item of roleList" :key="item.value" :label="item.text" :value="item.value" ></el-option>
-                                </el-select>
-                            </div>
-                        </span>
-                        <span v-if="sessionData.ascType==0">
-                            <div class="block">
-                                <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable >
-                                    <el-option v-for="item of companyData" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                                </el-select>
-                            </div>
-                        </span>
-                        <span>
-                            <div class="block">
-                                <el-select v-model="searchInfo.state" placeholder="请选择状态">
-                                    <el-option label="正常" value="1"></el-option>
-                                    <el-option label="禁用" value="0"></el-option>
-                                </el-select>
-                            </div>
-                        </span>
-                        <span>
-                            <div class="block">
-                                <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
-                                <el-button plain @click="reset()" :disabled="!isReset">重置</el-button>
-                                <el-button plain @click="newAccount()" v-if="showNewBtn">新建</el-button>
-                            </div>
-                        </span>
-                    </div>
+                    <el-col>
+                        <el-input placeholder="请输入内容" v-model="searchInfo.keyword" class="input-with-select">
+                            <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
+                                <el-option label="姓名" value="1"></el-option>
+                                <el-option label="账号" value="2"></el-option>
+                            </el-select>
+                        </el-input>
+                        <el-select v-model="searchInfo.role" placeholder="请选择账号角色">
+                            <el-option v-for="item of roleList" :key="item.value" :label="item.text" :value="item.value" ></el-option>
+                        </el-select>
+                        <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable v-if="sessionData.ascType==0">
+                            <el-option v-for="item of companyData" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                        </el-select>
+                        <el-select v-model="searchInfo.state" placeholder="请选择状态">
+                            <el-option label="正常" value="1"></el-option>
+                            <el-option label="禁用" value="0"></el-option>
+                        </el-select>
+                        <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
+                        <el-button plain @click="reset()" :disabled="!isReset">重置</el-button>
+                        <el-button plain @click="newAccount()" v-if="showNewBtn">新建</el-button>
+                    </el-col>
                 </el-row>
                 <div class="table_wrap">
                     <el-table border :data="currAccount" style="width: 100%" v-loading="loading" v-loadmore="accountLoadMore"

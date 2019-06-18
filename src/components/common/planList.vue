@@ -10,58 +10,40 @@
                 <h2>方案列表</h2>
             </div>
             <div class="mediaList_container">
-                <el-row>
-                    <div class="mediaList_handel">
-                        <span>
-                            <div style="display:inline-block" class="min_input">
-                                <el-input placeholder="请输入内容" v-model="searchInfo.keyword" size="small" class="input-with-select">
-                                    <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
-                                        <el-option label="方案名称" value="1"></el-option>
-                                        <el-option label="客户名称" value="2"></el-option>
-                                        <el-option label="品牌名称" value="3"></el-option>
-                                    </el-select>
-                                </el-input>
-                            </div>
-                        </span>
-                        <span>
-                            <div class="block">
-                                <el-date-picker size="small" class="input-with-select" v-model="searchInfo.rangeDate" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
-                                </el-date-picker>
-                            </div>
-                        </span>
-                        <span>
-                            <div class="block">
-                                <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small">
-                                    <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
-                                </el-select>
-                            </div>
-                        </span>
-                        <span v-if="isAll">
-                            <div class="block">
-                                <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable size="small">
-                                    <el-option v-for="item of companyData" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                                </el-select>
-                            </div>
-                        </span>
-                        <span>
-                            <div class="block">
-                                <el-select v-model="searchInfo.cityWord" placeholder="请选择投放城市" filterable size="small">
-                                    <el-option v-for="item of filterCityData" :key="item.rID" :label="item.text" :value="item.text"></el-option>
-                                </el-select>
-                            </div>
-                        </span>
-                        <div class="block">
-                            <el-select v-model="searchInfo.Lock" placeholder="是否预锁" size="small">
-                                <el-option label="已预锁" value="2"></el-option>
-                                <el-option label="未预锁" value="1"></el-option>
+                <el-row class="search_row">
+                    <el-col>
+                        <el-input placeholder="请输入内容" v-model="searchInfo.keyword" size="small" class="input-with-select">
+                            <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
+                                <el-option label="方案名称" value="1"></el-option>
+                                <el-option label="客户名称" value="2"></el-option>
+                                <el-option label="品牌名称" value="3"></el-option>
                             </el-select>
-                        </div>
+                        </el-input>
+                        <el-date-picker size="small" class="input-with-select" v-model="searchInfo.rangeDate" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
+                        </el-date-picker>
+                        <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small">
+                            <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
+                        </el-select>
+                        <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable size="small" v-if="isAll">
+                            <el-option v-for="item of companyData" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                        </el-select>
+                        <el-select v-model="searchInfo.cityWord" placeholder="请选择投放城市" filterable size="small">
+                            <el-option v-for="item of filterCityData" :key="item.rID" :label="item.text" :value="item.text"></el-option>
+                        </el-select>
+                        <el-select v-model="searchInfo.Lock" placeholder="是否预锁" size="small">
+                            <el-option label="已预锁" value="2"></el-option>
+                            <el-option label="未预锁" value="1"></el-option>
+                        </el-select>
                         <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
                         <el-button @click="reset()" :disabled="!isReset">重置</el-button>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col>
                         <el-button plain v-if="showNewBtn" @click="addOne()">新建</el-button>
                         <el-button plain v-if="showNewBtn" @click="isOpenDownload=true">导空位</el-button>
-                        <el-button type="primary" v-if="!isNation" @click="goToDiaPlate">点位表盘</el-button>
-                    </div>
+                        <el-button plain v-if="!isNation" @click="goToDiaPlate">点位表盘</el-button>
+                    </el-col>
                 </el-row>
                 <div class="table_wrap">
                     <el-table border :data="currentPlan" style="width: 100%" v-loadmore="pointLoadMore" v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
@@ -1123,6 +1105,9 @@ export default {
 };
 </script>
 <style scoped>
+.search_row{
+    margin-bottom: 16px;
+}
 a {
     color: #108ee9;
 }

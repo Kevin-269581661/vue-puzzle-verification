@@ -1,11 +1,11 @@
 <template>
     <div>
-        <div class="ad_mediaMana_wrap">
-            <div class="ad_mediaMana_nav clearfix">
+        <div class="ad_mediaDetail_wrap clearfix">
+            <div class="ad_mediaDetail_nav">
                 <p><a href="#">媒体管理</a><em> / </em><a href="#">录入媒体</a></p>
             </div>
-            <!--资源信息-->
-            <div class="mediaMana_content_top">
+            <!-- 资源信息mediaMana_content_top-->
+            <div class="mediaList_wrap"> 
                 <div class="content_top_wrap">
                     <div class="content_top_form_wrap">
                         <el-form :model="recForm" status-icon :rules="recRules" ref="recForm" label-width="100px"
@@ -317,8 +317,8 @@
                     </div>
                 </div>
             </div>
-            <!--媒体一-->
-            <div class="mediaMana_content_bottom clearfix">
+            <!--媒体一 mediaMana_content_bottom-->
+            <div class="mediaList_content">
                 <el-tabs v-model="activeMedia" @tab-click="handleClickMedia">
                     <el-tab-pane label="广告门" name="first">
                         <div class="content_bottom_wrap_box">
@@ -2945,6 +2945,12 @@
 </script>
 
 <style scoped>
+    .mediaList_content{
+        width: 92%;
+        background: #ffffff;
+        margin: 24px auto;
+        padding-bottom: 24px;
+    }
     /deep/ .ad_index_footer {
         text-align: center;
         font-size: 14px;
@@ -2952,53 +2958,9 @@
         margin-bottom: 16px;
         position: relative;
     }
-
-    /*面包屑导航*/
-    .ad_mediaMana_nav {
-        position: relative;
-        height: 0;
-    }
-
-    .ad_mediaMana_nav p {
-        padding-left: 57px;
-        position: absolute;
-        left: 0;
-        top: 12px;
-        font-size: 14px;
-        line-height: 18px;
-    }
-
-    .ad_mediaMana_nav p em {
-        font-size: 14px;
-        color: #D9D9D9;
-        line-height: 18px;
-    }
-
-    .ad_mediaMana_nav p a {
-        color: #666;
-    }
-
-    .ad_mediaMana_nav p a:nth-of-type(1) {
-        color: #999;
-    }
-
-    .ad_mediaMana_wrap {
-        margin-bottom: 109px;
-        position: relative;
-    }
-
-    /*资源信息*/
-    .mediaMana_content_top {
-        padding: 42px 60px 0 60px;
-    }
-
-    .mediaMana_content_bottom {
-        padding: 11px 60px;
-    }
-
+    
     .content_top_wrap{
         background: #FFFFFF;
-        border: 1px solid #DEDEDE;
         padding-top: 3px;
     }
 
@@ -3216,7 +3178,7 @@
     }
 
     /*媒体一表单*/
-    .mediaMana_content_bottom .content_bottom_upload {
+    .mediaList_content .content_bottom_upload {
         width: 408px;
         height: 877px;
         border: 2px dashed #979797;
@@ -3256,7 +3218,7 @@
         margin-top: 20px;
     }
 
-    /deep/ .mediaMana_content_bottom .el-form-item__error {
+    /deep/ .mediaList_content .el-form-item__error {
         top: 92%;
     }
 

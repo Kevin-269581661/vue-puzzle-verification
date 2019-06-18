@@ -11,46 +11,28 @@
             </div>
             <div class="mediaList_container">
                 <el-row>
-                    <div class="mediaList_handel">
-                        <span>
-                            <div style="display:inline-block">
-                                <el-input placeholder="请输入内容" v-model="searchInfo.keyword" class="input-with-select" size="small">
-                                    <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
-                                        <el-option label="订单名" value="1"></el-option>
-                                        <el-option label="客户名" value="2"></el-option>
-                                        <el-option label="合同编号" value="3"></el-option>
-                                    </el-select>
-                                </el-input>
-                            </div>
-                        </span>
-                        <span>
-                            <div class="block">
-                                <el-date-picker size="small" v-model="searchInfo.rangeDate" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
-                                </el-date-picker>
-                            </div>
-                        </span>
-                        <span v-if="isAll">
-                            <div class="block">
-                                <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable size="small">
-                                    <el-option v-for="item of companyData" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                                </el-select>
-                            </div>
-                        </span>
-                        <span>
-                            <div class="block block_box">
-                                <el-select v-model="searchInfo.cityWord" placeholder="请选择城市" filterable size="small">
-                                    <el-option v-for="item of filterCityData" :key="item.rID" :label="item.text" :value="item.value"></el-option>
-                                </el-select>
-                            </div>
-                        </span>
-                        <div class="block block_box">
-                            <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small">
-                                <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
+                    <el-col>
+                        <el-input placeholder="请输入内容" v-model="searchInfo.keyword" class="input-with-select" size="small">
+                            <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
+                                <el-option label="订单名" value="1"></el-option>
+                                <el-option label="客户名" value="2"></el-option>
+                                <el-option label="合同编号" value="3"></el-option>
                             </el-select>
-                        </div>
+                        </el-input>
+                        <el-date-picker size="small" v-model="searchInfo.rangeDate" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
+                        </el-date-picker>
+                        <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable size="small" v-if="isAll">
+                            <el-option v-for="item of companyData" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                        </el-select>
+                        <el-select v-model="searchInfo.cityWord" placeholder="请选择城市" filterable size="small">
+                            <el-option v-for="item of filterCityData" :key="item.rID" :label="item.text" :value="item.value"></el-option>
+                        </el-select>
+                        <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small">
+                            <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
+                        </el-select>
                         <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
                         <el-button @click="reset()" :disabled="!isReset">重置</el-button>
-                    </div>
+                    </el-col>
                 </el-row>
                 <div class="table_wrap">
                     <el-table border :data="currentOrder" style="width: 100%" v-loadmore="orderLoadMore" v-loading="loading" element-loading-text="玩命加载中" element-loading-spinner="el-icon-loading" :default-sort="{prop: 'apcTime', order: 'descending'}">

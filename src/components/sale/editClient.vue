@@ -16,31 +16,51 @@
                     </div>
                     <div class="content_top_form_wrap">
                         <el-form :model="clientForm" status-icon :rules="clientRules" ref="clientForm" label-width="100px" class="demo-ruleForm">
-                            <el-form-item label="联系人:" prop="realName">
-                                <el-input v-model.trim="clientForm.realName" placeholder="请输入联系人姓名" disabled="disabled" clearable></el-input>
-                            </el-form-item>
-                            <el-form-item label="账户名:" prop="sName">
-                                <el-input v-model.trim="clientForm.sName" placeholder="请输入账户名" disabled="disabled" clearable></el-input>
-                            </el-form-item>
-                            <el-form-item label="职位:" prop="position">
-                                <el-input v-model.trim="clientForm.position" placeholder="请输入联系人职位" clearable></el-input>
-                            </el-form-item>
-                            <el-form-item label="手机号码:" prop="phone">
-                                <el-input v-model.number="clientForm.phone" maxlength="11" minlength="11" placeholder="请输入联系人手机号码" clearable></el-input>
-                            </el-form-item>
-                            <el-form-item label="所在地:" prop="cityArr">
-                                <!-- <el-cascader :options="allProvince" v-model="clientForm.cityArr" separator="-" :show-all-levels="false" @change="seleProClient" @active-item-change="handleItemChange"></el-cascader> -->
-                                <el-cascader :options="allProvince" v-model="clientForm.cityArr" separator="-" :show-all-levels="false" @change="seleProClient" ></el-cascader>
-                            </el-form-item>
-                            <el-form-item label="邮箱:" prop="email">
-                                <el-input v-model.trim="clientForm.email" placeholder="请输入联系人邮箱" clearable></el-input>
-                            </el-form-item>
-                            <el-form-item label="固定电话:" prop="telephone">
-                                <el-input v-model.trim="clientForm.telephone" placeholder="请输入联系人固定电话" clearable></el-input>
-                            </el-form-item>
-                            <el-form-item label="事业部:" prop="division">
-                                <el-input v-model.trim="clientForm.division" placeholder="请输入联系人所属事业部" clearable></el-input>
-                            </el-form-item>
+                            <el-row class="form_row" type="flex" :gutter="72">
+                                <el-col :span="6">
+                                    <el-form-item label="联系人:" prop="realName">
+                                        <el-input v-model.trim="clientForm.realName" placeholder="请输入联系人姓名" disabled="disabled" clearable></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="账户名:" prop="sName">
+                                        <el-input v-model.trim="clientForm.sName" placeholder="请输入账户名" disabled="disabled" clearable></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="职位:" prop="position">
+                                        <el-input v-model.trim="clientForm.position" placeholder="请输入联系人职位" clearable></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="手机号码:" prop="phone">
+                                        <el-input v-model.number="clientForm.phone" maxlength="11" minlength="11" placeholder="请输入联系人手机号码" clearable></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row class="form_row" type="flex" :gutter="72">
+                                <el-col :span="6">
+                                    <el-form-item label="所在地:" prop="cityArr">
+                                        <!-- <el-cascader :options="allProvince" v-model="clientForm.cityArr" separator="-" :show-all-levels="false" @change="seleProClient" @active-item-change="handleItemChange"></el-cascader> -->
+                                        <el-cascader :options="allProvince" v-model="clientForm.cityArr" separator="-" :show-all-levels="false" @change="seleProClient" filterable></el-cascader>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="邮箱:" prop="email">
+                                        <el-input v-model.trim="clientForm.email" placeholder="请输入联系人邮箱" clearable></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="固定电话:" prop="telephone">
+                                        <el-input v-model.trim="clientForm.telephone" placeholder="请输入联系人固定电话" clearable></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="事业部:" prop="division">
+                                        <el-input v-model.trim="clientForm.division" placeholder="请输入联系人所属事业部" clearable></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
                         </el-form>
                     </div>
                 </div>
@@ -53,33 +73,49 @@
                     </div>
                     <div class="content_bottom_form_wrap">
                         <el-form :model="companyForm" status-icon :rules="companyRules" ref="companyForm" label-width="100px" class="demo-ruleForm">
-                            <el-form-item label="公司名称:" prop="cName">
-                                <el-input v-model.trim="companyForm.cName" placeholder="请输入公司具体地址" clearable></el-input>
-                            </el-form-item>
-                            <el-form-item label="公司品牌:" prop="cBrand" class="tags">
-                                <el-tag v-for="tag in oldBrandTags" :key="tag.bID">
-                                    {{tag.bTitle}}
-                                </el-tag>
-                                <el-tag v-for="(tag, index) in companyTags" :key="index" closable :disable-transitions="false" @close="handleClose(tag)">
-                                    {{tag}}
-                                </el-tag>
-                                <el-input style="width: 90px" class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm" @blur="handleInputConfirm" clearable>
-                                </el-input>
-                                <el-button v-else class="button-new-tag" size="small" @click="showInput">新增品牌</el-button>
-                            </el-form-item>
-                            <el-form-item label="行业分类:" prop="industryIdArr">
-                                <el-cascader placeholder="试试搜索：互联网" :options="bussiness" change-on-select v-model="companyForm.industryIdArr" @change="handleChange"></el-cascader>
-                            </el-form-item>
-                            <el-form-item label="公司地址:" prop="cAddress">
-                                <el-input v-model.trim="companyForm.cAddress" placeholder="请输入公司具体地址" clearable></el-input>
-                            </el-form-item>
-                            <el-form-item label="所在城市:" prop="cityArr">
-                                <!-- <el-cascader :options="allProvince" v-model="companyForm.cityArr" separator="-" :show-all-levels="false" @change="seleProCom" @active-item-change="handleItemChange"></el-cascader> -->
-                                <el-cascader :options="allProvince" v-model="companyForm.cityArr" separator="-" :show-all-levels="false" @change="seleProCom" ></el-cascader>
-                            </el-form-item>
-                            <el-form-item label="备注:" prop="cRemark">
-                                <el-input type="textarea" v-model.trim="companyForm.cRemark" placeholder="请填写备注信息" clearable></el-input>
-                            </el-form-item>
+                            <el-row class="form_row" type="flex" :gutter="72">
+                                <el-col :span="6">
+                                    <el-form-item label="公司名称:" prop="cName">
+                                        <el-input v-model.trim="companyForm.cName" placeholder="请输入公司具体地址" clearable></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="所在城市:" prop="cityArr">
+                                        <!-- <el-cascader :options="allProvince" v-model="companyForm.cityArr" separator="-" :show-all-levels="false" @change="seleProCom" @active-item-change="handleItemChange"></el-cascader> -->
+                                        <el-cascader :options="allProvince" v-model="companyForm.cityArr" separator="-" :show-all-levels="false" @change="seleProCom" filterable></el-cascader>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="行业分类:" prop="industryIdArr">
+                                        <el-cascader placeholder="试试搜索：互联网" :options="bussiness" change-on-select v-model="companyForm.industryIdArr" @change="handleChange" filterable></el-cascader>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="公司地址:" prop="cAddress">
+                                        <el-input v-model.trim="companyForm.cAddress" placeholder="请输入公司具体地址" clearable></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row class="form_row" type="flex" :gutter="72">
+                                <el-col :span="6">
+                                    <el-form-item label="公司品牌:" prop="cBrand" class="tags">
+                                        <el-tag v-for="tag in oldBrandTags" :key="tag.bID">
+                                            {{tag.bTitle}}
+                                        </el-tag>
+                                        <el-tag v-for="(tag, index) in companyTags" :key="index" closable :disable-transitions="false" @close="handleClose(tag)">
+                                            {{tag}}
+                                        </el-tag>
+                                        <el-input style="width: 90px" class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm" @blur="handleInputConfirm" clearable>
+                                        </el-input>
+                                        <el-button v-else class="button-new-tag" size="small" @click="showInput">新增品牌</el-button>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="备注:" prop="cRemark">
+                                        <el-input type="textarea" v-model.trim="companyForm.cRemark" placeholder="请填写备注信息" clearable></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
                         </el-form>
                     </div>
                 </div>
@@ -708,23 +744,11 @@ export default {
     padding-bottom: 24px;
     border: 1px solid #dedede;
 }
-/*tags*/
-.tags {
-    position: relative;
-}
-.tags::before {
-    position: absolute;
-    left: 18px;
-    top: 9px;
-    content: "*";
-    color: #f56c6c;
-}
 
 .content_top_wrap,
 .content_bottom_wrap {
     background: #ffffff;
     padding-top: 3px;
-    /*height: 280px;*/
 }
 
 .content_top_wrap .content_top_head {
@@ -746,46 +770,27 @@ export default {
     font-weight: bold;
     padding-left: 16px;
     height: 24px;
-    border-left: 2px solid #465d89;
     margin-top: 8px;
 }
 
-.content_top_wrap .content_top_form_wrap,
-.content_bottom_wrap .content_bottom_form_wrap {
-    padding: 18px;
+.content_top_form_wrap,
+.content_bottom_form_wrap {
+    padding: 24px 32px;
 }
 
 /*按钮*/
 .content_bottom_btn {
+    width: 100%;
     text-align: center;
-    margin-top: 30px;
-} 
-
-/deep/.content_bottom_btn .el-button {
-    height: 34px;
-    line-height: 34px;
-    min-width: 80px;
-    padding: 0 8px;
-}
-.content_bottom_btn button.create {
-    background: #108ee9;
-    border-radius: 2px;
-    font-size: 14px;
-    border: none;
-    color: #ffffff;
-}
-
-.content_bottom_btn button.cancel {
-    background: #f5f6fa;
-    border: none;
-    font-size: 14px;
-    color: #979797;
+    margin-bottom: 20px;
+    margin-top: 20px;
 }
 
 /*tags样式*/
 .el-tag {
-  margin-right: 5px;
+    margin-right: 5px;
 }
+
 .button-new-tag {
     margin-left: 10px;
     height: 32px;
@@ -793,24 +798,19 @@ export default {
     padding-top: 0;
     padding-bottom: 0;
 }
+
 .input-new-tag {
     width: 90px !important;
     margin-left: 10px !important;
     vertical-align: bottom;
 }
-/deep/ .input-new-tag .el-input__inner {
-    width: 90px !important;
-    height: 34px;
-    position: relative;
-    top: -5px;
-    left: -9px;
-}
+
 /deep/ .input-new-tag .el-input__suffix {
     top: -4px;
     right: 14px;
 }
 
-/deep/.button-new-tag {
+/deep/ .button-new-tag {
     margin-left: 0;
     position: relative;
     top: -1px;
@@ -829,51 +829,54 @@ export default {
     height: 34px;
     line-height: 32px;
 }
+
 /deep/ .button-new-tag {
     height: 34px;
     line-height: 32px;
 }
 
-/*客户信息表单*/
-.el-input {
-    width: 240px;
-    height: 34px;
+/*按钮*/
+/deep/ .el-button--default:focus,
+.el-button--default:hover {
+    color: #606266;
+    border-color: #dcdfe6;
+    background-color: #fcfcfc;
 }
 
-/deep/ .el-input__inner {
-    width: 240px;
-    height: 34px;
-}
-
-/deep/ .el-form-item {
-    margin-bottom: 32px;
-    min-width: 33.33%;
-    max-width: 33.33%;
-}
-/deep/ form.el-form.demo-ruleForm{
+/deep/ .el-form.demo-ruleForm {
     display: flex;
     flex-wrap: wrap;
 }
 
-/deep/ .el-popper[x-placement^="bottom"] {
-    margin-top: 3px !important;
-}
-
-/deep/ .el-textarea__inner {
-    width: 240px;
-    height: 76px !important;
+.form_row,
+/deep/.el-textarea, 
+/deep/.el-textarea__inner,
+/deep/.el-autocomplete,
+/deep/.el-cascader,
+/deep/ .el-input__inner,
+/deep/ .el-select,
+/deep/.el-input,
+/deep/ .form_row .el-form-item{
+    width: 100%;
     resize: none;
-    position: relative;
-    top: 3px;
 }
-
-/deep/ .el-form-item__error {
-    top: 95%;
-    width: 200px;
+/*样式改版*/
+/deep/ .el-scrollbar__wrap{
+    display: none;
 }
-
-/deep/ .el-popper[x-placement^="bottom"] {
-    margin-top: 3px !important;
-    top: 200px !important;
+/deep/ .el-form-item__label{
+    float: none;
+    line-height: 32px;
+    color: rgba(0,0,0,0.85);
+}
+/deep/ .el-form-item__content{
+    margin-left: 0 !important;
+}
+/deep/ .el-input__inner{
+    height: 32px;
+    text-align: left;
+    line-height: 35px;
+    padding-right: 20px;
+    text-align: left;
 }
 </style>

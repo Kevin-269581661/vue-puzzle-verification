@@ -145,8 +145,8 @@
                                     </el-table-column>
                                     <el-table-column label="操作" min-width="4.3%" v-if="showHandel">
                                         <template slot-scope="scope">
-                                            <span style="color:#999;" v-if="scope.row.lState==2">终止</span>
-                                            <span style="color:#409EFF;" v-else @click="disContinue(scope.row)">终止</span>
+                                            <span style="color:#999;cursor: pointer;" v-if="scope.row.lState==2">终止</span>
+                                            <span style="color:#409EFF;cursor: pointer;" v-else @click="disContinue(scope.row)">终止</span>
                                         </template>
                                     </el-table-column>
 

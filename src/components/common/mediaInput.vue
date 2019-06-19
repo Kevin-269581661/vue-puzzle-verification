@@ -713,17 +713,17 @@
             let validateAssetId = (rule, value, callback) => {
                 let reg = /[\u4E00-\u9FA5]|[\uFE30-\uFFA0]/gi;
                 if (reg.test(value)) {
-                    callback(new Error('只能输入数字字母符号'));
+                    callback(new Error('只能输入数字字母符号!'));
                 } else {
                     callback();
                 }
             };
             let validateNum = (rule, value, callback) => {
                 if (value !== '' && !Number.isInteger(value)) {
-                    callback(new Error('只能输入整数值'));
+                    callback(new Error('只能输入整数值!'));
                 } else {
                     if (value < 1 || value > 26) {
-                        callback(new Error('最少投1面，最多可投26面'));
+                        callback(new Error('最少投1面，最多可投26面!'));
                     } else {
                         callback();
                     }
@@ -733,7 +733,7 @@
                 this.isResError = false
                 if (value) {
                     if (value.match(/^\s+$/)) {
-                        callback(new Error('所填内容不能为空格'))
+                        callback(new Error('所填内容不能为空格!'))
                     } else {
                         callback();
                     }
@@ -744,10 +744,10 @@
             let validatePrice = (rule, value, callback) => {
                 let reg = /^\d+(\.\d+)?$/
                 if (value !== '' && !(reg.test(value))) {
-                    callback(new Error('只能输入数字'));
+                    callback(new Error('只能输入数字!'));
                 } else {
                     if (value > 9999999) {
-                        callback(new Error('不得大于9999999'));
+                        callback(new Error('不得大于9999999!'));
                     } else {
                         callback();
                     }
@@ -757,10 +757,10 @@
                 let reg = /^\d+(\.\d+)?$/
                 // let reg =  /[^\d\.]/g
                 if (value !== '' && !(reg.test(value))) {
-                    callback(new Error('只能输入数字'));
+                    callback(new Error('只能输入数字!'));
                 } else {
                     if (value < 0 || value > 180) {
-                        callback(new Error('只能输入数字(0-180)'));
+                        callback(new Error('只能输入数字(0-180)!'));
                     } else {
                         callback();
                     }
@@ -769,10 +769,10 @@
             let validateLng = (rule, value, callback) =>{
                 let reg = /^\d+(\.\d+)?$/
                 if (value !== '' && !(reg.test(value))) {
-                    callback(new Error('只能输入数字'));
+                    callback(new Error('只能输入数字!'));
                 } else {
                     if (value < 0 || value > 90) {
-                        callback(new Error('只能输入数字(0-90)'));
+                        callback(new Error('只能输入数字(0-90)!'));
                     } else {
                         callback();
                     }
@@ -782,10 +782,10 @@
             let validateGreenP = (rule, value, callback) =>{
                 let reg = /^\d+(\.\d+)?$/
                 if (value !== '' && !(reg.test(value))) {
-                    callback(new Error('只能输入数字'));
+                    callback(new Error('只能输入数字!'));
                 } else {
                     if (value < 0 || value > 100) {
-                        callback(new Error('只能输入数字(0-100)'));
+                        callback(new Error('只能输入数字(0-100)!'));
                     } else {
                         callback();
                     }
@@ -935,43 +935,43 @@
                     ],
                     addressAlias: [
                         {validator: validateSpace, trigger: 'blur'},
-                        {min: 0, max: 40, message: '最多只能输入40个字节', trigger: 'change'}
+                        {min: 0, max: 40, message: '最多只能输入40个字节!', trigger: 'change'}
                     ],
                     business: [
                         {validator: validateSpace, trigger: 'blur'},
-                        {min: 0, max: 40, message: '最多只能输入40个字节', trigger: 'change'}
+                        {min: 0, max: 40, message: '最多只能输入40个字节!', trigger: 'change'}
                     ],
                     resaddr: [
-                        {required: true, message: '具体地址不能为空', trigger: ['blur','change']},
+                        {required: true, message: '具体地址不能为空!', trigger: ['blur','change']},
                         {validator: validateSpace, trigger: 'blur'},
-                        {min: 0, max: 70, message: '最多只能输入70个字节', trigger: 'change'}
+                        {min: 0, max: 70, message: '最多只能输入70个字节!', trigger: 'change'}
                     ],
                     floorType: [
-                        {required: true, message: '请选择楼盘类型', trigger: 'change'},
+                        {required: true, message: '请选择楼盘类型!', trigger: 'change'},
                     ],
                     buildingNum: [
-                        {required: true, message: '楼栋数量不能为空', trigger: 'change'},
+                        {required: true, message: '楼栋数量不能为空!', trigger: 'change'},
                     ],
                     households: [
-                        {required: true, message: '住户数量不能为空', trigger: ['blur','change']},
+                        {required: true, message: '住户数量不能为空!', trigger: ['blur','change']},
                         {validator: validatePrice, trigger: 'change'},
                     ],
                     buildingPrice: [
                         {validator: validatePrice, trigger: 'blur'},
                     ],
                     liveTime: [
-                        {required: true, message: '请选择年份', trigger: 'change'},
+                        {required: true, message: '请选择年份!', trigger: 'change'},
                     ],
                     lat: [
-                        {required: true, message: '经度不能为空', trigger: ['blur','change']},
+                        {required: true, message: '经度不能为空!', trigger: ['blur','change']},
                         {required: true,validator: validateLat, trigger: ['blur','change']},
                     ],
                     lng: [
-                        {required: true, message: '纬度不能为空', trigger: ['blur','change']},
+                        {required: true, message: '纬度不能为空!', trigger: ['blur','change']},
                         {required: true,validator: validateLng, trigger: ['blur','change']},
                     ],
                     pmc: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
+                        {max: 40, message: '最多只能输入40个字符!', trigger: 'blur'}
                     ],
                     carNumber: [
                         {validator: validatePrice, trigger: 'blur'},
@@ -989,78 +989,78 @@
                         {validator: validateGreenP, trigger: 'blur'},
                     ],
                     developer: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
+                        {max: 40, message: '最多只能输入40个字符!', trigger: 'blur'}
                     ],
                     managementFee: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
+                        {max: 40, message: '最多只能输入40个字符!', trigger: 'blur'}
                     ],
                     salesOfficeAdd: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
+                        {max: 40, message: '最多只能输入40个字符!', trigger: 'blur'}
                     ],
                     salesPhoneNumber: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
+                        {max: 40, message: '最多只能输入40个字符!', trigger: 'blur'}
                     ],
                     preSalePermit: [
-                        {max: 250, message: '最多只能输入250个字符', trigger: 'blur'}
+                        {max: 250, message: '最多只能输入250个字符!', trigger: 'blur'}
                     ],
                     ownershipType: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
+                        {max: 40, message: '最多只能输入40个字符!', trigger: 'blur'}
                     ],
                     discount: [
-                        {max: 250, message: '最多只能输入250个字符', trigger: 'blur'}
+                        {max: 250, message: '最多只能输入250个字符!', trigger: 'blur'}
                     ],
                     buildingStructure: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
+                        {max: 40, message: '最多只能输入40个字符!', trigger: 'blur'}
                     ],
                     ownershipPeriod: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
+                        {max: 40, message: '最多只能输入40个字符!', trigger: 'blur'}
                     ],
                     constructionSpace: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
+                        {max: 40, message: '最多只能输入40个字符!', trigger: 'blur'}
                     ],
                 },
                 assetIdRules: [
                     {validator: validateAssetId, trigger: 'blur'},
-                    {max: 40, message: '最多只能输入40个字节', trigger: 'blur'}
+                    {max: 40, message: '最多只能输入40个字节!', trigger: 'blur'}
                 ],
                 mediaRules: {
                     mediaName: [
-                        {required: true, message: '媒体名称不能为空', trigger: ['blur','change']},
+                        {required: true, message: '媒体名称不能为空!', trigger: ['blur','change']},
                         {validator: validateSpace, trigger: ['blur','change']},
-                        {max: 40, message: '最多只能输入40个字节', trigger: ['blur','change']}
+                        {max: 40, message: '最多只能输入40个字节!', trigger: ['blur','change']}
                     ],
                     usableNum: [
                         {validator: validateNum, trigger: 'blur'},
-                        {required: true, message: '可投面数不能为空', trigger: 'change'},
+                        {required: true, message: '可投面数不能为空!', trigger: 'change'},
                     ],
                     mstate: [
-                        {required: true, message: '请选择媒体状态', trigger: 'change'},
+                        {required: true, message: '请选择媒体状态!', trigger: 'change'},
                     ],
                     assetId: [
-                        {required: true, message: '资产编号不能为空', trigger: ['blur','change']},
+                        {required: true, message: '资产编号不能为空!', trigger: ['blur','change']},
                         {validator: validateAssetId, trigger: 'change'},
-                        {max: 40, message: '最多只能输入40个字节', trigger: ['blur','change']}
+                        {max: 40, message: '最多只能输入40个字节!', trigger: ['blur','change']}
                     ],
                     doorType: [
-                        {required: true, message: '媒体类型不能为空', trigger: ['blur','change']},
+                        {required: true, message: '媒体类型不能为空!', trigger: ['blur','change']},
                         {validator: validateSpace, trigger: ['blur','change']},
-                        {required: true, min: 1, max: 20, message: '最多只能输入20个字节', trigger: ['blur','change']}
+                        {required: true, min: 1, max: 20, message: '最多只能输入20个字节!', trigger: ['blur','change']}
                     ],
                     adSizeW: [
-                        {required: true, type: 'string', message: '不能为空且只能输入数字', trigger: ['blur','change']},
+                        {required: true, type: 'string', message: '不能为空且只能输入数字!', trigger: ['blur','change']},
                         {validator: validatePrice, trigger: ['blur','change']},
                     ],
                     adSizeH: [
-                        {required: true, type: 'string', message: '不能为空且只能输入数字', trigger: ['blur','change']},
+                        {required: true, type: 'string', message: '不能为空且只能输入数字!', trigger: ['blur','change']},
                         // {type: 'number', min: 1, max: 9999999, message: '最大值9999999', trigger: 'blur'},
                         {validator: validatePrice, trigger: ['blur','change']},
                     ],
                     visualW: [
-                        {required: true, type: 'string', message: '不能为空且只能输入数字', trigger: ['blur','change']},
+                        {required: true, type: 'string', message: '不能为空且只能输入数字!', trigger: ['blur','change']},
                         {validator: validatePrice, trigger: 'change'},
                     ],
                     visualH: [
-                        {required: true, type: 'string', message: '不能为空且只能输入数字', trigger: ['blur','change']},
+                        {required: true, type: 'string', message: '不能为空且只能输入数字!', trigger: ['blur','change']},
                         {validator: validatePrice, trigger: ['blur','change']},
                     ],
                     // mediaRemark: [
@@ -1070,37 +1070,37 @@
                 //道闸表单验证
                 roadGateRules:{
                     mediaName: [
-                        {required: true, message: '媒体名称不能为空', trigger: 'change'},
+                        {required: true, message: '媒体名称不能为空!', trigger: ['blur','change']},
                         {validator: validateSpace, trigger: 'blur'},
-                        {max: 40, message: '最多只能输入40个字节', trigger: 'change'}
+                        {max: 40, message: '最多只能输入40个字节!', trigger: 'change'}
                     ],
                     usableNum: [
                         {validator: validateNum, trigger: 'change'},
-                        {required: true, message: '可投面数不能为空', trigger: 'change'},
+                        {required: true, message: '可投面数不能为空!', trigger: ['blur','change']},
                         // { type:'number', min:1, max:26, message:'最多可投26面',trigger:'blur'},
                     ],
                     mstate: [
-                        {required: true, message: '请选择媒体状态', trigger: 'change'},
+                        {required: true, message: '请选择媒体状态!', trigger: ['blur','change']},
                     ],
                     assetId: [
-                        {required: true, message: '资产编号不能为空', trigger: 'change'},
+                        {required: true, message: '资产编号不能为空!', trigger: ['blur','change']},
                         {validator: validateAssetId, trigger: 'change'},
-                        {max: 40, message: '最多只能输入40个字节', trigger: 'change'}
+                        {max: 40, message: '最多只能输入40个字节!', trigger: 'change'}
                     ],
                     LBSizeW: [
-                        {required: true, type: 'string', message: '宽度不能为空且只能为数字', trigger: 'change'},
+                        {required: true, type: 'string', message: '不能为空且只能为数字!', trigger: ['blur','change']},
                         {validator: validatePrice, trigger: 'change'},
                     ],
                     LBSizeH: [
-                        {required: true, type: 'string', message: '高度不能为空且只能为数字', trigger: 'change'},
+                        {required: true, type: 'string', message: '不能为空且只能为数字!', trigger: ['blur','change']},
                         {validator: validatePrice, trigger: 'change'},
                     ],
                     visualW: [
-                        {required: true, type: 'string', message: '不能为空且只能输入数字', trigger: 'change'},
+                        {required: true, type: 'string', message: '不能为空且只能输入数字!', trigger: ['blur','change']},
                         {validator: validatePrice, trigger: 'change'},
                     ],
                     visualH: [
-                        {required: true, type: 'string', message: '不能为空且只能输入数字', trigger: 'change'},
+                        {required: true, type: 'string', message: '不能为空且只能输入数字!', trigger: ['blur','change']},
                         {validator: validatePrice, trigger: 'change'},
                     ],
                     // mediaRemark: [
@@ -1984,10 +1984,10 @@
                         this.Editloading.close()
                         if(res.data.SysCode == 200200 && res.data.data.length > 0){
                             // this.pushResMediaToWydt(res.data.data)
-                            Message({
-                                message: '媒体创建成功',
-                                type: 'success'
-                            })
+                            // Message({
+                            //     message: '媒体创建成功',
+                            //     type: 'success'
+                            // })
                             if(String !== 'edit'){
                                 this.$confirm('资源媒体创建成功!', '提示', {
                                     confirmButtonText: '继续创建',
@@ -3244,7 +3244,7 @@
     }
 
     .upload_img_wrap {
-        width: 236px;
+        width: 120px;
         height: 125px;
         overflow: hidden;
     }

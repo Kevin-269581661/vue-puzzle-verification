@@ -8,8 +8,8 @@
         </div>
         <div class="mediaList_wrap">
             <el-tabs v-model="activeTabName" @tab-click="handleClick">
-                <el-tab-pane label="广告门" name="广告门"></el-tab-pane>
-                <el-tab-pane label="道闸" name="道闸"></el-tab-pane>
+                <el-tab-pane label="广告门" name="adDoor"></el-tab-pane>
+                <el-tab-pane label="道闸" name="roadGate" class="el_tab_roadGate" style="text-align: right;"></el-tab-pane>
             </el-tabs>
             <div class="tab_conten">
                 <el-row :gutter="32" class="tab_conten_row">
@@ -30,14 +30,6 @@
                             size="small"
                             @change="changeArea">
                         </el-cascader>
-                        <!--<el-select v-model="areaRid" filterable placeholder="区域" :clearable="true" size="small" @change="changeArea">-->
-                            <!--<el-option-->
-                                <!--v-for="(item,index) in areaList"-->
-                                <!--:key="index"-->
-                                <!--:label="item.label"-->
-                                <!--:value="item.value">-->
-                            <!--</el-option>-->
-                        <!--</el-select>-->
                     </el-col>
                     <el-col :span="7">
                         <span class="search_label">查询范围:</span>
@@ -59,7 +51,7 @@
                         <el-button @click="clearSearch">重置</el-button>
                     </el-col>
                 </el-row>
-                <div class="table_wrap">
+                <div class="table_wrap" :class="!tableLength && (pageData.pageSize == 20 ? 'table_wrap_20' : pageData.pageSize == 30 ? 'table_wrap_30' : pageData.pageSize == 40 ? 'table_wrap_40' : '')">
                     <el-table
                         v-loading="tableLoading"
                         element-loading-text="拼命加载中..."
@@ -67,6 +59,7 @@
                         :key="tableKey"
                         :data="adsTableList"
                         class="ads_table"
+                        :class="tableLength ? 'ads_table_10' : ''"
                         style="width: 100%">
                         <el-table-column
                             class-name="el-table-column-resName"
@@ -187,7 +180,7 @@
                 // 点位表盘loading
                 tableLoading: true,
                 // 当前tab
-                activeTabName: '广告门',
+                activeTabName: 'adDoor',
                 // 搜索的资源名称
                 resName: '',
                 cityRid: '',
@@ -208,6 +201,7 @@
                 tableHeader:[],
                 // 选择的第一个日期
                 firstTime: '',
+                tableLength: true,
                 // 时间限制
                 pickerOptions:{
                     disabledDate:(time) =>{
@@ -243,7 +237,7 @@
             this.getTableData()
             this.getCity()
             // 设置表格左侧定位的高度
-            // this.setFixedTableHieght()
+            this.setFixedTableHieght()
         },
         methods:{
             getSessionData(){
@@ -260,20 +254,20 @@
                 this.beforDate = [starTime, endTime]
             },
             // 表格左侧定位的高度
-            // setFixedTableHieght(){
+            setFixedTableHieght(){
                 // let timer = setTimeout(()=>{
-                //     let fixedTable = document.querySelector('.el-table__fixed')
-                //     console.log('fixedTable',fixedTable)
+                //     let fixedTable = document.querySelector('.el-table__fixed') //el-table__body-wrapper
+                //     let tableBody = document.querySelector('.el-table__body-wrapper')
+                //     console.log('fixedTable',fixedTable,'tableBody',tableBody.offsetHeight)
                 //     clearTimeout(timer)
-                //     if(fixedTable){
-                //         fixedTable.style.height = 490 + (this.pageData.pageSize / 10 - 1) * 450  + 'px'
+                //     if(fixedTable && tableBody){
+                //         fixedTable.style.height = tableBody.offsetHeight + 32 + 'px'//490 + (this.pageData.pageSize / 10 - 1) * 450  + 'px'
                 //         // clearTimeout(timer)
                 //     }else{
                 //         this.setFixedTableHieght()
                 //     }
-                // },1000)
-                // 1350+490= 1840
-            // },
+                // },500)
+            },
             // tab切换
             handleClick(){
                 console.log('tab切换',this.activeTabName)
@@ -282,7 +276,7 @@
                 this.resName = ''
                 this.areaRid = []
                 this.getTableData()
-                // this.setFixedTableHieght()
+                this.setFixedTableHieght()
             },
             // 获取城市
             getCity(){
@@ -347,7 +341,7 @@
                     token: this.sessionData.token,
                     pageNum: this.pageData.pageNum,
                     pageSize: this.pageData.pageSize,
-                    mVehicle: this.activeTabName,
+                    mVehicle: this.activeTabName == 'adDoor' ? '广告门' : this.activeTabName == 'roadGate' ? '道闸' : '',
                     startTime: this.dateInput[0],
                     endTime: this.dateInput[1],
                     resName: this.resName,
@@ -401,6 +395,11 @@
                         adsArr.push(obj)
                     }
                     this.adsTableList = adsArr.concat()
+                    if(this.adsTableList.length < 10){
+                        this.tableLength = true
+                    }else{
+                        this.tableLength = false
+                    }
                     if(this.tableKey === 1){
                         this.tableKey = 2
                     }else{
@@ -445,28 +444,31 @@
                     }
                     clearTimeout(timer)
                 },350)
+                this.setFixedTableHieght()
             },
             // 重置搜索
             clearSearch(){
                 this.resName = ''
                 this.areaRid = []
                 this.pageData.pageNum = 1
+                this.pageData.pageSize = 10
                 this.setTime()
                 this.getTableData()
-                // this.setFixedTableHieght()
+                this.setFixedTableHieght()
             },
             // 分页
             changePage(val){
                 console.log('当前页',val)
                 this.pageData.pageNum = val
                 this.getTableData()
+                this.setFixedTableHieght()
             },
             // 每页的条数
             changeSize(val){
                 console.log('每页的条数',val)
                 this.pageData.pageSize = val
                 this.getTableData()
-                // this.setFixedTableHieght()
+                this.setFixedTableHieght()
             },
             // 返回上一页
             returnBefore(){
@@ -552,6 +554,9 @@
 
     /deep/ .el-tabs__active-bar{
         width: 68px !important;
+    }
+    /deep/ .el_tab_road{
+        text-align: right;
     }
 
     .tab_conten{
@@ -688,8 +693,12 @@
         font-size: 14px;
     }
     /*滚动条*/
-    /deep/ .el-table__body-wrapper {
-        min-height: 440px;
+    /deep/ .ads_table_10.ads_table .el-table__body-wrapper{
+        height: 458px !important;
+        min-height: 450px;
+    }
+    /deep/ .ads_table .el-table__body-wrapper {
+        min-height: 450px;
         overflow-y: auto;
         overflow-x: auto;
     }
@@ -707,6 +716,16 @@
     }
 
     /deep/ .ads_table .el-table__fixed{
+        height: 490px !important;
+    }
+
+    /deep/ .table_wrap_20 .el-table__fixed{
+        height: 940px !important;
+    }
+    /deep/ .table_wrap_30 .el-table__fixed{
+        height: 1390px !important;
+    }
+    /deep/ .table_wrap_40 .el-table__fixed{
         height: 1840px !important;
     }
 

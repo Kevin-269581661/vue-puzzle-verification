@@ -227,8 +227,8 @@ export default {
                         hPrice: item.hPrice/100,
                         cType: item.cType || '--',
                         chDay: item.chDay || '--',
-                        carFlow: item.carFlow || '--',
                         parkSpaceNum: item.parkSpaceNum ||'--',
+                        carFlow: item.carFlow || '--',
                         peopleFlow: item.peopleFlow || '--',
                         notPush: item.allNotPush || '--',
                         remark: item.allremark || '--',
@@ -453,8 +453,8 @@ export default {
                             chDay: item.chDay || '--',
                             hNum: item.hNum || '--',
                             peopleFlow: item.peopleFlow || '--',
-                            carFlow: item.carFlow || '--',
                             parkSpaceNum: item.parkSpaceNum ||'--',
+                            carFlow: item.carFlow || '--',
                             date: date
                         };
                         resObj.showList.push(obj);

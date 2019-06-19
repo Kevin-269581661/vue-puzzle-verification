@@ -5900,7 +5900,9 @@
         text-overflow: ellipsis;
         white-space: nowrap;
     }
-
+    /deep/ .el-table__row .cell span{
+        overflow-x: initial;
+    }
     /deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
         background-color: #ecf5ff;
     }

@@ -36,14 +36,14 @@
                 </el-row>
                 <div class="table_wrap">
                     <el-table border :data="currentOrder" style="width: 100%" v-loadmore="orderLoadMore" v-loading="loading" element-loading-text="玩命加载中" element-loading-spinner="el-icon-loading" :default-sort="{prop: 'apcTime', order: 'descending'}">
-                        <el-table-column label="订单名称" min-width="14.6%" show-overflow-tooltip>
+                        <el-table-column label="订单名称" min-width="14.9%" show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <a href="javascript:void(0);" @click="ToDetail(scope.row)">{{scope.row.apName}}</a>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="cName" label="客户名称" min-width="10.4%"  show-overflow-tooltip>
+                        <el-table-column prop="cName" label="客户名称" min-width="12.6%"  show-overflow-tooltip>
                         </el-table-column>
-                        <el-table-column prop="bTitle" label="品牌名称" min-width="6.0%" show-overflow-tooltip>
+                        <el-table-column prop="bTitle" label="品牌名称" min-width="6.6%" show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column prop="apQC" label="合同编号" width="180px">
                         </el-table-column>
@@ -52,7 +52,7 @@
                                 <span>&yen;{{(scope.row.apTotal)?priceFormat(scope.row.apTotal/100):0}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="投放城市(点位面数，排期)" prop="cityArea" min-width="20.2%">
+                        <el-table-column label="投放城市(点位面数，排期)" prop="cityArea" min-width="25.8%" show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <div v-if="isAll" v-for="(item, index) of scope.row.companyList" :key="index" class="city_p">
                                     {{item.asName}}
@@ -67,12 +67,12 @@
                                 </div>
                             </template>
                         </el-table-column>
-                        <el-table-column label="发布日期" min-width="8.3%" sortable :sort-by="sortData">
+                        <el-table-column label="发布日期" min-width="8.3%" sortable :sort-by="sortData" show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <span>{{formatTime(scope.row.apcTime)}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column class="Status" prop="apState" label="状态" min-width="6%" >
+                        <el-table-column class="Status" prop="apState" label="状态" min-width="6%" show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <point-state :state-text="stateToText(scope.row.apState).text" :color="stateToText(scope.row.apState).color"></point-state>                                                                
                             </template>
@@ -881,20 +881,6 @@ a {
 /deep/ .el-table__body-wrapper {
     height: 405px;
 }
-
-/*超出省略*/
-/deep/ .el-table__row .cell {
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/deep/ .el-table__row .cell span {
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
 /*操作*/
 .el-dropdown-link {
     cursor: pointer;

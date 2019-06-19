@@ -405,10 +405,4 @@ export default {
 /deep/ .el-table__body-wrapper {
     height: 405px;
 }
-/*超出省略*/
-/deep/ .el-table .cell {
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
 </style>

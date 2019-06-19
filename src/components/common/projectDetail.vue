@@ -724,7 +724,7 @@
         padding-left: 40px;
     }
     .pro_detail_container{
-        margin: 24px 0;
+        margin: 16px 0;
         padding: 0;
 
     }

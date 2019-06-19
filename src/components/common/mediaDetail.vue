@@ -1039,7 +1039,7 @@
         width: 92%;
         background: #FFFFFF;
         border: 1px solid #E6E7E9;
-        margin: 10px auto 32px;
+        margin: 0 auto 32px;
         padding-bottom: 24px;
     }
 
@@ -1135,20 +1135,6 @@
         font-size: 14px;
         background: #fff;
     }
-    /deep/ .el-table th > .cell {
-        font-size: 14px;
-        color: #666666;
-        font-weight: bold;
-    }
-    /deep/ .el-table th, .el-table tr {
-        height: 44px;
-        padding: 0;
-        background-color: #f7f7f7;
-    }
-    /deep/ .el-table td{
-        padding: 10px 0;
-    }
-
     /*广告*/
     .ad_ad{
         padding-bottom: 30px;
@@ -1232,12 +1218,6 @@
         font-weight: bold;
         text-indent: 14px;
         box-sizing: border-box;
-    }
-    /*超出省略*/
-    /deep/ .el-table .cell {
-        overflow-x: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
     }
     .ad_ad .ad_adPanel .adPanel_table td{
         border-right: 1px solid #E2E2E2;

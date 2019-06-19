@@ -470,13 +470,6 @@
         height: 405px;
     }
 
-    /*超出省略*/
-    /deep/ .el-table .cell {
-        white-space: nowrap;
-        max-width: 300px;
-        text-overflow: ellipsis;
-    }
-
     /*下拉搜索框*/
     /deep/ .el-input-group__prepend {
         width: 64px;

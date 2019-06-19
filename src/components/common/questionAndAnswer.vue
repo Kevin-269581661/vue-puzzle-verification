@@ -111,7 +111,7 @@
     .el-aside {
         background-color: #D3DCE6;
         color: #333;
-        text-align: center;
+        text-align: left;
     }
 
     .el-main {
@@ -148,6 +148,10 @@
     .ad_mediaDetail_wrap /deep/ .el-menu-item.is-active{
         background-color: #e9f7fe;
         border-right: 2px solid #1890ff;
+    }
+    /deep/ .el-menu-item, .el-submenu__title{
+        height: 48px;
+        line-height: 48px;
     }
 </style>
 <style>

@@ -544,24 +544,6 @@ a {
 /deep/ .el-table__body-wrapper {
     height: 405px;
 }
-
-/*超出省略*/
-/deep/ .el-table__row .cell {
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    line-height: 24px;
-    display: flex;
-    flex-direction: column;
-}
-
-/deep/ .el-table__row .cell span {
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    line-height: 24px;
-}
-
 /deep/ .el-table__row td:nth-child(5) .cell span {
     width: 85px;
 }

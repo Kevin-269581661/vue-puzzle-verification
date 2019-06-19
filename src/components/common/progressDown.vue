@@ -32,7 +32,7 @@ export default {
                         this.$alert('请在下载工具里查看文件', '文件成功生成', {
                             confirmButtonText: '知道了',
                         });
-                        setTimeout(()=>{tempwindow.close()}, 0);
+                        setTimeout(()=>{tempwindow.close()}, 2000);
                     }
                 }
             }).catch(res =>{

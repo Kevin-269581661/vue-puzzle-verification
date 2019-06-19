@@ -228,7 +228,7 @@
 }
 
 .mediaList_wrap .mediaList_container .table_wrap {
-    margin: 24px auto 16px;
+    margin: 16px auto;
     border-radius: 4px;
 }
 
@@ -260,17 +260,14 @@
 
 .ad_mediaDetail_nav {
     width: 92%;
-    height: 42px;
+    height: 32px;
+    line-height: 32px;
     margin: 0 auto;
-    position: relative;
 }
 
 .ad_mediaDetail_nav p {
-    position: absolute;
-    left: 0;
-    top: 12px;
     font-size: 14px;
-    line-height: 18px;
+    display: inline-block;
 }
 
 .ad_mediaDetail_nav p em {

@@ -486,8 +486,8 @@ export default {
 .mediaList_content{
     width: 92%;
     background: #ffffff;
-    margin: 24px auto;
-    padding-bottom: 24px;
+    margin: 16px auto;
+    padding-bottom: 16px;
     border: 1px solid #dedede;
 }
 /*状态行*/
@@ -628,12 +628,15 @@ export default {
     font-size: 14px;
     color: #999999;
     text-align: right;
-    line-height: 50px;
+    line-height: 36px;
+    display: inline-block;
+    float: right;
+    height: 36px;
 }
 
 /*按钮*/
 .content_bottom_btn {
-    margin-top: 20px;
+    margin: 32px 0;
     width: 100%;
     text-align: center;
 }

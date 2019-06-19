@@ -38,7 +38,7 @@
                         <el-button @click="reset()" :disabled="!isReset">重置</el-button>
                     </el-col>
                 </el-row>
-                <el-row>
+                <el-row v-if="showNewBtn || !isNation" >
                     <el-col>
                         <el-button plain v-if="showNewBtn" @click="addOne()">新建</el-button>
                         <el-button plain v-if="showNewBtn" @click="isOpenDownload=true">导空位</el-button>
@@ -65,7 +65,7 @@
                         </el-table-column>
                         <el-table-column label="投放城市(点位面数,排期)"
                             prop="cityArea"
-                            min-width="25.8%" >
+                            min-width="25.8%" show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <p v-if="isAll" v-for="(item, index) of scope.row.cityArea" :key="index" class="city_p">
                                     <template v-if="item.isshow">
@@ -87,12 +87,12 @@
                                 </p>
                             </template>
                         </el-table-column>
-                        <el-table-column label="创建日期" min-width="8.3%" sortable :sort-by="sortData">
+                        <el-table-column label="创建日期" min-width="8.3%" sortable :sort-by="sortData" show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <span>{{formatTime(scope.row.apcTime)}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column class="tac" prop="apState" label="状态" min-width="6.1%">
+                        <el-table-column class="tac" prop="apState" label="状态" min-width="6.1%" show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <point-state :state-text="stateToText(scope.row.apState).text" :color="stateToText(scope.row.apState).color"></point-state>                                                                
                             </template>

@@ -2319,8 +2319,8 @@ export default {
 .mediaList_content{
     width: 92%;
     background: #ffffff;
-    margin: 24px auto;
-    padding-bottom: 24px;
+    margin: 16px auto;
+    padding-bottom: 16px;
     border: 1px solid #dedede;
 }
 /*修改合同号*/
@@ -2751,8 +2751,7 @@ export default {
 .content_bottom_btn {
     width: 100%;
     text-align: center;
-    margin-bottom: 20px;
-    margin-top: 20px;
+    margin: 32px 0;
 }
 
 /deep/ .el-button--default:focus,
@@ -2813,13 +2812,6 @@ export default {
 /deep/ .el-table__body-wrapper {
     height: 480px;
 }
-/*超出省略*/
-/deep/ .el-table .cell {
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
 /deep/ .el-table__row td:nth-child(2) .cell span {
     width: 225px;
 }

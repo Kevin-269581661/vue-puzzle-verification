@@ -1166,13 +1166,6 @@
         height: 405px;
     }
 
-    /*超出省略*/
-    /deep/ .el-table .cell {
-        overflow-x: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
     /*筛选*/
     /deep/ .el-table__column-filter-trigger {
         margin-left: 10px;

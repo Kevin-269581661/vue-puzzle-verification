@@ -1746,15 +1746,6 @@ export default {
     background-color: #fcfcfc;
 }
 
-.content_bottom_btn /deep/ .el-button span {
-    /*position: relative;*/
-    /*top: -2px;*/
-}
-
-.content_bottom_btn /deep/ .el-button span a {
-    color: #606266;
-}
-
 /*换点表格*/
 /deep/ .el-table td,
 .el-table th {

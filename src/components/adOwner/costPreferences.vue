@@ -530,7 +530,7 @@
     /*列表样式*/
     .style2-wrap {
         /* width: 100%; */
-        padding: 22px;
+        padding: 24px;
         display: flex;
         flex-wrap: wrap;
         /*justify-content: space-between;*/
@@ -541,7 +541,7 @@
         box-sizing: border-box;
         background-color: #fff;
         border: 1px solid #dedede;
-        margin: 0px 7px 24px 7px;
+        margin: 0px 7px 16px 7px;
     }
     .wholeDiv.right-charts-table{
         width: 100%;

@@ -2947,8 +2947,8 @@
     .mediaList_content{
         width: 92%;
         background: #ffffff;
-        margin: 24px auto;
-        padding-bottom: 24px;
+        margin: 16px auto;
+        padding-bottom: 32px;
     }
     /deep/ .ad_index_footer {
         text-align: center;

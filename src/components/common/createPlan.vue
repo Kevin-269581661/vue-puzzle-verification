@@ -1798,9 +1798,9 @@
                     let funcs=[]; //Promise.all要用到的参数, 存放每次请求的Promise对象
 
                     for (let i=0; i<request_times; i++) { // 循环请求次数，构造请求的Promise对象并插入funcs数组
-                        let func=new Promise(function(resolve, reject){ //定义Promise并处理请求逻辑
+                        let func=new Promise((resolve, reject)=>{ //定义Promise并处理请求逻辑
                             let data=[];
-                            self.$http.get(
+                            this.$http.get(
                                 // 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes/'+self.planForm.throwCity[i]+'.json'
                                 this.apiVar.jsonLink+self.planForm.throwCity[i]+'.json'
                             ).then(function(response){
@@ -1823,7 +1823,7 @@
                         funcs.push(func);
                     }
 
-                    Promise.all(funcs).then(function(values){ //使用Promise.all调用funcs里面的函数，并合并数据，最后给js-xlsx生成Excel
+                    Promise.all(funcs).then((values)=>{ //使用Promise.all调用funcs里面的函数，并合并数据，最后给js-xlsx生成Excel
                         let resultValus = [];
                         for(let val of values){
                             if(val){

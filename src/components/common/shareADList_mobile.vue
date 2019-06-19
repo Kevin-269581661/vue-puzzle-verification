@@ -800,7 +800,7 @@
                                 return true
                             }
                         } else {
-                            if (aKey.noLevelSelectedNum > 0 || aKey.selectedRoadGateNum > 0) {
+                            if (aKey.selectedNum > 0 || aKey.selectedRoadGateNum > 0) {
                                 console.log('提交前判断是否有勾选',aKey)
                                 return true
                             }

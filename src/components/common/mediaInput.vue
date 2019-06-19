@@ -517,6 +517,7 @@
                                             <el-col :span="6">
                                                 <el-form-item label="媒体状态" prop="mstate">
                                                     <el-select v-model="item.roadGateForm.mstate" placeholder="请选择媒体状态"
+                                                               @blur="roadGateBlur('mstate',key)"
                                                                @change="selectMstate(item.roadGateForm)">
                                                         <el-option label="禁用" :value="'0' + key"></el-option>
                                                         <el-option label="正常" :value="'1' + key"></el-option>
@@ -1707,6 +1708,19 @@
                 console.log('name',name)
                 // 手动触发校验 validateField
                 this.$refs.mediaForm[index].validateField(name,(valid)=>{
+                    console.log('错误提示信息',valid)
+                    if (!valid){
+                        console.log('校验通过')
+                    }else{
+                        console.log('校验不通过')
+                    }
+                })
+            },
+            // 道闸 roadGate
+            roadGateBlur(name,index){
+                console.log('name',name)
+                // 手动触发校验 validateField
+                this.$refs.roadGateForm[index].validateField(name,(valid)=>{
                     console.log('错误提示信息',valid)
                     if (!valid){
                         console.log('校验通过')

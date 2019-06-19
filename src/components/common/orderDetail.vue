@@ -54,20 +54,18 @@
                                 更换点位
                                <span>单位:面&nbsp;&nbsp; 首次投放:{{nowPointNum}}&nbsp;&nbsp; 中止投放:{{stopPointNum}} &nbsp;&nbsp;&nbsp; 新增面数:{{addNewPointNum}} &nbsp;&nbsp;&nbsp; 累计投放:{{setpointArr.length}} </span>
                             </h4>
-                            <div class="search-wrap">
-                                <span>
+                            <el-row class="search-row">
+                                <el-col>
                                     <el-input placeholder="请输入内容" v-model="keyword" class="input-with-select" @change="init()">
                                         <el-select v-model="selectRecName" slot="prepend" placeholder="请选择">
                                             <el-option label="资源名称" value="1"></el-option>
                                         </el-select>
                                     </el-input>
-                                </span>
-                                <span>
-                                    <el-button type="primary" icon="el-icon-search" class="searchBtn" @click="search()">搜索</el-button>
-                                    <el-button type="primary" @click="showAddPointDialog" class="changeDWBtn" v-show="showHandel">添加点位</el-button>
-                                    <el-button type="default" icon="el-icon-download" class="searchBtn" @click="export2Excel(orderDetail.apName)" :disabled="isDown">导出</el-button>
-                                </span>
-                            </div>
+                                    <el-button type="primary" icon="el-icon-search" @click="search()">搜索</el-button>
+                                    <el-button type="primary" @click="showAddPointDialog" v-show="showHandel">添加点位</el-button>
+                                    <el-button type="default" icon="el-icon-download" @click="export2Excel(orderDetail.apName)" :disabled="isDown">导出</el-button>
+                                </el-col>
+                            </el-row>
 
                             <div class="table_wrap">
                                 <el-table border :data="currentSetpoint" style="width: 100%"
@@ -177,7 +175,6 @@
                                             <el-radio-button label="广告门"></el-radio-button>
                                             <el-radio-button label="道闸"></el-radio-button>
                                         </el-radio-group>
-                                        <el-button @click="downloadImg('SK')" >导出图片</el-button>
                                         <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
                                     </template>
 
@@ -249,6 +246,7 @@
                                             <!--</el-checkbox>-->
                                         <!-- </div> -->
                                         <div class="up-report-bottom-btns">
+                                            <el-button @click="downloadImg('SK')" >导出图片</el-button>
                                             <el-button type="primary" @click="submitUpload('SK')">保存</el-button>
                                             <!-- <el-button plain @click="downloadUp">下载PDF</el-button> -->
                                             <el-button plain @click="showH5('SK')">查看H5</el-button>
@@ -268,7 +266,6 @@
                                             <el-radio-button label="广告门"></el-radio-button>
                                             <el-radio-button label="道闸"></el-radio-button>
                                         </el-radio-group>
-                                        <el-button @click="downloadImg('XK')" >导出图片</el-button>                                        
                                         <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
                                     </template>
 
@@ -341,6 +338,7 @@
                                             <!--</el-checkbox>-->
                                         </div>
                                         <div class="up-report-bottom-btns">
+                                            <el-button @click="downloadImg('XK')" >导出图片</el-button>                                        
                                             <el-button type="primary" @click="submitUpload('XK')">保存</el-button>
                                             <!-- <el-button plain @click="downloadDown">下载PDF</el-button> -->
                                             <el-button plain @click="showH5('XK')">查看H5</el-button>
@@ -2380,15 +2378,20 @@ export default {
     left: 5px;
 }
 
-/*选点排期*/
-.changeDWBtn {
-    margin-left: 10px;
-}
-
 .table_wrap {
     padding: 10px 28px 28px 28px;
 }
+/* 搜索 */
+.el-input {
+    width: 180px;
+    border-radius: 4px;
+}
 
+.input-with-select /deep/ .el-input__inner {
+    font-size: 14px;
+    vertical-align: middle;
+    margin-right: 4px;
+}
 /*下拉搜索框*/
 /deep/ .el-input-group__prepend {
     width: 64px;
@@ -2831,16 +2834,13 @@ export default {
     left: -3px;
 }
 
-.search-wrap{
-    display:inline-block;
-    margin-left: 30px;
-    margin-top: 10px;
+/* 搜索 */
+.search-row{
+    padding: 8px 28px;
 }
-/deep/ .search-wrap > span {
-    float: left;
-    margin-left: 2px;
+.search_col{
+    margin-left: 8px;
 }
-
 /*日期控件*/
 .block {
     display: inline-block;

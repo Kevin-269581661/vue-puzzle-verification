@@ -30,9 +30,6 @@ export default {
                         clearInterval(this.myInterval);
                         // tempwindow = window.open();
                         // tempwindow.location = resinfo.url;
-                        // this.$alert('请在下载工具里查看文件', '文件成功生成', {
-                        //     confirmButtonText: '知道了',
-                        // });
                         // setTimeout(()=>{tempwindow.close()}, 2000);
 
                         let downloadElement = document.createElement('a');
@@ -41,6 +38,9 @@ export default {
                         document.body.appendChild(downloadElement);
                         downloadElement.click(); //点击下载
                         document.body.removeChild(downloadElement); //下载完成移除元素
+                        this.$alert('请在下载工具里查看文件', '文件成功生成', {
+                            confirmButtonText: '知道了',
+                        });
                     }
                 }
             }).catch(res =>{

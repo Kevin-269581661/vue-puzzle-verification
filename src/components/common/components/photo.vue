@@ -49,7 +49,7 @@ export default {
 </script>
 <template>
     <div>
-        <div v-if="isSearch">
+     <!--   <div v-if="isSearch">
             <div class="tempPic">
                 <div class="noFind" v-if="showPic === 1">
                     <img src="../../../assets/images/tempPic.png" alt="">
@@ -60,7 +60,7 @@ export default {
                     <h4>无匹配结果</h4>
                     <p>可以尝试扩大搜索范围重新搜索哦</p>
                 </div>
-                <!--图片列表-->
+                &lt;!&ndash;图片列表&ndash;&gt;
                 <div class="find clearfix" v-if="showPic === 3">
                     <div class="photoCard" v-for="(img, index) of imgarr" :key="img.pID">
                         <div class="imgBox" @mouseenter="showPreImg = index" @mouseleave="showPreImg = null">
@@ -87,8 +87,9 @@ export default {
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="search-nav" v-else>
+        </div>-->
+
+        <div class="search-nav"><!--v-else-->
             <!--未搜索占位图-->
             <div class="tempPic">
                 <div class="noFind" v-if="showPic === 1">

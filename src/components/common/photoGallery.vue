@@ -7,136 +7,137 @@
                 </p>
             </div>
             <div class="mediaList_wrap">
-                <div class="mediaList_container">
+                <!--<div class="mediaList_container">-->
                     <el-tabs v-model="activeName" @tab-click="handleClick()">
                         <!--搜索框-->
-                        <div class="search-wrap clearfix" v-if="!ludan">
-                            <span>
-                                <div style="display:inline-block">
-                                    <el-input placeholder="请输入内容" v-model="keyword" class="input-with-select" size="small">
-                                        <el-select v-model="select" slot="prepend" placeholder="请选择">
-                                            <el-option label="方案名称" value="1" v-if="(activeName=='first')||(activeName=='second')"></el-option>
-                                            <!-- <el-option label="账号名称" value="2"></el-option> -->
-                                            <el-option label="资源名称" value="3"></el-option>
-                                        </el-select>
-                                    </el-input>
-                                </div>
-                            </span>
-                            <el-cascader :options="citys" v-model="citySelect" :show-all-levels='false' size="small" class="plan-select" placeholder="选择地区" change-on-select filterable>
-                            </el-cascader>
-                            <span v-if="(activeName=='first')||(activeName=='second')">
-                                <el-select v-model="LabSelect" placeholder="选择投放面" class="plan-select" size="small">
-                                    <el-option label="A面" value="A"></el-option>
-                                    <el-option label="B面" value="B"></el-option>
-                                </el-select>
-                            </span>
-                            <el-cascader :options="bussiness" size="small" class="plan-select" v-model="industryIdArr" change-on-select @change="handleChange" v-if="(activeName=='first')||(activeName=='second')" filterable></el-cascader>
-                            <span v-if="(activeName=='first')||(activeName=='second')">
-                                <div class="block">
-                                    <el-date-picker size="small" v-model="date" type="daterange" range-separator="-" format="yyyy/MM/dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
+                        <div v-if="(activeName=='first')||(activeName=='second')">
+                            <el-row :gutter="32">
+                                <el-col :span="6">
+                                    <span>资源名称：</span>
+                                    <el-input v-model="searchInfo.resName" size="small" placeholder="请输入资源名称"></el-input>
+                                </el-col>
+                                <el-col :span="6">
+                                    <span>方案名称：</span>
+                                    <el-input v-model="searchInfo.apName" size="small" placeholder="请输入方案名称"></el-input>
+                                </el-col>
+                                <el-col :span="6">
+                                    <span>城市区域：</span>
+                                    <el-cascader :options="citys" v-model="citySelect" :show-all-levels='false'
+                                                 size="small"
+                                                 class="plan-select"
+                                                 placeholder="选择地区"
+                                                 change-on-select filterable>
+                                    </el-cascader>
+                                </el-col>
+                                <el-col :span="6">
+                                    <span>行业类型：</span>
+                                    <el-cascader :options="bussiness" size="small" class="plan-select" v-model="industryIdArr"
+                                                 change-on-select
+                                                 @change="handleChange"
+                                                 filterable>
+                                    </el-cascader>
+                                </el-col>
+                            </el-row>
+                            <el-row :gutter="32">
+                                <el-col :span="6">
+                                    <span>&nbsp;投 放 面：</span>
+                                    <el-select v-model="LabSelect" placeholder="选择投放面" class="plan-select" size="small">
+                                        <el-option label="A面" value="A"></el-option>
+                                        <el-option label="B面" value="B"></el-option>
+                                    </el-select>
+                                </el-col>
+                                <el-col :span="6">
+                                    <span>投放日期：</span>
+                                    <el-date-picker size="small" v-model="date" type="daterange" range-separator="-"
+                                                    format="yyyy/MM/dd" value-format="yyyy-MM-dd" start-placeholder="投放日期"
+                                                    end-placeholder="投放日期">
                                     </el-date-picker>
-                                </div>
-                            </span>
-                            <span>
-                                <el-button type="primary" size="small" icon="el-icon-search" class="searchBtn" @click="searchPic()" :disabled="!isSearch">搜索</el-button>
-                            </span>
-                            <span>
-                                <el-button plain size="small" @click="reset()">重置</el-button>
-                            </span>
-                            <span>
-                                <el-button plain size="small" @click="allDownLoad()">一键导出</el-button>
-                            </span>
+                                </el-col>
+                                <el-col :span="6">
+                                    <span>&nbsp;上 下 刊：</span>
+                                    <el-select v-model="publish" placeholder="请选择" class="plan-select" size="small">
+                                        <el-option label="上刊" value="SK"></el-option>
+                                        <el-option label="下刊" value="XK"></el-option>
+                                    </el-select>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-button type="primary" size="small" icon="el-icon-search" class="searchBtn"
+                                               @click="searchPic()" :disabled="!isSearch">搜索
+                                    </el-button>
+                                    <el-button plain size="small" @click="reset()">重置</el-button>
+                                    <el-button plain size="small" @click="allDownLoad()">一键导出</el-button>
+                                </el-col>
+                            </el-row>
                         </div>
-                        <el-tab-pane label="上刊" name="first">
+                        <el-tab-pane label="案例库" name="first">
                             <!-- 图片 -->
                             <photo :imgarr="pageUpImgArr" :show-pic="showPic"></photo>
                             <!--页码-->
                             <div class="pager" v-if="showPic ===3">
-                                <el-pagination v-if="paginationShow" small background :current-page.sync="currUpPage" :page-sizes="[10, 20]" :page-size="pageUpSize" layout="sizes, prev, pager, next, jumper" :total="totalUpNum" @size-change="sizeChange" @current-change='changePage'>
+                                <el-pagination
+                                    v-if="paginationShow"
+                                    small background
+                                    :current-page.sync="currUpPage"
+                                    :page-sizes="[10, 20]"
+                                    :page-size="pageUpSize"
+                                    layout="sizes, prev, pager, next, jumper"
+                                    :total="totalUpNum"
+                                    @size-change="sizeChange"
+                                    @current-change='changePage'>
                                 </el-pagination>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane label="下刊" name="second">
+                        <el-tab-pane label="收藏夹" name="second">
                             <!-- 图片 -->
                             <photo :imgarr="pageDownImgArr" :show-pic="showPic"></photo>
                             <!--页码-->
                             <div class="pager" v-if="showPic ===3">
-                                <el-pagination v-if="paginationShow" small background :current-page.sync="currDownPage" :page-sizes="[10, 20]" :page-size="pageDownSize" layout="sizes, prev, pager, next, jumper" :total="totalDownNum" @size-change="sizeChange" @current-change='changePage'>
+                                <el-pagination v-if="paginationShow" small background
+                                               :current-page.sync="currDownPage"
+                                               :page-sizes="[10, 20]"
+                                               :page-size="pageDownSize"
+                                               layout="sizes, prev, pager, next, jumper"
+                                               :total="totalDownNum"
+                                               @size-change="sizeChange"
+                                               @current-change='changePage'>
                                 </el-pagination>
                             </div>
                         </el-tab-pane>
-                        <!-- <el-tab-pane label="录单" name="fifth">
-                            <div class="mediaList_container">
-                                <div style="display:inline-block" v-if="ludan">
-                                    <span>
-                                        <el-input placeholder="请输入内容" v-model="keyword2" class="input-with-select">
-                                            <el-select v-model="ludanSelect" slot="prepend" placeholder="请选择">
-                                                <el-option label="任务名称" value="1"></el-option>
-                                                <el-option label="创建人" value="2"></el-option>
-                                            </el-select>
-                                        </el-input>
-                                    </span>
-                                    <span>
-                                        <el-button type="primary" icon="el-icon-search">搜索</el-button>
-                                    </span>
-                                </div>
-                                <div class="table_wrap">
-                                    <el-table border width="98%" :data="caseList" style="width: 100%" :default-sort="{prop: 'date', order: 'descending'}">
-                                        <el-table-column label="任务名称" min-width="18.3%">
-                                            <template slot-scope="scope">
-                                                <span @click="newPath" style="color: #1890ff;cursor: pointer">{{scope.row.caseName}}</span>
-                                            </template>
-                                        </el-table-column>
-                                        <el-table-column prop="caseType" label="任务类型" min-width="11%" :filters="[{text: '上刊', value: '上刊'}, {text: '下刊', value: '下刊'}]" :filter-method="filterCaseType" :filter-multiple="false">
-                                        </el-table-column>
-                                        <el-table-column prop="dwNum" label="点位数量" min-width="11%">
-                                        </el-table-column>
-                                        <el-table-column prop="uploadImg" label="已上传图片" min-width="11%">
-                                        </el-table-column>
-                                        <el-table-column prop="creater" label="创建人" min-width="11%">
-                                        </el-table-column>
-                                        <el-table-column prop="account" label="创建账号" min-width="13.8%">
-                                        </el-table-column>
-                                        <el-table-column prop="createDate" label="创建时间" min-width="11.3%">
-                                        </el-table-column>
-                                    </el-table>
-                                </div>
-                            </div>
-                        </el-tab-pane> -->
+                        <el-tab-pane label="行业图片" name="three">
+                            <order-photo></order-photo>
+                        </el-tab-pane>
                     </el-tabs>
                 </div>
-            </div>
-            <!-- <div class="bottom-btn">
-                <el-button plain>返回</el-button>
-            </div> -->
+            <!--</div>-->
         </div>
     </div>
 </template>
 
 <script>
-import { api } from "../../api/api.js";
-import photo from './components/photo.vue';
-// 时间格式化
-import dateFormat from "../../commonFun/timeFormat.js";
-import industryToText from "../../commonFun/industryToText.js";
-import areaPackage_new from "../../commonFun/areaPackage_new.js";
-import {
-    Button,
-    Input,
-    Table,
-    TableColumn,
-    Row,
-    Tooltip,
-    Tabs,
-    TabPane,
-    Select,
-    Option,
-    Cascader,
-    DatePicker,
-    Pagination,
-    Message
-} from "element-ui";
-import timeFormat from '../../commonFun/timeFormat.js';
+    import {api} from "../../api/api.js";
+    import photo from './components/photo.vue';
+    import orderPhoto from "./components/orderPhoto.vue"
+    // 时间格式化
+    import dateFormat from "../../commonFun/timeFormat.js";
+    import industryToText from "../../commonFun/industryToText.js";
+    import areaPackage_new from "../../commonFun/areaPackage_new.js";
+    import {
+        Button,
+        Input,
+        Table,
+        TableColumn,
+        Row,
+        Tooltip,
+        Tabs,
+        TabPane,
+        Select,
+        Option,
+        Cascader,
+        DatePicker,
+        Pagination,
+        Message
+    } from "element-ui";
+    import timeFormat from '../../commonFun/timeFormat.js';
 
 export default {
     name: "PhotoGallery",
@@ -155,6 +156,7 @@ export default {
         elDatePicker: DatePicker,
         elPagination: Pagination,
         photo,
+        orderPhoto,
     },
     data() {
         return {
@@ -179,154 +181,37 @@ export default {
             citySelect: [],
             //上刊搜索行
             select: "3",
-            keyword: "",
+            // keyword: "",
             LabSelect: "",
             date: '',
             industryIdArr: [],
             bussiness: [],
             // tab默认选择第一项
-            activeName: "first",
+            activeName: "three",
             //是否搜索到图片
             showPic: 1,
-
             showBtn: false,
-            // assetID: `005B201803GZ-X446`,
-            // address: `广东广州市天河区黄埔大道中`,
-            // keyword2: "",
             //录单搜索行
             ludan: false,
             ludanSelect: "任务名称",
-
             // showPic: 3,
             //  录单
             input: "",
             value6: "",
-            //表格
-            caseList: [
-                {
-                    caseName: "珠江帝景地产三月份方案",
-                    caseType: "上刊",
-                    dwNum: "60",
-                    uploadImg: "73",
-                    creater: "冯少宏",
-                    account: "fengshaohong",
-                    createDate: "2018.05.26"
-                },
-                {
-                    caseName: "珠江帝景地产三月份方案",
-                    caseType: "上刊",
-                    dwNum: "60",
-                    uploadImg: "73",
-                    creater: "冯少宏",
-                    account: "fengshaohong",
-                    createDate: "2018.05.26"
-                },
-                {
-                    caseName: "珠江帝景地产三月份方案",
-                    caseType: "上刊",
-                    dwNum: "60",
-                    uploadImg: "73",
-                    creater: "冯少宏",
-                    account: "fengshaohong",
-                    createDate: "2018.05.26"
-                },
-                {
-                    caseName: "珠江帝景地产三月份方案",
-                    caseType: "上刊",
-                    dwNum: "60",
-                    uploadImg: "73",
-                    creater: "冯少宏",
-                    account: "fengshaohong",
-                    createDate: "2018.05.26"
-                },
-                {
-                    caseName: "珠江帝景地产三月份方案",
-                    caseType: "上刊",
-                    dwNum: "60",
-                    uploadImg: "73",
-                    creater: "冯少宏",
-                    account: "fengshaohong",
-                    createDate: "2018.05.26"
-                },
-                {
-                    caseName: "珠江帝景地产三月份方案",
-                    caseType: "上刊",
-                    dwNum: "60",
-                    uploadImg: "73",
-                    creater: "冯少宏",
-                    account: "fengshaohong",
-                    createDate: "2018.05.26"
-                },
-                {
-                    caseName: "珠江帝景地产三月份方案",
-                    caseType: "上刊",
-                    dwNum: "60",
-                    uploadImg: "73",
-                    creater: "冯少宏",
-                    account: "fengshaohong",
-                    createDate: "2018.05.26"
-                },
-                {
-                    caseName: "珠江帝景地产三月份方案",
-                    caseType: "上刊",
-                    dwNum: "60",
-                    uploadImg: "73",
-                    creater: "冯少宏",
-                    account: "fengshaohong",
-                    createDate: "2018.05.26"
-                },
-                {
-                    caseName: "珠江帝景地产三月份方案",
-                    caseType: "上刊",
-                    dwNum: "60",
-                    uploadImg: "73",
-                    creater: "冯少宏",
-                    account: "fengshaohong",
-                    createDate: "2018.05.26"
-                },
-                {
-                    caseName: "珠江帝景地产三月份方案",
-                    caseType: "上刊",
-                    dwNum: "60",
-                    uploadImg: "73",
-                    creater: "冯少宏",
-                    account: "fengshaohong",
-                    createDate: "2018.05.26"
-                },
-                {
-                    caseName: "珠江帝景地产三月份方案",
-                    caseType: "上刊",
-                    dwNum: "60",
-                    uploadImg: "73",
-                    creater: "冯少宏",
-                    account: "fengshaohong",
-                    createDate: "2018.05.26"
-                },
-                {
-                    caseName: "珠江帝景地产三月份方案",
-                    caseType: "上刊",
-                    dwNum: "60",
-                    uploadImg: "73",
-                    creater: "冯少宏",
-                    account: "fengshaohong",
-                    createDate: "2018.05.26"
-                },
-                {
-                    caseName: "珠江帝景地产三月份方案",
-                    caseType: "上刊",
-                    dwNum: "60",
-                    uploadImg: "73",
-                    creater: "冯少宏",
-                    account: "fengshaohong",
-                    createDate: "2018.05.26"
-                }
-            ]
+            // 搜索信息
+            searchInfo:{
+                resName: '',
+                apName: '',
+            },
+            // 上下刊下拉
+            publish: 'SK',
         };
     },
     created() {
         this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
         this.getIndustry();
         this.getAllCity();
+        // this.searchFun();
     },
     methods: {
         // 获取城市
@@ -350,25 +235,29 @@ export default {
             let info = {
                 uid: session.uID,
                 token: session.token,
-                imgType: type,
-                pageNum: (type =='SK') ? this.currUpPage : this.currDownPage,
-                pageSize: (type =='SK') ? this.pageUpSize : this.pageDownSize,
+                imgType: this.publish, // type,
+                pageNum: this.currUpPage,
+                pageSize: this.pageUpSize,
+                // pageNum: (type =='SK') ? this.currUpPage : this.currDownPage,
+                // pageSize: (type =='SK') ? this.pageUpSize : this.pageDownSize,
             };
             let range = this.date;
             let select = this.select;
-            let keyword = this.keyword;
+            // let keyword = this.keyword;
             let lab = this.LabSelect;
             let city = this.citySelect;
             let industry = this.industryIdArr;
             if(select == 1){
                 info.selectType = 'ap';
+                info.wd = this.searchInfo.apName
             }
             if(select == 3){
                 info.selectType = 'res';
+                info.wd = this.searchInfo.resName
             }
-            if(keyword){
-                info.wd = keyword;
-            }
+            // if(keyword){
+            //     info.wd = keyword;
+            // }
             if(range){
                 info.ls = range[0];
                 info.le = range[1];
@@ -388,17 +277,21 @@ export default {
             console.log('type---', info);
             return info;
         },
-        // 搜索分页
+        // 搜索
         searchFun(){
-            if(this.activeName == 'first'){
-                let upinfo = this.searchFormat('SK');
-                this.getUpImgInfo(upinfo);
-            }else if(this.activeName == "second"){
-                let downinfo = this.searchFormat('XK');
-                this.getDownImgInfo(downinfo);
-            }
+            let upinfo = this.searchFormat();
+            this.pageUpImgArr = []
+            this.initPage = []
+            this.getUpImgInfo(upinfo);
+            // if(this.activeName == 'first'){
+            //     let upinfo = this.searchFormat('SK');
+            //     this.getUpImgInfo(upinfo);
+            // }else if(this.activeName == "second"){
+            //     let downinfo = this.searchFormat('XK');
+            //     this.getDownImgInfo(downinfo);
+            // }
         },
-        // 获取上刊图片数据
+        // 获取上/下刊图片数据
         getUpImgInfo(params) {
             let addload = this.$loading({
                 lock: true,
@@ -448,70 +341,34 @@ export default {
                     console.log(res);
                 });
         },
-        // 获取上刊图片数据
-        getDownImgInfo(params) {
-            let addload = this.$loading({
-                lock: true,
-                text: '玩命加载中...',
-                spinner: 'el-icon-loading',
-                background: 'rgba(0, 0, 0, 0.7)'
-            });
-            api.getApi(this.apiVar.Advertisement+"/GetImgList", params)
-                .then(res => {
-                    if (!res.data.SysCode) {
-                        console.log(res.data);
-                        let dataInfo = res.data;
-                        this.totalDownNum = dataInfo.total;
-                        this.currDownPage = dataInfo.pageNum;
-                        for(let data of dataInfo.list){
-                            if( (typeof data.pRemarks) == 'string'){
-                                data.pRemarks = JSON.parse(data.pRemarks);
-                            }
-                        }
-                        this.pageDownImgArr = dataInfo.list;
-                        addload.close();
-                        console.log('pageup----', this.pageDownImgArr);
-                        if(this.pageDownImgArr.length){
-                            this.showPic = 3;
-                        }else{
-                            this.showPic = 2;
-                        }
-                    } else if (res.data.SysCode == 100302) {
-                        addload.close();
-                        this.loginTimeout();
-                    } else {
-                        addload.close();
-                        Message.warning(res.data.MSG);
-                    }
-                })
-                .catch(res => {
-                    addload.close();
-                    console.log(res);
-                });
-        },
         // 页数大小改变
         sizeChange(pageVal) {
             console.log("pageVal", pageVal);
-            if(this.activeName == 'first'){
-                this.currUpPage = 1;
-                this.pageUpSize = pageVal;
-                this.searchFun();
-            }else if(this.activeName == 'second'){
-                this.currDownPage = 1;
-                this.pageDownSize = pageVal;
-                this.searchFun();
-            }
+            this.currUpPage = 1;
+            this.pageUpSize = pageVal;
+            this.searchFun();
+            // if(this.activeName == 'first'){
+            //     this.currUpPage = 1;
+            //     this.pageUpSize = pageVal;
+            //     this.searchFun();
+            // }else if(this.activeName == 'second'){
+            //     this.currDownPage = 1;
+            //     this.pageDownSize = pageVal;
+            //     this.searchFun();
+            // }
         },
         // 分页功能
         changePage(page) {
             console.log('page----', page);
-            if(this.activeName == 'first'){
-                this.currUpPage = page;
-                this.searchFun();
-            }else if(this.activeName == 'second'){
-                this.currDownPage = page;
-                this.searchFun();
-            }
+            this.currUpPage = page;
+            this.searchFun();
+            // if(this.activeName == 'first'){
+            //     this.currUpPage = page;
+            //     this.searchFun();
+            // }else if(this.activeName == 'second'){
+            //     this.currDownPage = page;
+            //     this.searchFun();
+            // }
         },
         // tabClick
         handleClick() {
@@ -519,7 +376,7 @@ export default {
         },
         // 重置
         reset(){
-            this.keyword = '';
+            // this.keyword = '';
             this.LabSelect = '';
             this.date = [];
             this.citySelect = [];
@@ -528,6 +385,11 @@ export default {
             this.pageDownImgArr = [];
 
             this.showPic = 1;
+        },
+        // 分页初始化
+        initPage(){
+            this.currUpPage = 1;
+            this.pageUpSize = 10;
         },
         // 导出功能
         allDownLoad(){
@@ -583,7 +445,7 @@ export default {
             }, 1000);
             if (
                 !this.select &&
-                !this.keyword &&
+                // !this.keyword &&
                 !this.LabSelect &&
                 !this.date &&
                 !this.citySelect.length &&
@@ -603,45 +465,42 @@ export default {
         filterCaseType(value, row) {
             return row.tag === value;
         },
-        newPath() {
-            this.$router.push("./ludanReport");
-        }
     },
 
 };
 </script>
 
 <style scoped>
-/deep/ .el-cascader__label {
-    line-height: 32px;
-}
+    /deep/ .el-cascader__label {
+        line-height: 32px;
+    }
 
-/*面包屑导航*/
-.ad_mediaMana_wrap {
-    margin-bottom: 50px;
-}
+    /*面包屑导航*/
+    .ad_mediaMana_wrap {
+        margin-bottom: 50px;
+    }
 
-.ad_mediaMana_nav p {
-    padding-left: 57px;
-    position: absolute;
-    left: 0;
-    top: 12px;
-    font-size: 14px;
-    line-height: 18px;
-}
+    .ad_mediaMana_nav p {
+        padding-left: 57px;
+        position: absolute;
+        left: 0;
+        top: 12px;
+        font-size: 14px;
+        line-height: 18px;
+    }
 
-.ad_mediaMana_nav p a {
-    color: #666;
-}
+    .ad_mediaMana_nav p a {
+        color: #666;
+    }
 
-.ad_mediaMana_nav {
-    height: 42px;
-    position: relative;
-}
+    .ad_mediaMana_nav {
+        height: 42px;
+        position: relative;
+    }
 
-.ad_mediaMana_nav p a:nth-of-type(1) {
-    color: #999;
-}
+    .ad_mediaMana_nav p a:nth-of-type(1) {
+        color: #999;
+    }
 
     /*wrap*/
     .mediaList_wrap {
@@ -667,302 +526,259 @@ export default {
         font-weight: bold;
     }
 
-    .mediaList_wrap .mediaList_container {
+ /*   .mediaList_wrap .mediaList_container {
         width: 96%;
         margin: 0 32px;
+    }*/
+
+    /*tabs*/
+    /deep/ .el-tabs__item {
+        font-size: 16px;
+        color: #999999;
     }
 
-/*tabs*/
-/deep/ .el-tabs__item {
-    font-size: 16px;
-    color: #999999;
-}
+    /deep/ .el-tabs__item.is-top.is-active {
+        font-weight: bold;
+        color: #409eff;
+    }
 
-/deep/ .el-tabs__item.is-top.is-active {
-    font-weight: bold;
-    color: #409eff;
-}
+    /deep/ .el-tabs__nav {
+        height: 49px;
+        line-height: 49px;
+    }
 
-/deep/ .el-tabs__nav {
-    height: 49px;
-    line-height: 49px;
-}
 
-/*上刊*/
-/deep/ .type-select .el-input,
-/deep/ .type-select .el-input__inner {
-    width: 95px;
-    position: relative;
-    top: 0;
-    left: -5px;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    padding-right: 0;
-    padding-left: 10px;
-}
+  /*  /deep/ .plan-select .el-input,
+    /deep/ .plan-select .el-input__inner {
+        width: 160px;
+    }*/
 
-.searchInput /deep/ .el-input__inner,
-.searchInput {
-    width: 224px !important;
-    position: relative;
-    left: -7px;
-    top: 0;
-    border-left: none !important;
-    border-bottom-left-radius: 0;
-    border-top-left-radius: 0;
-}
+    /deep/ .el-input-group .el-input__suffix {
+        right: 5px;
+    }
 
-/deep/ .plan-select .el-input,
-/deep/ .plan-select .el-input__inner {
-    width: 160px;
-}
-/deep/ .el-input-group .el-input__suffix {
-    right: 5px;
-}
-/*搜索到的图片列表*/
-.input-with-select /deep/ .el-input__inner {
-    font-size: 14px;
-    vertical-align: middle;
-}
+    /*搜索条件*/
+    .el-row{
+        margin-bottom: 24px;
+    }
+    .el-row span{
+        color: rgba(0,0,0,0.85);
+        font-size: 14px;
+    }
+    .el-row .el-input{
+        width: calc(98% - 70px);
+    }
+    /deep/.el-row .el-cascader.plan-select{
+        width: calc(98% - 76px);
+    }
+    .el-row .el-date-editor{
+        width: calc(98% - 70px);
+    }
+    /deep/.el-row .el-select.plan-select{
+        width: calc(98% - 70px);
+    }
+    ..plan-select .el-input__inner{
+        width: 100%;
+    }
+    /*搜索到的图片列表*/
+    .input-with-select /deep/ .el-input__inner {
+        font-size: 14px;
+        vertical-align: middle;
+    }
 
-/deep/ .plan-select .el-input__inner {
-    font-size: 14px;
-    vertical-align: middle;
-}
+    /deep/ .el-dialog {
+        box-shadow: none;
+    }
 
-/deep/ .el-dialog {
-    box-shadow: none;
-}
+    .detailBox {
+        padding-left: 10px;
+        margin-top: 10px;
+        border-bottom: 1px solid #eeeeee;
+        padding-bottom: 13px;
+        display: flex;
+        flex-direction: column;
+    }
 
-.detailBox {
-    padding-left: 10px;
-    margin-top: 10px;
-    border-bottom: 1px solid #eeeeee;
-    padding-bottom: 13px;
-    display: flex;
-    flex-direction: column;
-}
+    .detailBox p {
+        font-size: 14px;
+        color: #333333;
+    }
 
-.detailBox p {
-    font-size: 14px;
-    color: #333333;
-}
+    .detailBox > span {
+        font-size: 10px;
+        color: #999999;
+    }
 
-.detailBox > span {
-    font-size: 10px;
-    color: #999999;
-}
+    .detailBox .icons {
+        font-size: 10px;
+        color: #999999;
+        margin-top: 12px;
+        position: relative;
+    }
 
-.detailBox .icons {
-    font-size: 10px;
-    color: #999999;
-    margin-top: 12px;
-    position: relative;
-}
+    .icon span {
+        float: left;
+    }
 
-.icon span {
-    float: left;
-}
+    .icons img {
+        width: 14px;
+        height: 14px;
+        position: relative;
+        top: 2px;
+    }
 
-.icons img {
-    width: 14px;
-    height: 14px;
-    position: relative;
-    top: 2px;
-}
+    .icons span + span {
+        margin-left: 15px;
+    }
 
-.icons span + span {
-    margin-left: 15px;
-}
+    .icons .content p {
+        font-size: 10px;
+        color: #666666;
+    }
 
-.icons .content p {
-    font-size: 10px;
-    color: #666666;
-}
+    .el-icon-info,
+    .el-icon-location {
+        font-size: 13px;
+    }
 
-.el-icon-info,
-.el-icon-location {
-    font-size: 13px;
-}
+    .icons .el-icon-info {
+        position: absolute;
+        right: 12px;
+        top: 2px;
+    }
 
-.icons .el-icon-info {
-    position: absolute;
-    right: 12px;
-    top: 2px;
-}
+    .infoBox {
+        padding: 10px;
+    }
 
-.infoBox {
-    padding: 10px;
-}
+    .infoBox i {
+        display: inline-block;
+        width: 22px;
+        height: 22px;
+        font-size: 10px;
+        color: #ffffff;
+        border-radius: 50%;
+        background-color: #91acf9;
+        font-style: normal;
+        text-align: center;
+        line-height: 20px;
+    }
 
-.infoBox i {
-    display: inline-block;
-    width: 22px;
-    height: 22px;
-    font-size: 10px;
-    color: #ffffff;
-    border-radius: 50%;
-    background-color: #91acf9;
-    font-style: normal;
-    text-align: center;
-    line-height: 20px;
-}
+    .infoBox span {
+        font-size: 10px;
+        color: #333333;
+    }
 
-.infoBox span {
-    font-size: 10px;
-    color: #333333;
-}
+    .infoBox em {
+        font-size: 10px;
+        color: #999999;
+        margin-left: 20px;
+        float: right;
+        position: relative;
+        top: 5px;
+    }
 
-.infoBox em {
-    font-size: 10px;
-    color: #999999;
-    margin-left: 20px;
-    float: right;
-    position: relative;
-    top: 5px;
-}
+    /*页码*/
+    .pager {
+        width: 100%;
+        margin-top: 20px;
+        text-align: right;
+    }
 
-/*页码*/
+    /deep/ .el-pagination.is-background .el-pager li {
+        font-weight: normal;
+        font-size: 13px;
+        background-color: transparent;
+    }
 
-.pager{
-    width: 100%;
-    margin-top: 20px;
-    text-align: right;
-}
-/deep/ .el-pagination.is-background .el-pager li {
-    font-weight: normal;
-    font-size: 13px;
-    background-color: transparent;
-}
+    /deep/ .el-select__caret {
+        position: relative;
+        right: 4px;
+    }
 
-/deep/ .el-select__caret {
-    position: relative;
-    right: 4px;
-}
+    .up-report-bottom {
+        text-align: center;
+        margin-top: 20px;
+    }
 
-.up-report-bottom {
-    text-align: center;
-    margin-top: 20px;
-}
+    /deep/ .el-pager .number {
+        background-color: transparent;
+    }
 
-/deep/ .el-pager .number {
-    background-color: transparent;
-}
+    /deep/ .el-date-editor .el-range-separator {
+        line-height: 26px;
+    }
 
-.el-input {
-    width: 240px;
-    border-radius: 4px;
-}
+    /*筛选*/
+    .el-checkbox + .el-checkbox {
+        margin-left: 0;
+    }
 
-/deep/ .el-date-editor .el-range-separator {
-    line-height: 26px;
-}
+    .typeBox p {
+        height: 30px;
+        font-size: 12px;
+        text-align: center;
+        line-height: 30px;
+        border-top: 1px solid #cccccc;
+    }
 
-.bottom-btn {
-    text-align: center;
-    margin-bottom: 30px;
-}
+    /deep/ .el-checkbox__label {
+        font-size: 10px;
+        color: #8a8a8a;
+    }
 
-/*筛选*/
-.el-checkbox + .el-checkbox {
-    margin-left: 0;
-}
+    /*下拉搜索框*/
+    /deep/ .el-input-group__prepend {
+        width: 64px;
+        background-color: #fff;
+    }
 
-.typeBox p {
-    height: 30px;
-    font-size: 12px;
-    text-align: center;
-    line-height: 30px;
-    border-top: 1px solid #cccccc;
-}
+    /deep/ .el-input-group--prepend .el-select .el-input__inner {
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        width: 104px;
+    }
 
-/deep/ .el-checkbox__label {
-    font-size: 10px;
-    color: #8a8a8a;
-}
+    /deep/ .el-input-group--prepend .el-input__inner {
+        width: 185px;
+    }
 
-/*日期控件*/
-.block {
-    display: inline-block;
-    margin-left: 2px;
-    position: relative;
-}
+    .el-input {
+        border-radius: 4px;
+    }
 
-/deep/ .el-range-separator {
-    position: relative;
-    top: -2px;
-}
+    /*按钮*/
+    /deep/ .el-button--default:focus,
+    .el-button--default:hover {
+        color: #606266;
+        border-color: #dcdfe6;
+        background-color: #fcfcfc;
+    }
 
-/deep/ .el-input__inner {
-    /* width: 260px; */
-}
+    /deep/ .el-tabs__nav-wrap::after {
+        height: 1px;
+    }
+    /*tag颜色覆盖*/
+    /deep/ .mediaList_wrap .el-tabs__content{
+        padding: 24px 32px;
+    }
+    /deep/ .mediaList_wrap .el-tabs__header{
+        padding: 0 32px;
+        margin: 0;
+        border-bottom: 1px solid #e4e7ed;
+    }
 
-/deep/ .el-date-editor i,
-/deep/ .el-date-editor input,
-/deep/ .el-date-editor span {
-    float: left;
-    position: relative;
-}
+    /deep/ .mediaList_wrap .el-tabs__nav-wrap::after{
+        width: 0;
+    }
 
-/*下拉搜索框*/
-/deep/ .el-input-group__prepend {
-    width: 64px;
-    background-color: #fff;
-}
+    /deep/ .mediaList_wrap .el-tabs__item.is-active{
+        color: #1890FF;
+    }
 
-/deep/ .el-input-group--prepend .el-select .el-input__inner {
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-
-    width: 104px;
-}
-
-/deep/ .el-input-group--prepend .el-input__inner {
-    width: 185px;
-}
-
-.el-input {
-    border-radius: 4px;
-}
-
-/*按钮*/
-/deep/ .el-button--default:focus,
-.el-button--default:hover {
-    color: #606266;
-    border-color: #dcdfe6;
-    background-color: #fcfcfc;
-}
-
-.search-wrap span {
-    float: left;
-    margin-left: 4px;
-}
-
-.mediaList_container .search-wrap span {
-    float: left;
-    margin-left: 4px;
-}
-
-/deep/ .el-cascader {
-    line-height: 19px;
-}
-
-.clearfix:before,
-.clearfix:after {
-    display: table;
-    content: "";
-}
-
-.clearfix:after {
-    clear: both;
-}
-
-/deep/ .el-tabs__nav-wrap::after {
-    height: 1px;
-}
-.search-wrap /deep/ .el-date-editor--daterange.el-input__inner{
-    max-width: 238px;
-}
+    /deep/ #tab-roadGate{
+        margin-left: 18px;
+    }
 </style>

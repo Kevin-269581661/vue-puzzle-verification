@@ -2672,7 +2672,7 @@
                     parkSpaceNum: recObj.carNumber,
                     fullViewUrl: recObj.fullViewUrl || '',
                     // 房价网信息
-                    resAlias: resObj.resAlias || '',                            // 资源别名
+                    resAlias: recObj.resAlias || '',                            // 资源别名
                     addressAlias: recObj.addressAlias,                          // 地址别名
                     description : recObj.description || '',                     // 描述
                     supportingFacilities : recObj.supportingFacilities || '',   // 周边配套

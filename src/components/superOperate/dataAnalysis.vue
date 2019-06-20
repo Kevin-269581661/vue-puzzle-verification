@@ -1106,7 +1106,7 @@
                         <div class="card thr-card2">
                             <div>
                                 <div class="thr-tabs">
-                                    <el-tabs v-model="thirdActiveName" type="card">
+                                    <el-tabs v-model="thirdActiveName" type="card" @tab-click="handleClick()">
                                         <el-tab-pane label="社区上刊率" name="first">
                                             <div class="point-percent">
                                                 <div class="select-wrap">
@@ -1193,6 +1193,7 @@
                                                         class="CUP-table PUP-table"
                                                         :data="resRateList"
                                                         border
+                                                        :key="resTableKey"
                                                         style="width: 100%"
                                                         height="390"
                                                     >
@@ -1204,19 +1205,19 @@
                                                         <el-table-column
                                                             prop="city"
                                                             label="城市"
-                                                            min-width="10%">
+                                                            min-width="190">
                                                         </el-table-column>
                                                         <el-table-column
                                                             prop="area"
                                                             label="区域"
-                                                            min-width="10%">
+                                                            min-width="190">
                                                         </el-table-column>
                                                         <!--  :filters="[{ text: '天河区', value: '天河区' }, { text: '越秀区', value:'越秀区' }]"
                                                         :filter-method="filterArea"-->
                                                         <el-table-column
                                                             prop="resName"
                                                             label="社区名称"
-                                                            min-width="18%">
+                                                            min-width="355">
                                                         </el-table-column>
                                                         <el-table-column
                                                             prop="upPercent"
@@ -1224,7 +1225,7 @@
                                                             sortable
                                                             :sort-method="sortUpPercent"
                                                             :sort-orders="[2,1]"
-                                                            min-width="10%">
+                                                            min-width="200">
                                                             <template slot-scope="scope">
                                                                 <span>{{scope.row.upPercent || '--'}}%</span>
                                                             </template>
@@ -1234,7 +1235,7 @@
                                                             label="投放金额"
                                                             sortable
                                                             :sort-orders="sortResPrice"
-                                                            min-width="10%">
+                                                            min-width="200">
                                                             <template slot-scope="scope">
                                                                 <span>&yen;{{scope.row.price || '--'}}</span>
                                                                 <!-- <span>&yen;{{priceFormat(scope.row.price)}}</span>-->
@@ -1333,6 +1334,7 @@
                                                         v-loadmore="adsLoadMore"
                                                         class="CUP-table"
                                                         :data="adsRateList"
+                                                        :key="adsTableKey"
                                                         border
                                                         style="width: 100%"
                                                         height="390">
@@ -1368,7 +1370,7 @@
                                                             label="广告编号"
                                                             :filters="[{ text: 'A', value: 'A' }, { text: 'B', value: 'B' }]"
                                                             :filter-method="filterAdNo"
-                                                            min-width="8%">
+                                                            min-width="10%">
                                                         </el-table-column>
                                                         <el-table-column
                                                             prop="createTime"
@@ -1525,6 +1527,7 @@
                 card4Date2: [],
                 dateCompare: false,
                 //行业订单总量趋势
+                busOrderLineEchart:'',
                 card5Industry: [1],
                 beforeCard5business: [1],
                 TOrderDate: [],
@@ -1551,6 +1554,7 @@
                 IOrderComCount: [{data: []}, {legendData: []}],// 行业订单占比-广告主数
                 IOrderDataShow: [{data: []}, {legendData: []}],
                 //入驻物业排行
+                PropertyRankEchart: '',
                 PMCDataTitle: '社区数量',
                 resPMCDate: [],
                 resPMCTime: '最近半年',
@@ -1651,6 +1655,7 @@
                     '天津亲邻众联科技有限公司'
                 ],
                 //城市上刊率对比
+                cityPercentBattleEchart: '',
                 cityPercentBattleLoading: true,// 城市上刊率对比loading
                 cityBattleLoading: true,       // 城市数据对比loading
                 cityRateCompareDate: [],
@@ -1733,6 +1738,7 @@
                 adsRateData: [],          // 点位上刊率接口原数据 - 切换城市或全国时会变更
                 adsRateListIndex: 0,
                 adsRateList: [],
+                adsTableKey: 1,     // 点位上刊表格
                 adsPageNum: 1,      // 当前页数
                 adsTotalPage: 1,    // 总页数
                 adsPageSize: 50,
@@ -1753,6 +1759,7 @@
                 beforeResRateList: [],  // 搜索前的resRateList
                 resRateListIndxe:0,
                 resRateList: [],
+                resTableKey: 1,
                 loading_res: true,     // 社区上刊率列表 - 滚动加载
                 colorArr: ['#975fe4', '#3aa0ff', '#36cbcb', '#4dcb73', '#fad337', '#f2637b', '#6081FF', '#FE752A'],
                 colortest: 'red',
@@ -3466,9 +3473,12 @@
                         }
                     ]
                 });
-                window.addEventListener("resize", ()=> {
-                    this.PieData.resize();
-                });
+                let timer = setTimeout(()=>{
+                    window.addEventListener("resize", ()=> {
+                        this.PieData.resize();
+                    });
+                    clearTimeout(timer)
+                },200)
             },
             // 关键数据总量趋势 折线图
             keyDataLine() {
@@ -3770,8 +3780,11 @@
             // 行业订单总量趋势 折线图
             busOrderLine() {
                 // console.log('行业订单总量趋势折线图busOrderLine',this.totalOrderDataShow)
-                let busOrderLine = this.$echarts.init(this.$refs.busOrderLine);
-                busOrderLine.setOption({
+                if(this.busOrderLineEchart){
+                    this.busOrderLineEchart.dispose()
+                }
+                this.busOrderLineEchart = this.$echarts.init(this.$refs.busOrderLine);
+                this.busOrderLineEchart.setOption({
                     color: this.colorArr,
                     tooltip: {
                         trigger: 'axis',
@@ -3850,8 +3863,8 @@
                     },
                     series: this.totalOrderDataShow
                 });
-                window.addEventListener("resize", function () {
-                    busOrderLine.resize();
+                window.addEventListener("resize", ()=> {
+                    this.busOrderLineEchart.resize();
                 })
             },
             // 行业订单占比 饼图
@@ -3966,8 +3979,11 @@
             },
             // 入驻物业排行 柱状图
             PropertyRank() {
-                let PropertyRank = this.$echarts.init(this.$refs.PropertyRank);
-                PropertyRank.setOption({
+                if(this.PropertyRankEchart){
+                    this.PropertyRankEchart.dispose()
+                }
+                this.PropertyRankEchart = this.$echarts.init(this.$refs.PropertyRank);
+                this.PropertyRankEchart.setOption({
                     tooltip: {
                         trigger: 'axis',
                         axisPointer: {            // 坐标轴指示器，坐标轴触发有效
@@ -4059,8 +4075,8 @@
                         }
                     ]
                 });
-                window.addEventListener("resize", function () {
-                    PropertyRank.resize();
+                window.addEventListener("resize", ()=> {
+                    this.PropertyRankEchart.resize();
                 });
             },
             // 广告主排行 柱状图
@@ -4716,8 +4732,11 @@
             },
             // 城市上刊率对比  柱状图
             cityPercentBattleBar() {
-                let cityPercentBattleBar = this.$echarts.init(this.$refs.cityPercentBattleBar);
-                cityPercentBattleBar.setOption({
+                if(this.cityPercentBattleEchart){
+                    this.cityPercentBattleEchart.dispose()
+                }
+                this.cityPercentBattleEchart = this.$echarts.init(this.$refs.cityPercentBattleBar);
+                this.cityPercentBattleEchart.setOption({
                     color: ['#4AA6FC'],
                     tooltip: {
                         trigger: 'axis',
@@ -4825,9 +4844,12 @@
                         }
                     ]
                 });
-                window.addEventListener("resize", function () {
-                    cityPercentBattleBar.resize();
-                });
+                let timer = setTimeout(()=>{
+                    window.addEventListener("resize", ()=> {
+                        this.cityPercentBattleEchart.resize();
+                    });
+                    clearTimeout(timer)
+                },200)
                 this.cityPercentBattleLoading = false
             },
             // 城市关键数据对比  饼图
@@ -5534,6 +5556,22 @@
                             this.setPageNoAndTableDataAds()
                             this.getAdsRateFun()
                         }
+                    }
+                }
+            },
+            handleClick(){
+                console.log('val',this.thirdActiveName)
+                if (this.thirdActiveName === 'first') {
+                    if (this.resTableKey === 1) {
+                        this.resTableKey = 2
+                    } else {
+                        this.resTableKey = 1
+                    }
+                } else if (this.thirdActiveName === 'second') {
+                    if (this.adsTableKey === 1) {
+                        this.adsTableKey = 2
+                    } else {
+                        this.adsTableKey = 1
                     }
                 }
             },
@@ -6463,6 +6501,7 @@
 
     .data-analysis .el-table__body-wrapper::-webkit-scrollbar {
         width: 4px;
+        height: 6px;
         background: #fafafa;
     }
 

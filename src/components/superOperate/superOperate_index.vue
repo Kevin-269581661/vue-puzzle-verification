@@ -1419,8 +1419,7 @@
 
 <style scoped>
     .ad_index_container{
-        margin: 24px auto;
-        width: 92%;
+        margin: 24px 64px;
         height: auto;
     }
     /*常用模块*/
@@ -1458,9 +1457,6 @@
         -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
         background: #c1c1c1;
         border-radius: 4px;
-    }
-    .info_box{
-        margin-top: 34px;
     }
     .info_box img{
         margin-right: 8px;

@@ -581,8 +581,7 @@ export default {
 
 <style scoped>
 .ad_index_container{
-	margin: 24px auto;
-	width: 92%;
+	margin: 24px 64px;
 	height: auto;
 }
 .h2_style{

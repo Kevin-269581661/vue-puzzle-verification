@@ -2658,7 +2658,7 @@
                     token: this.session_userData.token,
                     asrIDs: this.returnAsrID()
                 }
-                api.getApi(this.apiVar.Count + '/GetSurvey', params).then(res=>{
+                api.getApi(this.apiVar.Count + '/GetSurveyV2', params).then(res=>{
                     console.log('概况相关汇总数据接口',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.allDataLoading = false
@@ -5360,7 +5360,7 @@
                         delete params[i]
                     }
                 }
-                api.postApi(this.apiVar.Count + '/GetResPublicationRate',params).then(res=> {
+                api.postApi(this.apiVar.Count + '/GetResPublicationRateV2',params).then(res=> {
                     console.log('社区社区列表-接口', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()
@@ -5412,7 +5412,7 @@
                         delete params[i]
                     }
                 }
-                api.postApi(this.apiVar.Count + '/GetSpotPublicationRate',params).then(res=>{
+                api.postApi(this.apiVar.Count + '/GetSpotPublicationRateV2',params).then(res=>{
                     console.log('点位社区列表 - 接口',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()

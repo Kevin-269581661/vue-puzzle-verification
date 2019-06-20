@@ -556,8 +556,6 @@
                     if(indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)){
                         this.getPdIncomeCountByID()
                     }
-                    if(this.getIsFirst()){
-                    }
                     // 获取月订单数及订单金额总数
                     let endTime = timeFormat.returnMonthCount(0, '-')
                     // 判断当前日期是否为每月的1号

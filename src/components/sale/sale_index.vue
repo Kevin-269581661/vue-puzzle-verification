@@ -417,7 +417,7 @@ export default {
 					this.loginTimeout();
 				}else{
 					this.isShowLine = false;
-					Message.warning(res.data.MSG);
+					// Message.warning(res.data.MSG);
 				}
 			}).catch(err =>{
 				console.log(err);

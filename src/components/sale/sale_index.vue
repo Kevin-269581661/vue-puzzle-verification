@@ -116,6 +116,7 @@ import { api } from '../../api/api';
 import timeFormat from '../../commonFun/timeFormat';
 import sessFun from '../../commonFun/sessFun.js';
 import comcards from '../../commonFun/json/comcard.json';
+import indexIsDateFirst from '../../commonFun/indexIsDateFirst.js';
 
 export default {
 	name: "sale_index",
@@ -568,7 +569,10 @@ export default {
 	mounted(){
 		this.getSession();
 		this.getIsCom();
-		this.getRank();
+		let nowDate = timeFormat.toDate(new Date(), '/');		
+		if(indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)){
+			this.getRank();
+		}
 		// 获取数据
 		this.getData();
 		// 获取目标

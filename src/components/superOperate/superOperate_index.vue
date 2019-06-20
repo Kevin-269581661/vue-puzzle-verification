@@ -240,6 +240,8 @@
     import commaFormat from '../../commonFun/commaFormat'
     import sessFun from '../../commonFun/sessFun.js'
     import api from "../../api/api";
+    import indexIsDateFirst from '../../commonFun/indexIsDateFirst.js';
+    
     export default {
         name: "admin_index",
         data() {
@@ -550,7 +552,12 @@
             getDataByAsrID(){
                 if (this.isRetailCompany) {
                     // 直营公司收入排名(超级运营排行弹窗) GetPdIncomeCount
-                    this.getPdIncomeCountByID()
+                    let nowDate = timeFormat.toDate(new Date(), '/');		
+                    if(indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)){
+                        this.getPdIncomeCountByID()
+                    }
+                    if(this.getIsFirst()){
+                    }
                     // 获取月订单数及订单金额总数
                     let endTime = timeFormat.returnMonthCount(0, '-')
                     // 判断当前日期是否为每月的1号

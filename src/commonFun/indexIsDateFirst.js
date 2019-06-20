@@ -2,16 +2,21 @@ let dateInfo = {};
 let dateArr = JSON.parse(localStorage.getItem('indexIsDateFirst'));
 // 判断localStorage是否已存在对应uid的展示信息
 dateInfo.setData = function (dateObj) {
+    console.log('dateobj----', dateObj);
     if (!dateArr) {
         dateArr = [dateObj];
     } else {
         let isHad = false;
         for (let key of dateArr) {
-            if (key.uid == dateObj.uid && ) {
-                key.setTime = dateObj.setTime
-                key.planData = dateObj.planData
-                isHad = true
-                break
+            if (key.uid == dateObj.uid) {
+                if(key.date == dateObj.date){
+                    isHad = true;
+                }else{
+                    key.date = dateObj.date;
+                    key.isHad = dateObj.isHad;
+                }
+                isHad = true;
+                break;
             }
         }
         if (!isHad) {
@@ -23,37 +28,44 @@ dateInfo.setData = function (dateObj) {
 // 返回指定uid的是否展示
 dateInfo.getData = function (uid) {
     if (!dateArr) {
-        return false
+        return false;
     } else {
-        let isHad = false
+        let isHad = false;
         for (let key of dateArr) {
             if (key.uid == uid) {
-                return key
-                break
+                return key;
+                break;
             }
         }
         if (!isHad) {
-            return false
+            return false;
         }
     }
 }
-// 删除指定uid的展示
-dateInfo.removeData = function (uid) {
-    if (!dateArr) {
-        return
-    }
-    for (let i = 0;i < dateArr.length; ) {
-        if (dateArr[i].uid == uid) {
-            dateArr.splice(i,1)
-            break
+
+// 判断当前用户当天是否是第一次
+dateInfo.getIsFirst = function(uid, date){
+    let data = this.getData(uid);
+    let info = {
+        uid: uid,
+        date: date,
+        isHad: '',
+    };
+    if(data){
+        if(data.date == date){
+            if(data.isHad){
+                return false;
+            }else{
+                info.isHad = 1;
+            }
         }else{
-            i++
+            info.isHad = 1;
         }
+    }else{
+        info.isHad = 1;
     }
-    if (dateArr.length) {
-        localStorage.setItem('indexIsDateFirst', JSON.stringify(dateArr))
-    } else {
-        localStorage.removeItem('indexIsDateFirst')
-    }
+    // 存储数据
+    this.setData(info);
+    return true;
 }
 export default dateInfo;

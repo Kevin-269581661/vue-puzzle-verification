@@ -201,10 +201,10 @@
 /*wrap主体内容布局-表格*/
 
 .mediaList_wrap {
-    width: 92%;
+    /* width: 92%; */
     background: #ffffff;
     border: 1px solid #e6e7e9;
-    margin: 0 auto;
+    margin: 0 64px;
 }
 
 .mediaList_wrap .mediaList_head {
@@ -232,6 +232,9 @@
     border-radius: 4px;
 }
 
+.margin_16_64{
+    margin: 16px 64px;
+}
 /*表格上部条件*/
 
 .handel_ul {
@@ -259,10 +262,10 @@
 /*面包屑导航*/
 
 .ad_mediaDetail_nav {
-    width: 92%;
+    /* width: 92%; */
     height: 32px;
     line-height: 32px;
-    margin: 0 auto;
+    margin: 0 64px;
 }
 
 .ad_mediaDetail_nav p {

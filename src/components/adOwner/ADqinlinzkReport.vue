@@ -385,29 +385,4 @@ export default {
 .card-bottom .red {
     color: #ff7373;
 }
-
-/*1440*/
-@media all and (min-width: 1420px) {
-    .ad_mediaDetail_nav p {
-        padding-left: 70px;
-    }
-    .cards .box-card{
-        margin-right: 26px;
-    }
-
-
-}
-
-/*1920*/
-@media all and (min-width: 1900px) {
-    .ad_mediaDetail_nav p {
-        padding-left: 95px;
-    }
-    .cards .box-card{
-        margin-right: 58px !important;
-    }
-    .cards .box-card:nth-child(5n){
-        margin-right: 0px !important;
-    }
-}
 </style>

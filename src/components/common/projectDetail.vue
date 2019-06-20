@@ -7,7 +7,7 @@
                 <a href="#">工程详情</a>
             </p>
         </div>
-        <div class="comList_wrap">
+        <div class="mediaList_wrap">
             <div class="pro_content_top">
                 <el-row class="top_row">
                     <el-col :span="12">
@@ -682,15 +682,20 @@
         margin-top:24px;
     }
 
-    .comList_wrap {
-        width: 92%;
-        margin: 0 auto;
+    .mediaList_wrap {
+        border: none;
+        background: none;
     }
 
     .pro_content_top, .pro_detail_container{
         background:#fff;
         border:1px solid rgba(230,231,233,1);
+    }
+    .pro_content_top{
         padding: 24px 32px;
+    }
+    .pro_detail_container{
+        margin: 16px 0;
     }
     .pro_content_top .el-row b{
         font-size:14px;
@@ -722,11 +727,6 @@
     .same_padding{
         margin-bottom: 8px;
         padding-left: 40px;
-    }
-    .pro_detail_container{
-        margin: 16px 0;
-        padding: 0;
-
     }
     .el-col-24{
         width: auto;

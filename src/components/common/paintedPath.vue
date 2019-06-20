@@ -1,6 +1,6 @@
 <template>
-    <div class="ad_main">
-        <div class="ad_breadcrumb">
+    <div class="ad_mediaDetail_wrap clearfix">
+        <div class="ad_mediaDetail_nav">
             <p><a href="#" style="color: #999">线路管理</a></p>
         </div>
         <div class="mediaList_wrap">
@@ -851,18 +851,6 @@
 </script>
 
 <style scoped>
-    /*面包屑*/
-    .ad_breadcrumb{
-        height: 42px;
-        line-height: 42px;
-        font-size: 14px;
-        color: rgb(153,153,153);
-        width: 100%;
-    }
-    .ad_breadcrumb p{
-        width: 92%;
-        margin: 0 auto;
-    }
     /*搜索条件*/
     .handel_ul_li{
         margin-right: 32px;

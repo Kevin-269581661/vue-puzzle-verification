@@ -41,7 +41,7 @@ export default {
         },
         // 导出ppt/pdf
         getPPTProcess(){
-            api.getApi(this.apiVar.Advertisement+'/process', this.$route.query).then(res =>{
+            api.getApi(this.apiVar.Advertisement+'/GetReportExportProgress', this.$route.query).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 200200){
                     let resinfo = res.data.data;

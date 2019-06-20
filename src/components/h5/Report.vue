@@ -7,8 +7,8 @@
                         <h1>{{upReport.apName}}{{(Info.name =='SK')?'上刊':'下刊'}}报告 
                             <span class="button_box">
                                 <!-- <el-button class="down_btn" @click="getPTTx()">导出PPTx</el-button> -->
-                                <el-button @click="getPTT()" size="small">导出PPT</el-button>
-                                <el-button @click="getPDF()" size="small">导出PDF</el-button>
+                                <el-button @click="getPTT()" size="small" :loading="pptLoading">导出PPT</el-button>
+                                <el-button @click="getPDF()" size="small" :loading="pdfLoading">导出PDF</el-button>
                             </span>
                         </h1>
                         <h3>{{upReport.bTitle}} &nbsp;&nbsp;{{formatTime(upReport.apcTime)}}</h3>
@@ -333,6 +333,8 @@ export default {
             dialogImageUrl: "",
             isDisble: false,
             isImgDis: false,
+            pptLoading: false,
+            pdfLoading: false,
         };
     },
     created() {
@@ -470,16 +472,34 @@ export default {
         //         addload.close();
         //     });
         // },
-
         // 获取ppt
-        getPPT(){
+        getPTT(){
             let name = this.Info.name.toString().toLowerCase();
             let val = this.Info.val;
             let info = {
+                [name]: val
+            };
+            api.getApi(this.apiVar.Advertisement+'/GetPPTReport', info).then(res =>{
+                if(res.data.code == 300200){
+                    let tempwindow = window.open();
+                    tempwindow.location = res.data.data;
+                }else{
+                    
+                }
+            });
+        },
+        // 获取ppt
+        getPTTFun(){
+            let name = this.Info.name.toString().toLowerCase();
+            let val = this.Info.val;
+            let info = {
+                downtype: 2,
                 key: val,
                 type: name=='sk' ? 0 : 1,
             };
-            api.getApi(this.apiVar.Advertisement+"/process", info).then(res =>{
+            this.pptLoading = true;
+            api.getApi(this.apiVar.Advertisement+"/GetReportExportProgress", info).then(res =>{
+                this.pptLoading = false;
                 if(res.data.SysCode == 200200){
                     let routeUrl = this.$router.resolve({
                         path: "/progressDown",
@@ -493,6 +513,7 @@ export default {
                 }
             }).catch(err =>{
                 console.log(err);
+                this.pptLoading = false;
             });
         },
         // 获取pdf
@@ -500,10 +521,13 @@ export default {
             let name = this.Info.name.toString().toLowerCase();
             let val = this.Info.val;
             let info = {
+                downtype: 2,
                 key: val,
                 type: name=='sk' ? 2 : 3,
             };
-            api.getApi(this.apiVar.Advertisement+"/process", info).then(res =>{
+            this.pdfLoading = true;
+            api.getApi(this.apiVar.Advertisement+"/GetReportExportProgress", info).then(res =>{
+                this.pdfLoading = false;
                 if(res.data.SysCode == 200200){
                     let routeUrl = this.$router.resolve({
                         path: "/progressDown",
@@ -516,6 +540,7 @@ export default {
                     Message.warning(res.data.MSG);
                 }
             }).catch(err =>{
+                this.pdfLoading = false;                
                 console.log(err);
             });
         },
@@ -803,18 +828,6 @@ export default {
             this.$router.push("/login");
         }
     },
-    // mounted() {
-    //     $(function() {
-    //         $(".tabs")
-    //             .find("button")
-    //             .click(function() {
-    //                 $(this)
-    //                     .addClass("active")
-    //                     .siblings()
-    //                     .removeClass("active");
-    //             });
-    //     });
-    // }
 };
 </script>
 

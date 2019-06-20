@@ -79,7 +79,7 @@
                 </div>
             </div>
             <!--公司信息-->
-            <div class="mediaList_content clearfix">
+            <div class="mediaList_wrap clearfix margin_16_64">
                 <div class="content_bottom_wrap companyInfo">
                     <div class="content_bottom_head">
                         <h2>公司信息</h2>
@@ -893,14 +893,6 @@ export default {
 </script>
 
 <style scoped>
-.mediaList_content{
-    width: 92%;
-    background: #ffffff;
-    margin: 24px auto;
-    padding-bottom: 24px;
-    border: 1px solid #dedede;
-}
-
 .content_top_wrap,
 .content_bottom_wrap {
     background: #ffffff;

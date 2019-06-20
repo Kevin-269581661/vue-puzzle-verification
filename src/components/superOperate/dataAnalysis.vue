@@ -1226,7 +1226,7 @@
                                                             :sort-orders="[2,1]"
                                                             min-width="10%">
                                                             <template slot-scope="scope">
-                                                                <span>{{scope.row.upPercent}}%</span>
+                                                                <span>{{scope.row.upPercent || '--'}}%</span>
                                                             </template>
                                                         </el-table-column>
                                                         <el-table-column
@@ -1236,7 +1236,7 @@
                                                             :sort-orders="sortResPrice"
                                                             min-width="10%">
                                                             <template slot-scope="scope">
-                                                                <span>&yen;{{scope.row.price}}</span>
+                                                                <span>&yen;{{scope.row.price || '--'}}</span>
                                                                 <!-- <span>&yen;{{priceFormat(scope.row.price)}}</span>-->
                                                             </template>
                                                         </el-table-column>
@@ -1375,6 +1375,9 @@
                                                             label="点位创建日期"
                                                             sortable
                                                             min-width="20%">
+                                                            <template slot-scope="scope">
+                                                                <span>{{scope.row.createTime || '--'}}</span>
+                                                            </template>
                                                         </el-table-column>
                                                         <el-table-column
                                                             prop="upPercent"
@@ -1383,7 +1386,7 @@
                                                             :sort-method="sortUpPercent"
                                                             min-width="10%">
                                                             <template slot-scope="scope">
-                                                                <span>{{scope.row.upPercent}}%</span>
+                                                                <span>{{scope.row.upPercent || '--'}}%</span>
                                                             </template>
                                                         </el-table-column>
                                                         <el-table-column
@@ -1393,7 +1396,7 @@
                                                             :sort-orders="sortResPrice"
                                                             min-width="10%">
                                                             <template slot-scope="scope">
-                                                                <span>&yen;{{scope.row.price}}</span>
+                                                                <span>&yen;{{scope.row.price || '--'}}</span>
                                                                 <!--<span>&yen;{{priceFormat(scope.row.price)}}</span>-->
                                                             </template>
                                                         </el-table-column>
@@ -5571,7 +5574,7 @@
             cConfirm() {
                 // alert('12312')
                 if(this.cUpMin !== '' && this.cUpMax !== ''){
-                    if(this.cUpMin >= this.cUpMax){
+                    if(Number(this.cUpMin) >= Number(this.cUpMax)){
                         this.$message({
                             type:'warning',
                             message: '请填写正确的区间'
@@ -5604,9 +5607,9 @@
             },
             //社区 - 确定
             pConfirm() {
-                // console.log('社区上刊率')
+                console.log('社区上刊率',this.pUpMin,this.pUpMax)
                 if(this.pUpMin !== '' && this.pUpMax !== ''){
-                    if(this.pUpMin >= this.pUpMax){
+                    if(Number(this.pUpMin) >= Number(this.pUpMax)){
                         this.$message({
                             type:'warning',
                             message: '请填写正确的区间'
@@ -6269,9 +6272,11 @@
         background: #fff;
     }
 
-    .upPercent-wrap-mask button {
+    .upPercent-wrap-mask /deep/ .el-button {
         width: 44px;
+        min-width: 44px;
         height: 24px;
+        line-height: 24px;
         position: absolute;
         bottom: 5px;
         left: 10px;
@@ -6279,7 +6284,7 @@
 
     .upPercent-wrap-mask button:last-child {
         left: 60%;
-        bottom: 0;
+        /*bottom: 0;*/
     }
 
     .upPercent-wrap-mask button:last-child span {

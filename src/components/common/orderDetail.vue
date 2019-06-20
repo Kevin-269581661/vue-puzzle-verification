@@ -338,7 +338,7 @@
                                             <!--</el-checkbox>-->
                                         </div>
                                         <div class="up-report-bottom-btns">
-                                            <el-button @click="downloadImg('XK')" >导出图片</el-button>                                        
+                                            <el-button @click="downloadImg('XK')" >导出图片</el-button>
                                             <el-button type="primary" @click="submitUpload('XK')">保存</el-button>
                                             <!-- <el-button plain @click="downloadDown">下载PDF</el-button> -->
                                             <el-button plain @click="showH5('XK')">查看H5</el-button>

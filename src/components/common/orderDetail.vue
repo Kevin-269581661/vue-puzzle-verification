@@ -44,7 +44,7 @@
                     </div>
                 </div>
             </div>
-            <div class="mediaList_content">
+            <div class="mediaList_wrap margin_16_64">
                 <el-tabs v-model="planPanel" @tab-click="handleClick()">
                     <el-tab-pane label="选点排期" name="first">
                         <div class="first-wrap box-wrap">
@@ -246,7 +246,7 @@
                                             <!--</el-checkbox>-->
                                         <!-- </div> -->
                                         <div class="up-report-bottom-btns">
-                                            <el-button @click="downloadImg('SK')" >导出图片</el-button>
+                                            <el-button @click="downloadImg('SK')" :loading="downLoading">导出图片</el-button>
                                             <el-button type="primary" @click="submitUpload('SK')">保存</el-button>
                                             <!-- <el-button plain @click="downloadUp">下载PDF</el-button> -->
                                             <el-button plain @click="showH5('SK')">查看H5</el-button>
@@ -338,7 +338,7 @@
                                             <!--</el-checkbox>-->
                                         </div>
                                         <div class="up-report-bottom-btns">
-                                            <el-button @click="downloadImg('XK')" >导出图片</el-button>
+                                            <el-button @click="downloadImg('XK')" :loading="downLoading">导出图片</el-button>
                                             <el-button type="primary" @click="submitUpload('XK')">保存</el-button>
                                             <!-- <el-button plain @click="downloadDown">下载PDF</el-button> -->
                                             <el-button plain @click="showH5('XK')">查看H5</el-button>
@@ -717,6 +717,8 @@ export default {
             //选点排期操作
             showHandel: false,
             UploadTime: 0,
+            // 导出订单图片包
+            downLoading: false,
         };
     },
     created() {
@@ -2295,6 +2297,7 @@ export default {
                 type: type=='SK' ? 0 : 1,
                 apName: this.orderDetail.apName,
             };
+            this.downLoading = true;
             api.getApi(this.apiVar.Advertisement+'/DownloadImgPackage', info).then(res =>{
                 if(res.data.SysCode == 200200){
                     let routeUrl = this.$router.resolve({
@@ -2307,6 +2310,9 @@ export default {
                 }else{
                     Message.warning(res.data.MSG);
                 }
+                this.downLoading = false;
+            }).catch(err =>{
+                this.downLoading = false;
             });
         },
     },
@@ -2314,13 +2320,6 @@ export default {
 </script>
 
 <style scoped>
-.mediaList_content{
-    width: 92%;
-    background: #ffffff;
-    margin: 16px auto;
-    padding-bottom: 16px;
-    border: 1px solid #dedede;
-}
 /*修改合同号*/
 .changeCID {
     color: #1890ff;
@@ -2932,12 +2931,12 @@ export default {
     width: 50px;
 }
 
-/deep/ .mediaList_content .el-tabs__header{
+/deep/ .mediaList_wrap .el-tabs__header{
     border-bottom: 1px solid #e6e7e9;
     height: 53px;
     line-height: 54px;
 }
-/deep/.mediaList_content  .baojiadan .el-tabs__header{
+/deep/.mediaList_wrap  .baojiadan .el-tabs__header{
     border-bottom: none;
     height: 38px;
     line-height: 38px;

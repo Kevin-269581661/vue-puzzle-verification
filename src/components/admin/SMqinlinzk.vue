@@ -1009,19 +1009,4 @@
     /deep/ .el-date-editor .el-range__close-icon {
         line-height: 23px;
     }
-
-    /*1440*/
-    @media all and (min-width: 1420px) {
-        .ad_mediaDetail_nav p {
-            padding-left: 70px;
-        }
-    }
-
-    /*1920*/
-    @media all and (min-width: 1900px) {
-        .ad_mediaDetail_nav p {
-            padding-left: 95px;
-        }
-
-    }
 </style>

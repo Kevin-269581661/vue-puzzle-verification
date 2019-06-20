@@ -29,7 +29,7 @@
                     </div>
                 </div>
             </div>
-            <div class="mediaList_content">
+            <div class="mediaList_wrap margin_16_64">
                 <el-tabs v-model="planPanel" @tab-click="handleClick()">
                     <el-tab-pane label="选点排期" name="first">
                         <div class="first-wrap box-wrap">
@@ -483,13 +483,6 @@ export default {
 </script>
 
 <style scoped>
-.mediaList_content{
-    width: 92%;
-    background: #ffffff;
-    margin: 16px auto;
-    padding-bottom: 16px;
-    border: 1px solid #dedede;
-}
 /*状态行*/
 /deep/ .el-table .warning-row {
     background: #fff1f1;
@@ -654,12 +647,12 @@ export default {
     color: #666666;
 }
 
-/deep/ .mediaList_content .el-tabs__header{
+/deep/ .mediaList_wrap .el-tabs__header{
     border-bottom: 1px solid #e6e7e9;
     height: 53px;
     line-height: 54px;
 }
-/deep/.mediaList_content  .baojiadan .el-tabs__header{
+/deep/.mediaList_wrap  .baojiadan .el-tabs__header{
     border-bottom: none;
     height: 38px;
     line-height: 38px;

@@ -420,7 +420,6 @@ export default {
 
 .button_type{
     float: right;
-    padding: 6px;
     margin: 6px;
 }
 </style>

@@ -571,12 +571,6 @@
         height: 24px;
     }
 
-
-    /*1440*/
-    @media all and (min-width: 1420px) {
-
-    }
-
     /*1920*/
     @media all and (min-width: 1900px) {
 

@@ -20,6 +20,7 @@ export default {
     },
     methods:{
         getProcess(){
+            let tempwindow = '';
             api.getApi(this.apiVar.Advertisement+'/DownloadImgPackage', this.$route.query).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 200200){
@@ -27,7 +28,7 @@ export default {
                     this.currper = parseInt(Number(resinfo.rate));
                     if(this.currper == 100){
                         clearInterval(this.myInterval);
-                        let tempwindow = window.open();
+                        tempwindow = window.open();
                         tempwindow.location = resinfo.url;
                         this.$alert('请在下载工具里查看文件', '文件成功生成', {
                             confirmButtonText: '知道了',

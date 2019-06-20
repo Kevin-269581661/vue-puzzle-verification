@@ -1,5 +1,5 @@
 <template>
-    <div class="mediaDetail">
+    <div>
         <div class="ad_mediaDetail_wrap clearfix">
             <div class="ad_mediaDetail_nav">
                 <p>
@@ -8,8 +8,8 @@
                     <a href="#">订单详情</a>
                 </p>
             </div>
-            <!--资源信息-->
-            <div class="mediaMana_content_top">
+            <!--资源信息mediaMana_content_top-->
+            <div class="mediaList_wrap">
                 <div class="content_top_wrap" v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                     <div class="plan-title">
                         <h4>
@@ -44,7 +44,7 @@
                     </div>
                 </div>
             </div>
-            <div class="plan-panel">
+            <div class="mediaList_wrap margin_16_64">
                 <el-tabs v-model="planPanel" @tab-click="handleClick()">
                     <el-tab-pane label="选点排期" name="first">
                         <div class="first-wrap box-wrap">
@@ -54,20 +54,18 @@
                                 更换点位
                                <span>单位:面&nbsp;&nbsp; 首次投放:{{nowPointNum}}&nbsp;&nbsp; 中止投放:{{stopPointNum}} &nbsp;&nbsp;&nbsp; 新增面数:{{addNewPointNum}} &nbsp;&nbsp;&nbsp; 累计投放:{{setpointArr.length}} </span>
                             </h4>
-                            <div class="search-wrap">
-                                <span>
+                            <el-row class="search-row">
+                                <el-col>
                                     <el-input placeholder="请输入内容" v-model="keyword" class="input-with-select" @change="init()">
                                         <el-select v-model="selectRecName" slot="prepend" placeholder="请选择">
                                             <el-option label="资源名称" value="1"></el-option>
                                         </el-select>
                                     </el-input>
-                                </span>
-                                <span>
-                                    <el-button type="primary" icon="el-icon-search" class="searchBtn" @click="search()">搜索</el-button>
-                                    <el-button type="primary" @click="showAddPointDialog" class="changeDWBtn" v-show="showHandel">添加点位</el-button>
-                                    <el-button type="default" icon="el-icon-download" class="searchBtn" @click="export2Excel(orderDetail.apName)" :disabled="isDown">导出</el-button>
-                                </span>
-                            </div>
+                                    <el-button type="primary" icon="el-icon-search" @click="search()">搜索</el-button>
+                                    <el-button type="primary" @click="showAddPointDialog" v-show="showHandel">添加点位</el-button>
+                                    <el-button type="default" icon="el-icon-download" @click="export2Excel(orderDetail.apName)" :disabled="isDown">导出</el-button>
+                                </el-col>
+                            </el-row>
 
                             <div class="table_wrap">
                                 <el-table border :data="currentSetpoint" style="width: 100%"
@@ -145,8 +143,8 @@
                                     </el-table-column>
                                     <el-table-column label="操作" min-width="4.3%" v-if="showHandel">
                                         <template slot-scope="scope">
-                                            <span style="color:#999;" v-if="scope.row.lState==2">终止</span>
-                                            <span style="color:#409EFF;" v-else @click="disContinue(scope.row)">终止</span>
+                                            <span style="color:#999;cursor: pointer;" v-if="scope.row.lState==2">终止</span>
+                                            <span style="color:#409EFF;cursor: pointer;" v-else @click="disContinue(scope.row)">终止</span>
                                         </template>
                                     </el-table-column>
 
@@ -177,7 +175,6 @@
                                             <el-radio-button label="广告门"></el-radio-button>
                                             <el-radio-button label="道闸"></el-radio-button>
                                         </el-radio-group>
-                                        <!-- <el-button @click="downloadImg('SK')" >导出图片</el-button> -->
                                         <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
                                     </template>
 
@@ -249,6 +246,7 @@
                                             <!--</el-checkbox>-->
                                         <!-- </div> -->
                                         <div class="up-report-bottom-btns">
+                                            <el-button @click="downloadImg('SK')" :loading="downLoading">导出图片</el-button>
                                             <el-button type="primary" @click="submitUpload('SK')">保存</el-button>
                                             <!-- <el-button plain @click="downloadUp">下载PDF</el-button> -->
                                             <el-button plain @click="showH5('SK')">查看H5</el-button>
@@ -268,7 +266,6 @@
                                             <el-radio-button label="广告门"></el-radio-button>
                                             <el-radio-button label="道闸"></el-radio-button>
                                         </el-radio-group>
-                                        <!-- <el-button @click="downloadImg('XK')" >导出图片</el-button>                                         -->
                                         <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
                                     </template>
 
@@ -341,6 +338,7 @@
                                             <!--</el-checkbox>-->
                                         </div>
                                         <div class="up-report-bottom-btns">
+                                            <el-button @click="downloadImg('XK')" :loading="downLoading">导出图片</el-button>                                        
                                             <el-button type="primary" @click="submitUpload('XK')">保存</el-button>
                                             <!-- <el-button plain @click="downloadDown">下载PDF</el-button> -->
                                             <el-button plain @click="showH5('XK')">查看H5</el-button>
@@ -719,6 +717,8 @@ export default {
             //选点排期操作
             showHandel: false,
             UploadTime: 0,
+            // 导出订单图片包
+            downLoading: false,
         };
     },
     created() {
@@ -2297,6 +2297,7 @@ export default {
                 type: type=='SK' ? 0 : 1,
                 apName: this.orderDetail.apName,
             };
+            this.downLoading = true;
             api.getApi(this.apiVar.Advertisement+'/DownloadImgPackage', info).then(res =>{
                 if(res.data.SysCode == 200200){
                     let routeUrl = this.$router.resolve({
@@ -2309,6 +2310,9 @@ export default {
                 }else{
                     Message.warning(res.data.MSG);
                 }
+                this.downLoading = false;
+            }).catch(err =>{
+                this.downLoading = false;
             });
         },
     },
@@ -2344,12 +2348,6 @@ export default {
     margin-right: 35px;
 }
 
-.plan-panel {
-    margin: 24px 60px;
-    background: #fff;
-    border: 1px solid #dedede;
-}
-
 .price_quo{
     margin: 0 auto;
     width: 96%;
@@ -2379,15 +2377,20 @@ export default {
     left: 5px;
 }
 
-/*选点排期*/
-.changeDWBtn {
-    margin-left: 10px;
-}
-
 .table_wrap {
     padding: 10px 28px 28px 28px;
 }
+/* 搜索 */
+.el-input {
+    width: 180px;
+    border-radius: 4px;
+}
 
+.input-with-select /deep/ .el-input__inner {
+    font-size: 14px;
+    vertical-align: middle;
+    margin-right: 4px;
+}
 /*下拉搜索框*/
 /deep/ .el-input-group__prepend {
     width: 64px;
@@ -2485,7 +2488,7 @@ export default {
 .content_top_wrap {
     padding: 34px 28px;
     background: #ffffff;
-    border: 1px solid #dedede;
+    /* border: 1px solid #dedede; */
     height: 145px;
     position: relative;
 }
@@ -2746,23 +2749,11 @@ export default {
     margin-bottom: 10px;
 }
 
-/*资源信息*/
-.mediaMana_content_top {
-    padding: 8px 60px 0 60px;
-}
-
 /*按钮*/
 .content_bottom_btn {
     width: 100%;
     text-align: center;
-    margin-bottom: 20px;
-    margin-top: 20px;
-}
-
-.content_bottom_btn button {
-    width: 80px;
-    height: 32px;
-    line-height: 10px;
+    margin: 32px 0;
 }
 
 /deep/ .el-button--default:focus,
@@ -2819,49 +2810,10 @@ export default {
     left: -3px;
 }
 
-/*表格*/
-/deep/ .el-checkbox + .el-checkbox {
-    margin-left: 10px;
-}
-
-/deep/ .el-table__expanded-cell[class*="cell"] {
-    padding: 0 44px;
-    background-color: #f7f7f7;
-}
-
-/deep/ .el-table__expanded-cell[class*="cell"] .el-form {
-    height: 44px;
-    line-height: 44px;
-}
-
-/deep/ .el-form-item__content {
-    line-height: 46px;
-}
-
-/deep/ .el-form-item__label {
-    padding: 0 0 0 12px;
-}
-
 /*滚动条*/
 /deep/ .el-table__body-wrapper {
     height: 480px;
 }
-
-/deep/ .el-form--inline .el-form-item {
-    margin-right: 45px;
-}
-
-/deep/ .table_wrap.car-list {
-    margin-top: 0 !important;
-}
-
-/*超出省略*/
-/deep/ .el-table .cell {
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
 /deep/ .el-table__row td:nth-child(2) .cell span {
     width: 225px;
 }
@@ -2881,16 +2833,13 @@ export default {
     left: -3px;
 }
 
-.search-wrap{
-    display:inline-block;
-    margin-left: 30px;
-    margin-top: 10px;
+/* 搜索 */
+.search-row{
+    padding: 8px 28px;
 }
-/deep/ .search-wrap > span {
-    float: left;
-    margin-left: 2px;
+.search_col{
+    margin-left: 8px;
 }
-
 /*日期控件*/
 .block {
     display: inline-block;
@@ -2982,12 +2931,12 @@ export default {
     width: 50px;
 }
 
-/deep/ .plan-panel .el-tabs__header{
+/deep/ .mediaList_wrap .el-tabs__header{
     border-bottom: 1px solid #e6e7e9;
     height: 53px;
     line-height: 54px;
 }
-/deep/.plan-panel  .baojiadan .el-tabs__header{
+/deep/.mediaList_wrap  .baojiadan .el-tabs__header{
     border-bottom: none;
     height: 38px;
     line-height: 38px;
@@ -3016,18 +2965,6 @@ export default {
 /deep/ .disabled .el-upload--picture-card {
     display: none;
 }
-
-/deep/ .el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active{
-    background-color: transparent;
-    border: none;
-}
-/deep/ .el-tabs--border-card>.el-tabs__header .el-tabs__item{
-    border: none;
-}
-/deep/ .el-tabs__item:focus.is-active.is-focus:not(:active){
-    box-shadow: none;
-}
-
 .radio_style{
     vertical-align: top;
 }

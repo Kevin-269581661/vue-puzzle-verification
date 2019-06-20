@@ -35,7 +35,6 @@ const editPlan = () => import('../components/common/editPlan.vue')
 const planDetail = () => import('../components/common/planDetail.vue')
 const orderDetail = () => import('../components/common/orderDetail.vue')
 const photoGallery = () => import('../components/common/photoGallery.vue')
-const ludanReport = () => import('../components/common/ludanReport.vue')
 const advertTV = () => import('../components/common/advertTV.vue')
 const tvOrderList = () => import('../components/common/tvOrderList.vue')
 const tvOrderDetail = () => import('../components/common/tvOrderDetail.vue')
@@ -127,7 +126,7 @@ export default new Router({
             children: [
                 {path: '/superOperate', component: adminIndex},
                 {path: '/superOperate/ADlimitList', component: ADlimitList},
-                {path: '/superOperate/mediaInput', component: mediaInput},
+                // {path: '/superOperate/mediaInput', component: mediaInput},
                 {path: '/superOperate/mediaList', component: mediaList},
                 {path: '/superOperate/mediaDetail', component: mediaDetail},
                 {path: '/superOperate/clientList', component: clientList},
@@ -140,7 +139,6 @@ export default new Router({
                 {path: '/superOperate/planDetail', component: planDetail},
                 {path: '/superOperate/orderDetail', component: orderDetail},
                 {path: '/superOperate/photoGallery', component: photoGallery},
-                {path: '/superOperate/ludanReport', component: ludanReport},
                 {path: '/superOperate/dataAnalysis', component: dataAnalysis},
                 {path: '/superOperate/changePwd', component: changePwd},
                 {path: '/superOperate/myInfo', component: myInfo},
@@ -184,6 +182,7 @@ export default new Router({
                 {path: '/media', component: mediaIndex},
                 {path: '/media/mediaList', component: mediaList},
                 {path: '/media/mediaInput', component: mediaInput},
+                {path: '/media/mediaEdit', component: mediaInput},
                 {path: '/media/mediaDetail', component: mediaDetail},
                 {path: '/media/planList', component: planList},
                 {path: '/media/publishPriceList', component: publishPriceList},
@@ -194,7 +193,6 @@ export default new Router({
                 {path: '/media/orderDetail', component: orderDetail},
                 {path: '/media/photoGallery', component: photoGallery},
                 {path: '/media/changePwd', component: changePwd},
-                {path: '/media/ludanReport', component: ludanReport},
                 {path: '/media/questionAndAnswer', component: questionAndAnswer},
                 {path: '/media/advertTV', component: advertTV},
                 {path: '/media/tvOrderList', component: tvOrderList},

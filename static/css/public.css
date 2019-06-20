@@ -201,10 +201,10 @@
 /*wrap主体内容布局-表格*/
 
 .mediaList_wrap {
-    width: 92%;
+    /* width: 92%; */
     background: #ffffff;
     border: 1px solid #e6e7e9;
-    margin: 0 auto;
+    margin: 0 64px;
 }
 
 .mediaList_wrap .mediaList_head {
@@ -228,10 +228,13 @@
 }
 
 .mediaList_wrap .mediaList_container .table_wrap {
-    margin: 24px auto 16px;
+    margin: 16px auto;
     border-radius: 4px;
 }
 
+.margin_16_64{
+    margin: 16px 64px;
+}
 /*表格上部条件*/
 
 .handel_ul {
@@ -259,18 +262,15 @@
 /*面包屑导航*/
 
 .ad_mediaDetail_nav {
-    width: 92%;
-    height: 42px;
-    margin: 0 auto;
-    position: relative;
+    /* width: 92%; */
+    height: 32px;
+    line-height: 32px;
+    margin: 0 64px;
 }
 
 .ad_mediaDetail_nav p {
-    position: absolute;
-    left: 0;
-    top: 12px;
     font-size: 14px;
-    line-height: 18px;
+    display: inline-block;
 }
 
 .ad_mediaDetail_nav p em {

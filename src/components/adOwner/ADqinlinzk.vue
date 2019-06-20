@@ -391,15 +391,12 @@
 </script>
 
 <style scoped>
-    /*.ad_mediaDetail_wrap{*/
-        /*padding-top: 60px;*/
-    /*}*/
+    .ad_mediaDetail_wrap{
+        position: initial;
+    }
     .el-menu-vertical-demo:not(.el-menu--collapse) {
         position: absolute;
-        /*left: 42px;*/
-        /*top: 60px;*/
         height: 90%;
-        /*min-width: 146px;*/
         width: 165px;
         border-top: 1px solid #666161;
     }
@@ -532,14 +529,6 @@
         padding: 0 10px;
     }
 
-
-    /*1440*/
-    @media all and (min-width: 1420px) {
-    }
-
-    /*1920*/
-    @media all and (min-width: 1900px) {
-    }
 </style>
 <style>
     .ADqinlinzk .tabs .el-tabs__item {

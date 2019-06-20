@@ -240,6 +240,8 @@
     import commaFormat from '../../commonFun/commaFormat'
     import sessFun from '../../commonFun/sessFun.js'
     import api from "../../api/api";
+    import indexIsDateFirst from '../../commonFun/indexIsDateFirst.js';
+    
     export default {
         name: "admin_index",
         data() {
@@ -550,7 +552,10 @@
             getDataByAsrID(){
                 if (this.isRetailCompany) {
                     // 直营公司收入排名(超级运营排行弹窗) GetPdIncomeCount
-                    this.getPdIncomeCountByID()
+                    let nowDate = timeFormat.toDate(new Date(), '/');		
+                    if(indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)){
+                        this.getPdIncomeCountByID()
+                    }
                     // 获取月订单数及订单金额总数
                     let endTime = timeFormat.returnMonthCount(0, '-')
                     // 判断当前日期是否为每月的1号
@@ -1419,8 +1424,7 @@
 
 <style scoped>
     .ad_index_container{
-        margin: 24px auto;
-        width: 92%;
+        margin: 24px 64px;
         height: auto;
     }
     /*常用模块*/
@@ -1458,9 +1462,6 @@
         -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
         background: #c1c1c1;
         border-radius: 4px;
-    }
-    .info_box{
-        margin-top: 34px;
     }
     .info_box img{
         margin-right: 8px;

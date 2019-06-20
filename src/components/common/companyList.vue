@@ -464,13 +464,6 @@
     /deep/ .el-table__body-wrapper {
         height: 405px;
     }
-
-    /*超出省略*/
-    /deep/ .el-table .cell {
-        white-space: nowrap;
-        max-width: 300px;
-        text-overflow: ellipsis;
-    }
 </style>
 
 

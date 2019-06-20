@@ -276,44 +276,13 @@ export default {
 </script>
 
 <style scoped>
-/*面包屑导航*/
-.ad_mediaDetail_wrap {
-    position: relative;
-    /*padding-top: 60px;*/
-}
-
-.ad_mediaDetail_nav p {
-    padding-left: 65px;
-    position: absolute;
-    left: 0;
-    top: 12px;
-    font-size: 14px;
-    line-height: 18px;
-}
-
-.ad_mediaDetail_nav p a {
-    color: #666;
-}
-
-.ad_mediaDetail_nav {
-    height: 42px;
-    position: relative;
-}
-
-.mediaList_wrap {
-    width: 90%;
-    /*height: 581px;*/
-    border-radius: 4px;
-    margin: 0 auto;
-}
-
 /*内容*/
 .banner {
     display: flex;
     justify-content: space-between;
     padding: 27px 70px 47px 27px;
     background: #ffffff;
-    border: 1px solid #e6e7e9;
+	border-bottom: 1px solid #e6e7e9;
 }
 .banner-txt {
     width: 55%;
@@ -341,6 +310,7 @@ export default {
     height: 0;
 }
 .cards {
+	padding: 10px 24px;
     display: flex;
     /*justify-content: space-between;*/
 
@@ -414,30 +384,5 @@ export default {
 }
 .card-bottom .red {
     color: #ff7373;
-}
-
-/*1440*/
-@media all and (min-width: 1420px) {
-    .ad_mediaDetail_nav p {
-        padding-left: 70px;
-    }
-    .cards .box-card{
-        margin-right: 26px;
-    }
-
-
-}
-
-/*1920*/
-@media all and (min-width: 1900px) {
-    .ad_mediaDetail_nav p {
-        padding-left: 95px;
-    }
-    .cards .box-card{
-        margin-right: 58px !important;
-    }
-    .cards .box-card:nth-child(5n){
-        margin-right: 0px !important;
-    }
 }
 </style>

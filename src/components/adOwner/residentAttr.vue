@@ -749,13 +749,13 @@ export default {
     .contain_top{
         height: 156px;
         /* margin-top: 20px; */
-        margin: 22px auto;
+        margin: 24px auto 16px;
         display: flex;
     }
     .con_left{
         width: 65%;
         height: 100%;
-        margin-right: 30px;
+        margin-right: 16px;
         overflow: hidden;
         background: #fff;
         border: 1px solid #dedede;
@@ -780,7 +780,7 @@ export default {
     .contain_mid, .contain_foot{
         height: 336px;
         /* border: 1px solid #dedede; */
-        margin: 30px auto;
+        margin: 16px auto;
         display: flex;
         /* background: #fff; */
     }

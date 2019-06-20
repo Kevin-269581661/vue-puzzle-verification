@@ -26,7 +26,9 @@
                             <el-col :span="6">
                                 <span class="ad_mediaInfoPanel_row_title">所在区域：</span><span>{{resData.cityArea}}</span>
                             </el-col>
-                            <el-col :span="6"></el-col>
+                            <el-col :span="6">
+                                <span class="ad_mediaInfoPanel_row_title">资源别名：</span><span>{{resData.resAlias}}</span>
+                            </el-col>
                         </el-row>
                     </div>
                     <div class="ad_mediaInfoPanel_row">
@@ -68,7 +70,7 @@
                                         <div class="showAllText showAllTextSfs" v-show="judgeShowBtn.sfs">
                                             <span style="color: #1890FF">{{showAllDetail.sfs? '收起' : '... 展开'}} </span>
                                         </div>
-                                       <!-- <div class="showAllText" v-show="!showAllDetail.sfs">... <span style="color: #1890FF">展开</span></div>-->
+                                        <!-- <div class="showAllText" v-show="!showAllDetail.sfs">... <span style="color: #1890FF">展开</span></div>-->
                                     </div>
                                     <div class="ad_mediaInfoPanel_row_content ad_mediaInfoPanel_row_content_sfs">
                                         {{resData.supportingFacilities || '--'}}
@@ -191,6 +193,8 @@
                                 <div>
                                     <el-button  size="small" type="primary" class="ad_adPanelBtn"
                                                 v-if="haveEdit" @click="connectDoorFun">设置连排门</el-button>
+                                    <el-button size="small" type="primary" class="ad_adPanel_add"
+                                               @click="edit('add')">添加媒体</el-button>
                                 </div>
                                 <div class="table_wrap">
                                     <el-table
@@ -508,11 +512,15 @@
                 this.$router.push('./mediaList');
             },
             // 编辑
-            edit() {
+            edit(goto) {
                 sessionStorage.setItem('recDetail', JSON.stringify(this.resData))
                 sessionStorage.setItem('mediaList', JSON.stringify(this.mediaList))
                 sessionStorage.setItem('roadGateList', JSON.stringify(this.roadGateList))
-                this.$router.push('./mediaInput?edit=y')
+                if(goto === 'add'){
+                    this.$router.push('./mediaEdit?add=true')
+                }else{
+                    this.$router.push('./mediaEdit')
+                }
             },
             // 获取资源、媒体信息
             getDataFun() {
@@ -539,6 +547,7 @@
                             let resData = res.data.data
                             let cityArea = areaToText_new.toTextCityArea(resData.rID)
                             this.resData = {
+                                resID:this.resID,
                                 cType: '',
                                 tradingArea: resData.tradingArea,
                                 resName: resData.resName,
@@ -559,6 +568,7 @@
                                 city: cityArea.city,
                                 cityArea: cityArea.area,
                                 // 房价网信息
+                                resAlias: resData.alias,                                  // 资源别名
                                 addressAlias: resData.addressAlias,                          // 地址别名
                                 description: resData.description || '',                     // 描述
                                 supportingFacilities: resData.supportingFacilities || '',   // 周边配套
@@ -965,7 +975,7 @@
                                 this.$message.warning('设置连排门失败')
                             }
                             connectAdloading.close()
-                    })
+                        })
                 }
             },
             showDetailFun(letter){
@@ -1029,7 +1039,7 @@
         width: 92%;
         background: #FFFFFF;
         border: 1px solid #E6E7E9;
-        margin: 10px auto 32px;
+        margin: 0 auto 32px;
         padding-bottom: 24px;
     }
 
@@ -1125,20 +1135,6 @@
         font-size: 14px;
         background: #fff;
     }
-    /deep/ .el-table th > .cell {
-        font-size: 14px;
-        color: #666666;
-        font-weight: bold;
-    }
-    /deep/ .el-table th, .el-table tr {
-        height: 44px;
-        padding: 0;
-        background-color: #f7f7f7;
-    }
-    /deep/ .el-table td{
-        padding: 10px 0;
-    }
-
     /*广告*/
     .ad_ad{
         padding-bottom: 30px;
@@ -1189,6 +1185,10 @@
         margin-left: 32px;
     }
 
+    /*   .ad_adPanel_add{
+           font-size: 14px;
+       }*/
+
     .ad_ad .ad_adPanel .table_wrap{
         border-radius: 4px;
         margin: 10px auto 0;
@@ -1218,12 +1218,6 @@
         font-weight: bold;
         text-indent: 14px;
         box-sizing: border-box;
-    }
-    /*超出省略*/
-    /deep/ .el-table .cell {
-        overflow-x: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
     }
     .ad_ad .ad_adPanel .adPanel_table td{
         border-right: 1px solid #E2E2E2;

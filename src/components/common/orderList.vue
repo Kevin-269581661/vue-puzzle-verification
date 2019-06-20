@@ -11,57 +11,39 @@
             </div>
             <div class="mediaList_container">
                 <el-row>
-                    <div class="mediaList_handel">
-                        <span>
-                            <div style="display:inline-block">
-                                <el-input placeholder="请输入内容" v-model="searchInfo.keyword" class="input-with-select" size="small">
-                                    <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
-                                        <el-option label="订单名" value="1"></el-option>
-                                        <el-option label="客户名" value="2"></el-option>
-                                        <el-option label="合同编号" value="3"></el-option>
-                                    </el-select>
-                                </el-input>
-                            </div>
-                        </span>
-                        <span>
-                            <div class="block">
-                                <el-date-picker size="small" v-model="searchInfo.rangeDate" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
-                                </el-date-picker>
-                            </div>
-                        </span>
-                        <span v-if="isAll">
-                            <div class="block">
-                                <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable size="small">
-                                    <el-option v-for="item of companyData" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                                </el-select>
-                            </div>
-                        </span>
-                        <span>
-                            <div class="block block_box">
-                                <el-select v-model="searchInfo.cityWord" placeholder="请选择城市" filterable size="small">
-                                    <el-option v-for="item of filterCityData" :key="item.rID" :label="item.text" :value="item.value"></el-option>
-                                </el-select>
-                            </div>
-                        </span>
-                        <div class="block block_box">
-                            <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small">
-                                <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
+                    <el-col>
+                        <el-input placeholder="请输入内容" v-model="searchInfo.keyword" class="input-with-select" size="small">
+                            <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
+                                <el-option label="订单名" value="1"></el-option>
+                                <el-option label="客户名" value="2"></el-option>
+                                <el-option label="合同编号" value="3"></el-option>
                             </el-select>
-                        </div>
+                        </el-input>
+                        <el-date-picker size="small" v-model="searchInfo.rangeDate" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
+                        </el-date-picker>
+                        <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable size="small" v-if="isAll">
+                            <el-option v-for="item of companyData" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                        </el-select>
+                        <el-select v-model="searchInfo.cityWord" placeholder="请选择城市" filterable size="small">
+                            <el-option v-for="item of filterCityData" :key="item.rID" :label="item.text" :value="item.value"></el-option>
+                        </el-select>
+                        <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small">
+                            <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
+                        </el-select>
                         <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
                         <el-button @click="reset()" :disabled="!isReset">重置</el-button>
-                    </div>
+                    </el-col>
                 </el-row>
                 <div class="table_wrap">
                     <el-table border :data="currentOrder" style="width: 100%" v-loadmore="orderLoadMore" v-loading="loading" element-loading-text="玩命加载中" element-loading-spinner="el-icon-loading" :default-sort="{prop: 'apcTime', order: 'descending'}">
-                        <el-table-column label="订单名称" min-width="14.6%" show-overflow-tooltip>
+                        <el-table-column label="订单名称" min-width="14.9%" show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <a href="javascript:void(0);" @click="ToDetail(scope.row)">{{scope.row.apName}}</a>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="cName" label="客户名称" min-width="10.4%"  show-overflow-tooltip>
+                        <el-table-column prop="cName" label="客户名称" min-width="12.6%"  show-overflow-tooltip>
                         </el-table-column>
-                        <el-table-column prop="bTitle" label="品牌名称" min-width="6.0%" show-overflow-tooltip>
+                        <el-table-column prop="bTitle" label="品牌名称" min-width="6.6%" show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column prop="apQC" label="合同编号" width="180px">
                         </el-table-column>
@@ -70,7 +52,7 @@
                                 <span>&yen;{{(scope.row.apTotal)?priceFormat(scope.row.apTotal/100):0}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="投放城市(点位面数，排期)" prop="cityArea" min-width="20.2%">
+                        <el-table-column label="投放城市(点位面数，排期)" prop="cityArea" min-width="25.8%" show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <div v-if="isAll" v-for="(item, index) of scope.row.companyList" :key="index" class="city_p">
                                     {{item.asName}}
@@ -85,12 +67,12 @@
                                 </div>
                             </template>
                         </el-table-column>
-                        <el-table-column label="发布日期" min-width="8.3%" sortable :sort-by="sortData">
+                        <el-table-column label="发布日期" min-width="8.3%" sortable :sort-by="sortData" show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <span>{{formatTime(scope.row.apcTime)}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column class="Status" prop="apState" label="状态" min-width="6%" >
+                        <el-table-column class="Status" prop="apState" label="状态" min-width="6%" show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <point-state :state-text="stateToText(scope.row.apState).text" :color="stateToText(scope.row.apState).color"></point-state>                                                                
                             </template>
@@ -899,20 +881,6 @@ a {
 /deep/ .el-table__body-wrapper {
     height: 405px;
 }
-
-/*超出省略*/
-/deep/ .el-table__row .cell {
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/deep/ .el-table__row .cell span {
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
 /*操作*/
 .el-dropdown-link {
     cursor: pointer;

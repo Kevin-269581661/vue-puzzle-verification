@@ -25,8 +25,23 @@
                                 <el-col :span="6">
                                     <el-form-item label="账户名:" prop="sname">
                                         <!-- <el-input v-model.trim="clientForm.sname" placeholder="请输入账户名" @change="check()" clearable></el-input> -->
-                                        <el-autocomplete v-model.trim="clientForm.sname" :fetch-suggestions="queryCheck" placeholder="请输入内容" @select="handle">
-                                        </el-autocomplete>
+                                        <!-- <el-autocomplete v-model.trim="clientForm.sname" :fetch-suggestions="queryCheck" placeholder="请输入内容" @select="handle">
+                                        </el-autocomplete> -->
+                                        <el-select
+                                            v-model="clientForm.sname"
+                                            filterable
+                                            remote
+                                            reserve-keyword
+                                            placeholder="请输入账户名"
+                                            :remote-method="remoteMethod"
+                                            :loading="loading">
+                                            <el-option
+                                                v-for="item in searchArr"
+                                                :key="item.value"
+                                                :label="item.label"
+                                                :value="item.value">
+                                            </el-option>
+                                        </el-select>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="6">
@@ -224,29 +239,24 @@ export default {
             }
         };
         var validatesSname = (rule, value, callback) => {
+            console.log(value, 'value---',this.isSame);
             let szReg = /^[^\u4e00-\u9fa5]{0,}$/;
             if (!szReg.test(value)) {
                 callback(new Error("只能输入字母,数字,符号"));
-            } else {
-                // else if (this.otherName) {
-                //     callback("该账号已经被占用");
-                // }
+            }else if (value) {
+                if(!this.isSame){
+                    callback();
+                }else{
+                    callback("该账号已经被占用");
+                }
+            }else {
                 callback();
             }
         };
-        // var validatesSname = (rule, value, callback) => {
-        //     let szReg = /^[^\u4e00-\u9fa5]{0,}$/;
-        //     if (!szReg.test(value)) {
-        //         callback(new Error("只能输入字母,数字,符号"));
-        //     } else if (value) {
-        //         if(this.otherName){
-        //             callback("该账号已经被占用");
-        //         }
-        //     } else {
-        //         callback();
-        //     }
-        // };
         return {
+            loading: false,
+            searchArr: [],
+            isSame: false,
             // 登录信息
             sessionData: {},
             otherName: null,
@@ -324,7 +334,7 @@ export default {
                         message: "最多只能输入50个字节",
                         trigger: "blur"
                     },
-                    { validator: validatesSname, trigger: "blur" }
+                    { validator: validatesSname, trigger: ['blur','change']}
                 ],
                 position: [
                     {
@@ -429,6 +439,36 @@ export default {
         handle(item) {
             console.log(item);
             this.clientForm.sname = item.value;
+        },
+        remoteMethod(query){
+            this.searchArr = [];
+            if(query){
+                let sname = query;
+                let session = this.sessionData;
+                let info = {
+                    uid: session.uID,
+                    token: session.token,
+                    sname: sname
+                };
+                this.loading = true;
+                api.postApi(this.apiVar.UCAPI+"/CheckUserName", info).then(res => {
+                    this.loading = false;                    
+                    if (res.data.SysCode == 200200) {
+                        let results = [{ value: query, label: query }];
+                        this.searchArr = results;
+                        console.log(res.data.data);
+                        if(res.data.data.uID){
+                            this.isSame = true;
+                        }else{
+                            this.isSame = false;
+                        }
+                    } else if(res.data.SysCode ==100302){
+                        this.loginTimeout();
+                    }else {
+                        Message.warning(res.data.MSG);
+                    }
+                });
+            }
         },
         queryCheck(queryString, callback) {
             if (queryString) {

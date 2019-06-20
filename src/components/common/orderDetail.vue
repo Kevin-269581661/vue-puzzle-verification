@@ -250,8 +250,8 @@
                                         </div>
                                         <div class="up-report-bottom-btns">
                                             <el-button type="primary" @click="submitUpload('SK')">保存</el-button>
-                                            <!-- <el-button plain @click="downloadUp">下载PDF</el-button> -->
                                             <el-button plain @click="showH5('SK')">查看H5</el-button>
+                                            <el-button plain @click="updateReport('SK')">更新报告</el-button>                                            
                                         </div>
                                     </div>
                                 </div>
@@ -342,8 +342,8 @@
                                         </div>
                                         <div class="up-report-bottom-btns">
                                             <el-button type="primary" @click="submitUpload('XK')">保存</el-button>
-                                            <!-- <el-button plain @click="downloadDown">下载PDF</el-button> -->
                                             <el-button plain @click="showH5('XK')">查看H5</el-button>
+                                            <el-button plain @click="updateReport('XK')">更新报告</el-button>
                                         </div>
                                     </div>
                                 </div>
@@ -1989,8 +1989,8 @@ export default {
         // downloadUp() {
         //     Message.warning("该功能尚未完善");
         // },
-        downloadDown() {
-            Message.warning("该功能尚未完善");
+        updateReport(type){
+            
         },
         // 查看h5上下刊刊报告按钮
         showH5(type){

@@ -6,7 +6,7 @@
                     <div class="title">
                         <h1>{{upReport.apName}}{{(Info.name =='SK')?'上刊':'下刊'}}报告 
                             <span class="button_box">
-                                <!-- <el-button class="down_btn" @click="getPTTx()">导出PPTx</el-button> -->
+                                <!-- <el-button @click="getPTTx()">导出PPTx</el-button> -->
                                 <el-button @click="getPTT()" size="small" :loading="pptLoading">导出PPT</el-button>
                                 <el-button @click="getPDF()" size="small" :loading="pdfLoading">导出PDF</el-button>
                             </span>
@@ -18,7 +18,6 @@
                             <em>公司名称：</em>
                             <i>{{upReport.cName}}</i>
                             <em>投放城市：</em>
-                            <!-- <i>{{filter(upReport.rIDs)}}</i> -->
                             <i>{{upReport.rIDs}}</i>
                             <em>投放面数：</em>
                             <i>{{upReport.totalNum}}</i>
@@ -30,29 +29,12 @@
                 <el-tabs v-model="planPanel" @tab-click="handleClick()">
                     <el-tab-pane label="投放详情" name="first">
                         <div class="first-wrap box-wrap">
-                            <!-- <h4>投放详情 <el-button class="down_btn" @click="getPdf('#pdfDom', 0)" :disabled="isDisble">导出PDF</el-button></h4> -->
-                            <!-- <h4>投放详情  -->
-                                <!-- <el-button class="down_btn" @click="getPTTx()">导出PPTx</el-button> -->
-                                <!-- <el-button class="down_btn" @click="getPTT()">导出PPT</el-button> -->
-                            <!-- </h4> -->
                             <div class="search-wrap">
-                                <span>
-                                    <el-select v-model="select" placeholder="请选择" class="type-select">
-                                        <el-option v-for="item in typeSelect" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                                    </el-select>
-                                    <el-input v-model="keyword" placeholder="请输入要搜索的内容" class="searchInput" @change="initData"></el-input>
-                                </span>
-                                <span>
-                                    <el-button type="primary" icon="el-icon-search" class="searchBtn" @click="search()">搜索</el-button>
-                                </span>
-                                <span>
-                                    <!-- <el-button class="down_btn" @click="getPTTx()">导出PPTx</el-button> -->
-                                    <!-- <el-button @click="getPTT()"  class="down_btn">导出PPT</el-button> -->
-                                    <!-- <el-button @click="getPDF()"  class="down_btn">导出PDF</el-button> -->
-                                </span>
-                                <!-- <p class="search_p">
-                                    *备注：若订单点位数量过多，请点击  “导出pptx”  按钮 ，导出的 “pptx” 文件使用正版软件打开后可再另存为“ppt”格式即可发给客户
-                                </p> -->
+                                <el-select v-model="select" placeholder="请选择" class="type-select">
+                                    <el-option v-for="item in typeSelect" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                                </el-select>
+                                <el-input v-model="keyword" placeholder="请输入要搜索的内容" class="searchInput" @change="initData"></el-input>
+                                <el-button type="primary" icon="el-icon-search" class="searchBtn" @click="search()">搜索</el-button>
                             </div>
                             <div class="table_wrap">
                                 <el-table border :data="currPutDetail" style="width: 100%" :default-sort="{prop: 'recName', order: 'descending'}" v-loading="loading" element-loading-text="玩命加载中" element-loading-spinner="el-icon-loading">
@@ -81,22 +63,22 @@
                                     </el-table-column>
                                     <el-table-column prop="rName" label="区域" min-width="6.7%" :filters="filtersArea" :filter-method="filterRName">
                                     </el-table-column>
-                                    <el-table-column prop="resName" label="资源名称" min-width="11.9%" class="tar">
+                                    <el-table-column prop="resName" label="资源名称" min-width="11.9%">
                                     </el-table-column>
                                     <el-table-column prop="resAddress" label="地址" min-width="19.5%">
                                     </el-table-column>
                                     <el-table-column prop="cType" label="楼盘类型" min-width="6.1%">
                                     </el-table-column>
-                                    <el-table-column prop="chDay" label="入住时间" min-width="6.1%" class="tar">
+                                    <el-table-column prop="chDay" label="入住时间" min-width="6.1%">
                                     </el-table-column>
-                                    <el-table-column label="楼盘价格" min-width="7.6%">
+                                    <el-table-column label="楼盘价格" min-width="7.6%" align="right">
                                         <template slot-scope="scope">
                                             <span>{{priceFormat(scope.row.hPrice/100)}}</span>
                                         </template>
                                     </el-table-column>
-                                    <el-table-column prop="hNum" label="户数" min-width="5.6%">
+                                    <el-table-column prop="hNum" label="户数" min-width="5.6%" align="right">
                                     </el-table-column>
-                                    <el-table-column label="媒体数量" prop="mediaNum" min-width="6.1%">
+                                    <el-table-column label="媒体数量" prop="mediaNum" min-width="6.1%" align="right">
                                     </el-table-column>
                                     <el-table-column label="操作" min-width="6.1%">
                                         <template slot-scope="scope">
@@ -111,14 +93,6 @@
                             </div>
                         </div>
                     </el-tab-pane>
-                    <!-- <el-tab-pane label="地图展示" name="second">
-						<div class="sec-wrap box-wrap">
-							<h4>地图展示</h4>
-							<div class="map">
-
-							</div>
-						</div>
-					</el-tab-pane> -->
                     <el-tab-pane label="监播图片" name="third">
                         <div class="sec-wrap box-wrap">
                             <el-radio-group v-model="mediaType" size="medium" @change="changeUpMedia()">
@@ -168,18 +142,17 @@
                     </el-tab-pane>
                     <el-tab-pane label="发布情况" name="forth">
                         <div class="forth-wrap box-wrap">
-                            <!-- <h4>发布情况</h4> -->
                             <div class="table_wrap">
                                 <el-table border :data="postDetail" style="width: 100%" :default-sort="{prop: 'recName', order: 'descending'}">
                                     <el-table-column prop="city" label="城市" min-width="10.3%">
                                     </el-table-column>
-                                    <el-table-column prop="planNum" label="计划点位数" min-width="18.6%">
+                                    <el-table-column prop="planNum" label="计划点位数" min-width="18.6%" align="right">
                                     </el-table-column>
-                                    <el-table-column prop="realNum" label="实际执行点位数" min-width="18.8%" class="tar">
+                                    <el-table-column prop="realNum" label="实际执行点位数" min-width="18.8%" align="right">
                                     </el-table-column>
-                                    <el-table-column prop="wrongNum" label="问题点位数" min-width="19.3%">
+                                    <el-table-column prop="wrongNum" label="问题点位数" min-width="19.3%" align="right">
                                     </el-table-column>
-                                    <el-table-column prop="resolveNum" label="问题解决数" min-width="19.8%">
+                                    <el-table-column prop="resolveNum" label="问题解决数" min-width="19.8%" align="right">
                                     </el-table-column>
                                     
                                     <div slot="empty">
@@ -484,7 +457,7 @@ export default {
                     let tempwindow = window.open();
                     tempwindow.location = res.data.data;
                 }else{
-                    
+                    this.getPTTFun();
                 }
             });
         },
@@ -506,10 +479,6 @@ export default {
                         query: info,
                     });
                     window.open(routeUrl .href, '_blank');
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
-                }else{
-                    Message.warning(res.data.MSG);
                 }
             }).catch(err =>{
                 console.log(err);
@@ -518,6 +487,22 @@ export default {
         },
         // 获取pdf
         getPDF(){
+            let name = this.Info.name.toString().toLowerCase();
+            let val = this.Info.val;
+            let info = {
+                [name]: val
+            };
+            api.getApi(this.apiVar.Advertisement+'/GetPdfReport', info).then(res =>{
+                if(res.data.code == 300200){
+                    let tempwindow = window.open();
+                    tempwindow.location = res.data.data;
+                }else{
+                    this.getPDFFun();
+                }
+            });
+        },
+        // 获取pdf
+        getPDFFun(){
             let name = this.Info.name.toString().toLowerCase();
             let val = this.Info.val;
             let info = {
@@ -534,10 +519,6 @@ export default {
                         query: info,
                     });
                     window.open(routeUrl .href, '_blank');
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
-                }else{
-                    Message.warning(res.data.MSG);
                 }
             }).catch(err =>{
                 this.pdfLoading = false;                
@@ -994,76 +975,9 @@ export default {
     font-weight: bold;
 }
 
-/deep/ .el-table__column-filter-trigger {
-    position: relative;
-    left: 5px;
-}
-
-/deep/ .el-table th,
-.el-table tr {
-    background: #f7f7f7;
-    padding: 4px 0;
-}
-
-/deep/ .el-table th > .cell {
-    color: #666666;
-    line-height: 14px;
-    font-weight: bold;
-}
-
-/deep/ .el-table__expanded-cell[class*="cell"] {
-    padding: 0 45px;
-    background-color: #f7f7f7;
-}
-
-/deep/ .el-table__expanded-cell[class*="cell"] .el-form {
-    height: 44px;
-    line-height: 44px;
-}
-
-/deep/ .el-form-item__label {
-    padding: 0 0 0 12px;
-}
-
-/deep/ .el-form-item__content {
-    line-height: 46px;
-}
-
-/deep/ .el-table_1_column_9,
-/deep/ .el-table_1_column_10 {
-    text-align: right !important;
-}
-
 /*滚动条*/
 /deep/ .el-table__body-wrapper {
-    /* height: 450px;
-    overflow-y: scroll;
-    overflow-x: hidden; */
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar {
-    width: 4px;
-    background: #fafafa;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
-
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #c1c1c1;
-    border-radius: 4px;
-}
-
-.el-table {
-    border-radius: 4px;
-}
-
-/deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
-    background-color: #ecf5ff;
-}
-
-/deep/ .el-tabs__item.is-active {
-    font-weight: bold;
+    height: 450px;
 }
 
 .ad_index_footer {
@@ -1203,21 +1117,6 @@ export default {
 }
 
 /*发布情况*/
-.forth-wrap /deep/ .el-table th,
-.el-table tr {
-    padding: 6px 0;
-}
-
-.forth-wrap /deep/ .el-table .cell {
-    padding: 9px 14px;
-}
-
-/deep/ .el-table_2_column_13,
-/deep/ .el-table_2_column_14,
-/deep/ .el-table_2_column_15,
-/deep/ .el-table_2_column_16 {
-    text-align: right;
-}
 .tooltip_p b, .tooltip_p span{
     display: block;
 }
@@ -1281,16 +1180,6 @@ export default {
     display: flex;
     flex-wrap: wrap;
 }
-
-/* .down_btn{
-    margin-left: 10px;
-    border-radius: 4px;
-    width: 76px;
-    height: 34px;
-    position: relative;
-    left: 16px;
-    padding: 0;
-} */
 .search_p{
     clear: both;
     padding-left: 28px;

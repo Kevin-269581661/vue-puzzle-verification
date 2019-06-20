@@ -14,7 +14,7 @@ import api from "../../api/api.js";
 export default {
     data(){
         return{
-            currper: 20,
+            currper: 0,
             myInterval: '',
         }
     },
@@ -28,12 +28,19 @@ export default {
                     this.currper = parseInt(Number(resinfo.rate));
                     if(this.currper == 100){
                         clearInterval(this.myInterval);
-                        tempwindow = window.open();
-                        tempwindow.location = resinfo.url;
-                        this.$alert('请在下载工具里查看文件', '文件成功生成', {
-                            confirmButtonText: '知道了',
-                        });
-                        setTimeout(()=>{tempwindow.close()}, 2000);
+                        // tempwindow = window.open();
+                        // tempwindow.location = resinfo.url;
+                        // this.$alert('请在下载工具里查看文件', '文件成功生成', {
+                        //     confirmButtonText: '知道了',
+                        // });
+                        // setTimeout(()=>{tempwindow.close()}, 2000);
+
+                        let downloadElement = document.createElement('a');
+                        let href = resinfo.url;
+                        downloadElement.href = href;
+                        document.body.appendChild(downloadElement);
+                        downloadElement.click(); //点击下载
+                        document.body.removeChild(downloadElement); //下载完成移除元素
                     }
                 }
             }).catch(res =>{

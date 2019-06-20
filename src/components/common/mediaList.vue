@@ -85,7 +85,7 @@
 							{ text: '写字楼', value: '写字楼' },
 							]"
                             :filter-method="filterRecType"
-                            :filter-multiple="true"
+                            :filter-multiple="false"
                         >
                         </el-table-column>
                         <el-table-column
@@ -169,10 +169,10 @@
                                         <div slot="content">
                                             A面:{{scope.row.asState.A == '1' ? '正常' : '禁用'}}  B面:{{scope.row.asState.B == '1' ? '正常' : '禁用'}}
                                         </div>
-                                        <span>{{scope.row.mState || '--' }}</span>
+                                        <point-state :state-text="stateToText(scope.row.mState).text" :color="stateToText(scope.row.mState).color"></point-state>                   
                                     </el-tooltip>
                                 </span>
-                                <span v-else>{{scope.row.mState || '--' }}</span>
+                                <point-state v-else :state-text="stateToText(scope.row.mState).text" :color="stateToText(scope.row.mState).color"></point-state>  
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -340,6 +340,7 @@
     import areaToTextNew from '../../commonFun/areaToText_new'
     import sessFun from "../../commonFun/sessFun.js";
     import noSearchResult from "./components/noSearchResult.vue";    
+    import pointState from './components/pointState.vue';    
     
     import {
         Form,
@@ -363,6 +364,7 @@
         name: "mediaList",
         components: {
             noSearchResult,
+            pointState,
             elForm: Form,
             elFormItem: FormItem,
             elTable: Table,
@@ -467,6 +469,32 @@
             }
         },
         methods: {
+            // 状态转换
+            stateToText(state){
+                let arr = [
+                    {
+                        text: '正常',
+                        color: 'rgba(82,196,26,1)',
+                    },
+                    {
+                        text: '待安装',
+                        color: 'rgba(196,203,211,1)',
+                    },
+                    {
+                        text: '待维修',
+                        color: 'rgba(250,173,20,1)',
+                    },
+                    {
+                        text: '禁用',
+                        color: 'rgba(245,34,45,1)',
+                    },
+                ];
+                for(let data of arr){
+                    if(data.text === state){
+                        return data;
+                    }
+                }
+            },
             loadMore() {
                 console.log('滚动触发了')
                 if (this.loadSign) {
@@ -501,19 +529,20 @@
                 return row.rtName === value;
             },
             filterPTStatus(value, row) {
-                let sum = 0;
-                for (let data of this.planList) {
-                    if (data.mState != value) {
-                        sum++;
-                    }
-                }
-                //sum和所有数据的长度相同时说明都不匹配
-                if (sum == this.planList.length) {
-                    Message.warning({
-                        message: '筛选数据为空',
-                        duration: 1500
-                    });
-                }
+                // let sum = 0;
+                // for (let data of this.planList) {
+                //     if (data.mState != value) {
+                //         sum++;
+                //     }
+                // }
+                // //sum和所有数据的长度相同时说明都不匹配
+                // if (sum == this.planList.length) {
+                //     // Message.warning({
+                //     //     message: '筛选数据为空',
+                //     //     duration: 1500
+                //     // });
+                //     Message.warning('筛选数据为空');
+                // }
                 return row.mState === value;
 
             },
@@ -1135,13 +1164,6 @@
     /*滚动条*/
     /deep/ .el-table__body-wrapper {
         height: 405px;
-    }
-
-    /*超出省略*/
-    /deep/ .el-table .cell {
-        overflow-x: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
     }
 
     /*筛选*/

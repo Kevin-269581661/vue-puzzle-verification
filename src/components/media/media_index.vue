@@ -105,7 +105,7 @@
 			<ul class="ul_box">
 				<li>
 					<div class="img_box">
-						<img src="../../assets/images/index/release.png" alt="">
+						<img src="../../assets/images/index/release.png" alt="" class="center_img">
 
 						<img src="../../assets/images/index/left-star.png" alt="" class="postionB left_star">
 						<img src="../../assets/images/index/left.png" alt="" class="postionB left">
@@ -120,7 +120,7 @@
 				</li>
 				<li v-if="!isAllMedia">
 					<div class="img_box" id="point_animation">
-						<img src="../../assets/images/index/remedia.png" alt="">
+						<img src="../../assets/images/index/remedia.png" alt="" class="center_img">
 
 						<img src="../../assets/images/index/left-star.png" alt="" class="postionB left_star">
 						<img src="../../assets/images/index/left.png" alt="" class="postionB left">
@@ -135,7 +135,7 @@
 				</li>
 				<li>
 					<div class="img_box">
-						<img src="../../assets/images/index/repoint.png" alt="">
+						<img src="../../assets/images/index/repoint.png" alt="" class="center_img">
 
 						<img src="../../assets/images/index/left-star.png" alt="" class="postionB left_star">
 						<img src="../../assets/images/index/left.png" alt="" class="postionB left">
@@ -712,8 +712,7 @@ export default {
 
 <style scoped>
 .ad_index_container{
-	margin: 24px auto;
-	width: 92%;
+	margin: 24px 64px;
 	height: auto;
 }
 .h2_style{
@@ -800,6 +799,9 @@ export default {
 .img_box{
 	position: relative;
 }
+.center_img{
+	width: 120px;
+}
 .postionB{
 	position: absolute;
 }
@@ -808,46 +810,47 @@ export default {
     left: 0px;
 }
 .left{
-	left: -46px;
-    top: 60px;
+	left: -48px;
+    top: 24px;
     z-index: -1;
 }
 .right{
-	left: 140px;
-    top: 60px;
+	left: 80px;
+    top: 24px;
     z-index: -1;
 }
 .right_star{
 	top: -10px;
-    left: 135px;
+    left: 100px
 }
 .name{
-	top: 150px;
+	top: 90px;
 	left: 0;
+	width: 140px;
 }
 .name_span{
-    top: 156px;
-    font-size: 22px;
+	top: 92px;
+    font-size: 16px;
     color: #fff;
-    left: 50px;
+    left: 36px;
 }
 .point_num{
-	margin-top: 6px;
-	width: 100%;
-    height: 49px;
+	margin-top: 8px;
+    width: 100%;
+    height: 42px;
     display: block;
-    line-height: 49px;
+    line-height: 42px;
     text-align: center;
 }
 .point_num span{
-	width: 141px;
-	display: inline-block;
+	width: 128px;
+    display: inline-block;
     color: #fff;
     text-align: center;
     background: rgba(0,0,0,0.3);
     font-weight: bold;
     border-radius: 8px;
-    font-size: 32px;
+    font-size: 24px;
 }
 
 #point_animation{

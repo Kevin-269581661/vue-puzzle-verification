@@ -1,11 +1,11 @@
 <template>
     <div>
-        <div class="ad_mediaMana_wrap">
-            <div class="ad_mediaMana_nav clearfix">
+        <div class="ad_mediaDetail_wrap clearfix">
+            <div class="ad_mediaDetail_nav">
                 <p><a href="#">媒体管理</a><em> / </em><a href="#">录入媒体</a></p>
             </div>
-            <!--资源信息-->
-            <div class="mediaMana_content_top">
+            <!-- 资源信息mediaMana_content_top-->
+            <div class="mediaList_wrap">
                 <div class="content_top_wrap">
                     <div class="content_top_form_wrap">
                         <el-form :model="recForm" status-icon :rules="recRules" ref="recForm" label-width="100px"
@@ -317,8 +317,8 @@
                     </div>
                 </div>
             </div>
-            <!--媒体一-->
-            <div class="mediaMana_content_bottom clearfix">
+            <!--媒体一 mediaMana_content_bottom-->
+            <div class="mediaList_content">
                 <el-tabs v-model="activeMedia" @tab-click="handleClickMedia">
                     <el-tab-pane label="广告门" name="first">
                         <div class="content_bottom_wrap_box">
@@ -517,6 +517,7 @@
                                             <el-col :span="6">
                                                 <el-form-item label="媒体状态" prop="mstate">
                                                     <el-select v-model="item.roadGateForm.mstate" placeholder="请选择媒体状态"
+                                                               @blur="roadGateBlur('mstate',key)"
                                                                @change="selectMstate(item.roadGateForm)">
                                                         <el-option label="禁用" :value="'0' + key"></el-option>
                                                         <el-option label="正常" :value="'1' + key"></el-option>
@@ -656,7 +657,7 @@
                 <el-button size="small" type="primary" @click="searchFun">搜索</el-button>
                 <span style="font-size: 14px;color: #333333;display: inline-block;margin-top: 10px">当前选择信息:
                    城市:{{searchResData.city || '--'}} 区域:{{searchResData.district || '--'}}
-                    名称:{{searchResData.title || '--'}} 经纬度:{{searchResData.lat + ',' + searchResData.lng}}
+                    名称:{{searchResData.title || '--'}} 经纬度:{{searchResData.lng + ',' + searchResData.lat}}
                 </span>
                 <!--百度地图-->
                 <div id="resMap" ref="resMap"  style="height: 500px;margin-top: 14px"></div>
@@ -713,17 +714,17 @@
             let validateAssetId = (rule, value, callback) => {
                 let reg = /[\u4E00-\u9FA5]|[\uFE30-\uFFA0]/gi;
                 if (reg.test(value)) {
-                    callback(new Error('只能输入数字字母符号'));
+                    callback(new Error('只能输入数字字母符号!'));
                 } else {
                     callback();
                 }
             };
             let validateNum = (rule, value, callback) => {
                 if (value !== '' && !Number.isInteger(value)) {
-                    callback(new Error('只能输入整数值'));
+                    callback(new Error('只能输入整数值!'));
                 } else {
                     if (value < 1 || value > 26) {
-                        callback(new Error('最少投1面，最多可投26面'));
+                        callback(new Error('最少投1面，最多可投26面!'));
                     } else {
                         callback();
                     }
@@ -733,7 +734,7 @@
                 this.isResError = false
                 if (value) {
                     if (value.match(/^\s+$/)) {
-                        callback(new Error('所填内容不能为空格'))
+                        callback(new Error('所填内容不能为空格!'))
                     } else {
                         callback();
                     }
@@ -744,10 +745,10 @@
             let validatePrice = (rule, value, callback) => {
                 let reg = /^\d+(\.\d+)?$/
                 if (value !== '' && !(reg.test(value))) {
-                    callback(new Error('只能输入数字'));
+                    callback(new Error('只能输入数字!'));
                 } else {
                     if (value > 9999999) {
-                        callback(new Error('不得大于9999999'));
+                        callback(new Error('不得大于9999999!'));
                     } else {
                         callback();
                     }
@@ -757,10 +758,10 @@
                 let reg = /^\d+(\.\d+)?$/
                 // let reg =  /[^\d\.]/g
                 if (value !== '' && !(reg.test(value))) {
-                    callback(new Error('只能输入数字'));
+                    callback(new Error('只能输入数字!'));
                 } else {
                     if (value < 0 || value > 180) {
-                        callback(new Error('只能输入数字(0-180)'));
+                        callback(new Error('只能输入数字(0-180)!'));
                     } else {
                         callback();
                     }
@@ -769,10 +770,10 @@
             let validateLng = (rule, value, callback) =>{
                 let reg = /^\d+(\.\d+)?$/
                 if (value !== '' && !(reg.test(value))) {
-                    callback(new Error('只能输入数字'));
+                    callback(new Error('只能输入数字!'));
                 } else {
                     if (value < 0 || value > 90) {
-                        callback(new Error('只能输入数字(0-90)'));
+                        callback(new Error('只能输入数字(0-90)!'));
                     } else {
                         callback();
                     }
@@ -782,10 +783,10 @@
             let validateGreenP = (rule, value, callback) =>{
                 let reg = /^\d+(\.\d+)?$/
                 if (value !== '' && !(reg.test(value))) {
-                    callback(new Error('只能输入数字'));
+                    callback(new Error('只能输入数字!'));
                 } else {
                     if (value < 0 || value > 100) {
-                        callback(new Error('只能输入数字(0-100)'));
+                        callback(new Error('只能输入数字(0-100)!'));
                     } else {
                         callback();
                     }
@@ -834,8 +835,10 @@
                         },
                     },
                 ],
-                m_boolean: false,   // 广告门表单验证
-                rt_boolean: false, // 道闸表单验证
+                // 广告门表单验证
+                m_boolean: {isOne: false,flag: false},
+                // 道闸表单验证
+                rt_boolean: {isOne: false,flag: false},
                 editRoadGateStatue: [],   // 编辑媒体时记录状态
                 roadGateMedia:[
                     {
@@ -935,43 +938,43 @@
                     ],
                     addressAlias: [
                         {validator: validateSpace, trigger: 'blur'},
-                        {min: 0, max: 40, message: '最多只能输入40个字节', trigger: 'change'}
+                        {min: 0, max: 40, message: '最多只能输入40个字节!', trigger: 'change'}
                     ],
                     business: [
                         {validator: validateSpace, trigger: 'blur'},
-                        {min: 0, max: 40, message: '最多只能输入40个字节', trigger: 'change'}
+                        {min: 0, max: 40, message: '最多只能输入40个字节!', trigger: 'change'}
                     ],
                     resaddr: [
-                        {required: true, message: '具体地址不能为空', trigger: ['blur','change']},
+                        {required: true, message: '具体地址不能为空!', trigger: ['blur','change']},
                         {validator: validateSpace, trigger: 'blur'},
-                        {min: 0, max: 70, message: '最多只能输入70个字节', trigger: 'change'}
+                        {min: 0, max: 70, message: '最多只能输入70个字节!', trigger: 'change'}
                     ],
                     floorType: [
-                        {required: true, message: '请选择楼盘类型', trigger: 'change'},
+                        {required: true, message: '请选择楼盘类型!', trigger: 'change'},
                     ],
                     buildingNum: [
-                        {required: true, message: '楼栋数量不能为空', trigger: 'change'},
+                        {required: true, message: '楼栋数量不能为空!', trigger: 'change'},
                     ],
                     households: [
-                        {required: true, message: '住户数量不能为空', trigger: ['blur','change']},
+                        {required: true, message: '住户数量不能为空!', trigger: ['blur','change']},
                         {validator: validatePrice, trigger: 'change'},
                     ],
                     buildingPrice: [
                         {validator: validatePrice, trigger: 'blur'},
                     ],
                     liveTime: [
-                        {required: true, message: '请选择年份', trigger: 'change'},
+                        {required: true, message: '请选择年份!', trigger: 'change'},
                     ],
                     lat: [
-                        {required: true, message: '经度不能为空', trigger: ['blur','change']},
+                        {required: true, message: '经度不能为空!', trigger: ['blur','change']},
                         {required: true,validator: validateLat, trigger: ['blur','change']},
                     ],
                     lng: [
-                        {required: true, message: '纬度不能为空', trigger: ['blur','change']},
+                        {required: true, message: '纬度不能为空!', trigger: ['blur','change']},
                         {required: true,validator: validateLng, trigger: ['blur','change']},
                     ],
                     pmc: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
+                        {max: 40, message: '最多只能输入40个字符!', trigger: 'blur'}
                     ],
                     carNumber: [
                         {validator: validatePrice, trigger: 'blur'},
@@ -989,78 +992,78 @@
                         {validator: validateGreenP, trigger: 'blur'},
                     ],
                     developer: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
+                        {max: 40, message: '最多只能输入40个字符!', trigger: 'blur'}
                     ],
                     managementFee: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
+                        {max: 40, message: '最多只能输入40个字符!', trigger: 'blur'}
                     ],
                     salesOfficeAdd: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
+                        {max: 40, message: '最多只能输入40个字符!', trigger: 'blur'}
                     ],
                     salesPhoneNumber: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
+                        {max: 40, message: '最多只能输入40个字符!', trigger: 'blur'}
                     ],
                     preSalePermit: [
-                        {max: 250, message: '最多只能输入250个字符', trigger: 'blur'}
+                        {max: 250, message: '最多只能输入250个字符!', trigger: 'blur'}
                     ],
                     ownershipType: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
+                        {max: 40, message: '最多只能输入40个字符!', trigger: 'blur'}
                     ],
                     discount: [
-                        {max: 250, message: '最多只能输入250个字符', trigger: 'blur'}
+                        {max: 250, message: '最多只能输入250个字符!', trigger: 'blur'}
                     ],
                     buildingStructure: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
+                        {max: 40, message: '最多只能输入40个字符!', trigger: 'blur'}
                     ],
                     ownershipPeriod: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
+                        {max: 40, message: '最多只能输入40个字符!', trigger: 'blur'}
                     ],
                     constructionSpace: [
-                        {max: 40, message: '最多只能输入40个字符', trigger: 'blur'}
+                        {max: 40, message: '最多只能输入40个字符!', trigger: 'blur'}
                     ],
                 },
                 assetIdRules: [
                     {validator: validateAssetId, trigger: 'blur'},
-                    {max: 40, message: '最多只能输入40个字节', trigger: 'blur'}
+                    {max: 40, message: '最多只能输入40个字节!', trigger: 'blur'}
                 ],
                 mediaRules: {
                     mediaName: [
-                        {required: true, message: '媒体名称不能为空', trigger: ['blur','change']},
+                        {required: true, message: '媒体名称不能为空!', trigger: ['blur','change']},
                         {validator: validateSpace, trigger: ['blur','change']},
-                        {max: 40, message: '最多只能输入40个字节', trigger: ['blur','change']}
+                        {max: 40, message: '最多只能输入40个字节!', trigger: ['blur','change']}
                     ],
                     usableNum: [
                         {validator: validateNum, trigger: 'blur'},
-                        {required: true, message: '可投面数不能为空', trigger: 'change'},
+                        {required: true, message: '可投面数不能为空!', trigger: 'change'},
                     ],
                     mstate: [
-                        {required: true, message: '请选择媒体状态', trigger: 'change'},
+                        {required: true, message: '请选择媒体状态!', trigger: 'change'},
                     ],
                     assetId: [
-                        {required: true, message: '资产编号不能为空', trigger: ['blur','change']},
+                        {required: true, message: '资产编号不能为空!', trigger: ['blur','change']},
                         {validator: validateAssetId, trigger: 'change'},
-                        {max: 40, message: '最多只能输入40个字节', trigger: ['blur','change']}
+                        {max: 40, message: '最多只能输入40个字节!', trigger: ['blur','change']}
                     ],
                     doorType: [
-                        {required: true, message: '媒体类型不能为空', trigger: ['blur','change']},
+                        {required: true, message: '媒体类型不能为空!', trigger: ['blur','change']},
                         {validator: validateSpace, trigger: ['blur','change']},
-                        {required: true, min: 1, max: 20, message: '最多只能输入20个字节', trigger: ['blur','change']}
+                        {required: true, min: 1, max: 20, message: '最多只能输入20个字节!', trigger: ['blur','change']}
                     ],
                     adSizeW: [
-                        {required: true, type: 'string', message: '不能为空且只能输入数字', trigger: ['blur','change']},
+                        {required: true, type: 'string', message: '不能为空且只能输入数字!', trigger: ['blur','change']},
                         {validator: validatePrice, trigger: ['blur','change']},
                     ],
                     adSizeH: [
-                        {required: true, type: 'string', message: '不能为空且只能输入数字', trigger: ['blur','change']},
+                        {required: true, type: 'string', message: '不能为空且只能输入数字!', trigger: ['blur','change']},
                         // {type: 'number', min: 1, max: 9999999, message: '最大值9999999', trigger: 'blur'},
                         {validator: validatePrice, trigger: ['blur','change']},
                     ],
                     visualW: [
-                        {required: true, type: 'string', message: '不能为空且只能输入数字', trigger: ['blur','change']},
+                        {required: true, type: 'string', message: '不能为空且只能输入数字!', trigger: ['blur','change']},
                         {validator: validatePrice, trigger: 'change'},
                     ],
                     visualH: [
-                        {required: true, type: 'string', message: '不能为空且只能输入数字', trigger: ['blur','change']},
+                        {required: true, type: 'string', message: '不能为空且只能输入数字!', trigger: ['blur','change']},
                         {validator: validatePrice, trigger: ['blur','change']},
                     ],
                     // mediaRemark: [
@@ -1070,37 +1073,37 @@
                 //道闸表单验证
                 roadGateRules:{
                     mediaName: [
-                        {required: true, message: '媒体名称不能为空', trigger: 'change'},
+                        {required: true, message: '媒体名称不能为空!', trigger: ['blur','change']},
                         {validator: validateSpace, trigger: 'blur'},
-                        {max: 40, message: '最多只能输入40个字节', trigger: 'change'}
+                        {max: 40, message: '最多只能输入40个字节!', trigger: 'change'}
                     ],
                     usableNum: [
                         {validator: validateNum, trigger: 'change'},
-                        {required: true, message: '可投面数不能为空', trigger: 'change'},
+                        {required: true, message: '可投面数不能为空!', trigger: ['blur','change']},
                         // { type:'number', min:1, max:26, message:'最多可投26面',trigger:'blur'},
                     ],
                     mstate: [
-                        {required: true, message: '请选择媒体状态', trigger: 'change'},
+                        {required: true, message: '请选择媒体状态!', trigger: ['blur','change']},
                     ],
                     assetId: [
-                        {required: true, message: '资产编号不能为空', trigger: 'change'},
+                        {required: true, message: '资产编号不能为空!', trigger: ['blur','change']},
                         {validator: validateAssetId, trigger: 'change'},
-                        {max: 40, message: '最多只能输入40个字节', trigger: 'change'}
+                        {max: 40, message: '最多只能输入40个字节!', trigger: 'change'}
                     ],
                     LBSizeW: [
-                        {required: true, type: 'string', message: '宽度不能为空且只能为数字', trigger: 'change'},
+                        {required: true, type: 'string', message: '不能为空且只能为数字!', trigger: ['blur','change']},
                         {validator: validatePrice, trigger: 'change'},
                     ],
                     LBSizeH: [
-                        {required: true, type: 'string', message: '高度不能为空且只能为数字', trigger: 'change'},
+                        {required: true, type: 'string', message: '不能为空且只能为数字!', trigger: ['blur','change']},
                         {validator: validatePrice, trigger: 'change'},
                     ],
                     visualW: [
-                        {required: true, type: 'string', message: '不能为空且只能输入数字', trigger: 'change'},
+                        {required: true, type: 'string', message: '不能为空且只能输入数字!', trigger: ['blur','change']},
                         {validator: validatePrice, trigger: 'change'},
                     ],
                     visualH: [
-                        {required: true, type: 'string', message: '不能为空且只能输入数字', trigger: 'change'},
+                        {required: true, type: 'string', message: '不能为空且只能输入数字!', trigger: ['blur','change']},
                         {validator: validatePrice, trigger: 'change'},
                     ],
                     // mediaRemark: [
@@ -1313,15 +1316,18 @@
                             this.loginTimeout()
                         } else {
                             if(res.data !== ''){
-                                this.setFangjiaData(res.data.data)
-                                // let obj = res.data.data
+                                if(res.data.data){
+                                    this.setFangjiaData(res.data.data)
+                                }else{
+                                    this.messageFun('warning','暂无该小区数据！')
+                                }
                             }else{
-                                this.$message.warning('数据获取异常,暂无该小区数据！')
+                                this.messageFun('warning','数据获取异常,暂无该小区数据')
                             }
                         }
                     })
                 } else {
-                    this.$message.warning('资源名称及市区域都不能为空！')
+                    this.messageFun('warning','资源名称及城市区域都不能为空')
                 }
             },
             // 房价网数据填充
@@ -1372,10 +1378,7 @@
                     this.recForm.salesPhoneNumber = obj.salesPhoneNumber || ''           // 售楼电话
                     this.FangJiaWangData = JSON.parse(JSON.stringify(this.recForm))      //
                 }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '取消成功'
-                    });
+                    this.messageFun('info','取消成功')
                 });
             },
             // 根据填写的具体地址去获取经纬度
@@ -1566,10 +1569,7 @@
                 if (this.ADTitleIndex < 50) {
                     this.arrMedia.push(mediaArr[0])
                 } else {
-                    Message({
-                        message: '最多同时支持五十个媒体面板的操作！',
-                        type: 'warning'
-                    })
+                    this.messageFun('warning','最多同时支持五十个媒体面板的操作!')
                 }
             },
             //删除广告门媒体面板
@@ -1610,10 +1610,7 @@
                 if (this.roadGateTitleIndex < 50) {
                     this.roadGateMedia.push(roadGateMedia[0])
                 } else {
-                    Message({
-                        message: '最多同时支持五十个媒体面板的操作！',
-                        type: 'warning'
-                    })
+                    this.messageFun('warning','最多同时支持五十个媒体面板的操作!')
                 }
             },
             //删除道闸媒体面板
@@ -1695,17 +1692,13 @@
                                     this.resCommentData.mediaNum = resData.mediaCount
                                     this.resCommentData.resName = resData.resName
                                     this.resCommentData.updateTime = resData.createTime
-                                    callback(new Error(''))
+                                    callback(new Error(' '))
                                 }
-
                             }
                         } else if (res.data.SysCode == 100302){
                             this.loginTimeout()
                         } else {
-                            Message({
-                                type: 'warning',
-                                message: '资源名称查重异常'
-                            });
+                            this.messageFun('warning','资源名称查重异常!')
                         }
                     })
                 }
@@ -1715,6 +1708,19 @@
                 console.log('name',name)
                 // 手动触发校验 validateField
                 this.$refs.mediaForm[index].validateField(name,(valid)=>{
+                    console.log('错误提示信息',valid)
+                    if (!valid){
+                        console.log('校验通过')
+                    }else{
+                        console.log('校验不通过')
+                    }
+                })
+            },
+            // 道闸 roadGate
+            roadGateBlur(name,index){
+                console.log('name',name)
+                // 手动触发校验 validateField
+                this.$refs.roadGateForm[index].validateField(name,(valid)=>{
                     console.log('错误提示信息',valid)
                     if (!valid){
                         console.log('校验通过')
@@ -1748,17 +1754,11 @@
                         console.log('判断记录编辑道闸媒体的状态')
                         if (this.editRoadGateStatue[i] == 2 || this.editRoadGateStatue[i] === '待安装') {
                             this.roadGateMedia[i].roadGateForm.assetIdBolean = true
-                            Message({
-                                type: 'warning',
-                                message: '请在亲邻助手中完成安装任务',
-                            })
+                            this.messageFun('warning','请在亲邻助手中完成安装任务')
                             this.roadGateMedia[i].roadGateForm.mstate = '2' + i
                         } else if (valArr[0] === '2') {
                             this.roadGateMedia[i].roadGateForm.assetIdBolean = false
-                            Message({
-                                type: 'warning',
-                                message: '请按正常流程走，当前媒体已安装'
-                            })
+                            this.messageFun('warning','请按正常流程走，当前媒体已安装！')
                             if (this.editRoadGateStatue[i] === '禁用' || this.editRoadGateStatue[i] == 0) {
                                 this.roadGateMedia[i].roadGateForm.mstate = '0' + i
                             } else if (this.editRoadGateStatue[i] === '正常' || this.editRoadGateStatue[i] == 1) {
@@ -1885,27 +1885,21 @@
                         this.resImg.ptid = recData.resID        // 资源图片的ptid就是资源的id
                         this.resImg.palt = this.recForm.resname + '-' + recData.rID
                         // this.setImg()
-                        Message({
-                            message: '资源媒体创建成功！',
-                            type: 'success'
-                        })
+                        // Message({
+                        //     message: '资源媒体创建成功！',
+                        //     type: 'success'
+                        // })
                         this.creadMediaFun(0,0)
                     } else if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时'){
                         this.Editloading.close()
                         this.loginTimeout()
                     }else {
                         this.Editloading.close()
-                        Message({
-                            message: '资源创建失败！',
-                            type: 'warning'
-                        })
+                        this.messageFun('warning','资源创建失败！')
                     }
                 }).catch(err => {
                     console.log('新建资源请求错误', err)
-                    Message({
-                        message: '新建资源请求异常',
-                        type: 'warning'
-                    })
+                    this.messageFun('warning','新建资源请求异常')
                 })
             },
             // 批量创建媒体
@@ -1922,7 +1916,7 @@
                 console.log('adIndex',adIndex,'rtIndex',rtIndex)
                 console.log('String',String)
                 let arr = []
-                if(this.m_boolean){
+                if(this.m_boolean.flag){
                     let mediaFrom = this.arrMedia
                     for (let i = adIndex; i < mediaFrom.length; i++) {
                         let key = mediaFrom[i].mediaForm
@@ -1945,7 +1939,7 @@
                         })
                     }
                 }
-                if(this.rt_boolean){
+                if(this.rt_boolean.flag){
 
                     let mediaFrom = this.roadGateMedia
                     for (let i = rtIndex; i < mediaFrom.length; i++){
@@ -1985,10 +1979,10 @@
                         this.Editloading.close()
                         if(res.data.SysCode == 200200 && res.data.data.length > 0){
                             // this.pushResMediaToWydt(res.data.data)
-                            Message({
-                                message: '媒体创建成功',
-                                type: 'success'
-                            })
+                            // Message({
+                            //     message: '媒体创建成功',
+                            //     type: 'success'
+                            // })
                             if(String !== 'edit'){
                                 this.$confirm('资源媒体创建成功!', '提示', {
                                     confirmButtonText: '继续创建',
@@ -2009,10 +2003,7 @@
                         } else if (res.data.SysCode == 100302){
                             this.loginTimeout()
                         }else{
-                            Message({
-                                message: '媒体创建失败',
-                                type: 'warning'
-                            })
+                            this.messageFun('warning','媒体创建失败')
                         }
                     })
                 }else{
@@ -2039,10 +2030,10 @@
                 const isLt2M = file.size / 1024 / 1024 < 4;
 
                 if (!isJPG) {
-                    this.$message.error('上传图片只能是 JPG 或 PNG 格式!');
+                    this.messageFun('warning','上传图片只能是 JPG 或 PNG 格式!')
                 }
                 if (!isLt2M) {
-                    this.$message.error('上传图片大小不能超过 4MB!');
+                    this.messageFun('warning','上传图片大小不能超过 4MB!')
                 }
                 return isJPG && isLt2M;
             },
@@ -2066,13 +2057,13 @@
 
             // 设置媒体图片信息
             saveImgInfo(m_title) {
-                this.$message.warning('该功能暂未开放！');
+                this.messageFun('warning','该功能暂未开放')
                 console.log('获取当前媒体标题', m_title)
                 this.mediaImg_title = m_title
             },
             // 广告门图片上传前校验
             beforeUpload_ad(file) {
-                this.$message.error('该功能暂未开放！');
+                this.messageFun('warning','该功能暂未开放')
                 return false
                 // const isJPG = file.type === "image/jpeg" || file.type === "image/png";
                 // const isLt6M = file.size / 1024 / 1024 < 6;
@@ -2140,12 +2131,12 @@
             },
             //道闸图片
             saveImgRGInfo(m_title){
-                this.$message.warning('该功能暂未开放')
+                this.messageFun('warning','该功能暂未开放')
                 this.rgImg_title = m_title
             },
             // 道闸图片上传前校验
             beforeUpload_rg(file){
-                this.$message.warning('该功能暂未开放')
+                this.messageFun('warning','该功能暂未开放')
                 return false
                 // const isJPG = file.type === "image/jpeg" || file.type === "image/png";
                 // const isLt6M = file.size / 1024 / 1024 < 6;
@@ -2218,15 +2209,6 @@
                     clearTimeout(timer)
                 },500)
                 let r_boolean = true
-                // this.$refs[r_item].validate((valid) => {
-                //     if (valid) {
-                //         r_boolean = true
-                //     } else {
-                //         console.log('error submit!!')
-                //         return false;
-                //     }
-                // })
-                // recRules
                 let validateResArr = ['rt','city','region','resname','resaddr','lat','lng','floorType','households','buildingNum','liveTime']
                 for (let key of validateResArr) {
                     this.$refs.recForm.validateField(key, (valid) => {
@@ -2242,51 +2224,80 @@
                 if(!r_boolean){
                     return
                 }
-                for(let key of this.arrMedia){
-                    if(key.mediaForm.mediaName !== '' || key.mediaForm.mstate !== ''
-                        || key.mediaForm.doorType !== '' || key.mediaForm.adSizeW !== ''){
-                        this.m_boolean = this.submitAdDoorFrom(m_item)
-                        console.log('m_boolean',this.m_boolean)
-                        break
-                    }
-                }
-                for(let key of this.roadGateMedia){
-                    if(key.roadGateForm.mediaName !== '' || key.roadGateForm.mstate !== ''
-                        || key.roadGateForm.LBSizeW !== '' || key.roadGateForm.visualW !== ''){
-                        this.rt_boolean = this.submitRoadGateForm(rt_item)
-                        break
-                    }
-                }
-                if (r_boolean && (this.m_boolean || this.rt_boolean)) {     // 前台验证
-                    if (this.PathHaveEdit) {                    // 判断是创建还是修改
-                        this.Editloading = this.$loading({
-                            lock: true,
-                            text: '保存中...',
-                            spinner: 'el-icon-loading',
-                            background: 'rgba(0, 0, 0, 0.7)'
-                        })
-                        this.postEditMsg()
+                // 广告门校验
+                this.AdDoorFrom(m_item)
+                // 道闸校验
+                this.roadGateFrom(rt_item)
+
+                if (r_boolean) {     // 前台验证
+                    let isBool = false
+                    // && (this.m_boolean.flag && this.rt_boolean.flag)
+                    console.log('this.m_boolean',this.m_boolean,'this.rt_boolean',this.rt_boolean)
+                    if (this.m_boolean.isOne || this.rt_boolean.isOne) {
+                        console.log('1111111')
+                        if (this.m_boolean.flag || this.rt_boolean.flag){
+                            console.log('2222222222')
+                            isBool = true
+                        } else {
+                            console.log('3333333333')
+                        }
                     } else {
-                        this.Editloading = this.$loading({
-                            lock: true,
-                            text: '创建中...',
-                            spinner: 'el-icon-loading',
-                            background: 'rgba(0, 0, 0, 0.7)'
-                        })
-                        console.log('校验成功')
-                        this.createRec()
+                        console.log('4444444444')
+                        if (this.m_boolean.flag && this.rt_boolean.flag) {
+                            isBool = true
+                            console.log('5555555555')
+                        } else {
+                            console.log('6666666666')
+                        }
+                    }
+                    if(isBool){
+                        if (this.PathHaveEdit) {                    // 判断是创建还是修改
+                            this.Editloading = this.$loading({
+                                lock: true,
+                                text: '保存中...',
+                                spinner: 'el-icon-loading',
+                                background: 'rgba(0, 0, 0, 0.7)'
+                            })
+                            this.postEditMsg()
+                        } else {
+                            this.Editloading = this.$loading({
+                                lock: true,
+                                text: '创建中...',
+                                spinner: 'el-icon-loading',
+                                background: 'rgba(0, 0, 0, 0.7)'
+                            })
+                            console.log('校验成功')
+                            this.createRec()
+                        }
+                    }else{
+                        if(!this.m_boolean.flag && !this.rt_boolean.flag){
+                            this.submitAdDoorFrom(m_item)
+                        }
+                        this.messageFun('warning','必填项信息不能为空')
                     }
                 } else {
-                    if(!this.m_boolean && !this.rt_boolean){
+                    if(!this.m_boolean.flag && !this.rt_boolean.flag){
                         this.submitAdDoorFrom(m_item)
                     }
-                    Message({
-                        message: '信息填写有误！',
-                        type: 'warning'
-                    })
+                    this.messageFun('warning','必填项信息不能为空')
                 }
             },
             // 广告门校验
+            AdDoorFrom(m_item){
+                for (let key of this.arrMedia) {
+                    if (key.mediaForm.mediaName || key.mediaForm.mstate !== '' || key.mediaForm.doorType
+                        || key.mediaForm.adSizeW || key.mediaForm.visualH) {
+                        this.m_boolean.flag = this.submitAdDoorFrom(m_item)
+                        console.log('m_boolean', this.m_boolean)
+                        // break
+                    }else{
+                        if(this.arrMedia.length <= 1){
+                            this.m_boolean.isOne = true
+                        }
+                    }
+                }
+            },
+            //
             submitAdDoorFrom(m_item){
                 let isBoolean = false
                 for (let i = 0; i < this.$refs[m_item].length; i++) {
@@ -2303,10 +2314,22 @@
                         break
                     }
                 }
-                // console.log('isBoolean',isBoolean)
                 return isBoolean
             },
             // 道闸校验
+            roadGateFrom(rt_item){
+                for(let key of this.roadGateMedia){
+                    if(key.roadGateForm.mediaName !== '' || key.roadGateForm.mstate !== ''
+                        || key.roadGateForm.LBSizeW !== '' || key.roadGateForm.visualW !== ''){
+                        this.rt_boolean.flag = this.submitRoadGateForm(rt_item)
+                        break
+                    }else{
+                        if(this.roadGateMedia.length <= 1){
+                            this.rt_boolean.isOne = true
+                        }
+                    }
+                }
+            },
             submitRoadGateForm(rt_item){
                 let isBoolean = false
                 for (let i = 0; i < this.$refs[rt_item].length; i++) {
@@ -2325,6 +2348,10 @@
                     }
                 }
                 return isBoolean
+            },
+            // 广告门和道闸都没有填写信息时
+            checkFrom(){
+                let validateMediaArr = ['mediaName','mstate','assetId','doorType','adSizeW','adSizeH','visualW','visualH']
             },
             //重置表单数据
             resetForm() {
@@ -2715,10 +2742,10 @@
                         // 设置资源图片信息
                         console.log('m_boolean',this.m_boolean,'rt_boolean',this.rt_boolean)
                         // this.creadMediaFun(0,0)
-                        if(this.m_boolean){
+                        if(this.m_boolean.flag){
                             this.postAdDoorData()
                         }
-                        if(this.rt_boolean){
+                        if(this.rt_boolean.flag){
                             this.postRoadGateData()
                         }
                         if(this.arrMedia.length > this.editMediaLength || this.roadGateMedia.length > this.editRoadGateLength){
@@ -2728,16 +2755,9 @@
                     } else {
                         if (res.data.SysCode == 100302 || res.data.MSG === '登陆超时') {
                             this.Editloading.close()
-                            Message({
-                                message: '登陆超时,请重新登录',
-                                type: 'warning'
-                            })
-                            this.$router.push('/login')
+                            this.loginTimeout()
                         } else {
-                            Message({
-                                message: '资源保存失败',
-                                type: 'warning'
-                            })
+                            this.messageFun('warning','资源保存失败')
                         }
                         this.Editloading.close()
                     }
@@ -2794,17 +2814,11 @@
                                         clearTimeout(timer)
                                     },500)
                                     this.Editloading.close()
-                                    Message({
-                                        message: '广告门保存成功',
-                                        type: 'success'
-                                    })
+                                    this.messageFun('success','广告门保存成功')
                                     this.$router.push('./mediaDetail');
                                 }
                             }else{
-                                Message({
-                                    message: tempObj.mediaName + '保存失败',
-                                    type: 'warning'
-                                })
+                                this.messageFun('warning',tempObj.mediaName + '保存失败')
                             }
                         })
                     } else {
@@ -2867,17 +2881,11 @@
                                         clearTimeout(timer)
                                     },500)
                                     this.Editloading.close()
-                                    Message({
-                                        message: '道闸保存成功',
-                                        type: 'success'
-                                    })
+                                    this.messageFun('success','道闸保存成功')
                                     this.$router.push('./mediaDetail');
                                 }
                             }else{
-                                Message({
-                                    message: tempObj.mediaName + '保存失败',
-                                    type: 'warning'
-                                })
+                                this.messageFun('warning',tempObj.mediaName + '保存失败')
                             }
                         })
                     } else {
@@ -2902,20 +2910,11 @@
                 api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('修改媒体状态', res)
                     if (res.data.SysCode === 200200 || res.data.MSG === '操作成功') {
-                        Message({
-                            type: 'success',
-                            message: '修改成功'
-                        })
+                        this.messageFun('success','修改成功')
                     } else if (res.data.SysCode === 200302 || res.data.MSG === '广告位已被占用') {
-                        Message({
-                            type: 'warning',
-                            message: res.data.MSG
-                        })
+                        this.messageFun('warning',res.data.MSG)
                     } else {
-                        Message({
-                            type: 'warning',
-                            message: '状态更改失败'
-                        })
+                        this.messageFun('warning','状态更改失败')
                     }
                 })
             },
@@ -2945,6 +2944,12 @@
 </script>
 
 <style scoped>
+    .mediaList_content{
+        width: 92%;
+        background: #ffffff;
+        margin: 16px auto;
+        padding-bottom: 32px;
+    }
     /deep/ .ad_index_footer {
         text-align: center;
         font-size: 14px;
@@ -2953,52 +2958,8 @@
         position: relative;
     }
 
-    /*面包屑导航*/
-    .ad_mediaMana_nav {
-        position: relative;
-        height: 0;
-    }
-
-    .ad_mediaMana_nav p {
-        padding-left: 57px;
-        position: absolute;
-        left: 0;
-        top: 12px;
-        font-size: 14px;
-        line-height: 18px;
-    }
-
-    .ad_mediaMana_nav p em {
-        font-size: 14px;
-        color: #D9D9D9;
-        line-height: 18px;
-    }
-
-    .ad_mediaMana_nav p a {
-        color: #666;
-    }
-
-    .ad_mediaMana_nav p a:nth-of-type(1) {
-        color: #999;
-    }
-
-    .ad_mediaMana_wrap {
-        margin-bottom: 109px;
-        position: relative;
-    }
-
-    /*资源信息*/
-    .mediaMana_content_top {
-        padding: 42px 60px 0 60px;
-    }
-
-    .mediaMana_content_bottom {
-        padding: 11px 60px;
-    }
-
     .content_top_wrap{
         background: #FFFFFF;
-        border: 1px solid #DEDEDE;
         padding-top: 3px;
     }
 
@@ -3103,6 +3064,7 @@
 
     .get_resName_btn{
         width: 66px;
+        min-width: 66px;
     }
 
     /*经纬度*/
@@ -3216,7 +3178,7 @@
     }
 
     /*媒体一表单*/
-    .mediaMana_content_bottom .content_bottom_upload {
+    .mediaList_content .content_bottom_upload {
         width: 408px;
         height: 877px;
         border: 2px dashed #979797;
@@ -3256,7 +3218,7 @@
         margin-top: 20px;
     }
 
-    /deep/ .mediaMana_content_bottom .el-form-item__error {
+    /deep/ .mediaList_content .el-form-item__error {
         top: 92%;
     }
 
@@ -3282,7 +3244,7 @@
     }
 
     .upload_img_wrap {
-        width: 236px;
+        width: 120px;
         height: 125px;
         overflow: hidden;
     }

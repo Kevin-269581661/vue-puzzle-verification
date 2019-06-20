@@ -25,7 +25,7 @@
                                 </el-autocomplete>
                             </el-form-item>
                             <el-form-item label="公司名称：" prop="companyName">
-                                <el-select v-model="planForm.companyName" @change="GetBrandByCid" placeholder="请选择公司名称">
+                                <el-select v-model="planForm.companyName" @change="GetBrandByCid" placeholder="请选择公司名称" filterable>
                                     <el-option
                                         v-for="item in companyName"
                                         :key="item.value"
@@ -36,7 +36,7 @@
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="公司品牌：" prop="companyBrand">
-                                <el-select v-model="planForm.companyBrand" placeholder="请选择公司品牌">
+                                <el-select v-model="planForm.companyBrand" placeholder="请选择公司品牌" filterable>
                                     <el-option
                                         v-for="item in companyBrand"
                                         :key="item.value"
@@ -46,7 +46,7 @@
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="联系人：" prop="ownerBU">
-                                <el-select v-model="planForm.ownerBU" placeholder="请选择所属联系人">
+                                <el-select v-model="planForm.ownerBU" placeholder="请选择所属联系人" filterable>
                                     <el-option
                                         v-for="item in ownerBU"
                                         :key="item.value"
@@ -1798,9 +1798,9 @@
                     let funcs=[]; //Promise.all要用到的参数, 存放每次请求的Promise对象
 
                     for (let i=0; i<request_times; i++) { // 循环请求次数，构造请求的Promise对象并插入funcs数组
-                        let func=new Promise(function(resolve, reject){ //定义Promise并处理请求逻辑
+                        let func=new Promise((resolve, reject)=>{ //定义Promise并处理请求逻辑
                             let data=[];
-                            self.$http.get(
+                            this.$http.get(
                                 // 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes/'+self.planForm.throwCity[i]+'.json'
                                 this.apiVar.jsonLink+self.planForm.throwCity[i]+'.json'
                             ).then(function(response){
@@ -1823,7 +1823,7 @@
                         funcs.push(func);
                     }
 
-                    Promise.all(funcs).then(function(values){ //使用Promise.all调用funcs里面的函数，并合并数据，最后给js-xlsx生成Excel
+                    Promise.all(funcs).then((values)=>{ //使用Promise.all调用funcs里面的函数，并合并数据，最后给js-xlsx生成Excel
                         let resultValus = [];
                         for(let val of values){
                             if(val){
@@ -1834,7 +1834,7 @@
                             let returnobj = self.hasPointData(resultValus);
                             console.log('returnobj----', returnobj);
                             let date = returnobj.date;
-                            let head = [ '省份', '城市', '区域', '资源名称','商圈', '地址', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '广告限制', '点位备注', '媒体数量(面)'];
+                            let head = [ '省份', '城市', '区域', '资源名称','商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '广告限制', '点位备注', '媒体数量(面)'];
                             let allHead = head.concat(date);
                             let filename = returnobj.filename+'-'+ date[0].substring(0, 10)+'~'+date[date.length-1].substring(11)+'空位表';
                             sheetExcel.toDownload(allHead, returnobj.arr, filename);
@@ -1874,6 +1874,7 @@
                                 resName: item.resName,
                                 tradingArea: item.tradingArea,
                                 resAddress: item.resAddress,
+                                mVehicle: item.mVehicle,
                                 fNum: item.fNum,
                                 hNum: item.hNum,
                                 hPrice: item.hPrice/100,
@@ -5900,7 +5901,9 @@
         text-overflow: ellipsis;
         white-space: nowrap;
     }
-
+    /deep/ .el-table__row .cell span{
+        overflow-x: initial;
+    }
     /deep/ .el-table--enable-row-hover .el-table__body tr:hover > td {
         background-color: #ecf5ff;
     }

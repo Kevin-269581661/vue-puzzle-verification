@@ -869,7 +869,7 @@
 
     .right-charts {
         width: 100%;
-        margin-top: 24px;
+        margin-top: 16px;
         padding: 0 24px;
         box-sizing: border-box;
         display: flex;

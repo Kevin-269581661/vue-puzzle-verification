@@ -860,14 +860,6 @@ export default {
     left: 0;
     top: 2px;
 }
-
-/*超出省略*/
-/deep/ .el-table .cell {
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
 .el-input {
     width: 300px;
     height: 34px;

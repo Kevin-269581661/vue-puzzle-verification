@@ -13,7 +13,7 @@
 				<el-row>
                     <el-col :span="8">
                         <span>所在公司:</span>
-                        <el-select v-model="searchInfo.company" placeholder="请选择公司" @change="getPeople()">
+                        <el-select v-model="searchInfo.company" placeholder="请选择公司" @change="getPeople()" filterable>
                             <el-option v-for="item of companyArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-col>
@@ -36,7 +36,7 @@
                     </el-col>
                     <el-col :span="8">
                         <span>工程人员:</span>
-                        <el-select v-model="searchInfo.engineer" placeholder="请选择工程人员">
+                        <el-select v-model="searchInfo.engineer" placeholder="请选择工程人员" filterable>
                             <el-option v-for="item of engineerArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-col>

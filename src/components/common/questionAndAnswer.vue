@@ -1,7 +1,7 @@
 <template>
-    <div class="questionAndAnswer">
-        <div class="ad_mediaDetail_nav ">
-            <p class="clearfix">
+    <div class="ad_mediaDetail_wrap clearfix">
+        <div class="ad_mediaDetail_nav">
+            <p>
                 <a href="#" style="color: #999">Q&A</a>
             </p>
         </div>
@@ -100,7 +100,7 @@
 </script>
 
 <style scoped>
-    .questionAndAnswer {
+    .ad_mediaDetail_wrap {
         position: absolute;
         width: 100%;
         bottom: 60px;
@@ -111,7 +111,7 @@
     .el-aside {
         background-color: #D3DCE6;
         color: #333;
-        text-align: center;
+        text-align: left;
     }
 
     .el-main {
@@ -136,7 +136,7 @@
         background: #ffffff;
     }
 
-    .questionAndAnswer .el-container {
+    .ad_mediaDetail_wrap .el-container {
         width: 100%;
         height: 100%;
         padding: 0 60px 42px 60px;
@@ -145,31 +145,17 @@
     .el-menu {
         height: 100%;
     }
-    .questionAndAnswer /deep/ .el-menu-item.is-active{
+    .ad_mediaDetail_wrap /deep/ .el-menu-item.is-active{
         background-color: #e9f7fe;
         border-right: 2px solid #1890ff;
     }
-    .ad_mediaDetail_nav p {
-        padding-left: 60px;
-        position: absolute;
-        left: 0;
-        top: 12px;
-        font-size: 14px;
-        line-height: 18px;
+    /deep/ .el-menu-item, .el-submenu__title{
+        height: 48px;
+        line-height: 48px;
     }
-
-    .ad_mediaDetail_nav p a {
-        color: #666;
-    }
-
-    .ad_mediaDetail_nav {
-        height: 42px;
-        position: relative;
-    }
-
 </style>
 <style>
-    .questionAndAnswer .el-collapse{
+    .ad_mediaDetail_wrap .el-collapse{
         border-top: none;
     }
 </style>

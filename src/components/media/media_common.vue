@@ -295,7 +295,6 @@ export default {
                     });
                     break;
                 case 'photoGallery':
-                case 'ludanReport':
                     $('#Photos').css({
                         "color": "#fff",
                         "border-bottom": "3px solid #fff"

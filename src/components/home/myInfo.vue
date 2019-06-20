@@ -63,32 +63,6 @@
 </script>
 
 <style scoped>
-/*面包屑导航*/
-.ad_mediaDetail_wrap {
-    position: relative;
-}
-.ad_mediaDetail_nav{
-    width: 92%;
-    margin: 0 auto;
-}
-.ad_mediaDetail_nav p {
-    position: absolute;
-    left: 0;
-    top: 12px;
-    font-size: 14px;
-    line-height: 18px;
-}
-
-.ad_mediaDetail_nav p a {
-    color: #666;
-}
-
-.ad_mediaDetail_nav {
-    height: 42px;
-    position: relative;
-}
-
-
     .questionAndAnswer {
         width: 92%;
         margin: 0 auto;

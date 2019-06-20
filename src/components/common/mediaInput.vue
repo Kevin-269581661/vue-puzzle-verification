@@ -657,7 +657,7 @@
                 <el-button size="small" type="primary" @click="searchFun">搜索</el-button>
                 <span style="font-size: 14px;color: #333333;display: inline-block;margin-top: 10px">当前选择信息:
                    城市:{{searchResData.city || '--'}} 区域:{{searchResData.district || '--'}}
-                    名称:{{searchResData.title || '--'}} 经纬度:{{searchResData.lat + ',' + searchResData.lng}}
+                    名称:{{searchResData.title || '--'}} 经纬度:{{searchResData.lng + ',' + searchResData.lat}}
                 </span>
                 <!--百度地图-->
                 <div id="resMap" ref="resMap"  style="height: 500px;margin-top: 14px"></div>

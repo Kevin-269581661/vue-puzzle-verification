@@ -2298,13 +2298,20 @@ export default {
                 apName: this.orderDetail.apName,
             };
             this.downLoading = true;
+            const tempPage = window.open('', '_blank');
             api.getApi(this.apiVar.Advertisement+'/DownloadImgPackage', info).then(res =>{
                 if(res.data.SysCode == 200200){
+                    // let routeUrl = this.$router.resolve({
+                    //     path: "/progressDown",
+                    //     query: info,
+                    // });
+                    // window.open(routeUrl.href, '_blank');
+
                     let routeUrl = this.$router.resolve({
                         path: "/progressDown",
                         query: info,
                     });
-                    window.open(routeUrl .href, '_blank');
+                    tempPage.location = routeUrl.href;
                 }else if(res.data.SysCode == 100302){
                     this.loginTimeout();
                 }else{

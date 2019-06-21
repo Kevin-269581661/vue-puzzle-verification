@@ -21,7 +21,7 @@
                         <img src="../../assets/images/usericon.png" alt="">
                     </div>
                     <div class="password">
-                        <input type="password" placeholder="密码" v-model="password" @keyup="show($event)">
+                        <input type="password" placeholder="密码" v-model="password"  @keydown.13="show($event)" @keydown.229="() => {}">
                         <img src="../../assets/images/passicon.png" alt="">
                     </div>
                     <div class="remeberUser">

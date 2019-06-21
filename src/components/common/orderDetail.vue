@@ -214,21 +214,40 @@
                                                     </p>
                                                 </div>
                                                 <div class="upload-img">
-                                                    <el-upload class="upload_plus"
+                                               <!--     <el-upload class="upload_plus"
                                                         :key="index+'-'+currUpPage+'-1'"
                                                         @click.native="saveId(updata)"
                                                         :class="{disabled:uploadDisabled(updata.upImgArr)}"
                                                         :action="doUpload"
                                                         :http-request="uploadImg"
+                                                        :limit="6"
                                                         list-type="picture-card"
                                                         :file-list="updata.upImgArr"
-                                                        :limit="6"
                                                         :before-upload="beforeAvatarUpload"
                                                         :before-remove="beforeImgRemove"
                                                         :on-preview="handlePictureCardPreview"
                                                         :on-remove="handleRemove"
-                                                        :on-exceed="handleExceed" multiple >
+                                                        :on-exceed="handleExceed" multiple>
                                                         <i class="el-icon-plus"></i>
+                                                    </el-upload>-->
+                                                    <el-upload
+                                                        class="upload_plus"
+                                                        :key="index+'-'+currUpPage+'-1'"
+                                                        @click.native="saveId(updata)"
+                                                        :class="{disabled:uploadDisabled(updata.upImgArr)}"
+                                                        :action="doUpload"
+                                                        :http-request="uploadImg"
+                                                        :limit="6"
+                                                        :show-file-list="false"
+                                                        :before-upload="beforeAvatarUpload"
+                                                        :before-remove="beforeImgRemove"
+                                                        :on-preview="handlePictureCardPreview"
+                                                        :on-remove="handleRemove"
+                                                        :on-exceed="handleExceed" multiple>
+                                                        <img class="upload_img_item"
+                                                             v-for="(item,index) in updata.upImgArr"
+                                                             :src="item.url">
+                                                        <i class="el-icon-plus avatar-uploader-icon"></i>
                                                     </el-upload>
                                                 </div>
                                             </el-card>
@@ -338,7 +357,7 @@
                                             <!--</el-checkbox>-->
                                         </div>
                                         <div class="up-report-bottom-btns">
-                                            <el-button @click="downloadImg('XK')" :loading="downLoading">导出图片</el-button>                                        
+                                            <el-button @click="downloadImg('XK')" :loading="downLoading">导出图片</el-button>
                                             <el-button type="primary" @click="submitUpload('XK')">保存</el-button>
                                             <!-- <el-button plain @click="downloadDown">下载PDF</el-button> -->
                                             <el-button plain @click="showH5('XK')">查看H5</el-button>
@@ -1523,6 +1542,7 @@ export default {
                             data.upImgArr = data.photoList;
                         }
                         this.pageUpReportArr = dataInfo.dataList;
+                        console.log('this.pageUpReportArr',this.pageUpReportArr)
                         this.UpReportLoading = false;
                         if(dataInfo.totalCount == 0){
                             Message.warning('暂无数据');
@@ -2968,4 +2988,12 @@ export default {
 .radio_style{
     vertical-align: top;
 }
+    .up_img{
+
+    }
+    .upload_img_item{
+        width: 30%;
+        height: 105px;
+        margin: 4.2% 1.6% 0 1.6%;
+    }
 </style>

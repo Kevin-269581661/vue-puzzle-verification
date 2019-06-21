@@ -7,7 +7,6 @@
                 </p>
             </div>
             <div class="mediaList_wrap">
-                <!--<div class="mediaList_container">-->
                     <el-tabs v-model="activeName" @tab-click="handleClick()">
                         <!--搜索框-->
                         <div v-if="(activeName=='first')||(activeName=='second')">
@@ -22,7 +21,7 @@
                                 </el-col>
                                 <el-col :span="6">
                                     <span>城市区域：</span>
-                                    <el-cascader :options="citys" v-model="citySelect" :show-all-levels='false'
+                                    <el-cascader :options="citys" v-model="searchInfo.citySelect" :show-all-levels='false'
                                                  size="small"
                                                  class="plan-select"
                                                  placeholder="选择地区"
@@ -31,7 +30,7 @@
                                 </el-col>
                                 <el-col :span="6">
                                     <span>行业类型：</span>
-                                    <el-cascader :options="bussiness" size="small" class="plan-select" v-model="industryIdArr"
+                                    <el-cascader :options="bussiness" size="small" class="plan-select" v-model="searchInfo.industryIdArr"
                                                  change-on-select
                                                  @change="handleChange"
                                                  filterable>
@@ -41,21 +40,21 @@
                             <el-row :gutter="32">
                                 <el-col :span="6">
                                     <span>&nbsp;投 放 面：</span>
-                                    <el-select v-model="LabSelect" placeholder="选择投放面" class="plan-select" size="small">
+                                    <el-select v-model="searchInfo.LabSelect" placeholder="选择投放面" class="plan-select" size="small">
                                         <el-option label="A面" value="A"></el-option>
                                         <el-option label="B面" value="B"></el-option>
                                     </el-select>
                                 </el-col>
                                 <el-col :span="6">
                                     <span>投放日期：</span>
-                                    <el-date-picker size="small" v-model="date" type="daterange" range-separator="-"
+                                    <el-date-picker size="small" v-model="searchInfo.date" type="daterange" range-separator="-"
                                                     format="yyyy/MM/dd" value-format="yyyy-MM-dd" start-placeholder="投放日期"
                                                     end-placeholder="投放日期">
                                     </el-date-picker>
                                 </el-col>
                                 <el-col :span="6">
                                     <span>&nbsp;上 下 刊：</span>
-                                    <el-select v-model="publish" placeholder="请选择" class="plan-select" size="small">
+                                    <el-select v-model="searchInfo.publish" placeholder="请选择" class="plan-select" size="small">
                                         <el-option label="上刊" value="SK"></el-option>
                                         <el-option label="下刊" value="XK"></el-option>
                                     </el-select>
@@ -69,18 +68,22 @@
                                 </el-col>
                             </el-row>
                         </div>
-                        <el-tab-pane label="案例库" name="first">
+                        <el-tab-pane label="案例库"
+                                     name="first"
+                                     v-loading="tabBodyLoading"
+                                     element-loading-text="拼命加载中..."
+                                     element-loading-spinner="el-icon-loading">
                             <!-- 图片 -->
-                            <photo :imgarr="pageUpImgArr" :show-pic="showPic"></photo>
+                            <photo :imgarr="pageUpImgArr" :show-pic="showPic" :publish="publish"></photo>
                             <!--页码-->
-                            <div class="pager" v-if="showPic ===3">
+                            <div class="ad_pagination" v-if="showPic ===3">
                                 <el-pagination
                                     v-if="paginationShow"
-                                    small background
+                                    background
                                     :current-page.sync="currUpPage"
                                     :page-sizes="[10, 20]"
                                     :page-size="pageUpSize"
-                                    layout="sizes, prev, pager, next, jumper"
+                                    layout="total, sizes, prev, pager, next, jumper"
                                     :total="totalUpNum"
                                     @size-change="sizeChange"
                                     @current-change='changePage'>
@@ -89,14 +92,14 @@
                         </el-tab-pane>
                         <el-tab-pane label="收藏夹" name="second">
                             <!-- 图片 -->
-                            <photo :imgarr="pageDownImgArr" :show-pic="showPic"></photo>
+                            <photo :imgarr="collectImgArr" :show-pic="showPic" :type = activeName></photo>
                             <!--页码-->
-                            <div class="pager" v-if="showPic ===3">
-                                <el-pagination v-if="paginationShow" small background
+                            <div class="ad_pagination" v-if="showPic ===3">
+                                <el-pagination v-if="paginationShow" background
                                                :current-page.sync="currDownPage"
                                                :page-sizes="[10, 20]"
                                                :page-size="pageDownSize"
-                                               layout="sizes, prev, pager, next, jumper"
+                                               layout="total, sizes, prev, pager, next, jumper"
                                                :total="totalDownNum"
                                                @size-change="sizeChange"
                                                @current-change='changePage'>
@@ -108,7 +111,6 @@
                         </el-tab-pane>
                     </el-tabs>
                 </div>
-            <!--</div>-->
         </div>
     </div>
 </template>
@@ -160,6 +162,8 @@ export default {
     },
     data() {
         return {
+            // 数据loading
+            tabBodyLoading: true,
             // 是否搜索
             isSearch: true,
             // 登录信息
@@ -174,44 +178,62 @@ export default {
             pageDownSize: 10,
             // 上刊
             pageUpImgArr: [],
-            // 下刊
-            pageDownImgArr: [],
             //地区搜索
             citys: [],
-            citySelect: [],
             //上刊搜索行
             select: "3",
-            // keyword: "",
-            LabSelect: "",
-            date: '',
-            industryIdArr: [],
             bussiness: [],
             // tab默认选择第一项
-            activeName: "three",
+            activeName: "first",
+            beforActive: 'first',
             //是否搜索到图片
             showPic: 1,
+            // 是否显示图片
             showBtn: false,
-            //录单搜索行
-            ludan: false,
-            ludanSelect: "任务名称",
-            // showPic: 3,
-            //  录单
-            input: "",
-            value6: "",
             // 搜索信息
             searchInfo:{
-                resName: '',
-                apName: '',
+                resName: '',            // 资源名称
+                apName: '',             // 方案名称
+                labSelect: '',          // A/B面
+                date: '',               // 搜索日期
+                citySelect: [],         // 地区搜索
+                industryIdArr: [],      // 搜索行业
+                publish: 'SK',            // 上下刊
             },
             // 上下刊下拉
             publish: 'SK',
+            // 收藏夹图片列表
+            collectImgArr: [],
+            photoApi: 'http://192.168.1.246/advertisement',
+            //  案例库搜索条件
+            gallerySelectInfo: {
+                LabSelect: '',
+                date: '',
+                citySelect:[],
+                industryIdArr:[],
+                showPic: 1,
+                apName: '',
+                resName: '',
+                publish: 'SK',
+            },
+            // 收藏夹搜索图片
+            collectSelectInfo:{
+                LabSelect: '',
+                date: '',
+                citySelect:[],
+                industryIdArr:[],
+                showPic: 1,
+                apName: '',
+                resName: '',
+                publish: 'SK',
+            }
         };
     },
     created() {
         this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
         this.getIndustry();
         this.getAllCity();
-        // this.searchFun();
+        this.searchFun();
     },
     methods: {
         // 获取城市
@@ -229,76 +251,142 @@ export default {
             let arr = JSON.parse(sessionStorage.getItem("industry"));
             this.bussiness = industryToText.cascader(arr);
         },
-        // 搜索数据格式化
-        searchFormat(type){
-            let session = this.sessionData;
-            let info = {
-                uid: session.uID,
-                token: session.token,
-                imgType: this.publish, // type,
-                pageNum: this.currUpPage,
-                pageSize: this.pageUpSize,
-                // pageNum: (type =='SK') ? this.currUpPage : this.currDownPage,
-                // pageSize: (type =='SK') ? this.pageUpSize : this.pageDownSize,
-            };
-            let range = this.date;
-            let select = this.select;
-            // let keyword = this.keyword;
-            let lab = this.LabSelect;
-            let city = this.citySelect;
-            let industry = this.industryIdArr;
-            if(select == 1){
-                info.selectType = 'ap';
-                info.wd = this.searchInfo.apName
+        // tabClick
+        handleClick() {
+            // beforActive
+            if (this.activeName == 'first') {
+                if(this.beforActive === 'second'){
+                    this.collectSelectInfo = JSON.parse(JSON.stringify(this.searchInfo))
+                }
+                this.searchInfo = JSON.parse(JSON.stringify(this.gallerySelectInfo))
+            } else if (this.activeName == 'second') {
+                if(this.beforActive === 'first'){
+                    this.gallerySelectInfo = JSON.parse(JSON.stringify(this.searchInfo))
+                }
+                this.searchInfo = JSON.parse(JSON.stringify(this.collectSelectInfo))
+                if(!this.collectImgArr.length){
+                    let collectParams = this.searchFormat();
+                    this.getCollectImgList(collectParams)
+                }
             }
-            if(select == 3){
-                info.selectType = 'res';
-                info.wd = this.searchInfo.resName
+            this.beforActive = this.activeName
+        },
+        // 重置
+        reset(){
+            for(let i in this.searchInfo){
+                if (i === 'citySelect' || i === 'industryIdArr') {
+                    this.searchInfo[i] = []
+                } else if (i === 'publish') {
+                    this.searchInfo[i] = 'SK'
+                } else {
+                    this.searchInfo[i] = ''
+                }
             }
-            // if(keyword){
-            //     info.wd = keyword;
-            // }
-            if(range){
-                info.ls = range[0];
-                info.le = range[1];
+            if (this.activeName == 'first') {
+                this.pageUpImgArr = [];
+                for(let key in this.gallerySelectInfo){
+                    if(key === 'citySelect' || key === 'industryIdArr'){
+                        this.gallerySelectInfo[key] = []
+                    }else if(key === 'publish'){
+                        this.gallerySelectInfo[key] = 'SK'
+                    }else{
+                        this.gallerySelectInfo[key] = ''
+                    }
+                }
+            } else if (this.activeName == 'second') {
+                this.collectImgArr = [];
+                for (let key in this.collectSelectInfo) {
+                    if(key === 'citySelect' || key === 'industryIdArr'){
+                        this.collectSelectInfo[key] = []
+                    }else if(key === 'publish'){
+                        this.collectSelectInfo[key] = 'SK'
+                    }else{
+                        this.collectSelectInfo[key] = ''
+                    }
+                }
+                let collectParams = this.searchFormat();
+                this.getCollectImgList(collectParams)
             }
-            if(lab){
-                info.asLab = lab;
-            }
-            if(city[1]){
-                info.prid = city[1];
-            }
-            if(city[2]){
-                info.rid = city[2];
-            }
-            if(industry){
-                info.iId = industry[1];
-            }
-            console.log('type---', info);
-            return info;
         },
         // 搜索
         searchFun(){
-            let upinfo = this.searchFormat();
-            this.pageUpImgArr = []
-            this.initPage = []
-            this.getUpImgInfo(upinfo);
-            // if(this.activeName == 'first'){
-            //     let upinfo = this.searchFormat('SK');
-            //     this.getUpImgInfo(upinfo);
-            // }else if(this.activeName == "second"){
-            //     let downinfo = this.searchFormat('XK');
-            //     this.getDownImgInfo(downinfo);
-            // }
+            if (this.activeName == 'first') {
+                let upinfo = this.searchFormat();
+                this.pageUpImgArr = []
+                this.initPage = []
+                this.getUpImgInfo(upinfo);
+            } else if (this.activeName == "second") {
+                let collectParams = this.searchFormat();
+                this.collectImgArr = []
+                this.initPage = []
+                this.getCollectImgList(collectParams)
+            }
+        },
+        // 搜索数据格式化
+        searchFormat(){
+            let session = this.sessionData;
+            if(this.activeName == 'first'){
+                let info = {
+                    uid: session.uID,
+                    token: session.token,
+                    imgType: this.searchInfo.publish, // type,
+                    orderName: this.searchInfo.apName,
+                    resourceName: this.searchInfo.resName,
+                    asLab: this.searchInfo.LabSelect,
+                    prid: '',
+                    pageNum: this.currUpPage,
+                    pageSize: this.pageUpSize,
+                };
+                if(this.searchInfo.date){
+                    info.ls = this.searchInfo.date[0];
+                    info.le = this.searchInfo.date[1];
+                }
+                if(this.searchInfo.citySelect[1]){
+                    info.prid = this.searchInfo.citySelect[1];
+                }
+                if(this.searchInfo.citySelect[2]){
+                    info.rid = this.searchInfo.citySelect[2];
+                }
+                if(this.searchInfo.industryIdArr){
+                    info.iId = this.searchInfo.industryIdArr[1];
+                }
+                console.log(this.activeName,'type---', info);
+                return info;
+            }else if(this.activeName == "second"){
+                let info = {
+                    uid: session.uID,
+                    token: session.token,
+                    type: this.searchInfo.publish === "SK" ? 0 : this.searchInfo.publish === "XK" ? 1 : "",
+                    orderName: this.searchInfo.apName,
+                    resourceName: this.searchInfo.resName,
+                    asLabel: this.searchInfo.LabSelect,
+                    pageNo: this.currUpPage,
+                    pageSize: this.pageUpSize,
+                };
+                if(this.searchInfo.industryIdArr){
+                    info.industryId = this.searchInfo.industryIdArr[1];
+                }
+                if(this.searchInfo.citySelect[2]){
+                    info.regionId = this.searchInfo.citySelect[2];
+                }
+                if(this.searchInfo.date){
+                    info.startDate = this.searchInfo.date[0];
+                    info.endDate = this.searchInfo.date[1];
+                }
+                console.log(this.activeName,'type---', info);
+                return info;
+            }
         },
         // 获取上/下刊图片数据
         getUpImgInfo(params) {
-            let addload = this.$loading({
-                lock: true,
-                text: '玩命加载中...',
-                spinner: 'el-icon-loading',
-                background: 'rgba(0, 0, 0, 0.7)'
-            });
+            this.tabBodyLoading = true
+            for (let i in params) {
+                console.log(params[i])
+                if (!params[i]) {
+                    delete params[i]
+                }
+            }
+            params.selectType = 'res'
             api.getApi(this.apiVar.Advertisement+"/GetImgList", params)
                 .then(res => {
                     if (!res.data.SysCode) {
@@ -314,32 +402,76 @@ export default {
                             }
                             this.pageUpImgArr = dataInfo.list;
                             console.log('pageup----', this.pageUpImgArr);
-                            addload.close();
                             if(this.pageUpImgArr.length){
                                 this.showPic = 3;
                             }else{
-                                this.showPic = 2;
+                                this.showPic = 1;
                                 Message.warning('暂无数据');
                             }
                         }else{
-                            addload.close();
-                            this.showPic = 2;
+                            this.showPic = 1;
                             Message.warning('暂无数据');
                         }
                     } else if (res.data.SysCode == 100302) {
-                        addload.close();
                         this.loginTimeout();
                     } else {
-                        addload.close();
                         this.pageUpImgArr = [];
-                        this.showPic = 2;
+                        this.showPic = 1;
                         Message.warning(res.data.MSG);
                     }
+                    this.tabBodyLoading = false
                 })
                 .catch(res => {
-                    addload.close();
                     console.log(res);
                 });
+        },
+        // 获取收藏夹图片列表 collectImgArr /collect/list type
+        getCollectImgList(params) {
+            console.log('获取收藏夹图片列表params',params)
+            this.tabBodyLoading = true
+            if(!params.orderName){
+                delete params.orderName
+            }
+            if(!params.resourceName){
+                delete params.resourceName
+            }
+            api.getApi(this.photoApi + '/imageCollection/list', params).then(res => {
+                console.log('收藏夹图片列表res', res)
+                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                    // this.loginTimeout()
+                } else if (res.data.SysCode === 200200) {
+                    let resData =  res.data.data
+                    let imgList = []
+                     for(let key of resData){
+                        imgList.push({
+                            pUrl: key.picUrl,
+                            pID: key.id,
+                            userId: key.userId,
+                            pUTime: key.publishDate,
+                            pRemarks: {
+                                plan: key.orderName,
+                                res: key.resourceName,
+                                media: key.mediaName,
+                                city: key.cityName,
+                                asLab: key.asLable,
+                                brand: key.brand || '--',
+                                username: key.resourceName,
+                                assettag: key.assettag || '--',
+                                address: key.address || '--',
+                            },
+                        })
+                     }
+                    if (imgList.length > 0) {
+                        this.showPic = 3
+                    } else {
+                        this.showPic = 1
+                    }
+                     this.collectImgArr = imgList
+                } else {
+                    this.messageFun('warning', res.data.MSG)
+                }
+                this.tabBodyLoading = false
+            })
         },
         // 页数大小改变
         sizeChange(pageVal) {
@@ -347,44 +479,12 @@ export default {
             this.currUpPage = 1;
             this.pageUpSize = pageVal;
             this.searchFun();
-            // if(this.activeName == 'first'){
-            //     this.currUpPage = 1;
-            //     this.pageUpSize = pageVal;
-            //     this.searchFun();
-            // }else if(this.activeName == 'second'){
-            //     this.currDownPage = 1;
-            //     this.pageDownSize = pageVal;
-            //     this.searchFun();
-            // }
         },
         // 分页功能
         changePage(page) {
             console.log('page----', page);
             this.currUpPage = page;
             this.searchFun();
-            // if(this.activeName == 'first'){
-            //     this.currUpPage = page;
-            //     this.searchFun();
-            // }else if(this.activeName == 'second'){
-            //     this.currDownPage = page;
-            //     this.searchFun();
-            // }
-        },
-        // tabClick
-        handleClick() {
-            this.reset();
-        },
-        // 重置
-        reset(){
-            // this.keyword = '';
-            this.LabSelect = '';
-            this.date = [];
-            this.citySelect = [];
-            this.industryIdArr = [];
-            this.pageUpImgArr = [];
-            this.pageDownImgArr = [];
-
-            this.showPic = 1;
         },
         // 分页初始化
         initPage(){
@@ -481,12 +581,10 @@ export default {
     }
 
     .ad_mediaMana_nav p {
-        padding-left: 57px;
-        position: absolute;
-        left: 0;
-        top: 12px;
+        width: 92%;
         font-size: 14px;
-        line-height: 18px;
+        line-height: 42px;
+        margin: 0 auto;
     }
 
     .ad_mediaMana_nav p a {
@@ -679,18 +777,6 @@ export default {
     }
 
     /*页码*/
-    .pager {
-        width: 100%;
-        margin-top: 20px;
-        text-align: right;
-    }
-
-    /deep/ .el-pagination.is-background .el-pager li {
-        font-weight: normal;
-        font-size: 13px;
-        background-color: transparent;
-    }
-
     /deep/ .el-select__caret {
         position: relative;
         right: 4px;

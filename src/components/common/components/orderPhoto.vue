@@ -27,12 +27,12 @@
                      :key="index"
                      @mouseenter="showPreImg = index"
                      @mouseleave="showPreImg = null">
-                    <!--<img :src="item.url" :alt="item.title">-->
-                    <el-image
+                    <img :src="item.url" :alt="item.title">
+            <!--        <el-image
                         class="industry_photo"
                         :src="item.url"
                         fit="cover">
-                    </el-image>
+                    </el-image>-->
                     <p class="card_select">
                         <el-cascader :options="bussiness" size="small" class="plan-select" v-model="item.industry"
                                      change-on-select
@@ -42,7 +42,7 @@
                     </p>
                     <!--查看缩略图和下载-->
                     <div class="mask-btn" v-if="showPreImg == index"><!--showPreImg == index-->
-                        <p class="mask_title">由 林骁 于 2019/10/6 上传</p>
+                        <p class="mask_title">由 {{item.userName}} 于 {{item.createTime}} 上传</p>
                         <p class="mask_icon">
                             <i class="el-icon-search" @click="handlePictureCardPreview(item)"></i>
                         </p>
@@ -116,6 +116,7 @@
         },
         data(){
             return{
+                photoApi: 'http://192.168.1.246/advertisement',
                 sessionData: '',
                 // 页码及条数
                 pageData:{
@@ -145,7 +146,7 @@
                 dialogVisible: false,
                 dialogImageUrl: '',
                 // 上传图片
-                doUpload: 'http://192.168.1.239/advertisement/image/upload',     //http://192.168.1.239/
+                doUpload: 'http://192.168.1.246/advertisement/image/upload',     //http://192.168.1.239/
                 UploadVisible: false,
                 uploadUrl: '',
                 // 上传图片的信息
@@ -179,7 +180,7 @@
               if(!params.industryId){
                   delete params.industryId
               }
-              api.getApi(this.apiVar.Advertisement + '/image/listCompanyImage', params).then(res=>{
+              api.getApi(this.photoApi + '/image/listCompanyImage', params).then(res=>{
                   console.log('图片列表res',res)
                   if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                       this.loginTimeout()
@@ -199,8 +200,9 @@
                     for(let key of data){
                         tempList.push({
                             id: key.id,
-                            createTime:'',
+                            createTime: key.createTime,
                             url: key.picUrl,
+                            userName: key.userName,
                             // topIndustryId: key.topIndustryId,
                             // industryId: key.industryId,
                             industry: [key.topIndustryId,key.industryId]
@@ -222,7 +224,10 @@
             },
             // 重置
             reset(){
-
+                this.industryIdArr = []
+                this.pageData.pageSize = 10
+                this.pageData.pageNum = 1
+                this.getIndustryImgList()
             },
             // 图片上传
             uploadFun(){
@@ -280,7 +285,7 @@
                     picUrls: this.uploadUrl[0]
                 }
                 console.log('params',params)
-                api.postApi(this.apiVar.Advertisement + '/image/save',params).then(res=>{
+                api.postApi(this.photoApi + '/image/save',params).then(res=>{
                     console.log('上传图片res',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         this.loginTimeout()
@@ -319,7 +324,7 @@
                         id: val.id,
                         industryId: val.industry[1]
                     }
-                    api.postApi(this.apiVar.Advertisement + '/image/updateIndustry',params).then(res=>{
+                    api.postApi(this.photoApi + '/image/updateIndustry',params).then(res=>{
                         console.log('修改图片关联行业res',res)
                         if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                             this.loginTimeout()
@@ -401,7 +406,8 @@
     .photo_card:nth-child(5n+0){
         margin-right: 0;
     }
-    .photo_card img,/deep/ .photo_card .industry_photo{
+    /*,/deep/ .photo_card .industry_photo*/
+    .photo_card img{
         position: absolute;
         top: 0;
         left: 0;

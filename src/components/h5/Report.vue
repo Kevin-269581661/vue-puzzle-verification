@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="ad_mediaMana_wrap" id="pdfDom">
+        <div class="ad_mediaMana_wrap">
             <div class="mediaMana_content_top">
                 <div class="content_top_wrap">
                     <div class="title">
@@ -452,11 +452,12 @@ export default {
             let info = {
                 [name]: val
             };
+            let tempwindow = window.open();
             api.getApi(this.apiVar.Advertisement+'/GetPPTReport', info).then(res =>{
                 if(res.data.code == 300200){
-                    let tempwindow = window.open();
                     tempwindow.location = res.data.data;
                 }else{
+                    tempwindow.close();
                     this.getPTTFun();
                 }
             });
@@ -471,6 +472,7 @@ export default {
                 type: name=='sk' ? 0 : 1,
             };
             this.pptLoading = true;
+            const tempPage = window.open('', '_blank');
             api.getApi(this.apiVar.Advertisement+"/GetReportExportProgress", info).then(res =>{
                 this.pptLoading = false;
                 if(res.data.SysCode == 200200){
@@ -478,11 +480,14 @@ export default {
                         path: "/progressDown",
                         query: info,
                     });
-                    window.open(routeUrl .href, '_blank');
+                    tempPage.location = routeUrl.href;
+                }else{
+                    tempPage.close();
                 }
             }).catch(err =>{
                 console.log(err);
                 this.pptLoading = false;
+                tempPage.close();
             });
         },
         // 获取pdf
@@ -815,14 +820,13 @@ export default {
 <style scoped>
 .ad_mediaMana_wrap {
     width: 100%;
-    padding-top: 40px;
+    padding-top: 32px;
     position: relative;
 }
 
 .mediaMana_content_top {
-    width: 90%;
-    padding: 28px;
-    margin: 0 auto;
+    padding: 24px;
+    margin: 0 64px;
     background: #fff url("../../assets/images/upReportBg.png") right no-repeat;
 }
 
@@ -866,9 +870,8 @@ export default {
 }
 
 .plan-panel {
-    width: 90%;
-    padding: 28px;
-    margin: 24px auto;
+    padding: 24px;
+    margin: 16px 64px;
     background: #fff;
 }
 

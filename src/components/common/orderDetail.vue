@@ -2993,4 +2993,16 @@ export default {
 .radio_style{
     vertical-align: top;
 }
+
+/deep/ .el-table__expanded-cell[class*=cell] .el-form {
+    height: 44px;
+    line-height: 44px;
+}
+/deep/ .el-table__expanded-cell[class*=cell] {
+    padding: 0 46px;
+    background-color: #F7F7F7;;
+}
+/deep/ .el-table__row .cell span{
+    overflow-x: initial;
+}
 </style>

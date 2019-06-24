@@ -686,7 +686,8 @@ export default {
                         }else if(code == 100403){
                            this.changRoute('成功修改客户信息,没有权限修改公司信息,是否跳转到列表页面');
                         }else{
-                           this.changRoute('成功修改客户信息,是否跳转到列表页面');
+                           this.$router.push("./clientDetail"); 
+                        //    this.changRoute('成功修改客户信息,是否跳转到列表页面');
                         }
                     } else if(userMsg.SysCode == 100302){
                         this.loginTimeout();

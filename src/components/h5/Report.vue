@@ -452,12 +452,15 @@ export default {
             let info = {
                 [name]: val
             };
-            let tempwindow = window.open();
             api.getApi(this.apiVar.Advertisement+'/GetPPTReport', info).then(res =>{
                 if(res.data.code == 300200){
-                    tempwindow.location = res.data.data;
+                    let downloadElement = document.createElement('a');
+                    let href = res.data.data;
+                    downloadElement.href = href;
+                    document.body.appendChild(downloadElement);
+                    downloadElement.click(); //点击下载
+                    document.body.removeChild(downloadElement); //下载完成移除元素
                 }else{
-                    tempwindow.close();
                     this.getPTTFun();
                 }
             });
@@ -499,8 +502,12 @@ export default {
             };
             api.getApi(this.apiVar.Advertisement+'/GetPdfReport', info).then(res =>{
                 if(res.data.code == 300200){
-                    let tempwindow = window.open();
-                    tempwindow.location = res.data.data;
+                    let downloadElement = document.createElement('a');
+                    let href = res.data.data;
+                    downloadElement.href = href;
+                    document.body.appendChild(downloadElement);
+                    downloadElement.click(); //点击下载
+                    document.body.removeChild(downloadElement); //下载完成移除元素
                 }else{
                     this.getPDFFun();
                 }

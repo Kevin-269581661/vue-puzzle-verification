@@ -19,6 +19,7 @@ export default {
         }
     },
     methods:{
+        // 导出订单图片包
         getProcess(){
             let tempwindow = '';
             api.getApi(this.apiVar.Advertisement+'/DownloadImgPackage', this.$route.query).then(res =>{
@@ -42,20 +43,66 @@ export default {
                             confirmButtonText: '知道了',
                         });
                     }
+                }else{
+                    clearInterval(this.myInterval);
                 }
             }).catch(res =>{
                 console.log(res);
+                clearInterval(this.myInterval);                
+            });
+        },
+        // 导出ppt/pdf
+        getPPTProcess(){
+            api.getApi(this.apiVar.Advertisement+'/GetReportExportProgress', this.$route.query).then(res =>{
+                console.log(res.data);
+                if(res.data.SysCode == 200200){
+                    let resinfo = res.data.data;
+                    this.currper = parseInt(Number(resinfo.rate));
+                    if(resinfo.code == 200){
+                        if(resinfo.finish == 1){
+                            clearInterval(this.myInterval);
+                            // let tempwindow = window.open();
+                            // tempwindow.location = resinfo.cosUrl;
+                            let downloadElement = document.createElement('a');
+                            let href = resinfo.cosUrl;
+                            downloadElement.href = href;
+                            document.body.appendChild(downloadElement);
+                            downloadElement.click(); //点击下载
+                            document.body.removeChild(downloadElement); //下载完成移除元素
+                            this.$alert('请在下载工具里查看文件', '文件成功生成', {
+                                confirmButtonText: '知道了',
+                            });
+                        }
+                    }else{
+                        clearInterval(this.myInterval);
+                        this.$message.warning(resinfo.msg);                        
+                    }
+                }else{
+                    clearInterval(this.myInterval);
+                }
+            }).catch(res =>{
+                console.log(res);
+                clearInterval(this.myInterval);                
             });
         },
     },
     created(){
-        this.getProcess();
+        if(this.$route.query.downtype == 1){
+            this.getProcess();
+        }else if(this.$route.query.downtype == 2){
+            this.getPPTProcess();
+        }
     },
     mounted(){
         this.myInterval = setInterval(() => {
             setTimeout(() => {
+                console.log('downtype--', this.$route.query.downtype);
                 //调用接口的方法
-                this.getProcess();
+                if(this.$route.query.downtype == 1){
+                    this.getProcess();
+                }else if(this.$route.query.downtype == 2){
+                    this.getPPTProcess();
+                }
             }, 1)
         }, 5000);
     },

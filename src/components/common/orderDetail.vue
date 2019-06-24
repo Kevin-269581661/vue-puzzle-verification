@@ -248,8 +248,8 @@
                                         <div class="up-report-bottom-btns">
                                             <el-button @click="downloadImg('SK')" :loading="downLoading">导出图片</el-button>
                                             <el-button type="primary" @click="submitUpload('SK')">保存</el-button>
-                                            <!-- <el-button plain @click="downloadUp">下载PDF</el-button> -->
                                             <el-button plain @click="showH5('SK')">查看H5</el-button>
+                                            <el-button plain @click="updateReport('SK')" :loading="updateLoading">更新报告</el-button>                                            
                                         </div>
                                     </div>
                                 </div>
@@ -340,8 +340,8 @@
                                         <div class="up-report-bottom-btns">
                                             <el-button @click="downloadImg('XK')" :loading="downLoading">导出图片</el-button>
                                             <el-button type="primary" @click="submitUpload('XK')">保存</el-button>
-                                            <!-- <el-button plain @click="downloadDown">下载PDF</el-button> -->
                                             <el-button plain @click="showH5('XK')">查看H5</el-button>
+                                            <el-button plain @click="updateReport('XK')" :loading="updateLoading">更新报告</el-button>
                                         </div>
                                     </div>
                                 </div>
@@ -540,6 +540,7 @@ export default {
     },
     data() {
         return {
+            updateLoading: false,
             // 上传图片
             formData: new FormData(),
             addload:'',
@@ -1986,11 +1987,27 @@ export default {
             this.dialogImageUrl = file.url;
             this.dialogVisible = true;
         },
-        // downloadUp() {
-        //     Message.warning("该功能尚未完善");
-        // },
-        downloadDown() {
-            Message.warning("该功能尚未完善");
+        // 更新报告
+        updateReport(type){
+            let info = {
+                apId: this.orderDetail.apID,
+                type: type,
+            };
+            this.updateLoading = true;
+            api.postApi(this.apiVar.Advertisement+"/UpdateSXReport", info).then(res =>{
+                console.log(res.data);
+                if(res.data.SysCode == 200200){
+                    Message.success(res.data.MSG);
+                }else if(res.data.SysCode == 100302){
+                    this.loginTimeout();
+                }else{
+                    Message.warning(res.data.MSG);
+                }
+                this.updateLoading = false;                
+            }).catch(err =>{
+                console.log(err);
+                this.updateLoading = false;                
+            });
         },
         // 查看h5上下刊刊报告按钮
         showH5(type){
@@ -2288,7 +2305,7 @@ export default {
             let s = date.getSeconds();
             return Y + M + D + h + m + s;
         },
-        // 导出图片
+        // 导出图片包
         downloadImg(type){
             let info = {
                 uid: this.sessionData.uID,
@@ -2296,6 +2313,7 @@ export default {
                 apId: this.orderDetail.apID,
                 type: type=='SK' ? 0 : 1,
                 apName: this.orderDetail.apName,
+                downtype: 1 
             };
             this.downLoading = true;
             const tempPage = window.open('', '_blank');

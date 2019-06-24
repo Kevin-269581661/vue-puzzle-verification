@@ -45,7 +45,7 @@
 						</el-table-column>
 						<el-table-column prop="cBrand" label="公司品牌" min-width="12.1%" show-overflow-tooltip>
 						</el-table-column>
-						<el-table-column prop="puName" label="所有人" min-width="6.1%">
+						<el-table-column prop="puName" label="所有人" min-width="6.1%" show-overflow-tooltip>
 						</el-table-column>
 						<el-table-column label="创建日期" min-width="8.3%" sortable :sort-by="sortData">
 							<template slot-scope="scope">

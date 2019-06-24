@@ -452,6 +452,8 @@ export default {
             let info = {
                 [name]: val
             };
+            const tempPage = window.open('', '_blank');
+            this.pptLoading = true;            
             api.getApi(this.apiVar.Advertisement+'/GetPPTReport', info).then(res =>{
                 if(res.data.code == 300200){
                     let downloadElement = document.createElement('a');
@@ -460,13 +462,15 @@ export default {
                     document.body.appendChild(downloadElement);
                     downloadElement.click(); //点击下载
                     document.body.removeChild(downloadElement); //下载完成移除元素
+                    tempPage.close();
+                    this.pptLoading = false;                    
                 }else{
-                    this.getPTTFun();
+                    this.getPTTFun(tempPage);
                 }
             });
         },
         // 获取ppt
-        getPTTFun(){
+        getPTTFun(tempPage){
             let name = this.Info.name.toString().toLowerCase();
             let val = this.Info.val;
             let info = {
@@ -474,24 +478,13 @@ export default {
                 key: val,
                 type: name=='sk' ? 0 : 1,
             };
-            this.pptLoading = true;
-            const tempPage = window.open('', '_blank');
-            api.getApi(this.apiVar.Advertisement+"/GetReportExportProgress", info).then(res =>{
-                this.pptLoading = false;
-                if(res.data.SysCode == 200200){
-                    let routeUrl = this.$router.resolve({
-                        path: "/progressDown",
-                        query: info,
-                    });
-                    tempPage.location = routeUrl.href;
-                }else{
-                    tempPage.close();
-                }
-            }).catch(err =>{
-                console.log(err);
-                this.pptLoading = false;
-                tempPage.close();
+            console.log(tempPage, 'tempage---');
+            this.pptLoading = false;            
+            let routeUrl = this.$router.resolve({
+                path: "/progressDown",
+                query: info,
             });
+            tempPage.location = routeUrl.href;
         },
         // 获取pdf
         getPDF(){
@@ -500,6 +493,8 @@ export default {
             let info = {
                 [name]: val
             };
+            const tempPage = window.open('', '_blank');      
+            this.pdfLoading = true;                  
             api.getApi(this.apiVar.Advertisement+'/GetPdfReport', info).then(res =>{
                 if(res.data.code == 300200){
                     let downloadElement = document.createElement('a');
@@ -508,13 +503,15 @@ export default {
                     document.body.appendChild(downloadElement);
                     downloadElement.click(); //点击下载
                     document.body.removeChild(downloadElement); //下载完成移除元素
+                    tempPage.close();
+                    this.pdfLoading = false;                    
                 }else{
-                    this.getPDFFun();
+                    this.getPDFFun(tempPage);
                 }
             });
         },
         // 获取pdf
-        getPDFFun(){
+        getPDFFun(tempPage){
             let name = this.Info.name.toString().toLowerCase();
             let val = this.Info.val;
             let info = {
@@ -522,20 +519,12 @@ export default {
                 key: val,
                 type: name=='sk' ? 2 : 3,
             };
-            this.pdfLoading = true;
-            api.getApi(this.apiVar.Advertisement+"/GetReportExportProgress", info).then(res =>{
-                this.pdfLoading = false;
-                if(res.data.SysCode == 200200){
-                    let routeUrl = this.$router.resolve({
-                        path: "/progressDown",
-                        query: info,
-                    });
-                    window.open(routeUrl .href, '_blank');
-                }
-            }).catch(err =>{
-                this.pdfLoading = false;                
-                console.log(err);
+            this.pdfLoading = false;
+            let routeUrl = this.$router.resolve({
+                path: "/progressDown",
+                query: info,
             });
+            tempPage.location = routeUrl.href;
         },
         // 页数大小改变
         sizeChange(pageVal) {

@@ -252,7 +252,16 @@
                                         </div>
                                     </div>
                                     <div class="pager">
-                                        <el-pagination v-if="paginationShow" small background :current-page.sync="currUpPage" :page-sizes="[6, 12]" :page-size="pageUpSize" layout="sizes, prev, pager, next, jumper" :total="totalUpPageNum" @size-change="sizeChange" @current-change='changePage'>
+                                        <el-pagination
+                                            v-if="paginationShow"
+                                            background
+                                            :current-page.sync="currUpPage"
+                                            :page-sizes="[6, 12]"
+                                            :page-size="pageUpSize"
+                                            layout="sizes, prev, pager, next, jumper"
+                                            :total="totalUpPageNum"
+                                            @size-change="sizeChange"
+                                            @current-change='changePage'>
                                         </el-pagination>
                                     </div>
                                     <div class="up-report-bottom">
@@ -360,7 +369,15 @@
                                         </div>
                                     </div>
                                     <div class="pager">
-                                        <el-pagination v-if="paginationShow" small background :current-page.sync="currDownPage" :page-sizes="[6, 12]" :page-size="pageDownSize" layout="sizes, prev, pager, next, jumper" :total="totalDownPageNum" @size-change="sizeChange" @current-change='changePage'>
+                                        <el-pagination v-if="paginationShow"
+                                                       background
+                                                       :current-page.sync="currDownPage"
+                                                       :page-sizes="[6, 12]"
+                                                       :page-size="pageDownSize"
+                                                       layout="sizes, prev, pager, next, jumper"
+                                                       :total="totalDownPageNum"
+                                                       @size-change="sizeChange"
+                                                       @current-change='changePage'>
                                         </el-pagination>
                                     </div>
                                     <div class="up-report-bottom">
@@ -752,6 +769,8 @@ export default {
             UploadTime: 0,
             // 导出订单图片包
             downLoading: false,
+            //显示预览图蒙版
+            showPreImg: null,
         };
     },
     created() {
@@ -1550,12 +1569,15 @@ export default {
                                 item.name = item.pID+'.png',
                                 item.url = item.pURL;
                                 item.pID = item.pID;
+                                item.isCollection = false
                             }
                             let time = this.formatTime(data.lStar) + "-" +this.formatTime(data.lEnd);
                             data.timeRange = time;
                             data.upImgArr = data.photoList;
                         }
                         this.pageUpReportArr = dataInfo.dataList;
+                        this.checkImgStatus('SK')
+                        console.log('this.pageUpReportArr',this.pageUpReportArr)
                         this.UpReportLoading = false;
                         if(dataInfo.totalCount == 0){
                             Message.warning('暂无数据');
@@ -1588,12 +1610,14 @@ export default {
                                 item.name = item.pID+'.png',
                                 item.url = item.pURL;
                                 item.pID = item.pID;
+                                item.isCollection = false;
                             }
                             let time = this.formatTime(data.lStar) + "-" +this.formatTime(data.lEnd);
                             data.timeRange = time;
                             data.downImgArr = data.photoList;
                         }
                         this.pageDownReportArr = dataInfo.dataList;
+                        this.checkImgStatus('XK')
                         this.DownReportLoading = false;
                         if(dataInfo.totalCount == 0){
                             Message.warning('暂无数据');
@@ -1608,6 +1632,71 @@ export default {
                     this.DownReportLoading = false;
                     console.log(res);
                 });
+        },
+        // 检查图片是否已收藏
+        checkImgStatus(type){
+            //advertisement/GetUserStatusByPid
+            let pIDList = this.returnPIDList(type)
+            if(!pIDList.length){
+                return
+            }
+            let params = {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                pids: pIDList.join(','),
+            }
+            console.log('params',params)
+            api.getApi('http://192.168.1.246/advertisement' + '/GetUserStatusByPid',params).then(res=>{
+                console.log('检测图片收藏状态res',res)
+                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                    this.loginTimeout()
+                } else if (res.data.SysCode === 200200) {
+                    this.setImgStatus(res.data.data,type)
+                } else {
+                    this.messageFun('warning', res.data.MSG)
+                }
+            })
+        },
+        // 返回PIDList
+        returnPIDList(type){
+            let reportList = []
+            if(type === 'SK'){
+                reportList = this.pageUpReportArr
+            }else if (type === 'XK'){
+                reportList = this.pageDownReportArr
+            }
+            console.log(type,'reportList',reportList)
+            let pIDList = []
+            for(let key of reportList){
+                let imgArr = type === 'SK' ? key.upImgArr : key.downImgArr
+                for(let imgKey of imgArr){
+                    pIDList.push(imgKey.pID)
+                }
+            }
+            return pIDList
+        },
+        // 给上下刊添加图片的收藏状态
+        setImgStatus(data,type){
+            console.log('给上下刊添加图片的收藏状态',data)
+            let reportList = []
+            if(type === 'SK'){
+                reportList = this.pageUpReportArr
+            }else if (type === 'XK'){
+
+            }
+            console.log(type,'添加图片的收藏状态',reportList)
+            for (let key of reportList) {
+                let imgArr = type === 'SK' ? key.upImgArr : key.downImgArr
+                for (let imgKey of imgArr) {
+                    for (let pKey of data) {
+                        if (pKey.pid == imgKey.pID) {
+                            imgKey.isCollection = pKey.isCollection
+                            break
+                        }
+                    }
+                }
+            }
+            console.log('reportList',reportList,this.pageUpReportArr)
         },
         // 区域二级联动
         getCitys(arr) {
@@ -1787,7 +1876,7 @@ export default {
         },
         // 隐藏上传组件
         uploadDisabled(imgList){
-            console.log(imgList);
+            // console.log(imgList);
             return imgList.length>5;
         },
         // 上刊图片上传
@@ -1905,6 +1994,83 @@ export default {
             }).catch(res =>{
                 this.addload.close();
             });
+        },
+        // 收藏
+        saveImgFun(item,index,type){
+            console.log('保存图片', item,index)
+            let params = {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                lId: item.lID,
+                pId: type === 'SK' ? item.upImgArr[index].pID : item.downImgArr[index].pID,
+                picUrl: type === 'SK' ? item.upImgArr[index].url : item.downImgArr[index].url,
+                type: this.planPanel === 'forth' ? 0 : this.planPanel === 'fifth' ? 1 : "",
+            }
+            if (!params.lId) {
+                this.messageFun('warning', '图片信息异常无法保存！')
+                return
+            }
+            if (params.type === "") {
+                delete params.type
+            }
+            console.log('params', params)
+            api.postApi(this.apiVar.Advertisement + '/imageCollection/add', params).then(res => {
+                console.log('图片收藏res', res)
+                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                    this.loginTimeout()
+                } else if (res.data.SysCode === 200200) {
+                    if(type === 'SK'){
+                        item.upImgArr[index].isCollection = true
+                    }else if(type === 'XK'){
+                        item.downImgArr[index].isCollection = true
+                    }
+                    this.messageFun('success', '收藏成功')
+                } else {
+                    this.messageFun('warning', res.data.MSG)
+                }
+            })
+        },
+        // 取消收藏
+        cancelImgFun(item,index,type){
+            console.log('取消收藏',item,index)
+            let params = {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                pId: type === 'SK' ? item.upImgArr[index].pID : item.downImgArr[index].pID,
+            }
+            api.postApi(this.apiVar.Advertisement + '/imageCollection/remove', params).then(res => {
+                console.log('取消收藏res', res)
+                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                    this.loginTimeout()
+                } else if (res.data.SysCode === 200200) {
+                    if(type === 'SK'){
+                        item.upImgArr[index].isCollection = false
+                    }else if(type === 'XK'){
+                        item.downImgArr[index].isCollection = false
+                    }
+                    this.messageFun('success', '取消成功')
+                } else {
+                    this.messageFun('warning', res.data.MSG)
+                }
+            })
+        },
+        // 删除已上传的图片
+        deleteImg(item){
+            console.log('删除item',item)
+            if(item.pID){
+                this.$confirm('确定移除这张图片吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.handleRemove(item)
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+            }
         },
         uploadImg(params){
             console.log('parmas---', params);
@@ -3048,28 +3214,98 @@ export default {
             width: 15%;
         }
 
-    .plan-detail-left ul li {
-        float: left;
-        width: 400px;
-        margin-bottom: 12px;
+        .plan-detail-left ul li {
+            float: left;
+            width: 400px;
+            margin-bottom: 12px;
+        }
     }
-}
-/deep/ .disabled .el-upload--picture-card {
-    display: none;
-}
-.radio_style{
-    vertical-align: top;
-}
 
-/deep/ .el-table__expanded-cell[class*=cell] .el-form {
-    height: 44px;
-    line-height: 44px;
-}
-/deep/ .el-table__expanded-cell[class*=cell] {
-    padding: 0 46px;
-    background-color: #F7F7F7;;
-}
-/deep/ .el-table__row .cell span{
-    overflow-x: initial;
-}
+    /deep/ .disabled .el-upload--picture-card {
+        /*display: none;*/
+    }
+
+    .radio_style {
+        vertical-align: top;
+    }
+    /deep/ .el-upload-list__item.is-success{
+        display: none;
+    }
+    /**/
+    .img_box {
+        width: 30%;
+        height: 105px;
+        margin: 4.2% 1.6% 0 1.6%;
+        float: left;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .upload_img_item {
+        width: 100%;
+        height: 100%;
+    }
+    .icon_success{
+        display: block;
+        position: absolute;
+        right: -15px;
+        top: -6px;
+        width: 40px;
+        height: 24px;
+        background: #13ce66;
+        text-align: center;
+        -webkit-transform: rotate(45deg);
+        transform: rotate(45deg);
+        -webkit-box-shadow: 0 0 1pc 1px rgba(0,0,0,.2);
+        box-shadow: 0 0 1pc 1px rgba(0,0,0,.2)
+    }
+    .icon_success i{
+        color: #fff;
+        font-size: 12px;
+        margin-top: 11px;
+        transform: rotate(-45deg);
+    }
+    .icon_box{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top:0;
+        left: 0;
+        background: rgba(0,0,0,.5);
+        cursor:pointer;
+    }
+    .img_box_icon {
+        width: 100%;
+        margin-top:40%;
+        text-align: center;
+    }
+    .img_box_icon i{
+        color: #fff;
+        font-size: 22px;
+    }
+    .img_box_icon i.icon_save {
+        color: #FFD517;
+    }
+
+    /deep/ .disabled .el-upload--picture-card {
+        display: none;
+    }
+
+    .radio_style {
+        vertical-align: top;
+    }
+
+    /deep/ .el-table__expanded-cell[class*=cell] .el-form {
+        height: 44px;
+        line-height: 44px;
+    }
+
+    /deep/ .el-table__expanded-cell[class*=cell] {
+        padding: 0 46px;
+        background-color: #F7F7F7;;
+    }
+
+    /deep/ .el-table__row .cell span {
+        overflow-x: initial;
+    }
 </style>

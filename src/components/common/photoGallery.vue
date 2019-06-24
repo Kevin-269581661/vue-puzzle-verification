@@ -64,7 +64,7 @@
                                                @click="searchPic()" :disabled="!isSearch">搜索
                                     </el-button>
                                     <el-button plain size="small" @click="reset()">重置</el-button>
-                                    <el-button plain size="small" @click="allDownLoad()">一键导出</el-button>
+                                    <el-button plain size="small" @click="allDownLoad()" v-show="activeName == 'first'">一键导出</el-button>
                                 </el-col>
                             </el-row>
                         </div>
@@ -74,7 +74,7 @@
                                      element-loading-text="拼命加载中..."
                                      element-loading-spinner="el-icon-loading">
                             <!-- 图片 -->
-                            <photo :imgarr="pageUpImgArr" :show-pic="showPic" :publish="publish"></photo>
+                            <photo :imgarr="pageUpImgArr" :show-pic="showPic" :publish="publish" @doSomeThing="saveChange"></photo>
                             <!--页码-->
                             <div class="ad_pagination" v-if="showPic ===3">
                                 <el-pagination
@@ -204,7 +204,7 @@ export default {
             publish: 'SK',
             // 收藏夹图片列表
             collectImgArr: [],
-            photoApi: 'http://192.168.1.246/advertisement',
+            // photoApi: 'http://192.168.1.246/advertisement',
             //  案例库搜索条件
             gallerySelectInfo: {
                 LabSelect: '',
@@ -267,7 +267,7 @@ export default {
         },
         // tabClick
         handleClick() {
-            // beforActive
+            console.log('tabClick切换',this.activeName)
             if (this.activeName == 'first') {
                 if(this.beforActive === 'second'){
                     this.collectSelectInfo = JSON.parse(JSON.stringify(this.searchInfo))
@@ -279,8 +279,16 @@ export default {
                 }
                 this.searchInfo = JSON.parse(JSON.stringify(this.collectSelectInfo))
                 if(!this.collectImgArr.length){
+                    console.log('+++++++++++')
                     let collectParams = this.searchFormat();
                     this.getCollectImgList(collectParams)
+                }
+            } else if(this.activeName == 'three'){
+                if(this.beforActive === 'first'){
+                    this.gallerySelectInfo = JSON.parse(JSON.stringify(this.searchInfo))
+                }
+                if(this.beforActive === 'second'){
+                    this.collectSelectInfo = JSON.parse(JSON.stringify(this.searchInfo))
                 }
             }
             this.beforActive = this.activeName
@@ -303,6 +311,7 @@ export default {
         },
         // 数据初始化
         resetData(selectInfo){
+            console.log('+++++++++++')
             for (let key in selectInfo) {
                 if (key === 'citySelect' || key === 'industryIdArr') {
                     selectInfo[key] = []
@@ -398,7 +407,7 @@ export default {
                 }
             }
             // params.selectType = 'res'
-            api.getApi(this.photoApi + "/GetImgList", params)
+            api.getApi(this.apiVar.Advertisement + "/GetImgList", params)
                 .then(res => {
                     if (!res.data.SysCode) {
                         console.log(res.data);
@@ -448,7 +457,7 @@ export default {
             if(!params.asLabel){
                 delete params.asLabel
             }
-            api.getApi(this.photoApi + '/imageCollection/list', params).then(res => {
+            api.getApi(this.apiVar.Advertisement + '/imageCollection/list', params).then(res => {
                 console.log('收藏夹图片列表res', res)
                 if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                     this.loginTimeout()
@@ -491,7 +500,12 @@ export default {
         },
         // 保存或取消
         saveChange(){
-            this.collectImgArr =[]
+            if(this.activeName == 'first'){
+                this.collectImgArr =[]
+            }else if(this.activeName == 'second'){
+                let collectParams = this.searchFormat();
+                this.getCollectImgList(collectParams)
+            }
         },
         // 页数大小改变
         sizeChange(pageVal) {

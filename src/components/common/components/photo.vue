@@ -45,7 +45,8 @@
                 dialogVisible: false,
                 //显示预览图蒙版
                 showPreImg: null,
-                photoApi: 'http://192.168.1.246/advertisement',
+                // photoApi: 'http://192.168.1.246/advertisement',
+                imgUrl: "http://192.168.1.239/advertisement/DownloadImage?picUrl=" ,
             }
         },
         methods: {
@@ -74,7 +75,7 @@
                     delete params.type
                 }
                 console.log('params', params)
-                api.postApi(this.photoApi + '/imageCollection/add', params).then(res => {
+                api.postApi(this.apiVar.Advertisement + '/imageCollection/add', params).then(res => {
                     console.log('图片收藏res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         this.loginTimeout()
@@ -95,7 +96,7 @@
                     token: this.sessionData.token,
                     pId: item.pID,
                 }
-                api.postApi(this.photoApi + '/imageCollection/remove', params).then(res => {
+                api.postApi(this.apiVar.Advertisement + '/imageCollection/remove', params).then(res => {
                     console.log('取消收藏res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         this.loginTimeout()
@@ -106,6 +107,26 @@
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }
+                })
+            },
+            // 下载图片
+            downloadImg(item){
+                console.log('下载图片item',item)
+                let params = {
+                    // uid: this.sessionData.uID,
+                    // token: this.sessionData.token,
+                    // pId: item.pID,
+                    picUrl: item.pUrl
+                }
+                //DownloadImage?picUrl=
+                api.getApi_file(this.apiVar.Advertisement + '/DownloadImage',params).then(res=>{
+                    console.log('下载图片',res)
+                    this.imgUrl = res.data
+                    // if (res.data.SysCode === 200200) {
+                    //     this.messageFun('success', '下载成功')
+                    // } else {
+                    //     this.messageFun('warning', res.data.MSG)
+                    // }
                 })
             },
             // 操作提示统一方法
@@ -149,10 +170,9 @@
                                     <i class="el-icon-search" @click="handlePictureCardPreview(img)"></i>
                                 </p>
                                 <p class="mask_a">
-                                    <a :href="img.pUrl"
-                                       :download="formatTime(img.pUTime)+'下刊'+img.pRemarks.account+img.pRemarks.city+img.pRemarks.area+img.pRemarks.res+img.pRemarks.assettag+'.png'">
-                                        下载图片
-                                    </a>
+                                    <a :href= "imgUrl + img.pUrl" >下载图片</a>
+                                    <!--
+                                       :download="formatTime(img.pUTime)+'下刊'+img.pRemarks.account+img.pRemarks.city+img.pRemarks.area+img.pRemarks.res+img.pRemarks.assettag+'.png'"-->
                                 </p>
                             </div>
                         </div>

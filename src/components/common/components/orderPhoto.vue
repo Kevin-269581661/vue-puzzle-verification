@@ -48,7 +48,8 @@
                             <i class="el-icon-search" @click="handlePictureCardPreview(item)"></i>
                         </p>
                         <p class="mask_a">
-                            <a href="">下载图片</a>
+                           <!-- <a :href="item.url" @click="downloadImg" :download="item.userName + item.createTime + '.png'">下载图片</a>-->
+                            <a :href= "imgUrl + item.url" >下载图片</a>
                         </p>
                     </div>
                 </div>
@@ -118,7 +119,6 @@
         },
         data(){
             return{
-                photoApi: 'http://192.168.1.246/advertisement',
                 sessionData: '',
                 showPic: 1,
                 isShowBtn: false,
@@ -150,13 +150,14 @@
                 dialogVisible: false,
                 dialogImageUrl: '',
                 // 上传图片
-                doUpload: 'http://192.168.1.246/advertisement/image/upload',     //http://192.168.1.239/
+                doUpload: '/advertisement/image/upload',     //http://192.168.1.239/
                 UploadVisible: false,
                 uploadUrl: '',
                 // 上传图片的信息
                 uploadImg: [],           // 显示已上传的图片
                 // 上传图片关联的行业
                 industryImg:[],
+                imgUrl: "http://192.168.1.239/advertisement/DownloadImage?picUrl=" ,
             }
         },
         mounted(){
@@ -192,7 +193,7 @@
               if(!params.industryId){
                   delete params.industryId
               }
-              api.getApi(this.photoApi + '/image/listCompanyImage', params).then(res=>{
+              api.getApi(this.apiVar.Advertisement + '/image/listCompanyImage', params).then(res=>{
                   console.log('图片列表res',res)
                   if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                       this.loginTimeout()
@@ -300,7 +301,7 @@
                     picUrls: this.uploadUrl[0]
                 }
                 console.log('params',params)
-                api.postApi(this.photoApi + '/image/save',params).then(res=>{
+                api.postApi(this.apiVar.Advertisement + '/image/save',params).then(res=>{
                     console.log('上传图片res',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         this.loginTimeout()
@@ -339,7 +340,7 @@
                         id: val.id,
                         industryId: val.industry[1]
                     }
-                    api.postApi(this.photoApi + '/image/updateIndustry',params).then(res=>{
+                    api.postApi(this.apiVar.Advertisement + '/image/updateIndustry',params).then(res=>{
                         console.log('修改图片关联行业res',res)
                         if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                             this.loginTimeout()
@@ -356,6 +357,25 @@
                 console.log('imgInfo--------', item);
                 this.dialogImageUrl = item.url;
                 this.dialogVisible = true;
+            },
+            // 下载图片
+            downloadImg(item){
+                console.log('下载图片item',item)
+                let params = {
+                    // uid: this.sessionData.uID,
+                    // token: this.sessionData.token,
+                    // pId: item.pID,
+                    picUrl: item.url
+                }
+                //DownloadImage?picUrl=
+                api.getApi_file(this.apiVar.Advertisement + '/DownloadImage',params).then(res=>{
+                    console.log('下载图片',res)
+                    if (res.data.SysCode === 200200) {
+                        this.messageFun('success', '下载成功')
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                })
             },
             // 分页
             changePage(val){

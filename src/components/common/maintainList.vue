@@ -96,8 +96,15 @@
                         </el-row> 
                     </div>
 
-                    <div class="page_box" v-if="totalNum" style="text-align:right;margin-bottom:30px;">
-                        <el-pagination small background :current-page.sync="currPage" :page-sizes="[5, 10]" :page-size="pageSize" layout="sizes, prev, pager, next, jumper" :total="totalNum" @size-change="sizeChange" @current-change='changePape'>
+                    <div class="ad_pagination" v-if="totalNum" >
+                        <el-pagination small background 
+                            :current-page.sync="currPage" 
+                            :page-sizes="[5, 10]" 
+                            :page-size="pageSize" 
+                            layout="sizes, prev, pager, next, jumper" 
+                            :total="totalNum" 
+                            @size-change="sizeChange" 
+                            @current-change='changePape'>
                         </el-pagination>
                     </div>
 				</div>

@@ -98,6 +98,7 @@
                 </div>
                 <div class="ad_pagination">
                     <el-pagination
+                        background
                         v-if="paginationShow"
                         @size-change="sizeChange"
                         @current-change="changePage"
@@ -592,10 +593,6 @@
     /deep/ .size_detail_dialog .el-dialog__footer{
         border-top: 1px solid #E8E8E8;
         padding: 16px;
-    }
-    /*滚动条*/
-    /deep/ .el-table__body-wrapper {
-        height: 405px;
     }
 </style>
 

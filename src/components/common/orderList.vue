@@ -10,7 +10,7 @@
                 <h2>订单列表</h2>
             </div>
             <div class="mediaList_container">
-                <el-row>
+                <el-row class="search_row">
                     <el-col>
                         <el-input placeholder="请输入内容" v-model="searchInfo.keyword" class="input-with-select" size="small">
                             <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
@@ -100,15 +100,19 @@
                         </div>
                     </el-table>
 
-                    <el-pagination
-                        @size-change="sizeChange"
-                        @current-change="changePage"
-                        :current-page.sync="currPage"
-                        :page-sizes="pageSizes"
-                        :page-size="pageSize"
-                        layout="total, sizes, prev, pager, next, jumper"
-                        :total="totalNum">
-                    </el-pagination>
+                    <div class="ad_pagination">
+                        <el-pagination
+                            background
+                            v-if="paginationShow"
+                            @size-change="sizeChange"
+                            @current-change="changePage"
+                            :current-page.sync="currPage"
+                            :page-sizes="pageSizes"
+                            :page-size="pageSize"
+                            layout="total, sizes, prev, pager, next, jumper"
+                            :total="totalNum">
+                        </el-pagination>
+                    </div>
                 </div>
             </div>
         </div>
@@ -197,6 +201,7 @@ export default {
             // 公司列表
             companyData: [],
             // 分页信息
+            paginationShow: true,
             pageSize: 20,
             pageSizes: [20, 50, 80, 100],
             currPage: 1,
@@ -417,8 +422,13 @@ export default {
             }
         },
         searchFun(){
+            this.paginationShow = false;
+            this.loading = true;
             let info = this.searchFormat();
             this.getData(info);
+            this.$nextTick(function () {
+                this.paginationShow = true;
+            });
         },
         // 设置表格数据
         setTableData(item){
@@ -802,7 +812,7 @@ a {
     top: -2px;
 }
 
-/deep/ .el-input__inner {
+/deep/.search_row .el-input__inner {
     width: 140px;
 }
 /deep/ .block_box .el-input__inner{

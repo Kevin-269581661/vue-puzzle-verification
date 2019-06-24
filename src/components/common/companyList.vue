@@ -66,15 +66,19 @@
                         </div>
                     </el-table>
 
-                    <el-pagination
-                        @size-change="sizeChange"
-                        @current-change="changePage"
-                        :current-page.sync="currPage"
-                        :page-sizes="pageSizes"
-                        :page-size="pageSize"
-                        layout="total, sizes, prev, pager, next, jumper"
-                        :total="totalNum">
-                    </el-pagination>
+                    <div class="ad_pagination">
+                        <el-pagination
+                            background
+                            v-if="paginationShow"
+                            @size-change="sizeChange"
+                            @current-change="changePage"
+                            :current-page.sync="currPage"
+                            :page-sizes="pageSizes"
+                            :page-size="pageSize"
+                            layout="total, sizes, prev, pager, next, jumper"
+                            :total="totalNum">
+                        </el-pagination>
+                    </div>
                 </div>
             </div>
         </div>
@@ -122,6 +126,7 @@
         data(){
             return{
                 // 分页信息
+                paginationShow: true,
                 pageSize: 20,
                 pageSizes: [20, 50, 80, 100],
                 currPage: 1,
@@ -201,8 +206,13 @@
                 }
             },
             searchFun(){
+                this.paginationShow = false;
+                this.loading = true;
                 let info = this.searchFormat();
                 this.getData(info);
+                this.$nextTick(function () {
+                    this.paginationShow = true;
+                });
             },
             // 滚动获取列表数据
             getData(params){
@@ -458,11 +468,6 @@
     }
     a{
         color: #108ee9;
-    }
-    
-    /* 表格高度 */
-    /deep/ .el-table__body-wrapper {
-        height: 405px;
     }
 </style>
 

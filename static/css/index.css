@@ -164,3 +164,8 @@ body .el-table colgroup.gutter {
 .el-tabs__item:focus.is-active.is-focus:not(:active){
     box-shadow: none;
 }
+
+/*滚动条*/
+.el-table__body-wrapper,.el-table__empty-block {
+    min-height: 405px;
+}

@@ -63,15 +63,19 @@
                         </div>
 					</el-table>
 
-                    <el-pagination
-                        @size-change="sizeChange"
-                        @current-change="changePage"
-                        :current-page.sync="currPage"
-                        :page-sizes="pageSizes"
-                        :page-size="pageSize"
-                        layout="total, sizes, prev, pager, next, jumper"
-                        :total="totalNum">
-                    </el-pagination>
+                    <div class="ad_pagination">
+                        <el-pagination
+                            background
+                            v-if="paginationShow"
+                            @size-change="sizeChange"
+                            @current-change="changePage"
+                            :current-page.sync="currPage"
+                            :page-sizes="pageSizes"
+                            :page-size="pageSize"
+                            layout="total, sizes, prev, pager, next, jumper"
+                            :total="totalNum">
+                        </el-pagination>
+                    </div>
 				</div>
 			</div>
 		</div>
@@ -114,6 +118,7 @@ export default {
             // 公司列表
             companyArr: [],
             // 分页信息
+            paginationShow: true,
             pageSize: 20,
             pageSizes: [20, 50, 80, 100],
             currPage: 1,
@@ -215,8 +220,13 @@ export default {
             return info;
         },
         searchFun(){
+            this.paginationShow = false;
+            this.loading = true;
             let info = this.searchFormat();
             this.getData(info);
+            this.$nextTick(function () {
+                this.paginationShow = true;
+            });
         },
         // 滚动加载获取数据(无搜索数据)
         getData(params){
@@ -369,9 +379,9 @@ export default {
     top: -3px;
 }
 
-/deep/ .el-input__inner {
+/* /deep/ .el-input__inner {
     width: 260px;
-}
+} */
 
 /deep/ .el-date-editor i,
 /deep/ .el-date-editor input,
@@ -405,7 +415,7 @@ export default {
 }
 
 /* 表格高度 */
-/deep/ .el-table__body-wrapper {
+/* /deep/ .el-table__body-wrapper {
     height: 405px;
-}
+} */
 </style>

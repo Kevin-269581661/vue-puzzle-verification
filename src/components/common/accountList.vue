@@ -10,7 +10,7 @@
                 <h2>账号列表</h2>
             </div>
             <div class="mediaList_container">
-                <el-row>
+                <el-row class="search_row">
                     <el-col>
                         <el-input placeholder="请输入内容" v-model="searchInfo.keyword" class="input-with-select">
                             <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
@@ -28,7 +28,7 @@
                             <el-option label="正常" value="1"></el-option>
                             <el-option label="禁用" value="0"></el-option>
                         </el-select>
-                        <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
+                        <el-button type="primary" icon="el-icon-search" @click="search()" :loading="isSearch">搜索</el-button>
                         <el-button plain @click="reset()" :disabled="!isReset">重置</el-button>
                         <el-button plain @click="newAccount()" v-if="showNewBtn">新建</el-button>
                     </el-col>
@@ -76,15 +76,19 @@
                         </div>
                     </el-table>
 
-                    <el-pagination
-                        @size-change="sizeChange"
-                        @current-change="changePage"
-                        :current-page.sync="currPage"
-                        :page-sizes="pageSizes"
-                        :page-size="pageSize"
-                        layout="total, sizes, prev, pager, next, jumper"
-                        :total="totalNum">
-                    </el-pagination>
+                    <div class="ad_pagination">
+                        <el-pagination
+                            background
+                            v-if="paginationShow"
+                            @size-change="sizeChange"
+                            @current-change="changePage"
+                            :current-page.sync="currPage"
+                            :page-sizes="pageSizes"
+                            :page-size="pageSize"
+                            layout="total, sizes, prev, pager, next, jumper"
+                            :total="totalNum">
+                        </el-pagination>
+                    </div>
                 </div>
             </div>
         </div>
@@ -129,6 +133,7 @@
         data() {
             return {
                 // 分页信息
+                paginationShow: true,
                 pageSize: 20,
                 pageSizes: [20, 50, 80, 100],
                 currPage: 1,
@@ -222,8 +227,13 @@
                 }
             },
             searchFun(){
+                this.paginationShow = false;
+                this.loading = true;
                 let info = this.searchFormat();
                 this.getData(info);
+                this.$nextTick(function () {
+                    this.paginationShow = true;
+                });
             },
             // 滚动加载数据列表
             getData(params){
@@ -238,6 +248,7 @@
                             let dataArr = dataInfo.data;
                             this.currAccount = this.funcData(dataArr);
                             this.loading = false;
+                            this.isSearch = false;
                             if(dataInfo.totalpage == 0){
                                 Message.warning('暂无数据');
                             }
@@ -323,16 +334,17 @@
             // 搜索优化
             search(){
                 let { keyword, role, state, company } = this.searchInfo;                
-                this.isSearch = false;
-                let timer = setTimeout(()=>{
-                    this.isSearch = true;
-                    clearTimeout(timer);
-                }, 1000);
+                // this.isSearch = false;
+                // let timer = setTimeout(()=>{
+                //     this.isSearch = true;
+                //     clearTimeout(timer);
+                // }, 1000);
                 if(keyword || role || state || company){
                     this.currAccount = [];
                     this.loading = true;
                     this.currPage = 1;
                     this.searchFun();
+                    this.isSearch = true;
                 }else{
                     Message.warning('请输入搜索条件');
                 }
@@ -452,7 +464,7 @@
         top: 0;
     }
 
-    /deep/ .el-input__inner {
+    /deep/.search_row .el-input__inner {
         width: 180px;
         height: 34px;
     }
@@ -464,11 +476,6 @@
 
     /deep/ .el-date-editor .el-range-separator {
         line-height: 26px;
-    }
-
-    /* 表格高度 */
-    /deep/ .el-table__body-wrapper {
-        height: 405px;
     }
 
     /*下拉搜索框*/
@@ -493,4 +500,5 @@
     .el-input {
         border-radius: 4px;
     }
+
 </style>

@@ -122,15 +122,19 @@
                         </div>
                     </el-table>
 
-                    <el-pagination
-                        @size-change="sizeChange"
-                        @current-change="changePage"
-                        :current-page.sync="currPage"
-                        :page-sizes="pageSizes"
-                        :page-size="pageSize"
-                        layout="total, sizes, prev, pager, next, jumper"
-                        :total="totalNum">
-                    </el-pagination>
+                    <div class="ad_pagination">
+                        <el-pagination
+                            background
+                            v-if="paginationShow"
+                            @size-change="sizeChange"
+                            @current-change="changePage"
+                            :current-page.sync="currPage"
+                            :page-sizes="pageSizes"
+                            :page-size="pageSize"
+                            layout="total, sizes, prev, pager, next, jumper"
+                            :total="totalNum">
+                        </el-pagination>
+                    </div>
                 </div>
             </div>
         </div>
@@ -265,6 +269,7 @@ export default {
             // 公司列表
             companyData: [],
             // 分页信息
+            paginationShow: true,
             pageSize: 20,
             pageSizes: [20, 50, 80, 100],
             currPage: 1,
@@ -974,8 +979,13 @@ export default {
             }
         },
         searchFun(){
+            this.paginationShow = false;
+            this.loading = true;
             let info = this.searchFormat();
             this.getData(info);
+            this.$nextTick(function () {
+                this.paginationShow = true;
+            });
         },
         // 搜索数据格式化
         searchFormat(){
@@ -1176,7 +1186,7 @@ a {
     top: -2px;
 }
 
-/deep/ .el-input__inner {
+/deep/.search_row .el-input__inner {
     width: 140px;
 }
 /deep/ .el-date-editor{

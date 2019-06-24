@@ -24,9 +24,6 @@
                                 </el-col>
                                 <el-col :span="6">
                                     <el-form-item label="账户名:" prop="sname">
-                                        <!-- <el-input v-model.trim="clientForm.sname" placeholder="请输入账户名" @change="check()" clearable></el-input> -->
-                                        <!-- <el-autocomplete v-model.trim="clientForm.sname" :fetch-suggestions="queryCheck" placeholder="请输入内容" @select="handle">
-                                        </el-autocomplete> -->
                                         <el-select
                                             v-model="clientForm.sname"
                                             filterable
@@ -58,9 +55,6 @@
                             <el-row class="form_row" type="flex" :gutter="72">
                                 <el-col :span="6">
                                     <el-form-item label="所在地:" prop="cityArr" placeholder="请选择联系人所在地">
-                                        <!-- <el-select v-model="clientForm.rid" placeholder="请选择活动区域">
-                                            <el-option :label="item.rName" :value="item.rID" v-for="item of allProvince" :key="item.rID"></el-option>
-                                        </el-select> -->
                                         <el-cascader :options="allProvince" v-model="clientForm.cityArr" separator="-" :show-all-levels="false" @change="seleProClient" @active-item-change="handleItemChange" filterable></el-cascader>
                                     </el-form-item>
                                 </el-col>
@@ -85,7 +79,7 @@
                 </div>
             </div>
             <!--公司信息-->
-            <div class="mediaList_content clearfix">
+            <div class="mediaList_wrap clearfix margin_16_64">
                 <div class="content_bottom_wrap companyInfo">
                     <div class="content_bottom_head">
                         <h2>公司信息</h2>
@@ -95,37 +89,36 @@
                             <el-row class="form_row" type="flex" :gutter="72">
                                 <el-col :span="6">
                                     <el-form-item label="公司名称:" prop="cName">
-                                        <!-- <span v-if="isFill">{{companyForm.cName}}
-                                            <el-button @click="selectAnother" size="mini">重选</el-button>
-                                        </span>
-                                        <el-autocomplete v-else v-model.trim="companyForm.cName" :fetch-suggestions="querySearchAsync" placeholder="请输入内容" @select="handleSelect">
-                                        </el-autocomplete> -->
-                                        <el-autocomplete v-model.trim="companyForm.cName" :value="companyForm.cName" :fetch-suggestions="querySearchAsync" placeholder="请输入内容" @select="handleSelect">
-                                        </el-autocomplete>
+                                        <el-select
+                                            v-model.trim="companyForm.cName" 
+                                            filterable
+                                            remote
+                                            reserve-keyword
+                                            placeholder="请输入公司名称"
+                                            :remote-method="remoteMethodCom"
+                                            @change="handleSelect()"
+                                            :loading="comLoading">
+                                            <el-option
+                                                v-for="item in companyArr"
+                                                :key="item.value"
+                                                :label="item.label"
+                                                :value="item.value">
+                                            </el-option>
+                                        </el-select>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="6">
                                     <el-form-item label="所在城市:" prop="cityArr" placeholder="请选择公司所在城市">
-                                        <!-- <span v-if="isFill">{{companyForm.rName}}</span> -->
-                                        <!-- <el-select v-else v-model="companyForm.rID" placeholder="请选择公司所在城市">
-                                            <el-option :label="item.rName" :value="item.rID" v-for="item of allProvince" :key="item.rID"></el-option>
-                                        </el-select> -->
-                                        <!-- <el-cascader v-else :options="allProvince" v-model="companyForm.cityArr" separator="-" :show-all-levels="false" @change="seleProCom" @active-item-change="handleItemChange"></el-cascader> -->
-                                        <!-- <el-cascader :options="allProvince" v-model="companyForm.cityArr" separator="-" :show-all-levels="false" @change="seleProCom" @active-item-change="handleItemChange"></el-cascader> -->
                                         <el-cascader :options="allProvince" v-model="companyForm.cityArr" separator="-" :show-all-levels="false" @change="seleProCom" @active-item-change="handleItemChange" filterable></el-cascader>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="6">
                                     <el-form-item label="行业分类:" prop="industryIdArr">
-                                        <!-- <span v-if="isFill">{{companyForm.iName}}</span> -->
-                                        <!-- <el-cascader v-else placeholder="试试搜索：互联网" :options="bussiness" v-model="companyForm.industryIdArr" filterable change-on-select @change="handleChange"></el-cascader> -->
                                         <el-cascader :options="bussiness" v-model="companyForm.industryIdArr" change-on-select @change="handleChange" filterable></el-cascader>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="6">
                                     <el-form-item label="公司地址:" prop="cAddress">
-                                        <!-- <span v-if="isFill">{{companyForm.cAddress}}</span> -->
-                                        <!-- <el-input v-else v-model.trim="companyForm.cAddress" placeholder="请输入公司具体地址" clearable></el-input> -->
                                         <el-input v-model.trim="companyForm.cAddress" placeholder="请输入公司具体地址" clearable></el-input>
                                     </el-form-item>
                                 </el-col>
@@ -146,8 +139,6 @@
                                 </el-col>
                                 <el-col :span="6">
                                     <el-form-item label="备注:" prop="cRemark">
-                                        <!-- <span v-if="isFill">{{companyForm.cRemark}}</span> -->
-                                        <!-- <el-input v-else type="textarea" v-model.trim="companyForm.cRemark" placeholder="请填写备注信息" clearable></el-input> -->
                                         <el-input type="textarea" v-model.trim="companyForm.cRemark" placeholder="请填写备注信息" clearable></el-input>
                                     </el-form-item>
                                 </el-col>
@@ -156,7 +147,6 @@
                     </div>
                 </div>
                 <div class="content_bottom_btn">
-                    <!-- <el-button type="primary" @click="submitData" :disabled="isAdd">创建</el-button> -->
                     <el-button type="primary" @click="submitData">创建</el-button>
                     <el-button @click="goBack">取消</el-button>
                 </div>
@@ -254,24 +244,21 @@ export default {
             }
         };
         return {
+            // 账号远程搜索
             loading: false,
             searchArr: [],
             isSame: false,
+            // 公司远程搜索
+            comLoading: false,
+            companyArr: [],
             // 登录信息
             sessionData: {},
-            otherName: null,
             // 所有区域
             allProvince: [],
-            // 是否有公司
-            isFill: false,
-            timeout: null,
             //行业分类
             bussiness: [],
-            // 搜索后获得到的公司
-            // allCompany: [],
             // 公司所对应的原来的品牌
             oldBrandTags: [],
-            isAdd: false,
             //tags
             companyTags: [],
             inputVisible: false,
@@ -440,6 +427,7 @@ export default {
             console.log(item);
             this.clientForm.sname = item.value;
         },
+        // 客户远程搜索
         remoteMethod(query){
             this.searchArr = [];
             if(query){
@@ -470,40 +458,6 @@ export default {
                 });
             }
         },
-        queryCheck(queryString, callback) {
-            if (queryString) {
-                let sname = queryString;
-                let session = this.sessionData;
-                let info = {
-                    uid: session.uID,
-                    token: session.token,
-                    sname: sname
-                };
-                api.postApi(this.apiVar.UCAPI+"/CheckUserName", info).then(res => {
-                    if (res.data.SysCode == 200200) {
-                        console.log(res.data.data);
-                        if(res.data.data.uID){
-                            Message.warning("该账号已经被占用");
-                            let results = [];
-                            callback(results);
-                            this.clientForm.sname = '';
-                        }else{
-                            let results = [{ value: queryString }];
-                            // this.clientForm.sname = queryString;
-                            clearTimeout(this.timeout);
-                            this.timeout = setTimeout(() => {
-                                callback(results);
-                            }, 3000 * Math.random());
-                                
-                        }
-                    } else if(res.data.SysCode ==100302){
-                        this.loginTimeout();
-                    }else {
-                        Message.warning(res.data.MSG);
-                    }
-                });
-            }
-        },
         // 选择行业
         handleChange(val) {
             console.log("industryIdArr---------", val);
@@ -524,47 +478,41 @@ export default {
         },
         // 获取所有区域信息
         getAreaData() {
-            // region.province(data => {
-            //     this.allProvince = data.province;
-            // });
             this.allProvince = areaPackageNew.province();
         },
         // 点击省级去显示其对应市级
         handleItemChange(val) {
             console.log("select", val);
-            // region.cityArea(
-            //     data => {
-            //         console.log(data);
-            //     },
-            //     val[0],
-            //     this.allProvince
-            // );
-
         },
-        // 输入获取公司信息(远程搜索)
-        querySearchAsync(queryString, callback) {
-            if (queryString) {
+        // 输入获取公司信息(远程搜索)        
+        remoteMethodCom(query){
+            this.companyArr = [];
+            if(query){
+                let session = this.sessionData;
                 let info = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    cn: queryString
+                    cn: query
                 };
-                api.postApi(this.apiVar.Advertisement+"/GetCompanyInfo", info)
-                    .then(res => {
-                        if (res.data) {
-                            for (let i of res.data) {
-                                i.value = i.cName; //将CUSTOMER_NAME作为value
-                            }
-                            // this.allCompany = res.data;
-                            // var results = this.allCompany;
-                            var results = res.data;
-                            this.companyForm.cID = '';
-                            clearTimeout(this.timeout);
-                            this.timeout = setTimeout(() => {
-                                callback(results);
-                            }, 3000 * Math.random());
+                this.comLoading = true;
+                api.postApi(this.apiVar.Advertisement+"/GetCompanyInfo", info).then(res => {
+                    this.comLoading = false;                    
+                    if (res.data) {
+                        for (let i of res.data) {
+                            i.value = i.cID;
+                            i.label = i.cName;
                         }
-                    });
+                        if(res.data.length){
+                            this.companyArr = res.data;
+                        }else{
+                            this.companyArr = [{label: query, value: query}];
+                        }
+                    } else if(res.data.SysCode ==100302){
+                        this.loginTimeout();
+                    }else {
+                        Message.warning(res.data.MSG);
+                    }
+                });
             }else{
                 this.oldBrandTags = [];
                 this.companyTags = [];
@@ -574,61 +522,61 @@ export default {
                 this.companyForm.cAddress = '';
             }
         },
-        handleSelect(item) {
-
+        // 选择公司
+        handleSelect() {
             this.companyTags = [];
-            console.log(item);
-            console.log(item.rID);
-            // 保存cID以便在创建客户的时候进行使用
-            item.cID = item.cID;
-            item.cName = item.cName;
-            item.cAddress = item.cAddress;
-            item.cRemark = item.cRemark;
-            item.iID = item.iID;
-
-            // 获取公司所在地的中文名称
-            let cityRID = item.rID.toString().substring(0, 2) + "0000";
-            let areaRID = item.rID.toString().substring(0, 4) + "00";
-            this.handleItemChange([cityRID, areaRID]);
-
-            // item.cityArr = [cityRID, areaRID];
-            this.$set(item, "cityArr", [cityRID, areaRID]);
-
-            // 获取公司原有的品牌信息
-            let bInfo = {
-                uid: this.sessionData.uID,
-                token: this.sessionData.token,
-                cid: item.cID,
-            };
-            api.getApi(this.apiVar.Advertisement+"/GetBrand", bInfo).then(res => {
-                console.log(res.data);
-                this.oldBrandTags = res.data;
-            });
-
-            // 公司信息所在行业
-            let arr = JSON.parse(sessionStorage.getItem("industry"));
-            // 如果有行业id则cascader显示出对应的行业
-            let industryResult = [
-                industryToText.getpiID(item.iID, arr),
-                item.iID
-            ];
-            item.industryIdArr = industryResult;
-
-            this.companyForm = item;
-            // 保存一份旧公司信息以便来判断是否改变公司信息
-            this.oldcompanyInfo = JSON.parse(JSON.stringify(item));
-            // this.$refs["companyForm"].clearValidate();
-            // this.isFill = true;
-            // Message.warning('该公司已有销售相关联');
+            let item = '';
+            for(let data of this.companyArr){
+                if(data.cID == this.companyForm.cName){
+                    item = data;
+                    break;
+                }
+            }
+            // item有即代表已有公司存在
+            if(item){
+                console.log(item);
+                console.log(item.rID);
+                // 保存cID以便在创建客户的时候进行使用
+                item.cID = item.cID;
+                item.cName = item.cName;
+                item.cAddress = item.cAddress;
+                item.cRemark = item.cRemark;
+                item.iID = item.iID;
+    
+                // 获取公司所在地的中文名称
+                let cityRID = item.rID.toString().substring(0, 2) + "0000";
+                let areaRID = item.rID.toString().substring(0, 4) + "00";
+                this.handleItemChange([cityRID, areaRID]);
+    
+                // item.cityArr = [cityRID, areaRID];
+                this.$set(item, "cityArr", [cityRID, areaRID]);
+    
+                // 获取公司原有的品牌信息
+                let bInfo = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    cid: item.cID,
+                };
+                api.getApi(this.apiVar.Advertisement+"/GetBrand", bInfo).then(res => {
+                    console.log(res.data);
+                    this.oldBrandTags = res.data;
+                });
+    
+                // 公司信息所在行业
+                let arr = JSON.parse(sessionStorage.getItem("industry"));
+                // 如果有行业id则cascader显示出对应的行业
+                let industryResult = [
+                    industryToText.getpiID(item.iID, arr),
+                    item.iID
+                ];
+                item.industryIdArr = industryResult;
+    
+                this.companyForm = item;
+                // 保存一份旧公司信息以便来判断是否改变公司信息
+                this.oldcompanyInfo = JSON.parse(JSON.stringify(item));
+                // this.$refs["companyForm"].clearValidate();
+            }
         },
-        selectAnother() {
-            // this.isFill = false;
-            this.companyTags = [];
-            this.oldBrandTags = [];
-            this.companyForm.cityArr = [];
-            this.companyForm.industryIdArr = [];
-        },
-
         // 创建
         submitData() {
             let client_bool = false;
@@ -660,11 +608,9 @@ export default {
                     // console.log('clientForm', this.validateForm('clientForm'));
                     // 修改公司信息
                     this.updateCompany();
-                    // this.isAdd = true;
 
                 } else {
                     console.log("nocom", company_bool, client_bool);
-                    // this.isAdd = true;
                     // 创建公司和用户
                     this.createCompany();
                 }
@@ -900,7 +846,6 @@ export default {
                 .catch(res => {
                     this.companyTags = [];
                     this.oldBrandTags = [];
-                    // this.isFill = false;
                 });
         },
         //重置表单
@@ -948,14 +893,6 @@ export default {
 </script>
 
 <style scoped>
-.mediaList_content{
-    width: 92%;
-    background: #ffffff;
-    margin: 24px auto;
-    padding-bottom: 24px;
-    border: 1px solid #dedede;
-}
-
 .content_top_wrap,
 .content_bottom_wrap {
     background: #ffffff;

@@ -30,7 +30,7 @@
                     </el-col>
 				</el-row>
 				<div class="table_wrap">
-					<el-table border :data="currentPlan" v-loading="loading" v-loadmore="userLoadMore" element-loading-text="玩命加载中..." element-loading-spinner="el-icon-loading" style="width: 100%" :default-sort="{prop: 'joinTime', order: 'descending'}">
+					<el-table border :data="currentPlan" v-loading="loading" element-loading-text="玩命加载中..." element-loading-spinner="el-icon-loading" style="width: 100%" :default-sort="{prop: 'joinTime', order: 'descending'}">
 						<el-table-column prop="realName" label="联系人" min-width="6%" show-overflow-tooltip>
 						</el-table-column>
 						<!--<el-table-column prop="clientRName" label="所在地" min-width="7.2%">-->
@@ -45,7 +45,7 @@
 						</el-table-column>
 						<el-table-column prop="cBrand" label="公司品牌" min-width="12.1%" show-overflow-tooltip>
 						</el-table-column>
-						<el-table-column prop="puName" label="所有人" min-width="6.1%">
+						<el-table-column prop="puName" label="所有人" min-width="6.1%" show-overflow-tooltip>
 						</el-table-column>
 						<el-table-column label="创建日期" min-width="8.3%" sortable :sort-by="sortData">
 							<template slot-scope="scope">
@@ -62,6 +62,20 @@
                             <no-search-result></no-search-result>
                         </div>
 					</el-table>
+
+                    <div class="ad_pagination">
+                        <el-pagination
+                            background
+                            v-if="paginationShow"
+                            @size-change="sizeChange"
+                            @current-change="changePage"
+                            :current-page.sync="currPage"
+                            :page-sizes="pageSizes"
+                            :page-size="pageSize"
+                            layout="total, sizes, prev, pager, next, jumper"
+                            :total="totalNum">
+                        </el-pagination>
+                    </div>
 				</div>
 			</div>
 		</div>
@@ -103,9 +117,13 @@ export default {
         return {
             // 公司列表
             companyArr: [],
-            pageSize: 15,
+            // 分页信息
+            paginationShow: true,
+            pageSize: 20,
+            pageSizes: [20, 50, 80, 100],
             currPage: 1,
             totalPage: 0,
+            totalNum: 0,
             // 登录信息
             sessionData:{},
             //加载中
@@ -119,8 +137,6 @@ export default {
             },
             // 表格数据
             currentPlan: [],
-            // 是否滚动加载
-            loading_point: true,
             isSearch: true,
             isReset: true,
         };
@@ -132,21 +148,21 @@ export default {
         }
         this.searchFun();
     },
-    directives: {
-        loadmore: {
-            bind: function (el, binding) {
-                const selectWrap = el.querySelector('.el-table__body-wrapper')
-                selectWrap.addEventListener('scroll', function () {
-                    const scrollDistance = this.scrollHeight - this.scrollTop - this.clientHeight;
-                    // console.log('滚动的距离',scrollDistance)
-                    if (scrollDistance <= 100) {
-                        binding.value()
-                    }
-                })
-            }
-        }
-    },
     methods: {
+        // 切换页码
+        changePage(page) {
+            this.currPage = page;
+            console.log('page----', page);
+            this.searchFun();
+        },
+        // 每页条数切换
+        sizeChange(val) {
+            this.pageSize = val;
+            if (this.currPage == 1) {
+                this.searchFun();
+            }
+            this.currPage = 1;
+        },
         // 获取公司
         getCompany(){
             let sess = this.sessionData;
@@ -175,15 +191,6 @@ export default {
                 console.log(err);
             });
         },
-        // 用户列表--滚动监听
-        userLoadMore(){
-            if(this.loading_point){
-                this.loading_point = false;
-                if(this.currPage <= this.totalPage){
-                    this.searchFun();
-                }
-            }
-        },
         // 判断角色是否有新建按钮(销售有)
         getRole() {
             this.sessionData = sessFun.getSess();
@@ -195,6 +202,7 @@ export default {
         },
         // 搜索数据格式化
         searchFormat(){
+            console.log('currpage--', this.currPage);
             let session = this.sessionData;
             let info = {
                 uid: session.uID,
@@ -212,8 +220,13 @@ export default {
             return info;
         },
         searchFun(){
+            this.paginationShow = false;
+            this.loading = true;
             let info = this.searchFormat();
             this.getData(info);
+            this.$nextTick(function () {
+                this.paginationShow = true;
+            });
         },
         // 滚动加载获取数据(无搜索数据)
         getData(params){
@@ -224,12 +237,13 @@ export default {
                 }else{
                     if(!res.data.SysCode){
                         let dataInfo = res.data.page;
-                        this.totalPage = dataInfo.totalPage;
+                        this.totalNum = dataInfo.total;
                         let dataArr = dataInfo.list;
-                        this.currentPlan = this.currentPlan.concat(this.funcData(dataArr));
-                        this.loading_point = true;
-                        this.currPage++;
+                        this.currentPlan = this.funcData(dataArr);
                         this.loading = false;
+                        if (dataInfo.totalSize == 0) {
+                            this.$Message.warning('暂无数据');
+                        }
                         if(dataInfo.totalPage == 0){
                             Message.warning('暂无数据');
                         }
@@ -260,7 +274,6 @@ export default {
             if(date || keyword || company){
                 this.currentPlan = [];
                 this.loading = true;
-                this.loading_point = false;
                 this.currPage = 1;
                 this.searchFun()
             }else{
@@ -366,9 +379,9 @@ export default {
     top: -3px;
 }
 
-/deep/ .el-input__inner {
+/* /deep/ .el-input__inner {
     width: 260px;
-}
+} */
 
 /deep/ .el-date-editor i,
 /deep/ .el-date-editor input,
@@ -402,7 +415,7 @@ export default {
 }
 
 /* 表格高度 */
-/deep/ .el-table__body-wrapper {
+/* /deep/ .el-table__body-wrapper {
     height: 405px;
-}
+} */
 </style>

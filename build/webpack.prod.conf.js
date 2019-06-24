@@ -17,6 +17,7 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 const env = config.build[process.env.env_config+'Env']
 
+const version = new Date().getTime();
 const webpackConfig = merge(baseWebpackConfig, {
   module: {
     rules: utils.styleLoaders({
@@ -28,9 +29,9 @@ const webpackConfig = merge(baseWebpackConfig, {
   devtool: config.build.productionSourceMap ? config.build.devtool : false,
   output: {
     path: config.build.assetsRoot,
-    filename: utils.assetsPath('js/[name].[chunkhash:8].js'),
+    filename: utils.assetsPath('js/[name].[chunkhash:8]'+version+'.js'),
     // filename: utils.assetsPath('js/[name].js'),
-    chunkFilename: utils.assetsPath('js/[id].[chunkhash:8].js')
+    chunkFilename: utils.assetsPath('js/[id].[chunkhash:8]'+version+'.js')
   },
   plugins: [
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
@@ -59,7 +60,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     }),
     // extract css into its own file
     new ExtractTextPlugin({
-      filename: utils.assetsPath('css/[name].[contenthash:8].css'),
+      filename: utils.assetsPath('css/[name].[contenthash:8]'+version+'.css'),
       // filename: utils.assetsPath('css/[name].css'),
       // Setting the following option to `false` will not extract CSS from codesplit chunks.
       // Their CSS will instead be inserted dynamically with style-loader when the codesplit chunk has been loaded by webpack.
@@ -83,6 +84,7 @@ const webpackConfig = merge(baseWebpackConfig, {
         : config.build.index,
       template: 'index.html',
       inject: true,
+      hash: version,
       minify: {
         removeComments: true,
         collapseWhitespace: true,

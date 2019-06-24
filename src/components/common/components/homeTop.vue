@@ -107,6 +107,9 @@ export default {
         font-size: 24px;
         height: 36px;
         line-height: 36px;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
     .title span{
         font-size: 14px;

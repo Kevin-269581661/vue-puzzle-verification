@@ -10,7 +10,7 @@
                 <h2>账号列表</h2>
             </div>
             <div class="mediaList_container">
-                <el-row>
+                <el-row class="search_row">
                     <el-col>
                         <el-input placeholder="请输入内容" v-model="searchInfo.keyword" class="input-with-select">
                             <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
@@ -28,14 +28,14 @@
                             <el-option label="正常" value="1"></el-option>
                             <el-option label="禁用" value="0"></el-option>
                         </el-select>
-                        <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
+                        <el-button type="primary" icon="el-icon-search" @click="search()" :loading="isSearch">搜索</el-button>
                         <el-button plain @click="reset()" :disabled="!isReset">重置</el-button>
                         <el-button plain @click="newAccount()" v-if="showNewBtn">新建</el-button>
                     </el-col>
                 </el-row>
                 <div class="table_wrap">
-                    <el-table border :data="currAccount" style="width: 100%" v-loading="loading" v-loadmore="accountLoadMore"
-                              element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading" 
+                    <el-table border :data="currAccount" style="width: 100%" v-loading="loading"
+                              element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading"
                               :default-sort="{prop: 'joinTime', order: 'descending'}">
                         <el-table-column label="账号" min-width="11.8%">
                             <template slot-scope="scope">
@@ -75,6 +75,20 @@
                             <no-search-result></no-search-result>
                         </div>
                     </el-table>
+
+                    <div class="ad_pagination">
+                        <el-pagination
+                            background
+                            v-if="paginationShow"
+                            @size-change="sizeChange"
+                            @current-change="changePage"
+                            :current-page.sync="currPage"
+                            :page-sizes="pageSizes"
+                            :page-size="pageSize"
+                            layout="total, sizes, prev, pager, next, jumper"
+                            :total="totalNum">
+                        </el-pagination>
+                    </div>
                 </div>
             </div>
         </div>
@@ -118,9 +132,13 @@
         },
         data() {
             return {
+                // 分页信息
+                paginationShow: true,
+                pageSize: 20,
+                pageSizes: [20, 50, 80, 100],
                 currPage: 1,
                 totalPage: 0,
-                pageSize: 15,
+                totalNum: 0,
                 // 登录信息
                 sessionData:{},
                 //加载中
@@ -136,7 +154,6 @@
                 companyData: [],
                 // 表格数据
                 currAccount: [],
-                loading_point: true,
                 isSearch: true,
                 isReset: true,
                 roleList: [
@@ -157,21 +174,22 @@
             }
             this.searchFun();
         },
-        directives: {
-            loadmore: {
-                bind: function (el, binding) {
-                    const selectWrap = el.querySelector('.el-table__body-wrapper')
-                    selectWrap.addEventListener('scroll', function () {
-                        const scrollDistance = this.scrollHeight - this.scrollTop - this.clientHeight;
-                        // console.log('滚动的距离',scrollDistance)
-                        if (scrollDistance <= 100) {
-                            binding.value()
-                        }
-                    })
-                }
-            }
-        },
         methods: {
+            // 切换页码
+            changePage(page) {
+                this.currPage = page;
+                console.log('page----', page);
+                this.searchFun();
+            },
+            // 每页条数切换
+            sizeChange(val) {
+                this.pageSize = val;
+                if (this.currPage == 1) {
+                    this.searchFun();
+                }
+                this.currPage = 1;
+            },
+            // 获取公司
             getCompany(){
                 let sess = this.sessionData;
                 let info = {
@@ -208,18 +226,14 @@
                     this.showNewBtn = false;
                 }
             },
-            // 账号列表--滚动监听
-            accountLoadMore(){
-                if(this.loading_point){
-                    this.loading_point = false;
-                    if(this.currPage <= this.totalPage){
-                        this.searchFun();
-                    }
-                }
-            },
             searchFun(){
+                this.paginationShow = false;
+                this.loading = true;
                 let info = this.searchFormat();
                 this.getData(info);
+                this.$nextTick(function () {
+                    this.paginationShow = true;
+                });
             },
             // 滚动加载数据列表
             getData(params){
@@ -230,12 +244,11 @@
                     }else{
                         if(!res.data.SysCode){
                             let dataInfo = res.data;
-                            this.totalPage = dataInfo.totalpage;
+                            this.totalNum = dataInfo.count;
                             let dataArr = dataInfo.data;
-                            this.currAccount = this.currAccount.concat(this.funcData(dataArr));
-                            this.loading_point = true;
-                            this.currPage++;
+                            this.currAccount = this.funcData(dataArr);
                             this.loading = false;
+                            this.isSearch = false;
                             if(dataInfo.totalpage == 0){
                                 Message.warning('暂无数据');
                             }
@@ -321,17 +334,17 @@
             // 搜索优化
             search(){
                 let { keyword, role, state, company } = this.searchInfo;                
-                this.isSearch = false;
-                let timer = setTimeout(()=>{
-                    this.isSearch = true;
-                    clearTimeout(timer);
-                }, 1000);
+                // this.isSearch = false;
+                // let timer = setTimeout(()=>{
+                //     this.isSearch = true;
+                //     clearTimeout(timer);
+                // }, 1000);
                 if(keyword || role || state || company){
                     this.currAccount = [];
                     this.loading = true;
-                    this.loading_point = false;
                     this.currPage = 1;
                     this.searchFun();
+                    this.isSearch = true;
                 }else{
                     Message.warning('请输入搜索条件');
                 }
@@ -451,7 +464,7 @@
         top: 0;
     }
 
-    /deep/ .el-input__inner {
+    /deep/.search_row .el-input__inner {
         width: 180px;
         height: 34px;
     }
@@ -463,11 +476,6 @@
 
     /deep/ .el-date-editor .el-range-separator {
         line-height: 26px;
-    }
-
-    /* 表格高度 */
-    /deep/ .el-table__body-wrapper {
-        height: 405px;
     }
 
     /*下拉搜索框*/
@@ -492,4 +500,5 @@
     .el-input {
         border-radius: 4px;
     }
+
 </style>

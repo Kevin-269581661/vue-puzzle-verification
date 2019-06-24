@@ -1186,6 +1186,9 @@
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+    /deep/ .el-table__row .cell span{
+        overflow-x: initial;
+    }
     .searchBox{
         margin-bottom: 10px;
         font-size: 14px;

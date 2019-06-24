@@ -14,46 +14,62 @@
                 <h2>客户详情</h2>
             </div>
             <div class="mediaList_handel">
-                <div class="clientInfo">
-                    <h4>客户信息</h4>
-                    <ul>
-                        <li>
-                            <em>联系人：</em>{{userInfo.realName || '--'}}</li>
-                        <li>
-                            <em>邮箱：</em>{{userInfo.email || '--'}}</li>
-                        <li>
-                            <em>手机号码：</em>{{userInfo.phone || '--'}}</li>
-                        <li>
-                            <em>账户名：</em>{{userInfo.sName || '--'}}</li>
-                        <li>
-                            <em>职位：</em>{{userInfo.position || '--'}}</li>
-                        <li>
-                            <em>固定电话：</em>{{userInfo.telephone || '--'}}</li>
-                        <li>
-                            <em>所在地：</em>{{userInfo.rName || '--'}}</li>
-                        <li>
-                            <em>事业部：</em>{{userInfo.division || '--'}}</li>
-                        <li>
-                            <em>所有人：</em>{{userInfo.puName || '--'}}</li>
-                    </ul>
-                </div>
-                <div class="companyInfo">
-                    <h4>公司信息</h4>
-                    <ul>
-                        <li>
-                            <em>公司名称：</em>{{companyInfo.cName || '--'}}</li>
-                        <li>
-                            <em>公司地址：</em>{{companyInfo.cAddress || '--'}}</li>
-                        <li>
-                            <em>行业：</em>{{companyInfo.iName || '--'}}</li>
-                        <li>
-                            <em>公司品牌：</em>{{companyInfo.cBrand || '--'}}</li>
-                        <li>
-                            <em>所在城市：</em>{{companyInfo.rName || '--'}}</li>
-                        <li>
-                            <em>备注：</em>{{companyInfo.cRemark || '--'}}</li>
-                    </ul>
-                </div>
+                <h4>客户信息</h4>
+                <el-row class="row_box">
+                    <el-col :span="8">
+                        <span class="row_title">联系人：</span><span>{{userInfo.realName || '--'}}</span>
+                    </el-col>
+                    <el-col :span="8">
+                        <span class="row_title">邮箱：</span><span>{{userInfo.email || '--'}}</span>
+                    </el-col>
+                    <el-col :span="8">
+                        <span class="row_title">手机号码：</span><span>{{userInfo.phone || '--'}}</span>
+                    </el-col>
+                </el-row>
+                <el-row class="row_box">
+                    <el-col :span="8">
+                        <span class="row_title">账户名：</span><span>{{userInfo.sName || '--'}}</span>
+                    </el-col>
+                    <el-col :span="8">
+                        <span class="row_title">职位：</span><span>{{userInfo.position || '--'}}</span>
+                    </el-col>
+                    <el-col :span="8">
+                        <span class="row_title">固定电话：</span><span>{{userInfo.telephone || '--'}}</span>
+                    </el-col>
+                </el-row>
+                <el-row class="row_box">
+                    <el-col :span="8">
+                        <span class="row_title">所在地：</span><span>{{userInfo.rName || '--'}}</span>
+                    </el-col>
+                    <el-col :span="8">
+                        <span class="row_title">事业部：</span><span>{{userInfo.division || '--'}}</span>
+                    </el-col>
+                    <el-col :span="8">
+                        <span class="row_title">所有人：</span><span>{{userInfo.puName || '--'}}</span>
+                    </el-col>
+                </el-row>
+            </div>
+            <div class="mediaList_handel">
+                <h4>公司信息</h4>
+                <el-row class="row_box">
+                    <el-col :span="8">
+                        <span class="row_title">公司名称：</span><span>{{userInfo.realName || '--'}}</span>
+                    </el-col>
+                    <el-col :span="8">
+                        <span class="row_title">公司地址：</span><span>{{userInfo.email || '--'}}</span>
+                    </el-col>
+                    <el-col :span="8">
+                        <span class="row_title">行业：</span><span>{{userInfo.phone || '--'}}</span>
+                    </el-col>
+                </el-row>
+                <el-row class="row_box">
+                    <el-col :span="8">
+                        <span class="row_title">所在城市：</span><span>{{userInfo.sName || '--'}}</span>
+                    </el-col>
+                    <el-col :span="8">
+                        <span class="row_title">备注：</span><span>{{userInfo.position || '--'}}</span>
+                    </el-col>
+                </el-row>
             </div>
         </div>
 
@@ -189,71 +205,34 @@ export default {
 </script>
 
 <style scoped>
-/*客户信息*/
-.mediaList_wrap {
-    width: 92%;
-    margin: 0 auto;
-    height: 346px;
-    background: #ffffff;
-    border: 1px solid #e6e7e9;
-}
-
-.mediaList_head {
-    width: 100%;
-    padding: 12px 0;
-    border-bottom: 1px solid #dedede;
-}
-
-.mediaList_head h2 {
-    font-size: 16px;
-    color: #2c313c;
-    font-weight: bold;
-    padding-left: 16px;
-    height: 24px;
-    border-left: 2px solid #465d89;
-}
-
 .mediaList_handel {
-    padding: 18px 24px;
+    margin: 18px 24px;
+    border-left: 1px solid rgb(245,246,250);
+    border-right: 1px solid rgb(245,246,250);
+    border-bottom: 1px solid rgb(245,246,250);
+    font-size: 14px;
 }
 
 .mediaList_handel h4 {
-    font-size: 14px;
+    font-size: 16px;
     color: #333333;
-    font-weight: bold;
+    font-weight:600;
+    padding-left: 16px;
+    height: 42px;
+    line-height: 42px;
+    background:rgba(245,246,250,1);
 }
 
-.mediaList_handel ul li {
-    width: 33.2%;
-    font-size: 14px;
-    color: #666666;
-    margin-top: 14px;
+.mediaList_handel span{
+    color: #666666;    
 }
-
-.clientInfo {
-    margin-bottom: 24px;
-    height: 130px;
+.row_box{
+    margin: 16px 0;
+    padding-left: 16px;
 }
-
-.clientInfo,
-.companyInfo {
-    clear: both;
-}
-
-.clientInfo ul li,
-.companyInfo ul li {
-    float: left;
-}
-
-.mediaList_handel ul li,
-.remarkBox p {
-    font-size: 14px;
-}
-.mediaList_handel ul li em,
-.remarkBox em {
+.mediaList_handel .row_title{
     color: #333333;
 }
-
 /*按钮*/
 .content_bottom_btn {
     text-align: center;

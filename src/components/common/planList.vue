@@ -46,8 +46,8 @@
                     </el-col>
                 </el-row>
                 <div class="table_wrap">
-                    <el-table border :data="currentPlan" style="width: 100%" v-loadmore="pointLoadMore" v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
-                        <el-table-column prop="apName" label="方案名称" min-width="14.9%" show-overflow-tooltip>
+                    <el-table border :data="currentPlan" style="width: 100%" v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
+                        <el-table-column prop="apName" label="方案名称" min-width="14.9%">
                             <template slot-scope="scope">
                                 <a href="javascript:void(0);" @click="ToDetail(scope.row)">{{scope.row.apName}}</a>
                             </template>
@@ -121,20 +121,34 @@
                             <no-search-result></no-search-result>
                         </div>
                     </el-table>
-                </div>
 
-                <el-dialog :title="isLock?'请选择预锁公司':'请选择解锁公司'" :visible.sync="dialogVisible" width="30%" center>
-                    <el-checkbox-group v-model="cityChoose">
-                        <el-checkbox v-if="isLock" :label="item.asrID" v-for="item of cityList" :key="item.rid" border :disabled="item.RemainDay>=0" size="mini">{{item.asName}}</el-checkbox>
-                        <el-checkbox v-if="!isLock" :label="item.asrID" v-for="item of cityList" :key="item.rid" border :disabled="item.RemainDay==undefined || item.RemainDay==null" size="mini">{{item.asName}}</el-checkbox>
-                    </el-checkbox-group>
-                    <span slot="footer" class="dialog-footer">
-                        <el-button @click="cancelLock">取 消</el-button>
-                        <el-button type="primary" @click="confirmLock">确 定</el-button>
-                    </span>
-                </el-dialog>
+                    <div class="ad_pagination">
+                        <el-pagination
+                            background
+                            v-if="paginationShow"
+                            @size-change="sizeChange"
+                            @current-change="changePage"
+                            :current-page.sync="currPage"
+                            :page-sizes="pageSizes"
+                            :page-size="pageSize"
+                            layout="total, sizes, prev, pager, next, jumper"
+                            :total="totalNum">
+                        </el-pagination>
+                    </div>
+                </div>
             </div>
         </div>
+        <!-- 预锁公司 -->
+        <el-dialog :title="isLock?'请选择预锁公司':'请选择解锁公司'" :visible.sync="dialogVisible" width="30%" center>
+            <el-checkbox-group v-model="cityChoose">
+                <el-checkbox v-if="isLock" :label="item.asrID" v-for="item of cityList" :key="item.rid" border :disabled="item.RemainDay>=0" size="mini">{{item.asName}}</el-checkbox>
+                <el-checkbox v-if="!isLock" :label="item.asrID" v-for="item of cityList" :key="item.rid" border :disabled="item.RemainDay==undefined || item.RemainDay==null" size="mini">{{item.asName}}</el-checkbox>
+            </el-checkbox-group>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="cancelLock">取 消</el-button>
+                <el-button type="primary" @click="confirmLock">确 定</el-button>
+            </span>
+        </el-dialog>
         <!--存在异常未完成的方案-->
         <el-dialog title="您有一个新方案未完成保存，是否继续编辑？"
                    :visible.sync="unfinishedDialogVisible"
@@ -254,11 +268,14 @@ export default {
             },
             // 公司列表
             companyData: [],
-            isAll: false,
-            // 列表数据
-            pageSize: 15,
+            // 分页信息
+            paginationShow: true,
+            pageSize: 20,
+            pageSizes: [20, 50, 80, 100],
             currPage: 1,
             totalPage: 0,
+            totalNum: 0,
+            isAll: false,
             Ctrlloading: false,
             // 登录信息、
             sessionData: {},
@@ -289,8 +306,6 @@ export default {
             ],
             // 根据角色判断是否显示新建按钮
             showNewBtn: true,
-            // 滚动加载
-            loading_point: true,
             isSearch: true,
             isReset: true,
             // 表格数据
@@ -318,21 +333,21 @@ export default {
         }
         this.searchFun();
     },
-    directives: {
-        loadmore: {
-            bind: function (el, binding) {
-                const selectWrap = el.querySelector('.el-table__body-wrapper')
-                selectWrap.addEventListener('scroll', function () {
-                    const scrollDistance = this.scrollHeight - this.scrollTop - this.clientHeight;
-                    // console.log('滚动的距离',scrollDistance)
-                    if (scrollDistance <= 100) {
-                        binding.value()
-                    }
-                })
-            }
-        }
-    },
     methods: {
+        // 切换页码
+        changePage(page) {
+            this.currPage = page;
+            console.log('page----', page);
+            this.searchFun();
+        },
+        // 每页条数切换
+        sizeChange(val) {
+            this.pageSize = val;
+            if (this.currPage == 1) {
+                this.searchFun();
+            }
+            this.currPage = 1;
+        },
         // 获取公司
         getCompany(){
             let sess = this.sessionData;
@@ -384,15 +399,6 @@ export default {
                 });
             }
         },
-        // 方案列表--滚动监听
-        pointLoadMore(){
-            if(this.loading_point){
-                this.loading_point = false;
-                if(this.currPage <= this.totalPage){
-                    this.searchFun();
-                }
-            }
-        },
         // 滚动加载获取数据(无搜索数据)
         getData(params){
             api.getApi(this.apiVar.Advertisement+'/GetProposal', params).then(res =>{
@@ -402,11 +408,9 @@ export default {
                 }else{
                     if(!res.data.SysCode){
                         let dataInfo = res.data;
-                        this.totalPage = dataInfo.totalPage;
+                        this.totalNum = dataInfo.total;
                         let dataArr = dataInfo.list;
-                        this.currentPlan = this.currentPlan.concat(this.funcData(dataArr));
-                        this.loading_point = true;
-                        this.currPage++;
+                        this.currentPlan = this.funcData(dataArr);
                         this.loading = false;
                         if(dataInfo.totalpage == 0){
                             Message.warning('暂无数据');
@@ -967,7 +971,6 @@ export default {
             ){
                 this.currentPlan = [];
                 this.loading = true;
-                this.loading_point = false;
                 this.currPage  = 1;
                 this.searchFun();
 
@@ -976,8 +979,13 @@ export default {
             }
         },
         searchFun(){
+            this.paginationShow = false;
+            this.loading = true;
             let info = this.searchFormat();
             this.getData(info);
+            this.$nextTick(function () {
+                this.paginationShow = true;
+            });
         },
         // 搜索数据格式化
         searchFormat(){
@@ -1178,7 +1186,7 @@ a {
     top: -2px;
 }
 
-/deep/ .el-input__inner {
+/deep/.search_row .el-input__inner {
     width: 140px;
 }
 /deep/ .el-date-editor{
@@ -1189,11 +1197,6 @@ a {
 /deep/ .el-date-editor span {
     float: left;
     position: relative;
-}
-
-/*滚动条*/
-/deep/ .el-table__body-wrapper {
-    height: 405px;
 }
 
 /*锁*/

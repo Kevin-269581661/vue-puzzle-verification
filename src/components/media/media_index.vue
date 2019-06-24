@@ -28,7 +28,7 @@
 					</template>
 				</div>
 			</div>
-			<div style="margin:24px 0; background:#fff;">
+			<div style="margin:24px 0; background:#fff;padding-bottom: 24px;">
 				<h2 class="h2_style flex_box">
 					<b>业绩指标</b>
 					<span style="margin-right:24px;">
@@ -55,9 +55,7 @@
 						</el-date-picker>
 					</span>
 				</h2>
-				<div style="padding:24px;">
-					<div id="perform" ref="perform" class="charts2" style="width:100%;height:400px;"></div>
-				</div>
+				<div id="perform" ref="perform" class="charts2" style="width:100%;height:400px;"></div>
 			</div>
 		</div>
 
@@ -632,19 +630,46 @@ export default {
 						axisPointer: {
 							type: 'shadow'
 						},
-
+						axisLabel: {
+							//坐标轴刻度标签
+							margin: 7, //刻度标签与轴线之间的距离
+							interval: 0,    //强制文字产生间隔
+							// rotate: 25,     //文字逆时针旋转25°
+							textStyle: {
+								fontFamily: "DINPro-Regular",
+								color: "#2C313C" //坐标轴刻度文字的颜色
+							}
+						},
+						axisLine: {
+							//坐标轴线条相关设置(颜色等)
+							lineStyle: {
+								color: "#E8E8E8"
+							}
+						},
 					}
 				],
 				yAxis: [
 					{
 						type: 'value',
 						name: '发布订单数',
-						axisLabel: {
-							formatter: '{value}'
-						},
 						nameTextStyle:{
 							fontWeight: 'bold',
-							fontSize: 14
+							fontSize: 14,
+							color: '#000'
+						},
+						axisLine: {
+							//坐标轴线条相关设置(颜色等)
+							lineStyle: {
+								color: "#E8E8E8"
+							}
+						},
+						axisLabel: {
+							//坐标轴刻度标签
+							margin: 7, //刻度标签与轴线之间的距离
+							textStyle: {
+								fontFamily: "DINPro-Regular",
+								color: "#2C313C" //坐标轴刻度文字的颜色
+							}
 						},
 						splitLine: {
                             lineStyle: {
@@ -656,12 +681,24 @@ export default {
 					{
 						type: 'value',
 						name: '录单点位数',
-						axisLabel: {
-							formatter: '{value}'
-						},
 						nameTextStyle:{
 							fontWeight: 'bold',
-							fontSize: 14
+							fontSize: 14,
+							color: '#000'
+						},
+						axisLine: {
+							//坐标轴线条相关设置(颜色等)
+							lineStyle: {
+								color: "#E8E8E8"
+							}
+						},
+						axisLabel: {
+							//坐标轴刻度标签
+							margin: 7, //刻度标签与轴线之间的距离
+							textStyle: {
+								fontFamily: "DINPro-Regular",
+								color: "#2C313C", //坐标轴刻度文字的颜色，
+							}
 						},
 						splitLine: {
                             lineStyle: {

@@ -13,11 +13,11 @@
             <div class="mediaList_container">
                 <div class="table_wrap">
                      <el-table border :data="publishPriceList" style="width: 100%" v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
-                        <el-table-column label="公司名称" prop="company">
+                        <el-table-column label="公司名称" prop="company" show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column label="城市" prop="city">
                         </el-table-column>
-                        <el-table-column label="城市级别" prop="cityLevel">
+                        <el-table-column label="城市级别" prop="cityLevel" show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <span>{{levelToText(scope.row.cityLevel) || '--'}}</span>
                             </template>

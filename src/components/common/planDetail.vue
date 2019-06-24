@@ -660,29 +660,16 @@ export default {
     border-bottom: 1px solid #e4e7ed;
     margin: 0;
 }
-/*1440*/
-@media all and (min-width: 1420px) {
-    .up-loader-Imgpanel + .up-loader-Imgpanel {
-        margin-left: 39px;
-    }
-
-    .up-loader-Imgpanel:nth-child(4) {
-        margin-left: 0;
-    }
-}
-
-/*1920*/
-@media all and (min-width: 1900px) {
-    .up-loader-Imgpanel + .up-loader-Imgpanel {
-        margin-left: 54px;
-    }
-
-    .up-loader-Imgpanel:nth-child(5) {
-        margin-left: 0;
-    }
-}
 
 /deep/ .content_bottom_btn .el-button{
     padding: 0;
+}
+/deep/ .el-table__expanded-cell[class*=cell] .el-form {
+    height: 44px;
+    line-height: 44px;
+}
+/deep/ .el-table__expanded-cell[class*=cell] {
+    padding: 0 46px;
+    background-color: #F7F7F7;;
 }
 </style>

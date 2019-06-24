@@ -34,7 +34,7 @@
                     </el-col>
 				</el-row>
                 <div class="table_wrap">
-                    <el-table border :data="companyList" height="450" v-loading="loading" v-loadmore="companyLoadMore"
+                    <el-table border :data="companyList" v-loading="loading" 
                         element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                         <el-table-column label="公司名称" min-width="11.8%" prop="name">
                         </el-table-column>
@@ -65,6 +65,20 @@
                             <no-search-result></no-search-result>
                         </div>
                     </el-table>
+
+                    <div class="ad_pagination">
+                        <el-pagination
+                            background
+                            v-if="paginationShow"
+                            @size-change="sizeChange"
+                            @current-change="changePage"
+                            :current-page.sync="currPage"
+                            :page-sizes="pageSizes"
+                            :page-size="pageSize"
+                            layout="total, sizes, prev, pager, next, jumper"
+                            :total="totalNum">
+                        </el-pagination>
+                    </div>
                 </div>
             </div>
         </div>
@@ -111,6 +125,13 @@
         },
         data(){
             return{
+                // 分页信息
+                paginationShow: true,
+                pageSize: 20,
+                pageSizes: [20, 50, 80, 100],
+                currPage: 1,
+                totalPage: 0,
+                totalNum: 0,
                 // 登录信息
                 sessionData:{},
                 // 搜索数据
@@ -157,28 +178,24 @@
                 showNewBtn: false,
                 // 编辑或新建
                 isAdd: false,
-                loading: true,
-                loading_point: true, 
-                currPage: 1,
-                totalPage: 0,
-                pageSize: 15,               
-            }
-        },
-        directives: {
-            loadmore: {
-                bind: function (el, binding) {
-                    const selectWrap = el.querySelector('.el-table__body-wrapper')
-                    selectWrap.addEventListener('scroll', function () {
-                        const scrollDistance = this.scrollHeight - this.scrollTop - this.clientHeight;
-                        // console.log('滚动的距离',scrollDistance)
-                        if (scrollDistance <= 100) {
-                            binding.value()
-                        }
-                    })
-                }
+                loading: true,             
             }
         },
         methods:{
+            // 切换页码
+            changePage(page) {
+                this.currPage = page;
+                console.log('page----', page);
+                this.searchFun();
+            },
+            // 每页条数切换
+            sizeChange(val) {
+                this.pageSize = val;
+                if (this.currPage == 1) {
+                    this.searchFun();
+                }
+                this.currPage = 1;
+            },
             // 判断角色是否有新建按钮(系统管理员和超级管理员有)
             getRole() {
                 this.sessionData = sessFun.getSess();
@@ -188,18 +205,14 @@
                     this.showNewBtn = true;
                 }
             },
-            // 公司列表滚动监听
-            companyLoadMore(){
-                if(this.loading_point){
-                    this.loading_point = false;
-                    if(this.currPage <= this.totalPage){
-                        this.searchFun();
-                    }
-                }
-            },
             searchFun(){
+                this.paginationShow = false;
+                this.loading = true;
                 let info = this.searchFormat();
                 this.getData(info);
+                this.$nextTick(function () {
+                    this.paginationShow = true;
+                });
             },
             // 滚动获取列表数据
             getData(params){
@@ -211,11 +224,9 @@
                         if(!res.data.SysCode){
                             console.log(res.data);
                             let dataInfo = res.data;
-                            this.totalPage = dataInfo.totalpage;
+                            this.totalNum = dataInfo.count;
                             let dataArr = dataInfo.data;
-                            this.companyList = this.companyList.concat(this.funcData(dataArr));
-                            this.loading_point = true;
-                            this.currPage++;
+                            this.companyList = this.funcData(dataArr);
                             this.loading = false;
                             if(dataInfo.totalpage == 0){
                                 Message.warning('暂无数据');
@@ -276,7 +287,6 @@
                 if(keyword || (type!=='') || (state!=='')){
                     this.companyList = [];
                     this.loading = true;
-                    this.loading_point = false;
                     this.currPage = 1;
                     this.searchFun();
                 }else{
@@ -458,11 +468,6 @@
     }
     a{
         color: #108ee9;
-    }
-    
-    /* 表格高度 */
-    /deep/ .el-table__body-wrapper {
-        height: 405px;
     }
 </style>
 

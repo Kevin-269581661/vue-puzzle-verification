@@ -130,7 +130,9 @@ export default new Router({
                 {path: '/superOperate/mediaList', component: mediaList},
                 {path: '/superOperate/mediaDetail', component: mediaDetail},
                 {path: '/superOperate/clientList', component: clientList},
-                {path: '/superOperate/planList', component: planList},
+                {path: '/superOperate/planList', component: planList,
+                    meta:{keepAlive: true} // 这个组件需要缓存 true                    
+                },
                 {path: '/superOperate/publishPriceList', component: publishPriceList},
                 {path: '/superOperate/createAccount', component: createAccount},
                 {path: '/superOperate/accountList', component: accountList},

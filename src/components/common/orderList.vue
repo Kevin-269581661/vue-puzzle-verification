@@ -35,8 +35,8 @@
                     </el-col>
                 </el-row>
                 <div class="table_wrap">
-                    <el-table border :data="currentOrder" style="width: 100%" v-loadmore="orderLoadMore" v-loading="loading" element-loading-text="玩命加载中" element-loading-spinner="el-icon-loading" :default-sort="{prop: 'apcTime', order: 'descending'}">
-                        <el-table-column label="订单名称" min-width="14.9%" show-overflow-tooltip>
+                    <el-table border :data="currentOrder" style="width: 100%" v-loading="loading" element-loading-text="玩命加载中" element-loading-spinner="el-icon-loading" :default-sort="{prop: 'apcTime', order: 'descending'}">
+                        <el-table-column label="订单名称" min-width="14.6%">
                             <template slot-scope="scope">
                                 <a href="javascript:void(0);" @click="ToDetail(scope.row)">{{scope.row.apName}}</a>
                             </template>
@@ -99,6 +99,16 @@
                             <no-search-result></no-search-result>
                         </div>
                     </el-table>
+
+                    <el-pagination
+                        @size-change="sizeChange"
+                        @current-change="changePage"
+                        :current-page.sync="currPage"
+                        :page-sizes="pageSizes"
+                        :page-size="pageSize"
+                        layout="total, sizes, prev, pager, next, jumper"
+                        :total="totalNum">
+                    </el-pagination>
                 </div>
             </div>
         </div>
@@ -186,15 +196,14 @@ export default {
             },
             // 公司列表
             companyData: [],
+            // 分页信息
+            pageSize: 20,
+            pageSizes: [20, 50, 80, 100],
+            currPage: 1,
+            totalPage: 0,
+            totalNum: 0,
             // 登录信息
             sessionData:{},
-            // 每页大小
-            pageSize: 15,
-            // 当前页
-            currPage: 1,
-            // 总得页数
-            totalPage: 0,
-
             // 权限城市过滤数组
             filterCityData: [],
             // 角色
@@ -214,8 +223,6 @@ export default {
             currentOrder: [],
             // 滚动加载的下标
             orderListIndex: 0,
-            // 是否滚动加载
-            loading_point: true,
             isSearch: true,
             isReset: true,
             // 开通画像需要使用的数据
@@ -235,21 +242,21 @@ export default {
         // 获得初始数据
         this.searchFun();
     },
-    directives: {
-        loadmore: {
-            bind: function (el, binding) {
-                const selectWrap = el.querySelector('.el-table__body-wrapper')
-                selectWrap.addEventListener('scroll', function () {
-                    const scrollDistance = this.scrollHeight - this.scrollTop - this.clientHeight;
-                    // console.log('滚动的距离',scrollDistance)
-                    if (scrollDistance <= 100) {
-                        binding.value()
-                    }
-                })
-            }
-        }
-    },
     methods: {
+        // 切换页码
+        changePage(page) {
+            this.currPage = page;
+            console.log('page----', page);
+            this.searchFun();
+        },
+        // 每页条数切换
+        sizeChange(val) {
+            this.pageSize = val;
+            if (this.currPage == 1) {
+                this.searchFun();
+            }
+            this.currPage = 1;
+        },
         // 获取公司
         getCompany(){
             let sess = this.sessionData;
@@ -299,15 +306,6 @@ export default {
                 }).catch(err =>{
                     console.log(err);
                 });
-            }
-        },
-        // 订单列表--滚动监听
-        orderLoadMore(){
-            if(this.loading_point){
-                this.loading_point = false;
-                if(this.currPage <= this.totalPage){
-                    this.searchFun();
-                }
             }
         },
         // 获取城市
@@ -378,11 +376,9 @@ export default {
                 }else{
                     if(!res.data.SysCode){
                         let dataInfo = res.data;
-                        this.totalPage = dataInfo.totalPage;
+                        this.totalNum = dataInfo.totalCount;
                         let dataArr = dataInfo.orderList;
-                        this.currentOrder = this.currentOrder.concat(this.funcData(dataArr));
-                        this.loading_point = true;
-                        this.currPage++;
+                        this.currentOrder = this.funcData(dataArr);
                         this.loading = false;
                         if(dataInfo.totalPage == 0){
                             Message.warning('暂无数据');
@@ -414,7 +410,6 @@ export default {
             if(keyword || rangeDate || company || cityWord || (status>0 || status===0) ){
                 this.currentOrder = [];
                 this.loading = true;
-                this.loading_point = false;
                 this.currPage = 1;
                 this.searchFun();
             }else{
@@ -875,11 +870,6 @@ a {
     color: #606266;
     border-color: #dcdfe6;
     background-color: #fcfcfc;
-}
-
-/*滚动条*/
-/deep/ .el-table__body-wrapper {
-    height: 405px;
 }
 /*操作*/
 .el-dropdown-link {

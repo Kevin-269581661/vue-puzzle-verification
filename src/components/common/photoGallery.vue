@@ -80,33 +80,34 @@
                                 <el-pagination
                                     v-if="paginationShow"
                                     background
-                                    :current-page.sync="currUpPage"
+                                    :current-page.sync="searchInfo.pageNum"
                                     :page-sizes="[10, 20]"
-                                    :page-size="pageUpSize"
+                                    :page-size="searchInfo.pageSize"
                                     layout="total, sizes, prev, pager, next, jumper"
-                                    :total="totalUpNum"
+                                    :total="searchInfo.totalpageNum"
                                     @size-change="sizeChange"
                                     @current-change='changePage'>
                                 </el-pagination>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane label="收藏夹" name="second">
+                        <el-tab-pane v-if="isShowAllTab" label="收藏夹" name="second">
                             <!-- 图片 -->
-                            <photo :imgarr="collectImgArr" :show-pic="showPic" :type = activeName></photo>
+                            <photo :imgarr="collectImgArr" :show-pic="showPic" :type = activeName @doSomeThing="saveChange"></photo>
                             <!--页码-->
                             <div class="ad_pagination" v-if="showPic ===3">
-                                <el-pagination v-if="paginationShow" background
-                                               :current-page.sync="currDownPage"
+                                <el-pagination v-if="paginationShow"
+                                               background
+                                               :current-page.sync="searchInfo.pageNum"
                                                :page-sizes="[10, 20]"
-                                               :page-size="pageDownSize"
+                                               :page-size="searchInfo.pageSize"
                                                layout="total, sizes, prev, pager, next, jumper"
-                                               :total="totalDownNum"
+                                               :total="searchInfo.totalpageNum"
                                                @size-change="sizeChange"
                                                @current-change='changePage'>
                                 </el-pagination>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane label="行业图片" name="three">
+                        <el-tab-pane v-if="isShowAllTab" label="行业图片" name="three">
                             <order-photo></order-photo>
                         </el-tab-pane>
                     </el-tabs>
@@ -166,16 +167,12 @@ export default {
             tabBodyLoading: true,
             // 是否搜索
             isSearch: true,
+            // 是否显示收藏夹和行业图片
+            isShowAllTab: false,
             // 登录信息
             sessionData:{},
             // 当前页
             paginationShow: true,
-            currUpPage: 1,
-            currDownPage: 1,
-            totalUpNum: 0,
-            totalDownNum: 0,
-            pageUpSize: 10,
-            pageDownSize: 10,
             // 上刊
             pageUpImgArr: [],
             //地区搜索
@@ -199,6 +196,9 @@ export default {
                 citySelect: [],         // 地区搜索
                 industryIdArr: [],      // 搜索行业
                 publish: 'SK',            // 上下刊
+                pageNum: 1,
+                pageSize: 10,
+                totalpageNum: 0
             },
             // 上下刊下拉
             publish: 'SK',
@@ -215,6 +215,9 @@ export default {
                 apName: '',
                 resName: '',
                 publish: 'SK',
+                pageNum: 1,
+                pageSize: 10,
+                totalpageNum: 0
             },
             // 收藏夹搜索图片
             collectSelectInfo:{
@@ -226,16 +229,27 @@ export default {
                 apName: '',
                 resName: '',
                 publish: 'SK',
+                pageNum: 1,
+                pageSize: 10,
+                totalpageNum: 0
             }
         };
     },
     created() {
-        this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
+        this.getSessionData();
         this.getIndustry();
         this.getAllCity();
         this.searchFun();
     },
     methods: {
+        getSessionData(){
+            this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
+            if(this.sessionData.asrID === '999'){
+                this.isShowAllTab = false
+            }else{
+                this.isShowAllTab = true
+            }
+        },
         // 获取城市
         getAllCity(){
             this.citys = areaPackage_new.cityArea();
@@ -273,39 +287,36 @@ export default {
         },
         // 重置
         reset(){
-            for(let i in this.searchInfo){
-                if (i === 'citySelect' || i === 'industryIdArr') {
-                    this.searchInfo[i] = []
-                } else if (i === 'publish') {
-                    this.searchInfo[i] = 'SK'
-                } else {
-                    this.searchInfo[i] = ''
-                }
-            }
+            console.log('重置activeName',this.activeName)
+            this.resetData(this.searchInfo)
             if (this.activeName == 'first') {
                 this.pageUpImgArr = [];
-                for(let key in this.gallerySelectInfo){
-                    if(key === 'citySelect' || key === 'industryIdArr'){
-                        this.gallerySelectInfo[key] = []
-                    }else if(key === 'publish'){
-                        this.gallerySelectInfo[key] = 'SK'
-                    }else{
-                        this.gallerySelectInfo[key] = ''
-                    }
-                }
+                this.resetData(this.gallerySelectInfo)
+                let collectParams = this.searchFormat();
+                this.getUpImgInfo(collectParams)
             } else if (this.activeName == 'second') {
                 this.collectImgArr = [];
-                for (let key in this.collectSelectInfo) {
-                    if(key === 'citySelect' || key === 'industryIdArr'){
-                        this.collectSelectInfo[key] = []
-                    }else if(key === 'publish'){
-                        this.collectSelectInfo[key] = 'SK'
-                    }else{
-                        this.collectSelectInfo[key] = ''
-                    }
-                }
+                this.resetData(this.collectSelectInfo)
                 let collectParams = this.searchFormat();
                 this.getCollectImgList(collectParams)
+            }
+        },
+        // 数据初始化
+        resetData(selectInfo){
+            for (let key in selectInfo) {
+                if (key === 'citySelect' || key === 'industryIdArr') {
+                    selectInfo[key] = []
+                } else if (key === 'publish') {
+                    selectInfo[key] = 'SK'
+                } else if (key === 'pageSize') {
+                    selectInfo[key] = 10
+                } else if (key === 'pageNum') {
+                    selectInfo[key] = 1
+                } else if (key === 'totalpageNum') {
+                    selectInfo[key] = 0
+                } else {
+                    selectInfo[key] = ''
+                }
             }
         },
         // 搜索
@@ -334,8 +345,8 @@ export default {
                     resourceName: this.searchInfo.resName,
                     asLab: this.searchInfo.LabSelect,
                     prid: '',
-                    pageNum: this.currUpPage,
-                    pageSize: this.pageUpSize,
+                    pageNum: this.searchInfo.pageNum,
+                    pageSize: this.searchInfo.pageSize,
                 };
                 if(this.searchInfo.date){
                     info.ls = this.searchInfo.date[0];
@@ -360,8 +371,8 @@ export default {
                     orderName: this.searchInfo.apName,
                     resourceName: this.searchInfo.resName,
                     asLabel: this.searchInfo.LabSelect,
-                    pageNo: this.currUpPage,
-                    pageSize: this.pageUpSize,
+                    pageNo: this.searchInfo.pageNum,
+                    pageSize: this.searchInfo.pageSize,
                 };
                 if(this.searchInfo.industryIdArr){
                     info.industryId = this.searchInfo.industryIdArr[1];
@@ -386,29 +397,28 @@ export default {
                     delete params[i]
                 }
             }
-            params.selectType = 'res'
-            api.getApi(this.apiVar.Advertisement+"/GetImgList", params)
+            // params.selectType = 'res'
+            api.getApi(this.photoApi + "/GetImgList", params)
                 .then(res => {
                     if (!res.data.SysCode) {
                         console.log(res.data);
                         let dataInfo = res.data;
-                        this.totalUpNum = dataInfo.total;
-                        this.currUpPage = dataInfo.pageNum;
-                        if(dataInfo.total){
-                            for(let data of dataInfo.list){
-                                if( (typeof data.pRemarks) == 'string'){
+                        this.searchInfo.totalpageNum = dataInfo.total;
+                        if (dataInfo.total) {
+                            for (let data of dataInfo.list) {
+                                if ((typeof data.pRemarks) == 'string') {
                                     data.pRemarks = JSON.parse(data.pRemarks);
                                 }
                             }
                             this.pageUpImgArr = dataInfo.list;
                             console.log('pageup----', this.pageUpImgArr);
-                            if(this.pageUpImgArr.length){
+                            if (this.pageUpImgArr.length) {
                                 this.showPic = 3;
-                            }else{
+                            } else {
                                 this.showPic = 1;
                                 Message.warning('暂无数据');
                             }
-                        }else{
+                        } else {
                             this.showPic = 1;
                             Message.warning('暂无数据');
                         }
@@ -435,28 +445,33 @@ export default {
             if(!params.resourceName){
                 delete params.resourceName
             }
+            if(!params.asLabel){
+                delete params.asLabel
+            }
             api.getApi(this.photoApi + '/imageCollection/list', params).then(res => {
                 console.log('收藏夹图片列表res', res)
                 if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                    // this.loginTimeout()
+                    this.loginTimeout()
                 } else if (res.data.SysCode === 200200) {
                     let resData =  res.data.data
                     let imgList = []
                      for(let key of resData){
                         imgList.push({
                             pUrl: key.picUrl,
-                            pID: key.id,
+                            id: key.id,
+                            pID: key.pId,
                             userId: key.userId,
                             pUTime: key.publishDate,
+                            isCollection: true,
                             pRemarks: {
                                 plan: key.orderName,
                                 res: key.resourceName,
                                 media: key.mediaName,
                                 city: key.cityName,
                                 asLab: key.asLable,
-                                brand: key.brand || '--',
-                                username: key.resourceName,
-                                assettag: key.assettag || '--',
+                                brand: key.brandName || '--',
+                                username: key.userName,
+                                assettag: key.assetNumber || '--',
                                 address: key.address || '--',
                             },
                         })
@@ -466,30 +481,35 @@ export default {
                     } else {
                         this.showPic = 1
                     }
-                     this.collectImgArr = imgList
+                    this.searchInfo.totalpageNum = res.data.total
+                    this.collectImgArr = imgList
                 } else {
                     this.messageFun('warning', res.data.MSG)
                 }
                 this.tabBodyLoading = false
             })
         },
+        // 保存或取消
+        saveChange(){
+            this.collectImgArr =[]
+        },
         // 页数大小改变
         sizeChange(pageVal) {
             console.log("pageVal", pageVal);
-            this.currUpPage = 1;
-            this.pageUpSize = pageVal;
+            this.searchInfo.pageNum = 1;
+            this.searchInfo.pageSize = pageVal;
             this.searchFun();
         },
         // 分页功能
         changePage(page) {
             console.log('page----', page);
-            this.currUpPage = page;
+            this.searchInfo.pageNum = page;
             this.searchFun();
         },
         // 分页初始化
         initPage(){
-            this.currUpPage = 1;
-            this.pageUpSize = 10;
+            this.searchInfo.pageNum = 1;
+            this.searchInfo.pageSize = 10;
         },
         // 导出功能
         allDownLoad(){
@@ -555,6 +575,14 @@ export default {
             } else {
                 this.searchFun();
             }
+        },
+        // 操作提示统一方法
+        messageFun(mesType,mes){
+            this.$message({
+                message: mes,
+                type: mesType,
+                showClose: true,
+            })
         },
         loginTimeout(){
             Message.warning("登录超时,请重新登录");

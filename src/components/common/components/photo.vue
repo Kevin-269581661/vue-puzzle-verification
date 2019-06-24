@@ -64,7 +64,7 @@
                     lId: item.pRemarks.lid,
                     pId: item.pID,
                     picUrl: item.pUrl,
-                    type: this.publish === 'SK' ? 0 : this.publish === 'SK' ? 1 : "",
+                    type: this.publish === 'SK' ? 0 : this.publish === 'XK' ? 1 : "",
                 }
                 if (!params.lId) {
                     this.messageFun('warning', '图片信息异常无法保存！')
@@ -79,6 +79,8 @@
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         this.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
+                        item.isCollection = true
+                        this.$emit('doSomeThing', true)
                         this.messageFun('success', '收藏成功')
                     } else {
                         this.messageFun('warning', res.data.MSG)
@@ -91,13 +93,15 @@
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    id: item.pID,
+                    pId: item.pID,
                 }
                 api.postApi(this.photoApi + '/imageCollection/remove', params).then(res => {
                     console.log('取消收藏res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         this.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
+                        item.isCollection = false
+                        this.$emit('doSomeThing', true)
                         this.messageFun('success', '取消成功')
                     } else {
                         this.messageFun('warning', res.data.MSG)
@@ -125,69 +129,23 @@
 </script>
 <template>
     <div>
-     <!--   <div v-if="isSearch">
-            <div class="tempPic">
-                <div class="noFind" v-if="showPic === 1">
-                    <img src="../../../assets/images/tempPic.png" alt="">
-                    <p style="margin-top: -10px">请先输入筛选条件搜索你所需要的图片</p>
-                </div>
-                <div class="cantFind" v-if="showPic === 2">
-                    <img src="../../../assets/images/noPic.png" alt="">
-                    <h4>无匹配结果</h4>
-                    <p>可以尝试扩大搜索范围重新搜索哦</p>
-                </div>
-                &lt;!&ndash;图片列表&ndash;&gt;
-                <div class="find clearfix" v-if="showPic === 3">
-                    <div class="photoCard" v-for="(img, index) of imgarr" :key="img.pID">
-                        <div class="imgBox" @mouseenter="showPreImg = index" @mouseleave="showPreImg = null">
-                            <img :src="img.pUrl" alt="" class="smallImg">
-                            <div class="mask-btn" v-if="showPreImg == index">
-                                <i class="el-icon-search" @click="handlePictureCardPreview(img)"></i>
-                                <a :href="img.pUrl" :download="formatTime(img.pUTime)+'下刊'+img.city+img.area+img.res+img.assettag+'.png'">下载图片</a>
-                            </div>
-                        </div>
-                        <div class="detailBox detailBox1">
-                            <p>{{img.res}} - {{img.mTitle}}</p>
-                            <div class="icons">
-                                <span class="el-icon-location">{{img.city}}</span>
-                                <el-tooltip placement="bottom" effect="light">
-                                    <span class="el-icon-info"></span>
-                                    <div slot="content" class="content">
-                                        <p>{{img.name}}上传</p>
-                                        <p>{{img.assettag}}</p>
-                                        <p>{{img.address}}</p>
-                                    </div>
-                                </el-tooltip>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>-->
-        <div class="search-nav"><!--v-else-->
+        <div class="search-nav">
             <!--未搜索占位图-->
             <div class="tempPic">
                 <div class="noFind" v-if="showPic === 1">
                     <img src="../../../assets/images/tempPic.png" alt="">
                     <p style="margin-top: -10px">暂无数据</p>
                 </div>
-            <!--    <div class="cantFind" v-if="showPic === 2">
-                    <img src="../../../assets/images/noPic.png" alt="">
-                    <h4>无匹配结果</h4>
-                    <p>可以尝试扩大搜索范围重新搜索哦</p>
-                </div>-->
                 <!--图片列表-->
                 <div class="find clearfix" v-if="showPic === 3">
                     <div class="photoCard" v-for="(img, index) of imgarr" :key="img.pID">
                         <div class="imgBox" @mouseenter="showPreImg = index" @mouseleave="showPreImg = null">
                             <img :src="img.pUrl" alt="" class="smallImg">
-                            <!-- <img v-lazyload="img.pURL" alt="" class="smallImg"> -->
                             <!--查看缩略图和下载-->
-                            <div class="mask-btn" v-if="showPreImg == index"><!--showPreImg == index-->
+                            <div class="mask-btn" v-if="showPreImg == index">
                                 <p class="mask_icon">
-                                    <!--1保存 2取消-->
-                                    <i class="el-icon-star-off" @click="saveImgFun(img)" v-if="type !== 'second'"></i> &nbsp;
-                                    <i class="el-icon-star-on icon_save" @click="cancelImgFun(img)" v-if="type === 'second'"></i> &nbsp;
+                                    <i v-if="!img.isCollection" class="el-icon-star-off" @click="saveImgFun(img)" ></i>
+                                    <i v-if="img.isCollection" class="el-icon-star-on icon_save" @click="cancelImgFun(img)" ></i>
                                     <i class="el-icon-search" @click="handlePictureCardPreview(img)"></i>
                                 </p>
                                 <p class="mask_a">
@@ -238,6 +196,7 @@
     .tempPic {
         text-align: left;
         margin-bottom: 2px;
+        min-height: 626px;
     }
 
     .tempPic img {
@@ -308,6 +267,7 @@
     .mask_icon {
         text-align: center;
         padding: 22% 0 0;
+        letter-spacing: 3px;
     }
 
     .mask-btn i {
@@ -363,17 +323,22 @@
     .detailBox p {
         font-size: 14px;
         color: #333333;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .detailBox > span {
         font-size: 10px;
         color: #999999;
+        display: inline-block;
+        height: 32px;
     }
 
     .detailBox .icons {
         font-size: 10px;
         color: #999999;
-        margin-top: 12px;
+        /*margin-top: 12px;*/
         position: relative;
     }
 

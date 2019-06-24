@@ -5,6 +5,7 @@
                 <span>行业类型:</span>
                 <el-cascader :options="bussiness" size="small" class="plan-select" v-model="industryIdArr"
                              change-on-select
+                             :clearable="true"
                              @change="handleChange"
                              filterable>
                 </el-cascader>
@@ -16,24 +17,24 @@
                 <el-button plain size="small" @click="reset()">重置</el-button>
             </el-col>
             <el-col :span="12" class="el_col_upload_btn">
-                <el-button type="primary" size="small" @click="uploadFun()" :disabled="!isSearch">上传图片</el-button>
-                <el-button plain size="small" @click="photoDownLoad()">一键导出</el-button>
+                <el-button v-if="isShowBtn" type="primary" size="small" @click="uploadFun()" :disabled="!isSearch">上传图片</el-button>
+                <!--<el-button plain size="small" @click="photoDownLoad()">一键导出</el-button>-->
             </el-col>
         </el-row>
         <div>
-            <div class="photo_list clearfix">
+            <div class="photo_list clearfix" :class="isShowBtn ? '' : 'photo_list_bd'">
+                <div class="noFind" v-show="showPic === 1">
+                    <img src="../../../assets/images/tempPic.png" alt="">
+                    <p style="margin-top: -10px">暂无数据</p>
+                </div>
                 <div class="photo_card"
+                     v-show="showPic === 2"
                      v-for="(item,index) in imgList"
                      :key="index"
                      @mouseenter="showPreImg = index"
                      @mouseleave="showPreImg = null">
                     <img :src="item.url" :alt="item.title">
-            <!--        <el-image
-                        class="industry_photo"
-                        :src="item.url"
-                        fit="cover">
-                    </el-image>-->
-                    <p class="card_select">
+                    <p class="card_select" v-if="isShowBtn">
                         <el-cascader :options="bussiness" size="small" class="plan-select" v-model="item.industry"
                                      change-on-select
                                      @change="imgIndustryChange(item)"
@@ -54,11 +55,12 @@
             </div>
             <div class="ad_pagination">
                 <el-pagination
+                    v-show="showPic === 2"
                     background
-                    layout="total, prev, pager, next, sizes, jumper"
+                    layout="total,sizes, prev, pager, next, jumper"
                     @current-change="changePage"
                     @size-change="changeSize"
-                    :page-sizes="[10, 20, 30, 40]"
+                    :page-sizes="[10, 20]"
                     :current-page.sync="pageData.pageNum"
                     :page-size="pageData.pageSize"
                     :total="pageData.totalSize">
@@ -118,11 +120,13 @@
             return{
                 photoApi: 'http://192.168.1.246/advertisement',
                 sessionData: '',
+                showPic: 1,
+                isShowBtn: false,
                 // 页码及条数
                 pageData:{
                     pageNum: 1,
                     pageSize: 10,
-                    totalSize: 8,
+                    totalSize: 0,
                 },
                 isSearch: true,
                 bussiness: [],
@@ -156,12 +160,20 @@
             }
         },
         mounted(){
-            this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
+            this.getSessionData()
             this.getIndustry()
             this.getIndustryImgList()
             // this.deletImg()
         },
         methods:{
+            getSessionData(){
+                this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
+                if(this.sessionData.uType === 'MD'){
+                    this.isShowBtn = true
+                }else{
+                    this.isShowBtn = false
+                }
+            },
             // 获取所有行业信息
             getIndustry() {
                 let arr = JSON.parse(sessionStorage.getItem("industry"));
@@ -185,7 +197,8 @@
                   if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                       this.loginTimeout()
                   } else if (res.data.SysCode === 200200) {
-                    this.setImgList(res.data.data)
+                      this.setImgList(res.data.data)
+                      this.pageData.totalSize = res.data.total
                   } else {
                       this.messageFun('warning', res.data.MSG)
                   }
@@ -193,7 +206,8 @@
             },
             //
             setImgList(data){
-                if(!data){
+                if(!data || data.length <= 0){
+                    this.showPic = 1
                     return
                 }else{
                     let tempList = []
@@ -209,6 +223,7 @@
                         })
                     }
                     this.imgList = tempList
+                    this.showPic = 2
                 }
             },
             // 选择行业
@@ -389,21 +404,48 @@
         text-align: right;
     }
 
+    .noFind,
+    .cantFind {
+        margin-top: 180px;
+        margin-bottom: 70px;
+    }
+
+    .noFind,
+    .cantFind {
+        margin-top: 87px;
+        margin-bottom: 70px;
+        text-align: center;
+    }
+
+    .noFind img,
+    .cantFind img {
+        width: 350px;
+        height: 245px;
+    }
+
+    .photo_list{
+        min-height: 641px;
+    }
+
     /*图片*/
     .photo_card{
-        /*width: 225px;*/
         width: 19%;
         height:0;
         padding-bottom: 28%;
         position: relative;
-        margin: 0 1% 24px 0;
+        margin: 0 .9% 24px 0;
         float: left;
         text-align: center;
         cursor: pointer;
         border: 1px solid rgba(0,0,0,0.1);
         border-radius: 2px;
     }
-    .photo_card:nth-child(5n+0){
+
+    .photo_list_bd .photo_card{
+        padding-bottom: 25%;
+    }
+
+    .photo_card:nth-child(5n+1){
         margin-right: 0;
     }
     /*,/deep/ .photo_card .industry_photo*/
@@ -413,6 +455,9 @@
         left: 0;
         width: 100%;
         height: 88%;
+    }
+    .photo_list_bd .photo_card img{
+        height: 100%;
     }
     /*图片的行业下拉选择*/
     .card_select{

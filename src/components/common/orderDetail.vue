@@ -214,7 +214,23 @@
                                                     </p>
                                                 </div>
                                                 <div class="upload-img">
-                                               <!--     <el-upload class="upload_plus"
+                                                    <div  class="img_box" v-for="(item,index) in updata.upImgArr"
+                                                          @mouseenter="showPreImg = item.pID"
+                                                          @mouseleave="showPreImg = null">
+                                                        <img class="upload_img_item" :src="item.url">
+                                                        <label class="icon_success">
+                                                            <i class="el-icon-check"></i>
+                                                        </label>
+                                                        <div class="icon_box" v-if="showPreImg === item.pID">
+                                                            <p class="img_box_icon">
+                                                                <i class="el-icon-search" @click="handlePictureCardPreview(item)"></i>
+                                                                <i v-if="!item.isCollection" class="el-icon-star-off" @click="saveImgFun(updata,index,'SK')"></i>
+                                                                <i v-if="item.isCollection" class="el-icon-star-on icon_save" @click="cancelImgFun(updata,index,'SK')"></i>
+                                                                <i class="el-icon-delete" @click="deleteImg(item)"></i>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <el-upload class="upload_plus"
                                                         :key="index+'-'+currUpPage+'-1'"
                                                         @click.native="saveId(updata)"
                                                         :class="{disabled:uploadDisabled(updata.upImgArr)}"
@@ -222,6 +238,7 @@
                                                         :http-request="uploadImg"
                                                         :limit="6"
                                                         list-type="picture-card"
+                                                        :show-file-list="true"
                                                         :file-list="updata.upImgArr"
                                                         :before-upload="beforeAvatarUpload"
                                                         :before-remove="beforeImgRemove"
@@ -229,29 +246,9 @@
                                                         :on-remove="handleRemove"
                                                         :on-exceed="handleExceed" multiple>
                                                         <i class="el-icon-plus"></i>
-                                                    </el-upload>-->
-                                                    <el-upload
-                                                        class="upload_plus"
-                                                        :key="index+'-'+currUpPage+'-1'"
-                                                        @click.native="saveId(updata)"
-                                                        :class="{disabled:uploadDisabled(updata.upImgArr)}"
-                                                        :action="doUpload"
-                                                        :http-request="uploadImg"
-                                                        :limit="6"
-                                                        :show-file-list="false"
-                                                        :before-upload="beforeAvatarUpload"
-                                                        :before-remove="beforeImgRemove"
-                                                        :on-preview="handlePictureCardPreview"
-                                                        :on-remove="handleRemove"
-                                                        :on-exceed="handleExceed" multiple>
-                                                        <img class="upload_img_item"
-                                                             v-for="(item,index) in updata.upImgArr"
-                                                             :src="item.url">
-                                                        <i class="el-icon-plus avatar-uploader-icon"></i>
                                                     </el-upload>
                                                 </div>
                                             </el-card>
-
                                         </div>
                                     </div>
                                     <div class="pager">
@@ -325,6 +322,22 @@
                                                     </p>
                                                 </div>
                                                 <div class="upload-img">
+                                                    <div  class="img_box" v-for="(item,index) in downData.downImgArr"
+                                                          @mouseenter="showPreImg = item.pID"
+                                                          @mouseleave="showPreImg = null">
+                                                        <img class="upload_img_item" :src="item.url">
+                                                        <label class="icon_success">
+                                                            <i class="el-icon-check"></i>
+                                                        </label>
+                                                        <div class="icon_box" v-if="showPreImg === item.pID">
+                                                            <p class="img_box_icon">
+                                                                <i class="el-icon-search" @click="handlePictureCardPreview(item)"></i>
+                                                                <i v-if="!item.isCollection" class="el-icon-star-off" @click="saveImgFun(downData,index,'XK')"></i>
+                                                                <i v-if="item.isCollection" class="el-icon-star-on icon_save" @click="cancelImgFun(downData,index,'XK')"></i>
+                                                                <i class="el-icon-delete" @click="deleteImg(item)"></i>
+                                                            </p>
+                                                        </div>
+                                                    </div>
                                                     <el-upload class="upload_plus"
                                                         @click.native="saveId(downData)"
                                                         :class="{disabled:uploadDisabled(downData.downImgArr)}"
@@ -338,7 +351,7 @@
                                                         :before-remove="beforeImgRemove"
                                                         :on-preview="handlePictureCardPreview"
                                                         :on-remove="handleRemove"
-                                                        :on-exceed="handleExceed" multiple >
+                                                        :on-exceed="handleExceed" multiple>
                                                         <i class="el-icon-plus"></i>
                                                     </el-upload>
                                                 </div>
@@ -738,6 +751,8 @@ export default {
             UploadTime: 0,
             // 导出订单图片包
             downLoading: false,
+            //显示预览图蒙版
+            showPreImg: null,
         };
     },
     created() {
@@ -1209,7 +1224,7 @@ export default {
         },
         // 查看图片
         previewImg(row){
-            this.dialogImageUrl = row.imgUrl;
+            this.dialogImageUrl = row.url;
             this.dialogVisible = true;
         },
         // 删除图片链接
@@ -1536,12 +1551,14 @@ export default {
                                 item.name = item.pID+'.png',
                                 item.url = item.pURL;
                                 item.pID = item.pID;
+                                item.isCollection = false
                             }
                             let time = this.formatTime(data.lStar) + "-" +this.formatTime(data.lEnd);
                             data.timeRange = time;
                             data.upImgArr = data.photoList;
                         }
                         this.pageUpReportArr = dataInfo.dataList;
+                        this.checkImgStatus('SK')
                         console.log('this.pageUpReportArr',this.pageUpReportArr)
                         this.UpReportLoading = false;
                         if(dataInfo.totalCount == 0){
@@ -1575,12 +1592,14 @@ export default {
                                 item.name = item.pID+'.png',
                                 item.url = item.pURL;
                                 item.pID = item.pID;
+                                item.isCollection = false;
                             }
                             let time = this.formatTime(data.lStar) + "-" +this.formatTime(data.lEnd);
                             data.timeRange = time;
                             data.downImgArr = data.photoList;
                         }
                         this.pageDownReportArr = dataInfo.dataList;
+                        this.checkImgStatus('XK')
                         this.DownReportLoading = false;
                         if(dataInfo.totalCount == 0){
                             Message.warning('暂无数据');
@@ -1595,6 +1614,71 @@ export default {
                     this.DownReportLoading = false;
                     console.log(res);
                 });
+        },
+        // 检查图片是否已收藏
+        checkImgStatus(type){
+            //advertisement/GetUserStatusByPid
+            let pIDList = this.returnPIDList(type)
+            if(!pIDList.length){
+                return
+            }
+            let params = {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                pids: pIDList.join(','),
+            }
+            console.log('params',params)
+            api.getApi('http://192.168.1.246/advertisement' + '/GetUserStatusByPid',params).then(res=>{
+                console.log('检测图片收藏状态res',res)
+                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                    this.loginTimeout()
+                } else if (res.data.SysCode === 200200) {
+                    this.setImgStatus(res.data.data,type)
+                } else {
+                    this.messageFun('warning', res.data.MSG)
+                }
+            })
+        },
+        // 返回PIDList
+        returnPIDList(type){
+            let reportList = []
+            if(type === 'SK'){
+                reportList = this.pageUpReportArr
+            }else if (type === 'XK'){
+                reportList = this.pageDownReportArr
+            }
+            console.log(type,'reportList',reportList)
+            let pIDList = []
+            for(let key of reportList){
+                let imgArr = type === 'SK' ? key.upImgArr : key.downImgArr
+                for(let imgKey of imgArr){
+                    pIDList.push(imgKey.pID)
+                }
+            }
+            return pIDList
+        },
+        // 给上下刊添加图片的收藏状态
+        setImgStatus(data,type){
+            console.log('给上下刊添加图片的收藏状态',data)
+            let reportList = []
+            if(type === 'SK'){
+                reportList = this.pageUpReportArr
+            }else if (type === 'XK'){
+
+            }
+            console.log(type,'添加图片的收藏状态',reportList)
+            for (let key of reportList) {
+                let imgArr = type === 'SK' ? key.upImgArr : key.downImgArr
+                for (let imgKey of imgArr) {
+                    for (let pKey of data) {
+                        if (pKey.pid == imgKey.pID) {
+                            imgKey.isCollection = pKey.isCollection
+                            break
+                        }
+                    }
+                }
+            }
+            console.log('reportList',reportList,this.pageUpReportArr)
         },
         // 区域二级联动
         getCitys(arr) {
@@ -1774,7 +1858,7 @@ export default {
         },
         // 隐藏上传组件
         uploadDisabled(imgList){
-            console.log(imgList);
+            // console.log(imgList);
             return imgList.length>5;
         },
         // 上刊图片上传
@@ -1893,11 +1977,89 @@ export default {
                 this.addload.close();
             });
         },
+        // 收藏
+        saveImgFun(item,index,type){
+            console.log('保存图片', item,index)
+            let params = {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                lId: item.lID,
+                pId: type === 'SK' ? item.upImgArr[index].pID : item.downImgArr[index].pID,
+                picUrl: type === 'SK' ? item.upImgArr[index].url : item.downImgArr[index].url,
+                type: this.planPanel === 'forth' ? 0 : this.planPanel === 'fifth' ? 1 : "",
+            }
+            if (!params.lId) {
+                this.messageFun('warning', '图片信息异常无法保存！')
+                return
+            }
+            if (params.type === "") {
+                delete params.type
+            }
+            console.log('params', params)
+            api.postApi('http://192.168.1.246/advertisement/imageCollection/add', params).then(res => {
+                console.log('图片收藏res', res)
+                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                    this.loginTimeout()
+                } else if (res.data.SysCode === 200200) {
+                    if(type === 'SK'){
+                        item.upImgArr[index].isCollection = true
+                    }else if(type === 'XK'){
+                        item.downImgArr[index].isCollection = true
+                    }
+                    this.messageFun('success', '收藏成功')
+                } else {
+                    this.messageFun('warning', res.data.MSG)
+                }
+            })
+        },
+        // 取消收藏
+        cancelImgFun(item,index,type){
+            console.log('取消收藏',item,index)
+            let params = {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                pId: type === 'SK' ? item.upImgArr[index].pID : item.downImgArr[index].pID,
+            }
+            api.postApi('http://192.168.1.246/advertisement/imageCollection/remove', params).then(res => {
+                console.log('取消收藏res', res)
+                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                    this.loginTimeout()
+                } else if (res.data.SysCode === 200200) {
+                    if(type === 'SK'){
+                        item.upImgArr[index].isCollection = false
+                    }else if(type === 'XK'){
+                        item.downImgArr[index].isCollection = false
+                    }
+                    this.messageFun('success', '取消成功')
+                } else {
+                    this.messageFun('warning', res.data.MSG)
+                }
+            })
+        },
+        // 删除已上传的图片
+        deleteImg(item){
+            console.log('删除item',item)
+            if(item.pID){
+                this.$confirm('确定移除这张图片吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.handleRemove(item)
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+            }
+        },
         uploadImg(params){
             console.log('parmas---', params);
             var fileObj = params.file;
             this.constractArr.push(this.upLoadObj);
             this.uploadImgArr.push(fileObj);
+            console.log('')
         },
         // 点击上传图片按钮之时进行储存所需数据(asid, ptp等)
         saveId(row) {
@@ -2335,665 +2497,752 @@ export default {
                 this.downLoading = false;
             });
         },
+        // 操作提示统一方法
+        messageFun(mesType,mes){
+            this.$message({
+                message: mes,
+                type: mesType,
+                showClose: true,
+            })
+        },
     },
 };
 </script>
 
 <style scoped>
-/*修改合同号*/
-.changeCID {
-    color: #1890ff;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-/*tabbar*/
-/deep/ .el-textarea__inner {
-    resize: vertical;
-}
-
-/deep/ .el-tabs__nav-wrap::after {
-    background-color: transparent;
-}
-
-.box-wrap {
-    background-color: #fff;
-}
-
-.first-wrap h4 span {
-    font-size: 14px;
-    color: #666;
-    font-weight: normal;
-    float: right;
-    margin-right: 35px;
-}
-
-.price_quo{
-    margin: 0 auto;
-    width: 96%;
-    margin-top: 10px;
-    margin-bottom: 20px;
-}
-/deep/ .el-tabs__nav-scroll {
-    padding-left: 28px;
-}
-
-.baojiadan /deep/ .el-tabs__nav-scroll {
-    padding-left: 0;
-}
-
-.box-wrap > h4 {
-    height: 55px;
-    padding-left: 28px;
-    border-bottom: 1px solid #e6e7e9;
-    font-size: 16px;
-    color: rgba(51, 51, 51, 0.85);
-    line-height: 55px;
-    font-weight: bold;
-}
-
-/deep/ .el-table__column-filter-trigger {
-    position: relative;
-    left: 5px;
-}
-
-.table_wrap {
-    padding: 10px 28px 28px 28px;
-}
-/* 搜索 */
-.el-input {
-    width: 180px;
-    border-radius: 4px;
-}
-
-.input-with-select /deep/ .el-input__inner {
-    font-size: 14px;
-    vertical-align: middle;
-    margin-right: 4px;
-}
-/*下拉搜索框*/
-/deep/ .el-input-group__prepend {
-    width: 64px;
-    background-color: #fff;
-}
-
-/deep/ .el-input-group--prepend .el-select .el-input__inner {
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-
-    width: 104px;
-}
-
-/deep/ .el-input-group--prepend .el-input__inner {
-    width: 185px;
-}
-
-.el-input {
-    border-radius: 4px;
-}
-
-/deep/ .el-input__inner {
-    font-size: 14px;
-    vertical-align: middle;
-}
-
-/*报价单*/
-
-/deep/ .el-tabs--border-card {
-    box-shadow: none;
-}
-/deep/ .el-tabs--border-card>.el-tabs__content{
-    padding: 0 !important;
-}
-/deep/ .el-tabs__content{
-    width: 100%;
-}
-.panel {
-    padding: 0 30px;
-}
-
-.step3 {
-    padding: 0 105px;
-}
-.price {
-    width: 100%;
-    height: 300px;
-}
-
-.price-left {
-    box-sizing: border-box;
-    padding-right: 66px;
-    width: 49%;
-    float: left;
-    border-right: 1px dashed #d8d8d8;
-}
-
-.price-right {
-    width: 49%;
-    float: right;
-    padding-left: 66px;
-    box-sizing: border-box;
-}
-
-.price ul li {
-    font-size: 14px;
-    color: #666666;
-    border-bottom: 1px solid #d8d8d8;
-    height: 50px;
-    line-height: 50px;
-    margin-left: 19px;
-    margin-right: 28px;
-}
-
-.price ul li:last-child {
-    text-align: right;
-    border-bottom: none;
-    font-size: 18px;
-    color: #333333;
-    font-weight: bold;
-}
-
-.price ul li span {
-    float: right;
-}
-
-/*滚动条*/
-/deep/ .el-table__body-wrapper {
-    height: 480px;
-}
-
-/*详情头部*/
-.content_top_wrap {
-    padding: 34px 28px;
-    background: #ffffff;
-    /* border: 1px solid #dedede; */
-    height: 145px;
-    position: relative;
-}
-
-.plan-title .handleBtn {
-    position: absolute;
-    right: 28px;
-    top: 30px;
-}
-
-.plan-title .handleBtn button {
-    width: 74px;
-    height: 32px;
-    font-size: 14px;
-    line-height: 9px;
-    padding: 0;
-}
-
-.plan-title h4 {
-    font-size: 20px;
-    color: rgba(0, 0, 0, 0.85);
-    font-weight: bold;
-    margin-bottom: 22px;
-}
-
-.plan-title h4 p {
-    display: inline-block;
-    font-size: 14px;
-    color: #666666;
-    font-weight: normal;
-    margin-left: 11px;
-}
-
-.plan-title h4 p img {
-    width: 14px;
-    height: 14px;
-    position: relative;
-    top: 1px;
-    cursor: pointer;
-}
-
-.plan-title h4 img {
-    width: 28px;
-    height: 28px;
-    position: relative;
-    top: 5px;
-    margin-right: 16px;
-}
-
-.plan-title .el-input__inner {
-    width: 100%;
-}
-
-.plan-detail {
-    font-size: 14px;
-    color: #333333;
-    padding-left: 41px;
-}
-
-.plan-detail-left {
-    float: left;
-    width: 78%;
-}
-
-.plan-detail-left ul {
-    width: 100%;
-    float: left;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    text-align: left;
-}
-
-.plan-detail-left ul li {
-    float: left;
-    width: 280px;
-    margin-bottom: 12px;
-    display: flex;
-}
-
-.plan-detail-left ul li em {
-    font-size: 14px;
-    color: #666666;
-}
-
-.plan-detail-right {
-    width: 20%;
-    float: right;
-    display: flex;
-    justify-content: space-between;
-}
-
-.plan-detail-right dl {
-    float: left;
-    text-align: right;
-}
-
-.plan-detail-right dt {
-    font-size: 14px;
-    color: rgba(0, 0, 0, 0.45);
-}
-
-.plan-detail-right dd {
-    margin-top: 4px;
-    display: inline-block;
-    font-size: 20px;
-    font-weight: bold;
-    color: rgba(0, 0, 0, 0.85);
-}
-
-/*物料信息*/
-/deep/ .el-table_2_column_16 .cell {
-    text-align: right;
-    padding-right: 20px;
-}
-
-/*上刊报告*/
-.imgs-box {
-    margin: 0 auto;
-}
-
-.up-loader-header {
-    position: relative;
-}
-
-.progress {
-    float: right;
-}
-
-.showimgbox {
-    text-align: center;
-    background: #f8f8f8;
-    width: 100%;
-    height: 28px;
-    line-height: 28px;
-    margin-top: 20px;
-    color: #999999;
-    cursor: pointer;
-}
-
-/deep/ .up-loader-header .el-input__inner {
-    height: 32px;
-    width: 180px;
-}
-
-.moreimgs {
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-}
-
-.progress span {
-    position: relative;
-    top: 8px;
-    left: 0;
-    font-size: 14px;
-    color: #666666;
-}
-
-/deep/ .el-progress-bar__outer {
-    height: 10px !important;
-}
-
-/deep/ .el-progress-bar {
-    width: 100%;
-}
-
-/deep/ .el-progress {
-    position: absolute;
-    line-height: 1;
-    width: 43%;
-    right: 65px;
-    top: 10px;
-}
-
-.img-car {
-    font-size: 14px;
-    color: #666666;
-    background:rgba(247,247,247,1);
-}
-.car_header{
-    border-top:1px solid #dedede;
-}
-.car_header span{
-    color:rgba(153,153,153,1);
-    line-height:17px;
-}
-.date_fa{
-    margin-right: 5px;
-}
-.up-loader-Imgpanel {
-    margin-top: 11px;
-    display: inline-block;
-    margin-right: 2.6%;
-    border: 1px solid #ebeef5;
-    width: 30%;
-    max-width: 383px;
-    min-width: 350px;
-}
-
-/*上传图片*/
-/deep/ .el-card__header{
-    font-size: 14px;
-    height: 66px;
-    color: #666666;
-    background: rgba(247,247,247,1);
-    padding: 11px 12px;
-}
-/deep/ .el-card__body {
-    padding: 0;
-    height: 260px;
-    overflow: hidden;
-}
-
-.upload-img span {
-    position: absolute;
-    top: 30px;
-    left: 30px;
-    font-size: 14px;
-    color: #666666;
-}
-/deep/ .el-upload--picture-card{
-    width: 30%;
-    height: 105px;
-    line-height: 105px;
-    margin: 4.2% 1.6% 0 1.6%;
-    background:rgba(251,251,251,1);
-    border-radius:4px;
-    border:1px dashed #dedede;
-    text-align: center;
-}
-
-/deep/ .el-upload-list--picture-card .el-upload-list__item {
-    width: 30%;
-    height: 105px;
-    margin: 4.2% 1.6% 0 1.6%;
-}
-/deep/ .up-loader-Imgpanel .el-card{
-    border: none;
-}
-/*页码*/
-.pager {
-    height: 32px;
-    margin-top: 30px;
-    text-align: right;
-}
-
-/deep/ .el-radio-group{
-    margin-bottom: 10px;
-}
-.up-report-bottom {
-    text-align: center;
-    margin: 20px;
-}
-
-.up-report-bottom-checkbox {
-    margin-bottom: 10px;
-}
-
-/*按钮*/
-.content_bottom_btn {
-    width: 100%;
-    text-align: center;
-    margin: 32px 0;
-}
-
-/deep/ .el-button--default:focus,
-.el-button--default:hover {
-    color: #606266;
-    border-color: #dcdfe6;
-    background-color: #fcfcfc;
-}
-
-.content_bottom_btn /deep/ .el-button span a {
-    color: #606266;
-}
-
-/*换点表格*/
-/deep/ .el-table td,
-.el-table th {
-    padding: 4px 0;
-    height: 48px;
-}
-
-/*添加点位对话框*/
-.first-wrap /deep/ .el-dialog {
-    width: 87% !important;
-}
-
-/deep/ .el-dialog {
-  width: 87%;
-}
-
-/*选择点位*/
-/deep/ .type-select .el-input,
-/deep/ .type-select .el-input__inner {
-    width: 95px;
-    position: relative;
-    top: 0;
-    left: -5px;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    padding-right: 0;
-    padding-left: 10px;
-    height: 32px;
-}
-
-/deep/ .date-select.el-input__inner {
-    width: 237px;
-    position: relative;
-    left: 1px;
-    height: 32px;
-}
-
-/deep/ .el-date-editor .el-range__icon {
-    position: relative;
-    top: -2px;
-    left: -3px;
-}
-
-/*滚动条*/
-/deep/ .el-table__body-wrapper {
-    height: 480px;
-}
-/deep/ .el-table__row td:nth-child(2) .cell span {
-    width: 225px;
-}
-/deep/ .table_wrap .el-table__row td:nth-child(2) .cell span {
-    width: 14px;
-}
-/deep/ .plan-select .el-input__inner {
-    width: 180px;
-    margin-left: -13px;
-    height: 32px;
-    border-top-left-radius: 0px;
-    border-bottom-left-radius: 0px;
-}
-/deep/ .el-date-editor .el-range__icon {
-    position: relative;
-    top: -2px;
-    left: -3px;
-}
-
-/* 搜索 */
-.search-row{
-    padding: 8px 28px;
-}
-.search_col{
-    margin-left: 8px;
-}
-/*日期控件*/
-.block {
-    display: inline-block;
-    margin-left: 2px;
-    position: relative;
-}
-
-/deep/ .el-range-separator {
-    position: relative;
-    top: -2px;
-}
-
-/deep/ .el-input__inner {
-    width: 260px;
-    height: 32px;
-    line-height: 32px;
-}
-
-
-/deep/ .el-dialog__body {
-    padding: 5px 20px;
-
-}
-.imgPreview /deep/ .el-dialog{
-      max-width: 42%;
-}
-.imgPreview /deep/ .el-dialog__body{
-  max-height: 640px;
-}
-.imgPreview /deep/ .el-dialog {
-  max-height: 750px;
-}
-
-
-/deep/.imgPreview .el-dialog__body img{
-  width: 100%;
-  max-height: 640px;
-}
-
-/deep/ .el-dialog__footer {
-    padding: 20px 20px 20px;
-}
-
-/deep/ .el-dialog /deep/ .el-input__inner {
-    width: 100%;
-}
-
-/deep/ .el-dialog .inline_dialog /deep/ .el-input {
-    width: auto;
-}
-
-/deep/ .table_mater .el-button--small, .el-button--small.is-round{
-    padding: 0;
-}
-/deep/ .table_mater .el-button--small, .el-button--small.is-round i{
-    font-size: 16px;
-}
-/deep/ .table_mater .el-button{
-    height: auto;
-    border: none;
-}
-/* 物料信息弹出框 */
-.car-title {
-    background: #E6F7FF;
-    border: 1px solid #BAE7FF;
-    border-radius: 4px;
-    margin-bottom: 10px;
-    padding: 5px;
-}
-
-.car-title h4 {
-    font-size: 14px;
-    display: inline-block;
-}
-
-.car-title span {
-    font-size: 14px;
-    font-weight: normal;
-    margin: 0 6px;
-    cursor: pointer;
-    color: #1890ff;
-}
-
-/deep/ .el-pagination .el-select .el-input .el-input__inner {
-    width: 100px;
-}
-
-/deep/ .el-pagination__editor.el-input .el-input__inner {
-    width: 50px;
-}
-
-/deep/ .mediaList_wrap .el-tabs__header{
-    border-bottom: 1px solid #e6e7e9;
-    height: 53px;
-    line-height: 54px;
-}
-/deep/.mediaList_wrap  .baojiadan .el-tabs__header{
-    border-bottom: none;
-    height: 38px;
-    line-height: 38px;
-    background-color: #f5f7fa;
-    border-bottom: 1px solid #e4e7ed;
-    margin: 0;
-}
-
-/*1920*/
-@media all and (min-width: 1900px) {
+    /*修改合同号*/
+    .changeCID {
+        color: #1890ff;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    /*tabbar*/
+    /deep/ .el-textarea__inner {
+        resize: vertical;
+    }
+
+    /deep/ .el-tabs__nav-wrap::after {
+        background-color: transparent;
+    }
+
+    .box-wrap {
+        background-color: #fff;
+    }
+
+    .first-wrap h4 span {
+        font-size: 14px;
+        color: #666;
+        font-weight: normal;
+        float: right;
+        margin-right: 35px;
+    }
+
+    .price_quo {
+        margin: 0 auto;
+        width: 96%;
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+
+    /deep/ .el-tabs__nav-scroll {
+        padding-left: 28px;
+    }
+
+    .baojiadan /deep/ .el-tabs__nav-scroll {
+        padding-left: 0;
+    }
+
+    .box-wrap > h4 {
+        height: 55px;
+        padding-left: 28px;
+        border-bottom: 1px solid #e6e7e9;
+        font-size: 16px;
+        color: rgba(51, 51, 51, 0.85);
+        line-height: 55px;
+        font-weight: bold;
+    }
+
+    /deep/ .el-table__column-filter-trigger {
+        position: relative;
+        left: 5px;
+    }
+
+    .table_wrap {
+        padding: 10px 28px 28px 28px;
+    }
+
+    /* 搜索 */
+    .el-input {
+        width: 180px;
+        border-radius: 4px;
+    }
+
+    .input-with-select /deep/ .el-input__inner {
+        font-size: 14px;
+        vertical-align: middle;
+        margin-right: 4px;
+    }
+
+    /*下拉搜索框*/
+    /deep/ .el-input-group__prepend {
+        width: 64px;
+        background-color: #fff;
+    }
+
+    /deep/ .el-input-group--prepend .el-select .el-input__inner {
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+
+        width: 104px;
+    }
+
+    /deep/ .el-input-group--prepend .el-input__inner {
+        width: 185px;
+    }
+
+    .el-input {
+        border-radius: 4px;
+    }
+
+    /deep/ .el-input__inner {
+        font-size: 14px;
+        vertical-align: middle;
+    }
+
+    /*报价单*/
+
+    /deep/ .el-tabs--border-card {
+        box-shadow: none;
+    }
+
+    /deep/ .el-tabs--border-card > .el-tabs__content {
+        padding: 0 !important;
+    }
+
+    /deep/ .el-tabs__content {
+        width: 100%;
+    }
+
+    .panel {
+        padding: 0 30px;
+    }
+
+    .step3 {
+        padding: 0 105px;
+    }
+
+    .price {
+        width: 100%;
+        height: 300px;
+    }
+
+    .price-left {
+        box-sizing: border-box;
+        padding-right: 66px;
+        width: 49%;
+        float: left;
+        border-right: 1px dashed #d8d8d8;
+    }
+
+    .price-right {
+        width: 49%;
+        float: right;
+        padding-left: 66px;
+        box-sizing: border-box;
+    }
+
+    .price ul li {
+        font-size: 14px;
+        color: #666666;
+        border-bottom: 1px solid #d8d8d8;
+        height: 50px;
+        line-height: 50px;
+        margin-left: 19px;
+        margin-right: 28px;
+    }
+
+    .price ul li:last-child {
+        text-align: right;
+        border-bottom: none;
+        font-size: 18px;
+        color: #333333;
+        font-weight: bold;
+    }
+
+    .price ul li span {
+        float: right;
+    }
+
+    /*滚动条*/
+    /deep/ .el-table__body-wrapper {
+        height: 480px;
+    }
+
+    /*详情头部*/
+    .content_top_wrap {
+        padding: 34px 28px;
+        background: #ffffff;
+        /* border: 1px solid #dedede; */
+        height: 145px;
+        position: relative;
+    }
+
     .plan-title .handleBtn {
         position: absolute;
+        right: 28px;
         top: 30px;
     }
 
-    .plan-detail-right {
-        width: 15%;
+    .plan-title .handleBtn button {
+        width: 74px;
+        height: 32px;
+        font-size: 14px;
+        line-height: 9px;
+        padding: 0;
+    }
+
+    .plan-title h4 {
+        font-size: 20px;
+        color: rgba(0, 0, 0, 0.85);
+        font-weight: bold;
+        margin-bottom: 22px;
+    }
+
+    .plan-title h4 p {
+        display: inline-block;
+        font-size: 14px;
+        color: #666666;
+        font-weight: normal;
+        margin-left: 11px;
+    }
+
+    .plan-title h4 p img {
+        width: 14px;
+        height: 14px;
+        position: relative;
+        top: 1px;
+        cursor: pointer;
+    }
+
+    .plan-title h4 img {
+        width: 28px;
+        height: 28px;
+        position: relative;
+        top: 5px;
+        margin-right: 16px;
+    }
+
+    .plan-title .el-input__inner {
+        width: 100%;
+    }
+
+    .plan-detail {
+        font-size: 14px;
+        color: #333333;
+        padding-left: 41px;
+    }
+
+    .plan-detail-left {
+        float: left;
+        width: 78%;
+    }
+
+    .plan-detail-left ul {
+        width: 100%;
+        float: left;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        text-align: left;
     }
 
     .plan-detail-left ul li {
         float: left;
-        width: 400px;
+        width: 280px;
         margin-bottom: 12px;
+        display: flex;
     }
-}
-/deep/ .disabled .el-upload--picture-card {
-    display: none;
-}
-.radio_style{
-    vertical-align: top;
-}
-    .up_img{
 
+    .plan-detail-left ul li em {
+        font-size: 14px;
+        color: #666666;
     }
-    .upload_img_item{
+
+    .plan-detail-right {
+        width: 20%;
+        float: right;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .plan-detail-right dl {
+        float: left;
+        text-align: right;
+    }
+
+    .plan-detail-right dt {
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.45);
+    }
+
+    .plan-detail-right dd {
+        margin-top: 4px;
+        display: inline-block;
+        font-size: 20px;
+        font-weight: bold;
+        color: rgba(0, 0, 0, 0.85);
+    }
+
+    /*物料信息*/
+    /deep/ .el-table_2_column_16 .cell {
+        text-align: right;
+        padding-right: 20px;
+    }
+
+    /*上刊报告*/
+    .imgs-box {
+        margin: 0 auto;
+    }
+
+    .up-loader-header {
+        position: relative;
+    }
+
+    .progress {
+        float: right;
+    }
+
+    .showimgbox {
+        text-align: center;
+        background: #f8f8f8;
+        width: 100%;
+        height: 28px;
+        line-height: 28px;
+        margin-top: 20px;
+        color: #999999;
+        cursor: pointer;
+    }
+
+    /deep/ .up-loader-header .el-input__inner {
+        height: 32px;
+        width: 180px;
+    }
+
+    .moreimgs {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+    }
+
+    .progress span {
+        position: relative;
+        top: 8px;
+        left: 0;
+        font-size: 14px;
+        color: #666666;
+    }
+
+    /deep/ .el-progress-bar__outer {
+        height: 10px !important;
+    }
+
+    /deep/ .el-progress-bar {
+        width: 100%;
+    }
+
+    /deep/ .el-progress {
+        position: absolute;
+        line-height: 1;
+        width: 43%;
+        right: 65px;
+        top: 10px;
+    }
+
+    .img-car {
+        font-size: 14px;
+        color: #666666;
+        background: rgba(247, 247, 247, 1);
+    }
+
+    .car_header {
+        border-top: 1px solid #dedede;
+    }
+
+    .car_header span {
+        color: rgba(153, 153, 153, 1);
+        line-height: 17px;
+    }
+
+    .date_fa {
+        margin-right: 5px;
+    }
+
+    .up-loader-Imgpanel {
+        margin-top: 11px;
+        display: inline-block;
+        margin-right: 2.6%;
+        border: 1px solid #ebeef5;
+        width: 22%;
+        max-width: 383px;
+        min-width: 350px;
+    }
+
+    /*上传图片*/
+    /deep/ .el-card__header {
+        font-size: 14px;
+        height: 66px;
+        color: #666666;
+        background: rgba(247, 247, 247, 1);
+        padding: 11px 12px;
+    }
+
+    /deep/ .el-card__body {
+        padding: 0;
+        height: 260px;
+        overflow: hidden;
+    }
+
+    .upload-img span {
+        position: absolute;
+        top: 30px;
+        left: 30px;
+        font-size: 14px;
+        color: #666666;
+    }
+
+    /deep/ .el-upload--picture-card {
+        width: 30%;
+        height: 105px;
+        line-height: 105px;
+        margin: 4.2% 1.6% 0 1.6%;
+        background: rgba(251, 251, 251, 1);
+        border-radius: 4px;
+        border: 1px dashed #dedede;
+        text-align: center;
+    }
+
+    /deep/ .el-upload-list--picture-card .el-upload-list__item {
         width: 30%;
         height: 105px;
         margin: 4.2% 1.6% 0 1.6%;
+    }
+
+    /deep/ .up-loader-Imgpanel .el-card {
+        border: none;
+    }
+
+    /*页码*/
+    .pager {
+        height: 32px;
+        margin-top: 30px;
+        text-align: right;
+    }
+
+    /deep/ .el-radio-group {
+        margin-bottom: 10px;
+    }
+
+    .up-report-bottom {
+        text-align: center;
+        margin: 20px;
+    }
+
+    .up-report-bottom-checkbox {
+        margin-bottom: 10px;
+    }
+
+    /*按钮*/
+    .content_bottom_btn {
+        width: 100%;
+        text-align: center;
+        margin: 32px 0;
+    }
+
+    /deep/ .el-button--default:focus,
+    .el-button--default:hover {
+        color: #606266;
+        border-color: #dcdfe6;
+        background-color: #fcfcfc;
+    }
+
+    .content_bottom_btn /deep/ .el-button span a {
+        color: #606266;
+    }
+
+    /*换点表格*/
+    /deep/ .el-table td,
+    .el-table th {
+        padding: 4px 0;
+        height: 48px;
+    }
+
+    /*添加点位对话框*/
+    .first-wrap /deep/ .el-dialog {
+        width: 87% !important;
+    }
+
+    /deep/ .el-dialog {
+        width: 87%;
+    }
+
+    /*选择点位*/
+    /deep/ .type-select .el-input,
+    /deep/ .type-select .el-input__inner {
+        width: 95px;
+        position: relative;
+        top: 0;
+        left: -5px;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        padding-right: 0;
+        padding-left: 10px;
+        height: 32px;
+    }
+
+    /deep/ .date-select.el-input__inner {
+        width: 237px;
+        position: relative;
+        left: 1px;
+        height: 32px;
+    }
+
+    /deep/ .el-date-editor .el-range__icon {
+        position: relative;
+        top: -2px;
+        left: -3px;
+    }
+
+    /*滚动条*/
+    /deep/ .el-table__body-wrapper {
+        height: 480px;
+    }
+
+    /deep/ .el-table__row td:nth-child(2) .cell span {
+        width: 225px;
+    }
+
+    /deep/ .table_wrap .el-table__row td:nth-child(2) .cell span {
+        width: 14px;
+    }
+
+    /deep/ .plan-select .el-input__inner {
+        width: 180px;
+        margin-left: -13px;
+        height: 32px;
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+    }
+
+    /deep/ .el-date-editor .el-range__icon {
+        position: relative;
+        top: -2px;
+        left: -3px;
+    }
+
+    /* 搜索 */
+    .search-row {
+        padding: 8px 28px;
+    }
+
+    .search_col {
+        margin-left: 8px;
+    }
+
+    /*日期控件*/
+    .block {
+        display: inline-block;
+        margin-left: 2px;
+        position: relative;
+    }
+
+    /deep/ .el-range-separator {
+        position: relative;
+        top: -2px;
+    }
+
+    /deep/ .el-input__inner {
+        width: 260px;
+        height: 32px;
+        line-height: 32px;
+    }
+
+    /deep/ .el-dialog__body {
+        padding: 5px 20px;
+
+    }
+
+    .imgPreview /deep/ .el-dialog {
+        max-width: 42%;
+    }
+
+    .imgPreview /deep/ .el-dialog__body {
+        max-height: 640px;
+    }
+
+    .imgPreview /deep/ .el-dialog {
+        max-height: 750px;
+    }
+
+    /deep/ .imgPreview .el-dialog__body img {
+        width: 100%;
+        max-height: 640px;
+    }
+
+    /deep/ .el-dialog__footer {
+        padding: 20px 20px 20px;
+    }
+
+    /deep/ .el-dialog /deep/ .el-input__inner {
+        width: 100%;
+    }
+
+    /deep/ .el-dialog .inline_dialog /deep/ .el-input {
+        width: auto;
+    }
+
+    /deep/ .table_mater .el-button--small, .el-button--small.is-round {
+        padding: 0;
+    }
+
+    /deep/ .table_mater .el-button--small, .el-button--small.is-round i {
+        font-size: 16px;
+    }
+
+    /deep/ .table_mater .el-button {
+        height: auto;
+        border: none;
+    }
+
+    /* 物料信息弹出框 */
+    .car-title {
+        background: #E6F7FF;
+        border: 1px solid #BAE7FF;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        padding: 5px;
+    }
+
+    .car-title h4 {
+        font-size: 14px;
+        display: inline-block;
+    }
+
+    .car-title span {
+        font-size: 14px;
+        font-weight: normal;
+        margin: 0 6px;
+        cursor: pointer;
+        color: #1890ff;
+    }
+
+    /deep/ .el-pagination .el-select .el-input .el-input__inner {
+        width: 100px;
+    }
+
+    /deep/ .el-pagination__editor.el-input .el-input__inner {
+        width: 50px;
+    }
+
+    /deep/ .mediaList_wrap .el-tabs__header {
+        border-bottom: 1px solid #e6e7e9;
+        height: 53px;
+        line-height: 54px;
+    }
+
+    /deep/ .mediaList_wrap .baojiadan .el-tabs__header {
+        border-bottom: none;
+        height: 38px;
+        line-height: 38px;
+        background-color: #f5f7fa;
+        border-bottom: 1px solid #e4e7ed;
+        margin: 0;
+    }
+
+    /*1920*/
+    @media all and (min-width: 1900px) {
+        .plan-title .handleBtn {
+            position: absolute;
+            top: 30px;
+        }
+
+        .plan-detail-right {
+            width: 15%;
+        }
+
+        .plan-detail-left ul li {
+            float: left;
+            width: 400px;
+            margin-bottom: 12px;
+        }
+    }
+
+    /deep/ .disabled .el-upload--picture-card {
+        /*display: none;*/
+    }
+
+    .radio_style {
+        vertical-align: top;
+    }
+    /deep/ .el-upload-list__item.is-success{
+        display: none;
+    }
+    /**/
+    .img_box {
+        width: 30%;
+        height: 105px;
+        margin: 4.2% 1.6% 0 1.6%;
+        float: left;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .upload_img_item {
+        width: 100%;
+        height: 100%;
+    }
+    .icon_success{
+        display: block;
+        position: absolute;
+        right: -15px;
+        top: -6px;
+        width: 40px;
+        height: 24px;
+        background: #13ce66;
+        text-align: center;
+        -webkit-transform: rotate(45deg);
+        transform: rotate(45deg);
+        -webkit-box-shadow: 0 0 1pc 1px rgba(0,0,0,.2);
+        box-shadow: 0 0 1pc 1px rgba(0,0,0,.2)
+    }
+    .icon_success i{
+        color: #fff;
+        font-size: 12px;
+        margin-top: 11px;
+        transform: rotate(-45deg);
+    }
+    .icon_box{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top:0;
+        left: 0;
+        background: rgba(0,0,0,.5);
+        cursor:pointer;
+    }
+    .img_box_icon {
+        width: 100%;
+        margin-top:40%;
+        text-align: center;
+    }
+    .img_box_icon i{
+        color: #fff;
+        font-size: 22px;
+    }
+    .img_box_icon i.icon_save {
+        color: #FFD517;
     }
 </style>

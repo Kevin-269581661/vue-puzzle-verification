@@ -1,5 +1,6 @@
 let dateInfo = {};
-let dateArr = JSON.parse(localStorage.getItem('indexIsDateFirst'));
+let info = localStorage.getItem('indexIsDateFirst');
+let dateArr = info?JSON.parse(info):'';
 // 判断localStorage是否已存在对应uid的展示信息
 dateInfo.setData = function (dateObj) {
     console.log('dateobj----', dateObj);
@@ -10,6 +11,7 @@ dateInfo.setData = function (dateObj) {
         for (let key of dateArr) {
             if (key.uid == dateObj.uid) {
                 if(key.date == dateObj.date){
+                    key.isHad = dateObj.isHad;
                     isHad = true;
                 }else{
                     key.date = dateObj.date;
@@ -45,6 +47,7 @@ dateInfo.getData = function (uid) {
 
 // 判断当前用户当天是否是第一次
 dateInfo.getIsFirst = function(uid, date){
+    console.log('uid---date', uid, date);
     let data = this.getData(uid);
     let info = {
         uid: uid,
@@ -64,6 +67,7 @@ dateInfo.getIsFirst = function(uid, date){
     }else{
         info.isHad = 1;
     }
+    console.log('info---', info);
     // 存储数据
     this.setData(info);
     return true;

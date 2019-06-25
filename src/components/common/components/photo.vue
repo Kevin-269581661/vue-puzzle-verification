@@ -49,6 +49,12 @@
                 imgUrl: "http://192.168.1.239/advertisement/DownloadImage?picUrl=" ,
             }
         },
+        watch:{
+            publish(newVal,oldVal){
+                console.log('newVal',newVal,'oldVal',oldVal)
+                this.publish = newVal
+            },
+        },
         methods: {
             // 查看图片
             handlePictureCardPreview(item) {

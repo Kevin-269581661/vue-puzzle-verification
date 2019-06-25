@@ -74,7 +74,7 @@
                                      element-loading-text="拼命加载中..."
                                      element-loading-spinner="el-icon-loading">
                             <!-- 图片 -->
-                            <photo :imgarr="pageUpImgArr" :show-pic="showPic" :publish="publish" @doSomeThing="saveChange"></photo>
+                            <photo :imgarr="pageUpImgArr" :show-pic="showPic" :publish="searchInfo.publish" @doSomeThing="saveChange"></photo>
                             <!--页码-->
                             <div class="ad_pagination" v-if="showPic ===3">
                                 <el-pagination

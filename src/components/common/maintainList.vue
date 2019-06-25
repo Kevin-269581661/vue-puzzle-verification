@@ -480,10 +480,7 @@ export default {
         sizeChange(val){
             this.pageSize = val;
             this.currPage = 1;
-            console.log(this.pageSize);
-            if(this.currPage == 1){
-                this.searchFun();
-            }
+            this.searchFun();
         },
         // 设置表格数据
         setTableData(item){

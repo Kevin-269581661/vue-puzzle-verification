@@ -342,11 +342,10 @@ export default {
         },
         // 每页条数切换
         sizeChange(val) {
+            console.log('val----', val);
             this.pageSize = val;
-            if (this.currPage == 1) {
-                this.searchFun();
-            }
             this.currPage = 1;
+            this.searchFun();
         },
         // 获取公司
         getCompany(){

@@ -23,7 +23,8 @@
             <el-col :span="14" class="col_style">
                 <dl v-for="(item, index) of dataArr" :key="index" class="dl_style">
                     <dt>{{item.name}}</dt>
-                    <dd>{{priceFormat(item.data)}}</dd>
+                    <dd v-if="item.name === '当月成交金额'">¥{{priceFormat(item.data)}}</dd>
+                    <dd v-else>{{priceFormat(item.data)}}</dd>
                 </dl>
             </el-col>
         </el-row>

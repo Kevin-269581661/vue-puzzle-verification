@@ -414,7 +414,7 @@
                 </el-dialog>
 
                 <!-- 图片查看显示 -->
-                <el-dialog :visible.sync="dialogVisible" class="imgPreview">
+                <el-dialog :visible.sync="dialogVisible" class="imgPreview" top="10vh">
                     <img  :src="dialogImageUrl" alt="" />
                 </el-dialog>
 
@@ -3094,21 +3094,22 @@ export default {
 
     }
 
-    .imgPreview /deep/ .el-dialog {
-        max-width: 42%;
-    }
 
-    .imgPreview /deep/ .el-dialog__body {
-        max-height: 640px;
+    .imgPreview /deep/ .el-dialog{
+        width: 35%;
     }
-
-    .imgPreview /deep/ .el-dialog {
-        max-height: 750px;
+    .imgPreview /deep/ .el-dialog__body{
+        text-align: center;
     }
-
-    /deep/ .imgPreview .el-dialog__body img {
-        width: 100%;
-        max-height: 640px;
+    /deep/ .imgPreview .el-dialog__body img{
+        max-width: 100%;
+        width: auto;
+        height: 550px;
+    }
+    @media screen and (max-width: 1440px) {
+        /deep/ .imgPreview .el-dialog__body img{
+            height: 450px;
+        }
     }
 
     /deep/ .el-dialog__footer {

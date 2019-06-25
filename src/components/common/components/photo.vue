@@ -46,7 +46,8 @@
                 //显示预览图蒙版
                 showPreImg: null,
                 // photoApi: 'http://192.168.1.246/advertisement',
-                imgUrl: this.apiVar.qadnUrl + "/advertisement/DownloadImage?picUrl=" ,
+                galleryImgUrl: this.apiVar.qadnUrl + "/advertisement/DownloadImage?picUrl=" ,
+                collectImgUrl: this.apiVar.qadnUrl + "/advertisement/DownloadUserImage?id=" ,
             }
         },
         watch:{
@@ -176,9 +177,8 @@
                                     <i class="el-icon-search" @click="handlePictureCardPreview(img)"></i>
                                 </p>
                                 <p class="mask_a">
-                                    <a :href= "imgUrl + img.pUrl" >下载图片</a>
-                                    <!--
-                                       :download="formatTime(img.pUTime)+'下刊'+img.pRemarks.account+img.pRemarks.city+img.pRemarks.area+img.pRemarks.res+img.pRemarks.assettag+'.png'"-->
+                                    <a v-if="tabType === 'first'" :href= "galleryImgUrl + img.pUrl" >下载图片</a>
+                                    <a v-else :href= "collectImgUrl + img.id" >下载图片</a>
                                 </p>
                             </div>
                         </div>
@@ -430,7 +430,23 @@
         top: 5px;
     }
 
-    .imgPreview /deep/ .el-dialog {
+    .imgPreview /deep/ .el-dialog{
+        width: 35%;
+    }
+    .imgPreview /deep/ .el-dialog__body{
+        text-align: center;
+    }
+    /deep/ .imgPreview .el-dialog__body img{
+        max-width: 100%;
+        width: auto;
+        height: 550px;
+    }
+    @media screen and (max-width: 1440px) {
+        /deep/ .imgPreview .el-dialog__body img{
+            height: 450px;
+        }
+    }
+  /*  .imgPreview /deep/ .el-dialog {
         max-width: 42%;
     }
 
@@ -445,5 +461,5 @@
     .imgPreview /deep/ .el-dialog img {
         width: 100%;
         max-height: 660px;
-    }
+    }*/
 </style>

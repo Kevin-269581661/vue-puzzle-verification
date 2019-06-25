@@ -131,18 +131,7 @@
                 isSearch: true,
                 bussiness: [],
                 industryIdArr: [],
-                imgList: [
-                    {
-                        title: '1',
-                        url: require('../../../assets/images/tvQNA_img1.jpg'),
-                        industry: [1,2],
-                    },
-                    {
-                        title: '2',
-                        url: require('../../../assets/images/tvQNA_img2.jpg'),
-                        industry: [1,2],
-                    },
-                ],
+                imgList: [],
                 //显示预览图蒙版
                 showPreImg: null,
                 // 图片上的行业选择
@@ -150,14 +139,14 @@
                 dialogVisible: false,
                 dialogImageUrl: '',
                 // 上传图片
-                doUpload: '/advertisement/image/upload',     //http://192.168.1.239/
+                doUpload: this.apiVar.qadnUrl + '/advertisement/image/upload',     //http://192.168.1.239/
                 UploadVisible: false,
                 uploadUrl: '',
                 // 上传图片的信息
                 uploadImg: [],           // 显示已上传的图片
                 // 上传图片关联的行业
                 industryImg:[],
-                imgUrl: "http://192.168.1.239/advertisement/DownloadImage?picUrl=" ,
+                imgUrl: this.apiVar.qadnUrl + "/advertisement/DownloadImage?picUrl=" ,
             }
         },
         mounted(){
@@ -256,21 +245,21 @@
             // 资源图片上传前验证格式和大小
             beforeUpload(file) {
                 const isJPG = file.type === "image/jpeg" || file.type === "image/png";
-                const isLt8M = file.size / 1024 / 1024 < 8;
+                const isLt10M = file.size / 1024 / 1024 < 10;
 
                 if (!isJPG) {
                     this.$message.error('上传图片只能是 JPG 或 PNG 格式!');
                 }
-                if (!isLt8M) {
-                    this.$message.error('上传图片大小不能超过 8MB!');
+                if (!isLt10M) {
+                    this.$message.error('上传图片大小不能超过 10MB!');
                 }
-                return isJPG && isLt8M;
+                return isJPG && isLt10M;
             },
             // 资源图片上传成功
             downSuccess(res) {
                 console.log('上传行业图片', res)
                 if(res.SysCode === 200200){
-                    this.uploadUrl = res.data
+                    // this.uploadUrl = res.data
                     console.log('this.uploadUrl',this.uploadUrl)
                 }
             },
@@ -399,7 +388,7 @@
                 })
             },
             loginTimeout(){
-                Message.warning("登录超时,请重新登录");
+                this.messageFun('warning',"登录超时,请重新登录");
                 this.$router.push("/login");
             },
         }
@@ -610,5 +599,13 @@
 
     /deep/ .el-dialog__body{
         padding: 0 24px 24px;
+    }
+
+    .upload_img /deep/ .el-progress-circle{
+        width: 104px !important;
+        height: 104px !important;
+    }
+    .upload_img /deep/ .el-progress__text{
+        width: 104px !important;
     }
 </style>

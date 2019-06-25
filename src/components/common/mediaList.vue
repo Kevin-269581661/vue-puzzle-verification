@@ -59,7 +59,6 @@
                         v-loading="loading"
                         element-loading-text="拼命加载中..."
                         element-loading-spinner="el-icon-loading"
-                        v-loadmore="loadMore"
                         border
                         :data="currentPlan"
                         style="width: 100%"
@@ -79,7 +78,7 @@
                         <el-table-column
                             prop="rtName"
                             label="资源类型"
-                            min-width="7%"
+                            min-width="8%"
                             :filters="[
 							{ text: '社区', value: '社区' },
 							{ text: '写字楼', value: '写字楼' },
@@ -101,44 +100,40 @@
                         <el-table-column
                             prop="rName"
                             label="区域"
-                            min-width="7%">
+                            min-width="7%"
+                            :show-overflow-tooltip="true">
                             <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.rName" placement="bottom">
-                                    <span>{{scope.row.rName || '--' }}</span>
-                                </el-tooltip>
+                                <span>{{scope.row.rName || '--' }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
+                            prop="tradingArea"
                             label="商圈"
                             min-width="8%"
-                        >
+                            :show-overflow-tooltip="true">
                             <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.tradingArea"
-                                            placement="bottom">
-                                    <span>{{scope.row.tradingArea || '--' }}</span>
-                                </el-tooltip>
+                                <span>{{scope.row.tradingArea || '--' }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
                             prop="mVehicle"
                             label="媒体类型"
                             min-width="7.4%"
-                        >
+                            :show-overflow-tooltip="true">
                         </el-table-column>
                         <el-table-column
+                            prop="mTitle"
                             label="媒体名称"
                             min-width="8.2%"
-                        >
+                            :show-overflow-tooltip="true">
                             <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.mTitle" placement="bottom">
-                                    <span>{{scope.row.mTitle || '--' }}</span>
-                                </el-tooltip>
+                                <span>{{scope.row.mTitle || '--' }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
+                            prop="assetTag"
                             label="资产编号"
-                            min-width="12%"
-                        >
+                            min-width="12%">
                             <template slot-scope="scope">
                                 {{ scope.row.assetTag || '--' }}
                             </template>
@@ -153,26 +148,17 @@
                         <el-table-column
                             prop="mState"
                             label="媒体状态"
-                            min-width="7.7%"
-                            :filters="[
-							{ text: '待维修', value: '待维修' },
-							{ text: '待安装', value: '待安装' },
-							{ text: '正常', value: '正常' },
-							{ text: '禁用', value: '禁用' },
-							]"
-                            :filter-method="filterPTStatus"
-                            :filter-multiple="false"
-                        >
+                            min-width="7.7%">
                             <template  slot-scope="scope">
                                 <span v-if="scope.row.mState === '正常'">
                                     <el-tooltip class="item" effect="dark" placement="left-start">
                                         <div slot="content">
                                             A面:{{scope.row.asState.A == '1' ? '正常' : '禁用'}}  B面:{{scope.row.asState.B == '1' ? '正常' : '禁用'}}
                                         </div>
-                                        <point-state :state-text="stateToText(scope.row.mState).text" :color="stateToText(scope.row.mState).color"></point-state>                   
+                                        <point-state :state-text="stateToText(scope.row.mState).text" :color="stateToText(scope.row.mState).color"></point-state>
                                     </el-tooltip>
                                 </span>
-                                <point-state v-else :state-text="stateToText(scope.row.mState).text" :color="stateToText(scope.row.mState).color"></point-state>  
+                                <point-state v-else :state-text="stateToText(scope.row.mState).text" :color="stateToText(scope.row.mState).color"></point-state>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -213,13 +199,18 @@
                         </div>
                     </el-table>
                 </div>
-             <!--   <div>
+                <div class="ad_pagination">
                     <el-pagination
                         background
-                        layout="prev, pager, next,jumper"
-                        :total="100">
+                        layout="total, prev, pager, next, sizes, jumper"
+                        @current-change="changePage"
+                        @size-change="changeSize"
+                        :page-sizes="[10, 20, 30, 40]"
+                        :current-page.sync="pageData.pageNum"
+                        :page-size="pageData.pageSize"
+                        :total="pageData.totalSize">
                     </el-pagination>
-                </div>-->
+                </div>
             </div>
             <!--媒体状态修改模态框-->
             <el-dialog :visible.sync="mStatusDialogVisible" :close-on-click-modal="false" custom-class="mStatueDialog">
@@ -339,9 +330,9 @@
     import areaPackageNew from '../../commonFun/areaPackage_new'
     import areaToTextNew from '../../commonFun/areaToText_new'
     import sessFun from "../../commonFun/sessFun.js";
-    import noSearchResult from "./components/noSearchResult.vue";    
-    import pointState from './components/pointState.vue';    
-    
+    import noSearchResult from "./components/noSearchResult.vue";
+    import pointState from './components/pointState.vue';
+
     import {
         Form,
         FormItem,
@@ -384,6 +375,12 @@
                 //加载中
                 loading: true,
                 loadSign: true,
+                // 页码及条数
+                pageData:{
+                    pageNum: 1,
+                    pageSize: 10,
+                    totalSize: 0,
+                },
                 role: '',
                 showNewBtn: false,   // 新建按钮
                 haveDetail: true,
@@ -448,25 +445,7 @@
             } else {
                 this.showImportBtn = false
             }
-            $(function () {
-                $('body').on('.el-tooltip__popper.is-light').css({
-                    'color': '#666666'
-                })
-            });
-            this.getData({"pageNo": this.pageNo,"pageSize":50});
-        },
-        directives: {
-            loadmore: {
-                bind: function (el, binding) {
-                    const selectWrap = el.querySelector('.el-table__body-wrapper')
-                    selectWrap.addEventListener('scroll', function () {
-                        const scrollDistance = this.scrollHeight - this.scrollTop - this.clientHeight
-                        if (scrollDistance <= 100) {
-                            binding.value()
-                        }
-                    })
-                }
-            }
+            this.getData();
         },
         methods: {
             // 状态转换
@@ -495,27 +474,6 @@
                     }
                 }
             },
-            loadMore() {
-                console.log('滚动触发了')
-                if (this.loadSign) {
-                    // console.log('正在请求')
-                    this.loadSign = false
-                    if (this.keyword !== '') {
-                        if(this.pageNo <= this.totalPage){
-                            this.searchByKewWord()
-                        }else{
-                            console.log('搜索数据已加载完成')
-                        }
-                    } else {
-                        if(this.pageNo <= this.totalPage){
-                            this.getData({"pageNo": this.pageNo,"pageSize":50}) // ,"resName":this.keyword
-                        }else{
-                            console.log('列表数据已加载完成')
-                        }
-                    }
-                    // console.log('到底了')
-                }
-            },
             //新建跳转
             newMedia() {
                 this.$router.push('./mediaInput');
@@ -528,37 +486,40 @@
             filterRecType(value, row) {
                 return row.rtName === value;
             },
-            filterPTStatus(value, row) {
-                // let sum = 0;
-                // for (let data of this.planList) {
-                //     if (data.mState != value) {
-                //         sum++;
-                //     }
-                // }
-                // //sum和所有数据的长度相同时说明都不匹配
-                // if (sum == this.planList.length) {
-                //     // Message.warning({
-                //     //     message: '筛选数据为空',
-                //     //     duration: 1500
-                //     // });
-                //     Message.warning('筛选数据为空');
-                // }
-                return row.mState === value;
-
+            // filterPTStatus(value, row) {
+            //     return row.mState === value;
+            // },
+            // 分页
+            changePage(val){
+                console.log('当前页',val)
+                this.pageData.pageNum = val
+                this.getData()
+            },
+            // 每页的条数
+            changeSize(val){
+                console.log('每页的条数',val)
+                this.pageData.pageNum = 1
+                this.pageData.pageSize = val
+                this.getData()
             },
             // 获取媒体列表
-            getData(msg) {
-                if(this.cityArea.cName !== ''){
-                    msg.cityName = this.cityArea.cName
-                }
-                if(this.cityArea.rName !== ''){
-                    msg.regionName = this.cityArea.rName
-                }
+            getData() {
+                this.loading = true
                 let params = {
                     uid: this.sessionData.uID,
-                    service:"GetRMList",
                     token: this.sessionData.token,
-                    data: msg
+                    service: "GetRMList",
+                    data: {
+                        pageNo: this.pageData.pageNum,
+                        pageSize: this.pageData.pageSize,
+                        cityName: this.cityArea.cName,
+                        regionName: this.cityArea.rName
+                    }
+                }
+                if (this.selectInfo === '1') {
+                    params.data.resName = this.keyword
+                } else if (this.selectInfo === '2') {
+                    params.data.tradeArea = this.keyword
                 }
                 for(let i in params.data){
                     if(params.data[i] === ''){
@@ -567,17 +528,16 @@
                 }
                 api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('资源媒体列表：', res)
+                    this.pageData.totalSize = res.data.data.totalPage
                     let RMList = res.data.data.list;
-                    this.totalPage = res.data.data.totalPage
                     if ( res.data.SysCode == 200200) {
                         if (RMList) {
+                            let mediaList = []
                             for (let i = 0; i < RMList.length; i++) {
                                 RMList[i].mState = this.return_mState(RMList[i].mState)
-                                this.planList.push(RMList[i])
+                                mediaList.push(RMList[i])
                             }
-                            this.currentPlan = this.planList.concat();
-                            this.loadSign = true
-                            this.pageNo++
+                            this.currentPlan = mediaList
                             //正在加载
                             this.loading = false;
                         } else {
@@ -620,19 +580,6 @@
 
                 console.log('this.regionOpt', this.regionOpt,'selectedOptions',this.selectedOptions)
 
-            },
-            // uWho不为全国时，根据市级城市rid，获取它的下属区、县
-            recFormCity(val) {
-                // console.log('val', val)
-                // this.regionOpt = ''
-                // this.cityArea.cName = areaToTextNew.toTextCity(val)
-                // let regionArr = areaPackageNew.findArea(val)
-                // let region = []
-                // for (let i = 0; i < regionArr.length; i++) {
-                //     let obj = {label: regionArr[i].rName, value: regionArr[i].rID}
-                //     region.push(obj)
-                // }
-                // this.regionOpt = region
             },
             //获取区域
             getRegion(val){
@@ -819,22 +766,22 @@
                         })
                         this.mStatusDialogVisible = false
                         if (letter === 'submitDS') {    // 是否为单面禁用/正常
-                            this.planList[this.rowIndex].asState[this.doorState.adState] = asState
-                            if (this.planList[this.rowIndex].asState.A === this.planList[this.rowIndex].asState.B) {
-                                this.planList[this.rowIndex].mState = Status;
+                            this.currentPlan[this.rowIndex].asState[this.doorState.adState] = asState
+                            if (this.currentPlan[this.rowIndex].asState.A === this.currentPlan[this.rowIndex].asState.B) {
+                                this.currentPlan[this.rowIndex].mState = Status;
                             } else if(!this.normalToDisabled){      // 禁用转正常-都要更改行媒体状态
-                                this.planList[this.rowIndex].mState = Status;
+                                this.currentPlan[this.rowIndex].mState = Status;
                             } else{
-                                console.log('行状态不用修改',this.planList[this.rowIndex].mState)
+                                console.log('行状态不用修改',this.currentPlan[this.rowIndex].mState)
                             }
                         } else {
-                            for(let key in this.planList[this.rowIndex].asState){
-                                this.planList[this.rowIndex].asState[key] = mstate
+                            for(let key in this.currentPlan[this.rowIndex].asState){
+                                this.currentPlan[this.rowIndex].asState[key] = mstate
                             }
-                            this.planList[this.rowIndex].mState = Status;
+                            this.currentPlan[this.rowIndex].mState = Status;
                         }
-                        console.log('当前行', this.planList[this.rowIndex])
-                        this.currentPlan = this.planList;
+                        console.log('当前行', this.currentPlan[this.rowIndex])
+                        this.currentPlan = this.currentPlan;
                     } else if (res.data.SysCode === 200302 || res.data.MSG === '广告位已被占用') {
                         Message({
                             type: 'warning',
@@ -901,31 +848,10 @@
                     })
                     this.searchBtnAbled = false
                 } else {
-                    this.loadSign = false
-                    this.setPageNoAndTableData()
-                    this.searchByKewWord()
+                    this.pageData.pageNum = 1
+                    this.getData()
+
                 }
-            },
-            searchByKewWord(){
-                let params = ''
-                console.log('selectInfo', this.selectInfo)
-                console.log('keyword', this.keyword)
-                let select = this.selectInfo;
-                let keyword = this.keyword;
-                if(select === '1'){     // 资源名称搜索
-                    params = {
-                        "resName": keyword,
-                        "pageNo": this.pageNo,
-                        "pageSize":50
-                    }
-                }else if(select === '2'){   // 商圈搜索
-                    params = {
-                        "tradeArea": keyword,
-                        "pageNo": this.pageNo,
-                        "pageSize":50
-                    }
-                }
-                this.getData(params)
             },
             // 重置搜索
             clearSearch(){
@@ -933,17 +859,10 @@
                 this.selectedOptions = []
                 this.selectRName = ''
                 this.regionOpt = [];
-                this.setPageNoAndTableData()
+                this.pageData.pageNum = 1
+                this.pageData.pageSize = 10
                 this.cityArea = {cName:'',rName:''}
-                this.getData({"pageNo": this.pageNo,"pageSize":50})
-            },
-            // 初始化数据
-            setPageNoAndTableData(){
-                this.planList = []
-                this.currentPlan = []
-                this.loading = true
-                this.loadScroll = false
-                this.pageNo = 1
+                this.getData()
             },
             // 导入媒体 companyList
             importMedia(){
@@ -1163,12 +1082,13 @@
 
     /*滚动条*/
     /deep/ .el-table__body-wrapper {
-        height: 405px;
+        min-height: 530px;
+        overflow-y: auto;
     }
 
     /*筛选*/
     /deep/ .el-table__column-filter-trigger {
-        margin-left: 10px;
+        margin-left: 6px;
         line-height: 0px;
         overflow-y: hidden;
     }
@@ -1208,7 +1128,7 @@
     .content_bottom_btn /deep/ .el-button span a {
         color: #606266;
     }
-    
+
     /deep/ .mStatueDialog{
         width: 285px;
     }

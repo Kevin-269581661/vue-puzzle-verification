@@ -259,7 +259,7 @@
             downSuccess(res) {
                 console.log('上传行业图片', res)
                 if(res.SysCode === 200200){
-                    // this.uploadUrl = res.data
+                    this.uploadUrl = res.data
                     console.log('this.uploadUrl',this.uploadUrl)
                 }
             },

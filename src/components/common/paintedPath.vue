@@ -63,6 +63,9 @@
                                 <span class="detail_btn" @click="showDetail(scope.row)">查看详情</span>
                             </template>
                         </el-table-column>
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
                     </el-table>
                 </div>
                 <div class="ad_pagination">
@@ -218,8 +221,12 @@
 
 <script>
     import { api } from "../../api/api";
+    import noSearchResult from "./components/noSearchResult.vue";      
     export default {
         name: "paintedPath",
+        components:{
+            noSearchResult
+        },
         data(){
             let validateresName = (rule, value, callback) => {
                 if(!this.createData.city){

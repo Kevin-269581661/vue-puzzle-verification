@@ -162,6 +162,7 @@ import homeLink from '../common/components/homeLink.vue';
 import { api } from '../../api/api';
 import comcards from '../../commonFun/json/comcard.json';
 import sessFun from '../../commonFun/sessFun.js';
+import indexIsDateFirst from '../../commonFun/indexIsDateFirst.js';
 
 export default {
 	name: "media_index",
@@ -172,7 +173,7 @@ export default {
 	data(){
 		return{
 			isAllMedia: false,
-			isShowNum: true,
+			isShowNum: false,
 			// 勋章弹出框
 			isShowMedal: false,
 			linkArr:[
@@ -739,8 +740,12 @@ export default {
 		this.getSession();
 		this.getIsCom();
 		this.getData();
-		this.getContribute();
 		this.getContributeBox();
+		let nowDate = timeFormat.toDate(new Date(), '/');		
+		if(indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)){
+			this.isShowNum = true;
+			this.getContribute();
+		}
 		this.setTime();
 		// this.getLinePer();
 	},
@@ -810,11 +815,6 @@ export default {
 	width: 30px;
 	background: -webkit-linear-gradient(left,rgba(255, 255, 255, 0),#D8D8D8,rgba(255,255,255,0));
 	background: linear-gradient(to right, rgba(255, 255, 255, 0),#D8D8D8,rgba(255,255,255,0));
-}
- @media all and (min-width: 1900px) {
-    .charts2 {
-      width: 1700px !important;
-    }
 }
 
 .rank_box{

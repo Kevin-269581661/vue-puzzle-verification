@@ -17,45 +17,45 @@
             <div class="info_right">
                 <el-row>
                     <el-col :span="8">
-                        <span>{{userInfo.title.account}}</span>
-                        <span>{{userInfo.data.account}}</span>
+                        <span>{{userInfo.title.account ||"--"}}</span>
+                        <span>{{userInfo.data.account ||"--"}}</span>
                     </el-col>
                     <el-col :span="8">
-                        <span>{{userInfo.title.dep}}</span>
-                        <span>{{userInfo.data.dep}}</span>
+                        <span>{{userInfo.title.dep ||"--"}}</span>
+                        <span>{{userInfo.data.dep ||"--"}}</span>
                     </el-col>
                     <el-col :span="8">
-                        <span>{{userInfo.title.company}}</span>
-                        <span>{{userInfo.data.company}}</span>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="8">
-                        <span>{{userInfo.title.username}}</span>
-                        <span>{{userInfo.data.username}}</span>
-                    </el-col>
-                    <el-col :span="8">
-                        <span>{{userInfo.title.super}}</span>
-                        <span>{{userInfo.data.super}}</span>
-                    </el-col>
-                    <el-col :span="8">
-                        <span>{{userInfo.title.phone}}</span>
-                        <span>{{userInfo.data.phone}}</span>
+                        <span>{{userInfo.title.company ||"--"}}</span>
+                        <span>{{userInfo.data.company ||"--"}}</span>
                     </el-col>
                 </el-row>
                 <el-row>
                     <el-col :span="8">
-                        <span>{{userInfo.title.role}}</span>
-                        <span>{{userInfo.data.role}}</span>
+                        <span>{{userInfo.title.username ||"--"}}</span>
+                        <span>{{userInfo.data.username ||"--"}}</span>
                     </el-col>
                     <el-col :span="8">
-                        <span>{{userInfo.title.duty}}</span>
-                        <span>{{userInfo.data.duty}}</span>
+                        <span>{{userInfo.title.super ||"--"}}</span>
+                        <span>{{userInfo.data.super ||"--"}}</span>
                     </el-col>
                     <el-col :span="8">
-                        <span>{{userInfo.title.email}}</span
+                        <span>{{userInfo.title.phone ||"--"}}</span>
+                        <span>{{userInfo.data.phone ||"--"}}</span>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="8">
+                        <span>{{userInfo.title.role ||"--"}}</span>
+                        <span>{{userInfo.data.role ||"--"}}</span>
+                    </el-col>
+                    <el-col :span="8">
+                        <span>{{userInfo.title.duty ||"--"}}</span>
+                        <span>{{userInfo.data.duty ||"--"}}</span>
+                    </el-col>
+                    <el-col :span="8">
+                        <span>{{userInfo.title.email ||"--"}}</span
                         >
-                        <span>{{userInfo.data.email}}</span>
+                        <span>{{userInfo.data.email ||"--"}}</span>
                     </el-col>
                 </el-row>
             </div>

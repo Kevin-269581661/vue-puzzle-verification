@@ -205,7 +205,7 @@
                         layout="total, prev, pager, next, sizes, jumper"
                         @current-change="changePage"
                         @size-change="changeSize"
-                        :page-sizes="[10, 20, 30, 40]"
+                        :page-sizes="[10, 20, 50]"
                         :current-page.sync="pageData.pageNum"
                         :page-size="pageData.pageSize"
                         :total="pageData.totalSize">

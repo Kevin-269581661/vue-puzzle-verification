@@ -127,8 +127,8 @@
             return{
                 // 分页信息
                 paginationShow: true,
-                pageSize: 20,
-                pageSizes: [20, 50, 80, 100],
+                pageSize: 10,
+                pageSizes: [10, 20, 50],
                 currPage: 1,
                 totalPage: 0,
                 totalNum: 0,

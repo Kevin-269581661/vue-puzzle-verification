@@ -42,7 +42,7 @@ export default {
                 <el-radio-button label="道闸"></el-radio-button>
             </el-radio-group>
             <!-- 广告门 -->
-            <el-table :data="material" border style="width: 100%; margin-top:20px;" v-if="mediaType=='广告门'" v-loading="loading" element-loading-text="玩命加载中..">
+            <el-table :data="material" border style="margin-top:16px;" v-if="mediaType=='广告门'" v-loading="loading" element-loading-text="玩命加载中..">
                 <el-table-column label="序号" min-width="5.9%">
                     <template slot-scope="scope">
                         <span>{{scope.$index+1}}</span>
@@ -62,7 +62,7 @@ export default {
                 </el-table-column>
             </el-table>
 
-            <el-table :data="daomater" border style="width: 100%; margin-top:20px;" v-loading="loading" element-loading-text="玩命加载中.." v-else>
+            <el-table :data="daomater" border style="margin-top:16px;" v-loading="loading" element-loading-text="玩命加载中.." v-else>
                 <el-table-column label="序号" min-width="5.9%">
                     <template slot-scope="scope">
                         <span>{{scope.$index+1}}</span>
@@ -103,27 +103,7 @@ export default {
     font-weight: bold;
 }
 .table_wrap {
-    padding: 10px 28px;
-}
-
-/*滚动条*/
-/deep/ .el-table__body-wrapper {
-    height: 480px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar {
-    width: 4px;
-    background: #fafafa;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
-
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #c1c1c1;
-    border-radius: 4px;
+    margin: 8px 32px;
 }
 
 /deep/ .el-table th > .cell {

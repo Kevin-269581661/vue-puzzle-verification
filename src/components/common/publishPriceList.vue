@@ -24,27 +24,27 @@
                         </el-table-column>
                         <el-table-column label="原刊例价(/周/面)" prop="oldPrice" align="right">
                             <template slot-scope="scope">
-                                <span>{{priceFormat(scope.row.oldPrice)}}</span>
+                                <span>￥{{priceFormat(scope.row.oldPrice)}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="广告门A级(/周/面)" prop="levelAprice" align="right">
                             <template slot-scope="scope">
-                                <span>{{priceFormat(scope.row.levelAprice)}}</span>
+                                <span>￥{{priceFormat(scope.row.levelAprice)}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="广告门B级(/周/面)" prop="levelBprice" align="right">
                             <template slot-scope="scope">
-                                <span>{{priceFormat(scope.row.levelBprice)}}</span>
+                                <span>￥{{priceFormat(scope.row.levelBprice)}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="广告门C级(/周/面)" prop="levelCprice" align="right">
                             <template slot-scope="scope">
-                                <span>{{priceFormat(scope.row.levelCprice)}}</span>
+                                <span>￥{{priceFormat(scope.row.levelCprice)}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="道闸(/月/杆)" prop="barrierPrice" align="right">
                             <template slot-scope="scope">
-                                <span>{{priceFormat(scope.row.barrierPrice)}}</span>
+                                <span>￥{{priceFormat(scope.row.barrierPrice)}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="操作" v-if="session_data.uType=='SM'" >

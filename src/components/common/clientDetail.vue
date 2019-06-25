@@ -53,21 +53,24 @@
                 <h4>公司信息</h4>
                 <el-row class="row_box">
                     <el-col :span="8">
-                        <span class="row_title">公司名称：</span><span>{{userInfo.realName || '--'}}</span>
+                        <span class="row_title">公司名称：</span><span>{{companyInfo.cName || '--'}}</span>
                     </el-col>
                     <el-col :span="8">
-                        <span class="row_title">公司地址：</span><span>{{userInfo.email || '--'}}</span>
+                        <span class="row_title">公司地址：</span><span>{{companyInfo.cAddress || '--'}}</span>
                     </el-col>
                     <el-col :span="8">
-                        <span class="row_title">行业：</span><span>{{userInfo.phone || '--'}}</span>
+                        <span class="row_title">行业：</span><span>{{companyInfo.iName || '--'}}</span>
                     </el-col>
                 </el-row>
                 <el-row class="row_box">
                     <el-col :span="8">
-                        <span class="row_title">所在城市：</span><span>{{userInfo.sName || '--'}}</span>
+                        <span class="row_title">公司品牌：</span><span>{{companyInfo.cBrand || '--'}}</span>
                     </el-col>
                     <el-col :span="8">
-                        <span class="row_title">备注：</span><span>{{userInfo.position || '--'}}</span>
+                        <span class="row_title">所在城市：</span><span>{{companyInfo.rName || '--'}}</span>
+                    </el-col>
+                    <el-col :span="8">
+                        <span class="row_title">备注：</span><span>{{companyInfo.cRemark || '--'}}</span>
                     </el-col>
                 </el-row>
             </div>
@@ -206,7 +209,7 @@ export default {
 
 <style scoped>
 .mediaList_handel {
-    margin: 18px 24px;
+    margin: 24px 32px;
     border-left: 1px solid rgb(245,246,250);
     border-right: 1px solid rgb(245,246,250);
     border-bottom: 1px solid rgb(245,246,250);

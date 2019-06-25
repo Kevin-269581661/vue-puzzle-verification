@@ -32,7 +32,7 @@
                 default: ''
             },
             // 当前tab
-            type:{
+            tabType:{
                 type: String,
                 default: 'first'
             }
@@ -46,7 +46,7 @@
                 //显示预览图蒙版
                 showPreImg: null,
                 // photoApi: 'http://192.168.1.246/advertisement',
-                imgUrl: "http://192.168.1.239/advertisement/DownloadImage?picUrl=" ,
+                imgUrl: this.apiVar.qadnUrl + "/advertisement/DownloadImage?picUrl=" ,
             }
         },
         watch:{
@@ -195,7 +195,7 @@
                                 <el-tooltip placement="bottom" effect="light">
                                     <span class="el-icon-info"></span>
                                     <div slot="content" class="content">
-                                        <p>{{img.pRemarks.username}}上传</p>
+                                        <p>{{img.pRemarks.username + (tabType === 'first' ? "上传" : "收藏")}}</p>
                                         <p>{{img.pRemarks.assettag}}</p>
                                         <p>{{img.pRemarks.address}}</p>
                                     </div>

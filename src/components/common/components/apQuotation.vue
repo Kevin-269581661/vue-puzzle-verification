@@ -729,6 +729,7 @@
                 if (!result.length) {
                     let obj = {};
                     obj.asrID = asidArr[0].asrID;
+                    obj.city = asidArr[0].city;
                     obj.rID = asidArr[0].rID;
                     obj.mVehicle = asidArr[0].mVehicle;
                     obj.asidlist = "";
@@ -752,10 +753,11 @@
                             start = dateFormat.toDate(init.pbStar);
                             end = dateFormat.toDate(init.pbEnd);
                         }
-                        let resRID = res.rID.toString().substring(0, 4);
-                        let dataRID = init.rID.toString().substring(0, 4);
+                        // let resRID = res.rID.toString().substring(0, 4);
+                        // let dataRID = init.rID.toString().substring(0, 4);
                         let resObj = {
                             asrID: init.asrID,
+                            city: init.city,
                             rID: init.rID,
                             mVehicle: init.mVehicle,
                             ds: start,
@@ -763,7 +765,9 @@
                             asidlist: "",
                             mNum: ""
                         };
-                        if (resRID == dataRID && res.ds == start && res.de == end
+                        // if (resRID == dataRID && res.ds == start && res.de == end
+                        //     && res.mVehicle == init.mVehicle && res.asrID == init.asrID) {
+                        if (res.city == init.city && res.ds == start && res.de == end
                             && res.mVehicle == init.mVehicle && res.asrID == init.asrID) {
                             if (asIDs === "") {
                                 asIDs = init.asID.toString();

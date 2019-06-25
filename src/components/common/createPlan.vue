@@ -132,7 +132,7 @@
                                     <el-button type="primary" style="background: #1890FF" icon="el-icon-search"
                                                class="searchBtn" @click="searchFun" :disabled="searchBtnAbled">搜索</el-button>
                                 </div>
-                                
+
                                 <div class="shopcar" @click="dialogVisible()">
                                     <el-badge :value="nowPointNum" class="item">
                                         <img src="../../assets/images/shopCar.png" alt="">
@@ -1436,7 +1436,7 @@
                 beOccupiedNumber: 0,             // 第一次搜索记录时提前保存 planList
                 isOccupied: true,                // 被占搜索时隐藏过滤条件
                 beOccupiedAdsData: [],           // 当前点击行的被占信息{beOccupieApName:'',lState: '',schedules: ''}
-                shopDelRowClick: false,                
+                shopDelRowClick: false,
                 pageNo: 1,                       // 页码
                 totalPage: 1,                    // 总页数
                 getAdsParamsData: {},            //　获取点位列表的参数data
@@ -2043,7 +2043,7 @@
                 }
                 this.isImport = false;
                 // this.dialogTableVisible = true;
-                this.judgeByselect();                
+                this.judgeByselect();
                 this.dialogVisible();
                 console.log('inport----data----shoplist', this.shopingList);
             },
@@ -2281,7 +2281,7 @@
                         apId: this.orderName,
                         startTime: this.dateInput[0],
                         endTime: this.dateInput[1],
-                        rIds: this.planForm.throwCity.join(',')                        
+                        rIds: this.planForm.throwCity.join(',')
                     };
                     api.getApi(this.apiVar.Advertisement+"/GetAdsFromCopiedAdPlan", info).then(res =>{
                         console.log(res.data);
@@ -2363,7 +2363,7 @@
                     importInfo.asID = info.asID
                 }
                 return importInfo;
-            },      
+            },
             // 第四步的导出方案
             downLoadFanan(){
                 let arr = this.excelData(this.shopingList)
@@ -2552,7 +2552,6 @@
                                 res.data.value = res.data.realName;
                                 this.BDData.realName = res.data.realName
                                 this.planForm.ownerSales = res.data.realName
-                                // this.BDuWho = res.data.uWho
                                 // 重新输入账号时，初始化部分数据
                                 this.planForm.companyName = ''
                                 this.planForm.companyBrand = ''
@@ -2563,22 +2562,21 @@
                                 this.getCityList()
                                 this.Get_cName()
                                 let results = [res.data];
-                                clearTimeout(this.timeout)
-                                this.timeout = setTimeout(() => {
-                                    callback(results);
-                                }, 1000 * Math.random());
+                                callback(results);
                             } else {
                                 this.BDData.uid = '0'
                                 this.messageFun('warning',res.data.MSG)
+                                callback([]);
                             }
                         }
 
                     });
+                }else{
+                    callback([]);
                 }
             },
             //获取公司名称列表MyCustomer
             Get_cName() {
-                // 公司信息所在城市
                 let params = {
                     uid: this.BDData.uid,
                     token: this.sessionData.token

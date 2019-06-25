@@ -2222,6 +2222,7 @@
                     })
                 }
                 if(!r_boolean){
+                    this.messageFun('warning','必填项信息不能为空')
                     return
                 }
                 // 广告门校验

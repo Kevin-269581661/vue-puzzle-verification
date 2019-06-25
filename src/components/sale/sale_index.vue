@@ -569,7 +569,7 @@ export default {
 	mounted(){
 		this.getSession();
 		this.getIsCom();
-		let nowDate = timeFormat.toDate(new Date(), '/');		
+		let nowDate = timeFormat.toDate(new Date(), '/');
 		if(indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)){
 			this.getRank();
 		}
@@ -858,13 +858,16 @@ export default {
         color: #fff;
         font-size:18px;
         font-weight: bold;
-        letter-spacing:5px;
+        letter-spacing:1px;
+        text-align: center;
+        display: inline-block;
+        width: 142px;
     }
     /*左边城市名称*/
     .city_name_left{
         bottom: 45px;
         /* left: 88px; */
-		left: 75px;
+		left: 42px;
     }
     /*左边*/
     #first_box{
@@ -909,7 +912,7 @@ export default {
         left: 53px;
     }
     .city_name_meiddle{
-        left: 85px;
+        left: 54px;
         top: 180px;
         display: none;
     }
@@ -978,7 +981,7 @@ export default {
     .city_name_right{
         bottom: 45px;
         /* left: 114px; */
-		left: 100px;
+		left: 64px;
     }
     .three_ranking_num{
         bottom: -30px;

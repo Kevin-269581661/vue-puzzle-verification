@@ -92,7 +92,7 @@
                         </el-tab-pane>
                         <el-tab-pane v-if="isShowAllTab" label="收藏夹" name="second">
                             <!-- 图片 -->
-                            <photo :imgarr="collectImgArr" :show-pic="showPic" :type = activeName @doSomeThing="saveChange"></photo>
+                            <photo :imgarr="collectImgArr" :show-pic="showPic" :tabType = "activeName" @doSomeThing="saveChange"></photo>
                             <!--页码-->
                             <div class="ad_pagination" v-if="showPic ===3">
                                 <el-pagination v-if="paginationShow"
@@ -184,7 +184,7 @@ export default {
             activeName: "first",
             beforActive: 'first',
             //是否搜索到图片
-            showPic: 1,
+            showPic: 3,
             // 是否显示图片
             showBtn: false,
             // 搜索信息
@@ -273,6 +273,11 @@ export default {
                     this.collectSelectInfo = JSON.parse(JSON.stringify(this.searchInfo))
                 }
                 this.searchInfo = JSON.parse(JSON.stringify(this.gallerySelectInfo))
+                if(this.searchInfo.totalpageNum === 0){
+                    this.pageUpImgArr = [];
+                    let params = this.searchFormat();
+                    this.getUpImgInfo(params)
+                }
             } else if (this.activeName == 'second') {
                 if(this.beforActive === 'first'){
                     this.gallerySelectInfo = JSON.parse(JSON.stringify(this.searchInfo))

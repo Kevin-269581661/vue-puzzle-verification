@@ -713,14 +713,14 @@ export default {
 					{
 						color: '#1890FF',
 						name:'发布订单数',
-						barWidth: "20%",
+						barWidth: "10%",
 						type:'bar',
 						data:this.orderPointData.orderData
 					},
 					{
 						color: '#FF9118',
 						name:'录单点位数',
-						barWidth: "20%",
+						barWidth: "10%",
 						type:'bar',
 						yAxisIndex: 1,
 						data:this.orderPointData.pointData

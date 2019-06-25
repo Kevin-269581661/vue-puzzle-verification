@@ -6,7 +6,7 @@
                     <div class="title">
                         <h1>{{upReport.apName}}{{(Info.name =='SK')?'上刊':'下刊'}}报告 
                             <span class="button_box">
-                                <!-- <el-button @click="getPTTx()">导出PPTx</el-button> -->
+                                <el-button @click="getPTTx()" size="small" :loading="pptxLoading">导出PPTx</el-button>
                                 <el-button @click="getPTT()" size="small" :loading="pptLoading">导出PPT</el-button>
                                 <el-button @click="getPDF()" size="small" :loading="pdfLoading">导出PDF</el-button>
                             </span>
@@ -304,8 +304,8 @@ export default {
             //缩略图对话框
             dialogVisible: false,
             dialogImageUrl: "",
-            isDisble: false,
-            isImgDis: false,
+            // 下载按钮loading
+            pptxLoading: false,
             pptLoading: false,
             pdfLoading: false,
         };
@@ -322,180 +322,28 @@ export default {
                 this.searchFun();
             }
         },
-        // // 获取ppt
-        // getPTT(){
-        //     let name = this.Info.name.toString().toLowerCase();
-        //     let val = this.Info.val;
-        //     let info = {
-        //         [name]: val
-        //     };
-        //     let addload = this.$loading({
-        //         lock: true,
-        //         text: '加急下载中...',
-        //         spinner: 'el-icon-loading',
-        //         background: 'rgba(0, 0, 0, 0.7)'
-        //     });
-        //     let tempwindow = window.open();
-        //     tempwindow.document.body.style.color = 'red';
-        //     tempwindow.document.body.style.textAlign = 'center';
-        //     tempwindow.document.body.style.marginTop = '200';
-        //     tempwindow.document.body.innerHTML="正在奋力下载ppt,请稍后！"
-        //     api.getApi(this.apiVar.Advertisement+'/GetPPTReport', info).then(res =>{
-        //         console.log(res.data);
-        //         addload.close();
-        //         if(res.data.code == 300200){
-        //             tempwindow.location = res.data.data;
-        //         }else if(res.data.code == 200200){
-        //             Message.warning(res.data.data);
-        //             tempwindow.document.body.innerHTML = res.data.data;
-        //         }
-        //     }).catch(error =>{
-        //         if (error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1) {
-        //             Message.warning('系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。');
-        //             tempwindow.document.body.innerHTML = '系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。';
-        //         }else{
-        //             if(error.toString().includes('Network Error') || error.toString().includes('504')){
-        //                 Message.warning('系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。');
-        //                 tempwindow.document.body.innerHTML = '系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。';
-        //             }
-        //             console.log('error---', error);
-        //         }
-        //         addload.close();
-        //     });
-        // },
-        // // 获取pptx
-        // getPTTx(){
-        //     let name = this.Info.name.toString().toLowerCase();
-        //     let val = this.Info.val;
-        //     let info = {
-        //         [name]: val
-        //     };
-        //     let addload = this.$loading({
-        //         lock: true,
-        //         text: '加急下载中...',
-        //         spinner: 'el-icon-loading',
-        //         background: 'rgba(0, 0, 0, 0.7)'
-        //     });
-        //     let tempwindow = window.open();
-        //     tempwindow.document.body.style.color = 'red';
-        //     tempwindow.document.body.style.textAlign = 'center';
-        //     tempwindow.document.body.style.marginTop = '200';
-        //     tempwindow.document.body.innerHTML="正在奋力下载ppt,请稍后！"
-        //     api.getApi(this.apiVar.Advertisement+'/GetPPTXReport', info).then(res =>{
-        //         console.log(res.data);
-        //         addload.close();
-        //         if(res.data.code == 300200){
-        //             tempwindow.location = res.data.data;
-        //         }else if(res.data.code == 200200){
-        //             Message.warning(res.data.data);
-        //             tempwindow.document.body.innerHTML = res.data.data;
-        //         }
-        //     }).catch(error =>{
-        //         if (error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1) {
-        //             Message.warning('系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。');
-        //             tempwindow.document.body.innerHTML = '系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。';
-        //         }else{
-        //             if(error.toString().includes('Network Error') || error.toString().includes('504')){
-        //                 Message.warning('系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。');
-        //                 tempwindow.document.body.innerHTML = '系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。';
-        //             }
-        //             console.log('error---', error);
-        //         }
-        //         addload.close();
-        //     });
-        // },
-        // // 获取pdf
-        // getPDF(){
-        //     let name = this.Info.name.toString().toLowerCase();
-        //     let val = this.Info.val;
-        //     let info = {
-        //         [name]: val
-        //     };
-        //     let addload = this.$loading({
-        //         lock: true,
-        //         text: '加急下载中...',
-        //         spinner: 'el-icon-loading',
-        //         background: 'rgba(0, 0, 0, 0.7)'
-        //     });
-        //     let tempwindow = window.open();
-        //     tempwindow.document.body.style.color = 'red';
-        //     tempwindow.document.body.style.textAlign = 'center';
-        //     tempwindow.document.body.style.marginTop = '200';
-        //     tempwindow.document.body.innerHTML="正在奋力下载pdf,请稍后！"
-        //     api.getApi(this.apiVar.Advertisement+'/GetPdfReport', info).then(res =>{
-        //         console.log(res.data);
-        //         addload.close();
-        //         if(res.data.code == 300200){
-        //             tempwindow.location = res.data.data;
-        //         }else if(res.data.code == 300504){
-        //             Message.warning(res.data.data);
-        //             tempwindow.document.body.innerHTML = res.data.data;
-        //         }
-        //     }).catch(error =>{
-        //         if (error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1) {
-        //             Message.warning('系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。');
-        //             tempwindow.document.body.innerHTML = '系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。';
-        //         }else{
-        //             if(error.toString().includes('Network Error') || error.toString().includes('504')){
-        //                 Message.warning('系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。');
-        //                 tempwindow.document.body.innerHTML = '系统正在为您拼命加工报告，由于数据量大，请稍后回来提取报告。。。';
-        //             }
-        //             console.log('error---', error);
-        //         }
-        //         addload.close();
-        //     });
-        // },
-        // 获取ppt
-        getPTT(){
-            let name = this.Info.name.toString().toLowerCase();
-            let val = this.Info.val;
-            let info = {
-                [name]: val
-            };
-            const tempPage = window.open('', '_blank');
-            this.pptLoading = true;            
-            api.getApi(this.apiVar.Advertisement+'/GetPPTReport', info).then(res =>{
-                if(res.data.code == 300200){
-                    let downloadElement = document.createElement('a');
-                    let href = res.data.data;
-                    downloadElement.href = href;
-                    document.body.appendChild(downloadElement);
-                    downloadElement.click(); //点击下载
-                    document.body.removeChild(downloadElement); //下载完成移除元素
-                    tempPage.close();
-                    this.pptLoading = false;                    
-                }else{
-                    this.getPTTFun(tempPage);
-                }
-            });
+        // 获取pptx
+        getPTTx(){
+            this.getApiFun('/GetPPTXReport', this.pptLoading, 'pptx');
         },
         // 获取ppt
-        getPTTFun(tempPage){
-            let name = this.Info.name.toString().toLowerCase();
-            let val = this.Info.val;
-            let info = {
-                downtype: 2,
-                key: val,
-                type: name=='sk' ? 0 : 1,
-            };
-            console.log(tempPage, 'tempage---');
-            this.pptLoading = false;            
-            let routeUrl = this.$router.resolve({
-                path: "/progressDown",
-                query: info,
-            });
-            tempPage.location = routeUrl.href;
+        getPTT(){
+            this.getApiFun('/GetPPTReport', this.pptLoading, 'ppt');
         },
         // 获取pdf
         getPDF(){
+            this.getApiFun('/GetPdfReport', this.pdfLoading, 'pdf');
+        },
+        // 接口Fun
+        getApiFun(apiName, loading, type){
             let name = this.Info.name.toString().toLowerCase();
             let val = this.Info.val;
             let info = {
                 [name]: val
             };
             const tempPage = window.open('', '_blank');      
-            this.pdfLoading = true;                  
-            api.getApi(this.apiVar.Advertisement+'/GetPdfReport', info).then(res =>{
+            loading = true;                  
+            api.getApi(this.apiVar.Advertisement+apiName, info).then(res =>{
                 if(res.data.code == 300200){
                     let downloadElement = document.createElement('a');
                     let href = res.data.data;
@@ -504,22 +352,29 @@ export default {
                     downloadElement.click(); //点击下载
                     document.body.removeChild(downloadElement); //下载完成移除元素
                     tempPage.close();
-                    this.pdfLoading = false;                    
+                    loading = false;                    
                 }else{
-                    this.getPDFFun(tempPage);
+                    let fileInfo = {
+                        downtype: 2,
+                        key: val,
+                    };
+                    if(type == 'ppt'){
+                        fileInfo.type = name=='sk' ? 0 : 1;
+                    }
+                    if(type == 'pdf'){
+                        fileInfo.type = name=='sk' ? 2 : 3;
+                    }
+                    if(type == 'pptx'){
+                        fileInfo.type = name=='sk' ? 4 : 5;
+                    }
+                    this.getFileProcessFun(tempPage, fileInfo);
+                    loading = false;
                 }
             });
         },
-        // 获取pdf
-        getPDFFun(tempPage){
-            let name = this.Info.name.toString().toLowerCase();
-            let val = this.Info.val;
-            let info = {
-                downtype: 2,
-                key: val,
-                type: name=='sk' ? 2 : 3,
-            };
-            this.pdfLoading = false;
+        // 获取pptx
+        getFileProcessFun(tempPage, info){
+            console.log(tempPage, 'tempage---');
             let routeUrl = this.$router.resolve({
                 path: "/progressDown",
                 query: info,

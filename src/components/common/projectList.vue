@@ -196,7 +196,7 @@
                 loading: true,
                 // 分页信息
                 pageSize: 10,
-                pageSizes: [10, 20, 30, 40],
+                pageSizes: [10, 20, 50],
                 currPage: 1,
                 totalNum: 0,
                 // 分配人员loading

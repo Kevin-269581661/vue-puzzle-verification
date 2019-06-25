@@ -116,7 +116,7 @@ export default {
     display: block;
     margin: 24px 0;
     text-align: left;
-    min-width: 250px;
+    min-width: 320px;
     padding: 0 10px;
 }
 .button_box button a{

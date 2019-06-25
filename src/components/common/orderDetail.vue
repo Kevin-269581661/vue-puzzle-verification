@@ -160,7 +160,7 @@
                         <ap-quotation @detailInfo="setInfo" :quotationData="quotation" :copydata="copyAsidArr" :isorder="true" :shopingList="[]" class="price_quo"></ap-quotation>
                     </el-tab-pane>
                     <el-tab-pane label="物料信息" name="third" :disabled="usableBtn">
-                        <p style="margin-left: 28px;">
+                        <p class="search-row">
                             <el-button type="primary" size="small" @click="uploadMater()">添加上画信息</el-button>
                             <!-- <el-button type="primary" size="small" @click="uploadMater()">添加上画备注</el-button> -->
                         </p>
@@ -2580,10 +2580,7 @@ export default {
     }
 
     .price_quo {
-        margin: 0 auto;
-        width: 96%;
-        margin-top: 10px;
-        margin-bottom: 20px;
+        margin: 0 32px;
     }
 
     /deep/ .el-tabs__nav-scroll {
@@ -2610,7 +2607,7 @@ export default {
     }
 
     .table_wrap {
-        padding: 10px 28px 28px 28px;
+        margin: 16px 32px;
     }
 
     /* 搜索 */
@@ -2668,7 +2665,7 @@ export default {
     }
 
     .panel {
-        padding: 0 30px;
+        margin: 0 32px;
     }
 
     .step3 {
@@ -2717,14 +2714,9 @@ export default {
         float: right;
     }
 
-    /*滚动条*/
-    /deep/ .el-table__body-wrapper {
-        height: 480px;
-    }
-
     /*详情头部*/
     .content_top_wrap {
-        padding: 34px 28px;
+        padding: 24px 32px;
         background: #ffffff;
         /* border: 1px solid #dedede; */
         height: 145px;
@@ -2842,7 +2834,9 @@ export default {
         text-align: right;
         padding-right: 20px;
     }
-
+    .third-wrap{
+        margin-bottom: 32px;
+    }
     /*上刊报告*/
     .imgs-box {
         margin: 0 auto;
@@ -2854,17 +2848,6 @@ export default {
 
     .progress {
         float: right;
-    }
-
-    .showimgbox {
-        text-align: center;
-        background: #f8f8f8;
-        width: 100%;
-        height: 28px;
-        line-height: 28px;
-        margin-top: 20px;
-        color: #999999;
-        cursor: pointer;
     }
 
     /deep/ .up-loader-header .el-input__inner {
@@ -2983,7 +2966,7 @@ export default {
         text-align: right;
     }
 
-    /deep/ .el-radio-group {
+    /deep/ .forth-wrap .el-radio-group {
         margin-bottom: 10px;
     }
 
@@ -3057,11 +3040,6 @@ export default {
         left: -3px;
     }
 
-    /*滚动条*/
-    /deep/ .el-table__body-wrapper {
-        height: 480px;
-    }
-
     /deep/ .el-table__row td:nth-child(2) .cell span {
         width: 225px;
     }
@@ -3086,7 +3064,7 @@ export default {
 
     /* 搜索 */
     .search-row {
-        padding: 8px 28px;
+        margin: 0 32px;
     }
 
     .search_col {
@@ -3308,5 +3286,8 @@ export default {
 
     /deep/ .el-table__row .cell span {
         overflow-x: initial;
+    }
+    /deep/ .table_wrap .el-table__body-wrapper{
+        min-height: auto;
     }
 </style>

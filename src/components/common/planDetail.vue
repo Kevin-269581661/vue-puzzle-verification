@@ -501,10 +501,7 @@ export default {
     background-color: #fff;
 }
 .price_quo{
-    margin: 0 auto;
-    width: 96%;
-    margin-top: 10px;
-    margin-bottom: 20px;
+    margin: 8px 32px;
 }
 /deep/ .el-tabs__nav-scroll {
     padding-left: 28px;
@@ -529,7 +526,7 @@ export default {
 }
 
 .table_wrap {
-    padding: 10px 24px;
+    padding: 8px 32px;
 }
 
 /*报价单*/
@@ -558,14 +555,9 @@ export default {
     top: -5px;
 }
 
-/*滚动条*/
-/deep/ .el-table__body-wrapper {
-    height: 480px;
-}
-
 /*详情头部*/
 .content_top_wrap {
-    padding: 34px 28px;
+    padding: 24px 32px;
     background: #ffffff;
     height: 145px;
     position: relative;
@@ -671,5 +663,11 @@ export default {
 /deep/ .el-table__expanded-cell[class*=cell] {
     padding: 0 46px;
     background-color: #F7F7F7;;
+}
+/deep/ .table_wrap .el-table__body-wrapper{
+    min-height: auto;
+}
+.box-wrap, #pane-second{
+    margin-bottom: 32px;
 }
 </style>

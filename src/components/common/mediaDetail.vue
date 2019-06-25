@@ -1295,4 +1295,7 @@
         background: #C1C1C1;
         border-radius: 4px;
     }
+    /deep/ .ad_ad .el-table__body-wrapper{
+        min-height: auto;
+    }
 </style>

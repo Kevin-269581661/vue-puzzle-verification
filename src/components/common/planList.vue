@@ -54,7 +54,7 @@
                         </el-table-column>
                         <el-table-column prop="cName" label="客户名称" min-width="12.6%" show-overflow-tooltip>
                         </el-table-column>
-                        <el-table-column prop="bTitle" label="品牌名称" min-width="6.6%" show-overflow-tooltip>
+                        <el-table-column prop="bTitle" label="品牌名称" min-width="7.6%" show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column label="方案价格" sortable :sort-method="sortPrice" width="120px" align="right">
                             <template slot-scope="scope">
@@ -87,7 +87,7 @@
                                 </p>
                             </template>
                         </el-table-column>
-                        <el-table-column label="创建日期" min-width="8.3%" sortable :sort-by="sortData" show-overflow-tooltip>
+                        <el-table-column label="创建日期" width="100px" sortable :sort-by="sortData" show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <span>{{formatTime(scope.row.apcTime)}}</span>
                             </template>
@@ -270,8 +270,8 @@ export default {
             companyData: [],
             // 分页信息
             paginationShow: true,
-            pageSize: 20,
-            pageSizes: [20, 50, 80, 100],
+            pageSize: 10,
+            pageSizes: [10, 20, 50],
             currPage: 1,
             totalPage: 0,
             totalNum: 0,

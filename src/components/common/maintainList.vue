@@ -99,7 +99,7 @@
                     <div class="ad_pagination" v-if="totalNum" >
                         <el-pagination small background 
                             :current-page.sync="currPage" 
-                            :page-sizes="[5, 10]" 
+                            :page-sizes="[10, 20, 50]" 
                             :page-size="pageSize" 
                             layout="sizes, prev, pager, next, jumper" 
                             :total="totalNum" 
@@ -183,7 +183,7 @@ export default {
         return {
             // 公司列表
             companyArr: [],
-            pageSize: 5,
+            pageSize: 10,
             currPage: 1,
             totalPage: 0,
             totalNum: 0,

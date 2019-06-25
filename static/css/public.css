@@ -223,8 +223,7 @@
 }
 
 .mediaList_wrap .mediaList_container {
-    width: 96%;
-    margin: 24px auto;
+    margin: 24px 32px;
 }
 
 .mediaList_wrap .mediaList_container .table_wrap {

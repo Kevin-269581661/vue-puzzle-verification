@@ -48,8 +48,7 @@
                             <i class="el-icon-search" @click="handlePictureCardPreview(item)"></i>
                         </p>
                         <p class="mask_a">
-                           <!-- <a :href="item.url" @click="downloadImg" :download="item.userName + item.createTime + '.png'">下载图片</a>-->
-                            <a :href= "imgUrl + item.url" >下载图片</a>
+                            <a :href= "imgUrl + item.id" >下载图片</a>
                         </p>
                     </div>
                 </div>
@@ -146,7 +145,7 @@
                 uploadImg: [],           // 显示已上传的图片
                 // 上传图片关联的行业
                 industryImg:[],
-                imgUrl: this.apiVar.qadnUrl + "/advertisement/DownloadImage?picUrl=" ,
+                imgUrl: this.apiVar.qadnUrl + "/advertisement/DownloadCompanyImage?id=" ,
             }
         },
         mounted(){
@@ -546,6 +545,22 @@
     }
     /*大图*/
     .imgPreview /deep/ .el-dialog{
+        width: 35%;
+    }
+    .imgPreview /deep/ .el-dialog__body{
+        text-align: center;
+    }
+    /deep/ .imgPreview .el-dialog__body img{
+        max-width: 100%;
+        width: auto;
+        height: 550px;
+    }
+    @media screen and (max-width: 1440px) {
+        /deep/ .imgPreview .el-dialog__body img{
+            height: 450px;
+        }
+    }
+  /*  .imgPreview /deep/ .el-dialog{
         max-width: 42%;
     }
     .imgPreview /deep/ .el-dialog__body{
@@ -557,7 +572,7 @@
     .imgPreview /deep/ .el-dialog img{
         width: 100%;
         max-height: 660px;
-    }
+    }*/
     /*上传图片*/
     .upload_p{
         margin-bottom: 16px;
@@ -577,11 +592,7 @@
         height: 104px;
         line-height: 104px;
     }
-    .upload_dialog_body /deep/ .el-upload--picture-card i{
-        /*position: absolute;*/
-        /*top: 49%;*/
-        /*left: 45%;*/
-    }
+
     /*上传成功*/
     /deep/ .el-upload-list--picture-card .el-upload-list__item{
         width: 100%;

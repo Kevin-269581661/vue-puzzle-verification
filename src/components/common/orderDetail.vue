@@ -1646,7 +1646,7 @@ export default {
                 pids: pIDList.join(','),
             }
             console.log('params',params)
-            api.getApi('http://192.168.1.246/advertisement' + '/GetUserStatusByPid',params).then(res=>{
+            api.getApi(this.apiVar.Advertisement + '/GetUserStatusByPid',params).then(res=>{
                 console.log('检测图片收藏状态res',res)
                 if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                     this.loginTimeout()

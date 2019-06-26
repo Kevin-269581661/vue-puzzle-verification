@@ -983,14 +983,6 @@ export default {
     line-height: 32px;
 }
 
-/*按钮*/
-/deep/ .el-button--default:focus,
-.el-button--default:hover {
-    color: #606266;
-    border-color: #dcdfe6;
-    background-color: #fcfcfc;
-}
-
 /deep/ .el-form.demo-ruleForm {
     display: flex;
     flex-wrap: wrap;

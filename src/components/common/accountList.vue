@@ -34,7 +34,7 @@
                     </el-col>
                 </el-row>
                 <div class="table_wrap">
-                    <el-table border :data="currAccount" style="width: 100%" v-loading="loading"
+                    <el-table border :data="currAccount" style="width: 100%"  @sort-change="sortChange" v-loading="loading"
                               element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading"
                               :default-sort="{prop: 'joinTime', order: 'descending'}">
                         <el-table-column label="账号" min-width="11.8%">
@@ -53,7 +53,7 @@
                         </el-table-column>
                         <el-table-column prop="puName" label="上级" min-width="7.8%">
                         </el-table-column>
-                        <el-table-column label="创建日期" min-width="9.8%" sortable :sort-by="sortData">
+                        <el-table-column prop="joinTime" label="创建日期" min-width="9.8%" sortable="custom">
                             <template slot-scope="scope">
                                 <span>{{formatTime(scope.row.joinTime)}}</span>
                             </template>
@@ -149,6 +149,10 @@
                     role: '',
                     state: '',
                     company: '',
+                    // 按照啥排序
+                    orderby: '',
+                    // 升序降序0/1
+                    desc: "",
                 },
                 showNewBtn: true,
                 companyData: [],
@@ -277,13 +281,15 @@
                     start: this.currPage,
                     pagesize: this.pageSize
                 };
-                let { keyword, role, state, select, company } = this.searchInfo;
+                let { keyword, role, state, select, company, orderby, desc } = this.searchInfo;
                 info = {
                     ...info,
                     ...(keyword && {keywordType: select, keyword}),
                     ...(state && {ustate: state}),
                     ...(role && {uType: role}),
-                    ...(company && {asrID: company})
+                    ...(company && {asrID: company}),
+                    ...(orderby && {orderby}),
+                    ...(desc!=='' && desc>=0 &&{desc})
                 };
                 return info;
             },
@@ -307,9 +313,17 @@
                 };
                 return obj;
             },
-            //日期排序
-            sortData(a, b) {
-                return dateFormat.toDate(a.joinTime, '') - dateFormat.toDate(b.joinTime, '');                
+            // 时间排序(请求后台接口进行排序)
+            sortChange(column){
+                console.log('columm---', column);
+                if(column.order == "ascending"){
+                    this.searchInfo.orderby = column.prop;
+                    this.searchInfo.desc = 0;
+                }else if(column.order == "descending"){
+                    this.searchInfo.orderby = column.prop;
+                    this.searchInfo.desc = 1;
+                }
+                this.searchFun();
             },
             // 时间格式化
             formatTime(time) {

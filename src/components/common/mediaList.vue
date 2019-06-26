@@ -1113,13 +1113,6 @@
         padding: 7px 15px 7px 20px;
     }
 
-    /*按钮*/
-    /deep/ .el-button--default:focus, .el-button--default:hover {
-        color: #606266;
-        border-color: #dcdfe6;
-        background-color: #fcfcfc;
-    }
-
     .content_bottom_btn /deep/ .el-button span {
         position: relative;
         top: -2px;

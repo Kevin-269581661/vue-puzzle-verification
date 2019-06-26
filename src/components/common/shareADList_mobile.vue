@@ -1153,7 +1153,7 @@
         padding-left: 0.4rem;
         right: 0;
         color: rgba(52, 52, 52, 0.85);
-        background: #fff;
+        background: rgba(249, 249, 249, 1);
         z-index: 111;
         font-weight: normal;
     }

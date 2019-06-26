@@ -78,10 +78,16 @@
             // 保存图片
             saveImgFun(item) {
                 console.log('保存图片', item)
+                let lID = ''
+                if(this.tabType === 'first'){
+                    lID = item.adsInfo ? item.adsInfo.lID : ''
+                }else{
+                    lID = item.pRemarks.lid
+                }
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    lId: this.tabType === 'first' ?  item.adsInfo.lID : item.pRemarks.lid ,
+                    lId: lID,
                     pId: item.pID,
                     picUrl: item.pUrl,
                     type: this.publish === 'SK' ? 0 : this.publish === 'XK' ? 1 : "",

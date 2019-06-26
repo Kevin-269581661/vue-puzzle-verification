@@ -39,7 +39,7 @@
         },
         data() {
             return {
-                sessionData: JSON.parse(sessionStorage.getItem('session_data')),
+                sessionData: '',
                 //缩略图
                 dialogImageUrl: "",
                 dialogVisible: false,
@@ -48,6 +48,7 @@
                 // photoApi: 'http://192.168.1.246/advertisement',
                 galleryImgUrl: this.apiVar.qadnUrl + "/advertisement/DownloadImage?picUrl=" ,
                 collectImgUrl: this.apiVar.qadnUrl + "/advertisement/DownloadUserImage?id=" ,
+                isShowCollect: true,
             }
         },
         watch:{
@@ -56,7 +57,18 @@
                 this.publish = newVal
             },
         },
+        mounted(){
+            this.getSessionData();
+        },
         methods: {
+            getSessionData(){
+                this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
+                if(this.sessionData.asrID === '999'){
+                    this.isShowCollect = false
+                }else{
+                    this.isShowCollect = true
+                }
+            },
             // 查看图片
             handlePictureCardPreview(item) {
                 console.log('imgInfo--------', item);
@@ -152,8 +164,10 @@
                             <!--查看缩略图和下载-->
                             <div class="mask-btn" v-if="showPreImg == index">
                                 <p class="mask_icon">
-                                    <i v-if="!img.isCollection" class="el-icon-star-off" @click="saveImgFun(img)" ></i>
-                                    <i v-if="img.isCollection" class="el-icon-star-on icon_save" @click="cancelImgFun(img)" ></i>
+                                    <span v-if="isShowCollect">
+                                        <i v-if="!img.isCollection" class="el-icon-star-off" @click="saveImgFun(img)" ></i>
+                                        <i v-if="img.isCollection" class="el-icon-star-on icon_save" @click="cancelImgFun(img)" ></i>
+                                    </span>
                                     <i class="el-icon-search" @click="handlePictureCardPreview(img)"></i>
                                 </p>
                                 <p class="mask_a">

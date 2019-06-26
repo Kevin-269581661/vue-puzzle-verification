@@ -1,5 +1,8 @@
 <template>
-    <div class="orderPhoto">
+    <div class="orderPhoto"
+         v-loading="imgLoading"
+         element-loading-text="玩命加载中..."
+         element-loading-spinner="el-icon-loading">
         <el-row :gutter="32">
             <el-col :span="6">
                 <span>行业类型:</span>
@@ -120,6 +123,8 @@
         data(){
             return{
                 sessionData: '',
+                // 图片加载
+                imgLoading: true,
                 showPic: 1,
                 isShowBtn: false,
                 // 页码及条数
@@ -171,28 +176,30 @@
                 console.log('获取所有行业信息',this.bussiness)
             },
             //获取图片列表
-            getIndustryImgList(){
-              let params = {
-                  uid: this.sessionData.uID,
-                  token: this.sessionData.token,
-                  pageNo: this.pageData.pageNum,
-                  pageSize: this.pageData.pageSize,
-                  industryId: this.industryIdArr[1],
-              }
-              if(!params.industryId){
-                  delete params.industryId
-              }
-              api.getApi(this.apiVar.Advertisement + '/image/listCompanyImage', params).then(res=>{
-                  console.log('图片列表res',res)
-                  if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                      this.loginTimeout()
-                  } else if (res.data.SysCode === 200200) {
-                      this.setImgList(res.data.data)
-                      this.pageData.totalSize = res.data.total
-                  } else {
-                      this.messageFun('warning', res.data.MSG)
-                  }
-              })
+            getIndustryImgList() {
+                this.imgLoading = true
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    pageNo: this.pageData.pageNum,
+                    pageSize: this.pageData.pageSize,
+                    industryId: this.industryIdArr[1],
+                }
+                if (!params.industryId) {
+                    delete params.industryId
+                }
+                api.getApi(this.apiVar.Advertisement + '/image/listCompanyImage', params).then(res => {
+                    console.log('图片列表res', res)
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        this.loginTimeout()
+                    } else if (res.data.SysCode === 200200) {
+                        this.setImgList(res.data.data)
+                        this.pageData.totalSize = res.data.total
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                    this.imgLoading = false
+                })
             },
             //
             setImgList(data){
@@ -490,7 +497,7 @@
     .industry_read /deep/ .el-input__suffix{
         display: none;
     }
-    .industry_read /deep/ .el-input__icon{
+    .industry_read /deep/ .el-cascader__label span{
         color: #c0c4cc;
     }
 

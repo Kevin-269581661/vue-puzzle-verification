@@ -82,34 +82,35 @@
                                 <el-pagination
                                     v-if="paginationShow"
                                     background
-                                    :current-page.sync="searchInfo.pageNum"
+                                    :current-page.sync="galleryPageData.pageNum"
                                     :page-sizes="[10, 20, 50]"
-                                    :page-size="searchInfo.pageSize"
+                                    :page-size="galleryPageData.pageSize"
                                     layout="total, sizes, prev, pager, next, jumper"
-                                    :total="searchInfo.totalpageNum"
+                                    :total="galleryPageData.totalpageNum"
                                     @size-change="sizeChange"
                                     @current-change='changePage'>
                                 </el-pagination>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane v-if="isShowAllTab" label="收藏夹" name="second"
-                                     v-loading="secondBodyLoading"
-                                     element-loading-text="玩命加载中..."
-                                     element-loading-spinner="el-icon-loading">
-                            <!-- 图片 -->
-                            <photo :imgarr="collectImgArr" :show-pic="showPic" :tabType = "activeName" @doSomeThing="saveChange"></photo>
-                            <!--页码-->
-                            <div class="ad_pagination" v-if="showPic ===3">
-                                <el-pagination v-if="paginationShow"
-                                               background
-                                               :current-page.sync="searchInfo.pageNum"
-                                               :page-sizes="[10, 20, 50]"
-                                               :page-size="searchInfo.pageSize"
-                                               layout="total, sizes, prev, pager, next, jumper"
-                                               :total="searchInfo.totalpageNum"
-                                               @size-change="sizeChange"
-                                               @current-change='changePage'>
-                                </el-pagination>
+                        <el-tab-pane v-if="isShowAllTab" label="收藏夹" name="second">
+                            <div v-loading="secondBodyLoading"
+                                 element-loading-text="玩命加载中..."
+                                 element-loading-spinner="el-icon-loading">
+                                <!-- 图片 -->
+                                <photo :imgarr="collectImgArr" :show-pic="showPic" :tabType = "activeName" @doSomeThing="saveChange"></photo>
+                                <!--页码-->
+                                <div class="ad_pagination" v-if="showPic ===3">
+                                    <el-pagination v-if="paginationShow"
+                                                   background
+                                                   :current-page.sync="collectPageData.pageNum"
+                                                   :page-sizes="[10, 20, 50]"
+                                                   :page-size="collectPageData.pageSize"
+                                                   layout="total, sizes, prev, pager, next, jumper"
+                                                   :total="collectPageData.totalpageNum"
+                                                   @size-change="sizeChange"
+                                                   @current-change='changePage'>
+                                    </el-pagination>
+                                </div>
                             </div>
                         </el-tab-pane>
                         <el-tab-pane v-if="isShowAllTab" label="行业图片" name="three">
@@ -124,9 +125,7 @@
 <script>
     import {api} from "../../api/api.js";
     import photo from './components/photo.vue';
-    import orderPhoto from "./components/orderPhoto.vue"
-    // 时间格式化
-    import dateFormat from "../../commonFun/timeFormat.js";
+    import orderPhoto from "./components/orderPhoto.vue";
     import industryToText from "../../commonFun/industryToText.js";
     import areaPackage_new from "../../commonFun/areaPackage_new.js";
     import {
@@ -203,15 +202,16 @@ export default {
                 citySelect: [],         // 地区搜索
                 industryIdArr: [],      // 搜索行业
                 publish: 'SK',            // 上下刊
-                pageNum: 1,
-                pageSize: 10,
-                totalpageNum: 0
             },
             // 上下刊下拉
             publish: 'SK',
             // 收藏夹图片列表
             collectImgArr: [],
-            // photoApi: 'http://192.168.1.246/advertisement',
+            galleryPageData:{
+                pageNum: 1,
+                pageSize: 10,
+                totalpageNum: 0
+            },
             //  案例库搜索条件
             gallerySelectInfo: {
                 LabSelect: '',
@@ -222,6 +222,11 @@ export default {
                 apName: '',
                 resName: '',
                 publish: 'SK',
+                pageNum: 1,
+                pageSize: 10,
+                totalpageNum: 0
+            },
+            collectPageData:{
                 pageNum: 1,
                 pageSize: 10,
                 totalpageNum: 0
@@ -308,6 +313,7 @@ export default {
         reset(){
             console.log('重置activeName',this.activeName)
             this.resetData(this.searchInfo)
+            this.initPage()
             if (this.activeName == 'first') {
                 this.pageUpImgArr = [];
                 this.resetData(this.gallerySelectInfo)
@@ -328,12 +334,6 @@ export default {
                     selectInfo[key] = []
                 } else if (key === 'publish') {
                     selectInfo[key] = 'SK'
-                } else if (key === 'pageSize') {
-                    selectInfo[key] = 10
-                } else if (key === 'pageNum') {
-                    selectInfo[key] = 1
-                } else if (key === 'totalpageNum') {
-                    selectInfo[key] = 0
                 } else {
                     selectInfo[key] = ''
                 }
@@ -341,15 +341,14 @@ export default {
         },
         // 搜索
         searchFun(){
+            this.initPage()
             if (this.activeName == 'first') {
                 let upinfo = this.searchFormat();
                 this.pageUpImgArr = []
-                this.initPage = []
                 this.getUpImgInfo(upinfo);
             } else if (this.activeName == "second") {
                 let collectParams = this.searchFormat();
                 this.collectImgArr = []
-                this.initPage = []
                 this.getCollectImgList(collectParams)
             }
         },
@@ -365,8 +364,8 @@ export default {
                     resourceName: this.searchInfo.resName,
                     asLab: this.searchInfo.LabSelect,
                     prid: '',
-                    pageNum: this.searchInfo.pageNum,
-                    pageSize: this.searchInfo.pageSize,
+                    pageNum: this.galleryPageData.pageNum,
+                    pageSize: this.galleryPageData.pageSize,
                 };
                 if(this.searchInfo.date){
                     info.ls = this.searchInfo.date[0];
@@ -391,8 +390,8 @@ export default {
                     orderName: this.searchInfo.apName,
                     resourceName: this.searchInfo.resName,
                     asLabel: this.searchInfo.LabSelect,
-                    pageNo: this.searchInfo.pageNum,
-                    pageSize: this.searchInfo.pageSize,
+                    pageNo: this.collectPageData.pageNum,
+                    pageSize: this.collectPageData.pageSize,
                 };
                 if(this.searchInfo.industryIdArr){
                     info.industryId = this.searchInfo.industryIdArr[1];
@@ -423,7 +422,7 @@ export default {
                     if (!res.data.SysCode) {
                         console.log(res.data);
                         let dataInfo = res.data;
-                        this.searchInfo.totalpageNum = dataInfo.total;
+                        this.galleryPageData.totalpageNum = dataInfo.total;
                         if (dataInfo.total) {
                             for (let data of dataInfo.list) {
                                 if ((typeof data.pRemarks) == 'string') {
@@ -501,7 +500,7 @@ export default {
                     } else {
                         this.showPic = 1
                     }
-                    this.searchInfo.totalpageNum = res.data.total
+                    this.collectPageData.totalpageNum = res.data.total
                     this.collectImgArr = imgList
                 } else {
                     this.messageFun('warning', res.data.MSG)
@@ -516,8 +515,8 @@ export default {
                 this.collectImgArr =[]
             }else if(this.activeName == 'second'){
                 // 最后一页（大于1页）且是最后一张图片
-                if(this.collectImgArr.length <= 1 && this.searchInfo.pageNum > 1){
-                    this.searchInfo.pageNum -= 1
+                if(this.collectImgArr.length <= 1 && this.collectPageData.pageNum > 1){
+                    this.collectPageData.pageNum -= 1
                 }
                 let collectParams = this.searchFormat();
                 this.getCollectImgList(collectParams)
@@ -526,20 +525,39 @@ export default {
         // 页数大小改变
         sizeChange(pageVal) {
             console.log("pageVal", pageVal);
-            this.searchInfo.pageNum = 1;
-            this.searchInfo.pageSize = pageVal;
+            // this.searchInfo.pageNum = 1;
+            // this.searchInfo.pageSize = pageVal;
+            if(this.activeName === 'first'){
+                this.galleryPageData.pageNum = 1
+                this.galleryPageData.pageSize = pageVal
+            }else if (this.activeName === 'second'){
+                this.collectPageData.pageNum = 1
+                this.collectPageData.pageSize = pageVal
+            }
             this.searchFun();
         },
         // 分页功能
         changePage(page) {
-            console.log('page----', page);
-            this.searchInfo.pageNum = page;
+            console.log('page----', page); //
+            if(this.activeName === 'first'){
+                this.galleryPageData.pageNum = page
+            }else if (this.activeName === 'second'){
+                this.collectPageData.pageNum = page
+            }
+            // this.searchInfo.pageNum = page;
             this.searchFun();
         },
         // 分页初始化
         initPage(){
-            this.searchInfo.pageNum = 1;
-            this.searchInfo.pageSize = 10;
+            // this.searchInfo.pageNum = 1;
+            // this.searchInfo.pageSize = 10;
+            if(this.activeName === 'first'){
+                this.galleryPageData.pageNum = 1
+                this.galleryPageData.pageSize = 10
+            }else if (this.activeName === 'second'){
+                this.collectPageData.pageNum = 1
+                this.collectPageData.pageSize = 10
+            }
         },
         // 导出功能
         allDownLoad(){

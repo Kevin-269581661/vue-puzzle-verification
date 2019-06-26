@@ -2235,20 +2235,16 @@
                     // && (this.m_boolean.flag && this.rt_boolean.flag)
                     console.log('this.m_boolean',this.m_boolean,'this.rt_boolean',this.rt_boolean)
                     if (this.m_boolean.isOne || this.rt_boolean.isOne) {
-                        console.log('1111111')
                         if (this.m_boolean.flag || this.rt_boolean.flag){
-                            console.log('2222222222')
                             isBool = true
                         } else {
-                            console.log('3333333333')
+
                         }
                     } else {
-                        console.log('4444444444')
                         if (this.m_boolean.flag && this.rt_boolean.flag) {
                             isBool = true
-                            console.log('5555555555')
                         } else {
-                            console.log('6666666666')
+
                         }
                     }
                     if(isBool){

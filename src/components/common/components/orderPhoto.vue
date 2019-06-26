@@ -22,10 +22,10 @@
             </el-col>
         </el-row>
         <div>
-            <div class="photo_list clearfix">
+            <div class="photo_list clearfix" :class="showPic === 1 ? 'no_data' : ''">
                 <div class="noFind" v-show="showPic === 1">
                     <img src="../../../assets/images/tempPic.png" alt="">
-                    <p style="margin-top: -10px">暂无数据</p>
+                    <p style="margin-top: -10px;color: #666">暂无数据</p>
                 </div>
                 <div class="photo_card"
                      v-show="showPic === 2"
@@ -61,7 +61,7 @@
                     layout="total,sizes, prev, pager, next, jumper"
                     @current-change="changePage"
                     @size-change="changeSize"
-                    :page-sizes="[10, 20]"
+                    :page-sizes="[10, 20, 50]"
                     :current-page.sync="pageData.pageNum"
                     :page-size="pageData.pageSize"
                     :total="pageData.totalSize">
@@ -304,10 +304,6 @@
                     }
                 })
             },
-            // 图片导出
-            photoDownLoad(){
-
-            },
             // 图片删除
             deletImg(){
                 // let params = {
@@ -370,13 +366,13 @@
             changePage(val){
                 console.log('当前页',val)
                 this.pageData.pageNum = val
-                this.getTableData()
+                this.getIndustryImgList()
             },
             // 每页的条数
             changeSize(val){
                 console.log('每页的条数',val)
                 this.pageData.pageSize = val
-                this.getTableData()
+                this.getIndustryImgList()
                 // this.setFixedTableHieght()
             },
             // 操作提示统一方法
@@ -433,7 +429,11 @@
     }
 
     .photo_list{
-        min-height: 641px;
+        min-height: 712px;
+    }
+
+    .photo_list.no_data{
+        min-height: 412px;
     }
 
     /*图片*/
@@ -489,6 +489,9 @@
 
     .industry_read /deep/ .el-input__suffix{
         display: none;
+    }
+    .industry_read /deep/ .el-input__icon{
+        color: #c0c4cc;
     }
 
     .photo_card .mask-btn {

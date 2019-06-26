@@ -138,7 +138,7 @@
                     });
                     return;
                 }
-                let loading = this.$loading({
+                this.loading = this.$loading({
                     lock: true,
                     text: '正在登录...',
                     spinner: 'el-icon-loading',
@@ -164,7 +164,7 @@
                             this.getIndustry();
                             userMsg.username = name
                             sessionStorage.setItem("session_data", JSON.stringify(userMsg));//userMsg.realName
-                            loading.close()
+                            // this.loading.close()
                             if (userMsg.uType === 'SM') {
                                 //sessionStorage.getItem("real_name") 获取session的值
                                 this.$router.push('/superOperate')
@@ -190,19 +190,19 @@
                                 message: '用户名或密码错误！',
                                 type: 'warning'
                             })
+                            this.loading.close()
                         }
                     } else {
-                        setTimeout(function () {
-                            Message({
-                                message: '登录异常！',
-                                type: 'warning'
-                            })
-                        }, 500)
+                        Message({
+                            message: '登录异常！',
+                            type: 'warning'
+                        })
+                        this.loading.close()
                     }
-                    loading.close()
+
                 }).catch(err => {
                     console.log(err);
-                    loading.close()
+                    this.loading.close()
                 });
                 this.isLogin = true
                 if (this.websock !== '') {
@@ -343,9 +343,13 @@
                 } else {
                     console.log('非扫码登录')
                 }
-
             },
         },
+        beforeDestroy() {
+            if(this.loading){
+                this.loading.close()
+            }
+        }
     }
 
 </script>

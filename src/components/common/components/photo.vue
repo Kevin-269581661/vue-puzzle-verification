@@ -69,7 +69,7 @@
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    lId: item.pRemarks.lid,
+                    lId: this.tabType === 'first' ?  item.adsInfo.lID : item.pRemarks.lid ,
                     pId: item.pID,
                     picUrl: item.pUrl,
                     type: this.publish === 'SK' ? 0 : this.publish === 'XK' ? 1 : "",
@@ -114,26 +114,6 @@
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }
-                })
-            },
-            // 下载图片
-            downloadImg(item){
-                console.log('下载图片item',item)
-                let params = {
-                    // uid: this.sessionData.uID,
-                    // token: this.sessionData.token,
-                    // pId: item.pID,
-                    picUrl: item.pUrl
-                }
-                //DownloadImage?picUrl=
-                api.getApi_file(this.apiVar.Advertisement + '/DownloadImage',params).then(res=>{
-                    console.log('下载图片',res)
-                    this.imgUrl = res.data
-                    // if (res.data.SysCode === 200200) {
-                    //     this.messageFun('success', '下载成功')
-                    // } else {
-                    //     this.messageFun('warning', res.data.MSG)
-                    // }
                 })
             },
             // 操作提示统一方法

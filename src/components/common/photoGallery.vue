@@ -25,12 +25,14 @@
                                                  size="small"
                                                  class="plan-select"
                                                  placeholder="选择地区"
+                                                 :clearable="true"
                                                  change-on-select filterable>
                                     </el-cascader>
                                 </el-col>
                                 <el-col :span="6">
                                     <span>行业类型：</span>
                                     <el-cascader :options="bussiness" size="small" class="plan-select" v-model="searchInfo.industryIdArr"
+                                                 :clearable="true"
                                                  change-on-select
                                                  @change="handleChange"
                                                  filterable>
@@ -40,14 +42,14 @@
                             <el-row :gutter="32">
                                 <el-col :span="6">
                                     <span>&nbsp;投 放 面：</span>
-                                    <el-select v-model="searchInfo.LabSelect" placeholder="选择投放面" class="plan-select" size="small">
+                                    <el-select v-model="searchInfo.LabSelect" :clearable="true" placeholder="选择投放面" class="plan-select" size="small">
                                         <el-option label="A面" value="A"></el-option>
                                         <el-option label="B面" value="B"></el-option>
                                     </el-select>
                                 </el-col>
                                 <el-col :span="6">
                                     <span>投放日期：</span>
-                                    <el-date-picker size="small" v-model="searchInfo.date" type="daterange" range-separator="-"
+                                    <el-date-picker size="small" v-model="searchInfo.date" :clearable="true" type="daterange" range-separator="-"
                                                     format="yyyy/MM/dd" value-format="yyyy-MM-dd" start-placeholder="投放日期"
                                                     end-placeholder="投放日期">
                                     </el-date-picker>
@@ -70,8 +72,8 @@
                         </div>
                         <el-tab-pane label="案例库"
                                      name="first"
-                                     v-loading="tabBodyLoading"
-                                     element-loading-text="拼命加载中..."
+                                     v-loading="firstBodyLoading"
+                                     element-loading-text="玩命加载中..."
                                      element-loading-spinner="el-icon-loading">
                             <!-- 图片 -->
                             <photo :imgarr="pageUpImgArr" :show-pic="showPic" :publish="searchInfo.publish" @doSomeThing="saveChange"></photo>
@@ -81,7 +83,7 @@
                                     v-if="paginationShow"
                                     background
                                     :current-page.sync="searchInfo.pageNum"
-                                    :page-sizes="[10, 20]"
+                                    :page-sizes="[10, 20, 50]"
                                     :page-size="searchInfo.pageSize"
                                     layout="total, sizes, prev, pager, next, jumper"
                                     :total="searchInfo.totalpageNum"
@@ -90,7 +92,10 @@
                                 </el-pagination>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane v-if="isShowAllTab" label="收藏夹" name="second">
+                        <el-tab-pane v-if="isShowAllTab" label="收藏夹" name="second"
+                                     v-loading="secondBodyLoading"
+                                     element-loading-text="玩命加载中..."
+                                     element-loading-spinner="el-icon-loading">
                             <!-- 图片 -->
                             <photo :imgarr="collectImgArr" :show-pic="showPic" :tabType = "activeName" @doSomeThing="saveChange"></photo>
                             <!--页码-->
@@ -98,7 +103,7 @@
                                 <el-pagination v-if="paginationShow"
                                                background
                                                :current-page.sync="searchInfo.pageNum"
-                                               :page-sizes="[10, 20]"
+                                               :page-sizes="[10, 20, 50]"
                                                :page-size="searchInfo.pageSize"
                                                layout="total, sizes, prev, pager, next, jumper"
                                                :total="searchInfo.totalpageNum"
@@ -164,7 +169,9 @@ export default {
     data() {
         return {
             // 数据loading
-            tabBodyLoading: true,
+            firstBodyLoading: true,
+            // 收藏夹load
+            secondBodyLoading: true,
             // 是否搜索
             isSearch: true,
             // 是否显示收藏夹和行业图片
@@ -277,16 +284,16 @@ export default {
                     this.pageUpImgArr = [];
                     let params = this.searchFormat();
                     this.getUpImgInfo(params)
+                }else{
+                    this.showPic = 3;
                 }
             } else if (this.activeName == 'second') {
-                if(this.beforActive === 'first'){
+                if (this.beforActive === 'first') {
                     this.gallerySelectInfo = JSON.parse(JSON.stringify(this.searchInfo))
                 }
                 this.searchInfo = JSON.parse(JSON.stringify(this.collectSelectInfo))
-                // if(!this.collectImgArr.length){
-                    let collectParams = this.searchFormat();
-                    this.getCollectImgList(collectParams)
-                // }
+                let collectParams = this.searchFormat();
+                this.getCollectImgList(collectParams)
             } else if(this.activeName == 'three'){
                 if(this.beforActive === 'first'){
                     this.gallerySelectInfo = JSON.parse(JSON.stringify(this.searchInfo))
@@ -403,7 +410,7 @@ export default {
         },
         // 获取上/下刊图片数据
         getUpImgInfo(params) {
-            this.tabBodyLoading = true
+            this.firstBodyLoading = true
             for (let i in params) {
                 console.log(params[i])
                 if (!params[i]) {
@@ -442,7 +449,7 @@ export default {
                         this.showPic = 1;
                         Message.warning(res.data.MSG);
                     }
-                    this.tabBodyLoading = false
+                    this.firstBodyLoading = false
                 })
                 .catch(res => {
                     console.log(res);
@@ -451,7 +458,7 @@ export default {
         // 获取收藏夹图片列表 collectImgArr /collect/list type
         getCollectImgList(params) {
             console.log('获取收藏夹图片列表params',params)
-            this.tabBodyLoading = true
+            this.secondBodyLoading = true
             if(!params.orderName){
                 delete params.orderName
             }
@@ -498,8 +505,9 @@ export default {
                     this.collectImgArr = imgList
                 } else {
                     this.messageFun('warning', res.data.MSG)
+                    this.showPic = 1
                 }
-                this.tabBodyLoading = false
+                this.secondBodyLoading = false
             })
         },
         // 保存或取消
@@ -507,6 +515,10 @@ export default {
             if(this.activeName == 'first'){
                 this.collectImgArr =[]
             }else if(this.activeName == 'second'){
+                // 最后一页（大于1页）且是最后一张图片
+                if(this.collectImgArr.length <= 1 && this.searchInfo.pageNum > 1){
+                    this.searchInfo.pageNum -= 1
+                }
                 let collectParams = this.searchFormat();
                 this.getCollectImgList(collectParams)
             }
@@ -713,7 +725,7 @@ export default {
         width: calc(98% - 70px);
     }
     /deep/.el-row .el-cascader.plan-select{
-        width: calc(98% - 76px);
+        width: calc(98% - 73px);
     }
     .el-row .el-date-editor{
         width: calc(98% - 70px);
@@ -721,7 +733,7 @@ export default {
     /deep/.el-row .el-select.plan-select{
         width: calc(98% - 70px);
     }
-    ..plan-select .el-input__inner{
+    .plan-select .el-input__inner{
         width: 100%;
     }
     /*搜索到的图片列表*/

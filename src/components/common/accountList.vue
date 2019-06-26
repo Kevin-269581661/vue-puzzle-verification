@@ -323,6 +323,7 @@
                     this.searchInfo.orderby = column.prop;
                     this.searchInfo.desc = 1;
                 }
+                this.currPage = 1;
                 this.searchFun();
             },
             // 时间格式化

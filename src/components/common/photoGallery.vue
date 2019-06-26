@@ -328,7 +328,7 @@ export default {
         },
         // 数据初始化
         resetData(selectInfo){
-            console.log('+++++++++++')
+            // console.log('+++++++++++')
             for (let key in selectInfo) {
                 if (key === 'citySelect' || key === 'industryIdArr') {
                     selectInfo[key] = []
@@ -341,12 +341,14 @@ export default {
         },
         // 搜索
         searchFun(){
-            this.initPage()
+            // this.initPage()
             if (this.activeName == 'first') {
+                this.galleryPageData.pageNum = 1
                 let upinfo = this.searchFormat();
                 this.pageUpImgArr = []
                 this.getUpImgInfo(upinfo);
             } else if (this.activeName == "second") {
+                this.collectPageData.pageNum = 1
                 let collectParams = this.searchFormat();
                 this.collectImgArr = []
                 this.getCollectImgList(collectParams)

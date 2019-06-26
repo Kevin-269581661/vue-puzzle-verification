@@ -62,6 +62,7 @@
                         border
                         :data="currentPlan"
                         style="width: 100%"
+                        @filter-change="filterChange"
                         :default-sort="{prop: 'resName', order: 'descending'}">
                         <el-table-column
                             label="资源名称"
@@ -75,16 +76,15 @@
                             </template>
                         </el-table-column>
                         <el-table-column
+                            column-key="rtName"
                             prop="rtName"
                             label="资源类型"
                             min-width="8%"
                             :filters="[
-							{ text: '社区', value: '社区' },
-							{ text: '写字楼', value: '写字楼' },
+							{ text: '社区', value: '1' },
+							{ text: '写字楼', value: '2' },
 							]"
-                            :filter-method="filterRecType"
-                            :filter-multiple="false"
-                        >
+                            :filter-multiple="false">
                         </el-table-column>
                         <el-table-column
                             prop="city"
@@ -117,7 +117,8 @@
                             prop="mVehicle"
                             label="媒体类型"
                             min-width="7.4%"
-                            :show-overflow-tooltip="true">
+                            :show-overflow-tooltip="true"
+                            >
                         </el-table-column>
                         <el-table-column
                             prop="mTitle"
@@ -145,9 +146,17 @@
                         >
                         </el-table-column>
                         <el-table-column
+                            column-key="mState"
                             prop="mState"
                             label="媒体状态"
-                            min-width="7.7%">
+                            min-width="8%"
+                            :filters="[
+                                { text: '禁用', value: '0' },
+                                { text: '正常', value: '1' },
+                                { text: '待安装', value: '2' },
+                                { text: '待维修', value: '3' },
+							]"
+                            :filter-multiple="false">
                             <template  slot-scope="scope">
                                 <span v-if="scope.row.mState === '正常'">
                                     <el-tooltip class="item" effect="dark" placement="left-start">
@@ -163,7 +172,7 @@
                         <el-table-column
                             v-if="showNewBtn"
                             label="操作"
-                            width="112"
+                            width="100"
                         >
                             <template slot-scope="scope">
                                 <el-dropdown size="small" trigger="click" placement="bottom-start"
@@ -394,28 +403,30 @@
                         label: '商圈'
                     }
                 ],
-                planList: [],         //  table的所有数据
-                currentPlan: [],      // 显示在table中的数据
-                cityOther: true,      // 默认显示全国省份城市
-                cityOptions: [],             //城市数组
-                selectedOptions: [],        // 当前选择的城市rid数组
-                regionOpt: [],              // 地区
-                selectRName: '',        // 当前选择的区域rid
+                resType: '',                    // 搜索的资源类型
+                mState: '',                     // 搜索的媒体状态
+                planList: [],                   //  table的所有数据
+                currentPlan: [],                // 显示在table中的数据
+                cityOther: true,                // 默认显示全国省份城市
+                cityOptions: [],                //城市数组
+                selectedOptions: [],            // 当前选择的城市rid数组
+                regionOpt: [],                  // 地区
+                selectRName: '',                // 当前选择的区域rid
                 cityArea:{cName:'',rName:''},   // 当前选择的城市名称和区域名称
                 loadScroll: true,
-                provinceCity: [],     //省份及其地级市
-                timeID: '',             // 计时器
-                cityRid: '',          // 搜索前置条件为城市时,转换成rid
+                provinceCity: [],               //省份及其地级市
+                timeID: '',                     // 计时器
+                cityRid: '',                    // 搜索前置条件为城市时,转换成rid
                 sessionData: '',
-                pageNo: 1,             // 页数
-                totalPage: 1,          // 总页数
-                searchBtnAbled:false,  // 搜索按钮禁止
-                mStatusDialogVisible: false, // 媒体状态修改模态框
-                normalToDisabled: true,     //  是否为正常转禁用
+                pageNo: 1,                      // 页数
+                totalPage: 1,                   // 总页数
+                searchBtnAbled:false,           // 搜索按钮禁止
+                mStatusDialogVisible: false,    // 媒体状态修改模态框
+                normalToDisabled: true,         //  是否为正常转禁用
                 doorState: {mState: false, adState: ''},  // 广告门单面禁用：媒体状态、点位状态
-                rowData: '',            // 修改媒体状态时的行数据
-                rowIndex: '',          // 修改媒体状态时的行下标
-                ImportDialogVisible: false,    // 媒体导入弹出框
+                rowData: '',                    // 修改媒体状态时的行数据
+                rowIndex: '',                   // 修改媒体状态时的行下标
+                ImportDialogVisible: false,     // 媒体导入弹出框
                 importAsrID: '',                // 导入媒体时所选择的公司id
                 importSelectLoading: true,      // 公司下拉选项
                 companyList: [],                // SA媒体导入时获取的公司列表
@@ -480,13 +491,25 @@
             maintain(){
                 this.$router.push('./maintainList');
             },
-            //筛选
-            filterRecType(value, row) {
-                return row.rtName === value;
+            filterChange(filters){
+                console.log('filters',filters)
+                for (let key in filters) {
+                    if (key === 'rtName') {
+                        if (filters[key].length) {
+                            this.resType = filters[key][0]
+                        } else {
+                            this.resType = ''
+                        }
+                    } else if (key === 'mState') {
+                        if (filters[key].length) {
+                            this.mState = filters[key][0]
+                        } else {
+                            this.mState = ''
+                        }
+                    }
+                }
+                this.getData()
             },
-            // filterPTStatus(value, row) {
-            //     return row.mState === value;
-            // },
             // 分页
             changePage(val){
                 console.log('当前页',val)
@@ -511,7 +534,9 @@
                         pageNo: this.pageData.pageNum,
                         pageSize: this.pageData.pageSize,
                         cityName: this.cityArea.cName,
-                        regionName: this.cityArea.rName
+                        regionName: this.cityArea.rName,
+                        resType: this.resType,
+                        mState: this.mState,
                     }
                 }
                 if (this.selectInfo === '1') {

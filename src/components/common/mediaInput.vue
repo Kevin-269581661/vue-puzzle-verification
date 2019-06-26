@@ -2406,7 +2406,7 @@
                         this.PathHaveEdit = true
                         // 设置默认选中的城市
                         this.recForm.city[0] = recObj.rid.toString().substring(0, 2) + '0000'
-                        this.recForm.city[1] = recObj.rid.toString().substring(0, 4) + '00'
+                        this.recForm.city[1] = recObj.cityId //recObj.rid.toString().substring(0, 4) + '00'
                         this.handleChange(this.recForm.city)
                         this.resAddres.city = recObj.city
                         this.resAddres.area = recObj.cityArea
@@ -2780,7 +2780,7 @@
                             notpush: tempObj.adLimit.join('、'),
                             assettag: tempObj.assetId,
                             mtype: tempObj.doorType,
-                            mrk: tempObj.mediaRemark === '' ? '暂无备注' : tempObj.mediaRemark,
+                            mrk: tempObj.mediaRemark || '',
                             mImg: tempObj.mImg || '',
                             grade: tempObj.adDoorLevel || ''
                         }

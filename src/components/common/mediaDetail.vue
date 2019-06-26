@@ -545,7 +545,7 @@
                             })
                         } else {
                             let resData = res.data.data
-                            let cityArea = areaToText_new.toTextCityArea(resData.rID)
+                            // let cityArea = areaToText_new.toTextCityArea(resData.rID)
                             this.resData = {
                                 resID:this.resID,
                                 cType: '',
@@ -565,8 +565,9 @@
                                 joinTime: resData.chDay,
                                 resAddress: resData.resAddress,
                                 latLng: '',
-                                city: cityArea.city,
-                                cityArea: cityArea.area,
+                                cityId: resData.cityId,
+                                city: resData.city,
+                                cityArea: resData.district,
                                 // 房价网信息
                                 resAlias: resData.alias,                                  // 资源别名
                                 addressAlias: resData.addressAlias,                          // 地址别名

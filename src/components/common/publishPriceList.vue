@@ -76,7 +76,7 @@
                         </div>
                     </el-table>
 
-                    <div class="ad_pagination">
+                    <div class="ad_pagination" v-if="session_data.uType=='SM'">
                         <el-pagination
                             background
                             v-if="paginationShow"
@@ -277,7 +277,6 @@ export default {
     created() {
         this.session_data = JSON.parse(sessionStorage.getItem("session_data"));
         this.getAreaData();
-        // this.getData();
         this.searchFun();
         this.getCompany();
     },

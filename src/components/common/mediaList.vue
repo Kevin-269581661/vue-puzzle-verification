@@ -508,6 +508,7 @@
                         }
                     }
                 }
+                this.pageData.pageNum = 1
                 this.getData()
             },
             // 分页
@@ -551,7 +552,7 @@
                 }
                 api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('资源媒体列表：', res)
-                    this.pageData.totalSize = res.data.data.totalPage
+                    this.pageData.totalSize = res.data.data.total
                     let RMList = res.data.data.list;
                     if ( res.data.SysCode == 200200) {
                         if (RMList) {

@@ -65,14 +65,13 @@
                         :default-sort="{prop: 'resName', order: 'descending'}">
                         <el-table-column
                             label="资源名称"
-                            min-width="10.2%">
+                            min-width="10.2%"
+                            :show-overflow-tooltip="true">
                             <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.resName" placement="bottom">
 								<span @click="mediaDetail(scope.row)"
                                       style="color: #108ee9;cursor: pointer">
 									{{scope.row.resName}}
 								</span>
-                                </el-tooltip>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -90,11 +89,10 @@
                         <el-table-column
                             prop="city"
                             label="城市"
-                            min-width="7%">
+                            min-width="7%"
+                            :show-overflow-tooltip="true">
                             <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" :content="scope.row.city" placement="bottom">
-                                    <span>{{scope.row.city || '--' }}</span>
-                                </el-tooltip>
+                                <span>{{scope.row.city || '--' }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -133,7 +131,8 @@
                         <el-table-column
                             prop="assetTag"
                             label="资产编号"
-                            min-width="12%">
+                            min-width="12%"
+                            :show-overflow-tooltip="true">
                             <template slot-scope="scope">
                                 {{ scope.row.assetTag || '--' }}
                             </template>
@@ -188,7 +187,6 @@
                                             @click.native.prevent="confirmBox($event,scope.$index, scope.row)"
                                             :disabled="scope.row.mState === '禁用'">禁用
                                         </el-dropdown-item>
-                                        <!-- <el-dropdown-item @click.native.prevent="confirmBox($event,scope.$index, scope.row)">删除</el-dropdown-item>-->
                                     </el-dropdown-menu>
                                 </el-dropdown>
                             </template>

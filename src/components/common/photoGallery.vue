@@ -283,11 +283,10 @@ export default {
                     this.gallerySelectInfo = JSON.parse(JSON.stringify(this.searchInfo))
                 }
                 this.searchInfo = JSON.parse(JSON.stringify(this.collectSelectInfo))
-                if(!this.collectImgArr.length){
-                    console.log('+++++++++++')
+                // if(!this.collectImgArr.length){
                     let collectParams = this.searchFormat();
                     this.getCollectImgList(collectParams)
-                }
+                // }
             } else if(this.activeName == 'three'){
                 if(this.beforActive === 'first'){
                     this.gallerySelectInfo = JSON.parse(JSON.stringify(this.searchInfo))

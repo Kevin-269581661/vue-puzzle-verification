@@ -190,9 +190,9 @@
                     <el-tabs v-model="activeMedia">
                         <el-tab-pane label="广告门" name="first">
                             <div class="ad_adPanel">
-                                <div>
+                                <div v-if="haveEdit">
                                     <el-button  size="small" type="primary" class="ad_adPanelBtn"
-                                                v-if="haveEdit" @click="connectDoorFun">设置连排门</el-button>
+                                                @click="connectDoorFun">设置连排门</el-button>
                                     <el-button size="small" type="primary" class="ad_adPanel_add"
                                                @click="edit('add')">添加媒体</el-button>
                                 </div>
@@ -1033,7 +1033,7 @@
     /deep/ .el-dialog__body{
         text-align: center;
     }
-    
+
     /*媒体信息*/
     .ad_mediaInfo{
         width: 92%;
@@ -1184,10 +1184,6 @@
     .ad_adPanelBtn{
         margin-left: 32px;
     }
-
-    /*   .ad_adPanel_add{
-           font-size: 14px;
-       }*/
 
     .ad_ad .ad_adPanel .table_wrap{
         border-radius: 4px;

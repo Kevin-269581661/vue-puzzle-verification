@@ -22,7 +22,7 @@
             </el-col>
         </el-row>
         <div>
-            <div class="photo_list clearfix" :class="isShowBtn ? '' : 'photo_list_bd'">
+            <div class="photo_list clearfix">
                 <div class="noFind" v-show="showPic === 1">
                     <img src="../../../assets/images/tempPic.png" alt="">
                     <p style="margin-top: -10px">暂无数据</p>
@@ -34,15 +34,16 @@
                      @mouseenter="showPreImg = index"
                      @mouseleave="showPreImg = null">
                     <img :src="item.url" :alt="item.title">
-                    <p class="card_select" v-if="isShowBtn">
+                    <p class="card_select" :class="isShowBtn ? '' : 'industry_read'">
                         <el-cascader :options="bussiness" size="small" class="plan-select" v-model="item.industry"
+                                     :disabled="!isShowBtn"
                                      change-on-select
                                      @change="imgIndustryChange(item)"
                                      filterable>
                         </el-cascader>
                     </p>
                     <!--查看缩略图和下载-->
-                    <div class="mask-btn" v-if="showPreImg == index"><!--showPreImg == index-->
+                    <div class="mask-btn" v-if="showPreImg == index">
                         <p class="mask_title">由 {{item.userName}} 于 {{item.createTime}} 上传</p>
                         <p class="mask_icon">
                             <i class="el-icon-search" @click="handlePictureCardPreview(item)"></i>
@@ -449,14 +450,10 @@
         border-radius: 2px;
     }
 
-    .photo_list_bd .photo_card{
-        padding-bottom: 25%;
-    }
-
     .photo_card:nth-child(5n+1){
         margin-right: 0;
     }
-    /*,/deep/ .photo_card .industry_photo*/
+
     .photo_card img{
         position: absolute;
         top: 0;
@@ -464,9 +461,7 @@
         width: 100%;
         height: 88%;
     }
-    .photo_list_bd .photo_card img{
-        height: 100%;
-    }
+
     /*图片的行业下拉选择*/
     .card_select{
         position: absolute;
@@ -474,20 +469,28 @@
         width: 100%;
         height: 24px;
     }
+
     .card_select /deep/ .el-cascader{
         width: 85%;
     }
+
     .card_select /deep/ .el-input__inner{
         height: 24px;
         border:1px solid rgba(145,213,255,1);
         background:rgba(230,247,255,1);
 
     }
+
     .card_select /deep/ .el-cascader__label,
     .card_select /deep/ .el-cascader__label span,
     .card_select /deep/ .el-input__icon{
         color:rgba(24,144,255,1);
     }
+
+    .industry_read /deep/ .el-input__suffix{
+        display: none;
+    }
+
     .photo_card .mask-btn {
         width: 100%;
         height: 88%;
@@ -516,7 +519,6 @@
         color: #fff;
         font-size: 26px;
         cursor: pointer;
-        /*margin-top: 45px;*/
     }
     .mask_a{
         width: 100%;
@@ -531,7 +533,6 @@
         width: 100px;
         height: 34px;
         color: #fff;
-        /*text-align: center;*/
         line-height: 34px;
         font-size: 14px;
         margin: 0 auto;
@@ -547,32 +548,23 @@
     .imgPreview /deep/ .el-dialog{
         width: 35%;
     }
+
     .imgPreview /deep/ .el-dialog__body{
         text-align: center;
     }
+
     /deep/ .imgPreview .el-dialog__body img{
         max-width: 100%;
         width: auto;
         height: 550px;
     }
+
     @media screen and (max-width: 1440px) {
         /deep/ .imgPreview .el-dialog__body img{
             height: 450px;
         }
     }
-  /*  .imgPreview /deep/ .el-dialog{
-        max-width: 42%;
-    }
-    .imgPreview /deep/ .el-dialog__body{
-        max-height: 640px;
-    }
-    .imgPreview /deep/ .el-dialog {
-        max-height: 750px;
-    }
-    .imgPreview /deep/ .el-dialog img{
-        width: 100%;
-        max-height: 660px;
-    }*/
+
     /*上传图片*/
     .upload_p{
         margin-bottom: 16px;

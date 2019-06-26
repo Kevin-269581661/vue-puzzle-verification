@@ -29,10 +29,6 @@ export default {
                     this.currper = parseInt(Number(resinfo.rate));
                     if(this.currper == 100){
                         clearInterval(this.myInterval);
-                        // tempwindow = window.open();
-                        // tempwindow.location = resinfo.url;
-                        // setTimeout(()=>{tempwindow.close()}, 2000);
-
                         let downloadElement = document.createElement('a');
                         let href = resinfo.url;
                         downloadElement.href = href;
@@ -45,6 +41,7 @@ export default {
                     }
                 }else{
                     clearInterval(this.myInterval);
+                    this.$message.warning(res.data.MSG);                                            
                 }
             }).catch(res =>{
                 console.log(res);
@@ -61,8 +58,6 @@ export default {
                     if(resinfo.code == 200){
                         if(resinfo.finish == 1){
                             clearInterval(this.myInterval);
-                            // let tempwindow = window.open();
-                            // tempwindow.location = resinfo.cosUrl;
                             let downloadElement = document.createElement('a');
                             let href = resinfo.cosUrl;
                             downloadElement.href = href;
@@ -79,6 +74,7 @@ export default {
                     }
                 }else{
                     clearInterval(this.myInterval);
+                    this.$message.warning(res.data.MSG);                    
                 }
             }).catch(res =>{
                 console.log(res);

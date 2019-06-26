@@ -35,7 +35,7 @@
                     </el-col>
                 </el-row>
                 <div class="table_wrap">
-                    <el-table border :data="currentOrder" style="width: 100%" v-loading="loading" element-loading-text="玩命加载中" element-loading-spinner="el-icon-loading" :default-sort="{prop: 'apcTime', order: 'descending'}">
+                    <el-table border :data="currentOrder" style="width: 100%" @sort-change="sortChange" v-loading="loading" element-loading-text="玩命加载中" element-loading-spinner="el-icon-loading" :default-sort="{prop: 'apcTime', order: 'descending'}">
                         <el-table-column label="订单名称" min-width="14.6%">
                             <template slot-scope="scope">
                                 <a href="javascript:void(0);" @click="ToDetail(scope.row)">{{scope.row.apName}}</a>
@@ -47,7 +47,7 @@
                         </el-table-column>
                         <el-table-column prop="apQC" label="合同编号" width="180px">
                         </el-table-column>
-                        <el-table-column sortable :sort-method="sortPrice" label="订单总价" width="120px" align="right">
+                        <el-table-column prop="apTotal" sortable="custom" label="订单总价" width="120px" align="right">
                             <template slot-scope="scope">
                                 <span>&yen;{{(scope.row.apTotal)?priceFormat(scope.row.apTotal/100):0}}</span>
                             </template>
@@ -67,7 +67,7 @@
                                 </div>
                             </template>
                         </el-table-column>
-                        <el-table-column label="发布日期" width="120px" sortable :sort-by="sortData" show-overflow-tooltip>
+                        <el-table-column prop="apcTime" label="发布日期" width="120px" sortable="custom" show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <span>{{formatTime(scope.row.apcTime)}}</span>
                             </template>
@@ -197,6 +197,10 @@ export default {
                 cityWord: '',
                 // 状态筛选
                 status: '',
+                // 按照啥排序
+                orderby: '',
+                // 升序降序0/1
+                desc: "",
             },
             // 公司列表
             companyData: [],
@@ -359,14 +363,16 @@ export default {
                 pageNum: this.currPage,
                 pageSize: this.pageSize
             };
-            let { select, keyword, rangeDate, company, cityWord, status } = this.searchInfo;
+            let { select, keyword, rangeDate, company, cityWord, status, orderby, desc } = this.searchInfo;
             info = {
                 ...info,
                 ...(keyword && (select == '1' && {orderName: keyword}) || (select == '2' && {customerName: keyword}) || (select == '3' && {contractNum: keyword})),
                 ...(rangeDate && {beginTime: rangeDate[0], endTime: rangeDate[1]}),
                 ...(status!=='' && status>=0 && {state: status}),
                 ...(company && {asrID: company}),
-                ...(cityWord && {rID: cityWord})
+                ...(cityWord && {rID: cityWord}),
+                ...(orderby && {orderby}),
+                ...(desc!=='' && desc>=0 &&{desc})
             };
             return info;
         },
@@ -502,13 +508,17 @@ export default {
         formatTime(val) {
             return dateFormat.toDate(val, '/');
         },
-        // 价格排序
-        sortPrice(a, b) {
-            return a.apTotal - b.apTotal;
-        },
-        //日期排序
-        sortData(a, b) {
-            return dateFormat.toDate(a.apcTime, '') - dateFormat.toDate(b.apcTime, '');
+        // 价格时间排序(请求后台接口进行排序)
+        sortChange(column){
+            console.log('columm---', column);
+            if(column.order == "ascending"){
+                this.searchInfo.orderby = column.prop;
+                this.searchInfo.desc = 0;
+            }else if(column.order == "descending"){
+                this.searchInfo.orderby = column.prop;
+                this.searchInfo.desc = 1;
+            }
+            this.searchFun();
         },
         // 价格加上逗号
         priceFormat(price) {
@@ -872,13 +882,6 @@ a {
     width: 185px;
 }
 
-/*按钮*/
-/deep/ .el-button--default:focus,
-.el-button--default:hover {
-    color: #606266;
-    border-color: #dcdfe6;
-    background-color: #fcfcfc;
-}
 /*操作*/
 .el-dropdown-link {
     cursor: pointer;

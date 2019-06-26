@@ -893,14 +893,6 @@ export default {
         border-radius: 4px;
     }
 
-    /*按钮*/
-    /deep/ .el-button--default:focus,
-    .el-button--default:hover {
-        color: #606266;
-        border-color: #dcdfe6;
-        background-color: #fcfcfc;
-    }
-
     /deep/ .el-tabs__nav-wrap::after {
         height: 1px;
     }

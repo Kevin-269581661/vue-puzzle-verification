@@ -46,7 +46,7 @@
                     </el-col>
                 </el-row>
                 <div class="table_wrap">
-                    <el-table border :data="currentPlan" style="width: 100%" v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
+                    <el-table border :data="currentPlan" style="width: 100%" @sort-change="sortChange" v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                         <el-table-column prop="apName" label="方案名称" min-width="14.9%">
                             <template slot-scope="scope">
                                 <a href="javascript:void(0);" @click="ToDetail(scope.row)">{{scope.row.apName}}</a>
@@ -56,7 +56,7 @@
                         </el-table-column>
                         <el-table-column prop="bTitle" label="品牌名称" min-width="7.6%" show-overflow-tooltip>
                         </el-table-column>
-                        <el-table-column label="方案价格" sortable :sort-method="sortPrice" width="120px" align="right">
+                        <el-table-column prop="apTotal" label="方案价格" sortable="custom" width="120px" align="right">
                             <template slot-scope="scope">
                                 <span>&yen;{{scope.row.apTotal?priceFormat(scope.row.apTotal/100):0}}</span>
                             </template>
@@ -87,7 +87,7 @@
                                 </p>
                             </template>
                         </el-table-column>
-                        <el-table-column label="创建日期" width="100px" sortable :sort-by="sortData" show-overflow-tooltip>
+                        <el-table-column prop="apcTime" label="创建日期" width="100px" sortable="custom" show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <span>{{formatTime(scope.row.apcTime)}}</span>
                             </template>
@@ -265,6 +265,10 @@ export default {
                 cityWord: '',
                 // 是否预锁
                 Lock: '',
+                // 按照啥排序
+                orderby: '',
+                // 升序降序0/1
+                desc: "",
             },
             // 公司列表
             companyData: [],
@@ -508,13 +512,17 @@ export default {
         priceFormat(price) {
             return commaFormat.init(price);
         },
-        // 价格排序
-        sortPrice(a, b) {
-            return a.apTotal - b.apTotal;
-        },
-        //日期排序
-        sortData(a, b) {
-            return dateFormat.toDate(a.apcTime, '') - dateFormat.toDate(b.apcTime, '');
+        // 价格时间排序(请求后台接口进行排序)
+        sortChange(column){
+            console.log('columm---', column);
+            if(column.order == "ascending"){
+                this.searchInfo.orderby = column.prop;
+                this.searchInfo.desc = 0;
+            }else if(column.order == "descending"){
+                this.searchInfo.orderby = column.prop;
+                this.searchInfo.desc = 1;
+            }
+            this.searchFun();
         },
         // 新建方案
         addOne() {
@@ -815,29 +823,37 @@ export default {
         // 确定预锁
         confirmLock() {
             console.log(this.cityChoose);
-            this.Ctrlloading = Loading.service(
-                {
-                    text: "请耐心等待...",
-                    spinner: "el-icon-loading",
-                    background: "rgba(0, 0, 0, 0.7)"
-                }
-            );
-            let arr = [];
-            for (let select of this.cityChoose) {
-                for (let data of this.cityList) {
-                    if (data.asrID == select) {
-                        arr.push(data);
-                        break;
+            if(this.cityChoose.length){
+                this.Ctrlloading = Loading.service(
+                    {
+                        text: "请耐心等待...",
+                        spinner: "el-icon-loading",
+                        background: "rgba(0, 0, 0, 0.7)"
+                    }
+                );
+                let arr = [];
+                for (let select of this.cityChoose) {
+                    for (let data of this.cityList) {
+                        if (data.asrID == select) {
+                            arr.push(data);
+                            break;
+                        }
                     }
                 }
+    
+                if (this.isLock) {
+                    this.LockCity(arr, 'L');
+                } else {
+                    this.noLockCity(arr);
+                }
+                this.dialogVisible = false;
+            }else{
+                if(this.isLock){
+                    Message.warning('请选择预锁公司！');
+                }else{
+                    Message.warning('请选择解锁公司！');
+                }
             }
-
-            if (this.isLock) {
-                this.LockCity(arr, 'L');
-            } else {
-                this.noLockCity(arr);
-            }
-            this.dialogVisible = false;
         },
         // 预锁
         LockCity(arr, act){
@@ -994,7 +1010,7 @@ export default {
                 start: this.currPage,
                 pagesize: this.pageSize
             };
-            let { select, keyword, rangeDate, status, company, cityWord, Lock } = this.searchInfo;
+            let { select, keyword, rangeDate, status, company, cityWord, Lock, orderby, desc } = this.searchInfo;
             info = {
                 ...info,
                 ...(keyword && {keywordType: select, keyword}),
@@ -1003,6 +1019,8 @@ export default {
                 ...(company && {asrID: company}),
                 ...(cityWord && {rname: cityWord}),
                 ...(Lock && {onyusuo: Lock}),
+                ...(orderby && {orderby}),
+                ...(desc!=='' && desc>=0 &&{desc})
             };
             return info;
         },
@@ -1211,14 +1229,6 @@ a {
 .el-dropdown-link {
     cursor: pointer;
     color: #409EFF;
-}
-
-/*按钮*/
-/deep/ .el-button--default:focus,
-.el-button--default:hover {
-    color: #606266;
-    border-color: #dcdfe6;
-    background-color: #fcfcfc;
 }
 
 .table_wrap .city_p span{

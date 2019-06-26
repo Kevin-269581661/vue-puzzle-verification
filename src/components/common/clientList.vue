@@ -30,7 +30,7 @@
                     </el-col>
 				</el-row>
 				<div class="table_wrap">
-					<el-table border :data="currentPlan" v-loading="loading" element-loading-text="玩命加载中..." element-loading-spinner="el-icon-loading" style="width: 100%" :default-sort="{prop: 'joinTime', order: 'descending'}">
+					<el-table border :data="currentPlan" @sort-change="sortChange" v-loading="loading" element-loading-text="玩命加载中..." element-loading-spinner="el-icon-loading" style="width: 100%" :default-sort="{prop: 'joinTime', order: 'descending'}">
 						<el-table-column prop="realName" label="联系人" min-width="6%" show-overflow-tooltip>
 						</el-table-column>
 						<!--<el-table-column prop="clientRName" label="所在地" min-width="7.2%">-->
@@ -47,7 +47,7 @@
 						</el-table-column>
 						<el-table-column prop="puName" label="所有人" min-width="6.1%" show-overflow-tooltip>
 						</el-table-column>
-						<el-table-column label="创建日期" min-width="8.3%" sortable :sort-by="sortData">
+						<el-table-column prop="joinTime" label="创建日期" min-width="8.3%" sortable="custom">
 							<template slot-scope="scope">
 								<span>{{ formatTime(scope.row.joinTime) }}</span>
 							</template>
@@ -134,6 +134,10 @@ export default {
                 keyword: '',
                 date: '',
                 company: '',
+                // 按照啥排序
+                orderby: '',
+                // 升序降序0/1
+                desc: "",
             },
             // 表格数据
             currentPlan: [],
@@ -208,12 +212,14 @@ export default {
                 pageNo: this.currPage,
                 pageSize: this.pageSize
             };
-            let { date, select, keyword, company } = this.searchInfo;
+            let { date, select, keyword, company, orderby, desc } = this.searchInfo;
             info = {
                 ...info,
                 ...(date && {beginTime: date[0], endTime: date[1]+' 23:59:59'}),
                 ...(keyword && (select=='1' && {brandName: keyword}) || (select=='2' && {companyName: keyword}) || (select=='3' && {contactName: keyword})),
-                ...(company && { asrID: company})
+                ...(company && { asrID: company}),
+                ...(orderby && {orderby}),
+                ...(desc!=='' && desc>=0 &&{desc})
             };
             return info;
         },
@@ -330,9 +336,17 @@ export default {
             sessionStorage.setItem("customerId", data.uID);
             this.$router.push("./clientDetail");
         },
-        //日期排序
-        sortData(a, b) {
-            return dateFormat.toDate(a.joinTime, '') - dateFormat.toDate(b.joinTime, '');
+        // 时间排序(请求后台接口进行排序)
+        sortChange(column){
+            console.log('columm---', column);
+            if(column.order == "ascending"){
+                this.searchInfo.orderby = column.prop;
+                this.searchInfo.desc = 0;
+            }else if(column.order == "descending"){
+                this.searchInfo.orderby = column.prop;
+                this.searchInfo.desc = 1;
+            }
+            this.searchFun();
         },
         loginTimeout(){
             Message.warning("登录超时,请重新登录");

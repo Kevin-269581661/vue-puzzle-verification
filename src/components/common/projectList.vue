@@ -49,9 +49,9 @@
                 </el-row>
                 
                 <div class="table_wrap">
-                    <el-table border :data="projectList" v-loading="loading" 
+                    <el-table border :data="projectList" @sort-change="sortChange" v-loading="loading" 
                         element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
-                        <el-table-column label="上画时间" min-width="11.8%" prop="photoTime" sortable :sort-by="sortData">
+                        <el-table-column label="上画时间" min-width="11.8%" prop="publishDate" sortable="custom">
                         </el-table-column>
                         <el-table-column prop="lineName" label="所属线路" min-width="8.1%">
                         </el-table-column>
@@ -173,6 +173,10 @@
                     order: '',
                     // 搜索时间段
                     rangeDate: '',
+                    // 按照啥排序
+                    orderby: '',
+                    // 升序降序0/1
+                    desc: "",
                 },
                 isSearch: true,
                 isReset: true,
@@ -234,9 +238,17 @@
                 console.log(this.searchInfo.rangeDate);
                 this.searchFun();
             },
-            //日期排序
-            sortData(a, b) {
-                return dateFormat.toDate(a.apcTime, '') - dateFormat.toDate(b.apcTime, '');
+            // 时间排序(请求后台接口进行排序)
+            sortChange(column){
+                console.log('columm---', column);
+                if(column.order == "ascending"){
+                    this.searchInfo.orderby = column.prop;
+                    this.searchInfo.desc = 0;
+                }else if(column.order == "descending"){
+                    this.searchInfo.orderby = column.prop;
+                    this.searchInfo.desc = 1;
+                }
+                this.searchFun();
             },
             // 线路列表
             getLine(){
@@ -371,13 +383,15 @@
                     pageNo: this.currPage,
                     pageSize: this.pageSize
                 };
-                let { line, engineer, order, rangeDate } = this.searchInfo;
+                let { line, engineer, order, rangeDate, orderby, desc } = this.searchInfo;
                 info = {
                     ...info,
                     ...(line && {lineId: line}),
                     ...(engineer && {userId: engineer}),
                     ...(order && {orderId: order}),
                     ...(rangeDate && {startDate: timeFormat.toDate(rangeDate[0]), endDate: timeFormat.toDate(rangeDate[1])}),
+                    ...(orderby && {orderby}),
+                    ...(desc!=='' && desc>=0 &&{desc})
                 }
                 return info;
             },
@@ -385,7 +399,7 @@
             setTableData(item){
                 let obj = {
                     photoId: item.publishId,
-                    photoTime: timeFormat.toDate(item.publishDate, '/'),
+                    publishDate: timeFormat.toDate(item.publishDate, '/'),
                     line: item.lineId,
                     lineName: item.lineName,
                     orderId: item.orderId,

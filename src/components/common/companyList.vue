@@ -34,7 +34,7 @@
                     </el-col>
 				</el-row>
                 <div class="table_wrap">
-                    <el-table border :data="companyList" v-loading="loading" 
+                    <el-table border :data="companyList"  @sort-change="sortChange" v-loading="loading" 
                         element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                         <el-table-column label="公司名称" min-width="11.8%" prop="name">
                         </el-table-column>
@@ -43,7 +43,7 @@
                                 <span>{{roleToText(scope.row.type)}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="创建日期" min-width="9.8%" sortable :sort-by="sortData">
+                        <el-table-column prop="createTime" label="创建日期" min-width="9.8%" sortable="custom">
                             <template slot-scope="scope">
                                 <span>{{formatTime(scope.row.createTime)}}</span>
                             </template>
@@ -139,6 +139,10 @@
                     keyword: '',
                     type: '',
                     state: '',
+                    // 按照啥排序
+                    orderby: '',
+                    // 升序降序0/1
+                    desc: "",
                 },
                 isSearch: true,
                 isReset: true,
@@ -254,12 +258,14 @@
                     start: this.currPage,
                     pagesize: this.pageSize
                 };
-                let { keyword, type, state } = this.searchInfo;
+                let { keyword, type, state, orderby, desc } = this.searchInfo;
                 info = {
                     ...info,
                     ...(keyword && {ascName: keyword}),
                     ...(state>=0 && {astate: state}),
                     ...(type>=0 && {asType: type}),
+                    ...(orderby && {orderby}),
+                    ...(desc!=='' && desc>=0 &&{desc})
                 };
                 return info;
             },
@@ -375,9 +381,17 @@
                     Message.warning('公司名称不能为空');
                 }
             },
-            //日期排序
-            sortData(a, b) {
-                return dateFormat.toDate(a.createTime, '') - dateFormat.toDate(b.createTime, '');                            
+            // 时间排序(请求后台接口进行排序)
+            sortChange(column){
+                console.log('columm---', column);
+                if(column.order == "ascending"){
+                    this.searchInfo.orderby = column.prop;
+                    this.searchInfo.desc = 0;
+                }else if(column.order == "descending"){
+                    this.searchInfo.orderby = column.prop;
+                    this.searchInfo.desc = 1;
+                }
+                this.searchFun();
             },
             // 时间格式化
             formatTime(time) {

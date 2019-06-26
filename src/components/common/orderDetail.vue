@@ -465,8 +465,9 @@
                             </h4>
                         </div>
                     </p>
-                    <el-table :data="materInfoArr" border height="400" ref="multipleTable" v-loading="materloading" v-loadmore="materLoadMore" @select="handleSelect" @select-all="handleSelectAll" class="table_mater">
+                    <el-table :data="materInfoArr" border height="450" ref="multipleTable" v-loading="materloading" v-loadmore="materLoadMore" @select="handleSelect" @select-all="handleSelectAll" class="table_mater">
                         <el-table-column type="selection" width="41px" scope="scope" >
+                        </el-table-column>
                         </el-table-column>
                         <el-table-column prop="resName" label="资源名称">
                         </el-table-column>
@@ -981,6 +982,7 @@ export default {
             this.shopList = [];
             this.currInfoPage = 1;
             this.materInfoArr = [];
+            this.mapArr = [];
             let info = this.searchDataFormat();
             this.getMaterInfo(info);
             this.getMapCenter();

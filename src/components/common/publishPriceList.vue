@@ -9,8 +9,21 @@
             <div class="mediaList_head">
                 <h2 style="display:inline-block;margin-right:20px;">刊例价列表</h2>
                 <el-button size="small" type="primary" @click="addOne()" v-if="session_data.uType=='SM'" >新增刊例价</el-button>
-            </div>
+            </div> 
             <div class="mediaList_container">
+                <el-row class="search_row" v-if="session_data.uType=='SM'">
+                    <el-col>
+                        <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable size="small">
+                            <el-option v-for="item of companyArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                        </el-select>
+                        <!-- <el-select v-model="searchInfo.city" placeholder="请选择城市" filterable size="small">
+                            <el-option v-for="item of cityList" :key="item.rID" :label="item.text" :value="item.value"></el-option>
+                        </el-select> -->
+                        <el-cascader :options="allProvince" v-model="searchInfo.cityArr" separator="-" :show-all-levels="false" filterable></el-cascader>                           
+                        <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
+                        <el-button @click="reset()" :disabled="!isReset">重置</el-button>
+                    </el-col>
+                </el-row>
                 <div class="table_wrap">
                      <el-table border :data="publishPriceList" style="width: 100%" v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                         <el-table-column label="公司名称" prop="company" show-overflow-tooltip>
@@ -62,6 +75,20 @@
                             <no-search-result></no-search-result>
                         </div>
                     </el-table>
+
+                    <div class="ad_pagination">
+                        <el-pagination
+                            background
+                            v-if="paginationShow"
+                            @size-change="sizeChange"
+                            @current-change="changePage"
+                            :current-page.sync="currPage"
+                            :page-sizes="pageSizes"
+                            :page-size="pageSize"
+                            layout="total, sizes, prev, pager, next, jumper"
+                            :total="totalNum">
+                        </el-pagination>
+                    </div>
                 </div>
             </div>
         </div>
@@ -176,6 +203,22 @@ export default {
     },
     data() {
         return {
+            // 分页信息
+            paginationShow: true,
+            pageSize: 10,
+            pageSizes: [10, 20, 50],
+            currPage: 1,
+            totalPage: 0,
+            totalNum: 0,
+            // 搜索信息
+            searchInfo:{
+                company: '',
+                city: '',
+                cityArr: []
+            },
+            cityList: [],
+            isSearch: true,
+            isReset: true,
             // 加载中
             loading: false,
             // 登录信息
@@ -234,10 +277,90 @@ export default {
     created() {
         this.session_data = JSON.parse(sessionStorage.getItem("session_data"));
         this.getAreaData();
-        this.getData();
+        // this.getData();
+        this.searchFun();
         this.getCompany();
     },
     methods: {
+        // 切换页码
+        changePage(page) {
+            this.currPage = page;
+            console.log('page----', page);
+            this.searchFun();
+        },
+        // 每页条数切换
+        sizeChange(val) {
+            console.log('val----', val);
+            this.pageSize = val;
+            this.currPage = 1;
+            this.searchFun();
+        },
+        // 搜索（优化）
+        search(){
+            let { company, cityArr } = this.searchInfo;
+            console.log(company, cityArr);
+            this.isSearch = false;
+            let timer = setTimeout(()=>{
+                this.isSearch = true;
+                clearTimeout(timer);
+            }, 1000);
+            if(
+                company || cityArr.length
+            ){
+                this.publishPriceList = [];
+                this.loading = true;
+                this.currPage  = 1;
+                this.searchFun();
+
+            }else{
+                Message.warning('请输入搜索条件');
+            }
+        },
+        // 重置
+        reset(){
+            this.searchInfo = {
+                company: '',
+                city: '',
+                cityArr: []
+            };
+            this.currPage = 1;
+            this.publishPriceList = [];
+            this.isReset = false;
+            let timer = setTimeout(()=>{
+                this.isReset = true;
+                clearTimeout(timer);
+            }, 1000);
+            this.searchFun();
+        },
+        // 搜索数据格式化
+        searchFormat(){
+            let info = {
+                uid: this.session_data.uID,
+                token: this.session_data.token,
+                service:"GetAdPrice",
+                data: {}
+            };
+            let { company, cityArr } = this.searchInfo;
+            let data = {
+                ...(company && {asrID: company}),
+                ...(cityArr.length && {city: cityArr[1]}),
+            };
+            info = {
+                ...info,
+                data,
+            };
+            console.log(info);
+            return info;
+        },
+        searchFun(){
+            this.paginationShow = false;
+            this.loading = true;
+            let info = this.searchFormat();
+            this.getData(info);
+            this.$nextTick(function () {
+                this.paginationShow = true;
+            });
+        },
         // 价格加上逗号
         priceFormat(price) {
             return commaFormat.format(price);
@@ -318,13 +441,7 @@ export default {
             });
         },
         // 获取刊例价列表
-        getData(){
-            let info = {
-                uid: this.session_data.uID,
-                token: this.session_data.token,
-                service:"GetAdPrice",
-                data: {}
-            };
+        getData(info){
             api.postApi_new(this.apiVar.Media, info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 200200){
@@ -333,12 +450,14 @@ export default {
                         let obj = this.setData(data);
                         result.push(obj);
                     }
+                    // this.totalNum = res.data.data.total;
                     this.publishPriceList = result;
                 }else if(res.data.SysCode == 100302){
                     this.loginTimeout();
                 }else{
                     Message.warning(res.data.MSG);
                 }
+                this.loading = false;
             }).catch(err =>{
                 console.log(err);
             })
@@ -659,11 +778,6 @@ export default {
     min-width: 9.6% !important;
 }
 
-/*表格高度*/
-/deep/ .el-table__body-wrapper {
-    height: 405px;
-}
-
 /deep/ .priceInfo_box .el-row{
     margin-bottom: 10px;
 }
@@ -720,6 +834,9 @@ export default {
 }
 /deep/  .el-dialog__body{
     padding: 15px 20px;
+}
+/deep/ .table_wrap .el-button{
+    min-width: auto;
 }
 </style>
 

@@ -342,9 +342,11 @@ export default {
             };
             let { company, cityArr } = this.searchInfo;
             let data = {
-                ...(company && {asrID: company}),
-                ...(cityArr.length && {city: cityArr[1]}),
+                ...(company && {asrId: company}),
+                ...(cityArr.length && {cityId: cityArr[1]}),
             };
+            data.pageSize = this.pageSize;
+            data.pageNum = this.currPage;
             info = {
                 ...info,
                 data,
@@ -445,12 +447,13 @@ export default {
             api.postApi_new(this.apiVar.Media, info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 200200){
+                    let resinfo = res.data.data;
                     let result = [];
-                    for(let data of res.data.data){
+                    for(let data of resinfo.dataList){
                         let obj = this.setData(data);
                         result.push(obj);
                     }
-                    // this.totalNum = res.data.data.total;
+                    this.totalNum = resinfo.totalSize;
                     this.publishPriceList = result;
                 }else if(res.data.SysCode == 100302){
                     this.loginTimeout();

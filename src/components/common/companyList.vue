@@ -191,10 +191,8 @@
             // 每页条数切换
             sizeChange(val) {
                 this.pageSize = val;
-                if (this.currPage == 1) {
-                    this.searchFun();
-                }
                 this.currPage = 1;
+                this.searchFun();
             },
             // 判断角色是否有新建按钮(系统管理员和超级管理员有)
             getRole() {

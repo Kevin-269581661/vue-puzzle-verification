@@ -158,10 +158,8 @@ export default {
         // 每页条数切换
         sizeChange(val) {
             this.pageSize = val;
-            if (this.currPage == 1) {
-                this.searchFun();
-            }
             this.currPage = 1;
+            this.searchFun();
         },
         // 获取公司
         getCompany(){
@@ -413,9 +411,4 @@ export default {
 /deep/ .el-input-group--prepend .el-input__inner {
     width: 185px;
 }
-
-/* 表格高度 */
-/* /deep/ .el-table__body-wrapper {
-    height: 405px;
-} */
 </style>

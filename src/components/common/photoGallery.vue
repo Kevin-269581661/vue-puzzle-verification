@@ -144,508 +144,506 @@
         Pagination,
         Message
     } from "element-ui";
-    import timeFormat from '../../commonFun/timeFormat.js';
 
-export default {
-    name: "PhotoGallery",
-    components: {
-        elButton: Button,
-        elInput: Input,
-        elTable: Table,
-        elTableColumn: TableColumn,
-        elRow: Row,
-        elTooltip: Tooltip,
-        elTabs: Tabs,
-        elTabPane: TabPane,
-        elSelect: Select,
-        elOption: Option,
-        elCascader: Cascader,
-        elDatePicker: DatePicker,
-        elPagination: Pagination,
-        photo,
-        orderPhoto,
-    },
-    data() {
-        return {
-            // 数据loading
-            firstBodyLoading: true,
-            // 收藏夹load
-            secondBodyLoading: true,
-            // 是否搜索
-            isSearch: true,
-            // 是否显示收藏夹和行业图片
-            isShowAllTab: false,
-            // 登录信息
-            sessionData:{},
-            // 当前页
-            paginationShow: true,
-            // 上刊
-            pageUpImgArr: [],
-            //地区搜索
-            citys: [],
-            //上刊搜索行
-            select: "3",
-            bussiness: [],
-            // tab默认选择第一项
-            activeName: "first",
-            beforActive: 'first',
-            //是否搜索到图片
-            showPic: 3,
-            // 是否显示图片
-            showBtn: false,
-            // 搜索信息
-            searchInfo:{
-                resName: '',            // 资源名称
-                apName: '',             // 方案名称
-                labSelect: '',          // A/B面
-                date: '',               // 搜索日期
-                citySelect: [],         // 地区搜索
-                industryIdArr: [],      // 搜索行业
-                publish: 'SK',            // 上下刊
-            },
-            // 上下刊下拉
-            publish: 'SK',
-            // 收藏夹图片列表
-            collectImgArr: [],
-            galleryPageData:{
-                pageNum: 1,
-                pageSize: 10,
-                totalpageNum: 0
-            },
-            //  案例库搜索条件
-            gallerySelectInfo: {
-                LabSelect: '',
-                date: '',
-                citySelect:[],
-                industryIdArr:[],
-                showPic: 1,
-                apName: '',
-                resName: '',
+    export default {
+        name: "PhotoGallery",
+        components: {
+            elButton: Button,
+            elInput: Input,
+            elTable: Table,
+            elTableColumn: TableColumn,
+            elRow: Row,
+            elTooltip: Tooltip,
+            elTabs: Tabs,
+            elTabPane: TabPane,
+            elSelect: Select,
+            elOption: Option,
+            elCascader: Cascader,
+            elDatePicker: DatePicker,
+            elPagination: Pagination,
+            photo,
+            orderPhoto,
+        },
+        data() {
+            return {
+                // 数据loading
+                firstBodyLoading: true,
+                // 收藏夹load
+                secondBodyLoading: true,
+                // 是否搜索
+                isSearch: true,
+                // 是否显示收藏夹和行业图片
+                isShowAllTab: false,
+                // 登录信息
+                sessionData: {},
+                // 当前页
+                paginationShow: true,
+                // 上刊
+                pageUpImgArr: [],
+                //地区搜索
+                citys: [],
+                //上刊搜索行
+                select: "3",
+                bussiness: [],
+                // tab默认选择第一项
+                activeName: "first",
+                beforActive: 'first',
+                //是否搜索到图片
+                showPic: 3,
+                // 是否显示图片
+                showBtn: false,
+                // 搜索信息
+                searchInfo: {
+                    resName: '',            // 资源名称
+                    apName: '',             // 方案名称
+                    labSelect: '',          // A/B面
+                    date: '',               // 搜索日期
+                    citySelect: [],         // 地区搜索
+                    industryIdArr: [],      // 搜索行业
+                    publish: 'SK',          // 上下刊
+                },
+                // 上下刊下拉
                 publish: 'SK',
-                pageNum: 1,
-                pageSize: 10,
-                totalpageNum: 0
-            },
-            collectPageData:{
-                pageNum: 1,
-                pageSize: 10,
-                totalpageNum: 0
-            },
-            // 收藏夹搜索图片
-            collectSelectInfo:{
-                LabSelect: '',
-                date: '',
-                citySelect:[],
-                industryIdArr:[],
-                showPic: 1,
-                apName: '',
-                resName: '',
-                publish: 'SK',
-                pageNum: 1,
-                pageSize: 10,
-                totalpageNum: 0
-            }
-        };
-    },
-    created() {
-        this.getSessionData();
-        this.getIndustry();
-        this.getAllCity();
-        this.searchFun();
-    },
-    methods: {
-        getSessionData(){
-            this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
-            if(this.sessionData.asrID === '999'){
-                this.isShowAllTab = false
-            }else{
-                this.isShowAllTab = true
-            }
-        },
-        // 获取城市
-        getAllCity(){
-            this.citys = areaPackage_new.cityArea();
-            console.log(this.citys);
-        },
-        // 选择行业
-        handleChange(val) {
-            console.log("industryIdArr---------", val);
-            this.industryIdArr = val;
-        },
-        // 获取所有行业信息
-        getIndustry() {
-            let arr = JSON.parse(sessionStorage.getItem("industry"));
-            this.bussiness = industryToText.cascader(arr);
-        },
-        // tabClick
-        handleClick() {
-            console.log('tabClick切换',this.activeName)
-            if (this.activeName == 'first') {
-                if(this.beforActive === 'second'){
-                    this.collectSelectInfo = JSON.parse(JSON.stringify(this.searchInfo))
+                // 收藏夹图片列表
+                collectImgArr: [],
+                // 案例库分页
+                galleryPageData: {
+                    pageNum: 1,
+                    pageSize: 10,
+                    totalpageNum: 0
+                },
+                //  案例库搜索条件
+                gallerySelectInfo: {
+                    LabSelect: '',
+                    date: '',
+                    citySelect: [],
+                    industryIdArr: [],
+                    showPic: 1,
+                    apName: '',
+                    resName: '',
+                    publish: 'SK',
+                    pageNum: 1,
+                    pageSize: 10,
+                    totalpageNum: 0
+                },
+                // 收藏夹分页
+                collectPageData: {
+                    pageNum: 1,
+                    pageSize: 10,
+                    totalpageNum: 0
+                },
+                // 收藏夹搜索图片
+                collectSelectInfo: {
+                    LabSelect: '',
+                    date: '',
+                    citySelect: [],
+                    industryIdArr: [],
+                    showPic: 1,
+                    apName: '',
+                    resName: '',
+                    publish: 'SK',
+                    pageNum: 1,
+                    pageSize: 10,
+                    totalpageNum: 0
                 }
-                this.searchInfo = JSON.parse(JSON.stringify(this.gallerySelectInfo))
-                if(this.searchInfo.totalpageNum === 0){
-                    this.pageUpImgArr = [];
-                    let params = this.searchFormat();
-                    this.getUpImgInfo(params)
-                }else{
-                    this.showPic = 3;
-                }
-            } else if (this.activeName == 'second') {
-                if (this.beforActive === 'first') {
-                    this.gallerySelectInfo = JSON.parse(JSON.stringify(this.searchInfo))
-                }
-                this.searchInfo = JSON.parse(JSON.stringify(this.collectSelectInfo))
-                let collectParams = this.searchFormat();
-                this.getCollectImgList(collectParams)
-            } else if(this.activeName == 'three'){
-                if(this.beforActive === 'first'){
-                    this.gallerySelectInfo = JSON.parse(JSON.stringify(this.searchInfo))
-                }
-                if(this.beforActive === 'second'){
-                    this.collectSelectInfo = JSON.parse(JSON.stringify(this.searchInfo))
-                }
-            }
-            this.beforActive = this.activeName
+            };
         },
-        // 重置
-        reset(){
-            console.log('重置activeName',this.activeName)
-            this.resetData(this.searchInfo)
-            this.initPage()
-            if (this.activeName == 'first') {
-                this.pageUpImgArr = [];
-                this.resetData(this.gallerySelectInfo)
-                let collectParams = this.searchFormat();
-                this.getUpImgInfo(collectParams)
-            } else if (this.activeName == 'second') {
-                this.collectImgArr = [];
-                this.resetData(this.collectSelectInfo)
-                let collectParams = this.searchFormat();
-                this.getCollectImgList(collectParams)
-            }
+        created() {
+            this.getSessionData();
+            // 行业
+            this.getIndustry();
+            this.getAllCity();
+            this.searchFun();
         },
-        // 数据初始化
-        resetData(selectInfo){
-            // console.log('+++++++++++')
-            for (let key in selectInfo) {
-                if (key === 'citySelect' || key === 'industryIdArr') {
-                    selectInfo[key] = []
-                } else if (key === 'publish') {
-                    selectInfo[key] = 'SK'
+        methods: {
+            getSessionData() {
+                this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
+                if (this.sessionData.asrID === '999') {
+                    this.isShowAllTab = false
                 } else {
-                    selectInfo[key] = ''
+                    this.isShowAllTab = true
                 }
-            }
-        },
-        // 搜索
-        searchFun(){
-            // this.initPage()
-            if (this.activeName == 'first') {
-                this.galleryPageData.pageNum = 1
-                let upinfo = this.searchFormat();
-                this.pageUpImgArr = []
-                this.getUpImgInfo(upinfo);
-            } else if (this.activeName == "second") {
-                this.collectPageData.pageNum = 1
-                let collectParams = this.searchFormat();
-                this.collectImgArr = []
-                this.getCollectImgList(collectParams)
-            }
-        },
-        // 搜索数据格式化
-        searchFormat(){
-            let session = this.sessionData;
-            if(this.activeName == 'first'){
-                let info = {
-                    uid: session.uID,
-                    token: session.token,
-                    imgType: this.searchInfo.publish, // type,
-                    orderName: this.searchInfo.apName,
-                    resourceName: this.searchInfo.resName,
-                    asLab: this.searchInfo.LabSelect,
-                    prid: '',
-                    pageNum: this.galleryPageData.pageNum,
-                    pageSize: this.galleryPageData.pageSize,
-                };
-                if(this.searchInfo.date){
-                    info.ls = this.searchInfo.date[0];
-                    info.le = this.searchInfo.date[1];
+            },
+            // 获取城市
+            getAllCity() {
+                this.citys = areaPackage_new.cityArea();
+                console.log(this.citys);
+            },
+            // 选择行业
+            handleChange(val) {
+                console.log("industryIdArr---------", val);
+                this.industryIdArr = val;
+            },
+            // 获取所有行业信息
+            getIndustry() {
+                let arr = JSON.parse(sessionStorage.getItem("industry"));
+                this.bussiness = industryToText.cascader(arr);
+            },
+            //tab切换
+            handleClick() {
+                console.log('tabClick切换', this.activeName)
+                if (this.activeName == 'first') {
+                    if (this.beforActive === 'second') {
+                        this.collectSelectInfo = JSON.parse(JSON.stringify(this.searchInfo))
+                    }
+                    this.searchInfo = JSON.parse(JSON.stringify(this.gallerySelectInfo))
+                    if (this.searchInfo.totalpageNum === 0) {
+                        this.pageUpImgArr = [];
+                        let params = this.searchFormat();
+                        this.getUpImgInfo(params)
+                    } else {
+                        this.showPic = 3;
+                    }
+                } else if (this.activeName == 'second') {
+                    if (this.beforActive === 'first') {
+                        this.gallerySelectInfo = JSON.parse(JSON.stringify(this.searchInfo))
+                    }
+                    this.searchInfo = JSON.parse(JSON.stringify(this.collectSelectInfo))
+                    let collectParams = this.searchFormat();
+                    this.getCollectImgList(collectParams)
+                } else if (this.activeName == 'three') {
+                    if (this.beforActive === 'first') {
+                        this.gallerySelectInfo = JSON.parse(JSON.stringify(this.searchInfo))
+                    }
+                    if (this.beforActive === 'second') {
+                        this.collectSelectInfo = JSON.parse(JSON.stringify(this.searchInfo))
+                    }
                 }
-                if(this.searchInfo.citySelect[1]){
-                    info.prid = this.searchInfo.citySelect[1];
+                this.beforActive = this.activeName
+            },
+            // 重置
+            reset() {
+                console.log('重置activeName', this.activeName)
+                this.resetData(this.searchInfo)
+                this.initPage()
+                if (this.activeName == 'first') {
+                    this.pageUpImgArr = [];
+                    this.resetData(this.gallerySelectInfo)
+                    let collectParams = this.searchFormat();
+                    this.getUpImgInfo(collectParams)
+                } else if (this.activeName == 'second') {
+                    this.collectImgArr = [];
+                    this.resetData(this.collectSelectInfo)
+                    let collectParams = this.searchFormat();
+                    this.getCollectImgList(collectParams)
                 }
-                if(this.searchInfo.citySelect[2]){
-                    info.rid = this.searchInfo.citySelect[2];
+            },
+            // 数据初始化
+            resetData(selectInfo) {
+                for (let key in selectInfo) {
+                    if (key === 'citySelect' || key === 'industryIdArr') {
+                        selectInfo[key] = []
+                    } else if (key === 'publish') {
+                        selectInfo[key] = 'SK'
+                    } else {
+                        selectInfo[key] = ''
+                    }
                 }
-                if(this.searchInfo.industryIdArr){
-                    info.iId = this.searchInfo.industryIdArr[1];
+            },
+            // 搜索
+            searchFun() {
+                if (this.activeName == 'first') {
+                    this.galleryPageData.pageNum = 1
+                    let upinfo = this.searchFormat();
+                    this.pageUpImgArr = []
+                    this.getUpImgInfo(upinfo);
+                } else if (this.activeName == "second") {
+                    this.collectPageData.pageNum = 1
+                    let collectParams = this.searchFormat();
+                    this.collectImgArr = []
+                    this.getCollectImgList(collectParams)
                 }
-                console.log(this.activeName,'type---', info);
-                return info;
-            }else if(this.activeName == "second"){
-                let info = {
-                    uid: session.uID,
-                    token: session.token,
-                    type: this.searchInfo.publish === "SK" ? 0 : this.searchInfo.publish === "XK" ? 1 : "",
-                    orderName: this.searchInfo.apName,
-                    resourceName: this.searchInfo.resName,
-                    asLabel: this.searchInfo.LabSelect,
-                    pageNo: this.collectPageData.pageNum,
-                    pageSize: this.collectPageData.pageSize,
-                };
-                if(this.searchInfo.industryIdArr){
-                    info.industryId = this.searchInfo.industryIdArr[1];
+            },
+            // 搜索数据格式化
+            searchFormat() {
+                let session = this.sessionData;
+                if (this.activeName == 'first') {
+                    let info = {
+                        uid: session.uID,
+                        token: session.token,
+                        imgType: this.searchInfo.publish, // type,
+                        orderName: this.searchInfo.apName,
+                        resourceName: this.searchInfo.resName,
+                        asLab: this.searchInfo.LabSelect,
+                        prid: '',
+                        pageNum: this.galleryPageData.pageNum,
+                        pageSize: this.galleryPageData.pageSize,
+                    };
+                    if (this.searchInfo.date) {
+                        info.ls = this.searchInfo.date[0];
+                        info.le = this.searchInfo.date[1];
+                    }
+                    if (this.searchInfo.citySelect[1]) {
+                        info.prid = this.searchInfo.citySelect[1];
+                    }
+                    if (this.searchInfo.citySelect[2]) {
+                        info.rid = this.searchInfo.citySelect[2];
+                    }
+                    if (this.searchInfo.industryIdArr) {
+                        info.iId = this.searchInfo.industryIdArr[1];
+                    }
+                    console.log(this.activeName, 'type---', info);
+                    return info;
+                } else if (this.activeName == "second") {
+                    let info = {
+                        uid: session.uID,
+                        token: session.token,
+                        type: this.searchInfo.publish === "SK" ? 0 : this.searchInfo.publish === "XK" ? 1 : "",
+                        orderName: this.searchInfo.apName,
+                        resourceName: this.searchInfo.resName,
+                        asLabel: this.searchInfo.LabSelect,
+                        pageNo: this.collectPageData.pageNum,
+                        pageSize: this.collectPageData.pageSize,
+                    };
+                    if (this.searchInfo.industryIdArr) {
+                        info.industryId = this.searchInfo.industryIdArr[1];
+                    }
+                    if (this.searchInfo.citySelect[2]) {
+                        info.regionId = this.searchInfo.citySelect[2];
+                    }
+                    if (this.searchInfo.date) {
+                        info.startDate = this.searchInfo.date[0];
+                        info.endDate = this.searchInfo.date[1];
+                    }
+                    console.log(this.activeName, 'type---', info);
+                    return info;
                 }
-                if(this.searchInfo.citySelect[2]){
-                    info.regionId = this.searchInfo.citySelect[2];
+            },
+            // 获取上/下刊图片数据
+            getUpImgInfo(params) {
+                this.firstBodyLoading = true
+                for (let i in params) {
+                    console.log(params[i])
+                    if (!params[i]) {
+                        delete params[i]
+                    }
                 }
-                if(this.searchInfo.date){
-                    info.startDate = this.searchInfo.date[0];
-                    info.endDate = this.searchInfo.date[1];
-                }
-                console.log(this.activeName,'type---', info);
-                return info;
-            }
-        },
-        // 获取上/下刊图片数据
-        getUpImgInfo(params) {
-            this.firstBodyLoading = true
-            for (let i in params) {
-                console.log(params[i])
-                if (!params[i]) {
-                    delete params[i]
-                }
-            }
-            // params.selectType = 'res'
-            api.getApi(this.apiVar.Advertisement + "/GetImgList", params)
-                .then(res => {
-                    if (!res.data.SysCode) {
-                        console.log(res.data);
-                        let dataInfo = res.data;
-                        this.galleryPageData.totalpageNum = dataInfo.total;
-                        if (dataInfo.total) {
-                            for (let data of dataInfo.list) {
-                                if ((typeof data.pRemarks) == 'string') {
-                                    data.pRemarks = JSON.parse(data.pRemarks);
+                // params.selectType = 'res'
+                api.getApi(this.apiVar.Advertisement + "/GetImgList", params)
+                    .then(res => {
+                        if (!res.data.SysCode) {
+                            console.log(res.data);
+                            let dataInfo = res.data;
+                            this.galleryPageData.totalpageNum = dataInfo.total;
+                            if (dataInfo.total) {
+                                for (let data of dataInfo.list) {
+                                    if ((typeof data.pRemarks) == 'string') {
+                                        data.pRemarks = JSON.parse(data.pRemarks);
+                                    }
                                 }
-                            }
-                            this.pageUpImgArr = dataInfo.list;
-                            console.log('pageup----', this.pageUpImgArr);
-                            if (this.pageUpImgArr.length) {
-                                this.showPic = 3;
+                                this.pageUpImgArr = dataInfo.list;
+                                console.log('pageup----', this.pageUpImgArr);
+                                if (this.pageUpImgArr.length) {
+                                    this.showPic = 3;
+                                } else {
+                                    this.showPic = 1;
+                                    Message.warning('暂无数据');
+                                }
                             } else {
                                 this.showPic = 1;
                                 Message.warning('暂无数据');
                             }
+                        } else if (res.data.SysCode == 100302) {
+                            this.loginTimeout();
                         } else {
+                            this.pageUpImgArr = [];
                             this.showPic = 1;
-                            Message.warning('暂无数据');
+                            Message.warning(res.data.MSG);
                         }
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
+                        this.firstBodyLoading = false
+                    })
+                    .catch(res => {
+                        console.log(res);
+                    });
+            },
+            // 获取收藏夹图片列表
+            getCollectImgList(params) {
+                console.log('获取收藏夹图片列表params', params)
+                this.secondBodyLoading = true
+                if (!params.orderName) {
+                    delete params.orderName
+                }
+                if (!params.resourceName) {
+                    delete params.resourceName
+                }
+                if (!params.asLabel) {
+                    delete params.asLabel
+                }
+                api.getApi(this.apiVar.Advertisement + '/imageCollection/list', params).then(res => {
+                    console.log('收藏夹图片列表res', res)
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        this.loginTimeout()
+                    } else if (res.data.SysCode === 200200) {
+                        let resData = res.data.data
+                        let imgList = []
+                        for (let key of resData) {
+                            imgList.push({
+                                pUrl: key.picUrl,
+                                id: key.id,
+                                pID: key.pId,
+                                userId: key.userId,
+                                pUTime: key.publishDate,
+                                isCollection: true,
+                                pRemarks: {
+                                    plan: key.orderName,
+                                    res: key.resourceName,
+                                    media: key.mediaName,
+                                    city: key.cityName,
+                                    asLab: key.asLable,
+                                    brand: key.brandName || '--',
+                                    username: key.userName,
+                                    assettag: key.assetNumber || '--',
+                                    address: key.address || '--',
+                                },
+                            })
+                        }
+                        if (imgList.length > 0) {
+                            this.showPic = 3
+                        } else {
+                            this.showPic = 1
+                        }
+                        this.collectPageData.totalpageNum = res.data.total
+                        this.collectImgArr = imgList
                     } else {
-                        this.pageUpImgArr = [];
-                        this.showPic = 1;
-                        Message.warning(res.data.MSG);
-                    }
-                    this.firstBodyLoading = false
-                })
-                .catch(res => {
-                    console.log(res);
-                });
-        },
-        // 获取收藏夹图片列表 collectImgArr /collect/list type
-        getCollectImgList(params) {
-            console.log('获取收藏夹图片列表params',params)
-            this.secondBodyLoading = true
-            if(!params.orderName){
-                delete params.orderName
-            }
-            if(!params.resourceName){
-                delete params.resourceName
-            }
-            if(!params.asLabel){
-                delete params.asLabel
-            }
-            api.getApi(this.apiVar.Advertisement + '/imageCollection/list', params).then(res => {
-                console.log('收藏夹图片列表res', res)
-                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                    this.loginTimeout()
-                } else if (res.data.SysCode === 200200) {
-                    let resData =  res.data.data
-                    let imgList = []
-                     for(let key of resData){
-                        imgList.push({
-                            pUrl: key.picUrl,
-                            id: key.id,
-                            pID: key.pId,
-                            userId: key.userId,
-                            pUTime: key.publishDate,
-                            isCollection: true,
-                            pRemarks: {
-                                plan: key.orderName,
-                                res: key.resourceName,
-                                media: key.mediaName,
-                                city: key.cityName,
-                                asLab: key.asLable,
-                                brand: key.brandName || '--',
-                                username: key.userName,
-                                assettag: key.assetNumber || '--',
-                                address: key.address || '--',
-                            },
-                        })
-                     }
-                    if (imgList.length > 0) {
-                        this.showPic = 3
-                    } else {
+                        this.messageFun('warning', res.data.MSG)
                         this.showPic = 1
                     }
-                    this.collectPageData.totalpageNum = res.data.total
-                    this.collectImgArr = imgList
-                } else {
-                    this.messageFun('warning', res.data.MSG)
-                    this.showPic = 1
-                }
-                this.secondBodyLoading = false
-            })
-        },
-        // 保存或取消
-        saveChange(){
-            if(this.activeName == 'first'){
-                this.collectImgArr =[]
-            }else if(this.activeName == 'second'){
-                // 最后一页（大于1页）且是最后一张图片
-                if(this.collectImgArr.length <= 1 && this.collectPageData.pageNum > 1){
-                    this.collectPageData.pageNum -= 1
-                }
-                let collectParams = this.searchFormat();
-                this.getCollectImgList(collectParams)
-            }
-        },
-        // 页数大小改变
-        sizeChange(pageVal) {
-            console.log("pageVal", pageVal);
-            // this.searchInfo.pageNum = 1;
-            // this.searchInfo.pageSize = pageVal;
-            if(this.activeName === 'first'){
-                this.galleryPageData.pageNum = 1
-                this.galleryPageData.pageSize = pageVal
-            }else if (this.activeName === 'second'){
-                this.collectPageData.pageNum = 1
-                this.collectPageData.pageSize = pageVal
-            }
-            this.searchFun();
-        },
-        // 分页功能
-        changePage(page) {
-            console.log('page----', page); //
-            if(this.activeName === 'first'){
-                this.galleryPageData.pageNum = page
-            }else if (this.activeName === 'second'){
-                this.collectPageData.pageNum = page
-            }
-            // this.searchInfo.pageNum = page;
-            this.searchFun();
-        },
-        // 分页初始化
-        initPage(){
-            // this.searchInfo.pageNum = 1;
-            // this.searchInfo.pageSize = 10;
-            if(this.activeName === 'first'){
-                this.galleryPageData.pageNum = 1
-                this.galleryPageData.pageSize = 10
-            }else if (this.activeName === 'second'){
-                this.collectPageData.pageNum = 1
-                this.collectPageData.pageSize = 10
-            }
-        },
-        // 导出功能
-        allDownLoad(){
-            Message.warning('此功能尚未开放');
-        },
-         // 区域二级联动
-        getCitys(arr) {
-            let cityArr = [];
-            for (let data of arr) {
-                if (data.pRemarks) {
-                    if( (typeof data.pRemarks) == 'string'){
-                        data.pRemarks = JSON.parse(data.pRemarks);
+                    this.secondBodyLoading = false
+                })
+            },
+            // 保存或取消
+            saveChange() {
+                if (this.activeName == 'first') {
+                    this.collectImgArr = []
+                } else if (this.activeName == 'second') {
+                    // 最后一页（大于1页）且是最后一张图片
+                    if (this.collectImgArr.length <= 1 && this.collectPageData.pageNum > 1) {
+                        this.collectPageData.pageNum -= 1
                     }
-                    let obj = {
-                        value: data.pRemarks.city,
-                        label: data.pRemarks.city,
-                        children: []
-                    };
-                    if (
-                        JSON.stringify(cityArr).indexOf(JSON.stringify(obj)) === -1
-                    ) {
-                        cityArr.push(obj);
-                    }
+                    let collectParams = this.searchFormat();
+                    this.getCollectImgList(collectParams)
                 }
-            }
-            for (let item of cityArr) {
+            },
+            // 每页的条数
+            sizeChange(pageVal) {
+                console.log("pageVal", pageVal);
+                if (this.activeName === 'first') {
+                    // this.galleryPageData.pageNum = 1
+                    this.galleryPageData.pageSize = pageVal
+                } else if (this.activeName === 'second') {
+                    // this.collectPageData.pageNum = 1
+                    this.collectPageData.pageSize = pageVal
+                }
+                this.searchFun();
+            },
+            // 页数
+            changePage(page) {
+                console.log('page----', page); //
+                if (this.activeName === 'first') {
+                    this.galleryPageData.pageNum = page
+                    let upinfo = this.searchFormat();
+                    this.getUpImgInfo(upinfo);
+                } else if (this.activeName === 'second') {
+                    this.collectPageData.pageNum = page
+                    let collectParams = this.searchFormat();
+                    this.getCollectImgList(collectParams)
+                }
+            },
+            // 分页初始化
+            initPage() {
+                if (this.activeName === 'first') {
+                    this.galleryPageData.pageNum = 1
+                    this.galleryPageData.pageSize = 10
+                } else if (this.activeName === 'second') {
+                    this.collectPageData.pageNum = 1
+                    this.collectPageData.pageSize = 10
+                }
+            },
+            // 导出功能
+            allDownLoad() {
+                Message.warning('此功能尚未开放');
+            },
+            // 区域二级联动
+            getCitys(arr) {
+                let cityArr = [];
                 for (let data of arr) {
                     if (data.pRemarks) {
-                        let areaObj = {
-                            value: data.pRemarks.area,
-                            label: data.pRemarks.area
+                        if ((typeof data.pRemarks) == 'string') {
+                            data.pRemarks = JSON.parse(data.pRemarks);
+                        }
+                        let obj = {
+                            value: data.pRemarks.city,
+                            label: data.pRemarks.city,
+                            children: []
                         };
-                        if (data.pRemarks.city == item.value) {
-                            // 去重
-                            if (
-                                JSON.stringify(item.children).indexOf(JSON.stringify(areaObj)) === -1
-                            ) {
-                                item.children.push(areaObj);
+                        if (
+                            JSON.stringify(cityArr).indexOf(JSON.stringify(obj)) === -1
+                        ) {
+                            cityArr.push(obj);
+                        }
+                    }
+                }
+                for (let item of cityArr) {
+                    for (let data of arr) {
+                        if (data.pRemarks) {
+                            let areaObj = {
+                                value: data.pRemarks.area,
+                                label: data.pRemarks.area
+                            };
+                            if (data.pRemarks.city == item.value) {
+                                // 去重
+                                if (
+                                    JSON.stringify(item.children).indexOf(JSON.stringify(areaObj)) === -1
+                                ) {
+                                    item.children.push(areaObj);
+                                }
                             }
                         }
                     }
                 }
-            }
-            console.log("cityArr---------------fda", cityArr);
-            return cityArr;
-        },
-        // 搜索图片
-        searchPic() {
-            this.isSearch = false;
-            let timer = setTimeout(()=>{
-                this.isSearch = true;
-                clearTimeout(timer);
-            }, 1000);
-            if (
-                !this.select &&
-                // !this.keyword &&
-                !this.LabSelect &&
-                !this.date &&
-                !this.citySelect.length &&
-                !this.industryIdArr.length
-            ) {
-                Message.warning("请先输入搜索条件");
-            } else {
-                this.searchFun();
-            }
-        },
-        // 操作提示统一方法
-        messageFun(mesType,mes){
-            this.$message({
-                message: mes,
-                type: mesType,
-                showClose: true,
-            })
-        },
-        loginTimeout(){
-            Message.warning("登录超时,请重新登录");
-            this.$router.push("/login");
+                console.log("cityArr---------------fda", cityArr);
+                return cityArr;
+            },
+            // 搜索图片
+            searchPic() {
+                this.isSearch = false;
+                let timer = setTimeout(() => {
+                    this.isSearch = true;
+                    clearTimeout(timer);
+                }, 1000);
+                if (
+                    !this.select &&
+                    // !this.keyword &&
+                    !this.LabSelect &&
+                    !this.date &&
+                    !this.citySelect.length &&
+                    !this.industryIdArr.length
+                ) {
+                    Message.warning("请先输入搜索条件");
+                } else {
+                    this.searchFun();
+                }
+            },
+            // 操作提示统一方法
+            messageFun(mesType, mes) {
+                this.$message({
+                    message: mes,
+                    type: mesType,
+                    showClose: true,
+                })
+            },
+            loginTimeout() {
+                Message.warning("登录超时,请重新登录");
+                this.$router.push("/login");
+            },
+
+            //筛选
+            filterCaseType(value, row) {
+                return row.tag === value;
+            },
         },
 
-        //筛选
-        filterCaseType(value, row) {
-            return row.tag === value;
-        },
-    },
-
-};
+    };
 </script>
 
 <style scoped>

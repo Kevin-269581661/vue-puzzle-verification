@@ -209,7 +209,7 @@
                 <div class="ad_pagination">
                     <el-pagination
                         background
-                        layout="total, prev, pager, next, sizes, jumper"
+                        layout="total, sizes, prev, pager, next, jumper"
                         @current-change="changePage"
                         @size-change="changeSize"
                         :page-sizes="[10, 20, 50]"

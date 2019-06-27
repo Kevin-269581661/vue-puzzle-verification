@@ -55,7 +55,13 @@
 						</el-date-picker>
 					</span>
 				</h2>
-				<div id="perform" ref="perform" class="charts2" style="width:100%;height:400px;"></div>
+				<div v-if="getNumIsNull(orderPointData.pointData)|| getNumIsNull(orderPointData.orderData)" id="perform" ref="perform" class="charts2" style="width:100%;height:400px;"></div>
+				<template v-else>
+					<p class="img_point">
+						<img src="../../assets/images/nofound.png" alt="空占位符">
+						<p class="img_point">暂无数据</p>
+					</p>
+				</template>
 			</div>
 		</div>
 
@@ -575,7 +581,9 @@ export default {
 					this.orderPointData.title = title;
 					this.orderPointData.orderData = orderData;
 					this.orderPointData.pointData = pointData;
-					this.getLinePer();
+					if(this.getNumIsNull(orderData) || this.getNumIsNull(pointData)){
+						this.getLinePer();
+					}
 				}else if(res.data.SysCode == 100302){
 					this.loginTimeout();
 				}else{
@@ -584,6 +592,13 @@ export default {
 			}).catch(err =>{
 				console.log(err);
 			});
+		},
+		getNumIsNull(arr){
+			let isHad = arr.filter(item =>{
+				return item>0;
+			});
+			console.log(isHad, 'ishhhh----');
+			return isHad.length==0?false:true;
 		},
 		getLinePer(){
 			let perLine = this.$echarts.init(this.$refs.perform)
@@ -952,5 +967,10 @@ export default {
 }
 .loglist_box{
 	margin-top:24px;
+}
+.img_point{
+	text-align: center;
+	color: #666;
+	margin-top: 20px;
 }
 </style>

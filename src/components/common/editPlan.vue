@@ -56,7 +56,7 @@
                                 <el-col>
                                     <el-button type="primary" class="map" icon="el-icon-location-outline" @click="mapAD">地图</el-button>
                                     <el-dropdown>
-                                        <el-button type="success" class="oneKeyPointBtn importXle">
+                                        <el-button type="success" class="importXle">
                                             导入<i class="el-icon-arrow-down el-icon--right"></i>
                                         </el-button>
                                         <el-dropdown-menu slot="dropdown">
@@ -65,7 +65,7 @@
                                         </el-dropdown-menu>
                                     </el-dropdown>
                                     <el-button type="primary" @click="importFanan('copy')">复制方案</el-button>
-                                    <el-button class="oneKeyPointBtn" @click="dialogOneKeyPoint = true">一键选点</el-button>
+                                    <el-button @click="dialogOneKeyPoint = true">一键选点</el-button>
                                 </el-col>
                             </el-row>
                         </div>
@@ -5499,13 +5499,6 @@
         font-weight: 700;
     }
 
-    .oneKeyPointBtn{
-        text-align: center;
-        height: 32px;
-        padding: 0;
-        line-height: 32px;
-    }
-
     .importXle.el-button--success{
         background: #51E171;
         border-color: #51E171;
@@ -5554,16 +5547,6 @@
 
     .content_bottom_btn /deep/ .el-button span a {
         color: #606266;
-    }
-
-    .map {
-        width: 76px;
-        height: 34px;
-        border: 1px solid #C2C2C2;
-        border-radius: 4px;
-        cursor: pointer;
-        text-align: center;
-        font-size: 14px;
     }
 
     .search-wrap {

@@ -27,6 +27,7 @@
                                         <el-select
                                             v-model="clientForm.sname"
                                             filterable
+                                            clearable
                                             remote
                                             reserve-keyword
                                             placeholder="请输入账户名"

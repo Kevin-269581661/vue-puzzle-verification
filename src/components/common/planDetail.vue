@@ -73,6 +73,9 @@
                                         </template>
                                     </el-table-column>
                                     <el-table-column prop="hNum" label="小区户数" min-width="6.0%" align="right">
+                                        <template slot-scope="scope">
+                                            <span>{{priceToFormat(scope.row.hNum)}}</span>
+                                        </template>
                                     </el-table-column>
                                     <el-table-column label="楼盘价格" min-width="9.0%" align="right">
                                         <template slot-scope="scope">
@@ -417,6 +420,9 @@ export default {
         // 价格加上逗号
         priceFormat(price) {
             return commaFormat.init(price);
+        },
+        priceToFormat(price){
+            return commaFormat.format(price);
         },
         // 返回
         goBack() {

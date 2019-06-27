@@ -49,6 +49,7 @@
                         <el-table-column
                             prop="pointCount"
                             label="覆盖点位"
+                            align="right"
                             min-width="14%">
                         </el-table-column>
                         <el-table-column

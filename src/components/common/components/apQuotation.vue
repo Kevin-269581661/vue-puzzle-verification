@@ -16,7 +16,7 @@
                                     </div>
                                     <div class="ad_SM_info">
                                         <h5>排期</h5>
-                                        <ul>
+                                        <ul class="SM_info_ul">
                                             <li v-for="(itemSM,indexSM) in item.priceMsg.adDoor.SM" :key=indexSM>{{itemSM}}</li>
                                         </ul>
                                     </div>
@@ -125,7 +125,7 @@
                                     <span>道闸的广告费价格为模糊计算 请以实际合同价格修改广告费</span>
                                     <div class="ad_SM_info">
                                         <h5>排期</h5>
-                                        <ul>
+                                        <ul class="SM_info_ul">
                                             <li v-for="(itemSM,indexSM) in item.priceMsg.roadGate.SM" :key=indexSM>{{itemSM}}</li>
                                         </ul>
                                     </div>
@@ -1876,5 +1876,18 @@
     .ad_rodeGare{
         width: 105px;
         height: 40px;
+    }
+    .SM_info_ul{
+        height: 102px;
+        overflow-y: auto;
+    }
+    .SM_info_ul::-webkit-scrollbar {
+        width: 6px;
+        background: #FAFAFA;
+    }
+    .SM_info_ul::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        background: #C1C1C1;
+        border-radius: 4px;
     }
 </style>

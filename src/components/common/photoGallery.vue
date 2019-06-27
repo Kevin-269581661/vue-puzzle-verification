@@ -62,11 +62,11 @@
                                     </el-select>
                                 </el-col>
                                 <el-col :span="6">
-                                    <el-button type="primary" size="small" icon="el-icon-search" class="searchBtn"
+                                    <el-button type="primary" icon="el-icon-search" class="searchBtn"
                                                @click="searchPic()" :disabled="!isSearch">搜索
                                     </el-button>
-                                    <el-button plain size="small" @click="reset()">重置</el-button>
-                                    <el-button plain size="small" @click="allDownLoad()" v-show="activeName == 'first'">一键导出</el-button>
+                                    <el-button plain @click="reset()">重置</el-button>
+                                    <el-button plain @click="allDownLoad()" v-show="activeName == 'first'">一键导出</el-button>
                                 </el-col>
                             </el-row>
                         </div>

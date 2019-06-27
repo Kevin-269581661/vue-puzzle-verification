@@ -14,13 +14,13 @@
                 </el-cascader>
             </el-col>
             <el-col :span="6">
-                <el-button type="primary" size="small" icon="el-icon-search" class="searchBtn"
+                <el-button type="primary" icon="el-icon-search" class="searchBtn"
                            @click="searchFun()" :disabled="!isSearch">搜索
                 </el-button>
-                <el-button plain size="small" @click="reset()">重置</el-button>
+                <el-button plain @click="reset()">重置</el-button>
             </el-col>
             <el-col :span="12" class="el_col_upload_btn">
-                <el-button v-if="isShowBtn" type="primary" size="small" @click="uploadFun()" :disabled="!isSearch">上传图片</el-button>
+                <el-button v-if="isShowBtn" type="primary" @click="uploadFun()" :disabled="!isSearch">上传图片</el-button>
                 <!--<el-button plain size="small" @click="photoDownLoad()">一键导出</el-button>-->
             </el-col>
         </el-row>
@@ -104,7 +104,7 @@
                 </p>
             </div>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="UploadVisible = false">取 消</el-button>
+                <el-button plain @click="UploadVisible = false">取 消</el-button>
                 <el-button type="primary" @click="uploadIndustryImg">确 定</el-button>
             </span>
         </el-dialog>

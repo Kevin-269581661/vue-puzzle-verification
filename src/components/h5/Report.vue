@@ -1031,6 +1031,17 @@ export default {
     color: rgb(102, 102, 102);
 }
 
+/deep/ .el-table__expanded-cell[class*=cell] .el-form {
+    height: 44px;
+    line-height: 44px;
+}
+/deep/ .el-table__expanded-cell[class*=cell] {
+    padding: 0 46px;
+    background-color: #F7F7F7;;
+}
+/deep/ .el-form-item__content{
+    line-height: 46px;
+}
 </style>
 
 

@@ -670,6 +670,9 @@ export default {
     padding: 0 46px;
     background-color: #F7F7F7;;
 }
+/deep/ .el-form-item__content{
+    line-height: 46px;
+}
 /deep/ .table_wrap .el-table__body-wrapper{
     min-height: auto;
 }

@@ -490,7 +490,7 @@
                         </el-table-column>
                         <el-table-column prop="imgUrl" label="操作" width="80">
                             <template slot-scope="scope">
-                                <el-button size="small" icon="el-icon-picture" style="margin-right:15px;" :style="{'color':scope.row.imgUrl?'#108DE7':''}" @click="previewImg(scope.row)" :disabled="!scope.row.imgUrl"></el-button>
+                                <el-button size="small" icon="el-icon-picture" :style="{'color':scope.row.imgUrl?'#108DE7':''}" @click="previewImg(scope.row)" :disabled="!scope.row.imgUrl"></el-button>
                                 <el-button size="small" icon="el-icon-delete" :style="{'color':scope.row.imgUrl?'#108DE7':''}" @click="deleteOneImg(scope.row, scope.$index)" :disabled="!scope.row.imgUrl"></el-button>
                             </template>
                         </el-table-column>
@@ -3287,6 +3287,9 @@ export default {
 
     /deep/ .el-table__row .cell span {
         overflow-x: initial;
+    }
+    /deep/ .el-form-item__content{
+        line-height: 46px;
     }
     /deep/ .table_wrap .el-table__body-wrapper{
         min-height: auto;

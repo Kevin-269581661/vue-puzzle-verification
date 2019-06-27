@@ -838,7 +838,7 @@
                         if (key.isLevel) {
                             if (aKey.selectedNum.A > 0 || aKey.selectedNum.B > 0 || aKey.selectedNum.C > 0 || aKey.selectedRoadGateNum > 0){
                                 params.asIDList.push({
-                                    classified: key.isLevel ? '1' : '0',
+                                    classified: key.isLevel ? '1' : '2',
                                     resID: aKey.resID,
                                     A: aKey.selectedNum.A,
                                     B: aKey.selectedNum.B,
@@ -851,7 +851,7 @@
                         } else {
                             if (aKey.selectedNum > 0 || aKey.selectedRoadGateNum > 0) {
                                 params.asIDList.push({
-                                    classified: key.isLevel ? '1' : '0',
+                                    classified: key.isLevel ? '1' : '2',
                                     resID: aKey.resID,
                                     selectedAdDoor: aKey.selectedNum,
                                     selectedRoadGateNum: aKey.selectedRoadGateNum,

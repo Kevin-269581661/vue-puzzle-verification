@@ -65,7 +65,7 @@
                                         </el-dropdown-menu>
                                     </el-dropdown>
                                     <el-button type="primary" @click="importFanan('copy')">复制方案</el-button>
-                                    <el-button @click="dialogOneKeyPoint = true">一键选点</el-button>
+                                    <el-button plain @click="dialogOneKeyPoint = true">一键选点</el-button>
                                 </el-col>
                             </el-row>
                         </div>
@@ -535,7 +535,7 @@
                                             <el-col :span="16" style="text-align:right;">
                                                 <span class="button_point">
                                                     <el-button @click="getMapADList" size="small" class="mapBtn" :disabled="mapBtn">获取地图选点</el-button>
-                                                    <el-button @click="getShareADList" size="small" class="mapBtn">更新客户选点</el-button>
+                                                    <el-button plain @click="getShareADList" size="small" class="mapBtn">更新客户选点</el-button>
                                                 </span>
                                                 <el-select v-model="eventType" placeholder="快捷配点" filterable @change="changeEvent">
                                                     <el-option v-for="item of eventList" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -744,15 +744,15 @@
             </div>
         </div>
         <div class="content_bottom_btn">
-            <el-button @click="prev" v-if="active == 2" type="default">上一步</el-button>
-            <el-button @click="goBack" v-if="active == 1" type="default">取消</el-button>
+            <el-button plain @click="prev" v-if="active == 2" type="default">上一步</el-button>
+            <el-button plain @click="goBack" v-if="active == 1" type="default">取消</el-button>
             <!--<el-button @click="clearData" v-if="active === 0" type="default">取消</el-button>-->
             <el-button @click="next" v-if="active == 0 || active == 1" type="primary">下一步</el-button>
             <el-button @click="next" v-if="active == 2" type="primary">创建方案 </el-button>
-            <el-button @click="next('workInSync')" v-if="active == 2">协同选点</el-button>
+            <el-button plain @click="next('workInSync')" v-if="active == 2">协同选点</el-button>
             <div class="finishBtn" v-if="active == 3">
                 <el-button type="primary" @click="continueCreate">继续创建</el-button>
-                <el-button type="default" @click="ToDetail">查看方案</el-button>
+                <el-button plain type="default" @click="ToDetail">查看方案</el-button>
                 <el-button @click="downLoadFanan()" type="success">导出方案</el-button>
             </div>
         </div>
@@ -5536,13 +5536,6 @@
 
     /deep/ .el-input__inner {
         height: 34px;
-    }
-
-    /*按钮*/
-    /deep/ .el-button--default:focus, .el-button--default:hover {
-        color: #606266;
-        border-color: #dcdfe6;
-        background-color: #fcfcfc;
     }
 
     .content_bottom_btn /deep/ .el-button span a {

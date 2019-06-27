@@ -31,7 +31,7 @@
                             <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
                         </el-select>
                         <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
-                        <el-button @click="reset()" :disabled="!isReset">重置</el-button>
+                        <el-button plain @click="reset()" :disabled="!isReset">重置</el-button>
                     </el-col>
                 </el-row>
                 <div class="table_wrap">

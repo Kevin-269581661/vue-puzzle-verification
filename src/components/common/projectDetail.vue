@@ -17,8 +17,8 @@
                         </h4>
                     </el-col>
                     <el-col :span="12" class="text_right">
-                        <el-button size="small" @click="toSetLine()" v-if="!projectInfo.line">设置线路</el-button>
-                        <el-button size="small" @click="download()" :loading="downLoading">导出清单</el-button>
+                        <el-button plain size="small" @click="toSetLine()" v-if="!projectInfo.line">设置线路</el-button>
+                        <el-button plain size="small" @click="download()" :loading="downLoading">导出清单</el-button>
                         <el-button type="primary" size="small" @click="toDistribute()">分配人员</el-button>
                     </el-col>
                 </el-row>

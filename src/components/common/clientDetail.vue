@@ -78,7 +78,7 @@
 
         <div class="content_bottom_btn">
             <el-button type="primary" @click="editClient" v-if="role=='BD'">编辑</el-button>
-            <el-button @click="goBack">返回</el-button>
+            <el-button plain @click="goBack">返回</el-button>
         </div>
     </div>
 </template>

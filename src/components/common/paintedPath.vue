@@ -15,7 +15,7 @@
                     </li>
                     <li class="handel_ul_li handel_ul_li_btn">
                         <el-button type="primary" :disabled="searchBtnAbled" @click="searchFun">搜索</el-button>
-                        <el-button @click="clearSearch">重置</el-button>
+                        <el-button plain @click="clearSearch">重置</el-button>
 
                     </li>
                     <li class="handel_ul_li handel_ul_li_Newbtn" v-if="showCreateBtn">

@@ -152,7 +152,7 @@
                                         </el-dropdown-menu>
                                     </el-dropdown>
                                     <el-button type="primary" @click="importFanan('copy')">复制方案</el-button>
-                                    <el-button class="oneKeyPointBtn" @click="dialogOneKeyPoint = true">一键选点</el-button>
+                                    <el-button plain @click="dialogOneKeyPoint = true">一键选点</el-button>
                                 </el-col>
                             </el-row>
                         </div>
@@ -620,7 +620,7 @@
 
                                         <el-col :span="16" style="text-align:right;">
                                             <span class="button_point">
-                                                <el-button @click="getMapADList" size="small" class="mapBtn" :disabled="mapBtn">获取地图选点</el-button>
+                                                <el-button plain @click="getMapADList" size="small" class="mapBtn" :disabled="mapBtn">获取地图选点</el-button>
                                             </span>
                                             <el-select v-model="eventType" placeholder="快捷配点" filterable @change="changeEvent">
                                                 <el-option v-for="item of eventList" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -818,7 +818,7 @@
                                 <li class="money"><em>订单金额：</em>￥{{priceFormat(totalPrice)}}</li>
                                 <li style="overflow: hidden;text-overflow:ellipsis">
                                     <em>协同选点：</em><span id="shareUrl">{{shareADUrl}}</span>
-                                    <el-button @click="copyUrl" class="urlBtn">复制</el-button>
+                                    <el-button plain @click="copyUrl" class="urlBtn">复制</el-button>
                                     <el-button @click="downLoadFanan()" type="success" class="urlBtn">导出方案</el-button>
                                 </li>
                             </ul>
@@ -828,12 +828,12 @@
             </div>
         </div>
         <div class="content_bottom_btn">
-            <el-button @click="prev" v-if="active == 1 || active == 2" type="default">上一步</el-button>
-            <el-button @click="clearData" v-if="active === 0" type="default">取消</el-button>
+            <el-button plain @click="prev" v-if="active == 1 || active == 2" type="default">上一步</el-button>
+            <el-button plain @click="clearData" v-if="active === 0" type="default">取消</el-button>
             <!-- 空点导出 -->
             <!-- <el-button v-if="active === 0" type="default" @click="downEmpty()">导空点</el-button> -->
             <!-- <el-button v-if="active === 0" type="default" @click="exportExcelData()">导空点</el-button> -->
-            <el-button v-if="active === 0" type="default" @click="exportEmpty()">导空点</el-button>
+            <el-button plain v-if="active === 0" type="default" @click="exportEmpty()">导空点</el-button>
 
             <el-button @click="next" v-if="active == 0 || active == 1" type="primary">下一步</el-button>
             <el-button @click="next" v-if="active == 2" type="primary">创建方案 </el-button>
@@ -842,7 +842,7 @@
 
             <div class="finishBtn" v-if="active == 3">
                 <el-button type="primary" @click="continueCreate">继续创建</el-button>
-                <el-button type="default" @click="ToDetail">
+                <el-button plain type="default" @click="ToDetail">
                     <!--<router-link to="{path='/orderList'}"></router-link>-->
                     查看方案
                 </el-button>
@@ -932,8 +932,8 @@
                 </el-form>
             </div>
             <span slot="footer" class="OneKeyPoint_footer">
-                <el-button @click="dialogOneKeyPoint = false">取 消</el-button>
-                <el-button type="primary" @click="oneKeyPointBtn('oneKeyPointData')" class="OneKeyPoint_footerBtn">一键选点</el-button>
+                <el-button plain @click="dialogOneKeyPoint = false">取 消</el-button>
+                <el-button type="primary" @click="oneKeyPointBtn('oneKeyPointData')">一键选点</el-button>
             </span>
         </el-dialog>
         <!-- 导出空位时间弹出框 -->
@@ -987,8 +987,8 @@
             <el-row>
                 <el-col :span="4" class="import_col"> 下载模板:</el-col>
                 <el-col :span="18">
-                    <el-button icon="el-icon-download" size="small" v-if="importType=='1'"><a :href ='this.apiVar.qadnUrl + "/importTemplate/resTemplate.xlsx"' download="小区导入模板.xlsx">小区模板</a></el-button>
-                    <el-button icon="el-icon-download" size="small" v-if="importType=='2'"><a :href ='this.apiVar.qadnUrl + "/importTemplate/adsTemplate.xlsx"' download="点位导入模板.xlsx">点位模板</a></el-button>
+                    <el-button plain icon="el-icon-download" size="small" v-if="importType=='1'"><a :href ='this.apiVar.qadnUrl + "/importTemplate/resTemplate.xlsx"' download="小区导入模板.xlsx">小区模板</a></el-button>
+                    <el-button plain icon="el-icon-download" size="small" v-if="importType=='2'"><a :href ='this.apiVar.qadnUrl + "/importTemplate/adsTemplate.xlsx"' download="点位导入模板.xlsx">点位模板</a></el-button>
                 </el-col>
             </el-row>
             <el-row class="import_file">
@@ -1002,7 +1002,7 @@
                         :show-file-list="false"
                         :http-request="uploadFile"
                         :multiple="false">
-                        <el-button icon="el-icon-upload2" size="small">上传文件</el-button>
+                        <el-button plain icon="el-icon-upload2" size="small">上传文件</el-button>
                     </el-upload>
                     <span style="color:#999;">支持扩展名: .xlsx .xls</span>
                 </el-col>
@@ -1022,7 +1022,7 @@
                 </el-col>
             </el-row>
             <span slot="footer" class="dialog-footer">
-                <el-button size="small" @click="isImport = false">取 消</el-button>
+                <el-button plain size="small" @click="isImport = false">取 消</el-button>
                 <el-button size="small" type="primary" @click="submitUpload()">确定上传</el-button>
             </span>
         </el-dialog>
@@ -1089,7 +1089,7 @@
                 <el-option v-for="item of orderArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
             <span slot="footer" class="dialog-footer">
-                <el-button size="small" @click="isCopy = false">取 消</el-button>
+                <el-button plain size="small" @click="isCopy = false">取 消</el-button>
                 <el-button size="small" type="primary" @click="confirmCopy()">确 定</el-button>
             </span>
         </el-dialog>
@@ -5557,13 +5557,6 @@
 
     /deep/ .el-input-group--prepend .el-input__inner {
         width: 185px;
-    }
-
-    /*按钮*/
-    /deep/ .el-button--default:focus, .el-button--default:hover {
-        color: #606266;
-        border-color: #dcdfe6;
-        background-color: #fcfcfc;
     }
 
     .content_bottom_btn /deep/ .el-button span a {

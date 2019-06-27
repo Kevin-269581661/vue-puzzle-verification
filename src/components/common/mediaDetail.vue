@@ -9,7 +9,7 @@
                 <div class="ad_mediaInfo_head">
                     <h2>{{resData.resName}}</h2>
                     <div class="ad_mediaInfo_head_btn">
-                        <el-button size="mini" style="color:rgba(0,0,0,0.65)" @click="showResImg" >小区全貌</el-button>
+                        <el-button plain size="mini" style="color:rgba(0,0,0,0.65)" @click="showResImg" >小区全貌</el-button>
                         <el-button type="primary" @click="edit" v-if="haveEdit" size="mini">编辑</el-button>
                     </div>
                 </div>
@@ -358,7 +358,7 @@
                     </el-tabs>
                 </div>
                 <div class="content_bottom_btn">
-                    <el-button type="default" @click="goBack">返回</el-button>
+                    <el-button plain type="default" @click="goBack">返回</el-button>
                 </div>
             </div>
         </div>

@@ -41,7 +41,7 @@
                             </el-row>
                             <el-row :gutter="32">
                                 <el-col :span="6">
-                                    <span>&nbsp;投 放 面：</span>
+                                    <span style="display: inline-block;width: 70px;text-align: right">投放面：</span>
                                     <el-select v-model="searchInfo.LabSelect" :clearable="true" placeholder="选择投放面" class="plan-select" size="small">
                                         <el-option label="A面" value="A"></el-option>
                                         <el-option label="B面" value="B"></el-option>
@@ -55,7 +55,7 @@
                                     </el-date-picker>
                                 </el-col>
                                 <el-col :span="6">
-                                    <span>&nbsp;上 下 刊：</span>
+                                    <span style="display: inline-block;width: 70px;text-align: right">上下刊：</span>
                                     <el-select v-model="searchInfo.publish" placeholder="请选择" class="plan-select" size="small">
                                         <el-option label="上刊" value="SK"></el-option>
                                         <el-option label="下刊" value="XK"></el-option>

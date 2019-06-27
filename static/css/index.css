@@ -89,9 +89,6 @@
     text-align: center;
     padding: 0;
 }
-.el-button--primary{
-    line-height: normal;
-}
 .el-button+.el-button{
     margin-left: 3px;
 }

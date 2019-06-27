@@ -418,7 +418,11 @@ export default {
 					let oneTarget = target/4;
 					// this.priceList = [0, oneTarget, oneTarget*2, oneTarget*3, oneTarget*4, target];
 					this.priceList = [0, oneTarget, oneTarget*2, oneTarget*3, target];
-					this.getAptotal();
+					if(target){
+						this.getAptotal();
+					}else{
+						this.isShowLine = false;
+					}
 				}else if(res.data.SysCode == 100302){
 					this.loginTimeout();
 				}else{

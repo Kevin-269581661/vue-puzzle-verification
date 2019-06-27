@@ -287,8 +287,7 @@
                         this.collectSelectInfo = JSON.parse(JSON.stringify(this.searchInfo))
                     }
                     this.searchInfo = JSON.parse(JSON.stringify(this.gallerySelectInfo))
-                    if (this.searchInfo.totalpageNum === 0) {
-                        this.pageUpImgArr = [];
+                    if (this.pageUpImgArr.length <= 0) {
                         let params = this.searchFormat();
                         this.getUpImgInfo(params)
                     } else {

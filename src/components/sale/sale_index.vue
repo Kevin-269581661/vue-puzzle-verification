@@ -44,6 +44,12 @@
 						</el-popover>
 					</div>
 				</div>
+				<template v-else>
+					<p class="img_point">
+						<img src="../../assets/images/nofound.png" alt="空占位符">
+						<p class="img_point">暂无数据</p>
+					</p>
+				</template>
 			</div>
 		</div>
 		<!-- 动效 -->
@@ -1016,5 +1022,12 @@ export default {
 		top: 100px;
 		left: 50%;
 	}
+}
+
+.img_point{
+	text-align: center;
+	color: #666;
+	margin-top: 20px;
+	padding-bottom:20px;
 }
 </style>

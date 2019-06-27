@@ -356,4 +356,8 @@ export default {
     color: rgba(0, 0, 0, 0.65);
 }
 
+.table_wrap .el-button{
+    min-width: auto;
+}
+
 </style>

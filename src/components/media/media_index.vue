@@ -741,10 +741,10 @@ export default {
 		this.getIsCom();
 		this.getData();
 		this.getContributeBox();
+		this.getContribute();
 		let nowDate = timeFormat.toDate(new Date(), '/');		
 		if(indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)){
 			this.isShowNum = true;
-			this.getContribute();
 		}
 		this.setTime();
 		// this.getLinePer();

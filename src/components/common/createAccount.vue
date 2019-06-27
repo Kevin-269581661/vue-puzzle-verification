@@ -84,8 +84,8 @@
                 </div>
             </div>
             <div class="content_bottom_btn">
-                <el-button @click="submitForm('accountForm')">{{isEdit?'保存':'创建'}}</el-button>
-                <el-button type="default" @click="resetForm()">取消</el-button>
+                <el-button type="primary" @click="submitForm('accountForm')">{{isEdit?'保存':'创建'}}</el-button>
+                <el-button plain type="default" @click="resetForm()">取消</el-button>
             </div>
         </div>
     </div>

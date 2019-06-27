@@ -109,8 +109,8 @@
                 </el-tabs>
             </div>
             <div class="content_bottom_btn">
-                <el-button type="default" icon="el-icon-download" class="searchBtn" v-if="planPanel=='first'" @click="export2Excel(planDetail.apName)" :disabled="isDown">导出</el-button>
-                <el-button class="cancel" @click="goBack()">返回</el-button>
+                <el-button plain type="default" icon="el-icon-download" class="searchBtn" v-if="planPanel=='first'" @click="export2Excel(planDetail.apName)" :disabled="isDown">导出</el-button>
+                <el-button plain class="cancel" @click="goBack()">返回</el-button>
             </div>
         </div>
     </div>

@@ -35,7 +35,7 @@
                             <el-option label="未预锁" value="1"></el-option>
                         </el-select>
                         <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
-                        <el-button @click="reset()" :disabled="!isReset">重置</el-button>
+                        <el-button plain @click="reset()" :disabled="!isReset">重置</el-button>
                     </el-col>
                 </el-row>
                 <el-row v-if="showNewBtn || !isNation" >
@@ -145,7 +145,7 @@
                 <el-checkbox v-if="!isLock" :label="item.asrID" v-for="item of cityList" :key="item.rid" border :disabled="item.RemainDay==undefined || item.RemainDay==null" size="mini">{{item.asName}}</el-checkbox>
             </el-checkbox-group>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="cancelLock">取 消</el-button>
+                <el-button plain @click="cancelLock">取 消</el-button>
                 <el-button type="primary" @click="confirmLock">确 定</el-button>
             </span>
         </el-dialog>
@@ -176,7 +176,7 @@
                 </ul>
             </div>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="cancelEdit">放 弃</el-button>
+                <el-button plain @click="cancelEdit">放 弃</el-button>
                 <el-button type="primary" @click="continueEdit">继续编辑</el-button>
             </span>
         </el-dialog>

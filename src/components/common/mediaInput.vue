@@ -627,7 +627,7 @@
                 <div class="content_bottom_btn">
                     <el-button type="primary" class="create" :disabled="submitBtnIsAble"
                                @click="submitForm('recForm','mediaForm','roadGateForm')">{{PathHaveEdit?'保存':'创建'}}</el-button>
-                    <el-button class="cancel" @click="clearData">取消</el-button>
+                    <el-button plain class="cancel" @click="clearData">取消</el-button>
                 </div>
             </div>
         </div>

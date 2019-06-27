@@ -6,9 +6,9 @@
                     <div class="title">
                         <h1>{{upReport.apName}}{{(Info.name =='SK')?'上刊':'下刊'}}报告 
                             <span class="button_box">
-                                <el-button @click="getPTTx()" size="small" :loading="pptxLoading">导出PPTx</el-button>
-                                <el-button @click="getPTT()" size="small" :loading="pptLoading">导出PPT</el-button>
-                                <el-button @click="getPDF()" size="small" :loading="pdfLoading">导出PDF</el-button>
+                                <el-button plain @click="getPTTx()" size="small" :loading="pptxLoading">导出PPTx</el-button>
+                                <el-button plain @click="getPTT()" size="small" :loading="pptLoading">导出PPT</el-button>
+                                <el-button plain @click="getPDF()" size="small" :loading="pdfLoading">导出PDF</el-button>
                             </span>
                         </h1>
                         <h3>{{upReport.bTitle}} &nbsp;&nbsp;{{formatTime(upReport.apcTime)}}</h3>

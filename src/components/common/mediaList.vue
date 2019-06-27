@@ -48,10 +48,10 @@
                     </li>
                     <li class="handel_ul_li handel_ul_li_btn">
                         <el-button type="primary" icon="el-icon-search" @click="searchFun" :disabled="searchBtnAbled">搜索</el-button>
-                        <el-button @click="clearSearch">重置</el-button>
+                        <el-button plain @click="clearSearch">重置</el-button>
                         <el-button plain @click="newMedia" v-if="showNewBtn">新建</el-button>
-                        <el-button @click="importMedia" v-if="showImportBtn">导入媒体</el-button>
-                        <el-button @click="maintain" v-if="!showImportBtn">维护管理</el-button>
+                        <el-button plain @click="importMedia" v-if="showImportBtn">导入媒体</el-button>
+                        <el-button plain @click="maintain" v-if="!showImportBtn">维护管理</el-button>
                     </li>
                 </div>
                 <div class="table_wrap">

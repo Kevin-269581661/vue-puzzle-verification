@@ -183,7 +183,7 @@
                     </div>
                 </div>
                 <p style="text-align:center;" class="marginTop16">
-                    <el-button size="small" @click="cancel()">取消</el-button>
+                    <el-button plain size="small" @click="cancel()">取消</el-button>
                     <el-button size="small" type="primary" @click="saveAll()">保存</el-button>
                 </p>
             </div>
@@ -760,5 +760,8 @@ export default {
 }
 .span_a{
     cursor: pointer;
+}
+/deep/ .el-table__row .cell span{
+    overflow-x: initial;
 }
 </style>

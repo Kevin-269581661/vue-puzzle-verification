@@ -57,10 +57,9 @@
 				</h2>
 				<div v-if="getNumIsNull(orderPointData.pointData)|| getNumIsNull(orderPointData.orderData)" id="perform" ref="perform" class="charts2" style="width:100%;height:400px;"></div>
 				<template v-else>
-					<p class="img_point">
-						<img src="../../assets/images/nofound.png" alt="空占位符">
-						<p class="img_point">暂无数据</p>
-					</p>
+					<div class="img_point">
+						<no-search-result></no-search-result>
+					</div>
 				</template>
 			</div>
 		</div>
@@ -169,12 +168,15 @@ import { api } from '../../api/api';
 import comcards from '../../commonFun/json/comcard.json';
 import sessFun from '../../commonFun/sessFun.js';
 import indexIsDateFirst from '../../commonFun/indexIsDateFirst.js';
+import noSearchResult from "../../components/common/components/noSearchResult.vue";
+
 
 export default {
 	name: "media_index",
 	components:{
 		homeTop,
 		homeLink,
+		noSearchResult,
 	},
 	data(){
 		return{

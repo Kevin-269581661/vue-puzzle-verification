@@ -390,18 +390,8 @@
             },
             // 退出登录
             loginOut(){
-                let info = {
-                    uid: this.saleData.uID,
-                    token: this.saleData.token
-                };
-                api.postApi(this.apiVar.UCAPI+"/Logout", info).then(res =>{
-                    if(res.data.SysCode == 200200){
-                        sessionStorage.clear();
-                        this.$router.push('/login');
-                    }else{
-                        this.$message.warning(res.data.MSG);
-                    }
-                });
+                sessionStorage.clear();
+                this.$router.push('/login');
             },
         },
         mounted: function () {

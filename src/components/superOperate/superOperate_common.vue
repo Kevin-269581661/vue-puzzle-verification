@@ -94,7 +94,8 @@
                         </li>
                         <li><a href="#" @click="openWxBox1 = true">微信授权</a></li>
                         <li>
-                            <router-link :to="{path:'/login'}">退出登陆</router-link>
+                            <!-- <router-link :to="{path:'/login'}">退出登陆</router-link> -->
+                            <a href="#" @click="loginOut()">退出登陆</a>
                         </li>
                     </ul>
                 </div>
@@ -203,6 +204,7 @@
 
 <script>
     import uTypeToText from '../../commonFun/uTypeToText.js'
+    import { api } from '../../api/api.js';
 
     export default {
         name: 'images',
@@ -492,6 +494,20 @@
                 if(sess.uType == 'SM' && sess.ascType == 0){
                     this.showCompany = true;
                 }
+            },
+            // 退出登录
+            loginOut(){
+                let info = {
+                    uid: this.SMData.uID,
+                    token: this.SMData.token
+                };
+                api.postApi(this.apiVar.UCAPI+"/Logout", info).then(res =>{
+                    if(res.data.SysCode == 200200){
+                        this.$router.push('/login');
+                    }else{
+                        this.$message.warning(res.data.MSG);
+                    }
+                });
             },
         },
         mounted: function () {

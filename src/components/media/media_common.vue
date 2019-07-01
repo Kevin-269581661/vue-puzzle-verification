@@ -72,7 +72,8 @@
 							</router-link>
 						</li> -->
 						<li>
-							<router-link :to="{path:'/login'}">退出登陆</router-link>
+							<!-- <router-link :to="{path:'/login'}">退出登陆</router-link> -->
+                            <a href="#" @click="loginOut()">退出登陆</a>                            
 						</li>
 					</ul>
 				</div>
@@ -160,6 +161,7 @@
 
 <script>
 import uTypeToText from "../../commonFun/uTypeToText.js";
+import { api } from '../../api/api.js';
 
 export default {
     name: "home",
@@ -411,6 +413,20 @@ export default {
                     });
                     break;
             }
+        },
+        // 退出登录
+        loginOut(){
+            let info = {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token
+            };
+            api.postApi(this.apiVar.UCAPI+"/Logout", info).then(res =>{
+                if(res.data.SysCode == 200200){
+                    this.$router.push('/login');
+                }else{
+                    this.$message.warning(res.data.MSG);
+                }
+            });
         },
     },
     watch: {

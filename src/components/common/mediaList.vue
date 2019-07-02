@@ -158,7 +158,7 @@
 							]"
                             :filter-multiple="false">
                             <template  slot-scope="scope">
-                                <span v-if="scope.row.mState === '正常'">
+                                <span v-if="scope.row.mState === '正常' && scope.row.mVehicle === '广告门'">
                                     <el-tooltip class="item" effect="dark" placement="left-start">
                                         <div slot="content">
                                             A面:{{scope.row.asState.A == '1' ? '正常' : '禁用'}}  B面:{{scope.row.asState.B == '1' ? '正常' : '禁用'}}
@@ -253,11 +253,6 @@
                             </el-option>
                         </el-select>
                     </li>
-                    <!--<li>-->
-                     <!--   <span>下载模板：</span>
-                        <a :href ='this.apiVar.qadnUrl + "/importTemplate/adDoor.xlsx"' class="el-icon-download aButton" download="广告门导入模板.xlsx">广告门模块</a>
-                        <a :href ='this.apiVar.qadnUrl + "/importTemplate/roadGate.xls"' class="el-icon-download aButton" download="道闸导入模板.xls">道闸模块</a>-->
-                    <!--</li>-->
                     <li>
                         <el-upload
                             class="upload_file"
@@ -635,7 +630,7 @@
                 console.log('状态', Status)
                 console.log('行内容', rows)//mState
                 if (rows.mState == Status ) {
-                    if (rows.mState === '正常' && rows.mVehicle === '广告门') {
+                    if (rows.mState === '正常' && rows.mVehicle === '广告门' && rows.pNum > 1) {
                         if (rows.asState.A !== rows.asState.B) {
                             let asLetter = ''
                             if (rows.asState.A === '0') {
@@ -676,7 +671,7 @@
                 } else {
                     this.rowData = rows
                     this.rowIndex = index
-                    if (rows.mVehicle === '广告门' && Status === '禁用' && rows.mState === '正常') {  // 正常转禁用
+                    if (rows.mVehicle === '广告门' && Status === '禁用' && rows.mState === '正常' && rows.pNum > 1) {  // 正常转禁用
                         this.normalToDisabled = true
                         if (rows.asState.A == '0') {
                             this.doorState.adState = 'A'
@@ -687,9 +682,8 @@
                         }
                         this.doorState.mState = false
                         this.mStatusDialogVisible = true
-                    } else if (rows.mVehicle === '广告门' && Status === '正常' && rows.mState === '禁用') {    // 禁用转正常
+                    } else if (rows.mVehicle === '广告门' && Status === '正常' && rows.mState === '禁用' && rows.pNum > 1) {    // 禁用转正常
                         this.normalToDisabled = false
-
                         this.doorState.mState = false
                         this.doorState.adState = ''
                         this.mStatusDialogVisible = true
@@ -1099,6 +1093,10 @@
     /deep/ .el-table__body-wrapper {
         min-height: 530px;
         overflow-y: auto;
+    }
+
+    /deep/ .error_media .el-table__body-wrapper{
+        min-height: 420px;
     }
 
     /*筛选*/

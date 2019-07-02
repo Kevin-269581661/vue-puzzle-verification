@@ -119,7 +119,7 @@
     import api from "../../api/api.js";
     import timeFormat from '../../commonFun/timeFormat.js'
     import commaFormat from '../../commonFun/commaFormat.js'
-    import sessFun from '../../commonFun/sessFun.js';    
+    import sessFun from '../../commonFun/sessFun.js';
     // 消费偏好json
     import allHoppy from "../../commonFun/json/allHoppy_new.json";
     // 消费偏好转换中文
@@ -766,12 +766,12 @@
 
 <style scoped>
     /*面包屑导航*/
-    .ad_mediaDetail_wrap {
+  /*  .ad_mediaDetail_wrap {
         position: relative;
     }
 
     .ad_mediaDetail_nav p {
-        padding-left: 65px;
+        !*padding-left: 65px;*!
         position: absolute;
         left: 0;
         top: 12px;
@@ -786,15 +786,15 @@
     .ad_mediaDetail_nav {
         height: 42px;
         position: relative;
-    }
+    }*/
 
     .mediaList_wrap {
-        width: 90%;
+        /*width: 90%;*/
         height: 581px;
         background: #FFFFFF;
         border: 1px solid #E6E7E9;
         border-radius: 4px;
-        margin: 0 auto;
+        margin: 0 64px;
     }
 
     /deep/ .el-card {

@@ -253,11 +253,11 @@
                             </el-option>
                         </el-select>
                     </li>
-                    <li>
+                    <!--<li>-->
                      <!--   <span>下载模板：</span>
                         <a :href ='this.apiVar.qadnUrl + "/importTemplate/adDoor.xlsx"' class="el-icon-download aButton" download="广告门导入模板.xlsx">广告门模块</a>
                         <a :href ='this.apiVar.qadnUrl + "/importTemplate/roadGate.xls"' class="el-icon-download aButton" download="道闸导入模板.xls">道闸模块</a>-->
-                    </li>
+                    <!--</li>-->
                     <li>
                         <el-upload
                             class="upload_file"
@@ -270,7 +270,7 @@
                             :on-remove="fileRemove"
                             :multiple="false">
                             <a :href ='this.apiVar.qadnUrl + "/importTemplate/mediaTemplate.xlsx"'
-                               class="el-icon-download aButton" download="媒体导入模板.xlsx">下载模板</a>
+                               class="el-icon-download aButton" download="媒体导入模板.xlsx" @click="dowmLoadFun">下载模板</a>
                             <el-button plain icon="el-icon-upload2" class="el_upload_btn">上传文件</el-button>
                         </el-upload>
                     </li>
@@ -918,6 +918,11 @@
                 console.log(file, fileList);
                 this.fileData = fileList
             },
+            // 导入模版下载
+            dowmLoadFun(event){
+                // 阻止冒泡事件
+                event.stopPropagation();
+            },
             // 确认上传
             submitUpload(){
                 console.log('this.importAsrID',this.importAsrID,this.fileData)
@@ -951,8 +956,9 @@
                             }
                             if(resData.mediaCount > 0){
                                 this.$message.success('成功导入' + resData.mediaCount + '条数据') // mediaCount resCount
-                                this.setPageNoAndTableData()
-                                this.getData({"pageNo": this.pageNo,"pageSize":50})
+                                // this.setPageNoAndTableData()
+                                this.pageData.pageNum = 1
+                                this.getData()
                             }
                             this.ImportDialogVisible = false
                         } else if (res.data.SysCode == 100302) {

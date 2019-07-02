@@ -1021,6 +1021,14 @@
                     </el-tag>
                 </el-col>
             </el-row>
+            <el-row v-if="importType=='2'" >
+                <el-col :span="4" class="import_col">  注意点:</el-col>
+                <el-col :span="18" class="warning_box">
+                    <i class="el-icon-warning" style="color:#FAAD14"></i>
+                    若需导入钼媒人群包进行选点，请在表格中填入正确的钼媒点位ID
+                    <!-- <i class="el-icon-close"></i> -->
+                </el-col>
+            </el-row>
             <span slot="footer" class="dialog-footer">
                 <el-button plain size="small" @click="isImport = false">取 消</el-button>
                 <el-button size="small" type="primary" @click="submitUpload()">确定上传</el-button>
@@ -2187,6 +2195,7 @@
                         asLab: data.asLab,
                         assetTag: data.assetTag,
                         schedules: data.date,
+                        pointId: data.pointId,
                     };
                     resultarr.push(item);
                 }
@@ -2195,7 +2204,7 @@
             // 导出有问题的点
             downLoadExcel(){
                 let arr = this.questionPoint(this.excelDataUpload, this.importInfoData.successList);
-                let allHead = ['资源名称',	'市', '区',	'媒介载体', '媒体名称', '投放面', '资产编号', '投放排期'];
+                let allHead = ['资源名称',	'市', '区',	'媒介载体', '媒体名称', '投放面', '资产编号', '投放排期', '钼媒点位ID'];
                 sheetExcel.toDownload(allHead, arr, this.planForm.planName+'问题点位表');
             },
             // 导入excel后台返回的问题点位
@@ -2220,6 +2229,7 @@
                         asLab: data.asLab,
                         assetTag: data.assetTag,
                         schedules: data.schedules,
+                        pointId: data.pointId,                        
                     };
                     resultarr[0].showList.push(obj);
                 }
@@ -2234,6 +2244,7 @@
                         asLab: info.asLab,
                         assetTag: info.assetTag,
                         schedules: timeFormat.toDate(data.pbStar, '.')+'-'+timeFormat.toDate(data.pbEnd, '.'),
+                        pointId: data.pointId,                        
                     };
                     resultarr[1].showList.push(obj);
                 }
@@ -6146,6 +6157,7 @@
     /* 方案导入 */
     /deep/.import_fanan .el-row{
         height: 40px;
+        line-height: 40px;
     }
     .import_fanan a{
         color: #606266;
@@ -6158,10 +6170,13 @@
     .import_file .upload_file{
         display: inline-block;
     }
-
-    .upload_box{
-        text-align: center;
-        margin-top: 20px
+    .warning_box{
+        background:rgba(255,251,230,1);
+        border-radius:4px;
+        border:1px solid rgba(255,229,143,1);
+        line-height: 24px;
+        color:rgba(0,0,0,0.65);
+        padding: 0 5px;
     }
 
     /*safari下表头错位*/

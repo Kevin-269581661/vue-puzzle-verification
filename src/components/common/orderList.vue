@@ -890,6 +890,7 @@ a {
 }
 
 /deep/ .el-table td .cell{
+    padding: 2px 10px;    
     height: auto;
     line-height: 28px;
 }

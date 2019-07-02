@@ -1169,6 +1169,7 @@
                     {buildlabel: '中端住宅', buildValue: '中端住宅'},
                     {buildlabel: '普通住宅', buildValue: '普通住宅'},
                     {buildlabel: '单体楼', buildValue: '单体楼'},
+                    {buildlabel: '别墅', buildlabel: '别墅'},
                     {buildlabel: '洋房', buildValue: '洋房'},
                     {buildlabel: '商住', buildValue: '商住'}
                 ],
@@ -1177,6 +1178,7 @@
                     {buildlabel: '中端住宅', buildValue: '中端住宅'},
                     {buildlabel: '普通住宅', buildValue: '普通住宅'},
                     {buildlabel: '单体楼', buildValue: '单体楼'},
+                    {buildlabel: '别墅', buildlabel: '别墅'},
                     {buildlabel: '洋房', buildValue: '洋房'},
                     {buildlabel: '商住', buildValue: '商住'}
                 ],
@@ -1546,7 +1548,7 @@
                 }
                 this.isImport = false;
                 // this.dialogTableVisible = true;
-                this.judgeByselect();  
+                this.judgeByselect();
                 this.dialogVisible();
                 console.log('inport----data----shoplist', this.shopingList);
             },
@@ -1809,7 +1811,7 @@
                             for(let item of result){
                                 this.isHaveDiffPush(item);
                             }
-                            this.judgeByselect();  
+                            this.judgeByselect();
                         }else if(res.data.SysCode == 100302){
                             this.loginTimeout();
                         }else{
@@ -1821,7 +1823,7 @@
                         this.isCopy = false;
                     });
                 }else{
-                    Message.warning('请先选择要复制的方案');                    
+                    Message.warning('请先选择要复制的方案');
                 }
             },
             // 构建复制方案数据格式

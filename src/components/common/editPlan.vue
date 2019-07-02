@@ -1685,6 +1685,7 @@
                         asLab: data.asLab,
                         assetTag: data.assetTag,
                         schedules: data.date,
+                        pointId: data.pointId,
                     };
                     resultarr.push(item);
                 }
@@ -1693,7 +1694,7 @@
             // 导出有问题的点
             downLoadExcel(){
                 let arr = this.questionPoint(this.excelDataUpload, this.importInfoData.successList);
-                let allHead = ['资源名称',	'市', '区', '媒介载体',	'媒体名称', '投放面', '资产编号', '投放排期'];
+                let allHead = ['资源名称',	'市', '区', '媒介载体',	'媒体名称', '投放面', '资产编号', '投放排期', '钼媒点位ID'];
                 sheetExcel.toDownload(allHead, arr, this.planForm.planName+'问题点位表');
             },
             // 导入excel后台返回的问题点位
@@ -1719,6 +1720,7 @@
                         asLab: data.asLab,
                         assetTag: data.assetTag,
                         schedules: data.schedules,
+                        pointId: data.pointId,                        
                     };
                     resultarr[0].showList.push(obj);
                 }
@@ -1733,6 +1735,7 @@
                         asLab: info.asLab,
                         assetTag: info.assetTag,
                         schedules: timeFormat.toDate(data.pbStar, '.')+'-'+timeFormat.toDate(data.pbEnd, '.'),
+                        pointId: data.pointId,                        
                     };
                     resultarr[1].showList.push(obj);
                 }

@@ -955,6 +955,8 @@
                                 this.getData()
                             }
                             this.ImportDialogVisible = false
+                            this.fileData = []
+                            this.importAsrID = ''
                         } else if (res.data.SysCode == 100302) {
                             this.loginTimeout()
                         } else {

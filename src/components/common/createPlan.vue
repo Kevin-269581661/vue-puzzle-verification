@@ -982,56 +982,40 @@
             class="import_fanan"
             :title="importType=='1'?'小区导入':'点位导入'"
             :visible.sync="isImport"
-            top="20vh"
-            width="40%">
+            top="30vh"
+            width="360px">
             <el-row>
-                <el-col :span="4" class="import_col"> 下载模板:</el-col>
-                <el-col :span="18">
-                    <el-button plain icon="el-icon-download" size="small" v-if="importType=='1'"><a :href ='this.apiVar.qadnUrl + "/importTemplate/resTemplate.xlsx"' download="小区导入模板.xlsx">小区模板</a></el-button>
-                    <el-button plain icon="el-icon-download" size="small" v-if="importType=='2'"><a :href ='this.apiVar.qadnUrl + "/importTemplate/adsTemplate.xlsx"' download="点位导入模板.xlsx">点位模板</a></el-button>
-                </el-col>
-            </el-row>
-            <el-row class="import_file">
-                <el-col :span="4" class="import_col"> 上传文件:</el-col>
-                <el-col :span="18" >
+                <el-col>
                     <el-upload
                         class="upload_file"
                         ref="upload"
                         accept=".xlsx,.xls"
                         :action="doUpload"
-                        :show-file-list="false"
+                        :show-file-list="true"
+                        :file-list="fileData"                        
                         :http-request="uploadFile"
+                        :on-remove="fileRemove"
                         :multiple="false">
-                        <el-button plain icon="el-icon-upload2" size="small">上传文件</el-button>
+                        <el-button plain icon="el-icon-download" size="small" class="fileButton" v-if="importType=='1'"><a :href ='this.apiVar.qadnUrl + "/importTemplate/resTemplate.xlsx"' download="小区导入模板.xlsx" @click="dowmLoadFun">下载模板</a></el-button>
+                        <el-button plain icon="el-icon-download" size="small" class="fileButton" v-if="importType=='2'"><a :href ='this.apiVar.qadnUrl + "/importTemplate/adsTemplate.xlsx"' download="点位导入模板.xlsx" @click="dowmLoadFun">下载模板</a></el-button>
+                        <el-button plain icon="el-icon-upload2" size="small" class="fileButton">上传文件</el-button>
                     </el-upload>
-                    <span style="color:#999;">支持扩展名: .xlsx .xls</span>
                 </el-col>
             </el-row>
-            <el-row>
-                <el-col :span="4" class="import_col"> 文件名称:</el-col>
-                <el-col :span="18">
-                    <el-tag
-                        v-for="(tag, index) of fileNameTags"
-                        :key="index"
-                        type="info"
-                        closable
-                        :disable-transitions="false"
-                        @close="tabCloseFun(tag, index)">
-                        {{tag}}
-                    </el-tag>
-                </el-col>
-            </el-row>
-            <el-row v-if="importType=='2'" >
-                <el-col :span="4" class="import_col">  注意点:</el-col>
-                <el-col :span="18" class="warning_box">
+            <el-row v-if="importType=='2' && isShowTag" class="warning_box">
+                <el-col :span="2">
                     <i class="el-icon-warning" style="color:#FAAD14"></i>
+                </el-col>
+                <el-col :span="20" >
                     若需导入钼媒人群包进行选点，请在表格中填入正确的钼媒点位ID
-                    <!-- <i class="el-icon-close"></i> -->
+                </el-col>
+                <el-col :span="2">
+                    <i class="el-icon-close" @click="hideTag()"></i>
                 </el-col>
             </el-row>
             <span slot="footer" class="dialog-footer">
                 <el-button plain size="small" @click="isImport = false">取 消</el-button>
-                <el-button size="small" type="primary" @click="submitUpload()">确定上传</el-button>
+                <el-button size="small" type="primary" @click="submitUpload()">导 入</el-button>
             </span>
         </el-dialog>
         <!-- 导入excel点位部分失败弹框 -->
@@ -1392,14 +1376,10 @@
                 getMapLoading: '',              // 获取地图选点时的loading
                 // 是否导入方案
                 isImport: false,
-                // importType: '1',
                 importType: '',
-                // 文件名称列表
-                fileNameTags:[],
+                isShowTag: true,
                 // 当前上传文件的数据- 表格
                 fileData:[],
-                // 所有上传文件的数据 - [{fileName:'',dataArr:[]}]
-                TotalFileData:[],
                 // 导入excel部分失败弹出框
                 showUploadFail: false,
                 // 导入excel之后返回的失败成功点数
@@ -1946,23 +1926,27 @@
                 }
                 this.isImport = true;
                 this.fileData = [];
-                this.fileNameTags = [];
                 this.importInfoData = {};
             },
             // 自定义上传
             uploadFile(params){
                 this.fileData = [];
-                this.fileNameTags = [];
                 console.log(params);
                 let fileObj = params.file;
                 this.fileData.push(fileObj);
-                this.fileNameTags.push(params.file.name);
             },
-            // 删除tag文件
-            tabCloseFun(data, index){
-                console.log('file---name', data);
-                this.fileNameTags = [];
-                this.fileData = [];
+            // 文件删除
+            fileRemove(file, fileList){
+                console.log(file, fileList);
+                this.fileData = fileList
+            },
+            // 导入模版下载
+            dowmLoadFun(event){
+                // 阻止冒泡事件
+                event.stopPropagation();
+            },
+            hideTag(){
+                this.isShowTag = false;
             },
             // 确认上传
             submitUpload(){
@@ -6155,26 +6139,21 @@
         font-size: 14px;
     }
     /* 方案导入 */
-    /deep/.import_fanan .el-row{
-        height: 40px;
-        line-height: 40px;
-    }
     .import_fanan a{
         color: #606266;
     }
-    .import_col{
-        text-align: right;
-        margin-right: 20px;
+    .import_fanan .fileButton{
+        width: 126px;
     }
 
     .import_file .upload_file{
         display: inline-block;
     }
     .warning_box{
+        margin-top: 20px;
         background:rgba(255,251,230,1);
         border-radius:4px;
         border:1px solid rgba(255,229,143,1);
-        line-height: 24px;
         color:rgba(0,0,0,0.65);
         padding: 0 5px;
     }

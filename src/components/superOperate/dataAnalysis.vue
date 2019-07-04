@@ -6344,7 +6344,12 @@
     }
 
     .table-wrap /deep/ .el-table__body-wrapper{
-        min-height: inherit;
+        min-height: auto;
+    }
+
+    .all-data-table /deep/ .el-table__body-wrapper{
+        min-height: auto;
+        overflow-y: auto;
     }
 
     .all-city-data-table-12 /deep/ .el-table__body-wrapper{

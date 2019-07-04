@@ -158,7 +158,7 @@
 							]"
                             :filter-multiple="false">
                             <template  slot-scope="scope">
-                                <span v-if="scope.row.mState === '正常' && scope.row.mVehicle === '广告门'">
+                                <span v-if="scope.row.mState === '正常' && scope.row.mVehicle === '广告门' && scope.row.pNum > 1">
                                     <el-tooltip class="item" effect="dark" placement="left-start">
                                         <div slot="content">
                                             A面:{{scope.row.asState.A == '1' ? '正常' : '禁用'}}  B面:{{scope.row.asState.B == '1' ? '正常' : '禁用'}}
@@ -955,6 +955,8 @@
                                 this.getData()
                             }
                             this.ImportDialogVisible = false
+                            this.fileData = []
+                            this.importAsrID = ''
                         } else if (res.data.SysCode == 100302) {
                             this.loginTimeout()
                         } else {

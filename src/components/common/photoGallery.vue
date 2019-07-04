@@ -65,7 +65,7 @@
                                     <el-button type="primary" icon="el-icon-search" class="searchBtn"
                                                @click="searchPic()" :disabled="!isSearch">搜索
                                     </el-button>
-                                    <el-button plain @click="reset()">重置</el-button>
+                                    <el-button plain @click="reset()" :disabled="!isSearch">重置</el-button>
                                     <el-button plain @click="allDownLoad()" v-show="activeName == 'first'">一键导出</el-button>
                                 </el-col>
                             </el-row>
@@ -171,7 +171,7 @@
                 // 收藏夹load
                 secondBodyLoading: true,
                 // 是否搜索
-                isSearch: true,
+                isSearch: false,
                 // 是否显示收藏夹和行业图片
                 isShowAllTab: false,
                 // 登录信息
@@ -450,9 +450,10 @@
                             Message.warning(res.data.MSG);
                         }
                         this.firstBodyLoading = false
-                    })
-                    .catch(res => {
+                        this.isSearch = true;
+                    }).catch(res => {
                         console.log(res);
+                        this.isSearch = true;
                     });
             },
             // 获取收藏夹图片列表
@@ -508,7 +509,11 @@
                         this.showPic = 1
                     }
                     this.secondBodyLoading = false
-                })
+                    this.isSearch = true;
+                }).catch(res => {
+                    console.log(res);
+                    this.isSearch = true;
+                });
             },
             // 保存或取消
             saveChange() {

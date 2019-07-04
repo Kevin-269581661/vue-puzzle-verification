@@ -3329,7 +3329,6 @@
                         trigger: 'item',
                         // formatter: "{a} <br/>{b}: {c} ({d}%)",
                         formatter: function (params) {
-                            // console.log('params',params)
                             return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
                                 '<span>' + params.name + '</span>' + '<span>' + '数据' +
                                 '</span>' + '</p>' + '<br/>' +
@@ -6343,6 +6342,11 @@
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+
+    .table-wrap /deep/ .el-table__body-wrapper{
+        min-height: inherit;
+    }
+
     .all-city-data-table-12 /deep/ .el-table__body-wrapper{
         overflow-y: hidden;
     }

@@ -996,8 +996,8 @@
                         :http-request="uploadFile"
                         :on-remove="fileRemove"
                         :multiple="false">
-                        <el-button plain icon="el-icon-download" size="small" class="fileButton" v-if="importType=='1'"><a :href ='this.apiVar.qadnUrl + "/importTemplate/resTemplate.xlsx"' download="小区导入模板.xlsx" @click="dowmLoadFun">下载模板</a></el-button>
-                        <el-button plain icon="el-icon-download" size="small" class="fileButton" v-if="importType=='2'"><a :href ='this.apiVar.qadnUrl + "/importTemplate/adsTemplate.xlsx"' download="点位导入模板.xlsx" @click="dowmLoadFun">下载模板</a></el-button>
+                        <a v-if="importType=='1'" :href ='this.apiVar.qadnUrl + "/importTemplate/resTemplate.xlsx"' download="小区导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
+                        <a v-if="importType=='2'" :href ='this.apiVar.qadnUrl + "/importTemplate/adsTemplate.xlsx"' download="点位导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
                         <el-button plain icon="el-icon-upload2" size="small" class="fileButton">上传文件</el-button>
                     </el-upload>
                 </el-col>
@@ -6146,7 +6146,7 @@
         width: 126px;
     }
 
-    .import_file .upload_file{
+    .upload_file{
         display: inline-block;
     }
     .warning_box{
@@ -6156,6 +6156,21 @@
         border:1px solid rgba(255,229,143,1);
         color:rgba(0,0,0,0.65);
         padding: 0 5px;
+    }
+    .upload_file .aButton{
+        width: 124px;
+        height: 29px;
+        line-height: 31px;
+        text-align: center;
+        display: inline-block;
+        color: #666;
+        margin-right: 3px;
+        border-radius: 4px;
+        border: 1px solid #dcdfe6;
+    }
+    .aButton:hover{
+        border: 1px solid #409EFF;
+        color: #409EFF;
     }
 
     /*safari下表头错位*/

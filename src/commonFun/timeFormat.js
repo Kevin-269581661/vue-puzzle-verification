@@ -257,4 +257,13 @@ timeFormat.getCurrMonthDays = function(date){
 	//这里传入的0,代表获取上一个月的最后一天;如果传1,则获得当月的第一天；
 	return new_date.getDate();
 }
+// 获取指定时间并计算N月前/后的日期
+timeFormat.getSpecifiedDateStr = function (specifiedDate,AddMonthCount) {
+    let dd = new Date(specifiedDate);
+    dd.setMonth(dd.getMonth() - AddMonthCount);
+    let Y = dd.getFullYear();
+    let M = (dd.getMonth() + 1 < 10 ? '0' + (dd.getMonth() + 1) : dd.getMonth() + 1)
+    let D = dd.getDate() < 10 ? "0" + dd.getDate() : dd.getDate()
+    return Y + '-' + M + '-' + D
+}
 export default timeFormat;

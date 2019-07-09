@@ -1188,11 +1188,7 @@
     }
 
     /deep/ .el-upload-list__item{
-        width: 83%;
-    }
-
-    /deep/ .el-upload-list__item-name{
-        margin-right: 20px;
+        width: 259px
     }
 
     /*导入失败媒体*/

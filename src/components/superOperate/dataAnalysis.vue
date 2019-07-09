@@ -6352,6 +6352,10 @@
         overflow-y: auto;
     }
 
+    .all-data-table /deep/ .el-table td{
+        padding: 9px 0;
+    }
+
     .all-city-data-table-12 /deep/ .el-table__body-wrapper{
         overflow-y: hidden;
     }
@@ -6370,11 +6374,6 @@
         .charts1 {
             width: 850px !important;
         }
-
-      /*  .data-title {
-            width: 81%;
-            margin-left: 18%;
-        }*/
 
         .card6 .title {
             left: 11.5%;

@@ -1182,13 +1182,20 @@
         border: 1px solid #409EFF;
         color: #409EFF;
     }
+
     /deep/ .Import_dialog .el-dialog__body{
         padding: 15px 20px 10px;
     }
+
+    /deep/ .el-upload-list__item{
+        width: 259px
+    }
+
     /*导入失败媒体*/
     /deep/ .error_media .el-dialog__body{
         padding: 10px 20px 20px;
     }
+
     .car-title {
         background: #E6F7FF;
         border: 1px solid #BAE7FF;

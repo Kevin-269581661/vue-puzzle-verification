@@ -53,7 +53,7 @@
                 // 是否城市对比
                 isCitys: false,
                 // 当前tabs
-                activeName: 'first',
+                activeName: 'second',
                 // 数据截止时间
                 toTime:'2019/07/01',
                 citys:[
@@ -103,8 +103,10 @@
                 }
             },
             // tabs切换
-            tabHandleClick(){
-
+            tabHandleClick(val){
+                if(val === 'second' && this.selectCity === '0'){
+                    this.selectCity = this.citys[1].value
+                }
             },
             // 全局选择城市
             changeCity(value){

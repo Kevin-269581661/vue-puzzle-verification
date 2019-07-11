@@ -35,31 +35,38 @@
                     </div>
                 </div>
                 <div class="data_kind">
-                    <div class="data_box box_active">
+                    <div class="data_box" :class="basicTotalType === 'res' ? 'box_active' : ''"
+                         @click="totalActiveFun('res')">
                         <h4>社区</h4>
                         <p>{{basicTotalData.resourceCount}}</p>
                     </div>
-                    <div class="data_box">
+                    <div class="data_box" :class="basicTotalType === 'adDoor' ? 'box_active' : ''"
+                         @click="totalActiveFun('adDoor')">
                         <h4>广告门</h4>
                         <p>{{basicTotalData.advertDoorCount}}</p>
                     </div>
-                    <div class="data_box">
+                    <div class="data_box" :class="basicTotalType === 'rate' ? 'box_active' : ''"
+                         @click="totalActiveFun('rate')">
                         <h4>年上刊率</h4>
                         <p>{{basicTotalData.publishRate}}%</p>
                     </div>
-                    <div class="data_box">
+                    <div class="data_box" :class="basicTotalType === 'order' ? 'box_active' : ''"
+                         @click="totalActiveFun('order')">
                         <h4>订单</h4>
                         <p>{{basicTotalData.orderCount}}</p>
                     </div>
-                    <div class="data_box">
+                    <div class="data_box" :class="basicTotalType === 'sale' ? 'box_active' : ''"
+                         @click="totalActiveFun('sale')">
                         <h4>销售额</h4>
                         <p>￥{{priceFormat(basicTotalData.sale)}}</p>
                     </div>
-                    <div class="data_box">
+                    <div class="data_box" :class="basicTotalType === 'price' ? 'box_active' : ''"
+                         @click="totalActiveFun('price')">
                         <h4>客单价</h4>
                         <p>￥{{priceFormat(basicTotalData.orderSale)}}</p>
                     </div>
-                    <div class="data_box">
+                    <div class="data_box" :class="basicTotalType === 'adver' ? 'box_active' : ''"
+                         @click="totalActiveFun('adver')">
                         <h4>广告主</h4>
                         <p>{{basicTotalData.advertisementCount}}</p>
                     </div>
@@ -97,7 +104,7 @@
                                     <el-row class="el_row_title">
                                         <el-col :span="5" style="padding-left: 8px">行为</el-col>
                                         <el-col :span="4" class="text_right">数量</el-col>
-                                        <el-col :span="7" class="text_right">涉及点位（面）</el-col>
+                                        <el-col :span="7" class="text_right">涉及点位(面)</el-col>
                                         <el-col :span="7" class="text_right">点位数(面·周)</el-col>
                                     </el-row>
                                 </li>
@@ -176,11 +183,12 @@
                     </li>
                 </ul>
                 <el-row :gutter="16">
-                    <el-col :span="12"
-                            v-loading="adSaleBarLoading"
-                            element-loading-text="玩命加载中..."
-                            element-loading-background="rgba(255, 255, 255)">
-                        <div class="bar_charts el_col_bar" id="ad_sale_ads" ref="adSaleBar" style="height: 328px;width: 100%"></div>
+                    <el-col :span="12">
+                        <div class="bar_charts el_col_bar" id="ad_sale_ads" ref="adSaleBar"
+                             style="height: 328px;width: 100%"
+                             v-loading="adSaleBarLoading"
+                             element-loading-text="玩命加载中..."
+                             element-loading-background="rgba(255, 255, 255)"></div>
                     </el-col>
                     <el-col :span="12" class="el_col_charts">
                         <div class="select_box">
@@ -296,8 +304,13 @@
                 </div>
                 <el-row :gutter="16">
                     <el-col :span="12" class="el_col_echarts">
-                        <p class="echarts_title">用户总量：1398个</p>
-                        <div class="bar_charts el_col_bar" id="chance_find" ref="chanceFindPie" style="height: 320px;width: 100%"></div>
+                        <p class="echarts_title">用户总量：{{chanceFindUserNum}}个</p>
+                        <div class="bar_charts el_col_bar" id="chance_find" ref="chanceFindPie"
+                             style="height: 320px;width: 100%"
+                             v-loading="chanceFindPieLoading"
+                             element-loading-text="玩命加载中..."
+                             element-loading-background="rgba(255, 255, 255)">
+                        </div>
                     </el-col>
                     <el-col :span="12">
                         <div class="el_col_bar el_col_table">
@@ -354,6 +367,7 @@
                 // 自定义颜色
                 colorList: ['#2FC25B','#1890FF','#FACC14'],
                 toDay: '',
+                basicTotalType: 'res',
                 // 数据总览
                 basicTotalData: {
                     resourceCount: 0,
@@ -419,7 +433,8 @@
                     weekList:['5月第1周', '5月第2周', '5月第3周', '5月第4周', '5月第5周'],
                     beenSold: [325, 340, 400, 350, 390],
                     unSold: [435, 446, 443, 459, 460],
-                    adsDisabled: [25, 26, 20, 10, 32]
+                    adsDisabled: [25, 26, 20, 10, 32],
+                    totalNum: 0,
                 },
                 // 广告销售 - 饼状图
                 adSalePieLoading: true,     // 加载状态
@@ -495,7 +510,10 @@
                 adInventoryDate: { starDate: '', endDate: '', weekNum: 0},
                 adInventoryType: '1',
                 // 机会挖掘
-                chanceFindDate: '',
+                chanceFindPieLoading: true,
+                // 用户总数
+                chanceFindUserNum: 0,
+                chanceFindDate: [],
                 chanceFindPieEcharts: '',
                 chanceFindPieData: {
                     title: ['生成方案', '生成订单', '未合作'],
@@ -506,51 +524,7 @@
                     ]
                 },
                 // 机会挖掘表格
-                chanceFindTable:[
-                    {
-                        name:'亲邻科技广州分公司',
-                        cooperation: '无订单',
-                        status: '生成方案',
-                        time: '2018/06/28',
-                        saler:'林晓'
-                    },
-                    {
-                        name:'亲邻科技广州分公司',
-                        cooperation: '无订单',
-                        status: '生成方案',
-                        time: '2018/06/28',
-                        saler:''
-                    },
-                    {
-                        name:'亲邻科技广州分公司',
-                        cooperation: '无订单',
-                        status: '生成方案',
-                        time: '2018/06/28',
-                        saler:'林晓'
-                    },
-                    {
-                        name:'亲邻科技广州分公司',
-                        cooperation: '无订单',
-                        status: '生成方案',
-                        time: '2018/06/28',
-                        saler: '林晓'
-                    },
-                    {
-                        name:'亲邻科技广州分公司',
-                        cooperation: '无订单',
-                        status: '生成方案',
-                        time: '2018/06/28',
-                        saler: '林晓'
-                    },
-                    {
-                        name:'亲邻科技广州分公司',
-                        cooperation: '无订单',
-                        status: '生成方案',
-                        time: '2018/06/28',
-                        saler: '林晓'
-                    },
-                ],
-
+                chanceFindTable:[],
                 // 饼状图的lengt的itemStyle富文本
                 itemStyle: {
                     rich:{
@@ -623,28 +597,30 @@
         mounted(){
             this.echartsListener();
             this.setTime()
-            // 数据总览
-            this.getTotalData();
-            this.initTotalDataBar();
-            // 当天概况
-            this.getToDayHeaderData();
-            this.initToDayPreceptBar();
-            // 广告销售 - 顶部数据接口
-            this.getAdSaleHeaderData();
-            // 图表数据接口
-            this.getAdSaleData();
-            // 广告销售 - 柱状图
-            // this.initAdSaleBar();
-            // 广告销售  - 饼状图
-            // this.initAdSalePie();
-            // 广告库存 - 左侧
-            this.getAdInventoriedData();
-            // this.initAdInventoriedPie();
-            // 广告库存 - 右侧
-            this.getAdInventoryData();
-            // this.initAdInventoryPie();
-            // 机会挖掘
-            this.initChanceFindPie();
+            // // 数据总览
+            // this.getTotalData();
+            // this.initTotalDataBar();
+            // // 当天概况
+            // this.getToDayHeaderData();
+            // this.initToDayPreceptBar();
+            // // 广告销售 - 顶部数据接口
+            // this.getAdSaleHeaderData();
+            // // 图表数据接口
+            // this.getAdSaleData();
+            // // 广告销售 - 柱状图
+            // // this.initAdSaleBar();
+            // // 广告销售  - 饼状图
+            // // this.initAdSalePie();
+            // // 广告库存 - 左侧
+            // this.getAdInventoriedData();
+            // // this.initAdInventoriedPie();
+            // // 广告库存 - 右侧
+            // this.getAdInventoryData();
+            // // this.initAdInventoryPie();
+            // // 机会挖掘
+            // this.getChanceFindEcharts();
+            // this.getChanceFindTable();
+            // // this.initChanceFindPie();
         },
         methods:{
             // 统一监听
@@ -670,12 +646,19 @@
                 this.adSaleMonth = endTime.substring(0,7);
                 this.toDay = endTime;
                 this.totalDataYear = endTime.substring(0,4);
-                console.log('endTime',endTime)
+                // 设置机会挖掘默认时间
+                let starTime = timeFormat.returnDayCount(-30,'-')
+                this.chanceFindDate = [starTime, endTime]
+                console.log('starTime',starTime,'endTime',endTime)
             },
             /*  数据总量  */
             changeYear(val){
                 console.log('选择的年份',val)
                 this.getTotalData()
+            },
+            // 点击的数据类型
+            totalActiveFun(type){
+                this.basicTotalType = type
             },
             // 表头接口
             getTotalData(){
@@ -1072,15 +1055,22 @@
                 let beenSold = []
                 let unSold = []
                 let adsDisabled = []
+                let totalNum = 0
+                let i = 0
                 for(let aKey of this.adSaleList){
+                    if(i < 1){
+                        totalNum += aKey.soldAdsCount + aKey.unsoldAdsCount + (aKey.forbiddenAdsCount || 0)
+                    }
                     beenSold.push(aKey.soldAdsCount)
                     unSold.push(aKey.unsoldAdsCount)
                     adsDisabled.push(aKey.forbiddenAdsCount)
+                    i++
                 }
                 this.adSaleData.weekList = JSON.parse(JSON.stringify(weekList))
                 this.adSaleData.beenSold = JSON.parse(JSON.stringify(beenSold))
                 this.adSaleData.unSold = JSON.parse(JSON.stringify(unSold))
                 this.adSaleData.adsDisabled = JSON.parse(JSON.stringify(adsDisabled))
+                this.adSaleData.totalNum = parseInt(totalNum * 1.5)
                 console.log('左侧柱状图',this.adSaleData)
                 this.initAdSaleBar();
             },
@@ -1131,7 +1121,7 @@
                         },
                     },
                     grid: {
-                        top: '10%',
+                        top: '13%',
                         left: '5%',
                         right: '5%',
                         bottom: '13%',
@@ -1140,57 +1130,92 @@
                     legend: {
                         bottom: '3%',
                         left: 'center',
-                        data: ['禁用点位','已售点位','未售点位']
+                        data: ['禁用点位','已售点位','未售点位','周在刊率']
                     },
-                    xAxis: [
-                        {
-                            type: 'category',
-                            data: this.adSaleData.weekList,
-                            axisTick: {
-                                alignWithLabel: true
-                            },
-                            axisLine: {
-                                //坐标轴线条相关设置(颜色等)
-                                lineStyle: {
-                                    color: "#E8E8E8"
-                                }
-                            },
-                            axisLabel: {
-                                //坐标轴刻度标签
-                                margin: 7, //刻度标签与轴线之间的距离
-                                interval: 0,    //强制文字产生间隔
-                                textStyle: {
-                                    fontFamily: "DINPro-Regular",
-                                    color: "#2C313C" //坐标轴刻度文字的颜色
-                                }
-                            },
-                        }
-                    ],
-                    yAxis: {
-                        type: 'value',
+                    xAxis: {
+                        type: 'category',
+                        data: this.adSaleData.weekList,
+                        axisTick: {
+                            alignWithLabel: true
+                        },
                         axisLine: {
-                            // show:false,
                             //坐标轴线条相关设置(颜色等)
                             lineStyle: {
                                 color: "#E8E8E8"
                             }
                         },
                         axisLabel: {
-                            // show:false,
                             //坐标轴刻度标签
                             margin: 7, //刻度标签与轴线之间的距离
+                            interval: 0,    //强制文字产生间隔
                             textStyle: {
                                 fontFamily: "DINPro-Regular",
                                 color: "#2C313C" //坐标轴刻度文字的颜色
                             }
                         },
-                        splitLine: {
-                            lineStyle: {
-                                color: "#E8E8E8",
-                                type: "dashed"
+                    },
+                    yAxis: [
+                        {
+                            type: 'value',
+                            max: this.adSaleData.totalNum,
+                            // interval: (this.adSaleData.totalNum / 6).toFixed(0),
+                            splitNumber: 6,
+                            axisLine: {
+                                // show:false,
+                                //坐标轴线条相关设置(颜色等)
+                                lineStyle: {
+                                    color: "#E8E8E8"
+                                }
+                            },
+                            axisLabel: {
+                                // show:false,
+                                //坐标轴刻度标签
+                                margin: 7, //刻度标签与轴线之间的距离
+                                textStyle: {
+                                    fontFamily: "DINPro-Regular",
+                                    color: "#2C313C" //坐标轴刻度文字的颜色
+                                }
+                            },
+                            splitLine: {
+                                lineStyle: {
+                                    color: "#E8E8E8",
+                                    type: "dashed"
+                                }
+                            }
+                        },
+                        {
+                            type: 'value',
+                            min: -500,
+                            max: 100,
+                            interval: 100,
+                            splitNumber: 6,
+                            show:false,
+                            axisLine: {
+                                //坐标轴线条相关设置(颜色等)
+                                show:false,
+                                lineStyle: {
+                                    color: "rgba(0,0,0,0)"
+                                }
+                            },
+                            axisLabel: {
+                                show:false,
+                                //坐标轴刻度标签
+                                margin: 7, //刻度标签与轴线之间的距离
+                                textStyle: {
+                                    fontFamily: "DINPro-Regular",
+                                    color: "#2C313C" //坐标轴刻度文字的颜色
+                                },
+                                formatter: '{value} %'
+                            },
+                            splitLine: {
+                                show: false,
+                                // lineStyle: {
+                                //     color: "#E8E8E8",
+                                //     type: "dashed"
+                                // }
                             }
                         }
-                    },
+                    ],
                     series: [
                         {
                             name:'禁用点位',
@@ -1237,6 +1262,27 @@
                             },
                             data: this.adSaleData.unSold
                         },
+                        // {
+                        //     name:'合计',
+                        //     type:'bar',
+                        //     stack:'xxx',
+                        //     // formatter:'{c}',
+                        //     textStyle:{ color:'#666' },
+                        //     itemStyle:{
+                        //         normal:{
+                        //             label: {
+                        //                 show: true,
+                        //                 position: 'bottom',
+                        //                 textStyle: {
+                        //                     color: '#666',
+                        //                     fontSize: 12
+                        //                 }
+                        //             },
+                        //             color:'rgba(128, 128, 128, 0)'
+                        //         }
+                        //     },
+                        //     data:this.adSaleData.totalNum
+                        // },
                         {
                             name:'合计',
                             type:'bar',
@@ -1254,10 +1300,31 @@
                             //思路一：给series集合末尾多加一栏用于展示合计，但是值都是0；
                             // 缺点：必须根据xAxis的data生成一组为空的数据，且tooltip不能加trigger: 'axis',这个条件，不然会展示合计：0
                             data:[0,0,0,0,0]
+                        },
+                        {
+                            name:'周在刊率',
+                            type:'line',
+                            yAxisIndex: 1,
+                            // xAxisIndex: 1,
+                            itemStyle: {
+                                normal: {
+                                    label: {
+                                        show: true,//是否展示
+                                        textStyle: {
+                                            color: '#666',
+                                            fontSize: 12
+                                        },
+                                        formatter: (params)=>{
+                                            return params.value + '%'
+                                        }
+                                    },
+                                    color: '#1890FF'
+                                },
+                            },
+                            data:[17, 25, 33, 68, 52]
                         }
                     ]
                 };
-
                 let series = option["series"];
                 let totalFun = function (params) {
                     let total =0;
@@ -1267,7 +1334,7 @@
                     return total
                 }
                 // 加载页面时候替换最后一个series的formatter
-                series[series.length-1]["label"]["normal"]["formatter"] = totalFun
+                series[series.length-2]["label"]["normal"]["formatter"] = totalFun
                 // 使用刚指定的配置项和数据显示图表。
                 this.adSaleBarEcharts.setOption(option);
                 this.adSaleBarLoading = false
@@ -1635,6 +1702,81 @@
                 this.adInventoryLoading = false
             },
             // 机会挖掘
+            getChanceFindEcharts(){
+                this.chanceFindPieLoading = true
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    startDate: this.chanceFindDate[0],
+                    endDate: this.chanceFindDate[1],
+                }
+                if (this.selectCity !== '0') {
+                    params.asrId = this.returnAsrID()
+                }
+                // console.log('机会挖掘饼状图params',params)
+                api.getApi(this.apiVar.report + '/api/v2/getCustomerInfo', params).then(res => {
+                    console.log('机会挖掘饼状图接口', res)
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        this.loginTimeout();
+                    } else if (res.data.SysCode === 200200) {
+                        let dataObj = res.data.data
+                        let dataArr = []
+                        let userNum = 0
+                        for (let key in dataObj) {
+                            userNum += dataObj[key] ? dataObj[key] : 0
+                            if (key === 'newPlan') {
+                                dataArr[0] = {value: dataObj[key], name: '生成方案'}
+                            } else if (key === 'newOrder') {
+                                dataArr[1] = {value: dataObj[key], name: '生成订单'}
+                            } else if (key === 'unCooperative') {
+                                dataArr[2] = {value: dataObj[key] || 0, name: '未合作'}
+                            }
+                        }
+                        this.chanceFindUserNum = userNum
+                        this.chanceFindPieData.data = dataArr;
+                        this.initChanceFindPie();
+                    } else {
+                        this.messageFun('warning', res.data.MSG);
+                    }
+                })
+            },
+            // 表格接口 getCustomerCooperative
+            getChanceFindTable(){
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    startDate: this.chanceFindDate[0],
+                    endDate: this.chanceFindDate[1],
+                    pageNo: 1,
+                    pageSize: 5000,
+                }
+                console.log('机会挖掘表格params',params)
+                api.getApi(this.apiVar.report + '/api/v2/getCustomerCooperative', params).then(res => {
+                    console.log('机会挖掘表格接口', res)
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        this.loginTimeout();
+                    } else if (res.data.SysCode === 200200) {
+                        let dataObj = res.data.data
+                        this.setChanceFindTabelData(dataObj)
+                    } else {
+                        this.messageFun('warning', res.data.MSG);
+                    }
+                })
+            },
+            setChanceFindTabelData(dataList){
+                let arr = []
+                for(let key of dataList){
+                    arr.push({
+                        name: key.customerName,
+                        cooperation: key.orderCount ? key.orderCount : '无订单',
+                        status: key.cooperativeName,
+                        time: key.createTime,
+                        saler: key.userName,
+                    })
+                }
+                this.chanceFindTable = arr
+            },
+            // 饼状图
             initChanceFindPie() {
                 if(this.chanceFindPieEcharts){
                     this.chanceFindPieEcharts.dispose()
@@ -1744,6 +1886,7 @@
                         }
                     ]
                 })
+                this.chanceFindPieLoading = false
             },
             // 设置周下拉选项
             setWeekSelectList(list){
@@ -1794,8 +1937,7 @@
                 this.messageFun('warning',"登录超时,请重新登录");
                 this.$router.push("/login");
             },
-        },
-
+        }
     }
 </script>
 
@@ -1861,6 +2003,14 @@
         margin-left: 16px;
         text-align: right;
         cursor: pointer;
+    }
+
+    .data_box:hover{
+        border:1px solid rgba(24,144,255,1);
+    }
+
+    .box_active:hover{
+        border:2px solid rgba(24,144,255,1);
     }
 
     .data_box:first-child{

@@ -6,7 +6,7 @@
                 <div slot="header" class="clearfix">
                     <span class="box_card_title">数据概览</span>
                     <span class="box_card_title_right">
-                        统计周期：2019年04月13日 00:00 - 2019年04月19日 23:59
+                        统计周期：2019年04月13日 - 2019年04月19日
                     </span>
                 </div>
                 <el-row :gutter="16">
@@ -91,18 +91,52 @@
                 </div>
             </el-card>
         </div>
+        <!--发件图标-->
+        <div class="subscriber_icon" @click="subscriberDialogVisible = true">
+            <i class="el-icon-position"></i>
+        </div>
+        <el-dialog
+            title="订阅报告"
+            :visible.sync="subscriberDialogVisible"
+            width="456px">
+            <div class="subscriber_box">
+                <p>收件人/邮箱</p>
+                <div class="subscriber_input_box" v-for="(item,index) in recipientData">
+                    <el-select v-model="item.recipienter" placeholder="请选择收件人" size="small">
+                        <el-option
+                            v-for="item in recipientList"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                        </el-option>
+                    </el-select>
+                    <el-input v-model="item.emailAaddress" placeholder="请输入邮箱地址" size="small" style="width: 220px;left: 6px"></el-input>
+                    <i class="el-icon-remove" @click="delRowSelect(index)"></i>
+                </div>
+                <div class="recipient_add_btn" @click="addRowSelect">
+                    <i class="el-icon-plus"></i> 添加收件人
+                </div>
+            </div>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="subscriberDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="subscriberDialogVisible = false">确 定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
     import api from '../../../api/api';
+    import timeFormat from '../../../commonFun/timeFormat';
     export default {
         name: "weekAndMouthReport",
         data(){
             return{
                 // 自定义颜色
                 colorList: ['#2FC25B','#1890FF','#FACC14'],
+                timeList:[],
                 // 数据概览
+                weekOverviewData: '',
                 issueReportPieEcharts:'',
                 issueReportPieData: {
                     title: ['空刊数(面)', '在刊媒体(面)', '禁用媒体(面)'],
@@ -204,7 +238,18 @@
                         issueDays: '156',
                         period: '2018/11/10 - 2019/11/08',
                     },
-                ]
+                ],
+                // 收件人设置
+                subscriberDialogVisible: false,
+                recipientData: [
+                    {recipienter:'',emailAaddress:''}
+                ],
+                // recipienter: '',
+                recipientList:[
+                    {value: 1,label:'官总'},
+                    {value: 2,label:'邱总'},
+                ],
+                // emailAaddress: '',
             }
         },
         props:{
@@ -238,7 +283,10 @@
             }
         },
         mounted(){
+            this.setTime()
             this.echartsListener();
+            this.getIssueReportData();
+            // this.initIssueReportBar();
         },
         methods:{
             // 统一监听
@@ -248,6 +296,51 @@
                     this.issueReportPieEcharts.resize();
                 });
             },
+            // 设置初始时间
+            setTime() {
+                let date = timeFormat.getWorkWeek('-')
+                this.timeList = JSON.parse(JSON.stringify(date))
+                console.log('_________',this.timeList)
+            },
+            // 数据总览接口
+            getIssueReportData(){
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    startDate: this.timeList[0],
+                    endDate: this.timeList[1],
+                    asrId: 1
+                }
+                console.log('数据总览params',params)
+                api.getApi(this.apiVar.report + '/api/v2/getWeekOverview', params).then(res => {
+                    console.log('广告销售-顶部数据接口', res)
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        this.loginTimeout()
+                    } else if (res.data.SysCode === 200200) {
+                        let dataObj = res.data.data
+                        this.weekOverviewData = res.data.data
+                        this.setEchartsData(res.data.data)
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                })
+            },
+            // 设置图表数据
+            setEchartsData(dataObj){
+                let arr = []
+                for(let key in dataObj){
+                    if(key === 'unsoldAdsCount'){
+                        arr[0] = {value: dataObj[key], name: '空刊数(面)'}
+                    } else if(key === 'publishAdsCount'){
+                        arr[1] = {value: dataObj[key], name: '在刊媒体(面)'}
+                    } else if(key === 'forbiddenAdsCount'){
+                        arr[2] = {value: dataObj[key], name: '禁用媒体(面)'}
+                    }
+                }
+                this.issueReportPieData.data = arr
+                this.initIssueReportBar();
+            },
+            // 图表
             initIssueReportBar() {
                 this.issueReportPieEcharts = this.$echarts.init(this.$refs.issueReportBar)
                 let total = 0
@@ -350,6 +443,37 @@
                     ]
                 })
             },
+            // 新增一行收件人
+            addRowSelect(){
+                this.recipientData.push({
+                    recipienter:'',
+                    emailAaddress:''
+                })
+            },
+            // 删除一行
+            delRowSelect(index){
+                this.recipientData.splice(index,1)
+            },
+            // 根据权限公司返回 asrIDs
+            returnAsrID(){
+                if (this.selectCity == '0'){
+                    return '1,2,3,4,5,6,7'
+                }else{
+                    return this.selectCity
+                }
+            },
+            // 操作提示统一方法
+            messageFun(mesType,mes){
+                this.$message({
+                    message: mes,
+                    type: mesType,
+                    showClose: true,
+                })
+            },
+            loginTimeout(){
+                this.messageFun('warning',"登录超时,请重新登录");
+                this.$router.push("/login");
+            },
         },
     }
 </script>
@@ -426,5 +550,73 @@
         font-size:14px;
         font-weight:400;
         color:rgba(0,0,0,0.65);
+    }
+
+    /*  订阅  */
+    .subscriber_icon{
+        position: fixed;
+        right: 36px;
+        top: 185px;
+        z-index: 99;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background:rgba(24,144,255,1);
+        box-shadow:0px 2px 4px 0px rgba(0,0,0,0.2);
+        text-align: center;
+        line-height: 56px;
+        cursor: pointer;
+    }
+
+    .subscriber_icon i{
+        font-size: 26px;
+        color: #fff;
+    }
+
+    .subscriber_box p{
+        margin-bottom: 12px;
+        color:rgba(0,0,0,0.85);
+        font-size: 14px;
+    }
+
+    .subscriber_box /deep/ .el-select.el-select--small{
+        width: 150px;
+    }
+
+    .subscriber_input_box{
+        margin-bottom: 16px;
+    }
+
+    .subscriber_input_box /deep/ .el-icon-remove{
+        color: rgba(255,0,0,0.85);
+        font-size: 20px;
+        font-weight: 500;
+        margin-left: 8px;
+        cursor: pointer;
+    }
+
+    .recipient_add_btn{
+        width: 93%;
+        height:30px;
+        text-align: center;
+        line-height: 30px;
+        border-radius:4px;
+        cursor:pointer;
+        color:rgba(24,144,255,1);
+        font-size: 14px;
+        border:1px dashed rgba(24,144,255,1);
+    }
+
+    .recipient_add_btn i{
+        color:rgba(24,144,255,1);
+    }
+
+    /deep/ .el-dialog__header{
+        padding: 16px 24px;
+        color: rgba(0,0,0,0.85);
+    }
+
+    /deep/ .el-dialog__body{
+        padding: 0 24px 24px;
     }
 </style>

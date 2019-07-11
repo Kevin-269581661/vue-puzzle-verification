@@ -215,7 +215,7 @@ timeFormat.returnTimeArr = function (timeString,firstString,secondString){
 }
 //获取当前时间并计算N天后的日期
 timeFormat.returnDayCount = function (AddDayCount,format,toDay = new Date()) {     // format: . 或 - 或 /
-    let dd = toDay //new Date();
+    let dd = toDay
     dd.setDate(dd.getDate() + AddDayCount)    // 获取AddDayCount天后的日期
     let y = dd.getFullYear();
     let m = (dd.getMonth() + 1) < 10 ? "0" + (dd.getMonth() + 1) : (dd.getMonth() + 1)  // 获取当前月份的日期，不足10补0
@@ -265,5 +265,23 @@ timeFormat.getSpecifiedDateStr = function (specifiedDate,AddMonthCount) {
     let M = (dd.getMonth() + 1 < 10 ? '0' + (dd.getMonth() + 1) : dd.getMonth() + 1)
     let D = dd.getDate() < 10 ? "0" + dd.getDate() : dd.getDate()
     return Y + '-' + M + '-' + D
+}
+// 获取指定日期所在的生产周(周六-周五)
+timeFormat.getWorkWeek = function (format,date = new Date()) {
+    let dd = new Date(date);
+    let weekIndex = dd.getDay();
+    let star = ''
+    let end = ''
+    if(weekIndex < 6){
+        star = this.returnDayCount(-(weekIndex + 1),format,new Date(date))
+    } else {
+        star = this.returnDayCount(6 - weekIndex,format,new Date(date))
+    }
+    if(weekIndex < 6){
+        end = this.returnDayCount((5 - weekIndex),format,dd)
+    } else {
+        end = this.returnDayCount((12 - weekIndex),format,new Date(date))
+    }
+    return [star,end]
 }
 export default timeFormat;

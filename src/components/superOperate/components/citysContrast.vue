@@ -292,6 +292,8 @@
         data(){
             return{
                 isGetData: false,
+                // 城市对比选择的城市只能为0
+                selectCity: '0',
                 cities: [
                     '北京亲邻众联',
                     '上海多邻网络',
@@ -407,10 +409,10 @@
                 type: Object,
                 required: true,
             },
-            selectCity: {
-                type: String,
-                required: true,
-            },
+            // selectCity: {
+            //     type: String,
+            //     required: true,
+            // },
             activeName:{
                 type:String,
                 required: true
@@ -425,9 +427,9 @@
                 console.log('newVal', newVal, 'oldVal', oldVal)
                 this.sessionData = newVal
             },
-            selectCity(newVal, oldVal) {
-                this.selectCity = newVal
-            },
+            // selectCity(newVal, oldVal) {
+            //     this.selectCity = newVal
+            // },
             activeName(newVal,oldVal){
                 this.activeName = newVal
                 // 关键数据总量/增量趋势 - 社区接口
@@ -438,15 +440,8 @@
                         this.cityPercentBattleBar()
                         this.keyDataPie()
                     } else {
-                        this.getAllDateSurvey()
-                        this.cityBattleRadio()
-                        // 城市上刊率对比
-                        this.GetCompareCityRate()
-                        // 城市关键数据 - 社区、点位、媒体
-                        this.getCityKeyDataResMediaAds()
-                        // 城市关键数据 - 订单、广告主、订单总额
-                        this.forCityKeyData()
-                        this.isGetData = true
+                        // 统一调用接口
+                        this.getCityContrastData()
                     }
                 }
             }
@@ -464,7 +459,7 @@
             // this.getAllDateSurvey()
             // this.cityBattleRadio()
             // // 城市上刊率对比
-            // this.GetCompareCityRate()
+            // this.getCompareCityRate()
             // // 城市关键数据 - 社区、点位、媒体
             // this.getCityKeyDataResMediaAds()
             // // 城市关键数据 - 订单、广告主、订单总额
@@ -491,6 +486,18 @@
                     this.cityPercentBattleEchart.resize();
                     this.keyDataPieEcharts.resize();
                 });
+            },
+            // 统一调用接口
+            getCityContrastData(){
+                this.getAllDateSurvey()
+                this.cityBattleRadio()
+                // 城市上刊率对比
+                this.getCompareCityRate()
+                // 城市关键数据 - 社区、点位、媒体
+                this.getCityKeyDataResMediaAds()
+                // 城市关键数据 - 订单、广告主、订单总额
+                this.forCityKeyData()
+                this.isGetData = true
             },
             /*  城市数据展示  */
             getAllDateSurvey(){
@@ -658,7 +665,7 @@
                         // 城市上刊率对比
                         this.cityRateCompareDate = [starTime, endTime]
                         this.BeforeCityRateCompareDate = this.cityRateCompareDate.concat()
-                        this.GetCompareCityRate()
+                        this.getCompareCityRate()
                         break;
                     case 'cityKey':
                         this.cityKeyDataDate = [starTime, endTime]
@@ -707,7 +714,7 @@
                         })
                     }
                     this.cityRateCompareTime = '其它'
-                    this.GetCompareCityRate()
+                    this.getCompareCityRate()
                 } else if (String === 'cityKey') {
                     // 城市关键数据对比
                     let compareLen = this.isMonthLength(this.cityKeyDataDate)
@@ -752,11 +759,11 @@
                     console.log('series---', this.cityLineDataShow,this.cityBattleLineSeries)
                     this.beforeCityBLSShow = cityList
                     this.cityBattleLine()
-                }else{
+                } else {
                     this.selectCompareCity = this.beforeCityBLSShow
                     this.$message({
-                        type:'warning',
-                        message:'城市不能为空'
+                        type: 'warning',
+                        message: '城市不能为空'
                     })
                 }
             },
@@ -787,24 +794,24 @@
                 let cityArr = ['1', '2', '3', '4', '5', '6','7']
                 for (let i = 0; i < cityArr.length; i++) {
                     if (name === '社区数') {
-                        this.GetCityTotalAndIncrement(cityArr[i], '/GetResCountOfTotalAndIncrement');
+                        this.getCityTotalAndIncrement(cityArr[i], '/GetResCountOfTotalAndIncrement');
                     } else if (name === '广告门数') {
-                        this.GetCityTotalAndIncrement(cityArr[i], '/GetMediaCountOfTotalAndIncrement');
+                        this.getCityTotalAndIncrement(cityArr[i], '/GetMediaCountOfTotalAndIncrement');
                     } else if (name === '点位数') {
-                        this.GetCityTotalAndIncrement(cityArr[i], '/GetAdSpaceCountOfTotalAndIncrement');
+                        this.getCityTotalAndIncrement(cityArr[i], '/GetAdSpaceCountOfTotalAndIncrement');
                     } else if (name === '上刊率') {
-                        this.GetCityTotalAndIncrement(cityArr[i], '/GetPublicationRateTotalAndIncrement', 'rate');
+                        this.getCityTotalAndIncrement(cityArr[i], '/GetPublicationRateTotalAndIncrement', 'rate');
                     } else if (name === '订单数') {
-                        this.GetCityTotalAndIncrement(cityArr[i], '/GetOrderTotalAndIncrement');
+                        this.getCityTotalAndIncrement(cityArr[i], '/GetOrderTotalAndIncrement');
                     } else if (name === '订单总额') {
-                        this.GetCityTotalAndIncrement(cityArr[i], '/GetOrderIncomeTotalAndIncrement', 'price');
+                        this.getCityTotalAndIncrement(cityArr[i], '/GetOrderIncomeTotalAndIncrement', 'price');
                     } else if (name === '广告主数') {
-                        this.GetCityTotalAndIncrement(cityArr[i], '/GetAdOwnerTotalAndIncrement');
+                        this.getCityTotalAndIncrement(cityArr[i], '/GetAdOwnerTotalAndIncrement');
                     }
                 }
             },
             // 城市数据对比 - 接口
-            GetCityTotalAndIncrement(asrID,url,String){
+            getCityTotalAndIncrement(asrID,url,String){
                 let onStart = this.returnDate(this.compareCityTime[0],'start')
                 let onEnd = this.returnDate(this.compareCityTime[1])
                 let params = {
@@ -987,7 +994,7 @@
                 }
             },
             // 城市上刊率对比 - 接口
-            GetCompareCityRate(){
+            getCompareCityRate(){
                 this.cityPercentBattleLoading = true
                 let params = {
                     uid: this.sessionData.uID,
@@ -1057,7 +1064,7 @@
                     xAxis: [
                         {
                             type: 'category',
-                            data:  this.cityRateCompareShowData.name, //this.selectCity2,
+                            data:  this.cityRateCompareShowData.name,
                             axisTick: {
                                 alignWithLabel: true
                             },
@@ -1563,7 +1570,7 @@
             },
             // 根据权限公司返回 asrIDs
             returnAsrID() {
-                if (this.selectCity == '0') {
+                if (this.selectCity === '0') {
                     return '1,2,3,4,5,6,7'
                 } else {
                     return this.selectCity
@@ -1593,7 +1600,7 @@
             // 判断是否为当前月份并返回 年-月-日
             returnDate(time,kind){
                 let dateList = time.split('-')
-                console.log('time',time,'kind',kind,'this.nowMonth',this.nowMonth,'dateList',dateList)
+                // console.log('time',time,'kind',kind,'this.nowMonth',this.nowMonth,'dateList',dateList)
                 if (kind === 'start') {
                     return time + '-01'
                 } else {

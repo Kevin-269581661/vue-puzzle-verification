@@ -296,14 +296,14 @@
                             </el-table-column>
                             <el-table-column prop="iName" label="行业" min-width="161">
                             </el-table-column>
-                            <el-table-column label="订单总额" min-width="161">
+                            <el-table-column label="订单总额" min-width="161" align="right">
                                 <template slot-scope="scope">
                                     &yen;{{priceFormat((scope.row.orderTotal/100))}}
                                 </template>
                             </el-table-column>
-                            <el-table-column prop="apCount" label="订单数" min-width="105">
+                            <el-table-column prop="apCount" label="订单数" min-width="105" align="right">
                             </el-table-column>
-                            <el-table-column prop="comCount" label="广告主" min-width="105">
+                            <el-table-column prop="comCount" label="广告主" min-width="105" align="right">
                             </el-table-column>
                         </el-table>
                     </el-col>
@@ -476,15 +476,24 @@
                     <el-table-column property="rank"
                                      type="index"
                                      label="排名"
-                                     width="50"></el-table-column>
-                    <el-table-column property="resPMC" label="物业"
-                                     min-width="40%"></el-table-column>
-                    <el-table-column property="resCount" label="社区" min-width="20%"
+                                     width="50">
+                    </el-table-column>
+                    <el-table-column property="resPMC"
+                                     label="物业"
+                                     min-width="40%">
+                    </el-table-column>
+                    <el-table-column property="resCount"
+                                     label="社区"
+                                     min-width="20%"
                                      sortable
-                                     :sort-orders="[2,1]"></el-table-column>
-                    <el-table-column property="mCount" label="广告点位" min-width="20%"
+                                     align="right">
+                    </el-table-column>
+                    <el-table-column property="mCount"
+                                     label="广告点位"
+                                     min-width="20%"
                                      sortable
-                                     :sort-orders="[2,1]"></el-table-column>
+                                     align="right">
+                    </el-table-column>
                 </el-table>
             </div>
         </el-dialog>
@@ -505,14 +514,15 @@
                     </el-table-column>
                     <el-table-column property="price" label="金额" min-width="25%"
                                      sortable
-                                     :sort-orders="[2,1]">
+                                     align="right">
                         <template slot-scope="scope">
                             &yen;{{priceFormat(scope.row.totalSum / 100)}}
                         </template>
                     </el-table-column>
                     <el-table-column property="apCount" label="数量" min-width="20%"
                                      sortable
-                                     :sort-orders="[2,1]"></el-table-column>
+                                     align="right">
+                    </el-table-column>
                 </el-table>
             </div>
         </el-dialog>
@@ -527,14 +537,14 @@
                                      min-width="35%"></el-table-column>
                     <el-table-column property="totalSum" label="金额" min-width="35%"
                                      sortable
-                                     :sort-orders="[2,1]">
+                                     align="right">
                         <template slot-scope="scope">
                             &yen;{{priceFormat(scope.row.totalSum / 100)}}
                         </template>
                     </el-table-column>
                     <el-table-column property="apCount" label="数量" min-width="20%"
                                      sortable
-                                     :sort-orders="[2,1]">
+                                     align="right">
                     </el-table-column>
                 </el-table>
             </div>
@@ -551,6 +561,9 @@
         name: "indexQuery",
         data(){
           return{
+              isGetData: false,
+              // 前一次-全局选择的城市
+              oldSelectCity: '0',
               // 当前月份日期
               nowMonth: '',
               // 数据截止时间
@@ -747,72 +760,88 @@
             },
             selectCity(newVal,oldVal){
                 this.selectCity = newVal
+                if (this.activeName === 'third') {
+                    this.getIndexQueryData()
+                } else {
+                    if(this.selectCity != this.oldSelectCity){
+                        this.isGetData = false
+                    } else {
+                        this.isGetData = true
+                    }
+                }
+                console.log('this.selectCity',this.selectCity,'this.oldSelectCity',this.oldSelectCity)
             },
             activeName(newVal,oldVal){
                 this.activeName = newVal
                 // 关键数据总量/增量趋势 - 社区接口
                 if(this.activeName === 'third'){
-                    // 总量/增量 - 社区
-                    if (this.CountOfTotalDataShow.numData.length && this.CountOfIncreDataShow.AddData.length) {
-                        this.keyDataLine()
-                        this.keyDataBar()
+                    if (!this.isGetData) {
+                        // 统一调用接口
+                        this.getIndexQueryData()
+                        this.isGetData = true
                     } else {
-                        this.getAllResData('allAndAdd')
-                    }
-                    // 行业订单总总量趋势 - 接口
-                    if (this.totalOrderDataShow.length) {
-                        this.busOrderLine()
-                    } else {
-                        this.getIOrderData(1)
-                    }
-                    // 行业订单占比
-                    if (this.IOrderDataShow[0].data.length) {
-                        this.allOrderPie()
-                    } else {
-                        this.getIOrderTotalData()
-                    }
-                    // 入驻物业排行
-                    if (this.ResPMCShowData.length) {
-                        this.PropertyRank()
-                    } else {
-                        this.getResPMCRankData()
-                    }
-                    // 广告主排行
-                    if (this.AdOwnerShowData.length) {
-                        this.adOwnerRank()
-                    } else {
-                        this.getAdOwnerData()
-                    }
-                    // 销售业绩排行
-                    if (this.salesRankShowData.length) {
-                        this.salesRank()
-                    } else {
-                        this.getSalesRankData()
+                        // 总量/增量 - 社区
+                        if (this.CountOfTotalDataShow.numData.length && this.CountOfIncreDataShow.AddData.length) {
+                            this.keyDataLine()
+                            this.keyDataBar()
+                        } else {
+                            this.getAllResData('allAndAdd')
+                        }
+                        // 行业订单总总量趋势 - 接口
+                        if (this.totalOrderDataShow.length) {
+                            this.busOrderLine()
+                        } else {
+                            this.getIOrderData(1)
+                        }
+                        // 行业订单占比
+                        if (this.IOrderDataShow[0].data.length) {
+                            this.allOrderPie()
+                        } else {
+                            this.getIOrderTotalData()
+                        }
+                        // 入驻物业排行
+                        if (this.ResPMCShowData.length) {
+                            this.PropertyRank()
+                        } else {
+                            this.getResPMCRankData()
+                        }
+                        // 广告主排行
+                        if (this.AdOwnerShowData.length) {
+                            this.adOwnerRank()
+                        } else {
+                            this.getAdOwnerData()
+                        }
+                        // 销售业绩排行
+                        if (this.salesRankShowData.length) {
+                            this.salesRank()
+                        } else {
+                            this.getSalesRankData()
+                        }
                     }
                 }
             }
         },
         mounted(){
-            let industryData = JSON.parse(sessionStorage.getItem('industry'))
-            this.industryData = industry.getFirstLevel(industryData)
-            this.setTime()
+            let industryData = JSON.parse(sessionStorage.getItem('industry'));
+            this.industryData = industry.getFirstLevel(industryData);
+            this.setTime();
             this.echartsListener();
         },
         methods:{
             // 设置初始时间
             setTime() {
-                let starTime = timeFormat.returnMonthCount(5,'-')
-                let endTime = timeFormat.returnMonthCount(0,'-')
-                let starTimeSub = starTime.substring(0,7)
-                let endTimeSub = endTime.substring(0,7)
-                this.nowMonth = endTimeSub
-                this.toTime = endTime
-                this.allkeyDataDate = [starTimeSub, endTimeSub]     // 关键数据总量趋势
-                this.addkeyDataDate = [starTimeSub, endTimeSub]     // 关键数据增量趋势
-                this.TOrderDate = [starTimeSub,endTimeSub]          // 行业订单总量趋势
-                this.resPMCDate = [starTime, endTime]               // 入驻物业排行
-                this.adOwnerDate = [starTime, endTime]              // 广告主排行
-                this.salesRankDate = [starTime, endTime]            // 销售业绩排行
+                let starTime = timeFormat.returnMonthCount(5,'-');
+                let endTime = timeFormat.returnMonthCount(0,'-');
+                let starTimeSub = starTime.substring(0,7);
+                let endTimeSub = endTime.substring(0,7);
+                this.nowMonth = endTimeSub;
+                this.toTime = endTime;
+                this.allkeyDataDate = [starTimeSub, endTimeSub];     // 关键数据总量趋势
+                this.addkeyDataDate = [starTimeSub, endTimeSub];     // 关键数据增量趋势
+                this.TOrderDate = [starTimeSub,endTimeSub];          // 行业订单总量趋势
+                this.resPMCDate = [starTime, endTime];               // 入驻物业排行
+                this.adOwnerDate = [starTime, endTime];              // 广告主排行
+                this.salesRankDate = [starTime, endTime];            // 销售业绩排行
             },
             // 统一监听
             echartsListener(){
@@ -832,6 +861,22 @@
                     // 销售业绩
                     this.salesRankEcharts.resize();
                 });
+            },
+            // 统一调用接口
+            getIndexQueryData(){
+                // 总量/增量 - 社区
+                this.getAllResData('allAndAdd')
+                // 行业订单总总量趋势 - 接口
+                this.getIOrderData(1)
+                // 行业订单占比
+                this.getIOrderTotalData()
+                // 入驻物业排行
+                this.getResPMCRankData()
+                // 广告主排行
+                this.getAdOwnerData()
+                // 销售业绩排行
+                this.getSalesRankData()
+                this.oldSelectCity = this.selectCity
             },
             // 关键数据总量趋势 - Radio
             keydataRadio(val,temp){

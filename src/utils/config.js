@@ -28,6 +28,7 @@ const apiVar = {
     Advertisement: '/advertisement',
     //经营分析
     Count: '/Count',
+    report: '/report',
     QADNAPI: '/QADNAPI',
     // 工程分画线路
     engineer:'engineer/publishLine',

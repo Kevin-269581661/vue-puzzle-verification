@@ -209,7 +209,8 @@
                                         label="上刊率"
                                         sortable
                                         :sort-method="sortUpPercent"
-                                        min-width="18%">
+                                        min-width="18%"
+                                        align="right">
                                         <template slot-scope="scope">
                                             <span>{{scope.row.upPercent || '--'}}%</span>
                                         </template>
@@ -219,7 +220,8 @@
                                         label="投放金额"
                                         sortable
                                         :sort-method="sortResPrice"
-                                        min-width="18%">
+                                        min-width="18%"
+                                        align="right">
                                         <template slot-scope="scope">
                                             <span>&yen;{{scope.row.price || '--'}}</span>
                                         </template>
@@ -354,7 +356,8 @@
                                         label="上刊率"
                                         sortable
                                         :sort-method="sortUpPercent"
-                                        min-width="10%">
+                                        min-width="10%"
+                                        align="right">
                                         <template slot-scope="scope">
                                             <span>{{scope.row.upPercent || '--'}}%</span>
                                         </template>
@@ -364,7 +367,8 @@
                                         label="投放金额"
                                         sortable
                                         :sort-method="sortResPrice"
-                                        min-width="10%">
+                                        min-width="10%"
+                                        align="right">
                                         <template slot-scope="scope">
                                             <span>&yen;{{scope.row.price || '--'}}</span>
                                         </template>
@@ -485,7 +489,7 @@
                         this.getResRateFun()
                         this.getAdsRateFun()
                     } else {
-                        console.log('已获取过数据')
+                        console.log('已获取过数据  ')
                     }
                 }
             }

@@ -1,3 +1,4 @@
+<script src="../../../../../ntr/NTR/pages/login/login.js"></script>
 <template>
     <div class="data_read">
         <div class="data_read_box">
@@ -25,7 +26,10 @@
                                 v-model="totalDataYear"
                                 type="year"
                                 size="small"
-                                placeholder="选择年">
+                                value-format="yyyy"
+                                format="yyyy"
+                                placeholder="选择年"
+                                @change="changeYear">
                             </el-date-picker>
                         </div>
                     </div>
@@ -33,31 +37,31 @@
                 <div class="data_kind">
                     <div class="data_box box_active">
                         <h4>社区</h4>
-                        <p>1,248</p>
+                        <p>{{basicTotalData.resourceCount}}</p>
                     </div>
                     <div class="data_box">
                         <h4>广告门</h4>
-                        <p>1,248</p>
+                        <p>{{basicTotalData.advertDoorCount}}</p>
                     </div>
                     <div class="data_box">
                         <h4>年上刊率</h4>
-                        <p>1,248</p>
+                        <p>{{basicTotalData.publishRate}}%</p>
                     </div>
                     <div class="data_box">
                         <h4>订单</h4>
-                        <p>1,248</p>
+                        <p>{{basicTotalData.orderCount}}</p>
                     </div>
                     <div class="data_box">
                         <h4>销售额</h4>
-                        <p>￥3,836,283</p>
+                        <p>￥{{priceFormat(basicTotalData.sale)}}</p>
                     </div>
                     <div class="data_box">
                         <h4>客单价</h4>
-                        <p>1,248</p>
+                        <p>￥{{priceFormat(basicTotalData.orderSale)}}</p>
                     </div>
                     <div class="data_box">
                         <h4>广告主</h4>
-                        <p>258</p>
+                        <p>{{basicTotalData.advertisementCount}}</p>
                     </div>
                 </div>
                 <div class="charts_warp">
@@ -73,14 +77,14 @@
                     <span class="box_card_title_right" style="float: right; padding: 3px 0">数据更新至 2019年04月13日 00:00</span>
                 </div>
                 <ul class="toDay_data_ul">
-                    <li class="data_li">生成订单：6个</li>
-                    <li class="data_li">预锁方案：4个</li>
-                    <li class="data_li">新建方案：12个</li>
-                    <li class="data_li">导出空点：106个</li>
-                    <li class="data_li">上画点位：26个</li>
-                    <li class="data_li">录入小区：6个</li>
-                    <li class="data_li">录入媒体：8个</li>
-                    <li class="data_li">禁用点位：10个</li>
+                    <li class="data_li">生成订单：{{basicToDayData.orderCount}}个</li>
+                    <li class="data_li">预锁方案：{{basicToDayData.lockPlanCount}}个</li>
+                    <li class="data_li">新建方案：{{basicToDayData.newPlanCount}}个</li>
+                    <li class="data_li">导出空点：{{basicToDayData.exportLeisureCount || 0}}个</li>
+                    <li class="data_li">上画点位：{{basicToDayData.publishPointCount || 0}}个</li>
+                    <li class="data_li">录入小区：{{basicToDayData.newResourceCount}}个</li>
+                    <li class="data_li">录入媒体：{{basicToDayData.newMediaCount}}个</li>
+                    <li class="data_li">禁用点位：{{basicToDayData.forbiddenPointCount || 0}}个</li>
                 </ul>
                 <el-row :gutter="16">
                     <el-col :span="12">
@@ -121,14 +125,18 @@
                             v-model="adSaleMonth"
                             type="month"
                             size="small"
-                            placeholder="选择月">
+                            value-format="yyyy-MM"
+                            format="yyyy-MM"
+                            placeholder="选择月"
+                            @change="adSaleChange">
                         </el-date-picker>
                     </div>
                 </div>
                 <ul class="toDay_data_ul">
                     <li class="ad_sale_li">
                         <h3 class="ad_sale_li_title">点位总量(面·周)</h3>
-                        <p class="ad_sale_li_num">5,204*4=20,816</p>
+                        <!--<p class="ad_sale_li_num">5,204*4=20,816</p>-->
+                        <p class="ad_sale_li_num">{{adSaleHeaderData.pointCount || 0}}</p>
                         <p class="ad_sale_li_text">
                             较上个月 <i class="el-icon-top ad_sale_top_icon"></i>
                             <span>9.66%</span>
@@ -136,7 +144,7 @@
                     </li>
                     <li class="ad_sale_li">
                         <h3 class="ad_sale_li_title">月均上刊率</h3>
-                        <p class="ad_sale_li_num">59%</p>
+                        <p class="ad_sale_li_num">{{adSaleHeaderData.monthPublishRate || 0}}%</p>
                         <p class="ad_sale_li_text">
                             较上个月 <i class="el-icon-top ad_sale_top_icon"></i>
                             <span>9.66%</span>
@@ -144,7 +152,7 @@
                     </li>
                     <li class="ad_sale_li">
                         <h3 class="ad_sale_li_title">当前禁用媒体数量(面)</h3>
-                        <p class="ad_sale_li_num">736</p>
+                        <p class="ad_sale_li_num">{{adSaleHeaderData.forbiddenMediaCount || 0}}</p>
                         <p class="ad_sale_li_text">
                             较上个月 <i class="el-icon-bottom ad_sale_bottom_icon"></i>
                             <span>25.66%</span>
@@ -152,7 +160,7 @@
                     </li>
                     <li class="ad_sale_li">
                         <h3 class="ad_sale_li_title">成交订单</h3>
-                        <p class="ad_sale_li_num">20</p>
+                        <p class="ad_sale_li_num">{{adSaleHeaderData.orderCount}}</p>
                         <p class="ad_sale_li_text"> 较上个月
                             <i class="el-icon-bottom ad_sale_bottom_icon"></i>
                             <span>9.66%</span>
@@ -160,7 +168,7 @@
                     </li>
                     <li class="ad_sale_li">
                         <h3 class="ad_sale_li_title">账面销售额</h3>
-                        <p class="ad_sale_li_num">¥ 372,362,736.00</p>
+                        <p class="ad_sale_li_num">¥ {{priceFormat(adSaleHeaderData.sale)}}</p>
                         <p class="ad_sale_li_text"> 较上个月
                             <i class="el-icon-top ad_sale_top_icon"></i>
                             <span>9.66%</span>
@@ -168,21 +176,27 @@
                     </li>
                 </ul>
                 <el-row :gutter="16">
-                    <el-col :span="12">
+                    <el-col :span="12"
+                            v-loading="adSaleBarLoading"
+                            element-loading-text="玩命加载中..."
+                            element-loading-background="rgba(255, 255, 255)">
                         <div class="bar_charts el_col_bar" id="ad_sale_ads" ref="adSaleBar" style="height: 328px;width: 100%"></div>
                     </el-col>
                     <el-col :span="12" class="el_col_charts">
                         <div class="select_box">
-                            <el-select v-model="activeWeek" size="small" placeholder="请选择">
+                            <el-select v-model="adSaleActiveWeek" size="small" placeholder="请选择" @change="adSaleChangeWeek">
                                 <el-option
-                                    v-for="item in weekSelectList"
+                                    v-for="item in adSaleWeekSelectList"
                                     :key="item.value"
                                     :label="item.label"
                                     :value="item.value">
                                 </el-option>
                             </el-select>
                         </div>
-                        <div class="el_col_bar">
+                        <div class="el_col_bar"
+                             v-loading="adSalePieLoading"
+                             element-loading-text="玩命加载中..."
+                             element-loading-background="rgba(255, 255, 255)">
                             <div class="bar_charts" id="ad_sale_media" ref="adSalePie" style="height: 328px;width: 100%"></div>
                         </div>
                     </el-col>
@@ -197,11 +211,14 @@
                     <span class="box_card_title_right" style="float: right; padding: 3px 0">数据更新至 2019年07月13日 12:00</span>
                 </div>
                 <el-row :gutter="16">
-                    <el-col :span="12" class="el_col_charts">
+                    <el-col :span="12" class="el_col_charts"
+                            v-loading="adInventoriedLoading"
+                            element-loading-text="玩命加载中..."
+                            element-loading-background="rgba(255, 255, 255)">
                         <div class="select_box">
-                            <el-select v-model="activeWeek" size="small" placeholder="请选择">
+                            <el-select v-model="adInventoriedType" size="small" placeholder="请选择" @change="getAdInventoriedData">
                                 <el-option
-                                    v-for="item in weekSelectList"
+                                    v-for="item in typeList"
                                     :key="item.value"
                                     :label="item.label"
                                     :value="item.value">
@@ -209,7 +226,7 @@
                             </el-select>
                         </div>
                         <p class="price_box">
-                            ¥ 81963000.00
+                            ¥ {{adInventoriedDate.estimateSale || 0}}
                             <el-popover
                                 placement="top"
                                 trigger="hover">
@@ -221,11 +238,14 @@
                         </p>
                         <div class="bar_charts el_col_bar" id="ad_inventoried" ref="adInventoriedPie" style="height: 328px;width: 100%"></div>
                     </el-col>
-                    <el-col :span="12" class="el_col_charts">
+                    <el-col :span="12" class="el_col_charts"
+                            v-loading="adInventoryLoading"
+                            element-loading-text="玩命加载中..."
+                            element-loading-background="rgba(255, 255, 255)">
                         <div class="select_box">
-                            <el-select v-model="activeWeek" size="small" placeholder="请选择">
+                            <el-select v-model="adInventoryType" size="small" placeholder="请选择" @change="getAdInventoryData">
                                 <el-option
-                                    v-for="item in weekSelectList"
+                                    v-for="item in typeList"
                                     :key="item.value"
                                     :label="item.label"
                                     :value="item.value">
@@ -233,7 +253,7 @@
                             </el-select>
                         </div>
                         <p class="price_box">
-                            ¥ 2963600.00
+                            ¥ {{adInventoryDate.estimateSale || 0}}
                             <el-popover
                                 placement="top"
                                 trigger="hover">
@@ -250,10 +270,10 @@
                 </el-row>
                 <el-row>
                     <el-col :span="12" class="ad_inventory_bottom ad_inventory_bottom_left">
-                        过去：2019年02月30日 ~ 2019年05月28日 合计21周
+                        过去：{{adInventoriedDate.starDate}} ~ {{adInventoriedDate.endDate}} 合计 {{adInventoriedDate.weekNum}}周
                     </el-col>
                     <el-col :span="12" class="ad_inventory_bottom ad_inventory_bottom_right">
-                        未来：2019年02月30日 ~ 2019年05月28日 合计21周
+                        未来：{{adInventoryDate.starDate}} ~ {{adInventoryDate.endDate}} 合计{{adInventoryDate.weekNum - adInventoriedDate.weekNum}}周
                     </el-col>
                 </el-row>
             </el-card>
@@ -324,6 +344,8 @@
 
 <script>
     import api from '../../../api/api';
+    import commaFormat from '../../../commonFun/commaFormat';
+    import timeFormat from '../../../commonFun/timeFormat';
     export default {
         name: "dataRead",
         data(){
@@ -331,10 +353,33 @@
                 cityList:['北京亲邻众联','上海多邻网络','广州亲粤邻','深圳亲邻交互','成都亲邻','重庆亲邻','天津亲邻众联'],
                 // 自定义颜色
                 colorList: ['#2FC25B','#1890FF','#FACC14'],
-                totalDataBarEcharts: '',
-                // 当天概况表格数据
+                toDay: '',
+                // 数据总览
+                basicTotalData: {
+                    resourceCount: 0,
+                    advertDoorCount: 0,
+                    orderCount: 0,
+                    sale: 0,
+                    orderSale: 0,
+                    advertisementCount: 0,
+                    publishRate: 0,
+                },
+                // 选择的年份
                 totalDataYear: '',
+                totalDataBarEcharts: '',
+                // 当天概况头部基础数据
+                basicToDayData:{
+                    orderCount: 0,
+                    lockPlanCount: 0,
+                    newPlanCount: 0,
+                    exportLeisureCount: 0,
+                    publishPointCount: 0,
+                    newResourceCount: 0,
+                    newMediaCount: 0,
+                    forbiddenPointCount: 0,
+                },
                 toDayPreceptBarEcharts: '',
+                // 当天概况表格数据
                 totalTableList: [
                     {
                         name:'新建方案',
@@ -357,15 +402,27 @@
                 ],
                 /*  广告销售  */
                 adSaleMonth: '',
+                //
+                adSaleHeaderData:{
+                    pointCount: 0,
+                    monthPublishRate: 0,
+                    forbiddenMediaCount: 0,
+                    orderCount: 0,
+                    sale: 0
+                },
+                // 图表接口原数据
+                adSaleList:'',
                 adSaleBarEcharts: '',
-                // 广告销售图表数据
+                // 广告销售 - 柱状图数据
+                adSaleBarLoading: true,
                 adSaleData: {
-                    weekList:['5月第一周', '5月第二周', '5月第三周', '5月第四周', '5月第五周'],
+                    weekList:['5月第1周', '5月第2周', '5月第3周', '5月第4周', '5月第5周'],
                     beenSold: [325, 340, 400, 350, 390],
                     unSold: [435, 446, 443, 459, 460],
                     adsDisabled: [25, 26, 20, 10, 32]
                 },
                 // 广告销售 - 饼状图
+                adSalePieLoading: true,     // 加载状态
                 mediaSaleData:{
                     title: ['空刊数(面)','在刊媒体(面)','禁用媒体(面)'],
                     data:[
@@ -375,32 +432,22 @@
                     ]
                 },
                 // 下拉选中
-                activeWeek: '',
+                adSaleActiveWeek: '0',
                 // 下拉选项 - 周
-                weekSelectList:[
-                    {
-                        value:'五月第一周',
-                        label:'五月第一周'
-                    },
-                    {
-                        value:'五月第二周',
-                        label:'五月第二周'
-                    },
-                    {
-                        value:'五月第三周',
-                        label:'五月第三周'
-                    },
-                    {
-                        value:'五月第四周',
-                        label:'五月第四周'
-                    },
-                    {
-                        value:'五月第五周',
-                        label:'五月第五周'
-                    },
-                ],
+                adSaleWeekSelectList: [],
                 // 广告库存
+                typeList:[
+                    {
+                        value:'0',
+                        label:'按面/天'
+                    },
+                    {
+                        value:'1',
+                        label:'按面/周'
+                    }
+                ],
                 // 左侧
+                adInventoriedLoading: true,
                 adInventoriedPieEcharts: '',
                 beenWeekOfSurfaceData: {
                     title:['已售','过期','禁用'],
@@ -410,7 +457,33 @@
                         {value:334, name:'禁用'},
                     ]
                 },
+                adInventoriedDate:{ starDate: '',endDate: '',weekNum: 0},
+                adInventoriedType: '1',
                 // 右侧
+                adInventoryLoading: true,
+                activeWeek: '',
+                weekSelectList:[
+                    {
+                        value:'0',
+                        label:'7月第1周'
+                    },
+                    {
+                        value:'1',
+                        label:'7月第2周'
+                    },
+                    {
+                        value:'2',
+                        label:'7月第3周'
+                    },
+                    {
+                        value:'3',
+                        label:'7月第4周'
+                    },
+                    {
+                        value:'4',
+                        label:'7月第5周'
+                    },
+                ],
                 adInventoryPieEcharts: '',
                 futureWeekOfSurfaceData: {
                     title:['已售','可售'],
@@ -419,6 +492,8 @@
                         {value:3170, name:'可售'},
                     ]
                 },
+                adInventoryDate: { starDate: '', endDate: '', weekNum: 0},
+                adInventoryType: '1',
                 // 机会挖掘
                 chanceFindDate: '',
                 chanceFindPieEcharts: '',
@@ -547,20 +622,29 @@
         },
         mounted(){
             this.echartsListener();
+            this.setTime()
             // 数据总览
+            this.getTotalData();
             this.initTotalDataBar();
             // 当天概况
-            this.initToDayPreceptBar()
+            this.getToDayHeaderData();
+            this.initToDayPreceptBar();
+            // 广告销售 - 顶部数据接口
+            this.getAdSaleHeaderData();
+            // 图表数据接口
+            this.getAdSaleData();
             // 广告销售 - 柱状图
-            this.initAdSaleBar()
+            // this.initAdSaleBar();
             // 广告销售  - 饼状图
-            this.initAdSalePie()
+            // this.initAdSalePie();
             // 广告库存 - 左侧
-            this.initAdInventoriedPie()
+            this.getAdInventoriedData();
+            // this.initAdInventoriedPie();
             // 广告库存 - 右侧
-            this.initAdInventoryPie()
+            this.getAdInventoryData();
+            // this.initAdInventoryPie();
             // 机会挖掘
-            this.initChanceFindPie()
+            this.initChanceFindPie();
         },
         methods:{
             // 统一监听
@@ -579,6 +663,51 @@
                     // 机会挖掘
                     this.chanceFindPieEcharts.resize();
                 });
+            },
+            // 设置初始时间
+            setTime() {
+                let endTime = timeFormat.returnMonthCount(0,'-');
+                this.adSaleMonth = endTime.substring(0,7);
+                this.toDay = endTime;
+                this.totalDataYear = endTime.substring(0,4);
+                console.log('endTime',endTime)
+            },
+            /*  数据总量  */
+            changeYear(val){
+                console.log('选择的年份',val)
+                this.getTotalData()
+            },
+            // 表头接口
+            getTotalData(){
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    startDate: this.totalDataYear + '-01-01',
+                    endDate: this.totalDataYear + '-12-31',
+                }
+                if (this.selectCity !== '0') {
+                    params.asrId = this.returnAsrID()
+                }
+                console.log('params', params)
+                api.getApi(this.apiVar.report + '/api/v2/getOverview', params).then(res => {
+                    console.log('数据总总览-表头接口', res)
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        this.loginTimeout()
+                    } else if (res.data.SysCode === 200200) {
+                        let dataObj = res.data.data
+                        this.basicTotalData = {
+                                resourceCount: dataObj.resourceCount,
+                                advertDoorCount: dataObj.advertDoorCount,
+                                orderCount: dataObj.orderCount,
+                                sale: dataObj.sale,
+                                orderSale: dataObj.orderSale,
+                                advertisementCount: dataObj.advertisementCount,
+                                publishRate: dataObj.publishRate ?  Math.floor(dataObj.publishRate * 10000)/100 : 0,
+                        }
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                })
             },
             // 数据总览 头部柱状图
             initTotalDataBar(){
@@ -678,7 +807,39 @@
                     ]
                 });
             },
-            // 当天概况
+            /*  当天概况  */
+            getToDayHeaderData(){
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    startDate: this.toDay,
+                    endDate: this.toDay,
+                }
+                if (this.selectCity !== '0') {
+                    params.asrId = this.returnAsrID()
+                }
+                console.log('当天概况params', params)
+                api.getApi(this.apiVar.report + '/api/v2/getSurvey', params).then(res => {
+                    console.log('当天概况-表头接口', res)
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        this.loginTimeout()
+                    } else if (res.data.SysCode === 200200) {
+                        let dataObj = res.data.data
+                        this.basicToDayData = {
+                                orderCount: dataObj.orderCount,
+                                lockPlanCount: dataObj.lockPlanCount,
+                                newPlanCount: dataObj.newPlanCount,
+                                exportLeisureCount: dataObj.exportLeisureCount,
+                                publishPointCount: dataObj.publishPointCount,
+                                newResourceCount: dataObj.newResourceCount,
+                                newMediaCount: dataObj.newMediaCount,
+                                forbiddenPointCount: dataObj.forbiddenPointCount,
+                        }
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                })
+            },
             initToDayPreceptBar(){
                 if(this.toDayPreceptBarEcharts){
                     this.toDayPreceptBarEcharts.dispose()
@@ -831,6 +992,114 @@
                         }
                     ]
                 })
+            },
+            /*  广告销售  */
+            // 月份选择
+            adSaleChange(){
+                console.log('this.adSaleMonth',this.adSaleMonth)
+                this.getAdSaleHeaderData()
+                this.getAdSaleData()
+            },
+            // 周选择
+            adSaleChangeWeek() {
+                console.log('周选择this.adSaleActiveWeek', this.adSaleActiveWeek)
+                this.setAdSalePieData(this.adSaleList[this.adSaleActiveWeek])
+            },
+            // 顶部接口
+            getAdSaleHeaderData(){
+                let monthDayNum = timeFormat.getCurrMonthDays(this.adSaleMonth)
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    startDate: this.adSaleMonth + '-01',
+                    endDate: this.adSaleMonth + '-' + monthDayNum,
+                }
+                if (this.selectCity !== '0') {
+                    params.asrId = this.returnAsrID()
+                }
+                api.getApi(this.apiVar.report + '/api/v2/getAdvertSales', params).then(res => {
+                    console.log('广告销售-顶部数据接口', res)
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        this.loginTimeout()
+                    } else if (res.data.SysCode === 200200) {
+                        let dataObj = res.data.data
+                        this.adSaleHeaderData = {
+                            pointCount: dataObj.pointCount,
+                            monthPublishRate: dataObj.monthPublishRate ?  Math.floor(dataObj.monthPublishRate * 10000)/100 : 0,
+                            forbiddenMediaCount: dataObj.forbiddenMediaCount,
+                            orderCount: dataObj.orderCount,
+                            sale: dataObj.sale
+                        }
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                })
+            },
+            getAdSaleData(){
+                this.adSaleBarLoading = true
+                this.adSalePieLoading = true
+                let monthDayNum = timeFormat.getCurrMonthDays(this.adSaleMonth)
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    startDate: this.adSaleMonth + '-01',
+                    endDate: this.adSaleMonth + '-' + monthDayNum,
+                }
+                if (this.selectCity !== '0') {
+                    params.asrId = this.returnAsrID()
+                }
+                api.getApi(this.apiVar.report + '/api/v2/getAdsInfoByWeek', params).then(res => {
+                    console.log('广告销售-顶部数据接口', res)
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        this.loginTimeout()
+                    } else if (res.data.SysCode === 200200) {
+                        this.adSaleList = res.data.data
+                        this.setAdSalePieData(this.adSaleList[0])
+                        this.adSaleWeekSelectList = this.setWeekSelectList(this.adSaleList)
+                        this.setAdSaleBarData()
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                })
+            },
+            // 设置广告销售图表数据
+            setAdSaleBarData(){
+                console.log('设置广告销售图表数据',this.adSaleList)
+                let weekList = []
+                for(let key of this.adSaleWeekSelectList){
+                    weekList.push(key.label)
+                }
+                let beenSold = []
+                let unSold = []
+                let adsDisabled = []
+                for(let aKey of this.adSaleList){
+                    beenSold.push(aKey.soldAdsCount)
+                    unSold.push(aKey.unsoldAdsCount)
+                    adsDisabled.push(aKey.forbiddenAdsCount)
+                }
+                this.adSaleData.weekList = JSON.parse(JSON.stringify(weekList))
+                this.adSaleData.beenSold = JSON.parse(JSON.stringify(beenSold))
+                this.adSaleData.unSold = JSON.parse(JSON.stringify(unSold))
+                this.adSaleData.adsDisabled = JSON.parse(JSON.stringify(adsDisabled))
+                console.log('左侧柱状图',this.adSaleData)
+                this.initAdSaleBar();
+            },
+            // 设置右侧饼状图数据
+            setAdSalePieData(obj){
+                this.adSalePieLoading = true
+                let pieArr = []
+                for (let key in obj) {
+                    if (key == 'unsoldAdsCount') {
+                        pieArr[0] = {value: obj[key] || 0, name: '空刊数(面)'}
+                    } else if (key == 'soldAdsCount') {
+                        pieArr[1] = {value: obj[key] || 0, name: '在刊媒体(面)'}
+                    } else if (key == 'forbiddenAdsCount') {
+                        pieArr[2] = {value: obj[key] || 0, name: '禁用媒体(面)'}
+                    }
+                }
+                console.log('pieArr',pieArr)
+                this.mediaSaleData.data = pieArr
+                this.initAdSalePie()
             },
             // 广告销售 - 左侧柱状图
             initAdSaleBar() {
@@ -1001,6 +1270,7 @@
                 series[series.length-1]["label"]["normal"]["formatter"] = totalFun
                 // 使用刚指定的配置项和数据显示图表。
                 this.adSaleBarEcharts.setOption(option);
+                this.adSaleBarLoading = false
             },
             // 广告销售 - 右侧饼状图
             initAdSalePie() {
@@ -1107,6 +1377,94 @@
                         }
                     ]
                 });
+                this.adSalePieLoading = false
+            },
+            /*  广告库存  */
+            // 左侧 - 过去
+            getAdInventoriedData(){
+                this.adInventoriedLoading = true
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    startDate: this.toDay.substring(0,4) + '-01-01',
+                    endDate: this.toDay,
+                    type: this.adInventoriedType
+                }
+                if (this.selectCity !== '0') {
+                    params.asrId = this.returnAsrID()
+                }
+                console.log('广告库存params - 过去',params)
+                api.getApi(this.apiVar.report + '/api/v2/getAdsInventoryInfo', params).then(res => {
+                    console.log('广告库存数据接口 - 过去', res)
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        this.loginTimeout()
+                    } else if (res.data.SysCode === 200200) {
+                        let dataObj = res.data.data
+                        let arr = []
+                        for(let key in dataObj){
+                            // 确保以 已售-过期-禁用 的顺序
+                            if (key === 'soldAds') {
+                                arr[0] = {value: dataObj[key], name: '已售'}
+                            } else if (key === 'unsoldAds') {
+                                arr[1] = {value: dataObj[key], name: '过期'}
+                            } else if (key === 'forbiddenAds') {
+                                arr[2] = {value: dataObj[key] || 0, name: '禁用'}
+                            }
+                        }
+                        this.beenWeekOfSurfaceData.data = JSON.parse(JSON.stringify(arr))
+                        this.adInventoriedDate = {
+                            starDate: dataObj.startDate,
+                            endDate: dataObj.endDate,
+                            weekNum: this.returnRankingWeekOnYear(this.toDay),
+                            estimateSale: dataObj.estimateSale,
+                        }
+                        this.initAdInventoriedPie();
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                })
+            },
+            // 右侧 - 未来
+            getAdInventoryData(){
+                this.adInventoryLoading = true
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    startDate: timeFormat.returnDayCount(1,'-'),
+                    endDate: this.toDay.substring(0,4) + '-12-31',
+                    type: this.adInventoryType
+                }
+                if (this.selectCity !== '0') {
+                    params.asrId = this.returnAsrID()
+                }
+                console.log('广告库存params - 未来',params)
+                api.getApi(this.apiVar.report + '/api/v2/getAdsInventoryInfo', params).then(res => {
+                    console.log('广告库存数据接口 - 过去', res)
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        this.loginTimeout()
+                    } else if (res.data.SysCode === 200200) {
+                        let dataObj = res.data.data
+                        let arr = []
+                        for(let key in dataObj){
+                            // 确保以 已售-可售 的顺序
+                            if (key === 'soldAds') {
+                                arr[0] = {value: dataObj[key], name: '已售'}
+                            } else if (key === 'unsoldAds') {
+                                arr[1] = {value: dataObj[key], name: '可售'}
+                            }
+                        }
+                        this.futureWeekOfSurfaceData.data = JSON.parse(JSON.stringify(arr))
+                        this.adInventoryDate = {
+                            starDate: dataObj.startDate,
+                            endDate: dataObj.endDate,
+                            weekNum: this.returnRankingWeekOnYear(dataObj.endDate),
+                            estimateSale: dataObj.estimateSale,
+                        }
+                        this.initAdInventoryPie();
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                })
             },
             // 广告库存 - 左侧
             initAdInventoriedPie(){
@@ -1189,6 +1547,7 @@
                         }
                     ]
                 })
+                this.adInventoriedLoading = false
             },
             // 广告库存 - 右侧
             initAdInventoryPie(){
@@ -1273,6 +1632,7 @@
                         }
                     ]
                 })
+                this.adInventoryLoading = false
             },
             // 机会挖掘
             initChanceFindPie() {
@@ -1384,6 +1744,55 @@
                         }
                     ]
                 })
+            },
+            // 设置周下拉选项
+            setWeekSelectList(list){
+                let weeks = []
+                let month = (new Date(list[1].startDate)).getMonth()+1;
+                for (let i = 0; i < list.length; i++) {
+                    weeks.push({
+                        value: i.toString(),
+                        label: month + '月第' + (i + 1) + '周'
+                    })
+                }
+                console.log('weeks',weeks)
+                return weeks
+            },
+            // 根据权限公司返回 asrIDs
+            returnAsrID(){
+                if (this.selectCity == '0'){
+                    return '1,2,3,4,5,6,7'
+                }else{
+                    return this.selectCity
+                }
+            },
+            // 价格加上逗号
+            priceFormat(price) {
+                return commaFormat.init(price);
+            },
+            // 指定日期为今年的第几周
+            returnRankingWeekOnYear(date){
+                let day1 = new Date(date);
+                let day2 = new Date(date);
+                day2.setMonth(0);
+                day2.setDate(1);
+                let rq = day1 - day2;
+                let dayNum = Math.ceil(rq/(24*60*60*1000));
+                let rankingWeek = Math.ceil(dayNum/7);
+                console.log('dayNum',dayNum,'rankingWeek',rankingWeek)
+                return rankingWeek
+            },
+            // 操作提示统一方法
+            messageFun(mesType,mes){
+                this.$message({
+                    message: mes,
+                    type: mesType,
+                    showClose: true,
+                })
+            },
+            loginTimeout(){
+                this.messageFun('warning',"登录超时,请重新登录");
+                this.$router.push("/login");
             },
         },
 

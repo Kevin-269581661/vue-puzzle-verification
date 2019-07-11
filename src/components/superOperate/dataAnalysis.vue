@@ -17,13 +17,13 @@
                 <el-tab-pane label="数据概览" name="first">
                     <data-read :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName"></data-read>
                 </el-tab-pane>
-                <el-tab-pane label="周报/月报" name="second">
+                <el-tab-pane label="周报/月报" name="second" v-if="isAllCity">
                     <weekAndMouth-report :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName"></weekAndMouth-report>
                 </el-tab-pane>
                 <el-tab-pane label="指标查询" name="third">
                     <index-query :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName"></index-query>
                 </el-tab-pane>
-                <el-tab-pane label="城市对比" name="fouth">
+                <el-tab-pane label="城市对比" name="fouth" v-if="isAllCity">
                     <citys-contrast :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName" :citys="citys"></citys-contrast>
                 </el-tab-pane>
                 <el-tab-pane label="点位分析" name="fifth">
@@ -48,6 +48,8 @@
         data(){
             return{
                 sessionData: {},
+                // 是否为平台商超管
+                isAllCity: true,
                 // 是否城市对比
                 isCitys: false,
                 // 当前tabs
@@ -85,6 +87,20 @@
             // 获取session数据;根据登录用户的权限设置权限
             getSessionData(){
                 this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
+                console.log('用户信息',this.sessionData)
+                if (this.sessionData.asrID == '999') {
+                    this.isAllCity = true
+                } else {
+                    let cityArr = [
+                        {
+                            value: this.sessionData.asrID,
+                            label: this.returnAsName(this.sessionData.asName)
+                        }
+                    ]
+                    this.citys =  JSON.parse(JSON.stringify(cityArr))
+                    this.currCity = this.citys[0].value
+                    this.isAllCity = false
+                }
             },
             // tabs切换
             tabHandleClick(){
@@ -93,7 +109,15 @@
             // 全局选择城市
             changeCity(value){
 
-            }
+            },
+            // 根据asrrID返回城市名
+            returnAsName(asrIDs) {
+                for (let key of this.citys) {
+                    if (key.value == asrIDs) {
+                        return key.label
+                    }
+                }
+            },
         },
     }
 </script>

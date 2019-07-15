@@ -1,4 +1,3 @@
-<script src="../../../../../ntr/NTR/pages/login/login.js"></script>
 <template>
     <div class="data_read">
         <div class="data_read_box">
@@ -29,12 +28,13 @@
                                 value-format="yyyy"
                                 format="yyyy"
                                 placeholder="选择年"
+                                :clearable="false"
                                 @change="changeYear">
                             </el-date-picker>
                         </div>
                     </div>
                 </div>
-                <div class="data_kind">
+                <div class="data_kind" :class="isAllCity ? 'data_kind_all_city' : ''">
                     <div class="data_box" :class="basicTotalType === 'res' ? 'box_active' : ''"
                          @click="totalActiveFun('res')">
                         <h4>社区</h4>
@@ -69,9 +69,14 @@
                          @click="totalActiveFun('adver')">
                         <h4>广告主</h4>
                         <p>{{basicTotalData.advertisementCount}}</p>
+                        <!--setTotalDataBar-->
                     </div>
                 </div>
-                <div class="charts_warp">
+                <div class="charts_warp"
+                     v-if="isAllCity"
+                     v-loading="totalDataBarLoading"
+                     element-loading-text="玩命加载中..."
+                     element-loading-background="rgba(255, 255, 255)">
                     <div class="bar_charts" id="total_data_read" ref="totalDataBar" style="height: 354px;width: 100%"></div>
                 </div>
             </el-card>
@@ -95,7 +100,12 @@
                 </ul>
                 <el-row :gutter="16">
                     <el-col :span="12">
-                        <div class="bar_charts el_col_bar" id="toDay_precept" ref="toDayPreceptBar" style="height: 328px;width: 100%"></div>
+                        <div class="bar_charts el_col_bar" id="toDay_precept"  ref="toDayPreceptBar"
+                             style="height: 328px;width: 100%"
+                             v-loading="toDayPreceptBarLoading"
+                             element-loading-text="玩命加载中..."
+                             element-loading-background="rgba(255, 255, 255)">
+                        </div>
                     </el-col>
                     <el-col :span="12">
                         <div class="el_col_bar">
@@ -135,6 +145,7 @@
                             value-format="yyyy-MM"
                             format="yyyy-MM"
                             placeholder="选择月"
+                            :clearable="false"
                             @change="adSaleChange">
                         </el-date-picker>
                     </div>
@@ -298,7 +309,8 @@
                             type="daterange"
                             range-separator="至"
                             start-placeholder="开始日期"
-                            end-placeholder="结束日期">
+                            end-placeholder="结束日期"
+                            :clearable="false">
                         </el-date-picker>
                     </div>
                 </div>
@@ -367,6 +379,9 @@
                 // 自定义颜色
                 colorList: ['#2FC25B','#1890FF','#FACC14'],
                 toDay: '',
+                isGetData: false,
+                // 前一次-全局选择的城市
+                oldSelectCity: '0',
                 basicTotalType: 'res',
                 // 数据总览
                 basicTotalData: {
@@ -378,6 +393,11 @@
                     advertisementCount: 0,
                     publishRate: 0,
                 },
+                totalDataBarLoading: true,
+                // 接口原数据
+                basicTotalBarData:[],
+                // 数据总览 - 柱状图数据
+                basicTotalBarDataShow:[],
                 // 选择的年份
                 totalDataYear: '',
                 totalDataBarEcharts: '',
@@ -392,26 +412,28 @@
                     newMediaCount: 0,
                     forbiddenPointCount: 0,
                 },
+                // 图表
+                toDayPreceptBarLoading: true,
                 toDayPreceptBarEcharts: '',
                 // 当天概况表格数据
                 totalTableList: [
                     {
                         name:'新建方案',
-                        number: 8,
-                        ads: 600,
-                        adsWeek: 890,
+                        number: 0,
+                        ads: 0,
+                        adsWeek: 0,
                     },
                     {
                         name:'预锁方案',
-                        number: 8,
-                        ads: 600,
-                        adsWeek: 890,
+                        number: 0,
+                        ads: 0,
+                        adsWeek: 0,
                     },
                     {
                         name:'发布订单',
-                        number: 6,
-                        ads: 500,
-                        adsWeek: 800,
+                        number: 0,
+                        ads: 0,
+                        adsWeek: 0,
                     },
                 ],
                 /*  广告销售  */
@@ -430,10 +452,11 @@
                 // 广告销售 - 柱状图数据
                 adSaleBarLoading: true,
                 adSaleData: {
-                    weekList:['5月第1周', '5月第2周', '5月第3周', '5月第4周', '5月第5周'],
-                    beenSold: [325, 340, 400, 350, 390],
-                    unSold: [435, 446, 443, 459, 460],
-                    adsDisabled: [25, 26, 20, 10, 32],
+                    weekList:[],
+                    beenSold: [],
+                    unSold: [],
+                    adsDisabled: [],
+                    publishRate: [],
                     totalNum: 0,
                 },
                 // 广告销售 - 饼状图
@@ -476,51 +499,30 @@
                 adInventoriedType: '1',
                 // 右侧
                 adInventoryLoading: true,
-                activeWeek: '',
-                weekSelectList:[
-                    {
-                        value:'0',
-                        label:'7月第1周'
-                    },
-                    {
-                        value:'1',
-                        label:'7月第2周'
-                    },
-                    {
-                        value:'2',
-                        label:'7月第3周'
-                    },
-                    {
-                        value:'3',
-                        label:'7月第4周'
-                    },
-                    {
-                        value:'4',
-                        label:'7月第5周'
-                    },
-                ],
+                // 未来
                 adInventoryPieEcharts: '',
                 futureWeekOfSurfaceData: {
                     title:['已售','可售'],
                     data:[
-                        {value:1350, name:'已售'},
-                        {value:3170, name:'可售'},
+                        {value:0, name:'已售'},
+                        {value:0, name:'可售'},
                     ]
                 },
-                adInventoryDate: { starDate: '', endDate: '', weekNum: 0},
+                adInventoryDate: {starDate: '', endDate: '', weekNum: 0},
                 adInventoryType: '1',
                 // 机会挖掘
                 chanceFindPieLoading: true,
                 // 用户总数
                 chanceFindUserNum: 0,
                 chanceFindDate: [],
+                // 机会挖掘 - 饼状图
                 chanceFindPieEcharts: '',
                 chanceFindPieData: {
                     title: ['生成方案', '生成订单', '未合作'],
                     data: [
-                        {value: 3350, name: '生成方案'},
-                        {value: 1170, name: '生成订单'},
-                        {value: 2170, name: '未合作'}
+                        {value: 0, name: '生成方案'},
+                        {value: 0, name: '生成订单'},
+                        {value: 0, name: '未合作'}
                     ]
                 },
                 // 机会挖掘表格
@@ -564,65 +566,82 @@
             activeName:{
                 type:String,
                 required: true
+            },
+            isAllCity:{
+                type:Boolean,
+                required: true,
             }
         },
-        watch:{
-            sessionData(newVal,oldVal){
-                console.log('newVal',newVal,'oldVal',oldVal)
+        watch: {
+            sessionData(newVal, oldVal) {
+                console.log('newVal', newVal, 'oldVal', oldVal)
                 this.sessionData = newVal
             },
-            selectCity(newVal,oldVal){
+            selectCity(newVal, oldVal) {
                 this.selectCity = newVal
+                if (this.activeName === 'first') {
+                    this.getDataRead();
+                } else {
+                    if(this.selectCity != this.oldSelectCity){
+                        this.isGetData = false
+                    } else {
+                        this.isGetData = true
+                    }
+                }
             },
-            activeName(newVal,oldVal){
+            activeName(newVal, oldVal) {
                 this.activeName = newVal
-                if(this.activeName === 'first'){
-                    // 数据总览
-                    this.initTotalDataBar();
-                    // 当天概况
-                    this.initToDayPreceptBar()
-                    // 广告销售 - 柱状图
-                    this.initAdSaleBar()
-                    // 广告销售  - 饼状图
-                    this.initAdSalePie()
-                    // 广告库存 - 左侧
-                    this.initAdInventoriedPie()
-                    // 广告库存 - 右侧
-                    this.initAdInventoryPie()
-                    // 机会挖掘
-                    this.initChanceFindPie()
+                if (this.activeName === 'first') {
+                    if (!this.isGetData) {
+                        // 统一调用接口
+                        this.getDataRead()
+                        this.isGetData = true
+                    } else {
+                        // 数据总览
+                        this.initTotalDataBar();
+                        // 当天概况
+                        this.initToDayPreceptBar();
+                        // 广告销售 - 柱状图
+                        this.initAdSaleBar();
+                        // 广告销售  - 饼状图
+                        this.initAdSalePie();
+                        // 广告库存 - 左侧
+                        this.initAdInventoriedPie();
+                        // 广告库存 - 右侧
+                        this.initAdInventoryPie();
+                        // 机会挖掘
+                        this.initChanceFindPie();
+                    }
                 }
             }
         },
         mounted(){
             this.echartsListener();
-            this.setTime()
-            // // 数据总览
-            // this.getTotalData();
-            // this.initTotalDataBar();
-            // // 当天概况
-            // this.getToDayHeaderData();
-            // this.initToDayPreceptBar();
-            // // 广告销售 - 顶部数据接口
-            // this.getAdSaleHeaderData();
-            // // 图表数据接口
-            // this.getAdSaleData();
-            // // 广告销售 - 柱状图
-            // // this.initAdSaleBar();
-            // // 广告销售  - 饼状图
-            // // this.initAdSalePie();
-            // // 广告库存 - 左侧
-            // this.getAdInventoriedData();
-            // // this.initAdInventoriedPie();
-            // // 广告库存 - 右侧
-            // this.getAdInventoryData();
-            // // this.initAdInventoryPie();
-            // // 机会挖掘
-            // this.getChanceFindEcharts();
-            // this.getChanceFindTable();
-            // // this.initChanceFindPie();
+            this.setTime();
+            this.getDataRead();
         },
         methods:{
+            // 统一调用接口
+            getDataRead(){
+                // 数据总览
+                this.getTotalData();
+                // this.initTotalDataBar();
+                // 当天概况
+                this.getToDayHeaderData();
+                this.initToDayPreceptBar();
+                // 广告销售 - 顶部数据接口
+                this.getAdSaleHeaderData();
+                // 广告销售 - 饼状图
+                this.getAdSaleData();
+                // 广告库存 - 左侧
+                this.getAdInventoriedData();
+                // 广告库存 - 右侧
+                this.getAdInventoryData();
+                // 机会挖掘
+                this.getChanceFindEcharts();
+                this.getChanceFindTable();
+                this.oldSelectCity = this.selectCity
+            },
             // 统一监听
             echartsListener(){
                 window.addEventListener("resize", ()=> {
@@ -657,11 +676,15 @@
                 this.getTotalData()
             },
             // 点击的数据类型
-            totalActiveFun(type){
-                this.basicTotalType = type
+            totalActiveFun(type) {
+                if (this.isAllCity) {
+                    this.basicTotalType = type
+                    this.setTotalDataBar()
+                }
             },
-            // 表头接口
+            // 数据总览-接口
             getTotalData(){
+                this.totalDataBarLoading = true
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
@@ -687,13 +710,51 @@
                                 advertisementCount: dataObj.advertisementCount,
                                 publishRate: dataObj.publishRate ?  Math.floor(dataObj.publishRate * 10000)/100 : 0,
                         }
+                        this.basicTotalBarData = JSON.parse(JSON.stringify(dataObj.asrList))
+                        this.setTotalDataBar()
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }
                 })
             },
+            // 设置显示
+            setTotalDataBar(){
+                this.totalDataBarLoading = true
+                let arr = []
+                for(let key of this.basicTotalBarData){
+                    switch (this.basicTotalType){
+                        case 'res':
+                            arr.push(key.resourceCount)
+                            break;
+                        case 'adDoor':
+                            arr.push(key.advertDoorCount)
+                            break;
+                        case 'rate':
+                            arr.push(key.publishRate || 0)
+                            break;
+                        case 'order':
+                            arr.push(key.orderCount)
+                            break;
+                        case 'sale':
+                            arr.push(key.sale)
+                            break;
+                        case 'price':
+                            arr.push(key.orderSale)
+                            break;
+                        case 'adver':
+                            arr.push(key.advertisementCount)
+                            break;
+                    }
+                }
+                this.basicTotalBarDataShow = arr
+                console.log('this.basicTotalBarDataShow',this.basicTotalBarDataShow)
+                this.initTotalDataBar()
+            },
             // 数据总览 头部柱状图
             initTotalDataBar(){
+                if(!this.isAllCity){
+                    return
+                }
                 if(this.totalDataBarEcharts){
                     this.totalDataBarEcharts.dispose()
                 }
@@ -712,16 +773,13 @@
                         padding: 0,
                         borderColor: '#dddddd',
                         borderWidth: 1,
-                        formatter: function (params) {
-                            return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
-                                '<span>' + params[0].name + '</span>' +
-                                '</p>' + '<br/>' +
-                                '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; ">' +
-                                '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' + params[0].name + '</span>' + params[0].data + '</p>'
-
+                        formatter: (params)=> {
+                            return '<p class="echarts_tooltip_title">' + '<span>' + params[0].name + '</span>' + '</p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params[0].name +
+                                '</span>' + params[0].data + '</p>'
                         },
                     },
-
                     grid: {
                         left: '3%',
                         right: '4%',
@@ -785,10 +843,11 @@
                             name: '',
                             type: 'bar',
                             barWidth: '25%',
-                            data: [1400, 2000, 2300, 4000, 4600,1800,3600]
+                            data: this.basicTotalBarDataShow
                         }
                     ]
                 });
+                this.totalDataBarLoading = false
             },
             /*  当天概况  */
             getToDayHeaderData(){
@@ -836,9 +895,9 @@
                         // data: ['方案/订单数(个)','点位数(面)','点位数(面·周)']
                     },
                     tooltip: {
-                        // trigger: 'axis',
-                        axisPointer: {            // 坐标轴指示器，坐标轴触发有效
-                            type: 'shadow',        // 默认为直线，可选为：'line' | 'shadow'
+                        trigger: 'axis',
+                        axisPointer: {              // 坐标轴指示器，坐标轴触发有效
+                            type: 'shadow',         // 默认为直线，可选为：'line' | 'shadow'
                             shadowStyle: {
                                 shadowColor: '#f5f5f5'
                             }
@@ -848,12 +907,18 @@
                         borderColor: '#dddddd',
                         borderWidth: 1,
                         formatter: function (params) {
-                            return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
-                                '<span>' + params.name + '</span>' + '<span>' + '数量' + '</span>' +
-                                '</p>' + '<br/>' +
-                                '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; ">' +
-                                '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' + params.seriesName + '</span>' + params.data[params.dataIndex + 1] + '</p>'
-
+                            let title = '';
+                            let arr = [];
+                            for (let i = 0; i < params.length; i++) {
+                                title = '<p class="echarts_tooltip_title">' +
+                                    '<span>' +  params[i].name + '</span>' + '<span>' + '数值' + '</span>' + '</p>' + '<br/>'
+                                let data = '<p class="echarts_tooltip_content">' +
+                                    '<span>'+ '<i class="echarts_tooltip_i" style="background:'+ params[i].color +'">' + '</i>' +
+                                    params[i].seriesName + '</span>' + params[i].value[params[i].seriesIndex + 1] + '</p>'
+                                arr.push(data)
+                            }
+                            let tooltip = arr.join('')
+                            return title + tooltip
                         },
                     },
                     dataset: {
@@ -975,6 +1040,7 @@
                         }
                     ]
                 })
+                this.toDayPreceptBarLoading = false
             },
             /*  广告销售  */
             // 月份选择
@@ -1001,7 +1067,7 @@
                     params.asrId = this.returnAsrID()
                 }
                 api.getApi(this.apiVar.report + '/api/v2/getAdvertSales', params).then(res => {
-                    console.log('广告销售-顶部数据接口', res)
+                    console.log('广告销售-顶部数据接口res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         this.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
@@ -1032,7 +1098,7 @@
                     params.asrId = this.returnAsrID()
                 }
                 api.getApi(this.apiVar.report + '/api/v2/getAdsInfoByWeek', params).then(res => {
-                    console.log('广告销售-顶部数据接口', res)
+                    console.log('广告销售-顶部数据接口res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         this.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
@@ -1049,12 +1115,13 @@
             setAdSaleBarData(){
                 console.log('设置广告销售图表数据',this.adSaleList)
                 let weekList = []
-                for(let key of this.adSaleWeekSelectList){
+                for (let key of this.adSaleWeekSelectList) {
                     weekList.push(key.label)
                 }
                 let beenSold = []
                 let unSold = []
                 let adsDisabled = []
+                let publishRate = []
                 let totalNum = 0
                 let i = 0
                 for(let aKey of this.adSaleList){
@@ -1064,12 +1131,19 @@
                     beenSold.push(aKey.soldAdsCount)
                     unSold.push(aKey.unsoldAdsCount)
                     adsDisabled.push(aKey.forbiddenAdsCount)
+                    publishRate.push(Math.floor(aKey.publishRate * 10000)/100)
                     i++
                 }
+                // 周
                 this.adSaleData.weekList = JSON.parse(JSON.stringify(weekList))
+                // 已售
                 this.adSaleData.beenSold = JSON.parse(JSON.stringify(beenSold))
+                // 未售点位
                 this.adSaleData.unSold = JSON.parse(JSON.stringify(unSold))
+                // 禁用点位
                 this.adSaleData.adsDisabled = JSON.parse(JSON.stringify(adsDisabled))
+                // 上刊率
+                this.adSaleData.publishRate = publishRate
                 this.adSaleData.totalNum = parseInt(totalNum * 1.5)
                 console.log('左侧柱状图',this.adSaleData)
                 this.initAdSaleBar();
@@ -1093,7 +1167,6 @@
             },
             // 广告销售 - 左侧柱状图
             initAdSaleBar() {
-                console.log('广告销售')
                 if(this.adSaleBarEcharts){
                     this.adSaleBarEcharts.dispose()
                 }
@@ -1112,16 +1185,13 @@
                         borderColor: '#dddddd',
                         borderWidth: 1,
                         formatter: function (params) {
-                            return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
-                                '<span>' + params.name + '</span>' + '<span>' + '数量' + '</span>' +
-                                '</p>' + '<br/>' +
-                                '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; ">' +
-                                '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' + params.seriesName + '</span>' + params.data + '</p>'
-
+                            return '<p class="echarts_tooltip_title">' + '<span>' + params.name + '</span>' + '<span>' + '数量' + '</span>' + '</p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' + '<span><i class="echarts_tooltip_i" style="background-color: '+ params.color +'"></i>'
+                                + params.seriesName + '</span>' + params.data + '</p>'
                         },
                     },
                     grid: {
-                        top: '13%',
+                        top: '8%',
                         left: '5%',
                         right: '5%',
                         bottom: '13%',
@@ -1209,14 +1279,31 @@
                             },
                             splitLine: {
                                 show: false,
-                                // lineStyle: {
-                                //     color: "#E8E8E8",
-                                //     type: "dashed"
-                                // }
                             }
                         }
                     ],
                     series: [
+                        {
+                            name:'周在刊率',
+                            type:'line',
+                            yAxisIndex: 1,
+                            itemStyle: {
+                                normal: {
+                                    label: {
+                                        show: true,//是否展示
+                                        textStyle: {
+                                            color: '#666',
+                                            fontSize: 12
+                                        },
+                                        formatter: (params)=>{
+                                            return params.value + '%'
+                                        }
+                                    },
+                                    color: '#1890FF'
+                                },
+                            },
+                            data: this.adSaleData.publishRate
+                        },
                         {
                             name:'禁用点位',
                             type:'bar',
@@ -1227,7 +1314,7 @@
                                     label: {
                                         show: true,//是否展示
                                     },
-                                    color: '#FAD237'
+                                    color: this.colorList[2]
                                 }
                             },
                             data: this.adSaleData.adsDisabled
@@ -1242,7 +1329,7 @@
                                     label: {
                                         show: true,//是否展示
                                     },
-                                    color: '#1890FF'
+                                    color: this.colorList[1]
                                 }
                             },
                             data: this.adSaleData.beenSold
@@ -1255,34 +1342,13 @@
                             itemStyle: {
                                 normal: {
                                     label: {
-                                        show: true,//是否展示
+                                        show: true,// 是否展示
                                     },
-                                    color: '#4DCA73'
+                                    color: this.colorList[0]
                                 }
                             },
                             data: this.adSaleData.unSold
                         },
-                        // {
-                        //     name:'合计',
-                        //     type:'bar',
-                        //     stack:'xxx',
-                        //     // formatter:'{c}',
-                        //     textStyle:{ color:'#666' },
-                        //     itemStyle:{
-                        //         normal:{
-                        //             label: {
-                        //                 show: true,
-                        //                 position: 'bottom',
-                        //                 textStyle: {
-                        //                     color: '#666',
-                        //                     fontSize: 12
-                        //                 }
-                        //             },
-                        //             color:'rgba(128, 128, 128, 0)'
-                        //         }
-                        //     },
-                        //     data:this.adSaleData.totalNum
-                        // },
                         {
                             name:'合计',
                             type:'bar',
@@ -1300,29 +1366,8 @@
                             //思路一：给series集合末尾多加一栏用于展示合计，但是值都是0；
                             // 缺点：必须根据xAxis的data生成一组为空的数据，且tooltip不能加trigger: 'axis',这个条件，不然会展示合计：0
                             data:[0,0,0,0,0]
-                        },
-                        {
-                            name:'周在刊率',
-                            type:'line',
-                            yAxisIndex: 1,
-                            // xAxisIndex: 1,
-                            itemStyle: {
-                                normal: {
-                                    label: {
-                                        show: true,//是否展示
-                                        textStyle: {
-                                            color: '#666',
-                                            fontSize: 12
-                                        },
-                                        formatter: (params)=>{
-                                            return params.value + '%'
-                                        }
-                                    },
-                                    color: '#1890FF'
-                                },
-                            },
-                            data:[17, 25, 33, 68, 52]
                         }
+
                     ]
                 };
                 let series = option["series"];
@@ -1334,7 +1379,7 @@
                     return total
                 }
                 // 加载页面时候替换最后一个series的formatter
-                series[series.length-2]["label"]["normal"]["formatter"] = totalFun
+                series[series.length-1]["label"]["normal"]["formatter"] = totalFun
                 // 使用刚指定的配置项和数据显示图表。
                 this.adSaleBarEcharts.setOption(option);
                 this.adSaleBarLoading = false
@@ -1354,15 +1399,12 @@
                     tooltip : {
                         trigger: 'item',
                         formatter: function (params) {
-                            return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
-                                '<span>' + params.name + '</span>' +
-                                '</p>' + '<br/>' +
-                                '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; margin-bottom: -20px;">' +
-                                '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' + '数值' + '</span>' + params.value + '</p>' + '<br/>' +
-                                '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px;">' +
-                                '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' +
-                                '占比' + '</span>' + params.percent + '%' +
-                                '</p>'
+                            return '<p class="echarts_tooltip_title">' + '<span>' + params.name + '</span>' + '</p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: '+ params.color +'"></i>' + '数值' + '</span>' + params.value + '</p>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: '+ params.color +'"></i>' +
+                                '占比' + '</span>' + params.percent + '%' + '</p>'
                         },
                         backgroundColor: '#FFFFFF',
                         textStyle: {
@@ -1547,15 +1589,12 @@
                     tooltip : {
                         trigger: 'item',
                         formatter: function (params) {
-                            return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
-                                '<span>' + params.name + '</span>' +
-                                '</p>' + '<br/>' +
-                                '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; margin-bottom: -20px;">' +
-                                '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' + '数值' + '</span>' + params.value + '</p>' + '<br/>' +
-                                '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px;">' +
-                                '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' +
-                                '占比' + '</span>' + params.percent + '%' +
-                                '</p>'
+                            return '<p class="echarts_tooltip_title">' + '<span>' + params.name + '</span>' + '</p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: '+ params.color +'"></i>' + '数值' + '</span>' + params.value + '</p>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: '+ params.color +'"></i>' +
+                                '占比' + '</span>' + params.percent + '%' + '</p>'
                         },
                         backgroundColor: '#FFFFFF',
                         textStyle: {
@@ -1631,15 +1670,12 @@
                     tooltip : {
                         trigger: 'item',
                         formatter: function (params) {
-                            return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
-                                '<span>' + params.name + '</span>' +
-                                '</p>' + '<br/>' +
-                                '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; margin-bottom: -20px;">' +
-                                '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' + '数值' + '</span>' + params.value + '</p>' + '<br/>' +
-                                '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px;">' +
-                                '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' +
-                                '占比' + '</span>' + params.percent + '%' +
-                                '</p>'
+                            return '<p class="echarts_tooltip_title">' + '<span>' + params.name + '</span>' + '</p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: '+ params.color +'"></i>' + '数值' + '</span>' + params.value + '</p>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: '+ params.color +'"></i>' +
+                                '占比' + '</span>' + params.percent + '%' + '</p>'
                         },
                         backgroundColor: '#FFFFFF',
                         textStyle: {
@@ -1715,7 +1751,7 @@
                 }
                 // console.log('机会挖掘饼状图params',params)
                 api.getApi(this.apiVar.report + '/api/v2/getCustomerInfo', params).then(res => {
-                    console.log('机会挖掘饼状图接口', res)
+                    console.log('机会挖掘饼状图接口res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         this.loginTimeout();
                     } else if (res.data.SysCode === 200200) {
@@ -1750,9 +1786,12 @@
                     pageNo: 1,
                     pageSize: 5000,
                 }
+                if (this.selectCity !== '0') {
+                    params.asrId = this.returnAsrID()
+                }
                 console.log('机会挖掘表格params',params)
                 api.getApi(this.apiVar.report + '/api/v2/getCustomerCooperative', params).then(res => {
-                    console.log('机会挖掘表格接口', res)
+                    console.log('机会挖掘表格接口res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         this.loginTimeout();
                     } else if (res.data.SysCode === 200200) {
@@ -1790,15 +1829,12 @@
                     tooltip : {
                         trigger: 'item',
                         formatter: function (params) {
-                            return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
-                                '<span>' + params.name + '</span>' +
-                                '</p>' + '<br/>' +
-                                '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; margin-bottom: -20px;">' +
-                                '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' + '数值' + '</span>' + params.value + '</p>' + '<br/>' +
-                                '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px;">' +
-                                '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' +
-                                '占比' + '</span>' + params.percent + '%' +
-                                '</p>'
+                            return '<p class="echarts_tooltip_title">' + '<span>' + params.name + '</span>' + '</p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: '+ params.color +'"></i>' + '数值' + '</span>' + params.value + '</p>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: '+ params.color +'"></i>' +
+                                '占比' + '</span>' + params.percent + '%' + '</p>'
                         },
                         backgroundColor: '#FFFFFF',
                         textStyle: {
@@ -1911,7 +1947,8 @@
             },
             // 价格加上逗号
             priceFormat(price) {
-                return commaFormat.init(price);
+                price = commaFormat.init(price)
+                return price.substring(price,price.length - 3);
             },
             // 指定日期为今年的第几周
             returnRankingWeekOnYear(date){
@@ -2002,14 +2039,17 @@
         border:1px solid rgba(232,232,232,1);
         margin-left: 16px;
         text-align: right;
+    }
+
+    .data_kind_all_city .data_box{
         cursor: pointer;
     }
 
-    .data_box:hover{
+    .data_kind_all_city .data_box:hover{
         border:1px solid rgba(24,144,255,1);
     }
 
-    .box_active:hover{
+    .data_kind_all_city .box_active:hover{
         border:2px solid rgba(24,144,255,1);
     }
 
@@ -2032,11 +2072,11 @@
         font-weight: 500;
     }
 
-    .box_active{
+    .data_kind_all_city .box_active{
         border:2px solid rgba(24,144,255,1);
     }
 
-    .data_box.box_active h4,.data_box.box_active p{
+    .data_kind_all_city .data_box.box_active h4,.data_kind_all_city .data_box.box_active p{
         color:rgba(24,144,255,1);
     }
 
@@ -2282,4 +2322,5 @@
         background: #c1c1c1;
         border-radius: 4px;
     }
+
 </style>

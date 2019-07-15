@@ -6,7 +6,7 @@
                 <div slot="header" class="clearfix">
                     <span class="box_card_title">数据概览</span>
                     <span class="box_card_title_right">
-                        统计周期：2019年04月13日 - 2019年04月19日
+                        统计周期：{{showDate[0]}} - {{showDate[1]}}
                     </span>
                 </div>
                 <el-row :gutter="16">
@@ -26,7 +26,7 @@
                                     <el-row>
                                         <el-col :span="7" style="padding-left: 16px">{{index+1}}</el-col>
                                         <el-col :span="10" class="text_right">{{item.name}}</el-col>
-                                        <el-col :span="7" class="text_right">{{item.number}}</el-col>
+                                        <el-col :span="7" class="text_right">{{item.value}}</el-col>
                                     </el-row>
                                 </li>
                             </ul>
@@ -132,10 +132,13 @@
         name: "weekAndMouthReport",
         data(){
             return{
+                isGetData: false,
                 // 自定义颜色
                 colorList: ['#2FC25B','#1890FF','#FACC14'],
                 timeList:[],
                 // 数据概览
+                // 头部显示的时间
+                showDate:[],
                 weekOverviewData: '',
                 issueReportPieEcharts:'',
                 issueReportPieData: {
@@ -148,30 +151,30 @@
                 },
                 // 数据概览 - 表格数据
                 issueReportTableData: [
-                    {
-                        name: '社区总数（个）',
-                        number: '1298',
-                    },
-                    {
-                        name: '灯箱数',
-                        number: '1298',
-                    },
-                    {
-                        name: '媒体总量（面）',
-                        number: '1298',
-                    },
-                    {
-                        name: '禁用媒体（面）',
-                        number: '1298',
-                    },
-                    {
-                        name: '在刊媒体（面）',
-                        number: '1298',
-                    },
-                    {
-                        name: '空刊数（面）',
-                        number: '1298',
-                    }
+                    // {
+                    //     name: '社区总数（个）',
+                    //     value: '1298',
+                    // },
+                    // {
+                    //     name: '灯箱数',
+                    //     value: '1298',
+                    // },
+                    // {
+                    //     name: '媒体总量（面）',
+                    //     value: '1298',
+                    // },
+                    // {
+                    //     name: '禁用媒体（面）',
+                    //     value: '1298',
+                    // },
+                    // {
+                    //     name: '在刊媒体（面）',
+                    //     value: '1298',
+                    // },
+                    // {
+                    //     name: '空刊数（面）',
+                    //     value: '1298',
+                    // }
                 ],
                 // 周在线客户
                 weekOnlineClientData:[
@@ -267,26 +270,31 @@
             }
         },
         watch:{
-            sessionData(newVal,oldVal){
-                console.log('newVal',newVal,'oldVal',oldVal)
+            sessionData(newVal, oldVal) {
+                console.log('newVal', newVal, 'oldVal', oldVal)
                 this.sessionData = newVal
             },
-            selectCity(newVal,oldVal){
+            selectCity(newVal, oldVal) {
                 this.selectCity = newVal
             },
-            activeName(newVal,oldVal){
+            activeName(newVal, oldVal) {
                 this.activeName = newVal
-                if(this.activeName === 'second'){
-                    // 数据概览
-                    this.initIssueReportBar()
+                if (this.activeName === 'second') {
+                    if (this.isGetData) {
+                        // 图表重新渲染
+                        this.initIssueReportBar()
+                    } else {
+                        // 数据概览
+                        this.getIssueReportData();
+                        // 本周在线客户列表
+                        this.getWeekOnlineUserData()
+                    }
                 }
             }
         },
         mounted(){
             this.setTime()
             this.echartsListener();
-            this.getIssueReportData();
-            // this.initIssueReportBar();
         },
         methods:{
             // 统一监听
@@ -300,6 +308,7 @@
             setTime() {
                 let date = timeFormat.getWorkWeek('-')
                 this.timeList = JSON.parse(JSON.stringify(date))
+                this.showDate = timeFormat.getWorkWeek('/')
                 console.log('_________',this.timeList)
             },
             // 数据总览接口
@@ -313,13 +322,14 @@
                 }
                 console.log('数据总览params',params)
                 api.getApi(this.apiVar.report + '/api/v2/getWeekOverview', params).then(res => {
-                    console.log('广告销售-顶部数据接口', res)
+                    console.log('广告销售-顶部数据res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         this.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         this.weekOverviewData = res.data.data
-                        this.setEchartsData(res.data.data)
+                        this.setEchartsData(dataObj)
+                        this.setIssueReportTableData(dataObj)
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }
@@ -328,20 +338,44 @@
             // 设置图表数据
             setEchartsData(dataObj){
                 let arr = []
-                for(let key in dataObj){
-                    if(key === 'unsoldAdsCount'){
+                for (let key in dataObj) {
+                    if (key === 'unsoldAdsCount') {
                         arr[0] = {value: dataObj[key], name: '空刊数(面)'}
-                    } else if(key === 'publishAdsCount'){
+                    } else if (key === 'publishAdsCount') {
                         arr[1] = {value: dataObj[key], name: '在刊媒体(面)'}
-                    } else if(key === 'forbiddenAdsCount'){
+                    } else if (key === 'forbiddenAdsCount') {
                         arr[2] = {value: dataObj[key], name: '禁用媒体(面)'}
                     }
                 }
                 this.issueReportPieData.data = arr
                 this.initIssueReportBar();
             },
+            // 设置表格数据
+            setIssueReportTableData(dataObj) {
+                let arr = []
+                for (let key in dataObj) {
+                    if (key === 'resourceCount') {
+                        arr[0] = {value: dataObj[key], name: '社区总数(面)'}
+                    } else if (key === 'lightBox') {
+                        arr[1] = {value: dataObj[key], name: '灯箱数'}
+                    } else if (key === 'totalAdsCount') {
+                        arr[2] = {value: dataObj[key], name: '媒体总量(面)'}
+                    } else if (key === 'forbiddenAdsCount') {
+                        arr[3] = {value: dataObj[key], name: '禁用媒体(面)'}
+                    } else if (key === 'publishAdsCount') {
+                        arr[4] = {value: dataObj[key], name: '在刊媒体(面)'}
+                    } else if (key === 'unsoldAdsCount') {
+                        arr[5] = {value: dataObj[key], name: '空刊数(面)'}
+                    }
+                }
+                this.issueReportTableData = arr
+                console.log('this.issueReportTableData',this.issueReportTableData)
+            },
             // 图表
             initIssueReportBar() {
+                if (this.issueReportPieEcharts) {
+                    this.issueReportPieEcharts.dispose()
+                }
                 this.issueReportPieEcharts = this.$echarts.init(this.$refs.issueReportBar)
                 let total = 0
                 for (let key of this.issueReportPieData.data) {
@@ -351,15 +385,12 @@
                     tooltip: {
                         trigger: 'item',
                         formatter: function (params) {
-                            return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
-                                '<span>' + params.name + '</span>' +
-                                '</p>' + '<br/>' +
-                                '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; margin-bottom: -20px;">' +
-                                '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' + '数值' + '</span>' + params.value + '</p>' + '<br/>' +
-                                '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px;">' +
-                                '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' +
-                                '占比' + '</span>' + params.percent + '%' +
-                                '</p>'
+                            return '<p class="echarts_tooltip_title">' + '<span>' + params.name + '</span>' + '</p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: '+ params.color +'"></i>' + '数值' + '</span>' + params.value + '</p>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: '+ params.color +'"></i>' +
+                                '占比' + '</span>' + params.percent + '%' + '</p>'
                         },
                         backgroundColor: '#FFFFFF',
                         textStyle: {
@@ -443,6 +474,43 @@
                     ]
                 })
             },
+            // 本周在线客户列表
+            getWeekOnlineUserData(){
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    startDate: this.timeList[0],
+                    endDate: this.timeList[1],
+                    asrId: 1
+                }
+                console.log('本周在线客户列表params',params)
+                api.getApi(this.apiVar.report + '/api/v2/getOnlineCustom', params).then(res => {
+                    console.log('本周在线客户res', res)
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        this.loginTimeout()
+                    } else if (res.data.SysCode === 200200) {
+                        this.setOnlineCustomData(res.data.data)
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                })
+            },
+            // 设置本周在线客户表格数据
+            setOnlineCustomData(dataArr){
+                let arr = []
+                for(let key of dataArr){
+                    arr.push({
+                        clienter: key.customName,
+                        content: key.orderName,
+                        saler: key.userName,
+                        issueNum: key.adsCount,
+                        issueDays: key.adsDayCount,
+                        period: key.orderStartDate + '-' + key.orderEndDate
+                    })
+                }
+                this.weekOnlineClientData = arr
+            },
+
             // 新增一行收件人
             addRowSelect(){
                 this.recipientData.push({

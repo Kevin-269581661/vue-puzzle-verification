@@ -409,10 +409,6 @@
                 type: Object,
                 required: true,
             },
-            // selectCity: {
-            //     type: String,
-            //     required: true,
-            // },
             activeName:{
                 type:String,
                 required: true
@@ -427,9 +423,6 @@
                 console.log('newVal', newVal, 'oldVal', oldVal)
                 this.sessionData = newVal
             },
-            // selectCity(newVal, oldVal) {
-            //     this.selectCity = newVal
-            // },
             activeName(newVal,oldVal){
                 this.activeName = newVal
                 // 关键数据总量/增量趋势 - 社区接口
@@ -456,14 +449,6 @@
             // 关键数据对比
             this.selectCompareCityData = this.cities.concat()
             this.beforeCityKey = this.cities.concat()
-            // this.getAllDateSurvey()
-            // this.cityBattleRadio()
-            // // 城市上刊率对比
-            // this.getCompareCityRate()
-            // // 城市关键数据 - 社区、点位、媒体
-            // this.getCityKeyDataResMediaAds()
-            // // 城市关键数据 - 订单、广告主、订单总额
-            // this.forCityKeyData()
         },
         methods:{
             // 设置初始时间
@@ -878,20 +863,12 @@
                                 let title = '';
                                 let arr = [];
                                 for (let i = 0; i < params.length; i++) {
-                                    title = '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 255px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
-                                        '<span>' + '城市(' + params[i].name + ')' + '</span>' + '<span>' + '数值' +
-                                        '</span>' + '</p>' + '<br/>'
-                                    let val = ''
-                                    if(that.cityBattleTitle === '上刊率'){
-                                        val =  (Math.floor(params[i].value * 100)/ 100)  + '%'
-                                    }else{
-                                        val =  params[i].value
-                                    }
-                                    let data = '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 25px ">' +
-                                        '<span><i style="display: inline-block;width: 6px; height: 6px; border-radius: 50%;margin-right: 5px;" :style="{background:params[i].color}"></i>' + params[i].seriesName + '</span>' + val + '</p>'
+                                    title = '<p class="echarts_tooltip_title"><span>' + '城市(' + params[i].name + ')' + '</span>' + '<span>' + '数量' + '</span></p>' + '<br/>'
+                                    let data = '<p class="echarts_tooltip_content">' +
+                                        '<span><i class="echarts_tooltip_i" style="background: '+ params[i].color +'"></i>' + params[i].seriesName + '</span>' + params[i].value + '</p>'
                                     arr.push(data)
                                 }
-                                let tooltip = arr.join('')
+                                let tooltip = arr.join('');
                                 return title + tooltip
                             },
                             backgroundColor: '#FFFFFF',
@@ -1047,11 +1024,9 @@
                         borderColor: '#dddddd',
                         borderWidth: 1,
                         formatter: function (params) {
-                            return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
-                                '<span>' + params[0].name + '</span>' +
-                                '</p>' + '<br/>' +
-                                '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; ">' +
-                                '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' + params[0].seriesName + '</span>' + params[0].data + '%' + '</p>'
+                            return '<p class="echarts_tooltip_title"><span>' + params[0].name + '</span></p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC;"></i>' + params[0].seriesName + '</span>' + params[0].data + '%' + '</p>'
 
                         },
                     },
@@ -1138,9 +1113,6 @@
                                         this.cityResKeyData[j].value = 0
                                         this.cityAdsKeyData[j].value = 0
                                         this.cityMediaKeyData[j].value = 0
-                                        // this.cityResKeyData.splice(j,1)
-                                        // this.cityAdsKeyData.splice(j,1)
-                                        // this.cityMediaKeyData.splice(j,1)
                                         break
                                     }
                                 }
@@ -1149,9 +1121,6 @@
                                         this.RMPieOrderData[n].value = 0
                                         this.RMPieTotalPriceData[n].value = 0
                                         this.RMPieAdOwnersData[n].value = 0
-                                        // this.RMPieOrderData.splice(n,1)
-                                        // this.RMPieTotalPriceData.splice(n,1)
-                                        // this.RMPieAdOwnersData.splice(n,1)
                                         break
                                     }
                                 }
@@ -1351,14 +1320,14 @@
                     tooltip: {
                         trigger: 'item',
                         formatter: function (params) {
-                            return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
+                            return '<p class="echarts_tooltip_title">' +
                                 '<span>' + params.name + '</span>' +
                                 '<span>' + '数据' + '</span>' +
                                 '</p>' + '<br/>' +
-                                '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; margin-bottom: -20px;">' +
-                                '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' + params.seriesName + '</span>' + params.value + '</p>' + '<br/>' +
-                                '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px;">' +
-                                '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.seriesName + '</span>' + params.value + '</p>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC "></i>' +
                                 '占比' + '</span>' + params.percent + '%' +
                                 '</p>'
                         },

@@ -549,6 +549,8 @@
                 </el-table>
             </div>
         </el-dialog>
+
+
     </div>
 </template>
 
@@ -1512,10 +1514,8 @@
                         borderColor: '#dddddd',
                         borderWidth: 1,
                         formatter: function (params) {
-                            return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
-                            '<span>' + '时间' + '</span>' + '<span>' + '数值' +
-                            '</span>' + '</p>' + '<br/>' +
-                            '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; ">' +
+                            return '<p class="echarts_tooltip_title"><span>' + '时间' + '</span>' + '<span>' + '数值' + '</span></p>' + '<br/>' +
+                            '<p class="echarts_tooltip_content">' +
                             '<span>' + params[0].name + '</span>' + (that.allkeydatakind === '上刊率' ? params[0].value + '%' : params[0].value) + '</p>'
                         },
                     },
@@ -1643,19 +1643,15 @@
                         borderWidth: 1,
                         formatter: function (params) {
                             if (params.length >= 2) {
-                                return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
-                                    '<span>' + '时间' + '</span>' + '<span>' + '数值' +
-                                    '</span>' + '</p>' + '<br/>' +
-                                    '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; ">' +
-                                    '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' + params[0].name.substr(0, 7) + '</span>' + (that.addkeyDataKind === '上刊率' ? params[0].data + '%' : params[0].data)  + '</p>' + '</br>' +
-                                    '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; margin-top: -20px">' +
-                                    '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #BDDEFD;margin-right: 5px"></i>' + params[0].name.slice(9) + '</span>' + (that.addkeyDataKind === '上刊率' ? params[1].data + '%' : params[1].data)  + '</p>'
+                                return '<p class="echarts_tooltip_title"><span>' + '时间' + '</span>' + '<span>' + '数值' + '</span></p>' + '<br/>' +
+                                    '<p class="echarts_tooltip_content">' +
+                                    '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC;"></i>' + params[0].name.substr(0, 7) + '</span>' + (that.addkeyDataKind === '上刊率' ? params[0].data + '%' : params[0].data)  + '</p>' +
+                                    '<p class="echarts_tooltip_content">' +
+                                    '<span><i class="echarts_tooltip_i" style="background-color: #BDDEFD;"></i>' + params[0].name.slice(9) + '</span>' + (that.addkeyDataKind === '上刊率' ? params[1].data + '%' : params[1].data)  + '</p>'
                             } else {
-                                return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
-                                    '<span>' + '时间' + '</span>' + '<span>' + '数值' +
-                                    '</span>' + '</p>' + '<br/>' +
-                                    '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; ">' +
-                                    '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' + params[0].name.substr(0, 7) + '</span>' + (that.addkeyDataKind === '上刊率' ? params[0].value + '%' : params[0].value) + '</p>'
+                                return '<p class="echarts_tooltip_title""><span>' + '时间' + '</span>' + '<span>' + '数值' + '</span></p>' + '<br/>' +
+                                    '<p class="echarts_tooltip_content">' +
+                                    '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params[0].name.substr(0, 7) + '</span>' + (that.addkeyDataKind === '上刊率' ? params[0].value + '%' : params[0].value) + '</p>'
                             }
                         },
                     },
@@ -1962,11 +1958,9 @@
                             let title = '';
                             let arr = [];
                             for (let i = 0; i < params.length; i++) {
-                                title = '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
-                                    '<span>' + '行业(' + params[i].name + ')' + '</span>' + '<span>' + '数量' +
-                                    '</span>' + '</p>' + '<br/>'
-                                let data = '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 25px ">' +
-                                    '<span><i style="display: inline-block;width: 6px; height: 6px; border-radius: 50%;margin-right: 5px;" :style="{background:params[i].color}"></i>' + params[i].seriesName + '</span>' + params[i].value + '</p>'
+                                title = '<p class="echarts_tooltip_title"><span>' + '行业(' + params[i].name + ')' + '</span>' + '<span>' + '数量' + '</span></p>' + '<br/>'
+                                let data = '<p class="echarts_tooltip_content">' +
+                                    '<span><i class="echarts_tooltip_i" style="background: '+ params[i].color +'"></i>' + params[i].seriesName + '</span>' + params[i].value + '</p>'
                                 arr.push(data)
                             }
                             let tooltip = arr.join('');
@@ -2033,9 +2027,6 @@
                     },
                     series: this.totalOrderDataShow,
                 });
-                // window.addEventListener("resize", ()=> {
-                //     this.busOrderLineEchart.resize();
-                // })
             },
             /*  行业订单占比  */
             //行业订单-radio
@@ -2133,15 +2124,12 @@
                     tooltip: {
                         trigger: "item",
                         formatter: function (params) {
-                            return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
-                                '<span>' + params.name + '</span>' +
-                                '</p>' + '<br/>' +
-                                '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; margin-bottom: -20px;">' +
-                                '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' + params.seriesName + '</span>' + params.value + '</p>' + '<br/>' +
-                                '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px;">' +
-                                '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' +
-                                '占比' + '</span>' + params.percent + '%' +
-                                '</p>'
+                            return '<p class="echarts_tooltip_title"><span>' + params.name + '</span></p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: '+ params.color +'"></i>' + params.seriesName + '</span>' + params.value + '</p>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: '+ params.color +'"></i>' +
+                                '占比' + '</span>' + params.percent + '%' + '</p>'
                         },
                         backgroundColor: '#FFFFFF',
                         textStyle: {
@@ -2303,21 +2291,18 @@
                         borderColor: '#dddddd',
                         borderWidth: 1,
                         formatter: function (params) {
-                            return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
-                                '<span>' + params[0].name + '</span>' +
-                                // '<span>' + '数量' + '</span>' +
-                                '</p>' + '<br/>' +
-                                '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; ">' +
-                                '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' + params[0].seriesName + '</span>' + params[0].data + '</p>'
+                            return '<p class="echarts_tooltip_title"><span>' + params[0].name + '</span></p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params[0].seriesName + '</span>' + params[0].data + '</p>'
 
                         },
                     },
-
                     grid: {
+                        top: '10%',
                         left: '3%',
                         right: '4%',
-                        bottom: '3%',
-                        x: 100,     //控制x轴文字与底部的距离
+                        bottom: '2%',
+                        x: 10,     //控制x轴文字与底部的距离
                         y2: 200,    // y2可以控制倾斜的文字与最右边的距离，放置倾斜的文字超过显示区域
                         containLabel: true
                     },
@@ -2338,10 +2323,19 @@
                                 //坐标轴刻度标签
                                 margin: 7, //刻度标签与轴线之间的距离
                                 interval: 0,    //强制文字产生间隔
-                                rotate: 25,     //文字逆时针旋转25°
+                                // rotate: 25,     //文字逆时针旋转25°
                                 textStyle: {
                                     fontFamily: "DINPro-Regular",
                                     color: "#2C313C" //坐标轴刻度文字的颜色
+                                },
+                                formatter: function(val) {
+                                    let strs = val.split(''); //字符串数组
+                                    let str = ''
+                                    for(let i = 0, s; s = strs[i++];) { //遍历字符串数组
+                                        str += s;
+                                        if(!(i % 9)) str += '\n'; //按需要求余
+                                    }
+                                    return str
                                 }
                             },
                         }
@@ -2381,9 +2375,6 @@
                         }
                     ]
                 });
-                // window.addEventListener("resize", ()=> {
-                //     this.PropertyRankEchart.resize();
-                // });
             },
             /*  广告主排行  */
             // 时间选择
@@ -2475,15 +2466,13 @@
                         borderColor: '#dddddd',
                         borderWidth: 1,
                         formatter: function (params) {
-                            return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
-                                '<span>' + params[0].name + '</span>' +
-                                '</p>' + '<br/>' +
-                                '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; ">' +
-                                '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' + params[0].seriesName + '</span>' + params[0].data + '</p>'
-
+                            return '<p class="echarts_tooltip_title"><span>' + params[0].name + '</span></p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC;"></i>' + params[0].seriesName + '</span>' + params[0].data + '</p>'
                         },
                     },
                     grid: {
+                        top: '10%',
                         left: '3%',
                         right: '4%',
                         bottom: '3%',
@@ -2508,11 +2497,20 @@
                                 //坐标轴刻度标签
                                 margin: 7, //刻度标签与轴线之间的距离
                                 interval: 0,    //强制文字产生间隔
-                                rotate: 25,     //文字逆时针旋转45°
+                                // rotate: 25,     //文字逆时针旋转45°
                                 textStyle: {
                                     fontFamily: "DINPro-Regular",
                                     color: "#2C313C", //坐标轴刻度文字的颜色
-                                    // align: "center",
+                                    align: "center",
+                                },
+                                formatter: function(val) {
+                                    let strs = val.split(''); //字符串数组
+                                    let str = ''
+                                    for(let i = 0, s; s = strs[i++];) { //遍历字符串数组
+                                        str += s;
+                                        if(!(i % 9)) str += '\n'; //按需要求余
+                                    }
+                                    return str
                                 }
                             },
                         }
@@ -2629,16 +2627,14 @@
                         borderColor: '#dddddd',
                         borderWidth: 1,
                         formatter: function (params) {
-                            return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
-                                '<span>' + params[0].name + '</span>' +
-                                // '<span>' + '数量' + '</span>' +
-                                '</p>' + '<br/>' +
-                                '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; ">' +
-                                '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' + params[0].seriesName + '</span>' + params[0].data + '</p>'
-
+                            return '<p class="echarts_tooltip_title"><span>' + params[0].name + '</span></p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC;"></i>' +
+                                params[0].seriesName + '</span>' + params[0].data + '</p>'
                         },
                     },
                     grid: {
+                        top:'10%',
                         left: '3%',
                         right: '4%',
                         bottom: '3%',

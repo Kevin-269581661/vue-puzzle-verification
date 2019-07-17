@@ -788,55 +788,30 @@
                         this.isGetData = true
                     }
                 }
-                console.log('this.selectCity',this.selectCity,'this.oldSelectCity',this.oldSelectCity)
+                // console.log('this.selectCity',this.selectCity,'this.oldSelectCity',this.oldSelectCity)
             },
             activeName(newVal,oldVal){
-                console.log('指标查询newVal',newVal,'oldVal',oldVal)
+                console.log('指标查询activeName',newVal,'oldVal',oldVal)
                 this.activeName = newVal
                 // 关键数据总量/增量趋势 - 社区接口
                 if(this.activeName === 'third'){
                     if (!this.isGetData) {
                         // 统一调用接口
                         this.getIndexQueryData()
-                        this.isGetData = true
                     } else {
                         // 总量/增量 - 社区
-                        if (this.CountOfTotalDataShow.numData.length && this.CountOfIncreDataShow.AddData.length) {
-                            this.keyDataLine()
-                            this.keyDataBar()
-                        } else {
-                            this.getAllResData('allAndAdd')
-                        }
-                        // 行业订单总总量趋势 - 接口
-                        if (this.totalOrderDataShow.length) {
-                            this.busOrderLine()
-                        } else {
-                            this.getIOrderData(1)
-                        }
+                        this.keyDataLine()
+                        this.keyDataBar()
+                        // 行业订单总总量趋势
+                        this.busOrderLine()
                         // 行业订单占比
-                        if (this.IOrderDataShow[0].data.length) {
-                            this.allOrderPie()
-                        } else {
-                            this.getIOrderTotalData()
-                        }
+                        this.allOrderPie()
                         // 入驻物业排行
-                        if (this.ResPMCShowData.length) {
-                            this.PropertyRank()
-                        } else {
-                            this.getResPMCRankData()
-                        }
+                        this.PropertyRank()
                         // 广告主排行
-                        if (this.AdOwnerShowData.length) {
-                            this.adOwnerRank()
-                        } else {
-                            this.getAdOwnerData()
-                        }
+                        this.adOwnerRank()
                         // 销售业绩排行
-                        if (this.salesRankShowData.length) {
-                            this.salesRank()
-                        } else {
-                            this.getSalesRankData()
-                        }
+                        this.salesRank()
                     }
                 }
             }
@@ -884,9 +859,11 @@
             },
             // 统一调用接口
             getIndexQueryData(){
+                this.initActiveData()
                 // 总量/增量 - 社区
                 this.getAllResData('allAndAdd')
                 // 行业订单总总量趋势 - 接口
+                this.initIOrderData()
                 this.getIOrderData(1)
                 // 行业订单占比
                 this.getIOrderTotalData()
@@ -897,6 +874,23 @@
                 // 销售业绩排行
                 this.getSalesRankData()
                 this.oldSelectCity = this.selectCity
+                this.isGetData = true
+            },
+            initActiveData(){
+                // 总量/增量
+                this.allkeydatakind = '社区数'
+                this.addkeyDataKind = '社区数'
+                // 行业订单总总量趋势
+                this.selectIndustry = [1]
+                this.TOrderTitleRadio = '订单金额'
+                // 行业订单占比
+                this.orderScale = '订单金额'
+                // 入驻物业排行
+                this.PMCDataTitle = '社区数量'
+                // 广告主排行
+                this.adOwnerDataTitle = '订单金额'
+                // 销售业绩排行
+                this.salesDataTitle = '销售金额'
             },
             // 关键数据总量趋势 - Radio
             keydataRadio(val,temp){
@@ -1019,10 +1013,7 @@
                     case 'TOrder':
                         // 行业订单
                         this.TOrderDate = [starTime.substring(0,7),endTime.substring(0,7)]
-                        this.totalOrderPrice = []                //  订单金额
-                        this.totalOrderNumber = []               //  订单数量
-                        this.totalOrderAdOwner = []              //  广告主数
-                        this.totalOrderTitleShow = []
+                        this.initIOrderData()
                         for(let key of this.selectIndustry){
                             this.getIOrderData(key)
                         }
@@ -1784,6 +1775,12 @@
             },
 
             /*行业订单总量趋势*/
+            initIOrderData(){
+                this.totalOrderTitleShow = []
+                this.totalOrderPrice = []                        //  订单金额
+                this.totalOrderNumber = []                       //  订单数量
+                this.totalOrderAdOwner = []                      //  广告主数
+            },
             // 行业订单总量趋势 - 行业选择
             IOrderChange(){
                 if(this.selectIndustry.length > 0){
@@ -1883,8 +1880,9 @@
                     }
                     this.TOrderTime = '其它'
                     // console.log('行业订单总量趋势 - 选择月份',this.card5Industry)
-                    for(let i=0;i<this.selectIndustry.length;i++){
-                        this.getIOrderData(this.selectIndustry[i],'change')
+                    this.initIOrderData()
+                    for (let i = 0; i < this.selectIndustry.length; i++) {
+                        this.getIOrderData(this.selectIndustry[i])
                     }
 
                 }
@@ -1902,13 +1900,7 @@
                 this.busOrderLine()
             },
             // 行业订单总量趋势 - 接口
-            getIOrderData(val,String){
-                if(String === 'change'){
-                    this.totalOrderTitleShow = []
-                    this.totalOrderPrice = []                        //  订单金额
-                    this.totalOrderNumber = []                       //  订单数量
-                    this.totalOrderAdOwner = []                      //  广告主
-                }
+            getIOrderData(val){
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
@@ -1948,7 +1940,8 @@
                             this.totalOrderPrice.push(orderPrice)                         //  订单金额
                             this.totalOrderNumber.push(orderNumber)                       //  订单数量
                             this.totalOrderAdOwner.push(orderAdOwner)                     //  广告主数
-                            this.totalOrderDataShow = this.totalOrderPrice.concat()      //  折线数据
+                            this.totleOrderRadio(this.TOrderTitleRadio)
+                            // this.totalOrderDataShow = this.totalOrderPrice.concat()       //  折线数据
                             this.totalOrderTitleShow.push(orderPrice.name)                //  折线标题
                             console.log('行业订单总量趋势', this.totalOrderPrice, this.totalOrderNumber, this.totalOrderAdOwner)
                             this.totalOrderDate = orderMonths
@@ -2289,6 +2282,7 @@
                             } else if (this.PMCDataTitle === '点位数量') {
                                 this.ResPMCShowData = this.ResPMCMCount
                             }
+                            this.isHavePropertyRankData = true
                             this.PropertyRank()
                         } else {
                             this.isHavePropertyRankData = false
@@ -2299,108 +2293,110 @@
             },
             // 入驻物业排行 - 柱状图
             PropertyRank() {
-                if(this.PropertyRankEchart){
-                    this.PropertyRankEchart.dispose()
-                }
-                this.PropertyRankEchart = this.$echarts.init(this.$refs.PropertyRank);
-                this.PropertyRankEchart.setOption({
-                    tooltip: {
-                        trigger: 'axis',
-                        axisPointer: {            // 坐标轴指示器，坐标轴触发有效
-                            type: 'shadow',        // 默认为直线，可选为：'line' | 'shadow'
-                            shadowStyle: {
-                                shadowColor: '#f5f5f5'
-                            }
-                        },
-                        backgroundColor: '#FFFFFF',
-                        padding: 0,
-                        borderColor: '#dddddd',
-                        borderWidth: 1,
-                        formatter: function (params) {
-                            return '<p class="echarts_tooltip_title"><span>' + params[0].name + '</span></p>' + '<br/>' +
-                                '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params[0].seriesName + '</span>' + params[0].data + '</p>'
+                if (this.ResPMCShowData.length) {
+                    if (this.PropertyRankEchart) {
+                        this.PropertyRankEchart.dispose()
+                    }
+                    this.PropertyRankEchart = this.$echarts.init(this.$refs.PropertyRank);
+                    this.PropertyRankEchart.setOption({
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                                type: 'shadow',        // 默认为直线，可选为：'line' | 'shadow'
+                                shadowStyle: {
+                                    shadowColor: '#f5f5f5'
+                                }
+                            },
+                            backgroundColor: '#FFFFFF',
+                            padding: 0,
+                            borderColor: '#dddddd',
+                            borderWidth: 1,
+                            formatter: function (params) {
+                                return '<p class="echarts_tooltip_title"><span>' + params[0].name + '</span></p>' + '<br/>' +
+                                    '<p class="echarts_tooltip_content">' +
+                                    '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params[0].seriesName + '</span>' + params[0].data + '</p>'
 
+                            },
                         },
-                    },
-                    grid: {
-                        top: '10%',
-                        left: '3%',
-                        right: '4%',
-                        bottom: '2%',
-                        x: 10,     //控制x轴文字与底部的距离
-                        y2: 200,    // y2可以控制倾斜的文字与最右边的距离，放置倾斜的文字超过显示区域
-                        containLabel: true
-                    },
-                    xAxis: [
-                        {
-                            type: 'category',
-                            data: this.ResPMCName,
-                            axisTick: {
-                                alignWithLabel: true
-                            },
-                            axisLine: {
-                                //坐标轴线条相关设置(颜色等)
-                                lineStyle: {
-                                    color: "#E8E8E8"
-                                }
-                            },
-                            axisLabel: {
-                                //坐标轴刻度标签
-                                margin: 7, //刻度标签与轴线之间的距离
-                                interval: 0,    //强制文字产生间隔
-                                // rotate: 25,     //文字逆时针旋转25°
-                                textStyle: {
-                                    fontFamily: "DINPro-Regular",
-                                    color: "#2C313C" //坐标轴刻度文字的颜色
+                        grid: {
+                            top: '10%',
+                            left: '3%',
+                            right: '4%',
+                            bottom: '2%',
+                            x: 10,     //控制x轴文字与底部的距离
+                            y2: 200,    // y2可以控制倾斜的文字与最右边的距离，放置倾斜的文字超过显示区域
+                            containLabel: true
+                        },
+                        xAxis: [
+                            {
+                                type: 'category',
+                                data: this.ResPMCName,
+                                axisTick: {
+                                    alignWithLabel: true
                                 },
-                                formatter: function(val) {
-                                    let strs = val.split(''); //字符串数组
-                                    let str = ''
-                                    for(let i = 0, s; s = strs[i++];) { //遍历字符串数组
-                                        str += s;
-                                        if(!(i % 9)) str += '\n'; //按需要求余
+                                axisLine: {
+                                    //坐标轴线条相关设置(颜色等)
+                                    lineStyle: {
+                                        color: "#E8E8E8"
                                     }
-                                    return str
-                                }
-                            },
-                        }
-                    ],
-                    yAxis: [
-                        {
-                            type: 'value',
-                            axisLine: {
-                                //坐标轴线条相关设置(颜色等)
-                                lineStyle: {
-                                    color: "#E8E8E8"
-                                }
-                            },
-                            axisLabel: {
-                                //坐标轴刻度标签
-                                margin: 7, //刻度标签与轴线之间的距离
-                                textStyle: {
-                                    fontFamily: "DINPro-Regular",
-                                    color: "#2C313C" //坐标轴刻度文字的颜色
-                                }
-                            },
-                            splitLine: {
-                                lineStyle: {
-                                    color: "#E8E8E8",
-                                    type: "dashed"
+                                },
+                                axisLabel: {
+                                    //坐标轴刻度标签
+                                    margin: 7, //刻度标签与轴线之间的距离
+                                    interval: 0,    //强制文字产生间隔
+                                    // rotate: 25,     //文字逆时针旋转25°
+                                    textStyle: {
+                                        fontFamily: "DINPro-Regular",
+                                        color: "#2C313C" //坐标轴刻度文字的颜色
+                                    },
+                                    formatter: function(val) {
+                                        let strs = val.split(''); //字符串数组
+                                        let str = ''
+                                        for(let i = 0, s; s = strs[i++];) { //遍历字符串数组
+                                            str += s;
+                                            if(!(i % 9)) str += '\n'; //按需要求余
+                                        }
+                                        return str
+                                    }
+                                },
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value',
+                                axisLine: {
+                                    //坐标轴线条相关设置(颜色等)
+                                    lineStyle: {
+                                        color: "#E8E8E8"
+                                    }
+                                },
+                                axisLabel: {
+                                    //坐标轴刻度标签
+                                    margin: 7, //刻度标签与轴线之间的距离
+                                    textStyle: {
+                                        fontFamily: "DINPro-Regular",
+                                        color: "#2C313C" //坐标轴刻度文字的颜色
+                                    }
+                                },
+                                splitLine: {
+                                    lineStyle: {
+                                        color: "#E8E8E8",
+                                        type: "dashed"
+                                    }
                                 }
                             }
-                        }
-                    ],
-                    series: [
-                        {
-                            color: '#4AA6FC',
-                            name: this.PMCDataTitle === '社区数量'? '小区数' : '点位数',
-                            type: 'bar',
-                            barWidth: '15%',
-                            data: this.ResPMCShowData
-                        }
-                    ]
-                });
+                        ],
+                        series: [
+                            {
+                                color: '#4AA6FC',
+                                name: this.PMCDataTitle === '社区数量'? '小区数' : '点位数',
+                                type: 'bar',
+                                barWidth: '15%',
+                                data: this.ResPMCShowData
+                            }
+                        ]
+                    });
+                }
             },
             /*  广告主排行  */
             // 时间选择
@@ -2468,6 +2464,7 @@
                             } else if (this.salesDataTitle === '订单数量') {
                                 this.AdOwnerShowData = this.AdOwnerApCount
                             }
+                            this.isHaveAdOwnerRank = true
                             this.adOwnerRank()
                         } else {
                             this.isHaveAdOwnerRank = false
@@ -2478,105 +2475,110 @@
             },
             // 广告主排行 柱状图
             adOwnerRank() {
-                this.adOwnerRankEcharts = this.$echarts.init(this.$refs.adOwnerRank);
-                this.adOwnerRankEcharts.setOption({
-                    tooltip: {
-                        trigger: 'axis',
-                        axisPointer: {             // 坐标轴指示器，坐标轴触发有效
-                            type: 'shadow',        // 默认为直线，可选为：'line' | 'shadow'
-                            shadowStyle: {
-                                shadowColor: '#f5f5f5'
-                            }
-                        },
-                        backgroundColor: '#FFFFFF',
-                        padding: 0,
-                        borderColor: '#dddddd',
-                        borderWidth: 1,
-                        formatter: function (params) {
-                            return '<p class="echarts_tooltip_title"><span>' + params[0].name + '</span></p>' + '<br/>' +
-                                '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC;"></i>' + params[0].seriesName + '</span>' + params[0].data + '</p>'
-                        },
-                    },
-                    grid: {
-                        top: '10%',
-                        left: '3%',
-                        right: '4%',
-                        bottom: '3%',
-                        x: 100,     //控制x轴文字与底部的距离
-                        y2: 200,    // y2可以控制倾斜的文字与最右边的距离，放置倾斜的文字超过显示区域
-                        containLabel: true
-                    },
-                    xAxis: [
-                        {
-                            type: 'category',
-                            data: this.AdOwnerName,
-                            axisTick: {
-                                alignWithLabel: true
-                            },
-                            axisLine: {
-                                //坐标轴线条相关设置(颜色等)
-                                lineStyle: {
-                                    color: "#E8E8E8"
+                if(this.AdOwnerShowData.length){
+                    if(this.adOwnerRankEcharts){
+                        this.adOwnerRankEcharts.dispose()
+                    }
+                    this.adOwnerRankEcharts = this.$echarts.init(this.$refs.adOwnerRank);
+                    this.adOwnerRankEcharts.setOption({
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {             // 坐标轴指示器，坐标轴触发有效
+                                type: 'shadow',        // 默认为直线，可选为：'line' | 'shadow'
+                                shadowStyle: {
+                                    shadowColor: '#f5f5f5'
                                 }
                             },
-                            axisLabel: {
-                                //坐标轴刻度标签
-                                margin: 7, //刻度标签与轴线之间的距离
-                                interval: 0,    //强制文字产生间隔
-                                // rotate: 25,     //文字逆时针旋转45°
-                                textStyle: {
-                                    fontFamily: "DINPro-Regular",
-                                    color: "#2C313C", //坐标轴刻度文字的颜色
-                                    align: "center",
+                            backgroundColor: '#FFFFFF',
+                            padding: 0,
+                            borderColor: '#dddddd',
+                            borderWidth: 1,
+                            formatter: function (params) {
+                                return '<p class="echarts_tooltip_title"><span>' + params[0].name + '</span></p>' + '<br/>' +
+                                    '<p class="echarts_tooltip_content">' +
+                                    '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC;"></i>' + params[0].seriesName + '</span>' + params[0].data + '</p>'
+                            },
+                        },
+                        grid: {
+                            top: '10%',
+                            left: '3%',
+                            right: '4%',
+                            bottom: '3%',
+                            x: 100,     //控制x轴文字与底部的距离
+                            y2: 200,    // y2可以控制倾斜的文字与最右边的距离，放置倾斜的文字超过显示区域
+                            containLabel: true
+                        },
+                        xAxis: [
+                            {
+                                type: 'category',
+                                data: this.AdOwnerName,
+                                axisTick: {
+                                    alignWithLabel: true
                                 },
-                                formatter: function(val) {
-                                    let strs = val.split(''); //字符串数组
-                                    let str = ''
-                                    for(let i = 0, s; s = strs[i++];) { //遍历字符串数组
-                                        str += s;
-                                        if(!(i % 9)) str += '\n'; //按需要求余
+                                axisLine: {
+                                    //坐标轴线条相关设置(颜色等)
+                                    lineStyle: {
+                                        color: "#E8E8E8"
                                     }
-                                    return str
-                                }
-                            },
-                        }
-                    ],
-                    yAxis: [
-                        {
-                            type: 'value',
-                            axisLine: {
-                                //坐标轴线条相关设置(颜色等)
-                                lineStyle: {
-                                    color: "#E8E8E8"
-                                }
-                            },
-                            axisLabel: {
-                                //坐标轴刻度标签
-                                margin: 7, //刻度标签与轴线之间的距离
-                                textStyle: {
-                                    fontFamily: "DINPro-Regular",
-                                    color: "#2C313C" //坐标轴刻度文字的颜色
-                                }
-                            },
-                            splitLine: {
-                                lineStyle: {
-                                    color: "#E8E8E8",
-                                    type: "dashed"
+                                },
+                                axisLabel: {
+                                    //坐标轴刻度标签
+                                    margin: 7, //刻度标签与轴线之间的距离
+                                    interval: 0,    //强制文字产生间隔
+                                    // rotate: 25,     //文字逆时针旋转45°
+                                    textStyle: {
+                                        fontFamily: "DINPro-Regular",
+                                        color: "#2C313C", //坐标轴刻度文字的颜色
+                                        align: "center",
+                                    },
+                                    formatter: function(val) {
+                                        let strs = val.split(''); //字符串数组
+                                        let str = ''
+                                        for(let i = 0, s; s = strs[i++];) { //遍历字符串数组
+                                            str += s;
+                                            if(!(i % 9)) str += '\n'; //按需要求余
+                                        }
+                                        return str
+                                    }
+                                },
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value',
+                                axisLine: {
+                                    //坐标轴线条相关设置(颜色等)
+                                    lineStyle: {
+                                        color: "#E8E8E8"
+                                    }
+                                },
+                                axisLabel: {
+                                    //坐标轴刻度标签
+                                    margin: 7, //刻度标签与轴线之间的距离
+                                    textStyle: {
+                                        fontFamily: "DINPro-Regular",
+                                        color: "#2C313C" //坐标轴刻度文字的颜色
+                                    }
+                                },
+                                splitLine: {
+                                    lineStyle: {
+                                        color: "#E8E8E8",
+                                        type: "dashed"
+                                    }
                                 }
                             }
-                        }
-                    ],
-                    series: [
-                        {
-                            color: '#4AA6FC',
-                            name: this.adOwnerDataTitle,
-                            type: 'bar',
-                            barWidth: '15%',
-                            data: this.AdOwnerShowData
-                        }
-                    ]
-                });
+                        ],
+                        series: [
+                            {
+                                color: '#4AA6FC',
+                                name: this.adOwnerDataTitle,
+                                type: 'bar',
+                                barWidth: '15%',
+                                data: this.AdOwnerShowData
+                            }
+                        ]
+                    });
+                }
             },
 
             /*  销售业绩排行  */
@@ -2630,6 +2632,7 @@
                             } else if (this.salesDataTitle === '销售单数') {
                                 this.salesRankShowData = this.salesRankApCount
                             }
+                            this.isHaveSalesRank = true
                             this.salesRank()
                         } else {
                             this.isHaveSalesRank = false
@@ -2640,93 +2643,110 @@
             },
             // 销售业绩排行 柱状图
             salesRank() {
-                this.salesRankEcharts = this.$echarts.init(this.$refs.salesRank);
-                this.salesRankEcharts.setOption({
-                    tooltip: {
-                        trigger: 'axis',
-                        axisPointer: {            // 坐标轴指示器，坐标轴触发有效
-                            type: 'shadow',        // 默认为直线，可选为：'line' | 'shadow'
-                            shadowStyle: {
-                                shadowColor: '#f5f5f5'
-                            }
+                console.log('this.isHaveSalesRank',this.isHaveSalesRank)
+                if(this.salesRankShowData.length){
+                    if(this.salesRankEcharts){
+                        this.salesRankEcharts.dispose()
+                    }
+                    this.salesRankEcharts = this.$echarts.init(this.$refs.salesRank);
+                    this.salesRankEcharts.setOption({
+                        noDataLoadingOption: {
+                            text: '暂无数据',
+                            effect: 'bubble',
+                            effectOption:
+                                {
+                                    effect:
+                                        {
+                                            n: 0
+                                        }
+                                }
                         },
-                        backgroundColor: '#FFFFFF',
-                        padding: 0,
-                        borderColor: '#dddddd',
-                        borderWidth: 1,
-                        formatter: function (params) {
-                            return '<p class="echarts_tooltip_title"><span>' + params[0].name + '</span></p>' + '<br/>' +
-                                '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC;"></i>' +
-                                params[0].seriesName + '</span>' + params[0].data + '</p>'
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                                type: 'shadow',        // 默认为直线，可选为：'line' | 'shadow'
+                                shadowStyle: {
+                                    shadowColor: '#f5f5f5'
+                                }
+                            },
+                            backgroundColor: '#FFFFFF',
+                            padding: 0,
+                            borderColor: '#dddddd',
+                            borderWidth: 1,
+                            formatter: function (params) {
+                                return '<p class="echarts_tooltip_title"><span>' + params[0].name + '</span></p>' + '<br/>' +
+                                    '<p class="echarts_tooltip_content">' +
+                                    '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC;"></i>' +
+                                    params[0].seriesName + '</span>' + params[0].data + '</p>'
+                            },
                         },
-                    },
-                    grid: {
-                        top:'10%',
-                        left: '3%',
-                        right: '4%',
-                        bottom: '3%',
-                        containLabel: true
-                    },
-                    xAxis: [
-                        {
-                            type: 'category',
-                            data: this.salesRankName,
-                            axisTick: {
-                                alignWithLabel: true
-                            },
-                            axisLine: {
-                                //坐标轴线条相关设置(颜色等)
-                                lineStyle: {
-                                    color: "#E8E8E8"
-                                }
-                            },
-                            axisLabel: {
-                                //坐标轴刻度标签
-                                margin: 7, //刻度标签与轴线之间的距离
-                                interval: 0,    //强制文字产生间隔
-                                textStyle: {
-                                    fontFamily: "DINPro-Regular",
-                                    color: "#2C313C" //坐标轴刻度文字的颜色
-                                }
-                            }
-                        }
-                    ],
-                    yAxis: [
-                        {
-                            type: 'value',
-                            axisLine: {
-                                //坐标轴线条相关设置(颜色等)
-                                lineStyle: {
-                                    color: "#E8E8E8"
-                                }
-                            },
-                            axisLabel: {
-                                //坐标轴刻度标签
-                                margin: 7, //刻度标签与轴线之间的距离
-                                textStyle: {
-                                    fontFamily: "DINPro-Regular",
-                                    color: "#2C313C" //坐标轴刻度文字的颜色
-                                }
-                            },
-                            splitLine: {
-                                lineStyle: {
-                                    color: "#E8E8E8",
-                                    type: "dashed"
+                        grid: {
+                            top:'10%',
+                            left: '3%',
+                            right: '4%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        xAxis: [
+                            {
+                                type: 'category',
+                                data: this.salesRankName,
+                                axisTick: {
+                                    alignWithLabel: true
+                                },
+                                axisLine: {
+                                    //坐标轴线条相关设置(颜色等)
+                                    lineStyle: {
+                                        color: "#E8E8E8"
+                                    }
+                                },
+                                axisLabel: {
+                                    //坐标轴刻度标签
+                                    margin: 7, //刻度标签与轴线之间的距离
+                                    interval: 0,    //强制文字产生间隔
+                                    textStyle: {
+                                        fontFamily: "DINPro-Regular",
+                                        color: "#2C313C" //坐标轴刻度文字的颜色
+                                    }
                                 }
                             }
-                        }
-                    ],
-                    series: [
-                        {
-                            color: '#4AA6FC',
-                            name: this.salesDataTitle,//或销售单数
-                            type: 'bar',
-                            barWidth: '15%',
-                            data: this.salesRankShowData //[8000, 7502, 6650, 5134, 4390, 3330, 2220, 1111, 999]
-                        }
-                    ],
-                });
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value',
+                                axisLine: {
+                                    //坐标轴线条相关设置(颜色等)
+                                    lineStyle: {
+                                        color: "#E8E8E8"
+                                    }
+                                },
+                                axisLabel: {
+                                    //坐标轴刻度标签
+                                    margin: 7, //刻度标签与轴线之间的距离
+                                    textStyle: {
+                                        fontFamily: "DINPro-Regular",
+                                        color: "#2C313C" //坐标轴刻度文字的颜色
+                                    }
+                                },
+                                splitLine: {
+                                    lineStyle: {
+                                        color: "#E8E8E8",
+                                        type: "dashed"
+                                    }
+                                }
+                            }
+                        ],
+                        series: [
+                            {
+                                color: '#4AA6FC',
+                                name: this.salesDataTitle,//或销售单数
+                                type: 'bar',
+                                barWidth: '15%',
+                                data: this.salesRankShowData //[8000, 7502, 6650, 5134, 4390, 3330, 2220, 1111, 999]
+                            }
+                        ],
+                    });
+                }
             },
 
             /*  公用方法  */

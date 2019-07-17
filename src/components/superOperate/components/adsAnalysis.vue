@@ -4,7 +4,7 @@
             <el-card class="box-card" shadow="never">
                 <div slot="header" class="clearfix" style="position: relative">
                     <span class="box_card_title">点位使用概况</span>
-                    <div class="data_tab header-select">
+                    <div class="data_tab header_select">
                         <el-select v-model="pointSelect" placeholder="请选择" size="mini" @change="adsSelectDate">
                             <el-option value="自然天"></el-option>
                             <el-option value="自然月"></el-option>
@@ -489,17 +489,23 @@
             },
             selectCity(newVal, oldVal) {
                 this.selectCity = newVal
+                this.pointSelect = '自然天'
+                this.pointDate = this.pointDateDay.concat()
+                if (this.activeName === 'fifth') {
+                    this.getAdsAnalysisData()
+                } else {
+                    this.adsRateList = []
+                    this.resRateList = []
+                }
             },
             activeName(newVal,oldVal){
                 this.activeName = newVal
                 // 关键数据总量/增量趋势 - 社区接口
                 if (this.activeName === 'fifth') {
                     if (!this.adsRateList.length || !this.resRateList.length) {
-                        this.GetUserAdsInfo('自然天')
-                        this.getResRateFun()
-                        this.getAdsRateFun()
+                        this.getAdsAnalysisData()
                     } else {
-                        console.log('已获取过数据  ')
+                        console.log('已获取过数据')
                     }
                 }
             }
@@ -519,9 +525,6 @@
         },
         mounted(){
             this.setTime()
-            // this.GetUserAdsInfo('自然天')
-            // this.getResRateFun()
-            // this.getAdsRateFun()
         },
         methods:{
             // 设置初始时间
@@ -529,8 +532,15 @@
                 let starTime = timeFormat.returnMonthCount(5,'-')
                 let endTime = timeFormat.returnMonthCount(0,'-')
                 this.pointDate = [starTime,endTime]               // 点位使用概况
+                this.pointDateDay = this.pointDate.concat()
                 this.resSearchDate = [starTime,endTime]          // 社区上刊率列表
                 this.adsSearchDate = [starTime,endTime]           // 点位上刊率列表
+            },
+            // 统一调用接口
+            getAdsAnalysisData(){
+                this.GetUserAdsInfo('自然天')
+                this.getResRateFun()
+                this.getAdsRateFun()
             },
             // 点位使用概况 - 日期选择
             adsChangeDate(){
@@ -1025,13 +1035,13 @@
         color:rgba(44,49,60,1);
     }
 
-    .header-select {
+    .header_select {
         position: absolute;
         right: 0;
         top: 0;
     }
 
-    .header-select /deep/ .el-input__inner{
+    .header_select /deep/ .el-input__inner{
         width: 90px;
     }
 
@@ -1039,8 +1049,17 @@
         display: inline-block;
     }
 
+    .date_picker_month_box{
+        font-size: 12px;
+        color: #666;
+    }
+
     .date_picker_box /deep/ .el-range-editor--mini.el-input__inner{
         width: 225px;
+    }
+
+    .date_picker_month_box /deep/ .el-date-editor.el-input{
+        width: 110px;
     }
 
     .date_picker_month_box /deep/ .el-input__inner{

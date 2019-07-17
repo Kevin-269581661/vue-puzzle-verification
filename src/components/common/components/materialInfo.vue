@@ -58,7 +58,7 @@ export default {
                 </el-table-column>
                 <el-table-column prop="photoFormat" label="文件格式" min-width="17.6%">
                 </el-table-column>
-                <el-table-column prop="pointNum" label="点位面数" min-width="12.7%">
+                <el-table-column prop="pointNum" label="点位面数" min-width="12.7%" align="right">
                 </el-table-column>
             </el-table>
 
@@ -78,7 +78,7 @@ export default {
                 </el-table-column>
                 <el-table-column prop="photoFormat" label="文件格式" min-width="17.6%">
                 </el-table-column>
-                <el-table-column prop="pointNum" label="点位面数" min-width="12.7%">
+                <el-table-column prop="pointNum" label="点位面数" min-width="12.7%" align="right">
                 </el-table-column>
             </el-table>
         </div>

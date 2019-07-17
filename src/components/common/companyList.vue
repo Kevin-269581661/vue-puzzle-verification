@@ -29,8 +29,8 @@
                     </el-col>
                     <el-col :span="6">
                         <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">查询</el-button>
-                        <el-button @click="reset()">重置</el-button>
-                        <el-button @click="newCom()" v-if="showNewBtn">新建</el-button>
+                        <el-button plain @click="reset()">重置</el-button>
+                        <el-button plain @click="newCom()" v-if="showNewBtn">新建</el-button>
                     </el-col>
 				</el-row>
                 <div class="table_wrap">
@@ -99,7 +99,7 @@
                 </el-select>
             </p>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="isShowNew = false">取 消</el-button>
+                <el-button plain @click="isShowNew = false">取 消</el-button>
                 <el-button type="primary" @click="handleCompany()">确 定</el-button>
             </span>
         </el-dialog>

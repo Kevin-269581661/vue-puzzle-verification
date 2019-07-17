@@ -35,7 +35,7 @@
                             <el-option label="未预锁" value="1"></el-option>
                         </el-select>
                         <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
-                        <el-button @click="reset()" :disabled="!isReset">重置</el-button>
+                        <el-button plain @click="reset()" :disabled="!isReset">重置</el-button>
                     </el-col>
                 </el-row>
                 <el-row v-if="showNewBtn || !isNation" >
@@ -145,7 +145,7 @@
                 <el-checkbox v-if="!isLock" :label="item.asrID" v-for="item of cityList" :key="item.rid" border :disabled="item.RemainDay==undefined || item.RemainDay==null" size="mini">{{item.asName}}</el-checkbox>
             </el-checkbox-group>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="cancelLock">取 消</el-button>
+                <el-button plain @click="cancelLock">取 消</el-button>
                 <el-button type="primary" @click="confirmLock">确 定</el-button>
             </span>
         </el-dialog>
@@ -176,7 +176,7 @@
                 </ul>
             </div>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="cancelEdit">放 弃</el-button>
+                <el-button plain @click="cancelEdit">放 弃</el-button>
                 <el-button type="primary" @click="continueEdit">继续编辑</el-button>
             </span>
         </el-dialog>
@@ -374,7 +374,7 @@ export default {
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{
-                        Message.warning(res.data.MSG);
+                        this.messageFun('warning', res.data.MSG);
                     }
                 }).catch(err =>{
                     console.log(err);
@@ -395,7 +395,7 @@ export default {
                     }else if(res.data.SysCode == 100302){
                         this.loginTimeout();
                     }else{
-                        Message.warning(res.data.MSG);
+                        this.messageFun('warning', res.data.MSG);
                     }
                 }).catch(err =>{
                     console.log(err);
@@ -416,10 +416,10 @@ export default {
                         this.currentPlan = this.funcData(dataArr);
                         this.loading = false;
                         if(dataInfo.totalpage == 0){
-                            Message.warning('暂无数据');
+                            this.messageFun('warning', '暂无数据');
                         }
                     }else{
-                        Message.warning(res.data.MSG);
+                        this.messageFun('warning', res.data.MSG);
                     }
                 }
             });
@@ -467,7 +467,7 @@ export default {
                 } else if (res.data.SysCode == 100302) {
                     this.loginTimeout();
                 } else {
-                    Message.warning(res.data.MSG);
+                    this.messageFun('warning', res.data.MSG);
                 }
             });
         },
@@ -659,11 +659,11 @@ export default {
                         } else if(res.data.SysCode == 100302){
                             this.loginTimeout();
                         } else {
-                            Message.warning(res.data.MSG);
+                            this.messageFun('warning', res.data.MSG);
                         }
                     })
             }else{
-                Message.warning('您没有权限发布该方案');
+                this.messageFun('warning', '您没有权限发布该方案');
             }
         },
         // 保存合同编号
@@ -690,13 +690,13 @@ export default {
                                 if(!res.data.IsLock){
                                     this.releaseFun();
                                 }else{
-                                    Message.warning("该方案被预锁,请先解除预锁");
+                                    this.messageFun('warning', "该方案被预锁,请先解除预锁");
                                     this.Ctrlloading.close();
                                 }
                             }
                         });
                     }else{
-                        Message.warning(res.data.MSG);
+                        this.messageFun('warning', res.data.MSG);
                         this.Ctrlloading.close();
                     }
                 })
@@ -720,7 +720,7 @@ export default {
             api.postApi(this.apiVar.Advertisement+'/SetFangan', info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 300200){
-                    Message.success(res.data.MSG);
+                    this.messageFun('success', res.data.MSG);
                     for (let data of this.currentPlan) {
                         if (data.apID == this.currentItem.apID) {
                             this.$set(data, "apState", 2);
@@ -734,10 +734,10 @@ export default {
                         // 存在点位被占，是否立即去方案详情修改？
                         this.changeRoute();
                     }else{
-                        Message.warning(res.data.MSG);
+                        this.messageFun('warning', res.data.MSG);
                     }
                 }else{
-                    Message.warning(res.data.MSG);
+                    this.messageFun('warning', res.data.MSG);
                 }
                 this.Ctrlloading.close();
             }).catch(res =>{
@@ -770,7 +770,7 @@ export default {
             let startObj = this.compareTime(row.cityArea, 'pdStar', 'pdEnd');
             let date = timeFormat.toDate(new Date(), '/');
             if(startObj.startTime<=date){
-                Message.warning('开始投放时间已经早于当前时间,请直接发布！');
+                this.messageFun('warning', '开始投放时间已经早于当前时间,请直接发布！');
                 return;
             }
             this.cityList = this.getCityList(row.cityArea);
@@ -779,7 +779,7 @@ export default {
                 this.isLock = true;
                 this.dialogVisible = true;
             }else{
-                Message.warning('方案权限城市内您没有可以预锁的城市');
+                this.messageFun('warning', '方案权限城市内您没有可以预锁的城市');
             }
         },
         // 获取权限城市内的城市,进行勾选
@@ -850,9 +850,9 @@ export default {
                 this.dialogVisible = false;
             }else{
                 if(this.isLock){
-                    Message.warning('请选择预锁公司！');
+                    this.messageFun('warning', '请选择预锁公司！');
                 }else{
-                    Message.warning('请选择解锁公司！');
+                    this.messageFun('warning', '请选择解锁公司！');
                 }
             }
         },
@@ -893,7 +893,7 @@ export default {
                         }
                     }
                     this.currentPlan.push();
-                    Message.success(res.data.MSG);
+                    this.messageFun('success', res.data.MSG);
 
                 }else if(res.data.SysCode == 100302){
                     this.loginTimeout();
@@ -902,10 +902,10 @@ export default {
                         // 存在点位被占，是否立即去方案详情修改？
                         this.changeRoute();
                     }else{
-                        Message.warning(res.data.MSG);
+                        this.messageFun('warning', res.data.MSG);
                     }
                 }else{
-                    Message.warning(res.data.MSG);
+                    this.messageFun('warning', res.data.MSG);
                 }
                 this.Ctrlloading.close();
             }).catch(err =>{
@@ -943,7 +943,7 @@ export default {
                     }
                     this.currentPlan.push();
                 }
-                Message.success(res.data.MSG);
+                this.messageFun('success', res.data.MSG);
             }).catch(err =>{
                 console.log(err);
                 this.Ctrlloading.close();
@@ -991,7 +991,7 @@ export default {
                 this.searchFun();
 
             }else{
-                Message.warning('请输入搜索条件');
+                this.messageFun('warning', '请输入搜索条件');
             }
         },
         searchFun(){
@@ -1080,8 +1080,16 @@ export default {
         },
         // 是否预锁搜索
         loginTimeout(){
-            Message.warning("登录超时,请重新登录");
+            this.messageFun('warning', "登录超时,请重新登录");
             this.$router.push("/login");
+        },
+        // 操作提示统一方法
+        messageFun(mesType, mes){
+            this.$message({
+                message: mes,
+                type: mesType,
+                showClose: true,
+            })
         },
         // 放弃继续编辑
         cancelEdit(){
@@ -1244,6 +1252,7 @@ a {
 }
 
 /deep/ .el-table td .cell{
+    padding: 2px 10px;
     height: auto;
     line-height: 28px;
 }

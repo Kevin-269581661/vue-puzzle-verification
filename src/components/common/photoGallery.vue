@@ -41,7 +41,7 @@
                             </el-row>
                             <el-row :gutter="32">
                                 <el-col :span="6">
-                                    <span>&nbsp;投 放 面：</span>
+                                    <span style="display: inline-block;width: 70px;text-align: right">投放面：</span>
                                     <el-select v-model="searchInfo.LabSelect" :clearable="true" placeholder="选择投放面" class="plan-select" size="small">
                                         <el-option label="A面" value="A"></el-option>
                                         <el-option label="B面" value="B"></el-option>
@@ -55,18 +55,18 @@
                                     </el-date-picker>
                                 </el-col>
                                 <el-col :span="6">
-                                    <span>&nbsp;上 下 刊：</span>
+                                    <span style="display: inline-block;width: 70px;text-align: right">上下刊：</span>
                                     <el-select v-model="searchInfo.publish" placeholder="请选择" class="plan-select" size="small">
                                         <el-option label="上刊" value="SK"></el-option>
                                         <el-option label="下刊" value="XK"></el-option>
                                     </el-select>
                                 </el-col>
                                 <el-col :span="6">
-                                    <el-button type="primary" size="small" icon="el-icon-search" class="searchBtn"
+                                    <el-button type="primary" icon="el-icon-search" class="searchBtn"
                                                @click="searchPic()" :disabled="!isSearch">搜索
                                     </el-button>
-                                    <el-button plain size="small" @click="reset()">重置</el-button>
-                                    <el-button plain size="small" @click="allDownLoad()" v-show="activeName == 'first'">一键导出</el-button>
+                                    <el-button plain @click="reset()" :disabled="!isSearch">重置</el-button>
+                                    <el-button plain @click="allDownLoad()" v-show="activeName == 'first'">一键导出</el-button>
                                 </el-col>
                             </el-row>
                         </div>
@@ -171,7 +171,7 @@
                 // 收藏夹load
                 secondBodyLoading: true,
                 // 是否搜索
-                isSearch: true,
+                isSearch: false,
                 // 是否显示收藏夹和行业图片
                 isShowAllTab: false,
                 // 登录信息
@@ -287,8 +287,7 @@
                         this.collectSelectInfo = JSON.parse(JSON.stringify(this.searchInfo))
                     }
                     this.searchInfo = JSON.parse(JSON.stringify(this.gallerySelectInfo))
-                    if (this.searchInfo.totalpageNum === 0) {
-                        this.pageUpImgArr = [];
+                    if (this.pageUpImgArr.length <= 0) {
                         let params = this.searchFormat();
                         this.getUpImgInfo(params)
                     } else {
@@ -451,9 +450,10 @@
                             Message.warning(res.data.MSG);
                         }
                         this.firstBodyLoading = false
-                    })
-                    .catch(res => {
+                        this.isSearch = true;
+                    }).catch(res => {
                         console.log(res);
+                        this.isSearch = true;
                     });
             },
             // 获取收藏夹图片列表
@@ -509,7 +509,11 @@
                         this.showPic = 1
                     }
                     this.secondBodyLoading = false
-                })
+                    this.isSearch = true;
+                }).catch(res => {
+                    console.log(res);
+                    this.isSearch = true;
+                });
             },
             // 保存或取消
             saveChange() {

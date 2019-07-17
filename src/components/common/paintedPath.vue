@@ -15,7 +15,7 @@
                     </li>
                     <li class="handel_ul_li handel_ul_li_btn">
                         <el-button type="primary" :disabled="searchBtnAbled" @click="searchFun">搜索</el-button>
-                        <el-button @click="clearSearch">重置</el-button>
+                        <el-button plain @click="clearSearch">重置</el-button>
 
                     </li>
                     <li class="handel_ul_li handel_ul_li_Newbtn" v-if="showCreateBtn">
@@ -49,6 +49,7 @@
                         <el-table-column
                             prop="pointCount"
                             label="覆盖点位"
+                            align="right"
                             min-width="14%">
                         </el-table-column>
                         <el-table-column
@@ -71,7 +72,7 @@
                 <div class="ad_pagination">
                     <el-pagination
                         background
-                        layout="total, prev, pager, next, sizes, jumper"
+                        layout="total, sizes, prev, pager, next, jumper"
                         @current-change="changePage"
                         @size-change="changeSize"
                         :page-sizes="[10, 20, 30, 40]"

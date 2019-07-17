@@ -230,6 +230,11 @@
                             </el-row>
                             <el-row :gutter="76" class="from_row">
                                 <el-col :span="6">
+                                    <el-form-item label="出入口数" prop="doorwayNum">
+                                        <el-input v-model="recForm.doorwayNum" controls-position="right" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
                                     <el-form-item label="车位数" prop="carNumber">
                                         <el-input v-model="recForm.carNumber" controls-position="right" placeholder=""></el-input>
                                     </el-form-item>
@@ -627,7 +632,7 @@
                 <div class="content_bottom_btn">
                     <el-button type="primary" class="create" :disabled="submitBtnIsAble"
                                @click="submitForm('recForm','mediaForm','roadGateForm')">{{PathHaveEdit?'保存':'创建'}}</el-button>
-                    <el-button class="cancel" @click="clearData">取消</el-button>
+                    <el-button plain class="cancel" @click="clearData">取消</el-button>
                 </div>
             </div>
         </div>
@@ -888,7 +893,7 @@
                     business: '',       // 所属商圈
                     resaddr: '',        // 资源地址
                     floorType: '',  // 楼盘类型
-                    doorwayNum: '1',   // 出入数
+                    doorwayNum: '',   // 出入数
                     buildingNum: '1',  // 楼栋数量
                     households: '1',   // 住户数量
                     peopleFlowrate: '',  //人流量
@@ -975,6 +980,9 @@
                     ],
                     pmc: [
                         {max: 40, message: '最多只能输入40个字符!', trigger: 'blur'}
+                    ],
+                    doorwayNum:[
+                        {validator: validatePrice, trigger: 'blur'},
                     ],
                     carNumber: [
                         {validator: validatePrice, trigger: 'blur'},
@@ -1119,6 +1127,7 @@
                     {label: '高端住宅', value: '高端住宅'},
                     {label: '普通住宅', value: '普通住宅'},
                     {label: '单体楼', value: '单体楼'},
+                    {label: '别墅', value: '别墅'},
                     {label: '洋房', value: '洋房'},
                     {label: '商住', value: '商住'},
                 ],
@@ -1131,6 +1140,7 @@
                     {label: '高端住宅', value: '高端住宅'},
                     {label: '普通住宅', value: '普通住宅'},
                     {label: '单体楼', value: '单体楼'},
+                    {label: '别墅', value: '别墅'},
                     {label: '洋房', value: '洋房'},
                     {label: '商住', value: '商住'},
                 ],

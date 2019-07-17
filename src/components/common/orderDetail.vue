@@ -22,7 +22,7 @@
                         <el-dialog title="修改合同编号" :visible.sync="changeCID" width="30%">
                             <el-input v-model="apQC"></el-input>
                             <span slot="footer" class="dialog-footer">
-                                <el-button @click="cancelChangeID">取 消</el-button>
+                                <el-button plain @click="cancelChangeID">取 消</el-button>
                                 <el-button type="primary" @click="confirmChangeID">确 定</el-button>
                             </span>
                         </el-dialog>
@@ -33,7 +33,7 @@
                             <el-dialog title="监播备注" :visible.sync="changeRemark" width="30%">
                                 <el-input type="textarea" v-model="remark" :rows="2"></el-input>
                                 <span slot="footer" class="dialog-footer">
-                                    <el-button @click="cancelChangeRemark">取 消</el-button>
+                                    <el-button plain @click="cancelChangeRemark">取 消</el-button>
                                     <el-button type="primary" @click="confirmChangeRemark">确 定</el-button>
                                 </span>
                             </el-dialog>
@@ -63,7 +63,7 @@
                                     </el-input>
                                     <el-button type="primary" icon="el-icon-search" @click="search()">搜索</el-button>
                                     <el-button type="primary" @click="showAddPointDialog" v-show="showHandel">添加点位</el-button>
-                                    <el-button type="default" icon="el-icon-download" @click="export2Excel(orderDetail.apName)" :disabled="isDown">导出</el-button>
+                                    <el-button plain type="default" icon="el-icon-download" @click="export2Excel(orderDetail.apName)" :disabled="isDown">导出</el-button>
                                 </el-col>
                             </el-row>
 
@@ -121,6 +121,9 @@
                                         </template>
                                     </el-table-column>
                                     <el-table-column prop="hNum" label="小区户数" min-width="7.3%" align="right">
+                                        <template slot-scope="scope">
+                                            <span>{{priceToFormat(scope.row.hNum)}}</span>
+                                        </template>
                                     </el-table-column>
                                     <el-table-column label="楼盘价格" min-width="7.3%" align="right">
                                         <template slot-scope="scope">
@@ -271,7 +274,7 @@
                                             <!--</el-checkbox>-->
                                         <!-- </div> -->
                                         <div class="up-report-bottom-btns">
-                                            <el-button @click="downloadImg('SK')" :loading="downLoading">导出图片</el-button>
+                                            <el-button plain @click="downloadImg('SK')" :loading="downLoading">导出图片</el-button>
                                             <el-button type="primary" @click="submitUpload('SK')">保存</el-button>
                                             <el-button plain @click="showH5('SK')">查看H5</el-button>
                                             <el-button plain @click="updateReport('SK')" :loading="updateLoading">更新报告</el-button>
@@ -387,7 +390,7 @@
                                             <!--</el-checkbox>-->
                                         </div>
                                         <div class="up-report-bottom-btns">
-                                            <el-button @click="downloadImg('XK')" :loading="downLoading">导出图片</el-button>
+                                            <el-button plain @click="downloadImg('XK')" :loading="downLoading">导出图片</el-button>
                                             <el-button type="primary" @click="submitUpload('XK')">保存</el-button>
                                             <el-button plain @click="showH5('XK')">查看H5</el-button>
                                             <el-button plain @click="updateReport('XK')" :loading="updateLoading">更新报告</el-button>
@@ -408,7 +411,7 @@
                            :show-close="false">
                     <add-ads :IsAddAds="IsAddPoint" @ievent = "ievent"></add-ads>
                     <span slot="footer" class="dialog-footer">
-                        <el-button @click="cancelAddPoint">取 消</el-button>
+                        <el-button plain @click="cancelAddPoint">取 消</el-button>
                         <el-button type="primary" @click="confirmAddPoint">确 定</el-button>
                     </span>
                 </el-dialog>
@@ -426,7 +429,7 @@
                     <el-date-picker v-model="finishDate" type="date" format="yyyy.MM.dd" value-format="yyyy.MM.dd" placeholder="终止日期" :picker-options="pickerOptions">
                     </el-date-picker>
                     <span slot="footer" class="dialog-footer">
-                        <el-button @click="isFinish = false">取消</el-button>
+                        <el-button plain @click="isFinish = false">取消</el-button>
                         <el-button type="primary" @click="conFirmStopAds">确 定</el-button>
                     </span>
                 </el-dialog>
@@ -441,7 +444,7 @@
                             <el-option v-for="(item, index) of mapArr" :key="index" :label="item.name" :value="item.name"></el-option>
                         </el-select>
                         <el-button size="small" type="primary" @click="searchInfo()" :disabled="!isSearch">搜索</el-button>
-                        <el-button size="small" @click="resetInfo()" :disabled="!isReset">重置</el-button>
+                        <el-button plain size="small" @click="resetInfo()" :disabled="!isReset">重置</el-button>
                     </p>
                     <p style="margin-top:15px;">
                         <!-- <el-button size="small">添加画像</el-button> -->
@@ -453,9 +456,9 @@
                             :disabled="!shopList.length"
                             style="display:inline-block;"
                         >
-                            <el-button size="small">添加画像</el-button>
+                            <el-button plain size="small">添加画像</el-button>
                         </el-upload>
-                        <el-button size="small" @click="openRemark()">添加备注</el-button>
+                        <el-button plain size="small" @click="openRemark()">添加备注</el-button>
                     </p>
                     <p style="margin-top:15px;">
                         <div class="car-title">
@@ -487,7 +490,7 @@
                         </el-table-column>
                         <el-table-column prop="imgUrl" label="操作" width="80">
                             <template slot-scope="scope">
-                                <el-button size="small" icon="el-icon-picture" style="margin-right:15px;" :style="{'color':scope.row.imgUrl?'#108DE7':''}" @click="previewImg(scope.row)" :disabled="!scope.row.imgUrl"></el-button>
+                                <el-button size="small" icon="el-icon-picture" :style="{'color':scope.row.imgUrl?'#108DE7':''}" @click="previewImg(scope.row)" :disabled="!scope.row.imgUrl"></el-button>
                                 <el-button size="small" icon="el-icon-delete" :style="{'color':scope.row.imgUrl?'#108DE7':''}" @click="deleteOneImg(scope.row, scope.$index)" :disabled="!scope.row.imgUrl"></el-button>
                             </template>
                         </el-table-column>
@@ -508,14 +511,14 @@
                     :visible.sync="showRemark">
                     <el-input type="textarea" :rows="2" placeholder="请输入备注信息" v-model="remarkInfo" :maxlength="100"> </el-input>
                     <span slot="footer" class="dialog-footer">
-                        <el-button @click="showRemark = false" size="small">取消</el-button>
+                        <el-button plain @click="showRemark = false" size="small">取消</el-button>
                         <el-button type="primary" @click="saveRemark()" size="small">确 定</el-button>
                     </span>
                 </el-dialog>
             </div>
             <!-- 返回框 -->
             <div class="content_bottom_btn">
-                <el-button type="default" @click="goBack">返回</el-button>
+                <el-button plain type="default" @click="goBack">返回</el-button>
             </div>
         </div>
     </div>
@@ -1748,6 +1751,9 @@ export default {
         priceFormat(price) {
             // console.log('price', price);
             return commaFormat.init(price);
+        },
+        priceToFormat(price){
+            return commaFormat.format(price);
         },
         // 随机生成合同编号
         getContractNo(rid) {
@@ -2988,13 +2994,6 @@ export default {
         margin: 32px 0;
     }
 
-    /deep/ .el-button--default:focus,
-    .el-button--default:hover {
-        color: #606266;
-        border-color: #dcdfe6;
-        background-color: #fcfcfc;
-    }
-
     .content_bottom_btn /deep/ .el-button span a {
         color: #606266;
     }
@@ -3288,6 +3287,9 @@ export default {
 
     /deep/ .el-table__row .cell span {
         overflow-x: initial;
+    }
+    /deep/ .el-form-item__content{
+        line-height: 46px;
     }
     /deep/ .table_wrap .el-table__body-wrapper{
         min-height: auto;

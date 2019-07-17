@@ -62,7 +62,7 @@
             <div class="results_runway_title">
                 <h2 class="results_runway_title_h2">业务员业绩跑道</h2>
                 <div class="results_runway_title_box">
-                    <el-button class="results_runway_title_btn" size="small" @click="performanceVisible = !performanceVisible">设置目标</el-button>
+                    <el-button size="small" @click="performanceVisible = !performanceVisible">设置目标</el-button>
                     <img class="results_runway_title_trophy" src="../../assets/images/trophy.png" alt="">
                 </div>
             </div>
@@ -1529,15 +1529,6 @@
     }
     .results_runway_title_box{
         position: relative;
-    }
-    .results_runway_title_btn{
-        display: inline-block;
-        float: right;
-        margin: 13px 16px 0 0;
-        padding: 9px 8px 9px 24px;
-    }
-    .results_runway_title_btn:hover{
-        color: #606266;
     }
     .results_runway_title_trophy{
         width: 14px;

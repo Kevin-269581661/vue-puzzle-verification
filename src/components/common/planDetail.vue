@@ -73,6 +73,9 @@
                                         </template>
                                     </el-table-column>
                                     <el-table-column prop="hNum" label="小区户数" min-width="6.0%" align="right">
+                                        <template slot-scope="scope">
+                                            <span>{{priceToFormat(scope.row.hNum)}}</span>
+                                        </template>
                                     </el-table-column>
                                     <el-table-column label="楼盘价格" min-width="9.0%" align="right">
                                         <template slot-scope="scope">
@@ -106,8 +109,8 @@
                 </el-tabs>
             </div>
             <div class="content_bottom_btn">
-                <el-button type="default" icon="el-icon-download" class="searchBtn" v-if="planPanel=='first'" @click="export2Excel(planDetail.apName)" :disabled="isDown">导出</el-button>
-                <el-button class="cancel" @click="goBack()">返回</el-button>
+                <el-button plain type="default" icon="el-icon-download" class="searchBtn" v-if="planPanel=='first'" @click="export2Excel(planDetail.apName)" :disabled="isDown">导出</el-button>
+                <el-button plain class="cancel" @click="goBack()">返回</el-button>
             </div>
         </div>
     </div>
@@ -418,6 +421,9 @@ export default {
         priceFormat(price) {
             return commaFormat.init(price);
         },
+        priceToFormat(price){
+            return commaFormat.format(price);
+        },
         // 返回
         goBack() {
             this.$router.push("./planList");
@@ -663,6 +669,9 @@ export default {
 /deep/ .el-table__expanded-cell[class*=cell] {
     padding: 0 46px;
     background-color: #F7F7F7;;
+}
+/deep/ .el-form-item__content{
+    line-height: 46px;
 }
 /deep/ .table_wrap .el-table__body-wrapper{
     min-height: auto;

@@ -55,7 +55,12 @@
 						</el-date-picker>
 					</span>
 				</h2>
-				<div id="perform" ref="perform" class="charts2" style="width:100%;height:400px;"></div>
+				<div v-if="getNumIsNull(orderPointData.pointData)|| getNumIsNull(orderPointData.orderData)" id="perform" ref="perform" class="charts2" style="width:100%;height:400px;"></div>
+				<template v-else>
+					<div class="img_point">
+						<no-search-result></no-search-result>
+					</div>
+				</template>
 			</div>
 		</div>
 
@@ -163,12 +168,15 @@ import { api } from '../../api/api';
 import comcards from '../../commonFun/json/comcard.json';
 import sessFun from '../../commonFun/sessFun.js';
 import indexIsDateFirst from '../../commonFun/indexIsDateFirst.js';
+import noSearchResult from "../../components/common/components/noSearchResult.vue";
+
 
 export default {
 	name: "media_index",
 	components:{
 		homeTop,
 		homeLink,
+		noSearchResult,
 	},
 	data(){
 		return{
@@ -575,7 +583,9 @@ export default {
 					this.orderPointData.title = title;
 					this.orderPointData.orderData = orderData;
 					this.orderPointData.pointData = pointData;
-					this.getLinePer();
+					if(this.getNumIsNull(orderData) || this.getNumIsNull(pointData)){
+						this.getLinePer();
+					}
 				}else if(res.data.SysCode == 100302){
 					this.loginTimeout();
 				}else{
@@ -584,6 +594,13 @@ export default {
 			}).catch(err =>{
 				console.log(err);
 			});
+		},
+		getNumIsNull(arr){
+			let isHad = arr.filter(item =>{
+				return item>0;
+			});
+			console.log(isHad, 'ishhhh----');
+			return isHad.length==0?false:true;
 		},
 		getLinePer(){
 			let perLine = this.$echarts.init(this.$refs.perform)
@@ -741,10 +758,10 @@ export default {
 		this.getIsCom();
 		this.getData();
 		this.getContributeBox();
+		this.getContribute();
 		let nowDate = timeFormat.toDate(new Date(), '/');		
 		if(indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)){
 			this.isShowNum = true;
-			this.getContribute();
 		}
 		this.setTime();
 		// this.getLinePer();
@@ -952,5 +969,10 @@ export default {
 }
 .loglist_box{
 	margin-top:24px;
+}
+.img_point{
+	text-align: center;
+	color: #666;
+	margin-top: 20px;
 }
 </style>

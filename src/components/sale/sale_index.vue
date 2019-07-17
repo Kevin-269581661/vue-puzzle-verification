@@ -44,6 +44,11 @@
 						</el-popover>
 					</div>
 				</div>
+				<template v-else>
+					<div class="img_point">
+						<no-search-result></no-search-result>
+					</div>
+				</template>
 			</div>
 		</div>
 		<!-- 动效 -->
@@ -117,12 +122,15 @@ import timeFormat from '../../commonFun/timeFormat';
 import sessFun from '../../commonFun/sessFun.js';
 import comcards from '../../commonFun/json/comcard.json';
 import indexIsDateFirst from '../../commonFun/indexIsDateFirst.js';
+import noSearchResult from "../../components/common/components/noSearchResult.vue";
+
 
 export default {
 	name: "sale_index",
 	components:{
 		homeTop,
 		homeLink,
+		noSearchResult,
 		elButton: Button,
 	},
 	data(){
@@ -412,7 +420,11 @@ export default {
 					let oneTarget = target/4;
 					// this.priceList = [0, oneTarget, oneTarget*2, oneTarget*3, oneTarget*4, target];
 					this.priceList = [0, oneTarget, oneTarget*2, oneTarget*3, target];
-					this.getAptotal();
+					if(target){
+						this.getAptotal();
+					}else{
+						this.isShowLine = false;
+					}
 				}else if(res.data.SysCode == 100302){
 					this.loginTimeout();
 				}else{
@@ -1016,5 +1028,12 @@ export default {
 		top: 100px;
 		left: 50%;
 	}
+}
+
+.img_point{
+	text-align: center;
+	color: #666;
+	margin-top: 20px;
+	padding-bottom:20px;
 }
 </style>

@@ -47,7 +47,8 @@
                             </router-link>
                         </li>
                         <li>
-                            <router-link :to="{path:'/login'}">退出登陆</router-link>
+                            <!-- <router-link :to="{path:'/login'}">退出登陆</router-link> -->
+                            <a href="#" @click="loginOut()">退出登陆</a>                                                        
                         </li>
                     </ul>
                 </div>
@@ -199,7 +200,11 @@
             this.avator = this.sessionData.headPic || require('../../assets/images/index/headimg.png')
         },
         methods: {
-
+            // 退出登录
+            loginOut(){
+                sessionStorage.clear();                    
+                this.$router.push('/login');
+            },
             // 获取用户名称和角色
             getUserName() {
                 // let data = JSON.parse(sessionStorage.getItem('session_data'));

@@ -48,10 +48,10 @@
                     </li>
                     <li class="handel_ul_li handel_ul_li_btn">
                         <el-button type="primary" icon="el-icon-search" @click="searchFun" :disabled="searchBtnAbled">搜索</el-button>
-                        <el-button @click="clearSearch">重置</el-button>
+                        <el-button plain @click="clearSearch">重置</el-button>
                         <el-button plain @click="newMedia" v-if="showNewBtn">新建</el-button>
-                        <el-button @click="importMedia" v-if="showImportBtn">导入媒体</el-button>
-                        <el-button @click="maintain" v-if="!showImportBtn">维护管理</el-button>
+                        <el-button plain @click="importMedia" v-if="showImportBtn">导入媒体</el-button>
+                        <el-button plain @click="maintain" v-if="!showImportBtn">维护管理</el-button>
                     </li>
                 </div>
                 <div class="table_wrap">
@@ -158,7 +158,7 @@
 							]"
                             :filter-multiple="false">
                             <template  slot-scope="scope">
-                                <span v-if="scope.row.mState === '正常'">
+                                <span v-if="scope.row.mState === '正常' && scope.row.mVehicle === '广告门' && scope.row.pNum > 1">
                                     <el-tooltip class="item" effect="dark" placement="left-start">
                                         <div slot="content">
                                             A面:{{scope.row.asState.A == '1' ? '正常' : '禁用'}}  B面:{{scope.row.asState.B == '1' ? '正常' : '禁用'}}
@@ -209,7 +209,7 @@
                 <div class="ad_pagination">
                     <el-pagination
                         background
-                        layout="total, prev, pager, next, sizes, jumper"
+                        layout="total, sizes, prev, pager, next, jumper"
                         @current-change="changePage"
                         @size-change="changeSize"
                         :page-sizes="[10, 20, 50]"
@@ -241,11 +241,10 @@
                 :close-on-click-modal="false"
                 custom-class="Import_dialog"
                 top="30vh"
-                width="380px">
+                width="300px">
                 <ul class="import_ul">
                     <li>
-                        <span>所属企业：</span>
-                        <el-select v-model="importAsrID" filterable :loading="importSelectLoading" placeholder="请选择">
+                        <el-select v-model="importAsrID" size="small" filterable :loading="importSelectLoading" placeholder="请选择所属公司">
                             <el-option
                                 v-for="(item,index) in companyList"
                                 :key="index"
@@ -255,40 +254,25 @@
                         </el-select>
                     </li>
                     <li>
-                        <span>下载模板：</span>
-                        <a :href ='this.apiVar.qadnUrl + "/importTemplate/adDoor.xlsx"' class="el-icon-download aButton" download="广告门导入模板.xlsx">广告门模块</a>
-                        <a :href ='this.apiVar.qadnUrl + "/importTemplate/roadGate.xls"' class="el-icon-download aButton" download="道闸导入模板.xls">道闸模块</a>
-                    </li>
-                    <li>
-                        <span>上传文件：</span>
-
                         <el-upload
                             class="upload_file"
                             ref="upload"
                             accept=".xlsx,.xls"
                             :action="doUpload"
-                            :show-file-list="false"
+                            :show-file-list="true"
+                            :file-list="fileData"
                             :http-request="uploadFile"
+                            :on-remove="fileRemove"
                             :multiple="false">
-                            <el-button icon="el-icon-upload2">上传文件</el-button>
+                            <a :href ='this.apiVar.qadnUrl + "/importTemplate/mediaTemplate.xlsx"'
+                               class="el-icon-download aButton" download="媒体导入模板.xlsx" @click="dowmLoadFun">下载模板</a>
+                            <el-button plain icon="el-icon-upload2" class="el_upload_btn">上传文件</el-button>
                         </el-upload>
-                        <span style="color:#999;">支持扩展名: .xlsx .xls</span>
-                    </li>
-                    <li>
-                        <span>文件名称：</span>
-                        <el-tag
-                            v-for="(tag, index) of fileNameTags"
-                            :key="index"
-                            closable
-                            :disable-transitions="false"
-                            @close="tabCloseFun(tag, index)">
-                            {{tag}}
-                        </el-tag>
                     </li>
                 </ul>
                 <div slot="footer" class="">
                     <el-button @click="ImportDialogVisible = false">取 消</el-button>
-                    <el-button type="primary"  @click="submitUpload">确 定</el-button>
+                    <el-button type="primary"  @click="submitUpload">导 入</el-button>
                 </div>
             </el-dialog>
             <!--导入失败的媒体列表-->
@@ -432,7 +416,6 @@
                 companyList: [],                // SA媒体导入时获取的公司列表
                 doUpload: this.apiVar.qadnUrl + '/mediaService/media/MediaInfoImport',
                 fileData:[],                            // 当前上传文件的数据- 表格
-                fileNameTags:[],                        // 文件名称列表
                 excelDataUpload:[],                     // 导入excel之后返回的数组
                 showUploadFail: false,                  // 导入失败的媒体弹出框
                 excelObj:{successNum: 0, failNum: 0},   // 导入excel之后返回的失败成功点数
@@ -647,7 +630,7 @@
                 console.log('状态', Status)
                 console.log('行内容', rows)//mState
                 if (rows.mState == Status ) {
-                    if (rows.mState === '正常' && rows.mVehicle === '广告门') {
+                    if (rows.mState === '正常' && rows.mVehicle === '广告门' && rows.pNum > 1) {
                         if (rows.asState.A !== rows.asState.B) {
                             let asLetter = ''
                             if (rows.asState.A === '0') {
@@ -688,7 +671,7 @@
                 } else {
                     this.rowData = rows
                     this.rowIndex = index
-                    if (rows.mVehicle === '广告门' && Status === '禁用' && rows.mState === '正常') {  // 正常转禁用
+                    if (rows.mVehicle === '广告门' && Status === '禁用' && rows.mState === '正常' && rows.pNum > 1) {  // 正常转禁用
                         this.normalToDisabled = true
                         if (rows.asState.A == '0') {
                             this.doorState.adState = 'A'
@@ -699,9 +682,8 @@
                         }
                         this.doorState.mState = false
                         this.mStatusDialogVisible = true
-                    } else if (rows.mVehicle === '广告门' && Status === '正常' && rows.mState === '禁用') {    // 禁用转正常
+                    } else if (rows.mVehicle === '广告门' && Status === '正常' && rows.mState === '禁用' && rows.pNum > 1) {    // 禁用转正常
                         this.normalToDisabled = false
-
                         this.doorState.mState = false
                         this.doorState.adState = ''
                         this.mStatusDialogVisible = true
@@ -921,21 +903,23 @@
             // 自定义上传
             uploadFile(params){
                 this.fileData = []
-                this.fileNameTags = []
                 console.log(params)
                 let fileObj = params.file
                 this.fileData.push(fileObj)
-                this.fileNameTags.push(params.file.name)
             },
-            // 删除tag文件
-            tabCloseFun(data, index){
-                console.log('file---name', data)
-                this.fileNameTags = []
-                this.fileData = []
+            // 文件删除
+            fileRemove(file, fileList){
+                console.log(file, fileList);
+                this.fileData = fileList
+            },
+            // 导入模版下载
+            dowmLoadFun(event){
+                // 阻止冒泡事件
+                event.stopPropagation();
             },
             // 确认上传
             submitUpload(){
-                console.log('this.importAsrID',this.importAsrID)
+                console.log('this.importAsrID',this.importAsrID,this.fileData)
                 if(!this.importAsrID){
                     this.$message.warning('请选择所属企业')
                     return
@@ -966,10 +950,13 @@
                             }
                             if(resData.mediaCount > 0){
                                 this.$message.success('成功导入' + resData.mediaCount + '条数据') // mediaCount resCount
-                                this.setPageNoAndTableData()
-                                this.getData({"pageNo": this.pageNo,"pageSize":50})
+                                // this.setPageNoAndTableData()
+                                this.pageData.pageNum = 1
+                                this.getData()
                             }
                             this.ImportDialogVisible = false
+                            this.fileData = []
+                            this.importAsrID = ''
                         } else if (res.data.SysCode == 100302) {
                             this.loginTimeout()
                         } else {
@@ -1110,6 +1097,10 @@
         overflow-y: auto;
     }
 
+    /deep/ .error_media .el-table__body-wrapper{
+        min-height: 420px;
+    }
+
     /*筛选*/
     /deep/ .el-table__column-filter-trigger {
         margin-left: 6px;
@@ -1161,34 +1152,50 @@
     /*导入媒体*/
     .upload_file{
         display: inline-block;
+        /*display: none;*/
+    }
+    .upload_file .el_upload_btn{
+        /*display: none;*/
     }
     .import_ul li{
         margin-bottom: 16px;
     }
     .import_ul /deep/ .el-select{
-        width: 224px;
+        width: 100%;
     }
     .import_ul /deep/ .el-button{
-        width: 92px;
+        width: 126px;
     }
     .import_ul .aButton{
-        width: 87px;
-        height: 26px;
-        padding: 3px;
-        line-height: 26px;
+        width: 124px;
+        height: 29px;
+        /*padding: 3px;*/
+        line-height: 31px;
         text-align: center;
         display: inline-block;
         color: #666;
+        margin-right: 3px;
         border-radius: 4px;
-        border: 1px solid #dedede;
+        border: 1px solid #dcdfe6;
     }
+    .aButton:hover{
+        border: 1px solid #409EFF;
+        color: #409EFF;
+    }
+
     /deep/ .Import_dialog .el-dialog__body{
         padding: 15px 20px 10px;
     }
+
+    /deep/ .el-upload-list__item{
+        width: 259px
+    }
+
     /*导入失败媒体*/
     /deep/ .error_media .el-dialog__body{
         padding: 10px 20px 20px;
     }
+
     .car-title {
         background: #E6F7FF;
         border: 1px solid #BAE7FF;

@@ -21,7 +21,7 @@
                         </el-select> -->
                         <el-cascader :options="allProvince" v-model="searchInfo.cityArr" separator="-" :show-all-levels="false" filterable></el-cascader>                           
                         <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
-                        <el-button @click="reset()" :disabled="!isReset">重置</el-button>
+                        <el-button plain @click="reset()" :disabled="!isReset">重置</el-button>
                     </el-col>
                 </el-row>
                 <div class="table_wrap">

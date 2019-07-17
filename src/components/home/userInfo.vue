@@ -11,7 +11,7 @@
                     :on-preview="handlePreview"
                     :before-upload="beforeAvatarUpload"
                     :show-file-list="false">
-                    <el-button size="small" type="default" style="margin-top: 5px;">更换头像</el-button>
+                    <el-button plain size="small" type="default" style="margin-top: 5px;">更换头像</el-button>
                 </el-upload>
             </div>
             <div class="info_right">

@@ -27,6 +27,7 @@
                                         <el-select
                                             v-model="clientForm.sname"
                                             filterable
+                                            clearable
                                             remote
                                             reserve-keyword
                                             placeholder="请输入账户名"
@@ -148,7 +149,7 @@
                 </div>
                 <div class="content_bottom_btn">
                     <el-button type="primary" @click="submitData">创建</el-button>
-                    <el-button @click="goBack">取消</el-button>
+                    <el-button plain @click="goBack">取消</el-button>
                 </div>
             </div>
         </div>

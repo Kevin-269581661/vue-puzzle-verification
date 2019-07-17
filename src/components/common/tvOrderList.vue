@@ -30,7 +30,7 @@
                         </span>
                         <span>
                             <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
-                            <el-button type="default" @click="newPlan()" v-if='(role == "BD" || role == "MD")'>新建</el-button>
+                            <el-button plain type="default" @click="newPlan()" v-if='(role == "BD" || role == "MD")'>新建</el-button>
                         </span>
                     </div>
                 </el-row>

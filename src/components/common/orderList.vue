@@ -31,11 +31,11 @@
                             <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
                         </el-select>
                         <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
-                        <el-button @click="reset()" :disabled="!isReset">重置</el-button>
+                        <el-button plain @click="reset()" :disabled="!isReset">重置</el-button>
                     </el-col>
                 </el-row>
                 <div class="table_wrap">
-                    <el-table border :data="currentOrder" style="width: 100%" @sort-change="sortChange" v-loading="loading" element-loading-text="玩命加载中" element-loading-spinner="el-icon-loading" :default-sort="{prop: 'apcTime', order: 'descending'}">
+                    <el-table border :data="currentOrder" style="width: 100%" @sort-change="sortChange" v-loading="loading" element-loading-text="玩命加载中" element-loading-spinner="el-icon-loading" :default-sort="{prop: 'appTime', order: 'descending'}">
                         <el-table-column label="订单名称" min-width="14.6%">
                             <template slot-scope="scope">
                                 <a href="javascript:void(0);" @click="ToDetail(scope.row)">{{scope.row.apName}}</a>
@@ -67,9 +67,9 @@
                                 </div>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="apcTime" label="发布日期" width="120px" sortable="custom" show-overflow-tooltip>
+                        <el-table-column prop="appTime" label="发布日期" width="120px" sortable="custom" show-overflow-tooltip>
                             <template slot-scope="scope">
-                                <span>{{formatTime(scope.row.apcTime)}}</span>
+                                <span>{{formatTime(scope.row.appTime)}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column class="Status" prop="apState" label="状态" min-width="6%" show-overflow-tooltip>
@@ -443,7 +443,7 @@ export default {
                 apQC: item.apQC ? item.apQC : '',
                 apState: item.apState ? item.apState : '',
                 apTotal: item.apTotal ? item.apTotal : '',
-                apcTime: item.apcTime ? item.apcTime : '',
+                appTime: item.appTime ? item.appTime : '',
                 bTitle: item.bTitle ? item.bTitle : '--',
                 cName: item.cName ? item.cName : '',
                 realName: item.realName ? item.realName : '',
@@ -890,6 +890,7 @@ a {
 }
 
 /deep/ .el-table td .cell{
+    padding: 2px 10px;    
     height: auto;
     line-height: 28px;
 }

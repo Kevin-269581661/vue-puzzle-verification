@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>亲邻科技2019物业手册</title>
+    <link rel="stylesheet" href="lib/swiper.min.css">
+    <style>
+        .home-btn {
+            width: 5rem;
+            height: 5rem;
+            background-size: 4rem 4rem !important;
+            background: rgba(0, 0, 0, 0.3) url("imgs/home.png") center no-repeat;
+            position: absolute;
+            right: 2rem;
+            top: 2rem;
+            border-radius: 10px;
+            z-index: 9;
+        }
+        .swiper-container {
+            width: 100%;
+            height: 100%;
+        }
+        img{
+            width: 100%;
+            height: 100%;
+        }
+        .img-box{
+            position: fixed;
+            width: 100%;
+            /*height: 100%;*/
+            top: 50%;
+            transform: translateY(-50%);
+            left: 0;
+        }
+        .swiper-button-next, .swiper-button-prev{
+            width: 6rem;
+            height: 6rem;
+            background-size: 1rem 1rem;
+            background:  url("imgs/right.png") center no-repeat !important;
+        }
+        .swiper-button-prev{
+            background:  url("imgs/left.png") center no-repeat !important;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <div class="img-box">
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide img-slide">
+                    <img id='img1' class="swiper-lazy" data-src="imgs/QL-01.png" alt="亲邻科技2019物业手册">
+                </div>
+                <div class="swiper-slide img-slide">
+                    <img id='img2' class="swiper-lazy" data-src="imgs/QL-02.png" alt="亲邻科技2019物业手册">
+                </div>
+                <div class="swiper-slide img-slide">
+                    <img id='img3' class="swiper-lazy" data-src="imgs/QL-03.png" alt="亲邻科技2019物业手册">
+                </div>
+                <div class="swiper-slide img-slide">
+                    <img id='img4' class="swiper-lazy" data-src="imgs/QL-04.png" alt="亲邻科技2019物业手册">
+                </div>
+                <div class="swiper-slide img-slide">
+                    <img id='img5' class="swiper-lazy" data-src="imgs/QL-05.png" alt="亲邻科技2019物业手册">
+                </div>
+                <div class="swiper-slide img-slide">
+                    <img id='img6' class="swiper-lazy" data-src="imgs/QL-06.png" alt="亲邻科技2019物业手册">
+                </div>
+                <div class="swiper-slide img-slide">
+                    <img id='img7' class="swiper-lazy" data-src="imgs/QL-07.png" alt="亲邻科技2019物业手册">
+                </div>
+                <div class="swiper-slide img-slide">
+                    <img id='img8' class="swiper-lazy" data-src="imgs/QL-08.png" alt="亲邻科技2019物业手册">
+                </div>
+                <div class="swiper-slide img-slide">
+                    <img id='img9' class="swiper-lazy" data-src="imgs/QL-09.png" alt="亲邻科技2019物业手册">
+                </div>
+                <div class="swiper-slide img-slide">
+                    <img id='img10' class="swiper-lazy" data-src="imgs/QL-10.png" alt="亲邻科技2019物业手册">
+                </div>
+                <div class="swiper-slide img-slide">
+                    <img id='img11' class="swiper-lazy" data-src="imgs/QL-11.png" alt="亲邻科技2019物业手册">
+                </div>
+                <div class="swiper-slide img-slide">
+                    <img id='img12' class="swiper-lazy" data-src="imgs/QL-12.png" alt="亲邻科技2019物业手册">
+                </div>
+                <div class="swiper-slide img-slide">
+                    <img id='img13' class="swiper-lazy" data-src="imgs/QL-13.png" alt="亲邻科技2019物业手册">
+                </div>
+                <div class="swiper-slide img-slide">
+                    <img id='img14' class="swiper-lazy" data-src="imgs/QL-14.png" alt="亲邻科技2019物业手册">
+                </div>
+                <div class="swiper-slide img-slide">
+                    <img id='img15' class="swiper-lazy" data-src="imgs/QL-15.png" alt="亲邻科技2019物业手册">
+                </div>
+                <div class="swiper-slide img-slide">
+                    <img id='img16' class="swiper-lazy" data-src="imgs/QL-16.png" alt="亲邻科技2019物业手册">
+                </div>
+                <div class="swiper-slide img-slide">
+                    <img id='img17' class="swiper-lazy" data-src="imgs/QL-17.png" alt="亲邻科技2019物业手册">
+                </div>
+                <div class="swiper-slide img-slide">
+                    <img id='img18' class="swiper-lazy" data-src="imgs/QL-18.png" alt="亲邻科技2019物业手册">
+                </div>
+                <div class="swiper-slide img-slide">
+                    <img id='img19' class="swiper-lazy" data-src="imgs/QL-19.png" alt="亲邻科技2019物业手册">
+                </div>
+            </div>
+            <!-- Add Arrows -->
+            <div class="swiper-button-next swiper-button-white"></div>
+            <div class="swiper-button-prev swiper-button-white"></div>
+            <div class="home-btn" id="homeBtn"></div>
+        </div>
+    </div>
+</div>
+<script src="lib/swiper.min.js"></script>
+<script src="lib/swiper.animate.min.js"></script>
+<script>
+    var swiper = new Swiper('.swiper-container', {
+        effect: 'coverflow',
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+        },
+        lazy: {
+            loadPrevNext: true,
+            loadPrevNextAmount: 2,
+        },
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        followFinger:false,
+        observer:true,//修改swiper自己或子元素时，自动初始化swiper
+        observeParents:true,//修改swiper的父元素时，自动初始化swiper
+    });
+    let btn = document.getElementById('homeBtn')
+    btn.onclick = function () {
+        swiper.slideTo(0, 100, false);//切换到第一个slide，速度为1秒
+    };
+    document.documentElement.addEventListener('touchstart', function (event) {
+        if (event.touches.length > 1) {
+            event.preventDefault();
+        }
+    }, false);
+
+</script>
+</body>
+</html>

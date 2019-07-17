@@ -16,7 +16,7 @@
                                     </div>
                                     <div class="ad_SM_info">
                                         <h5>排期</h5>
-                                        <ul>
+                                        <ul class="SM_info_ul">
                                             <li v-for="(itemSM,indexSM) in item.priceMsg.adDoor.SM" :key=indexSM>{{itemSM}}</li>
                                         </ul>
                                     </div>
@@ -125,7 +125,7 @@
                                     <span>道闸的广告费价格为模糊计算 请以实际合同价格修改广告费</span>
                                     <div class="ad_SM_info">
                                         <h5>排期</h5>
-                                        <ul>
+                                        <ul class="SM_info_ul">
                                             <li v-for="(itemSM,indexSM) in item.priceMsg.roadGate.SM" :key=indexSM>{{itemSM}}</li>
                                         </ul>
                                     </div>
@@ -605,9 +605,9 @@
                 // 为每一条添加刊例价,广告费折扣百分比，制作费折扣百分比
                 console.log('城市刊例价adPrice',adPrice)
                 for (let ta of arr) {
-                    let rid = ta.rid.toString().substring(0, 4) + '00';
+                    // let rid = ta.rid.toString().substring(0, 4) + '00';
                     for (let adKey of adPrice){
-                        if (adKey.rid == rid && adKey.asrID == ta.asrID){
+                        if (adKey.city == ta.city && adKey.asrID == ta.asrID){
                             // 是否执行媒体分层 classified：1执行 2不执行
                             ta.classified = adKey.classified
                             // 是否执行溢价计算 premium：0不执行 1执行
@@ -779,10 +779,10 @@
                         } else {
                             let door = 1;
                             for (let data of result) {
-                                let dataR = data.rID.toString().substring(0, 4);
-                                let initR = init.rID.toString().substring(0, 4);
+                                // let dataR = data.rID.toString().substring(0, 4);
+                                // let initR = init.rID.toString().substring(0, 4);
                                 if (
-                                    dataR == initR &&
+                                    data.city == init.city &&
                                     data.ds == start &&
                                     data.de == end &&
                                     data.mVehicle == init.mVehicle
@@ -799,6 +799,7 @@
                     res.asidlist = asIDs;
                     res.mNum = mNum;
                 }
+                console.log('result',result)
                 return result;
             },
             // 整合排期信息
@@ -818,8 +819,9 @@
                         schedul:[],
                     };
                     for (let asid of asidRes) {
-                        let arrDataRID = arrData.rID.toString().substring(0, 4);
-                        let dataRID = asid.rID.toString().substring(0, 4);
+                        // let arrDataRID = arrData.rID.toString().substring(0, 4);
+                        // let dataRID = asid.rID.toString().substring(0, 4);
+                        // console.log('arrDataRID',arrDataRID,'dataRID',dataRID)
                         let ds = dateFormat.toDate(asid.ds, "/");
                         let de = dateFormat.toDate(asid.de, "/");
                         let days = this.dateToDays(ds, de);
@@ -832,8 +834,9 @@
                         }else{
                             weekDays = weekDay.week +'周'+weekDay.day+'天';
                         }
-                        if (arrDataRID == dataRID && arrData.asrID == asid.asrID) {
-                            if(asid.mVehicle == '广告门'){
+                        // if (arrDataRID == dataRID && arrData.asrID == asid.asrID) {
+                        if (arrData.city == asid.city && arrData.asrID == asid.asrID) {
+                            if (asid.mVehicle == '广告门') {
                                 obj.SM.push(ds + "-" + de +"("+ weekDays+',共'+ asid.mNum + "面)");
                                 obj.schedules.push(ds+'-'+de);
                                 console.log('obj.schedules', obj.schedules)
@@ -1876,5 +1879,18 @@
     .ad_rodeGare{
         width: 105px;
         height: 40px;
+    }
+    .SM_info_ul{
+        height: 102px;
+        overflow-y: auto;
+    }
+    .SM_info_ul::-webkit-scrollbar {
+        width: 6px;
+        background: #FAFAFA;
+    }
+    .SM_info_ul::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        background: #C1C1C1;
+        border-radius: 4px;
     }
 </style>

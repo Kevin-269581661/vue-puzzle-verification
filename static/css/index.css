@@ -89,9 +89,6 @@
     text-align: center;
     padding: 0;
 }
-.el-button--primary{
-    line-height: normal;
-}
 .el-button+.el-button{
     margin-left: 3px;
 }
@@ -168,12 +165,4 @@ body .el-table colgroup.gutter {
 /*滚动条*/
 .el-table__body-wrapper,.el-table__empty-block {
     min-height: 405px;
-}
-
-/*按钮*/
-.el-button--default:focus,
-.el-button--default:hover {
-    color: #606266;
-    border-color: #dcdfe6;
-    background-color: #fcfcfc;
 }

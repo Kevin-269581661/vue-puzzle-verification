@@ -14,10 +14,10 @@
                 </el-select>
             </div>
             <el-tabs v-model="activeName" @tab-click="tabHandleClick">
-                <el-tab-pane label="数据概览" name="first">
+                <el-tab-pane label="数据概览" name="first" v-if="isQinLinCity">
                     <data-read :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName" :isAllCity="isAllCity"></data-read>
                 </el-tab-pane>
-                <el-tab-pane label="周报/月报" name="second" v-if="!isAllCity"> <!--v-if="!isAllCity"-->
+                <el-tab-pane label="周报/月报" name="second" v-if="!isAllCity && isQinLinCity"> <!--v-if="!isAllCity"-->
                     <weekAndMouth-report :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName"></weekAndMouth-report>
                 </el-tab-pane>
                 <el-tab-pane label="指标查询" name="third">
@@ -52,8 +52,10 @@
                 isAllCity: true,
                 // 是否城市对比
                 isCitys: false,
+                // 是否是直营城市
+                isQinLinCity: false,
                 // 当前tabs
-                activeName: 'first',
+                activeName: '',
                 // 数据截止时间
                 toTime:'2019/07/01',
                 // 顶部Tab城市选择
@@ -80,30 +82,45 @@
             adsAnalysis,
         },
         created(){
-            this.getSessionData()
+            // this.getSessionData()
+            this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
         },
         mounted(){
-
+            this.getBasicData()
         },
         methods:{
             // 获取session数据;根据登录用户的权限设置权限
-            getSessionData(){
-                this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
+            getBasicData(){
                 console.log('用户信息',this.sessionData)
                 if (this.sessionData.asrID == '999') {
                     this.headerCityList = JSON.parse(JSON.stringify(this.citys))
                     this.isAllCity = true
+                    this.isQinLinCity = true
+                    let timer = setTimeout(()=>{
+                        this.activeName = 'first';
+                        clearTimeout(timer)
+                    },10)
                 } else {
+                    let asName = this.returnAsName(this.sessionData.asrID)
                     let cityArr = [
                         {
                             value: this.sessionData.asrID.toString(),
-                            label: this.returnAsName(this.sessionData.asrID)
+                            label: asName || this.sessionData.asName
                         }
                     ]
-                    this.headerCityList =  JSON.parse(JSON.stringify(cityArr))
+                    this.headerCityList = JSON.parse(JSON.stringify(cityArr))
                     this.selectCity = cityArr[0].value
                     this.isAllCity = false
-                    console.log('this.headerCityList',this.headerCityList)
+                    if (asName) {
+                        this.isQinLinCity = true
+                        let timer1 = setTimeout(()=>{
+                            this.activeName = 'first';
+                            clearTimeout(timer1)
+                        },10)
+                    } else {
+                        this.activeName = 'third'
+                    }
+                    console.log('this.headerCityList', this.headerCityList)
                 }
             },
             // tabs切换
@@ -124,7 +141,7 @@
                         return key.label
                     }
                 }
-                return '--'
+                return false
             },
         },
     }
@@ -227,5 +244,11 @@
         height: 6px;
         border-radius: 50%;
         margin-right: 5px;
+    }
+
+    /deep/ .had_not_data{
+        height: 240px;
+        text-align: center;
+        padding-top: 100px;
     }
 </style>

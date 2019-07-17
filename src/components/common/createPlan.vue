@@ -5764,6 +5764,10 @@
         margin-left: 4px;
     }
 
+    /deep/ .el-table-column-checkbox .el-checkbox{
+        margin-right: 0;
+    }
+
     /deep/ .el-table__expanded-cell[class*=cell] {
         padding: 0 86px;
         background-color: #F7F7F7;;

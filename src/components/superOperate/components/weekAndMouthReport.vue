@@ -93,7 +93,8 @@
         </div>
         <!--发件图标-->
         <div class="subscriber_icon" @click="subscriberDialogVisible = true">
-            <i class="el-icon-position"></i>
+            <!--<i class="el-icon-position"></i>-->
+            <img class="subscriber_icon_position" src="../../../assets/images/position.png" alt="">
         </div>
         <el-dialog
             title="订阅报告"
@@ -150,104 +151,14 @@
                     ]
                 },
                 // 数据概览 - 表格数据
-                issueReportTableData: [
-                    // {
-                    //     name: '社区总数（个）',
-                    //     value: '1298',
-                    // },
-                    // {
-                    //     name: '灯箱数',
-                    //     value: '1298',
-                    // },
-                    // {
-                    //     name: '媒体总量（面）',
-                    //     value: '1298',
-                    // },
-                    // {
-                    //     name: '禁用媒体（面）',
-                    //     value: '1298',
-                    // },
-                    // {
-                    //     name: '在刊媒体（面）',
-                    //     value: '1298',
-                    // },
-                    // {
-                    //     name: '空刊数（面）',
-                    //     value: '1298',
-                    // }
-                ],
+                issueReportTableData: [],
                 // 周在线客户
-                weekOnlineClientData:[
-                    {
-                        index: 1,
-                        clienter:'深圳托趣钢琴培训中心',
-                        content: '托趣',
-                        saler:'朱强',
-                        issueNum:'56',
-                        issueDays: '156',
-                        period: '2018/11/10 - 2019/11/08',
-                    },
-                    {
-                        index: 2,
-                        clienter:'深圳市成宏房地产经济有限公司',
-                        content: '成宏地产',
-                        saler:'朱强',
-                        issueNum:'56',
-                        issueDays: '156',
-                        period: '2018/11/10 - 2019/11/08',
-                    },
-                    {
-                        index: 3,
-                        clienter:'深圳托趣钢琴培训中心',
-                        content: '托趣',
-                        saler:'朱强',
-                        issueNum:'56',
-                        issueDays: '156',
-                        period: '2018/11/10 - 2019/11/08',
-                    },
-                    {
-                        index: 4,
-                        clienter:'深圳市梵净瑜伽美容有限公司',
-                        content: '托趣',
-                        saler:'朱强',
-                        issueNum:'56',
-                        issueDays: '156',
-                        period: '2018/11/10 - 2019/11/08',
-                    },
-                    {
-                        index: 5,
-                        clienter:'深圳三合百盛广告传媒有限公司',
-                        content: '皖厨（餐饮）',
-                        saler:'洪霞',
-                        issueNum:'56',
-                        issueDays: '156',
-                        period: '2018/11/10 - 2019/11/08',
-                    },
-                    {
-                        index: 6,
-                        clienter:'深圳平行线传媒有限公司',
-                        content: '关键词教育',
-                        saler:'张瑶',
-                        issueNum:'22',
-                        issueDays: '96',
-                        period: '2018/11/10 - 2019/11/08',
-                    },
-                    {
-                        index: 7,
-                        clienter:'深圳市三酷体育文化有限公司',
-                        content: '皖厨（餐饮）',
-                        saler:'洪霞',
-                        issueNum:'56',
-                        issueDays: '156',
-                        period: '2018/11/10 - 2019/11/08',
-                    },
-                ],
+                weekOnlineClientData:[],
                 // 收件人设置
                 subscriberDialogVisible: false,
                 recipientData: [
                     {recipienter:'',emailAaddress:''}
                 ],
-                // recipienter: '',
                 recipientList:[
                     {value: 1,label:'官总'},
                     {value: 2,label:'邱总'},
@@ -322,7 +233,7 @@
                 }
                 console.log('数据总览params',params)
                 api.getApi(this.apiVar.report + '/api/v2/getWeekOverview', params).then(res => {
-                    console.log('广告销售-顶部数据res', res)
+                    console.log('数据总览接口res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         this.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
@@ -626,19 +537,14 @@
         right: 36px;
         top: 185px;
         z-index: 99;
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        background:rgba(24,144,255,1);
-        box-shadow:0px 2px 4px 0px rgba(0,0,0,0.2);
-        text-align: center;
-        line-height: 56px;
+        width: 56px;
+        height: 56px;
         cursor: pointer;
     }
 
-    .subscriber_icon i{
-        font-size: 26px;
-        color: #fff;
+    .subscriber_icon_position{
+        width: 100%;
+        height: 100%;
     }
 
     .subscriber_box p{

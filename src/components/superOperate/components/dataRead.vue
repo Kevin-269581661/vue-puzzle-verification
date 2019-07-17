@@ -156,7 +156,7 @@
                         <!--<p class="ad_sale_li_num">5,204*4=20,816</p>-->
                         <p class="ad_sale_li_num">{{adSaleHeaderData.pointCount || 0}}</p>
                         <p class="ad_sale_li_text">
-                            较上个月 <i class="el-icon-top ad_sale_top_icon"></i>
+                            较上个月 <i class="el-icon-back ad_sale_top_icon"></i>
                             <span>9.66%</span>
                         </p>
                     </li>
@@ -164,7 +164,7 @@
                         <h3 class="ad_sale_li_title">月均上刊率</h3>
                         <p class="ad_sale_li_num">{{adSaleHeaderData.monthPublishRate || 0}}%</p>
                         <p class="ad_sale_li_text">
-                            较上个月 <i class="el-icon-top ad_sale_top_icon"></i>
+                            较上个月 <i class="el-icon-back ad_sale_top_icon"></i>
                             <span>9.66%</span>
                         </p>
                     </li>
@@ -172,7 +172,7 @@
                         <h3 class="ad_sale_li_title">当前禁用媒体数量(面)</h3>
                         <p class="ad_sale_li_num">{{adSaleHeaderData.forbiddenMediaCount || 0}}</p>
                         <p class="ad_sale_li_text">
-                            较上个月 <i class="el-icon-bottom ad_sale_bottom_icon"></i>
+                            较上个月 <i class="el-icon-back ad_sale_bottom_icon"></i>
                             <span>25.66%</span>
                         </p>
                     </li>
@@ -180,7 +180,7 @@
                         <h3 class="ad_sale_li_title">成交订单</h3>
                         <p class="ad_sale_li_num">{{adSaleHeaderData.orderCount}}</p>
                         <p class="ad_sale_li_text"> 较上个月
-                            <i class="el-icon-bottom ad_sale_bottom_icon"></i>
+                            <i class="el-icon-back ad_sale_bottom_icon"></i>
                             <span>9.66%</span>
                         </p>
                     </li>
@@ -188,7 +188,7 @@
                         <h3 class="ad_sale_li_title">账面销售额</h3>
                         <p class="ad_sale_li_num">¥ {{priceFormat(adSaleHeaderData.sale)}}</p>
                         <p class="ad_sale_li_text"> 较上个月
-                            <i class="el-icon-top ad_sale_top_icon"></i>
+                            <i class="el-icon-back ad_sale_top_icon"></i>
                             <span>9.66%</span>
                         </p>
                     </li>
@@ -415,26 +415,33 @@
                 // 图表
                 toDayPreceptBarLoading: true,
                 toDayPreceptBarEcharts: '',
-                // 当天概况表格数据
+                // 当天概况 - 表格数据
                 totalTableList: [
                     {
                         name:'新建方案',
-                        number: 0,
+                        number: 3,
                         ads: 0,
                         adsWeek: 0,
                     },
                     {
                         name:'预锁方案',
-                        number: 0,
+                        number: 2,
                         ads: 0,
                         adsWeek: 0,
                     },
                     {
                         name:'发布订单',
-                        number: 0,
+                        number: 1,
                         ads: 0,
                         adsWeek: 0,
                     },
+                ],
+                // 当天概况 - 柱状图 数据
+                toDayPreceptBarData: [
+                    ['product', '方案/订单数(个)', '点位数(面)', '点位数(面·周)'],
+                    ['新建方案', 38, 288, 520],
+                    ['预锁方案', 30, 200, 448],
+                    ['生成订单', 20, 180, 368],
                 ],
                 /*  广告销售  */
                 adSaleMonth: '',
@@ -590,6 +597,7 @@
                 }
             },
             activeName(newVal, oldVal) {
+                console.log('数据概览newVal',newVal,'oldVal',oldVal)
                 this.activeName = newVal
                 if (this.activeName === 'first') {
                     if (!this.isGetData) {
@@ -618,7 +626,7 @@
         mounted(){
             this.echartsListener();
             this.setTime();
-            this.getDataRead();
+            // this.getDataRead();
         },
         methods:{
             // 统一调用接口
@@ -628,7 +636,8 @@
                 // this.initTotalDataBar();
                 // 当天概况
                 this.getToDayHeaderData();
-                this.initToDayPreceptBar();
+                this.getToDayPreceptData();
+                // this.initToDayPreceptBar();
                 // 广告销售 - 顶部数据接口
                 this.getAdSaleHeaderData();
                 // 广告销售 - 饼状图
@@ -692,9 +701,8 @@
                     endDate: this.totalDataYear + '-12-31',
                 }
                 if (this.selectCity !== '0') {
-                    params.asrId = this.returnAsrID()
+                    params.asrIds = this.returnAsrID()
                 }
-                console.log('params', params)
                 api.getApi(this.apiVar.report + '/api/v2/getOverview', params).then(res => {
                     console.log('数据总总览-表头接口', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
@@ -855,12 +863,11 @@
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                     startDate: this.toDay,
-                    endDate: this.toDay,
+                    endDate: timeFormat.returnDayCount(1,'-') //this.toDay,
                 }
                 if (this.selectCity !== '0') {
-                    params.asrId = this.returnAsrID()
+                    params.asrIds = this.returnAsrID()
                 }
-                console.log('当天概况params', params)
                 api.getApi(this.apiVar.report + '/api/v2/getSurvey', params).then(res => {
                     console.log('当天概况-表头接口', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
@@ -881,6 +888,67 @@
                         this.messageFun('warning', res.data.MSG)
                     }
                 })
+            },
+            // 柱状图接口
+            getToDayPreceptData(){
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    startDate: this.toDay,
+                    endDate: timeFormat.returnDayCount(1,'-'),
+                }
+                if (this.selectCity !== '0') {
+                    params.asrIds = this.returnAsrID()
+                }
+                api.getApi(this.apiVar.report + '/api/v2/getBehaviorInfo', params).then(res => {
+                    console.log('当天概况-图表接口', res)
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        this.loginTimeout()
+                    } else if (res.data.SysCode === 200200) {
+                        let dataObj = res.data.data
+                        this.setToDatyPreceptData(dataObj)
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                })
+            },
+            // 设置数据
+            setToDatyPreceptData(dataObj){
+                let tableList = []
+                let barArr = []
+                for (let key in dataObj) {
+                    // 右侧图表
+                    barArr = [
+                        '', dataObj[key].count, dataObj[key].adsCount, dataObj[key].adsWeekCount
+                    ]
+                    // 左侧list
+                    let obj = {
+                        name: '',
+                        number: dataObj[key].count,
+                        ads: dataObj[key].adsCount,
+                        adsWeek: dataObj[key].adsWeekCount,
+                    }
+                    if (key === 'createPlanInfo') {
+                        barArr[0] = '创建方案'
+                        this.toDayPreceptBarData[1] = barArr
+                        //
+                        obj.name = '创建方案'
+                    } else if (key === 'lockPlanInfo') {
+                        barArr[0] = '预锁方案'
+                        this.toDayPreceptBarData[2] = barArr
+
+                        obj.name = '预锁方案'
+                    } else if (key === 'orderInfo') {
+                        barArr[0] = '生成订单'
+                        this.toDayPreceptBarData[3] = barArr
+
+                        obj.name = '生成订单'
+                    }
+                    tableList.push(obj)
+                }
+                this.totalTableList = tableList
+                console.log('tableList',tableList,'toDayPreceptBarData',this.toDayPreceptBarData)
+                this.initToDayPreceptBar()
             },
             initToDayPreceptBar(){
                 if(this.toDayPreceptBarEcharts){
@@ -922,12 +990,13 @@
                         },
                     },
                     dataset: {
-                        source: [
-                            ['product', '方案/订单数(个)', '点位数(面)', '点位数(面·周)'],
-                            ['新建方案', 38, 288, 520],
-                            ['预锁方案', 30, 200, 448],
-                            ['生成订单', 20, 180, 368],
-                        ]
+                        source: this.toDayPreceptBarData
+                        // source: [
+                        //     ['product', '方案/订单数(个)', '点位数(面)', '点位数(面·周)'],
+                        //     ['新建方案', 38, 288, 520],
+                        //     ['预锁方案', 30, 200, 448],
+                        //     ['生成订单', 20, 180, 368],
+                        // ]
                     },
                     grid: {
                         top: '10%',
@@ -962,6 +1031,8 @@
                     yAxis: [
                         {
                             type: 'value',
+                            // type: 'log',
+                            // type: 'category',
                             axisLine: {
                                 show:false,
                                 //坐标轴线条相关设置(颜色等)
@@ -1056,7 +1127,7 @@
             },
             // 顶部接口
             getAdSaleHeaderData(){
-                let monthDayNum = timeFormat.getCurrMonthDays(this.adSaleMonth)
+                let monthDayNum = timeFormat.getCurrMonthDays(this.adSaleMonth + '-01')
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
@@ -1064,7 +1135,7 @@
                     endDate: this.adSaleMonth + '-' + monthDayNum,
                 }
                 if (this.selectCity !== '0') {
-                    params.asrId = this.returnAsrID()
+                    params.asrIds = this.returnAsrID()
                 }
                 api.getApi(this.apiVar.report + '/api/v2/getAdvertSales', params).then(res => {
                     console.log('广告销售-顶部数据接口res', res)
@@ -1087,7 +1158,7 @@
             getAdSaleData(){
                 this.adSaleBarLoading = true
                 this.adSalePieLoading = true
-                let monthDayNum = timeFormat.getCurrMonthDays(this.adSaleMonth)
+                let monthDayNum = timeFormat.getCurrMonthDays(this.adSaleMonth + '-01')
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
@@ -1095,7 +1166,7 @@
                     endDate: this.adSaleMonth + '-' + monthDayNum,
                 }
                 if (this.selectCity !== '0') {
-                    params.asrId = this.returnAsrID()
+                    params.asrIds = this.returnAsrID()
                 }
                 api.getApi(this.apiVar.report + '/api/v2/getAdsInfoByWeek', params).then(res => {
                     console.log('广告销售-顶部数据接口res', res)
@@ -1187,7 +1258,7 @@
                         formatter: function (params) {
                             return '<p class="echarts_tooltip_title">' + '<span>' + params.name + '</span>' + '<span>' + '数量' + '</span>' + '</p>' + '<br/>' +
                                 '<p class="echarts_tooltip_content">' + '<span><i class="echarts_tooltip_i" style="background-color: '+ params.color +'"></i>'
-                                + params.seriesName + '</span>' + params.data + '</p>'
+                                + params.seriesName + '</span>' + (params.seriesName === '周在刊率' ? (params.data + '%') : params.data) + '</p>'
                         },
                     },
                     grid: {
@@ -1373,7 +1444,7 @@
                 let series = option["series"];
                 let totalFun = function (params) {
                     let total =0;
-                    for(let i= 0,l=series.length;i<l;i++){
+                    for(let i= 1,l=series.length;i<l;i++){
                         total += series[i].data[params.dataIndex]
                     }
                     return total
@@ -1500,9 +1571,8 @@
                     type: this.adInventoriedType
                 }
                 if (this.selectCity !== '0') {
-                    params.asrId = this.returnAsrID()
+                    params.asrIds = this.returnAsrID()
                 }
-                console.log('广告库存params - 过去',params)
                 api.getApi(this.apiVar.report + '/api/v2/getAdsInventoryInfo', params).then(res => {
                     console.log('广告库存数据接口 - 过去', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
@@ -1544,17 +1614,16 @@
                     type: this.adInventoryType
                 }
                 if (this.selectCity !== '0') {
-                    params.asrId = this.returnAsrID()
+                    params.asrIds = this.returnAsrID()
                 }
-                console.log('广告库存params - 未来',params)
                 api.getApi(this.apiVar.report + '/api/v2/getAdsInventoryInfo', params).then(res => {
-                    console.log('广告库存数据接口 - 过去', res)
+                    console.log('广告库存数据接口 - 未来', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         this.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         let arr = []
-                        for(let key in dataObj){
+                        for (let key in dataObj) {
                             // 确保以 已售-可售 的顺序
                             if (key === 'soldAds') {
                                 arr[0] = {value: dataObj[key], name: '已售'}
@@ -1747,7 +1816,7 @@
                     endDate: this.chanceFindDate[1],
                 }
                 if (this.selectCity !== '0') {
-                    params.asrId = this.returnAsrID()
+                    params.asrIds = this.returnAsrID()
                 }
                 // console.log('机会挖掘饼状图params',params)
                 api.getApi(this.apiVar.report + '/api/v2/getCustomerInfo', params).then(res => {
@@ -1787,9 +1856,8 @@
                     pageSize: 5000,
                 }
                 if (this.selectCity !== '0') {
-                    params.asrId = this.returnAsrID()
+                    params.asrIds = this.returnAsrID()
                 }
-                console.log('机会挖掘表格params',params)
                 api.getApi(this.apiVar.report + '/api/v2/getCustomerCooperative', params).then(res => {
                     console.log('机会挖掘表格接口res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
@@ -1926,8 +1994,9 @@
             },
             // 设置周下拉选项
             setWeekSelectList(list){
+                console.log('list',list)
                 let weeks = []
-                let month = (new Date(list[1].startDate)).getMonth()+1;
+                let month = (new Date(this.returnFormatDate(list[1].startDate))).getMonth()+1;
                 for (let i = 0; i < list.length; i++) {
                     weeks.push({
                         value: i.toString(),
@@ -1938,10 +2007,10 @@
                 return weeks
             },
             // 根据权限公司返回 asrIDs
-            returnAsrID(){
-                if (this.selectCity == '0'){
+            returnAsrID() {
+                if (this.selectCity == '0') {
                     return '1,2,3,4,5,6,7'
-                }else{
+                } else {
                     return this.selectCity
                 }
             },
@@ -1952,6 +2021,7 @@
             },
             // 指定日期为今年的第几周
             returnRankingWeekOnYear(date){
+                date = this.returnFormatDate(date)
                 let day1 = new Date(date);
                 let day2 = new Date(date);
                 day2.setMonth(0);
@@ -1962,16 +2032,20 @@
                 console.log('dayNum',dayNum,'rankingWeek',rankingWeek)
                 return rankingWeek
             },
+            // 日期格式在new Date()前全部转换成yyyy/mm/dd格式 - 主要为了兼容safari
+            returnFormatDate(date) {
+                return date.toString().replace(/[-\.]/g, "/")
+            },
             // 操作提示统一方法
-            messageFun(mesType,mes){
+            messageFun(mesType, mes) {
                 this.$message({
                     message: mes,
                     type: mesType,
                     showClose: true,
                 })
             },
-            loginTimeout(){
-                this.messageFun('warning',"登录超时,请重新登录");
+            loginTimeout() {
+                this.messageFun('warning', "登录超时,请重新登录");
                 this.$router.push("/login");
             },
         }
@@ -2177,11 +2251,13 @@
     .ad_sale_top_icon{
         font-size: 14px;
         color: #DE1010;
+        transform: rotate(90deg);
     }
 
     .ad_sale_bottom_icon{
         font-size: 14px;
         color:rgba(82,196,26,1);
+        transform: rotate(-90deg);
     }
 
     /*下拉*/

@@ -174,7 +174,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="table-wrap">
+                            <div class="table_wrap">
                                 <el-table
                                     v-loading="resLoading"
                                     element-loading-text="玩命加载中.."
@@ -226,6 +226,9 @@
                                             <span>&yen;{{scope.row.price || '--'}}</span>
                                         </template>
                                     </el-table-column>
+                                    <div slot="empty">
+                                        <no-search-result></no-search-result>
+                                    </div>
                                 </el-table>
                             </div>
                         </div>
@@ -298,7 +301,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="table-wrap">
+                            <div class="table_wrap">
                                 <el-table
                                     v-loading="adsLoading"
                                     element-loading-text="玩命加载中.."
@@ -373,6 +376,9 @@
                                             <span>&yen;{{scope.row.price || '--'}}</span>
                                         </template>
                                     </el-table-column>
+                                    <div slot="empty">
+                                        <no-search-result></no-search-result>
+                                    </div>
                                 </el-table>
                             </div>
                         </div>
@@ -387,8 +393,12 @@
     import api from '../../../api/api';
     import commaFormat from '../../../commonFun/commaFormat';
     import timeFormat from '../../../commonFun/timeFormat';
+    import noSearchResult from "../../../components/common/components/noSearchResult";
     export default {
         name: "adsAnalysis",
+        components:{
+            noSearchResult
+        },
         data(){
             return{
                 // 判断是否已获取过数据

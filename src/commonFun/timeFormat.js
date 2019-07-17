@@ -232,30 +232,30 @@ timeFormat.returnMonthCount = function (AddMonthCount,format) {  // format: . �
     return Y + format + M + format + D
 }
 // 获取date本月本周或者近两周的时间(周一到周日为一周),例如获取近一周的时间 returnDayRange(7, new Date());
-timeFormat.returnDayRange = function (num, date){
-	let resultObj = {
-		startTime: '',
-		endTime: '',
-	};
-	let time = new Date(this.toDate(date, '/'));
-	let sTime = time.getTime();
-	let day = time.getDay();
-	let limit = (day-1) * 86400000;
-	let resultTime = time.getTime() - limit;
-	let startTime = new Date(resultTime);
-	let endTime = resultTime + (num-1)*86400000;
-	resultObj.startTime = timeFormat.toDate(startTime);
-	resultObj.endTime = timeFormat.toDate(new Date(endTime));
-	return resultObj;
+timeFormat.returnDayRange = function (num, date) {
+    let resultObj = {
+        startTime: '',
+        endTime: '',
+    };
+    let time = new Date(this.toDate(date, '/'));
+    let sTime = time.getTime();
+    let day = time.getDay();
+    let limit = (day - 1) * 86400000;
+    let resultTime = time.getTime() - limit;
+    let startTime = new Date(resultTime);
+    let endTime = resultTime + (num - 1) * 86400000;
+    resultObj.startTime = timeFormat.toDate(startTime);
+    resultObj.endTime = timeFormat.toDate(new Date(endTime));
+    return resultObj;
 }
 // 获取传入日期当月的天数
-timeFormat.getCurrMonthDays = function(date){
-	let aDate = new Date(this.toDate(date));
-	let aYear = aDate.getFullYear();
-	let aMonth = aDate.getMonth()+1;
-	let new_date = new Date(aYear, aMonth, 0);
-	//这里传入的0,代表获取上一个月的最后一天;如果传1,则获得当月的第一天；
-	return new_date.getDate();
+timeFormat.getCurrMonthDays = function (date) {
+    let aDate = new Date(this.toDate(date, '/'));
+    let aYear = aDate.getFullYear();
+    let aMonth = aDate.getMonth() + 1;
+    let new_date = new Date(aYear, aMonth, 0);
+    //这里传入的0,代表获取上一个月的最后一天;如果传1,则获得当月的第一天；
+    return new_date.getDate();
 }
 // 获取指定时间并计算N月前/后的日期
 timeFormat.getSpecifiedDateStr = function (specifiedDate,AddMonthCount) {

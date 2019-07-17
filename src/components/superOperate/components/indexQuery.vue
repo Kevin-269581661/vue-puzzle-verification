@@ -278,15 +278,15 @@
                     </div>
                 </div>
                 <el-row>
-                    <el-col :span="12">
+                    <el-col :span="12" style="position: relative">
                         <div class="charts1" id="allOrderPie" ref="allOrderPie"
-                             style="width: 600px;height: 350px"></div>
-                        <div class="title">
+                             style="width: 100%;height: 350px"></div>
+                        <div class="order_pie_title">
                             <p>{{orderScale}}</p>
-                            <h3 v-show="orderScale === '订单金额'">¥
-                                {{priceFormat(IOrderTotalShow)}}</h3>
-                            <h3 v-show="orderScale === '订单数量' || orderScale === '广告主数'">
-                                {{IOrderTotalShow}}</h3>
+                            <h3>
+                                {{orderScale === '订单金额' ? ('¥' + priceFormat(IOrderTotalShow)) : IOrderTotalShow}}</h3>
+                            <!--<h3 v-show="orderScale === '订单数量' || orderScale === '广告主数'">-->
+                                <!--{{IOrderTotalShow}}</h3>-->
                         </div>
                     </el-col>
                     <el-col :span="12">
@@ -305,6 +305,9 @@
                             </el-table-column>
                             <el-table-column prop="comCount" label="广告主" min-width="105" align="right">
                             </el-table-column>
+                            <div slot="empty">
+                                <no-search-result></no-search-result>
+                            </div>
                         </el-table>
                     </el-col>
                 </el-row>
@@ -358,7 +361,10 @@
                     </div>
                     <div class="keyDataChart">
                         <div class="charts2" id="PropertyRank" ref="PropertyRank"
-                             style="width: 100%;height: 350px"></div>
+                             style="width: 100%;height: 350px" v-if="isHavePropertyRankData"></div>
+                        <div v-else class="had_not_data">
+                            <no-search-result ></no-search-result>
+                        </div>
                     </div>
                 </div>
             </el-card>
@@ -409,7 +415,10 @@
                     </div>
                     <div class="keyDataChart">
                         <div class="charts2" id="adOwnerRank" ref="adOwnerRank"
-                             style="width: 100%;height: 350px"></div>
+                             style="width: 100%;height: 350px" v-if="isHaveAdOwnerRank"></div>
+                        <div v-else class="had_not_data">
+                            <no-search-result ></no-search-result>
+                        </div>
                     </div>
                 </div>
             </el-card>
@@ -463,7 +472,10 @@
                     </div>
                     <div class="keyDataChart">
                         <div class="charts2" id="salesRank" ref="salesRank"
-                             style="width: 100%;height: 350px"></div>
+                             style="width: 100%;height: 350px" v-if="isHaveSalesRank"></div>
+                        <div v-else class="had_not_data">
+                            <no-search-result ></no-search-result>
+                        </div>
                     </div>
                 </div>
             </el-card>
@@ -559,8 +571,12 @@
     import timeFormat from '../../../commonFun/timeFormat';
     import industry from '../../../commonFun/industryToText';
     import commaFormat from '../../../commonFun/commaFormat';
+    import noSearchResult from "../../../components/common/components/noSearchResult";
     export default {
         name: "indexQuery",
+        components:{
+            noSearchResult
+        },
         data(){
           return{
               isGetData: false,
@@ -659,6 +675,7 @@
               IOrderComCount: [{data: []}, {legendData: []}],   // 行业订单占比-广告主数
               IOrderDataShow: [{data: []}, {legendData: []}],
               /*  入驻物业排行  */
+              isHavePropertyRankData: true,
               PropertyRankEchart: '',
               PMCDataTitle: '社区数量',
               resPMCDate: [],
@@ -671,6 +688,7 @@
               ResPMCName: [],            // 入驻物业排行 - 物业名称
               PropertyRankTable: [],
               /*  广告主排行  */
+              isHaveAdOwnerRank: true,
               adOwnerRankEcharts: '',
               adOwnerDataTitle: '订单金额',
               adOwnerDate: [],
@@ -682,12 +700,12 @@
               AdOwnerShowData: [],        // 广告主排行 - 显示的柱状数据
               adOwnerRankTableVisible: false,
               adOwnerRankTable: [],
-              //销售业绩排行
+              /*  销售业绩排行  */
+              isHaveSalesRank: true,
               salesRankEcharts: '',
               salesDataTitle: '销售金额',
               salesRankDate: [],
               salesRankTime: '最近半年',
-              card9Xdate: ['', '', '', '', '', '', '', '', ''],
               salesRankData: [],            // 销售业绩排行数据
               salesRankName: [],            // 销售业绩排行名称
               salesRankTotalSum: [],        // 销售业绩排行-金额
@@ -757,7 +775,6 @@
         },
         watch:{
             sessionData(newVal,oldVal){
-                console.log('newVal',newVal,'oldVal',oldVal)
                 this.sessionData = newVal
             },
             selectCity(newVal,oldVal){
@@ -774,6 +791,7 @@
                 console.log('this.selectCity',this.selectCity,'this.oldSelectCity',this.oldSelectCity)
             },
             activeName(newVal,oldVal){
+                console.log('指标查询newVal',newVal,'oldVal',oldVal)
                 this.activeName = newVal
                 // 关键数据总量/增量趋势 - 社区接口
                 if(this.activeName === 'third'){
@@ -2059,8 +2077,8 @@
                     let dataArr = res.data
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         this.loginTimeout()       // 登录超时
-                    }else{
-                        if(dataArr.length > 0){
+                    } else {
+                        if (dataArr.length > 0) {
                             this.IOrderTotalArr = [{data: []}, {legendData: []}],// 行业订单占比-订单金额
                                 this.IOrderApCount = [{data: []}, {legendData: []}],// 行业订单占比-订单数量
                                 this.IOrderComCount = [{data: []}, {legendData: []}],// 行业订单占比-广告主数
@@ -2076,7 +2094,10 @@
                                 this.IOrderTotal.apCount += dataArr[i].apCount
                                 this.IOrderTotal.comCount += dataArr[i].comCount
                                 if (i <= 4) {
-                                    let tempTotal = {value: (dataArr[i].orderTotal / 100).toFixed(0), name: dataArr[i].iName}
+                                    let tempTotal = {
+                                        value: (dataArr[i].orderTotal / 100).toFixed(0),
+                                        name: dataArr[i].iName
+                                    }
                                     this.IOrderTotalArr[0].data.push(tempTotal)
                                     this.IOrderTotalArr[1].legendData.push(tempTotal.name)
 
@@ -2107,17 +2128,21 @@
                             this.IOrderDataShow[0].data = this.IOrderTotalArr[0].data
                             this.IOrderDataShow[1].legendData = this.IOrderTotalArr[1].legendData
                             this.allOrderPie()
-                        }else{
-                            this.$message({
-                                message: '行业订单占比,暂无数据',
-                                type: 'warning'
-                            })
+                        } else {
+                            console.log('行业订单占比,暂无数据')
+                            // this.$message({
+                            //     message: '行业订单占比,暂无数据',
+                            //     type: 'warning'
+                            // })
                         }
                     }
                 })
             },
             // 行业订单占比 饼图
             allOrderPie() {
+                if(this.allOrderPieEcharts){
+                    this.allOrderPieEcharts.dispose()
+                }
                 this.allOrderPieEcharts = this.$echarts.init(this.$refs.allOrderPie);
                 let that = this
                 this.allOrderPieEcharts.setOption({
@@ -2176,7 +2201,7 @@
                     },
                     series: [
                         {
-                            center: ["33%", "50%"],
+                            center: ["28%", "50%"],
                             name: this.orderScale,
                             type: "pie",
                             radius: ["50%", "70%"],
@@ -2266,7 +2291,8 @@
                             }
                             this.PropertyRank()
                         } else {
-                            this.$message.warning('入驻物业排行在该时段暂无数据！');
+                            this.isHavePropertyRankData = false
+                            // this.$message.warning('入驻物业排行在该时段暂无数据！');
                         }
                     }
                 })
@@ -2444,7 +2470,8 @@
                             }
                             this.adOwnerRank()
                         } else {
-                            this.$message.warning('广告主排行在该时段暂无数据！');
+                            this.isHaveAdOwnerRank = false
+                            // this.$message.warning('广告主排行在该时段暂无数据！');
                         }
                     }
                 })
@@ -2603,10 +2630,11 @@
                             } else if (this.salesDataTitle === '销售单数') {
                                 this.salesRankShowData = this.salesRankApCount
                             }
+                            this.salesRank()
                         } else {
-                            this.$message.warning('销售业绩排行暂无数据！');
+                            this.isHaveSalesRank = false
+                            // this.$message.warning('销售业绩排行暂无数据！');
                         }
-                        this.salesRank()
                     }
                 })
             },
@@ -2656,6 +2684,7 @@
                             axisLabel: {
                                 //坐标轴刻度标签
                                 margin: 7, //刻度标签与轴线之间的距离
+                                interval: 0,    //强制文字产生间隔
                                 textStyle: {
                                     fontFamily: "DINPro-Regular",
                                     color: "#2C313C" //坐标轴刻度文字的颜色
@@ -2807,26 +2836,26 @@
         position: relative;
     }
 
-    .order_scale .title {
+    .order_scale .order_pie_title {
         position: absolute;
-        z-index: 2;
-        top: 40%;
-        left: 8%;
-        width: 200px;
+        z-index: 9;
+        top: 42%;
+        left: 18%;
+        width: 142px;
         height: 70px;
+        text-align: center;
         box-sizing: border-box;
     }
 
-    .order_scale .title p {
+    .order_pie_title p {
         font-size: 14px;
         color: rgba(0, 0, 0, 0.45);
-        text-align: center;
+        /*text-align: center;*/
     }
 
-    .order_scale .title h3 {
+    .order_pie_title h3 {
         font-size: 18px;
         color: rgba(0, 0, 0, 0.85);
-        text-align: center;
         font-family: "DINPro-Regular", "PingFangSC-Regular", "Microsoft YaHei";
     }
 
@@ -2850,5 +2879,11 @@
 
     .date_picker /deep/ .el-range-editor--mini.el-input__inner{
         width: 230px;
+    }
+
+    @media all and (min-width: 1900px) {
+        .order_scale .order_pie_title{
+            left: 20.5%;
+        }
     }
 </style>

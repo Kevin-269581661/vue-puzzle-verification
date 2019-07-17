@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "axios": "0.18.0",
-    "element-ui": "^2.10.1",
+    "element-ui": "^2.3.9",
     "jquery": "3.2.1",
     "jspdf": "^1.4.1",
     "mint-ui": "^2.2.13",

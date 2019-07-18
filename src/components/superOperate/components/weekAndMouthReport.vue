@@ -12,7 +12,12 @@
                 <el-row :gutter="16">
                     <el-col :span="12" class="el_col_echarts">
                         <p class="issue_report_title">上刊/空刊/禁用比值</p>
-                        <div class="bar_charts el_col_bar" id="issue_report" ref="issueReportBar" style="height: 320px;width: 100%"></div>
+                        <div class="bar_charts el_col_bar" id="issue_report" ref="issueReportBar"
+                             style="height: 320px;width: 100%"
+                             v-loading="issueReportBarLoading"
+                             element-loading-text="玩命加载中..."
+                             element-loading-background="rgba(255, 255, 255)">
+                        </div>
                     </el-col>
                     <el-col :span="12">
                         <div class="el_col_bar el_col_table">
@@ -41,14 +46,17 @@
                 <div slot="header" class="clearfix">
                     <span class="box_card_title">本周在线客户列表</span>
                     <span class="box_card_title_right">
-                        统计：本周在刊订单10个；在刊点位3893面；归属业务员9个
+                        统计：本周在刊订单{{WeekOnLineCount.orderCount}}个；在刊点位{{WeekOnLineCount.adsCount}}面；归属业务员{{WeekOnLineCount.userCount}}个
                     </span>
                 </div>
                 <div class="week_online_client">
                     <el-table
                         :data="weekOnlineClientData"
                         class="chance_find_table"
-                        style="width: 100%">
+                        style="width: 100%"
+                        v-loading="weekOnlineClientLoading"
+                        element-loading-text="玩命加载中..."
+                        element-loading-background="rgba(255, 255, 255)">
                         <el-table-column
                             type="index"
                             width="65"
@@ -93,7 +101,6 @@
         </div>
         <!--发件图标-->
         <div class="subscriber_icon" @click="subscriberDialogVisible = true">
-            <!--<i class="el-icon-position"></i>-->
             <img class="subscriber_icon_position" src="../../../assets/images/position.png" alt="">
         </div>
         <el-dialog
@@ -134,6 +141,7 @@
         data(){
             return{
                 isGetData: false,
+                starTime: '',
                 // 自定义颜色
                 colorList: ['#2FC25B','#1890FF','#FACC14'],
                 timeList:[],
@@ -141,6 +149,8 @@
                 // 头部显示的时间
                 showDate:[],
                 weekOverviewData: '',
+                // 饼状图
+                issueReportBarLoading: true,
                 issueReportPieEcharts:'',
                 issueReportPieData: {
                     title: ['空刊数(面)', '在刊媒体(面)', '禁用媒体(面)'],
@@ -153,7 +163,13 @@
                 // 数据概览 - 表格数据
                 issueReportTableData: [],
                 // 周在线客户
+                weekOnlineClientLoading: true,
                 weekOnlineClientData:[],
+                WeekOnLineCount:{
+                    orderCount: 0,
+                    adsCount: 0,
+                    userCount: 0,
+                },
                 // 收件人设置
                 subscriberDialogVisible: false,
                 recipientData: [
@@ -199,6 +215,7 @@
                         this.getIssueReportData();
                         // 本周在线客户列表
                         this.getWeekOnlineUserData()
+                        this.getWeekOnLineCount()
                     }
                 }
             }
@@ -217,6 +234,7 @@
             },
             // 设置初始时间
             setTime() {
+                this.starTime = timeFormat.returnDayCount(0,'/')
                 let date = timeFormat.getWorkWeek('/')
                 this.timeList = JSON.parse(JSON.stringify(date))
                 this.showDate = timeFormat.getWorkWeek('/')
@@ -224,12 +242,13 @@
             },
             // 数据总览接口
             getIssueReportData(){
+                this.issueReportBarLoading = true
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                     startDate: this.timeList[0],
                     endDate: this.timeList[1],
-                    asrId: 1
+                    asrIds: 1
                 }
                 console.log('数据总览params',params)
                 api.getApi(this.apiVar.report + '/api/v2/getWeekOverview', params).then(res => {
@@ -384,15 +403,42 @@
                         }
                     ]
                 })
+                this.issueReportBarLoading = false
             },
-            // 本周在线客户列表
-            getWeekOnlineUserData(){
+            // 本周在线统计
+            getWeekOnLineCount(){
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    startDate: this.timeList[0],
-                    endDate: this.timeList[1],
-                    asrId: 1
+                    startDate: this.starTime,
+                    asrIds: this.sessionData.asrID
+                }
+                console.log('本周在线统计params',params)
+                api.getApi(this.apiVar.report + '/api/v2/listOnlineCustomCountInfo', params).then(res => {
+                    console.log('本周在线统计res', res)
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        this.loginTimeout()
+                    } else if (res.data.SysCode === 200200) {
+                        let dataObj = res.data.data
+                        this.WeekOnLineCount = {
+                            orderCount: dataObj.orderCount,
+                            adsCount: dataObj.adsCount,
+                            userCount: dataObj.userCount,
+                        }
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                })
+            },
+            // 本周在线客户列表
+            getWeekOnlineUserData(){
+                this.weekOnlineClientLoading = true
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    startDate: this.starTime, //this.timeList[0],
+                    // endDate: this.timeList[1],
+                    asrIds: this.sessionData.asrID
                 }
                 console.log('本周在线客户列表params',params)
                 api.getApi(this.apiVar.report + '/api/v2/getOnlineCustom', params).then(res => {
@@ -420,6 +466,7 @@
                     })
                 }
                 this.weekOnlineClientData = arr
+                this.weekOnlineClientLoading = false
             },
 
             // 新增一行收件人

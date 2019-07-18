@@ -15,7 +15,7 @@
             </div>
             <el-tabs v-model="activeName" @tab-click="tabHandleClick">
                 <el-tab-pane label="数据概览" name="first" v-if="isQinLinCity">
-                    <data-read :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName" :isAllCity="isAllCity"></data-read>
+                    <data-read :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName"></data-read>
                 </el-tab-pane>
                 <el-tab-pane label="周报/月报" name="second" v-if="!isAllCity && isQinLinCity">
                     <weekAndMouth-report :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName"></weekAndMouth-report>

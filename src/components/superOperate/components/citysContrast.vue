@@ -615,7 +615,6 @@
                     ]
                 });
             },
-
             /*  城市数据对比  */
             // 类型radio
             cityBattleRadio(){
@@ -936,7 +935,6 @@
                 );
                 this.cityBattleLoading = false
             },
-
             /*  城市上刊率对比  */
             // 城市选择
             cityRateSelect(res){

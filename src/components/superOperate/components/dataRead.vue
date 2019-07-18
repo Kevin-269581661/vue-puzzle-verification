@@ -380,6 +380,7 @@
                 cityList:['北京亲邻众联','上海多邻网络','广州亲粤邻','深圳亲邻交互','成都亲邻','重庆亲邻','天津亲邻众联'],
                 // 自定义颜色
                 colorList: ['#2FC25B','#1890FF','#FACC14','#36cbcb'],
+                isAllCity: true,
                 toDay: '',
                 isGetData: false,
                 // 前一次-全局选择的城市
@@ -577,10 +578,10 @@
                 type:String,
                 required: true
             },
-            isAllCity:{
-                type:Boolean,
-                required: true,
-            }
+            // isAllCity:{
+            //     type:Boolean,
+            //     required: true,
+            // }
         },
         watch: {
             sessionData(newVal, oldVal) {
@@ -589,6 +590,11 @@
             },
             selectCity(newVal, oldVal) {
                 this.selectCity = newVal
+                if(this.selectCity === '0'){
+                    this.isAllCity = true
+                }else{
+                    this.isAllCity = false
+                }
                 if (this.activeName === 'first') {
                     this.getDataRead();
                 } else {
@@ -627,9 +633,14 @@
             }
         },
         mounted(){
+            if (this.sessionData.asrID !== '999') {
+                this.isAllCity = false
+            } else {
+                this.isAllCity = true
+            }
+            // console.log('this.isAllCity',this.isAllCity)
             this.echartsListener();
             this.setTime();
-            // this.getDataRead();
         },
         methods:{
             // 统一调用接口
@@ -995,12 +1006,6 @@
                     },
                     dataset: {
                         source: this.toDayPreceptBarData
-                        // source: [
-                        //     ['product', '方案/订单数(个)', '点位数(面)', '点位数(面·周)'],
-                        //     ['新建方案', 38, 288, 520],
-                        //     ['预锁方案', 30, 200, 448],
-                        //     ['生成订单', 20, 180, 368],
-                        // ]
                     },
                     grid: {
                         top: '10%',
@@ -1184,7 +1189,7 @@
                     params.asrIds = this.returnAsrID()
                 }
                 api.getApi(this.apiVar.report + '/api/v2/getAdsInfoByWeek', params).then(res => {
-                    console.log('广告销售-顶部数据接口res', res)
+                    console.log('广告销售-左侧数据接口res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         this.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
@@ -1216,7 +1221,7 @@
                     }
                     beenSold.push(aKey.soldAdsCount)
                     unSold.push(aKey.unsoldAdsCount)
-                    adsDisabled.push(aKey.forbiddenAdsCount)
+                    adsDisabled.push(aKey.forbiddenAdsCount || 0)
                     publishRate.push(Math.floor(aKey.publishRate * 10000)/100)
                     i++
                 }
@@ -1259,7 +1264,7 @@
                 this.adSaleBarEcharts = this.$echarts.init(this.$refs.adSaleBar);
                 let option =  {
                     tooltip: {
-                        // trigger: 'axis',
+                        trigger: 'axis',
                         axisPointer: {            // 坐标轴指示器，坐标轴触发有效
                             type: 'shadow',        // 默认为直线，可选为：'line' | 'shadow'
                             shadowStyle: {
@@ -1271,10 +1276,27 @@
                         borderColor: '#dddddd',
                         borderWidth: 1,
                         formatter: function (params) {
-                            return '<p class="echarts_tooltip_title">' + '<span>' + params.name + '</span>' + '<span>' + '数量' + '</span>' + '</p>' + '<br/>' +
-                                '<p class="echarts_tooltip_content">' + '<span><i class="echarts_tooltip_i" style="background-color: '+ params.color +'"></i>'
-                                + params.seriesName + '</span>' + (params.seriesName === '周在刊率' ? (params.data + '%') : params.data) + '</p>'
+                            // console.log('params',params)
+                            let title = '';
+                            let arr = [];
+                            let total = params[1].value + params[2].value + params[3].value
+                            for (let i = 0; i < params.length; i++) {
+                                title = '<p class="echarts_tooltip_title">' +
+                                    '<span>' +  params[i].name + '</span>' + '<span>' + '数值' + '</span>' + '</p>' + '<br/>'
+                                let data = '<p class="echarts_tooltip_content">' +
+                                    '<span>'+ '<i class="echarts_tooltip_i" style="background:'+ params[i].color +'">' + '</i>' +
+                                    params[i].seriesName + '</span>' +  (params[i].seriesName === '周在刊率' ? (params[i].value + '%') : params[i].seriesName === "合计" ? total : params[i].value)+ '</p>'
+                                arr.push(data)
+                            }
+                            let tooltip = arr.join('')
+                            return title + tooltip
                         },
+                        // formatter: function (params) {
+                        //     console.log('params',params)
+                        //     return '<p class="echarts_tooltip_title">' + '<span>' + params.name + '</span>' + '<span>' + '数量' + '</span>' + '</p>' + '<br/>' +
+                        //         '<p class="echarts_tooltip_content">' + '<span><i class="echarts_tooltip_i" style="background-color: '+ params.color +'"></i>'
+                        //         + params.seriesName + '</span>' + (params.seriesName === '周在刊率' ? (params.data + '%') : params.data) + '</p>'
+                        // },
                     },
                     grid: {
                         top: '8%',
@@ -1581,8 +1603,8 @@
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    startDate: this.toDay.substring(0,4) + '/01/01',
-                    endDate: this.toDay,
+                    // startDate: this.toDay.substring(0,4) + '/01/01',
+                    startDate: this.toDay,
                     type: this.adInventoriedType
                 }
                 if (this.selectCity !== '0') {

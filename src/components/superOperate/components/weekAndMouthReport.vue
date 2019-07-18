@@ -285,7 +285,7 @@
                 let arr = []
                 for (let key in dataObj) {
                     if (key === 'resourceCount') {
-                        arr[0] = {value: dataObj[key], name: '社区总数(面)'}
+                        arr[0] = {value: dataObj[key], name: '社区总数(个)'}
                     } else if (key === 'lightBox') {
                         arr[1] = {value: dataObj[key], name: '灯箱数'}
                     } else if (key === 'totalAdsCount') {

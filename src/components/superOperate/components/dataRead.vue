@@ -647,11 +647,9 @@
             getDataRead(){
                 // 数据总览
                 this.getTotalData();
-                // this.initTotalDataBar();
                 // 当天概况
                 this.getToDayHeaderData();
                 this.getToDayPreceptData();
-                // this.initToDayPreceptBar();
                 // 广告销售 - 顶部数据接口
                 this.getAdSaleHeaderData();
                 // 广告销售 - 饼状图
@@ -1215,14 +1213,14 @@
                 let publishRate = []
                 let totalNum = 0
                 let i = 0
-                for(let aKey of this.adSaleList){
-                    if(i < 1){
+                for (let aKey of this.adSaleList) {
+                    if (i < 1) {
                         totalNum += aKey.soldAdsCount + aKey.unsoldAdsCount + (aKey.forbiddenAdsCount || 0)
                     }
                     beenSold.push(aKey.soldAdsCount)
                     unSold.push(aKey.unsoldAdsCount)
                     adsDisabled.push(aKey.forbiddenAdsCount || 0)
-                    publishRate.push(Math.floor(aKey.publishRate * 10000)/100)
+                    publishRate.push(Math.floor(aKey.publishRate * 10000) / 100)
                     i++
                 }
                 // 周
@@ -1291,12 +1289,6 @@
                             let tooltip = arr.join('')
                             return title + tooltip
                         },
-                        // formatter: function (params) {
-                        //     console.log('params',params)
-                        //     return '<p class="echarts_tooltip_title">' + '<span>' + params.name + '</span>' + '<span>' + '数量' + '</span>' + '</p>' + '<br/>' +
-                        //         '<p class="echarts_tooltip_content">' + '<span><i class="echarts_tooltip_i" style="background-color: '+ params.color +'"></i>'
-                        //         + params.seriesName + '</span>' + (params.seriesName === '周在刊率' ? (params.data + '%') : params.data) + '</p>'
-                        // },
                     },
                     grid: {
                         top: '8%',
@@ -1415,7 +1407,7 @@
                         {
                             name:'禁用点位',
                             type:'bar',
-                            barWidth: '35%',
+                            barWidth: '30%',
                             stack:'xxx',
                             itemStyle: {
                                 normal: {
@@ -1430,7 +1422,7 @@
                         {
                             name:'已售点位',
                             type:'bar',
-                            barWidth: '35%',
+                            barWidth: '30%',
                             stack:'xxx',
                             itemStyle: {
                                 normal: {
@@ -1445,7 +1437,7 @@
                         {
                             name:'未售点位',
                             type:'bar',
-                            barWidth: '35%',
+                            barWidth: '30%',
                             stack:'xxx',
                             itemStyle: {
                                 normal: {
@@ -1913,9 +1905,9 @@
                     }
                 })
             },
-            setChanceFindTabelData(dataList){
+            setChanceFindTabelData(dataList) {
                 let arr = []
-                for(let key of dataList){
+                for (let key of dataList) {
                     arr.push({
                         name: key.customerName,
                         cooperation: key.orderCount ? key.orderCount : '无订单',
@@ -1928,12 +1920,12 @@
             },
             // 饼状图
             initChanceFindPie() {
-                if(this.chanceFindPieEcharts){
+                if (this.chanceFindPieEcharts) {
                     this.chanceFindPieEcharts.dispose()
                 }
                 this.chanceFindPieEcharts = this.$echarts.init(this.$refs.chanceFindPie)
                 let total = 0
-                for(let key of this.chanceFindPieData.data){
+                for (let key of this.chanceFindPieData.data) {
                     total += key.value
                 }
                 this.chanceFindPieEcharts.setOption({

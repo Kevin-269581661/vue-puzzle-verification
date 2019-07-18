@@ -37,7 +37,7 @@
 <script>
     import 'echarts/lib/chart/map';
     import 'echarts/map/js/china.js';
-    import api from '../../api/api';
+    // import api from '../../api/api';
     import timeFormat from '../../commonFun/timeFormat';
     import dataRead from './components/dataRead';
     import weekAndMouthReport from './components/weekAndMouthReport';
@@ -58,7 +58,7 @@
                 // 当前tabs
                 activeName: '',
                 // 数据截止时间
-                toTime:'2019/07/01',
+                toTime:'',
                 // 顶部Tab城市选择
                 headerCityList: [],
                 citys:[

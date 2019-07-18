@@ -217,7 +217,7 @@
             },
             // 设置初始时间
             setTime() {
-                let date = timeFormat.getWorkWeek('-')
+                let date = timeFormat.getWorkWeek('/')
                 this.timeList = JSON.parse(JSON.stringify(date))
                 this.showDate = timeFormat.getWorkWeek('/')
                 console.log('_________',this.timeList)

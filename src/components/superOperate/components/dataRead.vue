@@ -86,7 +86,7 @@
             <el-card  class="box-card" shadow="never">
                 <div slot="header" class="clearfix">
                     <span class="box_card_title">当天概况</span>
-                    <span class="box_card_title_right" style="float: right; padding: 3px 0">数据更新至 2019年04月13日 00:00</span>
+                    <span class="box_card_title_right" style="float: right; padding: 3px 0">数据更新至{{toDay}}</span>
                 </div>
                 <ul class="toDay_data_ul">
                     <li class="data_li">生成订单：{{basicToDayData.orderCount}}个</li>
@@ -142,8 +142,8 @@
                             v-model="adSaleMonth"
                             type="month"
                             size="small"
-                            value-format="yyyy-MM"
-                            format="yyyy-MM"
+                            value-format="yyyy/MM"
+                            format="yyyy/MM"
                             placeholder="选择月"
                             :clearable="false"
                             @change="adSaleChange">
@@ -153,43 +153,42 @@
                 <ul class="toDay_data_ul">
                     <li class="ad_sale_li">
                         <h3 class="ad_sale_li_title">点位总量(面·周)</h3>
-                        <!--<p class="ad_sale_li_num">5,204*4=20,816</p>-->
                         <p class="ad_sale_li_num">{{adSaleHeaderData.pointCount || 0}}</p>
                         <p class="ad_sale_li_text">
-                            较上个月 <i class="el-icon-back ad_sale_top_icon"></i>
-                            <span>9.66%</span>
+                            较上个月 <i class="el-icon-back" :class="adSaleHeaderData.comparePoint >= 0 ? 'ad_sale_top_icon' : 'ad_sale_bottom_icon'"></i>
+                            <span>{{adSaleHeaderData.comparePoint}}%</span>
                         </p>
                     </li>
                     <li class="ad_sale_li">
                         <h3 class="ad_sale_li_title">月均上刊率</h3>
                         <p class="ad_sale_li_num">{{adSaleHeaderData.monthPublishRate || 0}}%</p>
                         <p class="ad_sale_li_text">
-                            较上个月 <i class="el-icon-back ad_sale_top_icon"></i>
-                            <span>9.66%</span>
+                            较上个月 <i class="el-icon-back" :class="adSaleHeaderData.compareMonthPublish >= 0 ? 'ad_sale_top_icon' : 'ad_sale_bottom_icon'"></i>
+                            <span>{{adSaleHeaderData.compareMonthPublish}}%</span>
                         </p>
                     </li>
                     <li class="ad_sale_li">
                         <h3 class="ad_sale_li_title">当前禁用媒体数量(面)</h3>
                         <p class="ad_sale_li_num">{{adSaleHeaderData.forbiddenMediaCount || 0}}</p>
                         <p class="ad_sale_li_text">
-                            较上个月 <i class="el-icon-back ad_sale_bottom_icon"></i>
-                            <span>25.66%</span>
+                            较上个月 <i class="el-icon-back" :class="adSaleHeaderData.compareMedia >= 0 ? 'ad_sale_top_icon' : 'ad_sale_bottom_icon'"></i>
+                            <span>{{adSaleHeaderData.compareMedia}}%</span>
                         </p>
                     </li>
                     <li class="ad_sale_li">
                         <h3 class="ad_sale_li_title">成交订单</h3>
                         <p class="ad_sale_li_num">{{adSaleHeaderData.orderCount}}</p>
                         <p class="ad_sale_li_text"> 较上个月
-                            <i class="el-icon-back ad_sale_bottom_icon"></i>
-                            <span>9.66%</span>
+                            <i class="el-icon-back" :class="adSaleHeaderData.compareOrder >= 0 ? 'ad_sale_top_icon' : 'ad_sale_bottom_icon'"></i>
+                            <span>{{adSaleHeaderData.compareOrder}}%</span>
                         </p>
                     </li>
                     <li class="ad_sale_li">
                         <h3 class="ad_sale_li_title">账面销售额</h3>
                         <p class="ad_sale_li_num">¥ {{priceFormat(adSaleHeaderData.sale)}}</p>
                         <p class="ad_sale_li_text"> 较上个月
-                            <i class="el-icon-back ad_sale_top_icon"></i>
-                            <span>9.66%</span>
+                            <i class="el-icon-back" :class="adSaleHeaderData.compareSale >= 0 ? 'ad_sale_top_icon' : 'ad_sale_bottom_icon'"></i>
+                            <span>{{adSaleHeaderData.compareSale}}%</span>
                         </p>
                     </li>
                 </ul>
@@ -227,7 +226,7 @@
             <el-card  class="box-card" shadow="never">
                 <div slot="header" class="clearfix">
                     <span class="box_card_title">广告库存</span>
-                    <span class="box_card_title_right" style="float: right; padding: 3px 0">数据更新至 2019年07月13日 12:00</span>
+                    <span class="box_card_title_right" style="float: right; padding: 3px 0">数据更新至{{toDay}}</span>
                 </div>
                 <el-row :gutter="16">
                     <el-col :span="12" class="el_col_charts"
@@ -245,7 +244,7 @@
                             </el-select>
                         </div>
                         <p class="price_box">
-                            ¥ {{adInventoriedDate.estimateSale || 0}}
+                            ¥ {{priceFormat(adInventoriedDate.estimateSale) || 0}}
                             <el-popover
                                 placement="top"
                                 trigger="hover">
@@ -272,7 +271,7 @@
                             </el-select>
                         </div>
                         <p class="price_box">
-                            ¥ {{adInventoryDate.estimateSale || 0}}
+                            ¥ {{priceFormat(adInventoryDate.estimateSale) || 0}}
                             <el-popover
                                 placement="top"
                                 trigger="hover">
@@ -307,10 +306,13 @@
                             v-model="chanceFindDate"
                             size="small"
                             type="daterange"
+                            value-format="yyyy/MM/dd"
+                            format="yyyy/MM/dd"
                             range-separator="至"
                             start-placeholder="开始日期"
                             end-placeholder="结束日期"
-                            :clearable="false">
+                            :clearable="false"
+                            @change="changeFindDate">
                         </el-date-picker>
                     </div>
                 </div>
@@ -377,7 +379,7 @@
             return{
                 cityList:['北京亲邻众联','上海多邻网络','广州亲粤邻','深圳亲邻交互','成都亲邻','重庆亲邻','天津亲邻众联'],
                 // 自定义颜色
-                colorList: ['#2FC25B','#1890FF','#FACC14'],
+                colorList: ['#2FC25B','#1890FF','#FACC14','#36cbcb'],
                 toDay: '',
                 isGetData: false,
                 // 前一次-全局选择的城市
@@ -419,19 +421,19 @@
                 totalTableList: [
                     {
                         name:'新建方案',
-                        number: 3,
+                        number: 0,
                         ads: 0,
                         adsWeek: 0,
                     },
                     {
                         name:'预锁方案',
-                        number: 2,
+                        number: 0,
                         ads: 0,
                         adsWeek: 0,
                     },
                     {
                         name:'发布订单',
-                        number: 1,
+                        number: 0,
                         ads: 0,
                         adsWeek: 0,
                     },
@@ -439,13 +441,13 @@
                 // 当天概况 - 柱状图 数据
                 toDayPreceptBarData: [
                     ['product', '方案/订单数(个)', '点位数(面)', '点位数(面·周)'],
-                    ['新建方案', 38, 288, 520],
-                    ['预锁方案', 30, 200, 448],
-                    ['生成订单', 20, 180, 368],
+                    ['新建方案', 0, 0, 0],
+                    ['预锁方案', 0, 0, 0],
+                    ['生成订单', 0, 0, 0],
                 ],
                 /*  广告销售  */
                 adSaleMonth: '',
-                //
+                AdSaleHeadData:{},
                 adSaleHeaderData:{
                     pointCount: 0,
                     monthPublishRate: 0,
@@ -525,11 +527,12 @@
                 // 机会挖掘 - 饼状图
                 chanceFindPieEcharts: '',
                 chanceFindPieData: {
-                    title: ['生成方案', '生成订单', '未合作'],
+                    title: ['初购客户', '复购客户', '未合作','沉默客户'],
                     data: [
                         {value: 0, name: '生成方案'},
                         {value: 0, name: '生成订单'},
-                        {value: 0, name: '未合作'}
+                        {value: 0, name: '未合作'},
+                        {value: 0, name: '沉默客户'}
                     ]
                 },
                 // 机会挖掘表格
@@ -670,12 +673,12 @@
             },
             // 设置初始时间
             setTime() {
-                let endTime = timeFormat.returnMonthCount(0,'-');
+                let endTime = timeFormat.returnMonthCount(0,'/');
                 this.adSaleMonth = endTime.substring(0,7);
                 this.toDay = endTime;
                 this.totalDataYear = endTime.substring(0,4);
                 // 设置机会挖掘默认时间
-                let starTime = timeFormat.returnDayCount(-30,'-')
+                let starTime = timeFormat.returnDayCount(-30,'/')
                 this.chanceFindDate = [starTime, endTime]
                 console.log('starTime',starTime,'endTime',endTime)
             },
@@ -697,8 +700,8 @@
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    startDate: this.totalDataYear + '-01-01',
-                    endDate: this.totalDataYear + '-12-31',
+                    startDate: this.totalDataYear + '/01/01',
+                    endDate: this.totalDataYear + '/12/31',
                 }
                 if (this.selectCity !== '0') {
                     params.asrIds = this.returnAsrID()
@@ -719,6 +722,7 @@
                                 publishRate: dataObj.publishRate ?  Math.floor(dataObj.publishRate * 10000)/100 : 0,
                         }
                         this.basicTotalBarData = JSON.parse(JSON.stringify(dataObj.asrList))
+                        console.log('basicTotalData',this.basicTotalData)
                         this.setTotalDataBar()
                     } else {
                         this.messageFun('warning', res.data.MSG)
@@ -863,7 +867,7 @@
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                     startDate: this.toDay,
-                    endDate: timeFormat.returnDayCount(1,'-') //this.toDay,
+                    endDate: timeFormat.returnDayCount(1,'/') //this.toDay,
                 }
                 if (this.selectCity !== '0') {
                     params.asrIds = this.returnAsrID()
@@ -895,7 +899,7 @@
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                     startDate: this.toDay,
-                    endDate: timeFormat.returnDayCount(1,'-'),
+                    endDate: timeFormat.returnDayCount(1,'/'),
                 }
                 if (this.selectCity !== '0') {
                     params.asrIds = this.returnAsrID()
@@ -1127,12 +1131,12 @@
             },
             // 顶部接口
             getAdSaleHeaderData(){
-                let monthDayNum = timeFormat.getCurrMonthDays(this.adSaleMonth + '-01')
+                let monthDayNum = timeFormat.getCurrMonthDays(this.adSaleMonth + '/01')
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    startDate: this.adSaleMonth + '-01',
-                    endDate: this.adSaleMonth + '-' + monthDayNum,
+                    startDate: this.adSaleMonth + '/01',
+                    endDate: this.adSaleMonth + '/' + monthDayNum,
                 }
                 if (this.selectCity !== '0') {
                     params.asrIds = this.returnAsrID()
@@ -1143,17 +1147,28 @@
                         this.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
-                        this.adSaleHeaderData = {
-                            pointCount: dataObj.pointCount,
-                            monthPublishRate: dataObj.monthPublishRate ?  Math.floor(dataObj.monthPublishRate * 10000)/100 : 0,
-                            forbiddenMediaCount: dataObj.forbiddenMediaCount,
-                            orderCount: dataObj.orderCount,
-                            sale: dataObj.sale
-                        }
+                        this.setAdSaleHeaderData(dataObj)
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }
                 })
+            },
+            // 设置头部数据
+            setAdSaleHeaderData(dataObj) {
+                let {curMonthInfo,preMonthInfo} = dataObj
+                this.adSaleHeaderData = {
+                    pointCount: curMonthInfo.pointCount,
+                    comparePoint: this.keepTwoDecimal((curMonthInfo.pointCount - preMonthInfo.pointCount) / preMonthInfo.pointCount),
+                    monthPublishRate: curMonthInfo.monthPublishRate ? Math.floor(curMonthInfo.monthPublishRate * 10000) / 100 : 0,
+                    compareMonthPublish: this.keepTwoDecimal((curMonthInfo.monthPublishRate - preMonthInfo.monthPublishRate) / preMonthInfo.monthPublishRate),
+                    forbiddenMediaCount: curMonthInfo.forbiddenMediaCount,
+                    compareMedia:  this.keepTwoDecimal((curMonthInfo.forbiddenMediaCount - preMonthInfo.forbiddenMediaCount) / preMonthInfo.forbiddenMediaCount),
+                    orderCount: curMonthInfo.orderCount,
+                    compareOrder: this.keepTwoDecimal((curMonthInfo.orderCount - preMonthInfo.orderCount) / preMonthInfo.orderCount),
+                    sale: curMonthInfo.sale,
+                    compareSale: this.keepTwoDecimal((curMonthInfo.sale - preMonthInfo.sale) / preMonthInfo.sale),
+                }
+
             },
             getAdSaleData(){
                 this.adSaleBarLoading = true
@@ -1162,8 +1177,8 @@
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    startDate: this.adSaleMonth + '-01',
-                    endDate: this.adSaleMonth + '-' + monthDayNum,
+                    startDate: this.adSaleMonth + '/01',
+                    endDate: this.adSaleMonth + '/' + monthDayNum,
                 }
                 if (this.selectCity !== '0') {
                     params.asrIds = this.returnAsrID()
@@ -1566,7 +1581,7 @@
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    startDate: this.toDay.substring(0,4) + '-01-01',
+                    startDate: this.toDay.substring(0,4) + '/01/01',
                     endDate: this.toDay,
                     type: this.adInventoriedType
                 }
@@ -1609,14 +1624,14 @@
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    startDate: timeFormat.returnDayCount(1,'-'),
-                    endDate: this.toDay.substring(0,4) + '-12-31',
+                    startDate: timeFormat.returnDayCount(1,'/'),
+                    // endDate: this.toDay.substring(0,4) + '-12-31',
                     type: this.adInventoryType
                 }
                 if (this.selectCity !== '0') {
                     params.asrIds = this.returnAsrID()
                 }
-                api.getApi(this.apiVar.report + '/api/v2/getAdsInventoryInfo', params).then(res => {
+                api.getApi(this.apiVar.report + '/api/v2/getAdsFutureInventoryInfo', params).then(res => {
                     console.log('广告库存数据接口 - 未来', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         this.loginTimeout()
@@ -1806,7 +1821,11 @@
                 })
                 this.adInventoryLoading = false
             },
-            // 机会挖掘
+            /*  机会挖掘  */
+            changeFindDate(){
+                this.getChanceFindEcharts()
+            },
+            // 左侧图表接口
             getChanceFindEcharts(){
                 this.chanceFindPieLoading = true
                 let params = {
@@ -1826,18 +1845,20 @@
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         let dataArr = []
-                        let userNum = 0
+                        // let userNum = 0
                         for (let key in dataObj) {
-                            userNum += dataObj[key] ? dataObj[key] : 0
-                            if (key === 'newPlan') {
-                                dataArr[0] = {value: dataObj[key], name: '生成方案'}
-                            } else if (key === 'newOrder') {
-                                dataArr[1] = {value: dataObj[key], name: '生成订单'}
-                            } else if (key === 'unCooperative') {
+                            // userNum += dataObj[key] ? dataObj[key] : 0
+                            if (key === 'firstCooperation') {
+                                dataArr[0] = {value: dataObj[key], name: '初购客户'}
+                            } else if (key === 'multipleCooperation') {
+                                dataArr[1] = {value: dataObj[key], name: '复购客户'}
+                            } else if (key === 'unCooperation') {
                                 dataArr[2] = {value: dataObj[key] || 0, name: '未合作'}
+                            } else if (key === 'silenceCooperation') {
+                                dataArr[3] = {value: dataObj[key] || 0, name: '沉默客户'}
                             }
                         }
-                        this.chanceFindUserNum = userNum
+                        this.chanceFindUserNum = dataObj.totalUser
                         this.chanceFindPieData.data = dataArr;
                         this.initChanceFindPie();
                     } else {
@@ -1926,7 +1947,7 @@
                             let precent;
                             for(let key of this.chanceFindPieData.data){
                                 if (key.name == name) {
-                                    precent = parseFloat((key.value / total) * 100).toFixed(2) + '%'
+                                    precent = total ? (parseFloat((key.value / total) * 100).toFixed(2) + '%') : '0%'
                                     value = key.value
                                 }
                             }
@@ -2016,8 +2037,21 @@
             },
             // 价格加上逗号
             priceFormat(price) {
-                price = commaFormat.init(price)
-                return price.substring(price,price.length - 3);
+                if (price) {
+                    price = commaFormat.init(price)
+                    return price.substring(price, price.length - 3);
+                } else {
+                    return 0
+                }
+            },
+            // 保留两位小数
+            keepTwoDecimal(num){
+                let result = parseFloat(num);
+                if (isNaN(result)) {
+                    return 0;
+                }
+                result = Math.round(num * 100) / 100;
+                return result;
             },
             // 指定日期为今年的第几周
             returnRankingWeekOnYear(date){

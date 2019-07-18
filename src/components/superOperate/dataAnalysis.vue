@@ -17,7 +17,7 @@
                 <el-tab-pane label="数据概览" name="first" v-if="isQinLinCity">
                     <data-read :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName" :isAllCity="isAllCity"></data-read>
                 </el-tab-pane>
-                <el-tab-pane label="周报/月报" name="second" v-if="!isAllCity && isQinLinCity"> <!--v-if="!isAllCity"-->
+                <el-tab-pane label="周报/月报" name="second" v-if="!isAllCity && isQinLinCity">
                     <weekAndMouth-report :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName"></weekAndMouth-report>
                 </el-tab-pane>
                 <el-tab-pane label="指标查询" name="third">
@@ -38,13 +38,14 @@
     import 'echarts/lib/chart/map';
     import 'echarts/map/js/china.js';
     import api from '../../api/api';
+    import timeFormat from '../../commonFun/timeFormat';
     import dataRead from './components/dataRead';
     import weekAndMouthReport from './components/weekAndMouthReport';
     import indexQuery from './components/indexQuery';
     import citysContrast from './components/citysContrast';
     import adsAnalysis from './components/adsAnalysis';
     export default {
-        name: "dataAnalysis_",
+        name: "dataAnalysis",
         data(){
             return{
                 sessionData: {},
@@ -86,6 +87,7 @@
             this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
         },
         mounted(){
+            this.toTime = timeFormat.returnMonthCount(0,'/');
             this.getBasicData()
         },
         methods:{

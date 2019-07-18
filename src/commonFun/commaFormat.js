@@ -5,7 +5,6 @@ var comma = {};
 comma.init = function (price) {
 	var newStr = "";
 	var count = 0;
-	// console.log(price)
 	let str = price.toString();
 	if (str.indexOf(".") == -1) {
 		for (let i = str.length - 1; i >= 0; i--) {

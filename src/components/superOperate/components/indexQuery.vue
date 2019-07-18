@@ -931,10 +931,7 @@
             analysisChangeMonth(String,temp,index){
                 if (String === 'trend') {
                     if (this.allkeyDataDate[0] > this.allkeyDataDate[1]) {
-                        this.$message({
-                            type: 'warning',
-                            message: '结束时间小于开始时间'
-                        })
+                        this.messageFun('warning','结束时间小于开始时间!')
                     } else {
                         let starT = ''
                         let endT = ''
@@ -950,10 +947,7 @@
                                     endT = this.allkeyDataDate[1]
                                 }
                                 this.allkeyDataDate = [starT, endT]
-                                this.$message({
-                                    type: 'warning',
-                                    message: '月份跨度不能大于六个月'
-                                })
+                                this.messageFun('warning','月份跨度不能大于六个月!')
                             }
                             this.allkeyDataTime = '其它'
                             this.keydataRadio(this.allkeydatakind, temp)
@@ -969,10 +963,7 @@
                                     endT = this.addkeyDataDate[1]
                                 }
                                 this.addkeyDataDate = [starT, endT]
-                                this.$message({
-                                    type: 'warning',
-                                    message: '月份跨度不能大于六个月'
-                                })
+                                this.messageFun('warning','月份跨度不能大于六个月!')
                             }
                             this.addkeyDataTime = '其它'
                             this.keydataRadio(this.addkeyDataKind, temp)
@@ -1072,10 +1063,7 @@
                                 this.setAddKeyDataShow(dataArr, params)
                             }
                         } else {
-                            this.$message({
-                                message: '社区总量趋势,在该时段暂无数据',
-                                type: 'warning'
-                            })
+                            this.messageFun('warning','社区总量趋势,在该时段暂无数据!')
                         }
                     }
                 })
@@ -1368,7 +1356,7 @@
                 let dateTime = this.changeTime(params.onStart.substring(0, 7)) + '-' + this.changeTime(params.onEnd.substring(0, 7))
                 this.CountOfIncreDataShow.TitleDate = [dateTime]
                 if (this.dateCompare && this.addkeyCompareDate[0] && this.addkeyCompareDate) {
-                    this.addKeyDataChangeMonthCompare()
+                    this.addKeyDataChangeMonthCompare('init')
                 } else {
                     this.keyDataBar()
                 }
@@ -1403,17 +1391,19 @@
                 }
             },
             // 关键数据增量对比 - 月份对比
-            addKeyDataChangeMonthCompare(){
+            addKeyDataChangeMonthCompare(temp){
                 // console.log('关键数据增量对比 - 月份对比',this.addkeyCompareDate)
-                if((this.addkeyCompareDate[0] !== null && this.addkeyCompareDate[0] !== undefined) && (this.addkeyCompareDate[1] !== null && this.addkeyCompareDate[1] !== undefined)){
+                if(this.addkeyCompareDate[0] && this.addkeyCompareDate[1]){
                     let compareLen = this.isMonthLength(this.addkeyCompareDate)
                     // 比较两对比月份间隔是否相等
                     let Len = this.isMonthLength(this.addkeyDataDate)
                     if (Len !== compareLen) {
-                        this.$message({
-                            type: 'warning',
-                            message: '请选择相同的月份数量',
-                        })
+                        this.messageFun('warning','请选择相同的月份数量')
+                        if (temp === 'init') {
+                            this.keyDataBar()
+                        }
+                        // this.isAddkeyDataKind = false
+                        // this.keyDataBarLoading = false
                     } else {
                         let onStart = this.addkeyCompareDate[0]
                         let onEnd = this.addkeyCompareDate[1]
@@ -1825,17 +1815,14 @@
                                 break
                             }
                         }
-                    }else{
+                    } else {
                         // console.log('行业增加了',)
                         this.TOrderTitleRadio = '订单金额'
                         this.getIOrderData(industryData[industryData.length - 1])
                     }
                     this.beforeSelectIndustry = industryData.concat()
-                }else{
-                    this.$message({
-                        type: 'warning',
-                        message:'行业不能为空'
-                    })
+                } else {
+                    this.messageFun('warning', '行业不能为空!')
                     this.selectIndustry = this.beforeSelectIndustry.concat()
                 }
             },
@@ -1855,11 +1842,8 @@
             // 行业订单总量趋势 - 选择月份
             orderChangeMonth(index){
                 if (this.TOrderDate[0] > this.TOrderDate[1]) {
-                    this.$message({
-                        type: 'warning',
-                        message: '结束时间小于开始时间'
-                    })
-                }else{
+                    this.messageFun('warning', '结束时间小于开始时间!')
+                } else {
                     let starT = ''
                     let endT = ''
                     let compareLen = this.isMonthLength(this.TOrderDate)
@@ -1873,10 +1857,7 @@
                         }
                         this.TOrderDate = [starT,endT]
                         // console.log(starT,endT,'校验完后的时间',this.TOrderDate)
-                        this.$message({
-                            type: 'warning',
-                            message: '月份跨度不能大于六个月'
-                        })
+                        this.messageFun('warning','月份跨度不能大于六个月!')
                     }
                     this.TOrderTime = '其它'
                     // console.log('行业订单总量趋势 - 选择月份',this.card5Industry)
@@ -1947,10 +1928,7 @@
                             this.totalOrderDate = orderMonths
                             this.busOrderLine()
                         } else {
-                            this.$message({
-                                message: '行业订单总量趋势,在该时段暂无数据',
-                                type: 'warning'
-                            })
+                            this.messageFun('warning','行业订单总量趋势,在该时段暂无数据')
                         }
                     }
                 })
@@ -2123,10 +2101,6 @@
                             this.allOrderPie()
                         } else {
                             console.log('行业订单占比,暂无数据')
-                            // this.$message({
-                            //     message: '行业订单占比,暂无数据',
-                            //     type: 'warning'
-                            // })
                         }
                     }
                 })
@@ -2286,7 +2260,6 @@
                             this.PropertyRank()
                         } else {
                             this.isHavePropertyRankData = false
-                            // this.$message.warning('入驻物业排行在该时段暂无数据！');
                         }
                     }
                 })
@@ -2468,7 +2441,6 @@
                             this.adOwnerRank()
                         } else {
                             this.isHaveAdOwnerRank = false
-                            // this.$message.warning('广告主排行在该时段暂无数据！');
                         }
                     }
                 })
@@ -2636,7 +2608,6 @@
                             this.salesRank()
                         } else {
                             this.isHaveSalesRank = false
-                            // this.$message.warning('销售业绩排行暂无数据！');
                         }
                     }
                 })
@@ -2801,12 +2772,17 @@
             priceFormat(price) {
                 return commaFormat.init(price);
             },
+            // 操作提示统一方法
+            messageFun(mesType, mes) {
+                this.$message({
+                    message: mes,
+                    type: mesType,
+                    showClose: true,
+                })
+            },
             // 登录超时
             loginTimeout() {
-                this.$message({
-                    message: '登录超时或权限异常,请重新登录',
-                    type: 'warning'
-                })
+                this.messageFun('warning','登录超时或权限异常,请重新登录!')
                 this.$router.push('/login')
             },
         }

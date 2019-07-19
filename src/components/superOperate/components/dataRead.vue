@@ -1161,17 +1161,17 @@
                 let {curMonthInfo,preMonthInfo} = dataObj
                 this.adSaleHeaderData = {
                     pointCount: curMonthInfo.pointCount,
-                    comparePoint: this.keepTwoDecimal((curMonthInfo.pointCount - preMonthInfo.pointCount) / preMonthInfo.pointCount),
+                    comparePoint: this.keepTwoDecimal((curMonthInfo.pointCount - preMonthInfo.pointCount) / preMonthInfo.pointCount * 100),
                     monthPublishRate: curMonthInfo.monthPublishRate ? Math.floor(curMonthInfo.monthPublishRate * 10000) / 100 : 0,
-                    compareMonthPublish: this.keepTwoDecimal((curMonthInfo.monthPublishRate - preMonthInfo.monthPublishRate) / preMonthInfo.monthPublishRate),
+                    compareMonthPublish: this.keepTwoDecimal((curMonthInfo.monthPublishRate - preMonthInfo.monthPublishRate) / preMonthInfo.monthPublishRate * 100),
                     forbiddenMediaCount: curMonthInfo.forbiddenMediaCount,
-                    compareMedia:  this.keepTwoDecimal((curMonthInfo.forbiddenMediaCount - preMonthInfo.forbiddenMediaCount) / preMonthInfo.forbiddenMediaCount),
+                    compareMedia:  this.keepTwoDecimal((curMonthInfo.forbiddenMediaCount - preMonthInfo.forbiddenMediaCount) / preMonthInfo.forbiddenMediaCount * 100),
                     orderCount: curMonthInfo.orderCount,
-                    compareOrder: this.keepTwoDecimal((curMonthInfo.orderCount - preMonthInfo.orderCount) / preMonthInfo.orderCount),
+                    compareOrder: this.keepTwoDecimal((curMonthInfo.orderCount - preMonthInfo.orderCount) / preMonthInfo.orderCount * 100),
                     sale: curMonthInfo.sale,
-                    compareSale: this.keepTwoDecimal((curMonthInfo.sale - preMonthInfo.sale) / preMonthInfo.sale),
+                    compareSale: this.keepTwoDecimal((curMonthInfo.sale - preMonthInfo.sale) / preMonthInfo.sale * 100),
                 }
-
+                console.log('this.adSaleHeaderData',this.adSaleHeaderData)
             },
             getAdSaleData(){
                 this.adSaleBarLoading = true
@@ -1473,7 +1473,7 @@
                 let series = option["series"];
                 let totalFun = function (params) {
                     let total =0;
-                    for(let i= 1,l=series.length;i<l;i++){
+                    for (let i = 1, l = series.length; i < l; i++) {
                         total += series[i].data[params.dataIndex]
                     }
                     return total

@@ -77,6 +77,8 @@
                 directNameList: [],
                 // 当前选择的城市
                 selectCity: '0',
+                //
+                tabContentLoading: true,
             }
         },
         components:{
@@ -87,8 +89,13 @@
             adsAnalysis,
         },
         created() {
-            // this.getSessionData()
             this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
+            // this.tabContentLoading = this.$loading({
+            //     lock: true,
+            //     text: '玩命加载中...',
+            //     spinner: 'el-icon-loading',
+            //     background: 'rgba(0, 0, 0, 0.7)'
+            // });
         },
         mounted() {
             this.toTime = timeFormat.returnMonthCount(0, '/');
@@ -121,6 +128,7 @@
                         this.activeName = 'third'
                     }
                     console.log('this.headerCityList', this.headerCityList)
+                    // this.tabContentLoading.close()
                 }
             },
             // 登录账户为平台商则去获取直营公司列表
@@ -150,12 +158,14 @@
                         this.isAllCity = true
                         this.isQinLinCity = true
                         console.log('headerCityList',this.headerCityList)
-                        let timer = setTimeout(()=>{
+                        let timer = setTimeout(() => {
                             this.activeName = 'first';
                             clearTimeout(timer)
-                        },10)
+                        }, 10)
+                        // this.tabContentLoading.close()
                     } else {
                         this.messageFun('warning', res.data.MSG)
+                        // this.tabContentLoading.close()
                     }
                 })
             },
@@ -178,6 +188,11 @@
                     }
                 }
                 return false
+            },
+            loginTimeout() {
+                // this.messageFun('warning', "登录超时,请重新登录");
+                this.$message.warning("登录超时,请重新登录")
+                this.$router.push("/login");
             },
         },
     }

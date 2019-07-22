@@ -363,12 +363,12 @@
                             </el-date-picker>
                         </div>
                     </div>
-                    <div class="keyDataChart">
+                    <div class="keyDataChart" v-if="isHavePropertyRankData">
                         <div class="charts2" id="PropertyRank" ref="PropertyRank"
-                             style="width: 100%;height: 350px" v-if="isHavePropertyRankData"></div>
-                        <div v-else class="had_not_data">
-                            <no-search-result ></no-search-result>
-                        </div>
+                             style="width: 100%;height: 350px"></div>
+                    </div>
+                    <div v-else class="had_not_data">
+                        <no-search-result ></no-search-result>
                     </div>
                 </div>
             </el-card>
@@ -417,12 +417,12 @@
                             </el-date-picker>
                         </div>
                     </div>
-                    <div class="keyDataChart">
+                    <div class="keyDataChart" v-if="isHaveAdOwnerRank">
                         <div class="charts2" id="adOwnerRank" ref="adOwnerRank"
-                             style="width: 100%;height: 350px" v-if="isHaveAdOwnerRank"></div>
-                        <div v-else class="had_not_data">
-                            <no-search-result ></no-search-result>
-                        </div>
+                             style="width: 100%;height: 350px" ></div>
+                    </div>
+                    <div v-else class="had_not_data">
+                        <no-search-result ></no-search-result>
                     </div>
                 </div>
             </el-card>
@@ -474,12 +474,12 @@
                             </el-date-picker>
                         </div>
                     </div>
-                    <div class="keyDataChart">
+                    <div class="keyDataChart chart_data_box" v-if="isHaveSalesRank">
                         <div class="charts2" id="salesRank" ref="salesRank"
-                             style="width: 100%;height: 350px" v-if="isHaveSalesRank"></div>
-                        <div v-else class="had_not_data">
-                            <no-search-result ></no-search-result>
-                        </div>
+                             style="width: 100%;height: 350px"></div>
+                    </div>
+                    <div v-else class="had_not_data">
+                        <no-search-result ></no-search-result>
                     </div>
                 </div>
             </el-card>
@@ -2246,6 +2246,7 @@
                         this.loginTimeout()       // 登录超时
                     }else {
                         if (ResPMCdata.length > 0) {
+                            this.isHavePropertyRankData = true
                             this.ResPMCResCount = []
                             this.ResPMCMCount = []
                             this.ResPMCName = []
@@ -2265,8 +2266,10 @@
                             } else if (this.PMCDataTitle === '点位数量') {
                                 this.ResPMCShowData = this.ResPMCMCount
                             }
-                            this.isHavePropertyRankData = true
-                            this.PropertyRank()
+                            let timer = setTimeout(()=>{
+                                this.PropertyRank()
+                                clearTimeout(timer)
+                            },10)
                         } else {
                             this.isHavePropertyRankData = false
                         }
@@ -2424,6 +2427,7 @@
                         this.loginTimeout()       // 登录超时
                     }else {
                         if (dataArr.length > 0) {
+                            this.isHaveAdOwnerRank = true
                             dataArr.sort(this.compareSort('totalSum'))
                             this.AdOwnerData = dataArr
                             this.adOwnerRankTable = this.AdOwnerData
@@ -2446,10 +2450,13 @@
                             } else if (this.salesDataTitle === '订单数量') {
                                 this.AdOwnerShowData = this.AdOwnerApCount
                             }
-                            this.isHaveAdOwnerRank = true
-                            this.adOwnerRank()
+                            let timer = setTimeout(()=>{
+                                this.adOwnerRank()
+                                clearTimeout(timer)
+                            },10)
                         } else {
                             this.isHaveAdOwnerRank = false
+                            console.log('22222222',this.isHaveAdOwnerRank)
                         }
                     }
                 })
@@ -2594,6 +2601,7 @@
                         this.loginTimeout()       // 登录超时
                     }else {
                         if (dataArr.length > 0) {
+                            this.isHaveSalesRank = true
                             this.salesRankName = []
                             this.salesRankTotalSum = []
                             this.salesRankApCount = []
@@ -2613,8 +2621,10 @@
                             } else if (this.salesDataTitle === '销售单数') {
                                 this.salesRankShowData = this.salesRankApCount
                             }
-                            this.isHaveSalesRank = true
-                            this.salesRank()
+                            let timer = setTimeout(() => {
+                                this.salesRank()
+                                clearTimeout(timer)
+                            }, 10)
                         } else {
                             this.isHaveSalesRank = false
                         }

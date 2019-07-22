@@ -155,7 +155,7 @@
                         <h3 class="ad_sale_li_title">点位总量(面·周)</h3>
                         <p class="ad_sale_li_num">{{adSaleHeaderData.pointCount || 0}}</p>
                         <p class="ad_sale_li_text">
-                            较上个月 <i class="el-icon-back" :class="adSaleHeaderData.comparePoint >= 0 ? 'ad_sale_top_icon' : 'ad_sale_bottom_icon'"></i>
+                            较上个月 <i class="el-icon-back" :class="adSaleHeaderData.comparePoint < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
                             <span>{{adSaleHeaderData.comparePoint}}%</span>
                         </p>
                     </li>
@@ -163,7 +163,7 @@
                         <h3 class="ad_sale_li_title">月均上刊率</h3>
                         <p class="ad_sale_li_num">{{adSaleHeaderData.monthPublishRate || 0}}%</p>
                         <p class="ad_sale_li_text">
-                            较上个月 <i class="el-icon-back" :class="adSaleHeaderData.compareMonthPublish >= 0 ? 'ad_sale_top_icon' : 'ad_sale_bottom_icon'"></i>
+                            较上个月 <i class="el-icon-back" :class="adSaleHeaderData.compareMonthPublish < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
                             <span>{{adSaleHeaderData.compareMonthPublish}}%</span>
                         </p>
                     </li>
@@ -171,7 +171,7 @@
                         <h3 class="ad_sale_li_title">当前禁用媒体数量(面)</h3>
                         <p class="ad_sale_li_num">{{adSaleHeaderData.forbiddenMediaCount || 0}}</p>
                         <p class="ad_sale_li_text">
-                            较上个月 <i class="el-icon-back" :class="adSaleHeaderData.compareMedia >= 0 ? 'ad_sale_top_icon' : 'ad_sale_bottom_icon'"></i>
+                            较上个月 <i class="el-icon-back" :class="adSaleHeaderData.compareMedia < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
                             <span>{{adSaleHeaderData.compareMedia}}%</span>
                         </p>
                     </li>
@@ -179,7 +179,7 @@
                         <h3 class="ad_sale_li_title">成交订单</h3>
                         <p class="ad_sale_li_num">{{adSaleHeaderData.orderCount}}</p>
                         <p class="ad_sale_li_text"> 较上个月
-                            <i class="el-icon-back" :class="adSaleHeaderData.compareOrder >= 0 ? 'ad_sale_top_icon' : 'ad_sale_bottom_icon'"></i>
+                            <i class="el-icon-back" :class="adSaleHeaderData.compareOrder < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
                             <span>{{adSaleHeaderData.compareOrder}}%</span>
                         </p>
                     </li>
@@ -187,7 +187,7 @@
                         <h3 class="ad_sale_li_title">账面销售额</h3>
                         <p class="ad_sale_li_num">¥ {{priceFormat(adSaleHeaderData.sale)}}</p>
                         <p class="ad_sale_li_text"> 较上个月
-                            <i class="el-icon-back" :class="adSaleHeaderData.compareSale >= 0 ? 'ad_sale_top_icon' : 'ad_sale_bottom_icon'"></i>
+                            <i class="el-icon-back" :class="adSaleHeaderData.compareSale < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
                             <span>{{adSaleHeaderData.compareSale}}%</span>
                         </p>
                     </li>
@@ -1201,15 +1201,15 @@
                 let {curMonthInfo,preMonthInfo} = dataObj
                 this.adSaleHeaderData = {
                     pointCount: curMonthInfo.pointCount,
-                    comparePoint: this.keepTwoDecimal((curMonthInfo.pointCount - preMonthInfo.pointCount) / preMonthInfo.pointCount * 100),
+                    comparePoint: preMonthInfo.pointCount ? this.keepTwoDecimal((curMonthInfo.pointCount - preMonthInfo.pointCount) / preMonthInfo.pointCount * 100) : '--',
                     monthPublishRate: curMonthInfo.monthPublishRate ? Math.floor(curMonthInfo.monthPublishRate * 10000) / 100 : 0,
-                    compareMonthPublish: this.keepTwoDecimal((curMonthInfo.monthPublishRate - preMonthInfo.monthPublishRate) / preMonthInfo.monthPublishRate * 100),
-                    forbiddenMediaCount: curMonthInfo.forbiddenMediaCount,
-                    compareMedia:  this.keepTwoDecimal((curMonthInfo.forbiddenMediaCount - preMonthInfo.forbiddenMediaCount) / preMonthInfo.forbiddenMediaCount * 100),
+                    compareMonthPublish:  preMonthInfo.monthPublishRate ? this.keepTwoDecimal((curMonthInfo.monthPublishRate - preMonthInfo.monthPublishRate) / preMonthInfo.monthPublishRate * 100) : '--',
+                    forbiddenMediaCount: curMonthInfo.forbiddenAdsCount,
+                    compareMedia:  preMonthInfo.forbiddenAdsCount ? this.keepTwoDecimal((curMonthInfo.forbiddenAdsCount - preMonthInfo.forbiddenAdsCount) / preMonthInfo.forbiddenAdsCount * 100) : '--',
                     orderCount: curMonthInfo.orderCount,
-                    compareOrder: this.keepTwoDecimal((curMonthInfo.orderCount - preMonthInfo.orderCount) / preMonthInfo.orderCount * 100),
+                    compareOrder: preMonthInfo.orderCount ? this.keepTwoDecimal((curMonthInfo.orderCount - preMonthInfo.orderCount) / preMonthInfo.orderCount * 100) : 0,
                     sale: curMonthInfo.sale,
-                    compareSale: this.keepTwoDecimal((curMonthInfo.sale - preMonthInfo.sale) / preMonthInfo.sale * 100),
+                    compareSale: preMonthInfo.sale ? this.keepTwoDecimal((curMonthInfo.sale - preMonthInfo.sale) / preMonthInfo.sale * 100) : '--',
                 }
                 console.log('this.adSaleHeaderData',this.adSaleHeaderData)
             },
@@ -2100,10 +2100,10 @@
             },
             // 保留两位小数
             keepTwoDecimal(num){
-                let result = parseFloat(num);
-                if (isNaN(result)) {
+                if (!num && num !== 0) {
                     return 0;
                 }
+                let result = parseFloat(num);
                 result = Math.round(num * 100) / 100;
                 return result;
             },

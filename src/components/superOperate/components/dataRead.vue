@@ -751,7 +751,7 @@
                             arr.push(key.advertDoorCount)
                             break;
                         case 'rate':
-                            arr.push(key.publishRate || 0)
+                            arr.push(key.publishRate ?  Math.floor(key.publishRate * 10000)/100 : 0)
                             break;
                         case 'order':
                             arr.push(key.orderCount)
@@ -798,7 +798,7 @@
                             return '<p class="echarts_tooltip_title">' + '<span>' + params[0].name + '</span>' + '</p>' + '<br/>' +
                                 '<p class="echarts_tooltip_content">' +
                                 '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params[0].name +
-                                '</span>' + params[0].data + '</p>'
+                                '</span>' + params[0].data + (this.basicTotalType === 'rate' ? '%' : '') + '</p>'
                         },
                     },
                     grid: {
@@ -842,37 +842,68 @@
                             },
                         }
                     ],
-                    yAxis: [
-                        {
-                            type: 'value',
-                            axisLine: {
-                                //坐标轴线条相关设置(颜色等)
-                                lineStyle: {
-                                    color: "#E8E8E8"
-                                }
-                            },
-                            axisLabel: {
-                                //坐标轴刻度标签
-                                margin: 7, //刻度标签与轴线之间的距离
-                                textStyle: {
-                                    fontFamily: "DINPro-Regular",
-                                    color: "#2C313C" //坐标轴刻度文字的颜色
-                                }
-                            },
-                            splitLine: {
-                                lineStyle: {
-                                    color: "#E8E8E8",
-                                    type: "dashed"
+                    yAxis: this.basicTotalType === 'rate' ?
+                        [
+                            {          //纵轴标尺固定
+                                type: 'value',
+                                // scale: true,
+                                max: 100,
+                                min: 0,
+                                boundaryGap: [0.2, 0.2],
+                                axisLine: {
+                                    //坐标轴线条相关设置(颜色等)
+                                    lineStyle: {
+                                        color: "#E8E8E8"
+                                    }
+                                },
+                                axisLabel: {
+                                    formatter: '{value}%',
+                                    //坐标轴刻度标签
+                                    margin: 7, //刻度标签与轴线之间的距离
+                                    textStyle: {
+                                        fontFamily: "DINPro-Regular",
+                                        color: "#2C313C" //坐标轴刻度文字的颜色
+                                    }
+                                },
+                                splitLine: {
+                                    lineStyle: {
+                                        color: "#E8E8E8",
+                                        type: "dashed"
+                                    }
                                 }
                             }
-                        }
-                    ],
+                        ]:
+                        [
+                            {
+                                type: 'value',
+                                axisLine: {
+                                    //坐标轴线条相关设置(颜色等)
+                                    lineStyle: {
+                                        color: "#E8E8E8"
+                                    }
+                                },
+                                axisLabel: {
+                                    //坐标轴刻度标签
+                                    margin: 7, //刻度标签与轴线之间的距离
+                                    textStyle: {
+                                        fontFamily: "DINPro-Regular",
+                                        color: "#2C313C" //坐标轴刻度文字的颜色
+                                    }
+                                },
+                                splitLine: {
+                                    lineStyle: {
+                                        color: "#E8E8E8",
+                                        type: "dashed"
+                                    }
+                                }
+                            }
+                        ],
                     series: [
                         {
                             color: '#4AA6FC',
                             name: '',
                             type: 'bar',
-                            barWidth: '25%',
+                            barWidth: '18%',
                             data: this.basicTotalBarDataShow
                         }
                     ]

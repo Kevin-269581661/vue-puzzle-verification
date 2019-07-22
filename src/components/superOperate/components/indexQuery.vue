@@ -821,8 +821,9 @@
         mounted(){
             let industryData = JSON.parse(sessionStorage.getItem('industry'));
             this.industryData = industry.getFirstLevel(industryData);
-            this.selectIndustry = [this.industryData[0] || 1]
-            this.beforeSelectIndustry = [this.industryData[0] || 1],
+            // console.log('industryData',this.industryData)
+            this.selectIndustry = [this.industryData[0].value || 1]
+            this.beforeSelectIndustry = [this.industryData[0].value || 1],
             this.setTime();
             this.echartsListener();
         },
@@ -868,7 +869,7 @@
                 this.getAllResData('allAndAdd')
                 // 行业订单总总量趋势 - 接口
                 this.initIOrderData()
-                this.getIOrderData(this.industryData[0])
+                this.getIOrderData(this.industryData[0].value)
                 // 行业订单占比
                 this.getIOrderTotalData()
                 // 入驻物业排行
@@ -885,7 +886,7 @@
                 this.allkeydatakind = '社区数'
                 this.addkeyDataKind = '社区数'
                 // 行业订单总总量趋势
-                this.selectIndustry = [this.industryData[0]]
+                this.selectIndustry = [this.industryData[0].value]
                 this.TOrderTitleRadio = '订单金额'
                 // 行业订单占比
                 this.orderScale = '订单金额'

@@ -86,12 +86,12 @@
             citysContrast,
             adsAnalysis,
         },
-        created(){
+        created() {
             // this.getSessionData()
             this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
         },
-        mounted(){
-            this.toTime = timeFormat.returnMonthCount(0,'/');
+        mounted() {
+            this.toTime = timeFormat.returnMonthCount(0, '/');
             this.getBasicData()
         },
         methods:{
@@ -137,7 +137,7 @@
                         let resData = res.data.data
                         let arr = [{value: '0', label: '全 国'}]
                         let directName = []
-                        for(let key of resData){
+                        for (let key of resData) {
                             let asName = this.returnAsName(key.asrId)
                             directName.push(asName || key.name)
                             arr.push({

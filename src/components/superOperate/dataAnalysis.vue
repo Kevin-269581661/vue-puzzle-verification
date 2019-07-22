@@ -65,13 +65,13 @@
                 headerCityList: [],
                 citys:[
                     // {value: '0', label: '全 国'},
-                    // {value: '1', label: '北京亲邻众联'},
-                    // {value: '2', label: '上海多邻网络'},
-                    // {value: '3', label: '广州亲粤邻'},
-                    // {value: '4', label: '深圳亲邻交互'},
-                    // {value: '5', label: '成都亲邻'},
-                    // {value: '6', label: '重庆亲邻'},
-                    // {value: '7', label: '天津亲邻众联'}
+                    {value: '1', label: '北京亲邻众联'},
+                    {value: '2', label: '上海多邻网络'},
+                    {value: '3', label: '广州亲粤邻'},
+                    {value: '4', label: '深圳亲邻交互'},
+                    {value: '5', label: '成都亲邻'},
+                    {value: '6', label: '重庆亲邻'},
+                    {value: '7', label: '天津亲邻众联'}
                 ],
                 // 直营公司名称
                 directNameList: [],
@@ -100,13 +100,6 @@
                 console.log('用户信息',this.sessionData)
                 if (this.sessionData.asrID == '999') {
                     this.getDirectSales()
-                    // this.headerCityList = JSON.parse(JSON.stringify(this.citys))
-                    // this.isAllCity = true
-                    // this.isQinLinCity = true
-                    // let timer = setTimeout(()=>{
-                    //     this.activeName = 'first';
-                    //     clearTimeout(timer)
-                    // },10)
                 } else {
                     let asName = this.returnAsName(this.sessionData.asrID)
                     let cityArr = [
@@ -145,11 +138,11 @@
                         let arr = [{value: '0', label: '全 国'}]
                         let directName = []
                         for(let key of resData){
-                            // .substring(0,val.asName.length-6)
-                            directName.push(key.name) // .substring(0,key.name.length-6)
+                            let asName = this.returnAsName(key.asrId)
+                            directName.push(asName || key.name)
                             arr.push({
                                 value: key.asrId.toString(),
-                                label: key.name//.substring(0,key.name.length-6),
+                                label: asName || key.name
                             })
                         }
                         this.headerCityList = arr

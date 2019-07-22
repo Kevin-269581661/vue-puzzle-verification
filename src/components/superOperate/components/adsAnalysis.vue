@@ -493,11 +493,10 @@
                 this.selectCity = newVal
                 this.pointSelect = '自然天'
                 this.pointDate = this.pointDateDay.concat()
+                this.setPageNoAndTableDataRes()
+                this.setPageNoAndTableDataAds()
                 if (this.activeName === 'fifth') {
                     this.getAdsAnalysisData()
-                } else {
-                    this.adsRateList = []
-                    this.resRateList = []
                 }
             },
             activeName(newVal,oldVal){

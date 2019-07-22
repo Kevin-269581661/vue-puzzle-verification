@@ -1725,7 +1725,7 @@
                             let precent;
                             for(let key of this.beenWeekOfSurfaceData.data){
                                 if (key.name == name) {
-                                    precent = parseFloat((key.value / total) * 100).toFixed(2) + '%'
+                                    precent = (total ? parseFloat((key.value / total) * 100).toFixed(2) : 0) + '%'
                                     value = key.value
                                 }
                             }
@@ -1806,7 +1806,7 @@
                             let precent;
                             for (let key of this.futureWeekOfSurfaceData.data) {
                                 if (key.name == name) {
-                                    precent = parseFloat((key.value / total) * 100).toFixed(2) + '%'
+                                    precent = (total ? parseFloat((key.value / total) * 100).toFixed(2) : 0)+ '%'
                                     value = key.value
                                 }
                             }

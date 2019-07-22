@@ -15,13 +15,14 @@
             </div>
             <el-tabs v-model="activeName" @tab-click="tabHandleClick">
                 <el-tab-pane label="数据概览" name="first" v-if="isQinLinCity">
-                    <data-read :sessionData="sessionData" :directNameList="directNameList" :selectCity="selectCity" :activeName="activeName"></data-read>
+                    <data-read :sessionData="sessionData" :directNameList="directNameList"
+                               :selectCity="selectCity" :activeName="activeName"></data-read>
                 </el-tab-pane>
                 <el-tab-pane label="周报/月报" name="second" v-if="!isAllCity && isQinLinCity">
                     <weekAndMouth-report :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName"></weekAndMouth-report>
                 </el-tab-pane>
                 <el-tab-pane label="指标查询" name="third">
-                    <index-query :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName"></index-query>
+                    <index-query :sessionData="sessionData" :citys="headerCityList" :selectCity="selectCity" :activeName="activeName"></index-query>
                 </el-tab-pane>
                 <el-tab-pane label="城市对比" name="fouth" v-if="isAllCity">
                     <citys-contrast :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName"
@@ -145,16 +146,17 @@
                         let directName = []
                         for(let key of resData){
                             // .substring(0,val.asName.length-6)
-                            directName.push(key.name.substring(0,key.name.length-6))
+                            directName.push(key.name) // .substring(0,key.name.length-6)
                             arr.push({
                                 value: key.asrId.toString(),
-                                label: key.name.substring(0,key.name.length-6),
+                                label: key.name//.substring(0,key.name.length-6),
                             })
                         }
                         this.headerCityList = arr
                         this.directNameList = directName
                         this.isAllCity = true
                         this.isQinLinCity = true
+                        console.log('headerCityList',this.headerCityList)
                         let timer = setTimeout(()=>{
                             this.activeName = 'first';
                             clearTimeout(timer)

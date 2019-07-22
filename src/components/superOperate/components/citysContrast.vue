@@ -628,7 +628,7 @@
             cityBattleRadio(){
                 console.log('城市数据对比',this.cityBattleTitle)
                 this.isCityBattleRadio = true
-                if (this.selectCompareCity.length < 7) {
+                if (this.selectCompareCity.length < 8) {
                     this.selectCompareCity = this.directNameList.concat()
                 }
                 let stringName = this.cityBattleTitle
@@ -783,22 +783,25 @@
                 this.cityBattleLoading = true
                 this.cityBattleLineSeries = []
                 this.cityBattleLineStep = 0
-                let cityArr = ['1', '2', '3', '4', '5', '6','7']
-                for (let i = 0; i < cityArr.length; i++) {
+                // let cityArr = ['1', '2', '3', '4', '5', '6','7']
+                for (let key of this.citys) {
+                    if(key.value === '0'){
+                        continue
+                    }
                     if (name === '社区数') {
-                        this.getCityTotalAndIncrement(cityArr[i], '/GetResCountOfTotalAndIncrement');
+                        this.getCityTotalAndIncrement(key.value, '/GetResCountOfTotalAndIncrement');
                     } else if (name === '广告门数') {
-                        this.getCityTotalAndIncrement(cityArr[i], '/GetMediaCountOfTotalAndIncrement');
+                        this.getCityTotalAndIncrement(key.value, '/GetMediaCountOfTotalAndIncrement');
                     } else if (name === '点位数') {
-                        this.getCityTotalAndIncrement(cityArr[i], '/GetAdSpaceCountOfTotalAndIncrement');
+                        this.getCityTotalAndIncrement(key.value, '/GetAdSpaceCountOfTotalAndIncrement');
                     } else if (name === '上刊率') {
-                        this.getCityTotalAndIncrement(cityArr[i], '/GetPublicationRateTotalAndIncrement', 'rate');
+                        this.getCityTotalAndIncrement(key.value, '/GetPublicationRateTotalAndIncrement', 'rate');
                     } else if (name === '订单数') {
-                        this.getCityTotalAndIncrement(cityArr[i], '/GetOrderTotalAndIncrement');
+                        this.getCityTotalAndIncrement(key.value, '/GetOrderTotalAndIncrement');
                     } else if (name === '订单总额') {
-                        this.getCityTotalAndIncrement(cityArr[i], '/GetOrderIncomeTotalAndIncrement', 'price');
+                        this.getCityTotalAndIncrement(key.value, '/GetOrderIncomeTotalAndIncrement', 'price');
                     } else if (name === '广告主数') {
-                        this.getCityTotalAndIncrement(cityArr[i], '/GetAdOwnerTotalAndIncrement');
+                        this.getCityTotalAndIncrement(key.value, '/GetAdOwnerTotalAndIncrement');
                     }
                 }
             },
@@ -998,7 +1001,11 @@
                             let cityList = []
                             for(let val of dataArr){
                                 rateList.push(Math.round(val.publicationRate * 10000)/100)
-                                cityList.push(val.asName.substring(0,val.asName.length-6))
+                                if(val.asName.length > 6){
+                                    cityList.push(val.asName.substring(0,val.asName.length-6))
+                                }else{
+                                    cityList.push(val.asName)
+                                }
                             }
                             this.cityRateCompareShowData.name = cityList
                             this.cityRateCompare = cityList
@@ -1258,9 +1265,12 @@
             },
             forCityKeyData() {
                 this.cityBattlePieStep = 0
-                let cityArr = ['1', '2', '3', '4', '5', '6', '7']
-                for (let key of cityArr) {
-                    this.getCityBattleData(key)
+                // let cityArr = ['1', '2', '3', '4', '5', '6', '7']
+                for (let key of this.citys) {
+                    if(key.value === '0'){
+                        continue
+                    }
+                    this.getCityBattleData(key.value)
                 }
             },
             //城市关键数据对比  - 接口 (订单、广告主、订单总额)
@@ -1547,7 +1557,13 @@
             // 根据权限公司返回 asrIDs
             returnAsrID() {
                 if (this.selectCity === '0') {
-                    return '1,2,3,4,5,6,7'
+                    let asrIDs = []
+                    for (let key of this.citys) {
+                        if(key.value !== '0'){
+                            asrIDs.push(key.value)
+                        }
+                    }
+                    return asrIDs.join(',')//'1,2,3,4,5,6,7'
                 } else {
                     return this.selectCity
                 }

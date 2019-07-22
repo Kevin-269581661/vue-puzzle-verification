@@ -639,8 +639,8 @@
               /*   行业订单总量趋势   */
               colorArr: ['#975fe4', '#3aa0ff', '#36cbcb', '#4dcb73', '#fad337', '#f2637b', '#6081FF', '#FE752A'],
               busOrderLineEchart:'',
-              selectIndustry: [1],
-              beforeSelectIndustry: [1],
+              selectIndustry: [],
+              beforeSelectIndustry: [],
               TOrderDate: [],
               TOrderTime: '最近半年',
               // 订单类型
@@ -769,7 +769,11 @@
             activeName:{
                 type:String,
                 required: true
-            }
+            },
+            citys:{
+                type:Array,
+                required: true
+            },
         },
         watch:{
             sessionData(newVal,oldVal){
@@ -817,6 +821,8 @@
         mounted(){
             let industryData = JSON.parse(sessionStorage.getItem('industry'));
             this.industryData = industry.getFirstLevel(industryData);
+            this.selectIndustry = [this.industryData[0] || 1]
+            this.beforeSelectIndustry = [this.industryData[0] || 1],
             this.setTime();
             this.echartsListener();
         },
@@ -862,7 +868,7 @@
                 this.getAllResData('allAndAdd')
                 // 行业订单总总量趋势 - 接口
                 this.initIOrderData()
-                this.getIOrderData(1)
+                this.getIOrderData(this.industryData[0])
                 // 行业订单占比
                 this.getIOrderTotalData()
                 // 入驻物业排行
@@ -879,7 +885,7 @@
                 this.allkeydatakind = '社区数'
                 this.addkeyDataKind = '社区数'
                 // 行业订单总总量趋势
-                this.selectIndustry = [1]
+                this.selectIndustry = [this.industryData[0]]
                 this.TOrderTitleRadio = '订单金额'
                 // 行业订单占比
                 this.orderScale = '订单金额'
@@ -2735,7 +2741,13 @@
             // 根据权限公司返回 asrIDs
             returnAsrID(){
                 if (this.selectCity == '0'){
-                    return '1,2,3,4,5,6,7'
+                    let asrIDs = []
+                    for (let key of this.citys) {
+                        if(key.value !== '0'){
+                            asrIDs.push(key.value)
+                        }
+                    }
+                    return asrIDs.join(',')//'1,2,3,4,5,6,7'
                 }else{
                     return this.selectCity
                 }

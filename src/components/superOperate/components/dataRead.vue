@@ -377,7 +377,7 @@
         name: "dataRead",
         data(){
             return{
-                cityList:['北京亲邻众联','上海多邻网络','广州亲粤邻','深圳亲邻交互','成都亲邻','重庆亲邻','天津亲邻众联'],
+                // directNameList:['北京亲邻众联','上海多邻网络','广州亲粤邻','深圳亲邻交互','成都亲邻','重庆亲邻','天津亲邻众联'],
                 // 自定义颜色
                 colorList: ['#2FC25B','#1890FF','#FACC14','#36cbcb'],
                 isAllCity: true,
@@ -474,9 +474,9 @@
                 mediaSaleData:{
                     title: ['空刊数(面)','在刊媒体(面)','禁用媒体(面)'],
                     data:[
-                        {value:335, name:'空刊数(面)'},
-                        {value:310, name:'在刊媒体(面)'},
-                        {value:234, name:'禁用媒体(面)'},
+                        {value:0, name:'空刊数(面)'},
+                        {value:0, name:'在刊媒体(面)'},
+                        {value:0, name:'禁用媒体(面)'},
                     ]
                 },
                 // 下拉选中
@@ -578,10 +578,10 @@
                 type:String,
                 required: true
             },
-            // isAllCity:{
-            //     type:Boolean,
-            //     required: true,
-            // }
+            directNameList:{
+                type: Array,
+                required: true,
+            }
         },
         watch: {
             sessionData(newVal, oldVal) {
@@ -812,7 +812,7 @@
                     xAxis: [
                         {
                             type: 'category',
-                            data: this.cityList,
+                            data: this.directNameList,
                             axisTick: {
                                 alignWithLabel: true
                             },
@@ -829,6 +829,15 @@
                                 textStyle: {
                                     fontFamily: "DINPro-Regular",
                                     color: "#2C313C" //坐标轴刻度文字的颜色
+                                },
+                                formatter: function(val) {
+                                    let strs = val.split(''); //字符串数组
+                                    let str = ''
+                                    for(let i = 0, s; s = strs[i++];) { //遍历字符串数组
+                                        str += s;
+                                        if(!(i % 8)) str += '\n'; //按需要求余
+                                    }
+                                    return str
                                 }
                             },
                         }

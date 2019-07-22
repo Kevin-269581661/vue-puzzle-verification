@@ -162,7 +162,7 @@
                                    placeholder="请选择"
                                    size="mini" @change="selectCompareCities">
                             <el-option
-                                v-for="item in cities"
+                                v-for="item in directNameList"
                                 :key="item"
                                 :value="item">
                             </el-option>
@@ -259,7 +259,7 @@
                                    placeholder="请选择"
                                    size="mini" collapse-tags @change="cityKeySelect">
                             <el-option
-                                v-for="item in cities"
+                                v-for="item in directNameList"
                                 :key="item"
                                 :value="item">
                             </el-option>
@@ -294,15 +294,15 @@
                 isGetData: false,
                 // 城市对比选择的城市只能为0
                 selectCity: '0',
-                cities: [
-                    '北京亲邻众联',
-                    '上海多邻网络',
-                    '广州亲粤邻',
-                    '深圳亲邻交互',
-                    '成都亲邻',
-                    '重庆亲邻',
-                    '天津亲邻众联'
-                ],
+                // cities: [
+                //     '北京亲邻众联',
+                //     '上海多邻网络',
+                //     '广州亲粤邻',
+                //     '深圳亲邻交互',
+                //     '成都亲邻',
+                //     '重庆亲邻',
+                //     '天津亲邻众联'
+                // ],
                 nowMonth: '',               // 当前月份日期
                 citysContrastLoading: true,
                 //城市对比
@@ -416,12 +416,27 @@
             citys:{
                 type:Array,
                 required: true
+            },
+            directNameList:{
+                type: Array,
+                required:true
             }
         },
         watch: {
             sessionData(newVal, oldVal) {
                 console.log('newVal', newVal, 'oldVal', oldVal)
                 this.sessionData = newVal
+            },
+            directNameList(newVal, oldVal){
+                this.directNameList = newVal
+                this.selectCompareCity = this.directNameList.concat()
+                this.beforeCityBLSShow = this.selectCompareCity.concat()
+                // 上刊率
+                this.beforeCityRate = this.directNameList.concat()
+                // 关键数据对比
+                this.selectCompareCityData = this.directNameList.concat()
+                this.beforeCityKey = this.directNameList.concat()
+                console.log('directNameList',this.directNameList)
             },
             activeName(newVal,oldVal){
                 this.activeName = newVal
@@ -442,13 +457,6 @@
         mounted(){
             this.setTime()
             this.echartsListener()
-            this.selectCompareCity = this.cities.concat()
-            this.beforeCityBLSShow = this.selectCompareCity.concat()
-            // 上刊率
-            this.beforeCityRate = this.cities.concat()
-            // 关键数据对比
-            this.selectCompareCityData = this.cities.concat()
-            this.beforeCityKey = this.cities.concat()
         },
         methods:{
             // 设置初始时间
@@ -621,7 +629,7 @@
                 console.log('城市数据对比',this.cityBattleTitle)
                 this.isCityBattleRadio = true
                 if (this.selectCompareCity.length < 7) {
-                    this.selectCompareCity = this.cities.concat()
+                    this.selectCompareCity = this.directNameList.concat()
                 }
                 let stringName = this.cityBattleTitle
                 this.forCityData(stringName)
@@ -1099,7 +1107,7 @@
             // 城市选择
             cityKeySelect(res){
                 if(res.length > 0){
-                    let beforCity = this.beforeCityKey // selectCompareCityData
+                    let beforCity = this.beforeCityKey
                     let keyData = this.cityKeyData
                     console.log(beforCity,'城市关键数据对比 - 城市选择',keyData,res)
                     if (beforCity.length > res.length){
@@ -1240,6 +1248,7 @@
                             this.cityKeyData.ads = JSON.parse(JSON.stringify(this.cityAdsKeyData))
                             this.cityKeyData.media = JSON.parse(JSON.stringify(this.cityMediaKeyData))
                             console.log('城市关键数据对比',this.cityResKeyData, this.cityAdsKeyData, this.cityMediaKeyData)
+                            console.log('selectCompareCityData',this.selectCompareCityData)
                             this.keyDataPie()
                         }else{
                             this.$message.warning('城市关键数据对比（社区、广告门、点位）,在该时段暂无数据！');

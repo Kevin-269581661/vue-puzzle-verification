@@ -138,6 +138,7 @@
                                         range-separator="至"
                                         start-placeholder="开始日期"
                                         end-placeholder="结束日期"
+                                        :clearable="false"
                                         @change="CreatDateChange('res','search')">
                                     </el-date-picker>
                                 </div>
@@ -264,6 +265,7 @@
                                             range-separator="至"
                                             start-placeholder="开始日期"
                                             end-placeholder="结束日期"
+                                            :clearable="false"
                                             @change="CreatDateChange('ads','search')">
                                         </el-date-picker>
                                     </div>
@@ -727,9 +729,9 @@
                 this.getAdsRateFun()
             },
             // 创建社区时间 - changes
-            CreatDateChange(val1,val2){
-                console.log('----------------', val1)
-                if (val1 === 'res') {
+            CreatDateChange(val){
+                console.log('----------------', val)
+                if (val === 'res') {
                     if (!this.resCreatDate) {
                         this.resCreatDate = []
                     }
@@ -737,7 +739,7 @@
                     this.pUpMax = ''
                     this.setPageNoAndTableDataRes()
                     this.getResRateFun()
-                } else if (val1 === 'ads') {
+                } else if (val === 'ads') {
                     if (!this.adsCreatDate) {
                         this.adsCreatDate = []
                     }

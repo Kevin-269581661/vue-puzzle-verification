@@ -15,7 +15,7 @@
             </div>
             <el-tabs v-model="activeName" @tab-click="tabHandleClick">
                 <el-tab-pane label="数据概览" name="first" v-if="isQinLinCity">
-                    <data-read :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName"></data-read>
+                    <data-read :sessionData="sessionData" :directNameList="directNameList" :selectCity="selectCity" :activeName="activeName"></data-read>
                 </el-tab-pane>
                 <el-tab-pane label="周报/月报" name="second" v-if="!isAllCity && isQinLinCity">
                     <weekAndMouth-report :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName"></weekAndMouth-report>
@@ -24,7 +24,8 @@
                     <index-query :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName"></index-query>
                 </el-tab-pane>
                 <el-tab-pane label="城市对比" name="fouth" v-if="isAllCity">
-                    <citys-contrast :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName" :citys="headerCityList"></citys-contrast>
+                    <citys-contrast :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName"
+                                    :citys="headerCityList" :directNameList="directNameList"></citys-contrast>
                 </el-tab-pane>
                 <el-tab-pane label="点位分析" name="fifth">
                     <ads-analysis :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName"></ads-analysis>
@@ -37,7 +38,7 @@
 <script>
     import 'echarts/lib/chart/map';
     import 'echarts/map/js/china.js';
-    // import api from '../../api/api';
+    import api from '../../api/api';
     import timeFormat from '../../commonFun/timeFormat';
     import dataRead from './components/dataRead';
     import weekAndMouthReport from './components/weekAndMouthReport';
@@ -62,15 +63,17 @@
                 // 顶部Tab城市选择
                 headerCityList: [],
                 citys:[
-                    {value: '0', label: '全 国'},
-                    {value: '1', label: '北京亲邻众联'},
-                    {value: '2', label: '上海多邻网络'},
-                    {value: '3', label: '广州亲粤邻'},
-                    {value: '4', label: '深圳亲邻交互'},
-                    {value: '5', label: '成都亲邻'},
-                    {value: '6', label: '重庆亲邻'},
-                    {value: '7', label: '天津亲邻众联'}
+                    // {value: '0', label: '全 国'},
+                    // {value: '1', label: '北京亲邻众联'},
+                    // {value: '2', label: '上海多邻网络'},
+                    // {value: '3', label: '广州亲粤邻'},
+                    // {value: '4', label: '深圳亲邻交互'},
+                    // {value: '5', label: '成都亲邻'},
+                    // {value: '6', label: '重庆亲邻'},
+                    // {value: '7', label: '天津亲邻众联'}
                 ],
+                // 直营公司名称
+                directNameList: [],
                 // 当前选择的城市
                 selectCity: '0',
             }
@@ -95,13 +98,14 @@
             getBasicData(){
                 console.log('用户信息',this.sessionData)
                 if (this.sessionData.asrID == '999') {
-                    this.headerCityList = JSON.parse(JSON.stringify(this.citys))
-                    this.isAllCity = true
-                    this.isQinLinCity = true
-                    let timer = setTimeout(()=>{
-                        this.activeName = 'first';
-                        clearTimeout(timer)
-                    },10)
+                    this.getDirectSales()
+                    // this.headerCityList = JSON.parse(JSON.stringify(this.citys))
+                    // this.isAllCity = true
+                    // this.isQinLinCity = true
+                    // let timer = setTimeout(()=>{
+                    //     this.activeName = 'first';
+                    //     clearTimeout(timer)
+                    // },10)
                 } else {
                     let asName = this.returnAsName(this.sessionData.asrID)
                     let cityArr = [
@@ -124,6 +128,41 @@
                     }
                     console.log('this.headerCityList', this.headerCityList)
                 }
+            },
+            // 登录账户为平台商则去获取直营公司列表
+            getDirectSales(){
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token
+                }
+                api.getApi(this.apiVar.report + '/api/v2/listDirectList',params).then(res=>{
+                    console.log('获取直营公司列表',res)
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        this.loginTimeout()
+                    } else if (res.data.SysCode === 200200) {
+                        let resData = res.data.data
+                        let arr = [{value: '0', label: '全 国'}]
+                        let directName = []
+                        for(let key of resData){
+                            // .substring(0,val.asName.length-6)
+                            directName.push(key.name.substring(0,key.name.length-6))
+                            arr.push({
+                                value: key.asrId.toString(),
+                                label: key.name.substring(0,key.name.length-6),
+                            })
+                        }
+                        this.headerCityList = arr
+                        this.directNameList = directName
+                        this.isAllCity = true
+                        this.isQinLinCity = true
+                        let timer = setTimeout(()=>{
+                            this.activeName = 'first';
+                            clearTimeout(timer)
+                        },10)
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                })
             },
             // tabs切换
             tabHandleClick(val){

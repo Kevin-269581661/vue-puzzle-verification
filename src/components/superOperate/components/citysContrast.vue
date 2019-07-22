@@ -837,8 +837,8 @@
                         let tempObj = {asrID: asrID, name: this.returnAsName(asrID), type: 'line', data: []}
                         let timeArr = []
                         if (String === 'rate') {
-                            for (let res of ResCount) {
-                                tempObj.data.push(res.totalPublicationRate * 100)
+                            for (let res of ResCount) { // Math.round(num * 100) / 100
+                                tempObj.data.push(Math.round(res.totalPublicationRate * 10000) / 100)
                                 timeArr.push(res.month)
                             }
                         } else {
@@ -879,7 +879,8 @@
                                 for (let i = 0; i < params.length; i++) {
                                     title = '<p class="echarts_tooltip_title"><span>' + '城市(' + params[i].name + ')' + '</span>' + '<span>' + '数量' + '</span></p>' + '<br/>'
                                     let data = '<p class="echarts_tooltip_content">' +
-                                        '<span><i class="echarts_tooltip_i" style="background: '+ params[i].color +'"></i>' + params[i].seriesName + '</span>' + params[i].value + '</p>'
+                                        '<span><i class="echarts_tooltip_i" style="background: '+ params[i].color +'"></i>' + params[i].seriesName + '</span>' +
+                                        params[i].value + (that.cityBattleTitle === '上刊率' ? '%' : '')+ '</p>'
                                     arr.push(data)
                                 }
                                 let tooltip = arr.join('');

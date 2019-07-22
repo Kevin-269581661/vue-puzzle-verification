@@ -169,7 +169,7 @@
                                             <em slot="suffix" style="position: relative;top: 2px">%</em>
                                         </el-input>
                                     </div>
-                                    <div class="upPercent-wrap-mask" v-show="cinputFocus">
+                                    <div class="upPercent-wrap-mask" v-if="cinputFocus">
                                         <el-button type="text" @click="pClear">清除</el-button>
                                         <el-button plain class="confirm" @click="pConfirm">确定</el-button>
                                     </div>
@@ -610,9 +610,9 @@
                     console.log('点位使用概况error')
                 })
             },
-            // 社区社区列表 - 接口 this.setPageNoAndTableDataRes()
+            // 社区社区列表 - 接口
             getResRateFun(){
-                console.log('resPageNum',this.resPageNum)
+                console.log('resPageNum',this.resPageNum,this.pUpMin)
                 let params = {
                     uid:this.sessionData.uID,
                     token: this.sessionData.token,
@@ -622,8 +622,8 @@
                     createEnd: this.resCreatDate[1],
                     wd: this.resInputVal,
                     asrIDs: this.returnAsrID(), //this.currCity,
-                    maxPercent: this.pUpMax,
-                    minPercent: this.pUpMin,
+                    maxPercent:isNaN(Number(this.pUpMax)) ? '' : this.pUpMax,
+                    minPercent: isNaN(Number(this.pUpMin)) ? '' : this.pUpMin,
                     pageSize: this.resPageSize,
                     pageNum: this.resPageNum
                 }
@@ -673,9 +673,9 @@
                     createStar: this.adsCreatDate[0],
                     createEnd: this.adsCreatDate[1],
                     wd: this.adsInputVal,
-                    asrIDs: this.returnAsrID(), //this.currCity,
-                    maxPercent: this.cUpMax,
-                    minPercent: this.cUpMin,
+                    asrIDs: this.returnAsrID(),
+                    maxPercent: isNaN(Number(this.cUpMax)) ? '' : this.cUpMax,//this.cUpMax,
+                    minPercent: isNaN(Number(this.cUpMin)) ? '' : this.cUpMin,//this.cUpMin,
                     pageSize: this.adsPageSize,
                     pageNum: this.adsPageNum,
                 }
@@ -850,9 +850,10 @@
             },
             //点位，上刊率确定
             cConfirm() {
-                // alert('12312')
                 if(this.cUpMin !== '' && this.cUpMax !== ''){
-                    if(Number(this.cUpMin) >= Number(this.cUpMax)){
+                    let isMin = Number(this.cUpMin)
+                    let isMax = Number(this.cUpMax)
+                    if (isNaN(isMin) || isNaN(isMax) || isMin >= isMax) {
                         this.$message({
                             type:'warning',
                             message: '请填写正确的区间'
@@ -867,11 +868,12 @@
             // 社区上刊率
             resBlur(){
                 // console.log('失去焦点')
-                if (this.pUpMin === '' && this.pUpMax === '' && !this.cinputFocus) {
+                if (this.pUpMin === '' && this.pUpMax === '') {
+                    this.cinputFocus = false
                     this.setPageNoAndTableDataAds()
                     this.getAdsRateFun()
                 }
-                this.cinputFocus = false
+
             },
             // 社区 - 清除
             pClear() {
@@ -885,7 +887,10 @@
             pConfirm() {
                 console.log('社区上刊率',this.pUpMin,this.pUpMax)
                 if (this.pUpMin !== '' && this.pUpMax !== '') {
-                    if (Number(this.pUpMin) >= Number(this.pUpMax)) {
+                    let isMin = Number(this.pUpMin)
+                    let isMax = Number(this.pUpMax)
+                    // console.log('isMin',isMin,'isMax',isMax)
+                    if (isNaN(isMin) || isNaN(isMax) || isMin >= isMax) {
                         this.$message({
                             type: 'warning',
                             message: '请填写正确的区间'
@@ -922,8 +927,8 @@
                     onEnd: this.resSearchDate[1],
                     asrIDs: this.returnAsrID(),// this.currCity,
                     wd: this.resInputVal,
-                    maxPercent: this.pUpMax,
-                    minPercent: this.pUpMin,
+                    maxPercent: isNaN(Number(this.pUpMax)) ? '' : this.pUpMax,
+                    minPercent: isNaN(Number(this.pUpMin)) ? '' : this.pUpMin,
                 }
                 for(let i in params){
                     if(params[i] === '' || params[i] === undefined){
@@ -1008,6 +1013,22 @@
                     return '1,2,3,4,5,6,7'
                 }else{
                     return this.selectCity
+                }
+            },
+            // 操作提示统一方法
+            messageFun(mesType, mes) {
+                this.$message({
+                    message: mes,
+                    type: mesType,
+                    showClose: true,
+                })
+            },
+            validateNum(value) {
+                let reg = /^\d+(\.\d+)?$/
+                if (value !== '' && !(reg.test(value))) {
+                    return true
+                } else {
+                    return false
                 }
             },
             // 价格加上逗号

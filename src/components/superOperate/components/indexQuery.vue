@@ -50,6 +50,7 @@
                                 format="yyyy-MM"
                                 placeholder="选择月"
                                 :picker-options="allkeyOptionsStar"
+                                :clearable="false"
                                 @change="analysisChangeMonth('trend','all','0')">
                             </el-date-picker>
                             至
@@ -61,6 +62,7 @@
                                 format="yyyy-MM"
                                 placeholder="选择月"
                                 :picker-options="allkeyOptionsEnd"
+                                :clearable="false"
                                 @change="analysisChangeMonth('trend','all','1')">
                             </el-date-picker>
                         </div>
@@ -127,6 +129,7 @@
                                 format="yyyy-MM"
                                 placeholder="选择月"
                                 :picker-options="addKeyOptionsStar"
+                                :clearable="false"
                                 @change="analysisChangeMonth('trend','add','0')">
                             </el-date-picker>
                             至
@@ -138,6 +141,7 @@
                                 format="yyyy-MM"
                                 placeholder="选择月"
                                 :picker-options="addKeyOptionsEnd"
+                                :clearable="false"
                                 @change="analysisChangeMonth('trend','add','1')">
                             </el-date-picker>
                         </div>
@@ -1360,7 +1364,7 @@
                 this.CountOfIncreDataShow.dateCompare =this.CountOfIncreData.timeData.concat()
                 let dateTime = this.changeTime(params.onStart.substring(0, 7)) + '-' + this.changeTime(params.onEnd.substring(0, 7))
                 this.CountOfIncreDataShow.TitleDate = [dateTime]
-                if (this.dateCompare && this.addkeyCompareDate[0] && this.addkeyCompareDate) {
+                if (this.dateCompare && this.addkeyCompareDate[0] && this.addkeyCompareDate[1]) {
                     this.addKeyDataChangeMonthCompare('init')
                 } else {
                     this.keyDataBar()
@@ -1397,7 +1401,7 @@
             },
             // 关键数据增量对比 - 月份对比
             addKeyDataChangeMonthCompare(temp){
-                // console.log('关键数据增量对比 - 月份对比',this.addkeyCompareDate)
+                console.log('关键数据增量对比 - 月份对比',this.addkeyCompareDate)
                 if(this.addkeyCompareDate[0] && this.addkeyCompareDate[1]){
                     let compareLen = this.isMonthLength(this.addkeyCompareDate)
                     // 比较两对比月份间隔是否相等

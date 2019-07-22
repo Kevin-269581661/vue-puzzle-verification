@@ -141,6 +141,7 @@
                                 format="yyyy-MM"
                                 placeholder="选择月"
                                 :picker-options="cityCompareOptionsStar"
+                                :clearable="false"
                                 @change="cityCompareChangeTime('cityBattle','0')">
                             </el-date-picker>
                             至
@@ -152,6 +153,7 @@
                                 format="yyyy-MM"
                                 placeholder="选择月"
                                 :picker-options="cityCompareOptionsEnd"
+                                :clearable="false"
                                 @change="cityCompareChangeTime('cityBattle','1')">
                             </el-date-picker>
                         </div>
@@ -202,7 +204,8 @@
                                 range-separator="至"
                                 start-placeholder="开始日期"
                                 end-placeholder="结束日期"
-                                @change="cityRateChangeTime('cityRate')">
+                                @change="cityCompareChangeTime('cityRate')"
+                                :clearable="false">
                             </el-date-picker>
                         </div>
                     </div>
@@ -246,10 +249,11 @@
                                 v-model="cityKeyDataDate"
                                 type="daterange"
                                 value-format="yyyy-MM-dd"
-                                @change="cityRateChangeTime('cityKey')"
+                                @change="cityCompareChangeTime('cityKey')"
                                 range-separator="至"
                                 start-placeholder="开始日期"
-                                end-placeholder="结束日期">
+                                end-placeholder="结束日期"
+                                :clearable="false">
                             </el-date-picker>
                         </div>
                     </div>

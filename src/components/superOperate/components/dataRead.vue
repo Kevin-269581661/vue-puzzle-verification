@@ -1572,10 +1572,10 @@
                         formatter: (name)=> {
                             let value;
                             let precent;
-                            for (let i = 0; i < this.mediaSaleData.data.length; i++) {
-                                if (this.mediaSaleData.data[i].name == name) {
-                                    precent = parseFloat((this.mediaSaleData.data[i].value / total) * 100).toFixed(2) + '%'
-                                    value = this.mediaSaleData.data[i].value
+                            for(let key of this.mediaSaleData.data){
+                                if (key.name == name) {
+                                    precent = (total ? parseFloat((key.value / total) * 100).toFixed(2) : 0) + '%'
+                                    value = key.value
                                 }
                             }
                             let arr = ["{a|" + name + "}","{b|"+"|}","{c|" + precent + "}","{d|" + value + "}"]

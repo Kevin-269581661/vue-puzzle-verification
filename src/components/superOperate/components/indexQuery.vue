@@ -488,7 +488,7 @@
         <el-dialog title="入驻物业总排行" :visible.sync="PropertyRankTableVisible">
             <div class="table-wrap" style="width: 100%">
                 <el-table :data="ResPMCRankData" height="430px" border
-                          class="into-property-rank">
+                          style="width: 100%">
                     <el-table-column property="rank"
                                      type="index"
                                      label="排名"
@@ -517,7 +517,7 @@
         <el-dialog title="广告主总排行" :visible.sync="adOwnerRankTableVisible">
             <div class="table-wrap" style="width: 100%">
                 <el-table :data="adOwnerRankTable" height="430px" border
-                          class="ad-owner-rank-table">
+                          style="width: 100%">
                     <el-table-column
                         type="index"
                         label="排名"
@@ -795,7 +795,6 @@
                         this.isGetData = true
                     }
                 }
-                // console.log('this.selectCity',this.selectCity,'this.oldSelectCity',this.oldSelectCity)
             },
             activeName(newVal,oldVal){
                 console.log('指标查询activeName',newVal,'oldVal',oldVal)
@@ -2266,6 +2265,7 @@
                             } else if (this.PMCDataTitle === '点位数量') {
                                 this.ResPMCShowData = this.ResPMCMCount
                             }
+                            // 手动异步渲染确保在有无数据的显示隐藏之间的切换可以正常显示
                             let timer = setTimeout(()=>{
                                 this.PropertyRank()
                                 clearTimeout(timer)
@@ -2300,7 +2300,6 @@
                                 return '<p class="echarts_tooltip_title"><span>' + params[0].name + '</span></p>' + '<br/>' +
                                     '<p class="echarts_tooltip_content">' +
                                     '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params[0].seriesName + '</span>' + params[0].data + '</p>'
-
                             },
                         },
                         grid: {

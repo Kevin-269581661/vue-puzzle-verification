@@ -574,6 +574,7 @@
     import industry from '../../../commonFun/industryToText';
     import commaFormat from '../../../commonFun/commaFormat';
     import noSearchResult from "../../../components/common/components/noSearchResult";
+    import sessFun from '../../../commonFun/sessFun';
     export default {
         name: "indexQuery",
         components:{
@@ -940,7 +941,7 @@
             analysisChangeMonth(String,temp,index){
                 if (String === 'trend') {
                     if (this.allkeyDataDate[0] > this.allkeyDataDate[1]) {
-                        this.messageFun('warning','结束时间小于开始时间!')
+                        sessFun.messageFun('warning', '结束时间小于开始时间!')
                     } else {
                         let starT = ''
                         let endT = ''
@@ -956,7 +957,7 @@
                                     endT = this.allkeyDataDate[1]
                                 }
                                 this.allkeyDataDate = [starT, endT]
-                                this.messageFun('warning','月份跨度不能大于六个月!')
+                                sessFun.messageFun('warning', '月份跨度不能大于六个月!')
                             }
                             this.allkeyDataTime = '其它'
                             this.keydataRadio(this.allkeydatakind, temp)
@@ -972,7 +973,7 @@
                                     endT = this.addkeyDataDate[1]
                                 }
                                 this.addkeyDataDate = [starT, endT]
-                                this.messageFun('warning','月份跨度不能大于六个月!')
+                                sessFun.messageFun('warning', '月份跨度不能大于六个月!')
                             }
                             this.addkeyDataTime = '其它'
                             this.keydataRadio(this.addkeyDataKind, temp)
@@ -1052,7 +1053,7 @@
                 api.getApi(this.apiVar.Count + '/GetResCountOfTotalAndIncrement', params).then(res => {
                     console.log('社区数据', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()       // 登录超时
+                        sessFun.loginTimeout()       // 登录超时
                     } else {
                         let dataArr = res.data
                         if (dataArr.length > 0) {
@@ -1072,7 +1073,7 @@
                                 this.setAddKeyDataShow(dataArr, params)
                             }
                         } else {
-                            this.messageFun('warning','社区总量趋势,在该时段暂无数据!')
+                            sessFun.messageFun('warning', '社区总量趋势,在该时段暂无数据!')
                         }
                     }
                 })
@@ -1090,7 +1091,7 @@
                 api.getApi(this.apiVar.Count + '/GetMediaCountOfTotalAndIncrement', params).then(res => {
                     console.log('广告门总量趋势', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()       // 登录超时
+                        sessFun.loginTimeout()       // 登录超时
                     } else {
                         let dataArr = res.data
                         this.CountOfTotalData.media = []
@@ -1122,7 +1123,7 @@
                 api.getApi(this.apiVar.Count + '/GetAdSpaceCountOfTotalAndIncrement', params).then(res => {
                     console.log('点位数总量趋势', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()       // 登录超时
+                        sessFun.loginTimeout()       // 登录超时
                     } else {
                         this.CountOfTotalData.ads = []
                         this.CountOfTotalData.timeData = []
@@ -1154,7 +1155,7 @@
                 api.getApi(this.apiVar.Count + '/GetPublicationRateTotalAndIncrement', params).then(res=>{
                     console.log('上刊率总量趋势',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()       // 登录超时
+                        sessFun.loginTimeout()       // 登录超时
                     } else {
                         let dataArr = res.data
                         this.CountOfTotalData.Rate = []
@@ -1185,7 +1186,7 @@
                 api.getApi(this.apiVar.Count + '/GetOrderTotalAndIncrement', params).then(res=>{
                     console.log('订单总量/增量趋势',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()       // 登录超时
+                        sessFun.loginTimeout()       // 登录超时
                     } else {
                         let dataArr = res.data
                         this.CountOfTotalData.order = []
@@ -1217,7 +1218,7 @@
                 api.getApi(this.apiVar.Count + '/GetOrderIncomeTotalAndIncrement', params).then(res=>{
                     console.log('订单总额/增量趋势',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()       // 登录超时
+                        sessFun.loginTimeout()       // 登录超时
                     } else {
                         let dataArr = res.data
                         this.CountOfTotalData.orderPrice = []
@@ -1249,7 +1250,7 @@
                 api.getApi(this.apiVar.Count + '/GetAdOwnerTotalAndIncrement', params).then(res=>{
                     console.log('广告主总数/增量趋势',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()       // 登录超时
+                        sessFun.loginTimeout()       // 登录超时
                     } else {
                         let dataArr = res.data
                         this.CountOfTotalData.adOwner = []
@@ -1407,7 +1408,7 @@
                     // 比较两对比月份间隔是否相等
                     let Len = this.isMonthLength(this.addkeyDataDate)
                     if (Len !== compareLen) {
-                        this.messageFun('warning','请选择相同的月份数量')
+                        sessFun.messageFun('warning', '请选择相同的月份数量!')
                         if (temp === 'init') {
                             this.keyDataBar()
                         }
@@ -1831,7 +1832,7 @@
                     }
                     this.beforeSelectIndustry = industryData.concat()
                 } else {
-                    this.messageFun('warning', '行业不能为空!')
+                    sessFun.messageFun('warning', '行业不能为空!')
                     this.selectIndustry = this.beforeSelectIndustry.concat()
                 }
             },
@@ -1851,7 +1852,7 @@
             // 行业订单总量趋势 - 选择月份
             orderChangeMonth(index){
                 if (this.TOrderDate[0] > this.TOrderDate[1]) {
-                    this.messageFun('warning', '结束时间小于开始时间!')
+                    sessFun.messageFun('warning', '结束时间小于开始时间!')
                 } else {
                     let starT = ''
                     let endT = ''
@@ -1865,8 +1866,7 @@
                             endT = this.TOrderDate[1]
                         }
                         this.TOrderDate = [starT,endT]
-                        // console.log(starT,endT,'校验完后的时间',this.TOrderDate)
-                        this.messageFun('warning','月份跨度不能大于六个月!')
+                        sessFun.messageFun('warning', '月份跨度不能大于六个月!')
                     }
                     this.TOrderTime = '其它'
                     // console.log('行业订单总量趋势 - 选择月份',this.card5Industry)
@@ -1902,7 +1902,7 @@
                 api.getApi(this.apiVar.Count + '/GetIOrder', params).then(res =>{
                     console.log(params,'行业订单总量趋势 - 接口',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else {
                         let dataArr = res.data
                         if (dataArr.length > 0) {
@@ -1937,7 +1937,7 @@
                             this.totalOrderDate = orderMonths
                             this.busOrderLine()
                         } else {
-                            this.messageFun('warning','行业订单总量趋势,在该时段暂无数据')
+                            sessFun.messageFun('warning','行业订单总量趋势,在该时段暂无数据')
                         }
                     }
                 })
@@ -2056,7 +2056,7 @@
                     console.log('行业订单占比', res)
                     let dataArr = res.data
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()       // 登录超时
+                        sessFun.loginTimeout()       // 登录超时
                     } else {
                         if (dataArr.length > 0) {
                             this.IOrderTotalArr = [{data: []}, {legendData: []}],// 行业订单占比-订单金额
@@ -2243,7 +2243,7 @@
                     console.log('销售业绩排行', res)
                     let ResPMCdata = res.data
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()       // 登录超时
+                        sessFun.loginTimeout()       // 登录超时
                     }else {
                         if (ResPMCdata.length > 0) {
                             this.isHavePropertyRankData = true
@@ -2424,7 +2424,7 @@
                     console.log('广告主排行 ', res)
                     let dataArr = res.data
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()       // 登录超时
+                        sessFun.loginTimeout()       // 登录超时
                     }else {
                         if (dataArr.length > 0) {
                             this.isHaveAdOwnerRank = true
@@ -2598,7 +2598,7 @@
                     console.log(params,'销售业绩排行', res)
                     let dataArr =  res.data
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()       // 登录超时
+                        sessFun.loginTimeout()       // 登录超时
                     }else {
                         if (dataArr.length > 0) {
                             this.isHaveSalesRank = true
@@ -2796,19 +2796,6 @@
             // 价格加上逗号
             priceFormat(price) {
                 return commaFormat.init(price);
-            },
-            // 操作提示统一方法
-            messageFun(mesType, mes) {
-                this.$message({
-                    message: mes,
-                    type: mesType,
-                    showClose: true,
-                })
-            },
-            // 登录超时
-            loginTimeout() {
-                this.messageFun('warning','登录超时或权限异常,请重新登录!')
-                this.$router.push('/login')
             },
         }
     }

@@ -291,6 +291,7 @@
     import api from '../../../api/api';
     import commaFormat from '../../../commonFun/commaFormat';
     import timeFormat from '../../../commonFun/timeFormat';
+    import sessFun from '../../../commonFun/sessFun';
     export default {
         name: "citysContrast",
         data(){
@@ -690,10 +691,7 @@
                             endT = this.compareCityTime[1]
                         }
                         this.compareCityTime = [starT, endT]
-                        this.$message({
-                            type: 'warning',
-                            message: '月份跨度不能大于六个月'
-                        })
+                        sessFun.messageFun('warning','月份跨度不能大于六个月!')
                     }
                     this.cityBattleTime = '其它'
                     this.forCityData(this.cityBattleTitle)
@@ -704,10 +702,7 @@
                         starT = this.cityRateCompareDate[0]
                         endT = timeFormat.getSpecifiedDateStr(this.cityRateCompareDate[0], -5)
                         this.cityRateCompareDate = [starT, endT]
-                        this.$message({
-                            type: 'warning',
-                            message: '时间跨度不能大于六个月'
-                        })
+                        sessFun.messageFun('warning','时间跨度不能大于六个月!')
                     }
                     this.cityRateCompareTime = '其它'
                     this.getCompareCityRate()
@@ -718,10 +713,7 @@
                         starT = this.cityKeyDataDate[0]
                         endT = timeFormat.getSpecifiedDateStr(this.cityKeyDataDate[0], -5)
                         this.cityKeyDataDate = [starT, endT]
-                        this.$message({
-                            type: 'warning',
-                            message: '时间跨度不能大于六个月'
-                        })
+                        sessFun.messageFun('warning','时间跨度不能大于六个月!')
                     }
                     this.cityKeyDataTime = '其它'
                     this.forCityKeyData()
@@ -757,10 +749,7 @@
                     this.cityBattleLine()
                 } else {
                     this.selectCompareCity = this.beforeCityBLSShow
-                    this.$message({
-                        type: 'warning',
-                        message: '城市不能为空'
-                    })
+                    sessFun.messageFun('warning','城市不能为空!')
                 }
             },
             // 新增城市
@@ -827,10 +816,7 @@
                         this.loginTimeout()       // 登录超时
                     } else {
                         if (ResCount === '') {
-                            this.$message({
-                                type: 'warning',
-                                message: '该时间段暂无数据'
-                            })
+                            sessFun.messageFun('warning','该时间段暂无数据!')
                         }
                         this.cityBattleLineStep++
                         // console.log('步数',this.cityBattleLineStep)
@@ -978,10 +964,7 @@
                     this.cityPercentBattleBar()
                 }else{
                     this.cityRateCompareShowData.name = this.beforeCityRate
-                    this.$message({
-                        type:'warning',
-                        message:'城市不能为空'
-                    })
+                    sessFun.messageFun('warning','城市不能为空!')
                 }
             },
             // 城市上刊率对比 - 接口
@@ -1018,7 +1001,7 @@
                             console.log('城市上刊率对比',this.cityRateCompareShowData)
                             this.cityPercentBattleBar()
                         }else{
-                            this.$message.warning('城市上刊率对比,在该时段暂无数据！');
+                            sessFun.messageFun('warning','城市上刊率对比,在该时段暂无数据!')
                         }
                     }
                     this.cityPercentBattleLoading = false
@@ -1220,10 +1203,7 @@
                     this.keyDataPie()
                 }else{
                     this.selectCompareCityData = this.beforeCityKey
-                    this.$message({
-                        type:'warning',
-                        message:'城市不能为空'
-                    })
+                    sessFun.messageFun('warning','城市不能为空!')
                 }
             },
             // 城市关键数据对比 - 接口 （社区、广告门、点位）
@@ -1263,7 +1243,7 @@
                             console.log('selectCompareCityData',this.selectCompareCityData)
                             this.keyDataPie()
                         }else{
-                            this.$message.warning('城市关键数据对比（社区、广告门、点位）,在该时段暂无数据！');
+                            sessFun.messageFun('warning','城市关键数据对比（社区、广告门、点位）,在该时段暂无数据!')
                         }
                     }
                 })

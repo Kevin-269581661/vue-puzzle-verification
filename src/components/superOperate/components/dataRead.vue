@@ -373,6 +373,7 @@
     import api from '../../../api/api';
     import commaFormat from '../../../commonFun/commaFormat';
     import timeFormat from '../../../commonFun/timeFormat';
+    import sessFun from '../../../commonFun/sessFun'
     export default {
         name: "dataRead",
         data(){
@@ -718,7 +719,7 @@
                 api.getApi(this.apiVar.report + '/api/v2/getOverview', params).then(res => {
                     console.log('数据总总览-表头接口', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         this.basicTotalData = {
@@ -734,7 +735,8 @@
                         console.log('basicTotalData',this.basicTotalData)
                         this.setTotalDataBar()
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
+                        // this.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -924,7 +926,7 @@
                 api.getApi(this.apiVar.report + '/api/v2/getSurvey', params).then(res => {
                     console.log('当天概况-表头接口', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         this.basicToDayData = {
@@ -938,7 +940,8 @@
                                 forbiddenPointCount: dataObj.forbiddenPointCount,
                         }
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
+                        // this.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -956,12 +959,13 @@
                 api.getApi(this.apiVar.report + '/api/v2/getBehaviorInfo', params).then(res => {
                     console.log('当天概况-图表接口', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         this.setToDatyPreceptData(dataObj)
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
+                        // this.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -1187,12 +1191,13 @@
                 api.getApi(this.apiVar.report + '/api/v2/getAdvertSales', params).then(res => {
                     console.log('广告销售-顶部数据接口res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         this.setAdSaleHeaderData(dataObj)
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
+                        // this.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -1229,14 +1234,15 @@
                 api.getApi(this.apiVar.report + '/api/v2/getAdsInfoByWeek', params).then(res => {
                     console.log('广告销售-左侧数据接口res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         this.adSaleList = res.data.data
                         this.setAdSalePieData(this.adSaleList[0])
                         this.adSaleWeekSelectList = this.setWeekSelectList(this.adSaleList)
                         this.setAdSaleBarData()
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
+                        // this.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -1645,7 +1651,7 @@
                 api.getApi(this.apiVar.report + '/api/v2/getAdsInventoryInfo', params).then(res => {
                     console.log('广告库存数据接口 - 过去', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         let arr = []
@@ -1668,7 +1674,8 @@
                         }
                         this.initAdInventoriedPie();
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
+                        // this.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -1688,7 +1695,7 @@
                 api.getApi(this.apiVar.report + '/api/v2/getAdsFutureInventoryInfo', params).then(res => {
                     console.log('广告库存数据接口 - 未来', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         let arr = []
@@ -1709,7 +1716,8 @@
                         }
                         this.initAdInventoryPie();
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
+                        // this.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -1895,7 +1903,7 @@
                 api.getApi(this.apiVar.report + '/api/v2/getCustomerInfo', params).then(res => {
                     console.log('机会挖掘饼状图接口res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout();
+                        sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         let dataArr = []
@@ -1916,7 +1924,8 @@
                         this.chanceFindPieData.data = dataArr;
                         this.initChanceFindPie();
                     } else {
-                        this.messageFun('warning', res.data.MSG);
+                        sessFun.messageFun('warning', res.data.MSG)
+                        // this.messageFun('warning', res.data.MSG);
                     }
                 })
             },
@@ -1936,12 +1945,13 @@
                 api.getApi(this.apiVar.report + '/api/v2/getCustomerCooperative', params).then(res => {
                     console.log('机会挖掘表格接口res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout();
+                        sessFun.loginTimeout();
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         this.setChanceFindTabelData(dataObj)
                     } else {
-                        this.messageFun('warning', res.data.MSG);
+                        sessFun.messageFun('warning', res.data.MSG)
+                        // this.messageFun('warning', res.data.MSG);
                     }
                 })
             },
@@ -2093,7 +2103,7 @@
             priceFormat(price) {
                 if (price) {
                     price = commaFormat.init(price)
-                    return price.substring(price, price.length - 3);
+                    return price.split('.')[0]
                 } else {
                     return 0
                 }
@@ -2132,10 +2142,10 @@
                     showClose: true,
                 })
             },
-            loginTimeout() {
-                this.messageFun('warning', "登录超时,请重新登录");
-                this.$router.push("/login");
-            },
+            // loginTimeout() {
+            //     this.messageFun('warning', "登录超时,请重新登录");
+            //     this.$router.push("/login");
+            // },
         }
     }
 </script>
@@ -2467,7 +2477,7 @@
         background:rgba(0,0,0,0);
     }
 
-    .chance_find_table /deep/ .el-table__body-wrapper{
+    .chance_find_table /deep/ .el-table__body-wrapper,.chance_find_table /deep/ .el-table__empty-block{
         height: 218px;
         min-height: 218px;
         overflow-y: auto;

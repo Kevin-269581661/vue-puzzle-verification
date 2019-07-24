@@ -1253,16 +1253,15 @@
                 let adsDisabled = []
                 let publishRate = []
                 let totalNum = 0
-                let i = 0
                 for (let aKey of this.adSaleList) {
-                    if (i < 1) {
-                        totalNum += aKey.soldAdsCount + aKey.unsoldAdsCount + (aKey.forbiddenAdsCount || 0)
+                    let sum = aKey.soldAdsCount + aKey.unsoldAdsCount + (aKey.forbiddenAdsCount || 0)
+                    if(sum > totalNum){
+                        totalNum = sum
                     }
                     beenSold.push(aKey.soldAdsCount)
                     unSold.push(aKey.unsoldAdsCount)
                     adsDisabled.push(aKey.forbiddenAdsCount || 0)
                     publishRate.push(Math.floor(aKey.publishRate * 10000) / 100)
-                    i++
                 }
                 // 周
                 this.adSaleData.weekList = JSON.parse(JSON.stringify(weekList))
@@ -1274,8 +1273,8 @@
                 this.adSaleData.adsDisabled = JSON.parse(JSON.stringify(adsDisabled))
                 // 上刊率
                 this.adSaleData.publishRate = publishRate
-                this.adSaleData.totalNum = parseInt(totalNum * 1.5)
-                console.log('左侧柱状图',this.adSaleData)
+                this.adSaleData.totalNum = parseInt(totalNum * 1.4)
+                console.log('左侧柱状图',this.adSaleData,totalNum)
                 this.initAdSaleBar();
             },
             // 设置右侧饼状图数据
@@ -1315,7 +1314,6 @@
                         borderColor: '#dddddd',
                         borderWidth: 1,
                         formatter: function (params) {
-                            // console.log('params',params)
                             let title = '';
                             let arr = [];
                             let total = params[1].value + params[2].value + params[3].value
@@ -1506,14 +1504,14 @@
                             },
                             //思路一：给series集合末尾多加一栏用于展示合计，但是值都是0；
                             // 缺点：必须根据xAxis的data生成一组为空的数据，且tooltip不能加trigger: 'axis',这个条件，不然会展示合计：0
-                            data:[0,0,0,0,0]
+                            data:[0,0,0,0,0,0]
                         }
 
                     ]
                 };
                 let series = option["series"];
                 let totalFun = function (params) {
-                    let total =0;
+                    let total = 0;
                     for (let i = 1, l = series.length; i < l; i++) {
                         total += series[i].data[params.dataIndex]
                     }

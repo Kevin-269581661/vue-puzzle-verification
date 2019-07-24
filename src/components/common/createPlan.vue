@@ -1771,9 +1771,21 @@
                     this.messageFun('warning','请先选择投放城市')
                 }
             },
+            // 导出空点导出次数接口
+            postDownLoadNum(type){
+                let data = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    type,
+                };
+                api.postApi(this.apiVar.Advertisement+"/AddExportLog", data).then(res =>{
+                    console.log(res);
+                });
+            },
             /*step1*/
             // 导出数据
             exportExcelData: function(){
+                this.postDownLoadNum(0);
                 // this.planForm.throwCity = [110100, 440100];
                 if(this.planForm.throwCity.length){
                     let loadingPoint = this.$loading({

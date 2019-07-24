@@ -79,7 +79,7 @@
                                     </template>
                                     {{item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'}}
                                 </p>
-                                <p v-if="!isAll" v-for="item of scope.row.cityArea" :key="item.rid" class="city_p">
+                                <p v-if="!isAll" v-for="item of scope.row.cityArea" :key="item.rid+'-'+item.asrID" class="city_p">
                                     {{item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'}}
                                     <span v-show="item.RemainDay"> 预锁:剩<b :style="item.RemainDay<=3?'color:red;':''">{{item.RemainDay}}</b>天</span>
                                     <i v-if="item.RemainDay>=0" class="fa fa-lock fa-lg" style="color:#999;"></i>

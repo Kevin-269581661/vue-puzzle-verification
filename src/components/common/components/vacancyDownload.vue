@@ -160,6 +160,7 @@ export default {
         },
         // 自定义日期按照小区
         dateRangeEmpty(){
+            this.postDownLoadNum(0);            
             let { city, daterange } = this.downLoadInfo;
             let loadingPoint = this.$loading({
                 lock: true,
@@ -253,8 +254,20 @@ export default {
             }
             return str;
         },
+        // 导出空点导出次数接口
+        postDownLoadNum(type){
+            let data = {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                type,
+            };
+            api.postApi(this.apiVar.Advertisement+"/AddExportLog", data).then(res =>{
+                console.log(res);
+            });
+        },
         // 半年日期按照小区导出数据
         exportExcelData(){
+            this.postDownLoadNum(0);
             let loadingPoint = this.$loading({
                 lock: true,
                 text: '玩命加载中...',
@@ -382,6 +395,7 @@ export default {
         },
         // 自定义日期按照点位来导
         getDaterangeAds(info){
+            this.postDownLoadNum(1);            
             api.postApi(this.apiVar.Advertisement+'/ExportSpareAds', info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 300200){

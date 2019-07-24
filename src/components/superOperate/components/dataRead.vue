@@ -1367,7 +1367,6 @@
                         {
                             type: 'value',
                             max: this.adSaleData.totalNum,
-                            // interval: (this.adSaleData.totalNum / 6).toFixed(0),
                             splitNumber: 6,
                             axisLine: {
                                 // show:false,
@@ -1452,6 +1451,13 @@
                                 normal: {
                                     label: {
                                         show: true,//是否展示
+                                        formatter: (num) => {
+                                            if (this.adSaleData.totalNum) {
+                                                if ((num.value / this.adSaleData.totalNum) < 0.029) {
+                                                    return ''
+                                                }
+                                            }
+                                        }
                                     },
                                     color: this.colorList[2]
                                 }
@@ -1467,6 +1473,13 @@
                                 normal: {
                                     label: {
                                         show: true,//是否展示
+                                        formatter: (num) => {
+                                            if (this.adSaleData.totalNum) {
+                                                if ((num.value / this.adSaleData.totalNum) < 0.029) {
+                                                    return ''
+                                                }
+                                            }
+                                        }
                                     },
                                     color: this.colorList[1]
                                 }
@@ -1482,6 +1495,13 @@
                                 normal: {
                                     label: {
                                         show: true,// 是否展示
+                                        formatter: (num) => {
+                                            if (this.adSaleData.totalNum) {
+                                                if ((num.value / this.adSaleData.totalNum) < 0.029) {
+                                                    return ''
+                                                }
+                                            }
+                                        }
                                     },
                                     color: this.colorList[0]
                                 }

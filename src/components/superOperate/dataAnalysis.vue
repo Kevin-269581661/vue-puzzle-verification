@@ -73,8 +73,8 @@
                     {value: '5', label: '成都亲邻'},
                     {value: '6', label: '重庆亲邻'},
                     {value: '7', label: '天津亲邻众联'},
-                    {value: '1160',label: '天津测试公司'},
-                    {value: '1162', label: '经营报表-测试公司'}
+                    // {value: '1160',label: '天津测试公司'},
+                    // {value: '1162', label: '经营报表-测试公司'}
                 ],
                 // 直营公司名称
                 directNameList: [],
@@ -112,22 +112,21 @@
                 if (this.sessionData.asrID == '999') {
                     this.getDirectSales()
                 } else {
-                    let asName = this.returnAsName(this.sessionData.asrID)
                     let cityArr = [
                         {
                             value: this.sessionData.asrID.toString(),
-                            label: asName || this.sessionData.asName
+                            label: this.sessionData.asName
                         }
                     ]
                     this.headerCityList = JSON.parse(JSON.stringify(cityArr))
                     this.selectCity = cityArr[0].value
                     this.isAllCity = false
-                    if (asName) {
+                    if (this.sessionData.rela === '直营') {
                         this.isQinLinCity = true
-                        let timer1 = setTimeout(()=>{
+                        let timer1 = setTimeout(() => {
                             this.activeName = 'first';
                             clearTimeout(timer1)
-                        },10)
+                        }, 10)
                     } else {
                         this.activeName = 'third'
                     }

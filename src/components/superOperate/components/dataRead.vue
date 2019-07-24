@@ -736,7 +736,6 @@
                         this.setTotalDataBar()
                     } else {
                         sessFun.messageFun('warning', res.data.MSG)
-                        // this.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -941,7 +940,6 @@
                         }
                     } else {
                         sessFun.messageFun('warning', res.data.MSG)
-                        // this.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -965,7 +963,6 @@
                         this.setToDatyPreceptData(dataObj)
                     } else {
                         sessFun.messageFun('warning', res.data.MSG)
-                        // this.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -1197,7 +1194,6 @@
                         this.setAdSaleHeaderData(dataObj)
                     } else {
                         sessFun.messageFun('warning', res.data.MSG)
-                        // this.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -1242,7 +1238,6 @@
                         this.setAdSaleBarData()
                     } else {
                         sessFun.messageFun('warning', res.data.MSG)
-                        // this.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -1675,7 +1670,6 @@
                         this.initAdInventoriedPie();
                     } else {
                         sessFun.messageFun('warning', res.data.MSG)
-                        // this.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -1717,7 +1711,6 @@
                         this.initAdInventoryPie();
                     } else {
                         sessFun.messageFun('warning', res.data.MSG)
-                        // this.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -1925,7 +1918,6 @@
                         this.initChanceFindPie();
                     } else {
                         sessFun.messageFun('warning', res.data.MSG)
-                        // this.messageFun('warning', res.data.MSG);
                     }
                 })
             },
@@ -1951,7 +1943,6 @@
                         this.setChanceFindTabelData(dataObj)
                     } else {
                         sessFun.messageFun('warning', res.data.MSG)
-                        // this.messageFun('warning', res.data.MSG);
                     }
                 })
             },
@@ -2134,18 +2125,6 @@
             returnFormatDate(date) {
                 return date.toString().replace(/[-\.]/g, "/")
             },
-            // 操作提示统一方法
-            messageFun(mesType, mes) {
-                this.$message({
-                    message: mes,
-                    type: mesType,
-                    showClose: true,
-                })
-            },
-            // loginTimeout() {
-            //     this.messageFun('warning', "登录超时,请重新登录");
-            //     this.$router.push("/login");
-            // },
         }
     }
 </script>

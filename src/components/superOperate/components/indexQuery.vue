@@ -580,187 +580,187 @@
         components:{
             noSearchResult
         },
-        data(){
-          return{
-              isGetData: false,
-              // 前一次-全局选择的城市
-              oldSelectCity: '0',
-              // 当前月份日期
-              nowMonth: '',
-              // 数据截止时间
-              toTime:'',
-              // 所属行业
-              industryData: [],
-              //关键数据总量趋势
-              allkeydatakind: '社区数',
-              allkeyDataDate: [],
-              isReskeyDataKind: true,
-              allkeyDataTime: '最近半年',
-              // 关键数据总量loading
-              keyDataLineLoading: true,
-              // 关键数据总量echart
-              keyDataLineEchart: '',
-              // 关键数据总量
-              CountOfTotalData: {
-                  res: [],
-                  media: [],
-                  ads: [],
-                  timeData: [],
-                  Rate:[],
-                  order:[],
-                  orderPrice: [],
-                  adOwner: []
-              },
-              CountOfTotalDataShow: {numData: [], timeData: []},
-              //关键数据增量对比
-              CountOfIncreData: {
-                  res: [],
-                  media: [],
-                  ads: [],
-                  Rate: [],
-                  order:[],
-                  orderPrice:[],
-                  adOwner: [],
-                  timeData: [],
-                  increData: [],
-              },
-              // 关键数据增量echart
-              KeyDataBarEchart: '',
-              // 关键数据增量对比
-              CountOfIncreDataShow: {dateCompare: [], AddData: [], AddDataCP: [], TitleDate: []},
-              addkeyDataKind: '社区数',
-              // 数据加载时按钮禁用
-              isAddkeyDataKind: true,
-              // 默认的快捷时间按钮
-              addkeyDataTime: '最近半年',
-              // 关键数据增量对比时间
-              addkeyDataDate: [],
-              // 对比时间
-              addkeyCompareDate:[],
-              // 对比的checkBox
-              dateCompare: false,
-              // 关键数据增量loading
-              keyDataBarLoading: true,
-              /*   行业订单总量趋势   */
-              colorArr: ['#975fe4', '#3aa0ff', '#36cbcb', '#4dcb73', '#fad337', '#f2637b', '#6081FF', '#FE752A'],
-              busOrderLineEchart:'',
-              selectIndustry: [],
-              beforeSelectIndustry: [],
-              TOrderDate: [],
-              TOrderTime: '最近半年',
-              // 订单类型
-              TOrderTitleRadio: '订单金额',
-              //行业订单总量趋势折线图X
-              totalOrderDate: [],
-              // 显示数据
-              totalOrderDataShow: [],
-              // 折线标题
-              totalOrderTitleShow:[],
-              // 行业订单总量趋势 -订单金额
-              totalOrderPrice: [],
-              // 行业订单总量趋势 -订单数量
-              totalOrderNumber: [],
-              // 行业订单总量趋势 -广告主数
-              totalOrderAdOwner: [],
-              /*  行业订单占比  */
-              allOrderPieEcharts: '',
-              orderScale: '订单金额',
-              // 行业订单占比-总数据汇总
-              IOrderTotal: {orderTotal: 0, apCount: 0, comCount: 0},
-              // 行业订单占比-要显示的总数据
-              IOrderTotalShow: 0,
-              //饼图数据
-              IOrderData: [],
-              //表格数据
-              orderTable: [],
-              IOrderTotalArr: [{data: []}, {legendData: []}],   // 行业订单占比-订单金额
-              IOrderApCount: [{data: []}, {legendData: []}],    // 行业订单占比-订单数量
-              IOrderComCount: [{data: []}, {legendData: []}],   // 行业订单占比-广告主数
-              IOrderDataShow: [{data: []}, {legendData: []}],
-              /*  入驻物业排行  */
-              isHavePropertyRankData: true,
-              PropertyRankEchart: '',
-              PMCDataTitle: '社区数量',
-              resPMCDate: [],
-              resPMCTime: '最近半年',
-              PropertyRankTableVisible: false,
-              ResPMCRankData: [],        // 入驻物业排行 - 数据
-              ResPMCShowData: [],        // 入驻物业排行 - 显示数据
-              ResPMCResCount: [],        // 入驻物业排行 - 社区数
-              ResPMCMCount: [],          // 入驻物业排行 - 点位数
-              ResPMCName: [],            // 入驻物业排行 - 物业名称
-              PropertyRankTable: [],
-              /*  广告主排行  */
-              isHaveAdOwnerRank: true,
-              adOwnerRankEcharts: '',
-              adOwnerDataTitle: '订单金额',
-              adOwnerDate: [],
-              adOwnerTime: '最近半年',
-              AdOwnerData: [],
-              AdOwnerName: [],            // 广告主排位名称
-              AdOwnerTotalSum: [],        // 广告主排行-订单金额
-              AdOwnerApCount: [],         // 广告主排行- 订单数量
-              AdOwnerShowData: [],        // 广告主排行 - 显示的柱状数据
-              adOwnerRankTableVisible: false,
-              adOwnerRankTable: [],
-              /*  销售业绩排行  */
-              isHaveSalesRank: true,
-              salesRankEcharts: '',
-              salesDataTitle: '销售金额',
-              salesRankDate: [],
-              salesRankTime: '最近半年',
-              salesRankData: [],            // 销售业绩排行数据
-              salesRankName: [],            // 销售业绩排行名称
-              salesRankTotalSum: [],        // 销售业绩排行-金额
-              salesRankApCount: [],         // 销售业绩排行-单数
-              salesRankShowData: [],        // 销售业绩排行 - 显示的柱状数据
-              salesRankTableVisible: false,
-              salesRankTable: [],
-              // 结束时间与开始时间的验证 - 返回true即为禁止
-              // 关键数据总量趋势
-              allkeyOptionsStar:{
-                  disabledDate:(time) =>{
-                      return time.getTime() > Date.parse(this.allkeyDataDate[1])
-                  }
-              },
-              allkeyOptionsEnd: {
-                  disabledDate: (time) => {
-                      return    time.getTime() < Date.parse(this.allkeyDataDate[0])
-                  }
-              },
-              // 关键数据增量对比
-              addKeyOptionsStar:{
-                  disabledDate:(time) =>{
-                      return time.getTime() > Date.parse(this.addkeyDataDate[1])
-                  }
-              },
-              addKeyOptionsEnd:{
-                  disabledDate:(time) =>{
-                      return  time.getTime() < Date.parse(this.addkeyDataDate[0])
-                  }
-              },
-              addkeyCompareOptionsStar:{
-                  disabledDate:(time) =>{
-                      return time.getTime() > Date.parse(this.addkeyCompareDate[1])
-                  }
-              },
-              addkeyCompareOptionsEnd:{
-                  disabledDate:(time) =>{
-                      return  time.getTime() < Date.parse(this.addkeyCompareDate[0])
-                  }
-              },
-              // 订单总量趋势
-              orderDataOptionsStar:{
-                  disabledDate:(time) =>{
-                      return  time.getTime() > Date.parse(this.TOrderDate[1])
-                  }
-              },
-              orderDataOptionsEnd:{
-                  disabledDate:(time) =>{
-                      return  time.getTime() < Date.parse(this.TOrderDate[0])
-                  }
-              },
-          }
+        data() {
+            return {
+                isGetData: false,
+                // 前一次-全局选择的城市
+                oldSelectCity: '0',
+                // 当前月份日期
+                nowMonth: '',
+                // 数据截止时间
+                toTime: '',
+                // 所属行业
+                industryData: [],
+                //关键数据总量趋势
+                allkeydatakind: '社区数',
+                allkeyDataDate: [],
+                isReskeyDataKind: true,
+                allkeyDataTime: '最近半年',
+                // 关键数据总量loading
+                keyDataLineLoading: true,
+                // 关键数据总量echart
+                keyDataLineEchart: '',
+                // 关键数据总量
+                CountOfTotalData: {
+                    res: [],
+                    media: [],
+                    ads: [],
+                    timeData: [],
+                    Rate: [],
+                    order: [],
+                    orderPrice: [],
+                    adOwner: []
+                },
+                CountOfTotalDataShow: {numData: [], timeData: []},
+                //关键数据增量对比
+                CountOfIncreData: {
+                    res: [],
+                    media: [],
+                    ads: [],
+                    Rate: [],
+                    order: [],
+                    orderPrice: [],
+                    adOwner: [],
+                    timeData: [],
+                    increData: [],
+                },
+                // 关键数据增量echart
+                KeyDataBarEchart: '',
+                // 关键数据增量对比
+                CountOfIncreDataShow: {dateCompare: [], AddData: [], AddDataCP: [], TitleDate: []},
+                addkeyDataKind: '社区数',
+                // 数据加载时按钮禁用
+                isAddkeyDataKind: true,
+                // 默认的快捷时间按钮
+                addkeyDataTime: '最近半年',
+                // 关键数据增量对比时间
+                addkeyDataDate: [],
+                // 对比时间
+                addkeyCompareDate: [],
+                // 对比的checkBox
+                dateCompare: false,
+                // 关键数据增量loading
+                keyDataBarLoading: true,
+                /*   行业订单总量趋势   */
+                colorArr: ['#975fe4', '#3aa0ff', '#36cbcb', '#4dcb73', '#fad337', '#f2637b', '#6081FF', '#FE752A'],
+                busOrderLineEchart: '',
+                selectIndustry: [],
+                beforeSelectIndustry: [],
+                TOrderDate: [],
+                TOrderTime: '最近半年',
+                // 订单类型
+                TOrderTitleRadio: '订单金额',
+                //行业订单总量趋势折线图X
+                totalOrderDate: [],
+                // 显示数据
+                totalOrderDataShow: [],
+                // 折线标题
+                totalOrderTitleShow: [],
+                // 行业订单总量趋势 -订单金额
+                totalOrderPrice: [],
+                // 行业订单总量趋势 -订单数量
+                totalOrderNumber: [],
+                // 行业订单总量趋势 -广告主数
+                totalOrderAdOwner: [],
+                /*  行业订单占比  */
+                allOrderPieEcharts: '',
+                orderScale: '订单金额',
+                // 行业订单占比-总数据汇总
+                IOrderTotal: {orderTotal: 0, apCount: 0, comCount: 0},
+                // 行业订单占比-要显示的总数据
+                IOrderTotalShow: 0,
+                //饼图数据
+                IOrderData: [],
+                //表格数据
+                orderTable: [],
+                IOrderTotalArr: [{data: []}, {legendData: []}],   // 行业订单占比-订单金额
+                IOrderApCount: [{data: []}, {legendData: []}],    // 行业订单占比-订单数量
+                IOrderComCount: [{data: []}, {legendData: []}],   // 行业订单占比-广告主数
+                IOrderDataShow: [{data: []}, {legendData: []}],
+                /*  入驻物业排行  */
+                isHavePropertyRankData: true,
+                PropertyRankEchart: '',
+                PMCDataTitle: '社区数量',
+                resPMCDate: [],
+                resPMCTime: '最近半年',
+                PropertyRankTableVisible: false,
+                ResPMCRankData: [],        // 入驻物业排行 - 数据
+                ResPMCShowData: [],        // 入驻物业排行 - 显示数据
+                ResPMCResCount: [],        // 入驻物业排行 - 社区数
+                ResPMCMCount: [],          // 入驻物业排行 - 点位数
+                ResPMCName: [],            // 入驻物业排行 - 物业名称
+                PropertyRankTable: [],
+                /*  广告主排行  */
+                isHaveAdOwnerRank: true,
+                adOwnerRankEcharts: '',
+                adOwnerDataTitle: '订单金额',
+                adOwnerDate: [],
+                adOwnerTime: '最近半年',
+                AdOwnerData: [],
+                AdOwnerName: [],            // 广告主排位名称
+                AdOwnerTotalSum: [],        // 广告主排行-订单金额
+                AdOwnerApCount: [],         // 广告主排行- 订单数量
+                AdOwnerShowData: [],        // 广告主排行 - 显示的柱状数据
+                adOwnerRankTableVisible: false,
+                adOwnerRankTable: [],
+                /*  销售业绩排行  */
+                isHaveSalesRank: true,
+                salesRankEcharts: '',
+                salesDataTitle: '销售金额',
+                salesRankDate: [],
+                salesRankTime: '最近半年',
+                salesRankData: [],            // 销售业绩排行数据
+                salesRankName: [],            // 销售业绩排行名称
+                salesRankTotalSum: [],        // 销售业绩排行-金额
+                salesRankApCount: [],         // 销售业绩排行-单数
+                salesRankShowData: [],        // 销售业绩排行 - 显示的柱状数据
+                salesRankTableVisible: false,
+                salesRankTable: [],
+                // 结束时间与开始时间的验证 - 返回true即为禁止
+                // 关键数据总量趋势
+                allkeyOptionsStar: {
+                    disabledDate: (time) => {
+                        return time.getTime() > Date.parse(this.allkeyDataDate[1])
+                    }
+                },
+                allkeyOptionsEnd: {
+                    disabledDate: (time) => {
+                        return time.getTime() < Date.parse(this.allkeyDataDate[0])
+                    }
+                },
+                // 关键数据增量对比
+                addKeyOptionsStar: {
+                    disabledDate: (time) => {
+                        return time.getTime() > Date.parse(this.addkeyDataDate[1])
+                    }
+                },
+                addKeyOptionsEnd: {
+                    disabledDate: (time) => {
+                        return time.getTime() < Date.parse(this.addkeyDataDate[0])
+                    }
+                },
+                addkeyCompareOptionsStar: {
+                    disabledDate: (time) => {
+                        return time.getTime() > Date.parse(this.addkeyCompareDate[1])
+                    }
+                },
+                addkeyCompareOptionsEnd: {
+                    disabledDate: (time) => {
+                        return time.getTime() < Date.parse(this.addkeyCompareDate[0])
+                    }
+                },
+                // 订单总量趋势
+                orderDataOptionsStar: {
+                    disabledDate: (time) => {
+                        return time.getTime() > Date.parse(this.TOrderDate[1])
+                    }
+                },
+                orderDataOptionsEnd: {
+                    disabledDate: (time) => {
+                        return time.getTime() < Date.parse(this.TOrderDate[0])
+                    }
+                },
+            }
         },
         props:{
             sessionData: {
@@ -789,11 +789,11 @@
                 if (this.activeName === 'third') {
                     this.getIndexQueryData()
                 } else {
-                    if(this.selectCity != this.oldSelectCity){
-                        this.isGetData = false
-                    } else {
-                        this.isGetData = true
-                    }
+                    // if(this.selectCity != this.oldSelectCity){
+                    //     this.isGetData = false
+                    // } else {
+                    //     this.isGetData = true
+                    // }
                 }
             },
             activeName(newVal,oldVal){
@@ -826,8 +826,10 @@
             let industryData = JSON.parse(sessionStorage.getItem('industry'));
             this.industryData = industry.getFirstLevel(industryData);
             // console.log('industryData',this.industryData)
-            this.selectIndustry = [this.industryData[0].value || 1]
-            this.beforeSelectIndustry = [this.industryData[0].value || 1],
+            if (this.industryData && this.industryData.length) {
+                this.selectIndustry = [this.industryData[0].value]
+                this.beforeSelectIndustry = [this.industryData[0].value]
+            }
             this.setTime();
             this.echartsListener();
         },
@@ -873,7 +875,9 @@
                 this.getAllResData('allAndAdd')
                 // 行业订单总总量趋势 - 接口
                 this.initIOrderData()
-                this.getIOrderData(this.industryData[0].value)
+                if (this.industryData[0]) {
+                    this.getIOrderData(this.industryData[0].value)
+                }
                 // 行业订单占比
                 this.getIOrderTotalData()
                 // 入驻物业排行
@@ -890,7 +894,9 @@
                 this.allkeydatakind = '社区数'
                 this.addkeyDataKind = '社区数'
                 // 行业订单总总量趋势
-                this.selectIndustry = [this.industryData[0].value]
+                if (this.industryData[0]) {
+                    this.selectIndustry = [this.industryData[0].value]
+                }
                 this.TOrderTitleRadio = '订单金额'
                 // 行业订单占比
                 this.orderScale = '订单金额'
@@ -1411,8 +1417,6 @@
                         if (temp === 'init') {
                             this.keyDataBar()
                         }
-                        // this.isAddkeyDataKind = false
-                        // this.keyDataBarLoading = false
                     } else {
                         let onStart = this.addkeyCompareDate[0]
                         let onEnd = this.addkeyCompareDate[1]
@@ -1781,43 +1785,34 @@
                 this.totalOrderAdOwner = []                      //  广告主数
             },
             // 行业订单总量趋势 - 行业选择
-            IOrderChange(){
-                if(this.selectIndustry.length > 0){
+            IOrderChange() {
+                if (this.selectIndustry.length > 0) {
                     let industryData = this.selectIndustry
                     let beforeIndustryData = this.beforeSelectIndustry
-                    let industryArr = this.industryData
                     let industryDataShow = this.totalOrderDataShow
-                    // console.log('一级行业',this.industryData,'折线数据',this.totalOrderDataShow)
-                    if( beforeIndustryData.length > industryData.length){
+                    console.log('一级行业',this.industryData,'折线数据',this.totalOrderDataShow)
+                    if (beforeIndustryData.length > industryData.length) {
                         // console.log('行业减少了',)
-                        let iid = 0
-                        for(let BData of beforeIndustryData){
-                            let isFind = true
-                            for(let IData of industryData){
-                                if(IData == BData){
-                                    isFind = false
-                                    break
+                        for (let BData of beforeIndustryData) {
+                            let isFind = industryData.some(item =>{
+                                if(item == BData){
+                                    return true
                                 }
-                            }
-                            if(isFind){
-                                iid = BData
-                                for(let SData of industryArr){
-                                    if(SData.value == iid){
-                                        // console.log('行业',SData)
-                                        for(let showData of industryDataShow){
-                                            if(showData.name === SData.label){
-                                                showData.data = []
-                                                for(let i=0;i< this.totalOrderTitleShow.length;i++){
-                                                    if(showData.name === this.totalOrderTitleShow[i]){
-                                                        this.totalOrderTitleShow.splice(i,1)
-                                                        break
-                                                    }
-                                                }
-                                                this.busOrderLine()
-                                                this.DelAllOrderData(showData.name)
+                            })
+                            if (!isFind) {
+                                // 删除数据
+                                for (let showData of industryDataShow) {
+                                    if (showData.iid === BData) {
+                                        showData.data = []
+                                        // 删除标题
+                                        for (let i = 0; i < this.totalOrderTitleShow.length; i++) {
+                                            if (showData.name === this.totalOrderTitleShow[i]) {
+                                                this.totalOrderTitleShow.splice(i, 1)
                                                 break
                                             }
                                         }
+                                        this.busOrderLine()
+                                        this.DelAllOrderData(showData.name)
                                         break
                                     }
                                 }
@@ -1905,16 +1900,9 @@
                     } else {
                         let dataArr = res.data
                         if (dataArr.length > 0) {
-                            let orderName = ''
-                            for (let key of this.industryData) {
-                                if (key.value == val) {
-                                    orderName = key.label
-                                    break
-                                }
-                            }
-                            let orderPrice = {name: orderName, type: 'line', data: []}
-                            let orderNumber = {name: orderName, type: 'line', data: []}
-                            let orderAdOwner = {name: orderName, type: 'line', data: []}
+                            let orderPrice = {name: dataArr[0].iName,iid: val, type: 'line', data: []}
+                            let orderNumber = {name: dataArr[0].iName,iid: val, type: 'line', data: []}
+                            let orderAdOwner = {name: dataArr[0].iName,iid: val, type: 'line', data: []}
                             let orderMonths = []
                             for (let OKey of dataArr) {
                                 if (!OKey.orderTotal) {

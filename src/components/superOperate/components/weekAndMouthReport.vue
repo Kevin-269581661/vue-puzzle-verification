@@ -216,6 +216,7 @@
                         // 本周在线客户列表
                         this.getWeekOnlineUserData()
                         this.getWeekOnLineCount()
+                        this.isGetData = true
                     }
                 }
             }

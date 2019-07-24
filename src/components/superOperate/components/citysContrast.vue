@@ -160,7 +160,7 @@
                     </div>
                     <div class="data-tab citySelect">
                         <span>城市：</span>
-                        <el-select filterable v-model="selectCompareCity" multiple collapse-tags :multiple-limit=7
+                        <el-select filterable v-model="selectCityLine" multiple collapse-tags :multiple-limit=8
                                    placeholder="请选择"
                                    size="mini" @change="selectCompareCities">
                             <el-option
@@ -212,7 +212,7 @@
                     </div>
                     <div class="data-tab citySelect">
                         <span> 城市： </span>
-                        <el-select filterable v-model="cityRateCompareShowData.name" multiple :multiple-limit=7
+                        <el-select filterable v-model="cityRateCompareShowData.name" multiple :multiple-limit=8
                                    placeholder="请选择"
                                    collapse-tags
                                    size="mini"
@@ -295,8 +295,8 @@
     import sessFun from '../../../commonFun/sessFun';
     export default {
         name: "citysContrast",
-        data(){
-            return{
+        data() {
+            return {
                 isGetData: false,
                 // 城市对比选择的城市只能为0
                 selectCity: '0',
@@ -355,7 +355,7 @@
                 // compareCityTime前一个时间段
                 beforeCompareCityTime: [],
                 // 记录变化前城市个数，用来判断城市是增加还是减少
-                beforeCityBLSShow:[],
+                beforeCityLineShow:[],
                 //城市数据对比
                 cityBattleLineEcharts: '',
                 // 折线原数据
@@ -363,11 +363,11 @@
                 // 显示折线数据
                 cityLineDataShow: [],
                 // 选择的城市
-                selectCompareCity: [],
+                selectCityLine: [],
                 //城市上刊率对比
                 cityPercentBattleEchart: '',
                 cityPercentBattleLoading: true,// 城市上刊率对比loading
-                cityBattleLoading: true,       // 城市数据对比loading
+                // cityBattleLoading: true,       // 城市数据对比loading
                 cityRateCompareDate: [],
                 BeforeCityRateCompareDate: [],
                 cityRateCompareTime: '最近半年',
@@ -390,14 +390,14 @@
                 CityBattleData: [],   // 城市关键数据对比 - 广告主数据
                 cityBattlePieStep: 0,   // 城市关键数据对比 - 步数
                 // 城市数据对比
-                cityCompareOptionsStar:{
-                    disabledDate:(time) =>{
+                cityCompareOptionsStar: {
+                    disabledDate: (time) => {
                         return time.getTime() > Date.parse(this.compareCityTime[1])
                     }
                 },
-                cityCompareOptionsEnd:{
-                    disabledDate:(time) =>{
-                        return  time.getTime() < Date.parse(this.compareCityTime[0])
+                cityCompareOptionsEnd: {
+                    disabledDate: (time) => {
+                        return time.getTime() < Date.parse(this.compareCityTime[0])
                     }
                 },
             }
@@ -427,27 +427,7 @@
             },
             directNameList(newVal, oldVal){
                 this.directNameList = newVal
-                let arr = []
-                let asrIDList = []
-                for(let key of this.citys){
-                    if(key.value !== '0'){
-                        arr.push({
-                            value: key.value,
-                            label: key.label,
-                        })
-                        asrIDList.push(key.value)
-                    }
-                }
-                this.cityList = arr
-                this.selectCompareCity = asrIDList
-                // console.log('城市对比mounted',this.selectCompareCity,this.cityList)
-                this.beforeCityBLSShow = this.selectCompareCity.concat()
-                // 上刊率
-                this.beforeCityRate = this.directNameList.concat()
-                // 关键数据对比
-                this.selectCompareCityData = this.directNameList.concat()
-                this.beforeCityKey = this.directNameList.concat()
-                console.log('directNameList',this.directNameList)
+                this.initCitySelect()
             },
             activeName(newVal,oldVal){
                 this.activeName = newVal
@@ -504,6 +484,30 @@
                 this.forCityKeyData()
                 this.isGetData = true
             },
+            // 初始化各模块的城市选择
+            initCitySelect(){
+                let arr = []
+                let asrIDList = []
+                for(let key of this.citys){
+                    if(key.value !== '0'){
+                        arr.push({
+                            value: key.value,
+                            label: key.label,
+                        })
+                        asrIDList.push(key.value)
+                    }
+                }
+                this.cityList = arr
+                this.selectCityLine = asrIDList
+                // console.log('城市对比mounted',this.selectCityLine,this.cityList)
+                this.beforeCityLineShow = this.selectCityLine.concat()
+                // 上刊率
+                this.beforeCityRate = this.directNameList.concat()
+                // 关键数据对比
+                this.selectCompareCityData = this.directNameList.concat()
+                this.beforeCityKey = this.directNameList.concat()
+                console.log('directNameList',this.directNameList)
+            },
             /*  城市数据展示  */
             getAllDateSurvey(){
                 this.citysContrastLoading = true
@@ -519,11 +523,11 @@
                         let dataArr = res.data
                         let cityDataTable = []
                         // 社区、广告门、点位
-                        for(let key of dataArr.adsInfo.asrList){
+                        for (let key of dataArr.adsInfo.asrList) {
                             let tempObj = {
                                 countRes: key.countRes || 0,
                                 countAds: key.countAdS || 0,
-                                city: this.returnAsName(key.asrID) || '--',//key.asName || key.rName,
+                                city: this.returnAsName(key.asrID) || '--',
                                 countMedia: key.countMedia || 0,
                                 upPercent: 0,
                                 adOwners: 0,
@@ -536,7 +540,7 @@
                         this.cityCompareTable = cityDataTable
                         for (let bKey of dataArr.countATC) {
                             for (let cKey of this.cityCompareTable) {
-                                if(bKey.asrID == cKey.asrID){
+                                if (bKey.asrID == cKey.asrID) {
                                     cKey.adOwners = bKey.countcID
                                     cKey.orders = bKey.apCount
                                     cKey.totalPrice = bKey.totalSum
@@ -544,9 +548,9 @@
                                 }
                             }
                         }
-                        for(let pKey of dataArr.publicationRateInfo){
-                            for (let cKey of this.cityCompareTable){
-                                if(pKey.asrID == cKey.asrID){
+                        for (let pKey of dataArr.publicationRateInfo) {
+                            for (let cKey of this.cityCompareTable) {
+                                if (pKey.asrID == cKey.asrID) {
                                     cKey.upPercent = Math.floor(pKey.publishRate * 10000) / 100
                                     break
                                 }
@@ -726,13 +730,13 @@
             },
             // 城市数据对比 - 城市选择和charts关联
             selectCompareCities(cityList) {
-                console.log('城市选择和charts关联',cityList,this.beforeCityBLSShow,'this.cityLineDataShow',this.cityLineDataShow)
-                if(cityList.length > 0){
-                    let beforeCityData = this.beforeCityBLSShow
+                console.log('城市选择和charts关联',cityList,this.beforeCityLineShow,'this.cityLineDataShow',this.cityLineDataShow)
+                if (cityList.length > 0) {
+                    let beforeCityData = this.beforeCityLineShow
                     if (beforeCityData.length > cityList.length) {
                         // 删除了
-                        for(let key of this.cityLineDataShow){
-                            if (!cityList.includes(key.asrID)){
+                        for (let key of this.cityLineDataShow) {
+                            if (!cityList.includes(key.asrID)) {
                                 key.data = []
                             }
                         }
@@ -749,10 +753,10 @@
                         }
                     }
                     console.log('series---', this.cityLineDataShow,this.cityBattleLineSeries)
-                    this.beforeCityBLSShow = cityList
+                    this.beforeCityLineShow = cityList
                     this.cityBattleLine()
                 } else {
-                    this.selectCompareCity = this.beforeCityBLSShow
+                    this.selectCityLine = this.beforeCityLineShow
                     sessFun.messageFun('warning','城市不能为空!')
                 }
             },
@@ -781,11 +785,8 @@
                 this.cityBattleLineSeries = []
                 this.cityBattleLineStep = 0
                 // let cityArr = ['1', '2', '3', '4', '5', '6','7']
-                console.log('------------',this.selectCompareCity)
-                for (let key of this.selectCompareCity) {
-                    // if(key.value === '0'){
-                    //     continue
-                    // }
+                console.log('------------',this.selectCityLine)
+                for (let key of this.selectCityLine) {
                     if (name === '社区数') {
                         this.getCityTotalAndIncrement(key, '/GetResCountOfTotalAndIncrement');
                     } else if (name === '广告门数') {
@@ -828,7 +829,7 @@
                         let tempObj = {asrID: asrID, name: this.returnAsName(asrID), type: 'line', data: []}
                         let timeArr = []
                         if (String === 'rate') {
-                            for (let res of ResCount) { // Math.round(num * 100) / 100
+                            for (let res of ResCount) {
                                 tempObj.data.push(Math.round(res.totalPublicationRate * 10000) / 100)
                                 timeArr.push(res.month)
                             }
@@ -886,7 +887,7 @@
                             padding: 0,
                         },
                         legend: {
-                            data: this.selectCompareCity
+                            data: this.selectCityLine
                         },
                         grid: {
                             left: '3%',
@@ -946,30 +947,30 @@
             // 城市选择
             cityRateSelect(res){
                 console.log('城市上刊率对比 - 城市选择',res)
-                if(res.length > 0){
+                if (res.length > 0) {
                     let beforCity = this.beforeCityRate
                     let RateData = this.cityRateCompareData
-                    if (beforCity.length > res.length){
+                    if (beforCity.length > res.length) {
                         for (let i = 0; i < beforCity.length; i++) {
-                            if (res.indexOf(beforCity[i]) === -1){
-                                this.cityRateCompareShowData.value.splice(i,1)
+                            if (res.indexOf(beforCity[i]) === -1) {
+                                this.cityRateCompareShowData.value.splice(i, 1)
                             }
                         }
-                    }else{
-                        console.log('增加了',res[res.length-1],this.cityRateCompareData)
-                        let addCity = res[res.length-1]
-                        for(let val of RateData){
-                            if(val.asName.includes(addCity)){
-                                this.cityRateCompareShowData.value.push(Math.round(val.publicationRate * 10000)/100)
+                    } else {
+                        console.log('增加了', res[res.length - 1], this.cityRateCompareData)
+                        let addCity = res[res.length - 1]
+                        for (let val of RateData) {
+                            if (val.asName.includes(addCity)) {
+                                this.cityRateCompareShowData.value.push(Math.round(val.publicationRate * 10000) / 100)
                                 break
                             }
                         }
                     }
                     this.beforeCityRate = res
                     this.cityPercentBattleBar()
-                }else{
+                } else {
                     this.cityRateCompareShowData.name = this.beforeCityRate
-                    sessFun.messageFun('warning','城市不能为空!')
+                    sessFun.messageFun('warning', '城市不能为空!')
                 }
             },
             // 城市上刊率对比 - 接口
@@ -986,27 +987,27 @@
                     console.log('城市上刊率对比',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         sessFun.loginTimeout()       // 登录超时
-                    }else{
+                    } else {
                         let dataArr = res.data
-                        if(dataArr.length > 0){
+                        if (dataArr.length > 0) {
                             this.cityRateCompareData = dataArr
                             let rateList = []
                             let cityList = []
-                            for(let val of dataArr){
-                                rateList.push(Math.round(val.publicationRate * 10000)/100)
-                                if(val.asName.length > 6){
-                                    cityList.push(val.asName.substring(0,val.asName.length-6))
-                                }else{
+                            for (let val of dataArr) {
+                                rateList.push(Math.round(val.publicationRate * 10000) / 100)
+                                if (val.asName.length > 6) {
+                                    cityList.push(val.asName.substring(0, val.asName.length - 6))
+                                } else {
                                     cityList.push(val.asName)
                                 }
                             }
                             this.cityRateCompareShowData.name = cityList
                             this.cityRateCompare = cityList
                             this.cityRateCompareShowData.value = rateList
-                            console.log('城市上刊率对比',this.cityRateCompareShowData)
+                            console.log('城市上刊率对比', this.cityRateCompareShowData)
                             this.cityPercentBattleBar()
-                        }else{
-                            sessFun.messageFun('warning','城市上刊率对比,在该时段暂无数据!')
+                        } else {
+                            sessFun.messageFun('warning', '城市上刊率对比,在该时段暂无数据!')
                         }
                     }
                     this.cityPercentBattleLoading = false
@@ -1110,20 +1111,20 @@
                     let beforCity = this.beforeCityKey
                     let keyData = this.cityKeyData
                     console.log(beforCity,'城市关键数据对比 - 城市选择',keyData,res)
-                    if (beforCity.length > res.length){
+                    if (beforCity.length > res.length) {
+                        // 减少了
                         for (let i = 0; i < beforCity.length; i++) {
-                            if (res.indexOf(beforCity[i]) === -1){
-                                // console.log('减少了',beforCity[i])
-                                for(let j=0; j<this.cityResKeyData.length;j++){
-                                    if(this.cityResKeyData[j].name === beforCity[i]){
+                            if (res.indexOf(beforCity[i]) === -1) {
+                                for (let j = 0; j < this.cityResKeyData.length; j++) {
+                                    if (this.cityResKeyData[j].name === beforCity[i]) {
                                         this.cityResKeyData[j].value = 0
                                         this.cityAdsKeyData[j].value = 0
                                         this.cityMediaKeyData[j].value = 0
                                         break
                                     }
                                 }
-                                for(let n=0;n<this.RMPieOrderData.length;n++){
-                                    if(this.RMPieOrderData[n].name === beforCity[i]){
+                                for (let n = 0; n < this.RMPieOrderData.length; n++) {
+                                    if (this.RMPieOrderData[n].name === beforCity[i]) {
                                         this.RMPieOrderData[n].value = 0
                                         this.RMPieTotalPriceData[n].value = 0
                                         this.RMPieAdOwnersData[n].value = 0
@@ -1133,86 +1134,58 @@
                                 break
                             }
                         }
-                    }else{
-                        console.log('增加了',res[res.length-1])
-                        let addCity = res[res.length-1]
-                        for(let kData in keyData){
-                            console.log('kData',kData)
-                            for(let val of keyData[kData]){
-                                if(val.name === addCity){
-                                    let tempObj = {name: addCity, value: val.value}
-                                    if(kData === 'res'){
-                                        // this.cityResKeyData.push(tempObj)
-                                        console.log('kData:',kData,addCity)
-                                        for(let key of this.cityResKeyData){
-                                            if(key.name === addCity){
-                                                console.log('1',val.value)
-                                                key.value = val.value
-                                                break
-                                            }
-                                        }
-                                        break
-                                    }else if(kData === 'ads'){
-                                        // this.cityAdsKeyData.push(tempObj)
-                                        for(let key of this.cityAdsKeyData){
-                                            if(key.name === addCity){
-                                                console.log('2')
-                                                key.value = val.value
-                                                break
-                                            }
-                                        }
-                                        break
-                                    }else if(kData === 'media'){
-                                        // this.cityMediaKeyData.push(tempObj)
-                                        for(let key of this.cityMediaKeyData){
-                                            if(key.name === addCity){
-                                                key.value = val.value
-                                                break
-                                            }
-                                        }
-                                        break
-                                    }else if(kData === 'order'){
-                                        // this.RMPieOrderData.push(tempObj)
-                                        for(let key of this.RMPieOrderData){
-                                            if(key.name === addCity){
-                                                key.value = val.value
-                                                break
-                                            }
-                                        }
-                                        break
-                                    }else if(kData === 'totalPrice'){
-                                        // this.RMPieTotalPriceData.push(tempObj)
-                                        for(let key of this.RMPieTotalPriceData){
-                                            if(key.name === addCity){
-                                                key.value = val.value
-                                                break
-                                            }
-                                        }
-                                        break
-                                    }else if(kData === 'adOwner'){
-                                        // this.RMPieAdOwnersData.push(tempObj)
-                                        for(let key of this.RMPieAdOwnersData){
-                                            if(key.name === addCity){
-                                                key.value = val.value
-                                                break
-                                            }
-                                        }
-                                        break
+                    } else {
+                        // 增加了
+                        console.log('增加了', res[res.length - 1])
+                        let addCity = res[res.length - 1]
+                        for (let kData in keyData) {
+                            console.log('kData', kData)
+                            for (let val of keyData[kData]) {
+                                if (val.name === addCity) {
+                                    console.log('kData:', kData, addCity)
+                                    if (kData === 'res') {
+                                        this.cityKeyCompare(addCity,this.cityResKeyData,val); //增加的城市,遍历的数据,所需的数据
+                                        break;
+                                    } else if (kData === 'ads') {
+                                        this.cityKeyCompare(addCity,this.cityAdsKeyData,val);
+                                        break;
+                                    } else if (kData === 'media') {
+                                        this.cityKeyCompare(addCity,this.cityMediaKeyData,val);
+                                        break;
+                                    } else if (kData === 'order') {
+                                        this.cityKeyCompare(addCity,this.RMPieOrderData,val);
+                                        break;
+                                    } else if (kData === 'totalPrice') {
+                                        this.cityKeyCompare(addCity,this.RMPieTotalPriceData,val);
+                                        break;
+                                    } else if (kData === 'adOwner') {
+                                        this.cityKeyCompare(addCity,this.RMPieAdOwnersData,val);
+                                        break;
                                     }
                                 }
                             }
                         }
                     }
                     this.beforeCityKey = res
-                    console.log(this.cityResKeyData,this.cityAdsKeyData,this.cityMediaKeyData,'城市关键数据对比 - 城市选择',this.RMPieAdOwnersData,this.RMPieTotalPriceData,this.RMPieOrderData)
+                    console.log('城市关键数据对比:(社区，点位，媒体)',this.cityResKeyData,this.cityAdsKeyData,this.cityMediaKeyData)
+                    console.log('城市关键数据对比:(广告主，订单金额，订单数)',this.RMPieAdOwnersData,this.RMPieTotalPriceData,this.RMPieOrderData)
                     this.keyDataPie()
-                }else{
+                } else {
                     this.selectCompareCityData = this.beforeCityKey
-                    sessFun.messageFun('warning','城市不能为空!')
+                    sessFun.messageFun('warning', '城市不能为空!')
+                }
+            },
+            //参数：增加的城市,遍历的数据,所需的数据
+            cityKeyCompare(addCity, dataList, val) {
+                for (let key of dataList) {
+                    if (key.name === addCity) {
+                        key.value = val.value
+                        break
+                    }
                 }
             },
             // 城市关键数据对比 - 接口 （社区、广告门、点位）
-            getCityKeyDataResMediaAds(){
+            getCityKeyDataResMediaAds() {
                 let tStart = this.cityKeyDataDate[0]
                 let tEnd = this.cityKeyDataDate[1]
                 let params = {
@@ -1222,16 +1195,16 @@
                     istart: tStart,
                     iend: tEnd
                 }
-                api.getApi(this.apiVar.Count + '/GetRM', params).then(res=>{
-                    console.log('城市关键数据对比 - 接口 （社区、广告门、点位）',res)
+                api.getApi(this.apiVar.Count + '/GetRM', params).then(res => {
+                    console.log('城市关键数据对比 - 接口 （社区、广告门、点位）', res)
                     let dataArr = res.data
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         sessFun.loginTimeout()       // 登录超时
-                    }else{
+                    } else {
                         this.cityResKeyData = []
                         this.cityAdsKeyData = []
                         this.cityMediaKeyData = []
-                        if(res.data.length > 0){
+                        if (res.data.length > 0) {
                             for (let key of dataArr) {
                                 let cityName = this.returnAsName(key.asrID)
                                 let RESData = {name: cityName, value: key.countRES}
@@ -1244,11 +1217,11 @@
                             this.cityKeyData.res = JSON.parse(JSON.stringify(this.cityResKeyData))
                             this.cityKeyData.ads = JSON.parse(JSON.stringify(this.cityAdsKeyData))
                             this.cityKeyData.media = JSON.parse(JSON.stringify(this.cityMediaKeyData))
-                            console.log('城市关键数据对比',this.cityResKeyData, this.cityAdsKeyData, this.cityMediaKeyData)
-                            console.log('selectCompareCityData',this.selectCompareCityData)
+                            console.log('城市关键数据对比', this.cityResKeyData, this.cityAdsKeyData, this.cityMediaKeyData)
+                            console.log('selectCompareCityData', this.selectCompareCityData)
                             this.keyDataPie()
-                        }else{
-                            sessFun.messageFun('warning','城市关键数据对比（社区、广告门、点位）,在该时段暂无数据!')
+                        } else {
+                            sessFun.messageFun('warning', '城市关键数据对比（社区、广告门、点位）,在该时段暂无数据!')
                         }
                     }
                 })
@@ -1547,13 +1520,10 @@
             // 根据权限公司返回 asrIDs
             returnAsrID() {
                 if (this.selectCity === '0') {
-                    let asrIDs = []
-                    for (let key of this.citys) {
-                        if(key.value !== '0'){
-                            asrIDs.push(key.value)
-                        }
-                    }
-                    return asrIDs.join(',')//'1,2,3,4,5,6,7'
+                    let asrIDs = this.cityList.map((item) => {
+                        return item.value
+                    })
+                    return asrIDs.join(',')
                 } else {
                     return this.selectCity
                 }
@@ -1582,7 +1552,6 @@
             // 判断是否为当前月份并返回 年-月-日
             returnDate(time,kind){
                 let dateList = time.split('-')
-                // console.log('time',time,'kind',kind,'this.nowMonth',this.nowMonth,'dateList',dateList)
                 if (kind === 'start') {
                     return time + '-01'
                 } else {
@@ -1605,14 +1574,6 @@
                 let compareLen = (compareYear2 - compareYear1) * 12 + (compareMonth2 - compareMonth1)
                 return compareLen
             },
-            // // 登录超时
-            // loginTimeout() {
-            //     this.$message({
-            //         message: '登录超时或权限异常,请重新登录',
-            //         type: 'warning'
-            //     })
-            //     this.$router.push('/login')
-            // },
         },
     }
 </script>

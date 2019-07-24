@@ -72,7 +72,9 @@
                     {value: '4', label: '深圳亲邻交互'},
                     {value: '5', label: '成都亲邻'},
                     {value: '6', label: '重庆亲邻'},
-                    {value: '7', label: '天津亲邻众联'}
+                    {value: '7', label: '天津亲邻众联'},
+                    {value: '1160',label: '天津测试公司'},
+                    {value: '1162', label: '经营报表-测试公司'}
                 ],
                 // 直营公司名称
                 directNameList: [],
@@ -90,7 +92,7 @@
             adsAnalysis,
         },
         created() {
-            this.sessionData = sessFun.getSess()//JSON.parse(sessionStorage.getItem('session_data'))
+            this.sessionData = sessFun.getSess()
             // this.tabContentLoading = this.$loading({
             //     lock: true,
             //     text: '玩命加载中...',
@@ -99,6 +101,7 @@
             // });
         },
         mounted() {
+            // this.tabContentLoading.close()
             this.toTime = timeFormat.returnMonthCount(0, '/');
             this.getBasicData()
         },
@@ -129,7 +132,6 @@
                         this.activeName = 'third'
                     }
                     console.log('this.headerCityList', this.headerCityList)
-                    // this.tabContentLoading.close()
                 }
             },
             // 登录账户为平台商则去获取直营公司列表
@@ -163,10 +165,8 @@
                             this.activeName = 'first';
                             clearTimeout(timer)
                         }, 10)
-                        // this.tabContentLoading.close()
                     } else {
                         this.messageFun('warning', res.data.MSG)
-                        // this.tabContentLoading.close()
                     }
                 })
             },
@@ -180,7 +180,7 @@
             },
             // 根据asrrID返回城市名
             returnAsName(asrIDs) {
-                console.log('this.citys',this.citys,'asrIDs',asrIDs)
+                // console.log('this.citys',this.citys,'asrIDs',asrIDs)
                 for (let key of this.citys) {
                     if (key.value == asrIDs) {
                         return key.label
@@ -188,10 +188,6 @@
                 }
                 return false
             },
-            // loginTimeout() {
-            //     this.$message.warning("登录超时,请重新登录")
-            //     this.$router.push("/login");
-            // },
         },
     }
 </script>

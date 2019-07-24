@@ -11,12 +11,17 @@
                 </div>
                 <el-row :gutter="16">
                     <el-col :span="12" class="el_col_echarts">
-                        <p class="issue_report_title">上刊/空刊/禁用比值</p>
-                        <div class="bar_charts el_col_bar" id="issue_report" ref="issueReportBar"
-                             style="height: 320px;width: 100%"
-                             v-loading="issueReportBarLoading"
-                             element-loading-text="玩命加载中..."
-                             element-loading-background="rgba(255, 255, 255)">
+                        <div v-if="isHaveissueReport">
+                            <p class="issue_report_title">上刊/空刊/禁用比值</p>
+                            <div class="bar_charts el_col_bar" id="issue_report" ref="issueReportBar"
+                                 style="height: 320px;width: 100%"
+                                 v-loading="issueReportBarLoading"
+                                 element-loading-text="玩命加载中..."
+                                 element-loading-background="rgba(255, 255, 255)">
+                            </div>
+                        </div>
+                        <div v-else class="had_not_data">
+                            <no-search-result ></no-search-result>
                         </div>
                     </el-col>
                     <el-col :span="12">
@@ -136,8 +141,13 @@
 <script>
     import api from '../../../api/api';
     import timeFormat from '../../../commonFun/timeFormat';
+    import noSearchResult from "../../../components/common/components/noSearchResult";
+    import sessFun from '../../../commonFun/sessFun';
     export default {
         name: "weekAndMouthReport",
+        components:{
+            noSearchResult
+        },
         data(){
             return{
                 isGetData: false,
@@ -149,6 +159,7 @@
                 // 头部显示的时间
                 showDate:[],
                 weekOverviewData: '',
+                isHaveissueReport: true,
                 // 饼状图
                 issueReportBarLoading: true,
                 issueReportPieEcharts:'',
@@ -255,14 +266,22 @@
                 api.getApi(this.apiVar.report + '/api/v2/getWeekOverview', params).then(res => {
                     console.log('数据总览接口res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
-                        this.weekOverviewData = res.data.data
-                        this.setEchartsData(dataObj)
-                        this.setIssueReportTableData(dataObj)
+                        if (dataObj) {
+                            this.weekOverviewData = res.data.data
+                            this.setEchartsData(dataObj)
+                            this.setIssueReportTableData(dataObj)
+                        } else {
+                            sessFun.messageFun('warning', '数据概览暂无数据!')
+                            this.issueReportBarLoading = false
+                            this.isHaveissueReport = false
+                        }
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
+                        this.issueReportBarLoading = false
+                        this.isHaveissueReport = false
                     }
                 })
             },
@@ -418,7 +437,7 @@
                 api.getApi(this.apiVar.report + '/api/v2/listOnlineCustomCountInfo', params).then(res => {
                     console.log('本周在线统计res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         this.WeekOnLineCount = {
@@ -427,7 +446,7 @@
                             userCount: dataObj.userCount,
                         }
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -445,11 +464,11 @@
                 api.getApi(this.apiVar.report + '/api/v2/getOnlineCustom', params).then(res => {
                     console.log('本周在线客户res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         this.setOnlineCustomData(res.data.data)
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -489,18 +508,6 @@
                     return this.selectCity
                 }
             },
-            // 操作提示统一方法
-            messageFun(mesType,mes){
-                this.$message({
-                    message: mes,
-                    type: mesType,
-                    showClose: true,
-                })
-            },
-            loginTimeout(){
-                this.messageFun('warning',"登录超时,请重新登录");
-                this.$router.push("/login");
-            },
         },
     }
 </script>
@@ -528,6 +535,13 @@
 
     .el_col_echarts{
         position: relative;
+    }
+
+    .weekA_mouth_report .had_not_data{
+        height: 220px;
+        background: rgba(0, 108, 255, 0.02);
+        border: 1px solid rgba(232, 232, 232, 1);
+        font-size: 14px;
     }
 
     .issue_report_title{

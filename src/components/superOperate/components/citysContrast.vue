@@ -543,7 +543,7 @@
                                 if (bKey.asrID == cKey.asrID) {
                                     cKey.adOwners = bKey.countcID
                                     cKey.orders = bKey.apCount
-                                    cKey.totalPrice = bKey.totalSum
+                                    cKey.totalPrice = Math.floor(bKey.totalSum / 100) //bKey.totalSum
                                     break
                                 }
                             }

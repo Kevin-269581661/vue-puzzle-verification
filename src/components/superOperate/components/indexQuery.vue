@@ -546,7 +546,7 @@
         <el-dialog title="销售业绩总排行" :visible.sync="salesRankTableVisible">
             <div class="table-wrap" style="width: 100%">
                 <el-table :data="salesRankData" height="430px" border
-                          class="sales-rank-table">
+                          style="width: 100%">
                     <el-table-column property="rank" type="index" label="排名"
                                      width="50"></el-table-column>
                     <el-table-column property="realName" label="销售"
@@ -2627,17 +2627,6 @@
                     }
                     this.salesRankEcharts = this.$echarts.init(this.$refs.salesRank);
                     this.salesRankEcharts.setOption({
-                        noDataLoadingOption: {
-                            text: '暂无数据',
-                            effect: 'bubble',
-                            effectOption:
-                                {
-                                    effect:
-                                        {
-                                            n: 0
-                                        }
-                                }
-                        },
                         tooltip: {
                             trigger: 'axis',
                             axisPointer: {            // 坐标轴指示器，坐标轴触发有效
@@ -2719,7 +2708,7 @@
                                 name: this.salesDataTitle,//或销售单数
                                 type: 'bar',
                                 barWidth: '15%',
-                                data: this.salesRankShowData //[8000, 7502, 6650, 5134, 4390, 3330, 2220, 1111, 999]
+                                data: this.salesRankShowData
                             }
                         ],
                     });

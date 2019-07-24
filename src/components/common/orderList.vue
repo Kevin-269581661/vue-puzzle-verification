@@ -60,7 +60,7 @@
                                         {{city.city+'('+city.num+'面,'+formatTime(city.pdStart)+'至'+formatTime(city.pdEnd)+')'}}
                                     </p>
                                 </div>
-                                <div v-if="!isAll" v-for="item of scope.row.companyList" :key="item.rid" class="city_p">
+                                <div v-if="!isAll" v-for="item of scope.row.companyList" :key="item.rid+'-'+item.asrID" class="city_p">
                                     <p v-for="city of item.cityList" :key="city.city">
                                         {{city.city+'('+city.num+'面,'+formatTime(city.pdStart)+'至'+formatTime(city.pdEnd)+')'}}
                                     </p>

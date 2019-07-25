@@ -1189,8 +1189,9 @@
             },
             /*  广告销售  */
             // 月份选择
-            adSaleChange(){
-                console.log('this.adSaleMonth',this.adSaleMonth)
+            adSaleChange() {
+                console.log('this.adSaleMonth', this.adSaleMonth)
+                this.adSaleActiveWeek = '0'
                 this.getAdSaleHeaderData()
                 this.getAdSaleData()
             },

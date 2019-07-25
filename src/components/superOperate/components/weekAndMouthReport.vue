@@ -105,9 +105,9 @@
             </el-card>
         </div>
         <!--发件图标-->
-        <div class="subscriber_icon" @click="subscriberDialogVisible = true">
+   <!--     <div class="subscriber_icon" @click="subscriberDialogVisible = true">
             <img class="subscriber_icon_position" src="../../../assets/images/position.png" alt="">
-        </div>
+        </div>-->
         <el-dialog
             title="订阅报告"
             :visible.sync="subscriberDialogVisible"
@@ -274,7 +274,7 @@
                             this.setEchartsData(dataObj)
                             this.setIssueReportTableData(dataObj)
                         } else {
-                            sessFun.messageFun('warning', '数据概览暂无数据!')
+                            sessFun.messageFun('warning', '暂无数据!')
                             this.issueReportBarLoading = false
                             this.isHaveissueReport = false
                         }

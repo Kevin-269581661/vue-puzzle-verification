@@ -167,6 +167,9 @@
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }
+                }).catch(err=>{
+                    this.messageFun('warning', '直营公司获取异常')
+                    this.activeName = 'third'
                 })
             },
             // tabs切换

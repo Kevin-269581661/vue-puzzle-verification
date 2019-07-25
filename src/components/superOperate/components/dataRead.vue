@@ -148,6 +148,7 @@
                             placeholder="选择月"
                             :clearable="false"
                             @change="adSaleChange">
+                            <!--:picker-options="adSaleOptionsStar"-->
                         </el-date-picker>
                     </div>
                 </div>
@@ -155,24 +156,30 @@
                     <li class="ad_sale_li">
                         <h3 class="ad_sale_li_title">点位总量(面·周)</h3>
                         <p class="ad_sale_li_num">{{adSaleHeaderData.pointCount || 0}}</p>
-                        <p class="ad_sale_li_text">
-                            较上个月 <i class="el-icon-back" :class="adSaleHeaderData.comparePoint < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
+                        <p class="ad_sale_li_text">较上个月
+                            <!--<i class="el-icon-back" :class="adSaleHeaderData.comparePoint < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>-->
+                            <i class="el-icon-back" v-show="adSaleHeaderData.comparePoint !== 0 && adSaleHeaderData.comparePoint !== '--'"
+                               :class="adSaleHeaderData.comparePoint < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
                             <span>{{adSaleHeaderData.comparePoint}}%</span>
                         </p>
                     </li>
                     <li class="ad_sale_li">
                         <h3 class="ad_sale_li_title">月均上刊率</h3>
                         <p class="ad_sale_li_num">{{adSaleHeaderData.monthPublishRate || 0}}%</p>
-                        <p class="ad_sale_li_text">
-                            较上个月 <i class="el-icon-back" :class="adSaleHeaderData.compareMonthPublish < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
+                        <p class="ad_sale_li_text">较上个月
+                            <!--<i class="el-icon-back" :class="adSaleHeaderData.compareMonthPublish < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>-->
+                            <i class="el-icon-back" v-show="adSaleHeaderData.compareMonthPublish !== 0 && adSaleHeaderData.compareMonthPublish !== '--'"
+                               :class="adSaleHeaderData.compareMonthPublish < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
                             <span>{{adSaleHeaderData.compareMonthPublish}}%</span>
                         </p>
                     </li>
                     <li class="ad_sale_li">
                         <h3 class="ad_sale_li_title">当前禁用媒体数量(面)</h3>
                         <p class="ad_sale_li_num">{{adSaleHeaderData.forbiddenMediaCount || 0}}</p>
-                        <p class="ad_sale_li_text">
-                            较上个月 <i class="el-icon-back" :class="adSaleHeaderData.compareMedia < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
+                        <p class="ad_sale_li_text"> 较上个月
+                            <i class="el-icon-back" v-show="adSaleHeaderData.compareMedia !== 0 && adSaleHeaderData.compareMedia !== '--'"
+                               :class="adSaleHeaderData.compareMedia < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
+                            <!--<i class="el-icon-back" :class="adSaleHeaderData.compareMedia < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>-->
                             <span>{{adSaleHeaderData.compareMedia}}%</span>
                         </p>
                     </li>
@@ -180,7 +187,9 @@
                         <h3 class="ad_sale_li_title">成交订单</h3>
                         <p class="ad_sale_li_num">{{adSaleHeaderData.orderCount}}</p>
                         <p class="ad_sale_li_text"> 较上个月
-                            <i class="el-icon-back" :class="adSaleHeaderData.compareOrder < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
+                            <i class="el-icon-back" v-show="adSaleHeaderData.compareOrder !== 0 && adSaleHeaderData.compareOrder !== '--'"
+                               :class="adSaleHeaderData.compareOrder < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
+                            <!--<i class="el-icon-back" :class="adSaleHeaderData.compareOrder < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>-->
                             <span>{{adSaleHeaderData.compareOrder}}%</span>
                         </p>
                     </li>
@@ -188,7 +197,9 @@
                         <h3 class="ad_sale_li_title">账面销售额</h3>
                         <p class="ad_sale_li_num">¥ {{priceFormat(adSaleHeaderData.sale)}}</p>
                         <p class="ad_sale_li_text"> 较上个月
-                            <i class="el-icon-back" :class="adSaleHeaderData.compareSale < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
+                            <i class="el-icon-back" v-show="adSaleHeaderData.compareSale !== 0 && adSaleHeaderData.compareSale !== '--'"
+                               :class="adSaleHeaderData.compareSale < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
+                            <!--<i class="el-icon-back" :class="adSaleHeaderData.compareSale < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>-->
                             <span>{{adSaleHeaderData.compareSale}}%</span>
                         </p>
                     </li>
@@ -384,6 +395,9 @@
                 colorList: ['#2FC25B','#1890FF','#FACC14','#36cbcb'],
                 isAllCity: true,
                 toDay: '',
+                timeData:{
+                    maxYear: '',
+                },
                 isGetData: false,
                 // 前一次-全局选择的城市
                 oldSelectCity: '0',
@@ -567,11 +581,14 @@
                 },
                 totalDataOptionsStar: {
                     disabledDate: (time) => {
-                        let maxYear = timeFormat.getSpecifiedDateStr(this.toDay,-12)
-                        // console.log('maxYear',maxYear)
-                        return time.getTime() < Date.parse('2015/01/01') || time.getTime() > Date.parse(maxYear)
+                        return time.getTime() < Date.parse('2015/01/01') || time.getTime() > Date.parse(this.timeData.maxYear)
                     }
                 },
+                // adSaleOptionsStar: {
+                //     disabledDate: (time) => {
+                //         return time.getTime() < Date.parse('2015/01') || time.getTime() > Date.parse(this.timeData.maxYear)
+                //     }
+                // },
             }
         },
         props:{
@@ -699,6 +716,7 @@
                 let starTime = timeFormat.returnDayCount(-30,'/')
                 this.chanceFindDate = [starTime, endTime]
                 console.log('starTime',starTime,'endTime',endTime)
+                this.timeData.maxYear = timeFormat.getSpecifiedDateStr(this.toDay,-12)
             },
             /*  数据总量  */
             changeYear(val){
@@ -1534,7 +1552,6 @@
                             // 缺点：必须根据xAxis的data生成一组为空的数据，且tooltip不能加trigger: 'axis',这个条件，不然会展示合计：0
                             data:[0,0,0,0,0,0]
                         }
-
                     ]
                 };
                 let series = option["series"];

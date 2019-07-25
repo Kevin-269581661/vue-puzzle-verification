@@ -1322,7 +1322,7 @@
                     legend: {
                         orient: 'horizontal',
                         x: 'left',
-                        data: this.selectCompareCityData,//this.RMAllName,
+                        data: this.selectCompareCityData,
                         left: "center",
                         top: "0",
                         itemWidth: 8,
@@ -1338,26 +1338,9 @@
                             color: this.colorArr,
                             avoidLabelOverlap: false,
                             label: {
-                                normal: {
-                                    show: false,
-                                    position: "center",
-                                    formatter: "{a}\n{b}: ￥{c}"
-                                },
-                                emphasis: {
-                                    show: false,
-                                    textStyle: {
-                                        fontSize: "20",
-                                        fontWeight: "bold",
-                                        color: "#000"
-                                    }
-                                }
+                                show: false,
                             },
-                            labelLine: {
-                                normal: {
-                                    show: false
-                                }
-                            },
-                            data: this.cityResKeyData, //this.RMPieRESData,
+                            data: this.cityResKeyData,
                         },
                         {
                             name: '广告门',
@@ -1367,26 +1350,9 @@
                             color: this.colorArr,
                             avoidLabelOverlap: false,
                             label: {
-                                normal: {
-                                    show: false,
-                                    position: "center",
-                                    formatter: "{a}\n{b}: ￥{c}"
-                                },
-                                emphasis: {
-                                    show: false,
-                                    textStyle: {
-                                        fontSize: "20",
-                                        fontWeight: "bold",
-                                        color: "#000"
-                                    }
-                                }
+                                show: false,
                             },
-                            labelLine: {
-                                normal: {
-                                    show: false
-                                }
-                            },
-                            data: this.cityMediaKeyData,//this.RMPieMediaData,
+                            data: this.cityMediaKeyData,
                         },
                         {
                             name: '点位',
@@ -1396,26 +1362,9 @@
                             color: this.colorArr,
                             avoidLabelOverlap: false,
                             label: {
-                                normal: {
-                                    show: false,
-                                    position: "center",
-                                    formatter: "{a}\n{b}: ￥{c}"
-                                },
-                                emphasis: {
-                                    show: false,
-                                    textStyle: {
-                                        fontSize: "20",
-                                        fontWeight: "bold",
-                                        color: "#000"
-                                    }
-                                }
+                                show: false,
                             },
-                            labelLine: {
-                                normal: {
-                                    show: false
-                                }
-                            },
-                            data: this.cityAdsKeyData,//this.RMPieAdsData,
+                            data: this.cityAdsKeyData,
                         },
                         {
                             name: '订单',
@@ -1425,24 +1374,7 @@
                             color: this.colorArr,
                             avoidLabelOverlap: false,
                             label: {
-                                normal: {
-                                    show: false,
-                                    position: "center",
-                                    formatter: "{a}\n{b}: ￥{c}"
-                                },
-                                emphasis: {
-                                    show: false,
-                                    textStyle: {
-                                        fontSize: "20",
-                                        fontWeight: "bold",
-                                        color: "#000"
-                                    }
-                                }
-                            },
-                            labelLine: {
-                                normal: {
-                                    show: false
-                                }
+                                show: false,
                             },
                             data: this.RMPieOrderData,
                         },
@@ -1454,24 +1386,7 @@
                             color: this.colorArr,
                             avoidLabelOverlap: false,
                             label: {
-                                normal: {
-                                    show: false,
-                                    position: "center",
-                                    formatter: "{a}\n{b}: ￥{c}"
-                                },
-                                emphasis: {
-                                    show: false,
-                                    textStyle: {
-                                        fontSize: "20",
-                                        fontWeight: "bold",
-                                        color: "#000"
-                                    }
-                                }
-                            },
-                            labelLine: {
-                                normal: {
-                                    show: false
-                                }
+                                show: false,
                             },
                             data: this.RMPieTotalPriceData,
                         },
@@ -1483,24 +1398,7 @@
                             color: this.colorArr,
                             avoidLabelOverlap: false,
                             label: {
-                                normal: {
-                                    show: false,
-                                    position: "center",
-                                    formatter: "{a}\n{b}: ￥{c}"
-                                },
-                                emphasis: {
-                                    show: false,
-                                    textStyle: {
-                                        fontSize: "20",
-                                        fontWeight: "bold",
-                                        color: "#000"
-                                    }
-                                }
-                            },
-                            labelLine: {
-                                normal: {
-                                    show: false
-                                }
+                                show: false,
                             },
                             data: this.RMPieAdOwnersData,
                         }

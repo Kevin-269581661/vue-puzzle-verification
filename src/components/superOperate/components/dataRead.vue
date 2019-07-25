@@ -29,6 +29,7 @@
                                 format="yyyy"
                                 placeholder="选择年"
                                 :clearable="false"
+                                :picker-options="totalDataOptionsStar"
                                 @change="changeYear">
                             </el-date-picker>
                         </div>
@@ -563,7 +564,14 @@
                             padding: 8
                         }
                     }
-                }
+                },
+                totalDataOptionsStar: {
+                    disabledDate: (time) => {
+                        let maxYear = timeFormat.getSpecifiedDateStr(this.toDay,-12)
+                        // console.log('maxYear',maxYear)
+                        return time.getTime() < Date.parse('2015/01/01') || time.getTime() > Date.parse(maxYear)
+                    }
+                },
             }
         },
         props:{

@@ -100,6 +100,9 @@
                             min-width="125"
                             label="投放周期">
                         </el-table-column>
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
                     </el-table>
                 </div>
             </el-card>
@@ -260,7 +263,7 @@
                     token: this.sessionData.token,
                     startDate: this.timeList[0],
                     endDate: this.timeList[1],
-                    asrIds: 1
+                    asrIds: this.sessionData.asrID
                 }
                 console.log('数据总览params',params)
                 api.getApi(this.apiVar.report + '/api/v2/getWeekOverview', params).then(res => {

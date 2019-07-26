@@ -1923,6 +1923,7 @@
             /*  机会挖掘  */
             changeFindDate(){
                 this.getChanceFindEcharts()
+                this.getChanceFindTable()
             },
             // 左侧图表接口
             getChanceFindEcharts(){

@@ -870,7 +870,7 @@
                     </el-upload>
                 </el-col>
             </el-row>
-            <!-- <el-row v-if="importType=='2' && isShowTag" class="warning_box">
+            <el-row v-if="importType=='2' && isShowTag" class="warning_box">
                 <el-col :span="2">
                     <i class="el-icon-warning" style="color:#FAAD14"></i>
                 </el-col>
@@ -880,7 +880,7 @@
                 <el-col :span="2">
                     <i class="el-icon-close" @click="hideTag()"></i>
                 </el-col>
-            </el-row> -->
+            </el-row>
             <span slot="footer" class="dialog-footer">
                 <el-button plain size="small" @click="isImport = false">取 消</el-button>
                 <el-button size="small" type="primary" @click="submitUpload()">导 入</el-button>

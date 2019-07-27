@@ -1454,7 +1454,7 @@
                 return compareLen
             },
             // 保留两位小数
-            keepTwoDecimal(num){
+            keepTwoDecimal(num) {
                 if (!num && num !== 0) {
                     return 0;
                 }

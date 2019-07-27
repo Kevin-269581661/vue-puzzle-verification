@@ -254,9 +254,6 @@
                 let beforeDate = timeFormat.returnDayCount(-7,'/')
                 let date = timeFormat.getWorkWeek('/',beforeDate)
                 this.timeList = JSON.parse(JSON.stringify(date))
-                // 七天前日期
-                // let beforeDate = timeFormat.returnDayCount(-7,'/')
-                // this.showDate = timeFormat.getWorkWeek('/',beforeDate)
                 console.log('_________',this.timeList)
             },
             // 数据总览接口
@@ -265,8 +262,8 @@
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    startDate: this.timeList[0],
-                    endDate: this.timeList[1],
+                    startDate: this.starTime,
+                    // endDate: this.timeList[1],
                     asrIds: this.sessionData.asrID
                 }
                 console.log('数据总览params',params)
@@ -371,7 +368,7 @@
                             let precent;
                             for (let key of this.issueReportPieData.data) {
                                 if (key.name == name) {
-                                    precent = parseFloat((key.value / total) * 100).toFixed(2) + '%'
+                                    precent = (total ? parseFloat((key.value / total) * 100).toFixed(2) : 0 )+ '%'
                                     value = key.value
                                 }
                             }

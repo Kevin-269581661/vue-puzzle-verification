@@ -157,7 +157,6 @@
                         <h3 class="ad_sale_li_title">点位总量(面·周)</h3>
                         <p class="ad_sale_li_num">{{adSaleHeaderData.pointCount || 0}}</p>
                         <p class="ad_sale_li_text">较上个月
-                            <!--<i class="el-icon-back" :class="adSaleHeaderData.comparePoint < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>-->
                             <i class="el-icon-back" v-show="adSaleHeaderData.comparePoint !== 0 && adSaleHeaderData.comparePoint !== '--'"
                                :class="adSaleHeaderData.comparePoint < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
                             <span>{{adSaleHeaderData.comparePoint}}%</span>
@@ -167,7 +166,6 @@
                         <h3 class="ad_sale_li_title">月均上刊率</h3>
                         <p class="ad_sale_li_num">{{adSaleHeaderData.monthPublishRate || 0}}%</p>
                         <p class="ad_sale_li_text">较上个月
-                            <!--<i class="el-icon-back" :class="adSaleHeaderData.compareMonthPublish < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>-->
                             <i class="el-icon-back" v-show="adSaleHeaderData.compareMonthPublish !== 0 && adSaleHeaderData.compareMonthPublish !== '--'"
                                :class="adSaleHeaderData.compareMonthPublish < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
                             <span>{{adSaleHeaderData.compareMonthPublish}}%</span>
@@ -179,7 +177,6 @@
                         <p class="ad_sale_li_text"> 较上个月
                             <i class="el-icon-back" v-show="adSaleHeaderData.compareMedia !== 0 && adSaleHeaderData.compareMedia !== '--'"
                                :class="adSaleHeaderData.compareMedia < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
-                            <!--<i class="el-icon-back" :class="adSaleHeaderData.compareMedia < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>-->
                             <span>{{adSaleHeaderData.compareMedia}}%</span>
                         </p>
                     </li>
@@ -189,7 +186,6 @@
                         <p class="ad_sale_li_text"> 较上个月
                             <i class="el-icon-back" v-show="adSaleHeaderData.compareOrder !== 0 && adSaleHeaderData.compareOrder !== '--'"
                                :class="adSaleHeaderData.compareOrder < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
-                            <!--<i class="el-icon-back" :class="adSaleHeaderData.compareOrder < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>-->
                             <span>{{adSaleHeaderData.compareOrder}}%</span>
                         </p>
                     </li>
@@ -199,7 +195,6 @@
                         <p class="ad_sale_li_text"> 较上个月
                             <i class="el-icon-back" v-show="adSaleHeaderData.compareSale !== 0 && adSaleHeaderData.compareSale !== '--'"
                                :class="adSaleHeaderData.compareSale < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
-                            <!--<i class="el-icon-back" :class="adSaleHeaderData.compareSale < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>-->
                             <span>{{adSaleHeaderData.compareSale}}%</span>
                         </p>
                     </li>

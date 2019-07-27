@@ -6,7 +6,7 @@
                 <div slot="header" class="clearfix">
                     <span class="box_card_title">数据概览</span>
                     <span class="box_card_title_right">
-                        统计周期：{{showDate[0]}} - {{showDate[1]}}
+                        统计周期：{{timeList[0]}} - {{timeList[1]}}
                     </span>
                 </div>
                 <el-row :gutter="16">
@@ -250,9 +250,13 @@
             // 设置初始时间
             setTime() {
                 this.starTime = timeFormat.returnDayCount(0,'/')
-                let date = timeFormat.getWorkWeek('/')
+                // 七天前日期
+                let beforeDate = timeFormat.returnDayCount(-7,'/')
+                let date = timeFormat.getWorkWeek('/',beforeDate)
                 this.timeList = JSON.parse(JSON.stringify(date))
-                this.showDate = timeFormat.getWorkWeek('/')
+                // 七天前日期
+                // let beforeDate = timeFormat.returnDayCount(-7,'/')
+                // this.showDate = timeFormat.getWorkWeek('/',beforeDate)
                 console.log('_________',this.timeList)
             },
             // 数据总览接口

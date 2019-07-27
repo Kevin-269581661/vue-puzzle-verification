@@ -302,6 +302,7 @@
                 selectCity: '0',
                 cityList: [],
                 nowMonth: '',               // 当前月份日期
+                totalDataYear: '',          // 当前年份
                 citysContrastLoading: true,
                 //城市对比
                 //全国数据表格
@@ -458,6 +459,7 @@
                 let starTimeSub = starTime.substring(0,7)
                 let endTimeSub = endTime.substring(0,7)
                 this.nowMonth = endTimeSub
+                this.toDay = timeFormat.returnDayCount(0,'/')
                 this.compareCityTime = [starTimeSub,endTimeSub]        //  城市数据对比
                 this.cityRateCompareDate = [starTime,endTime]     // 城市上刊率对比
                 this.BeforeCityRateCompareDate = this.cityRateCompareDate.concat()
@@ -474,7 +476,8 @@
             },
             // 统一调用接口
             getCityContrastData(){
-                this.getAllDateSurvey()
+                // 城市数据对比
+                this.getAllCityInfo()
                 this.cityBattleRadio()
                 // 城市上刊率对比
                 this.getCompareCityRate()
@@ -509,65 +512,46 @@
                 console.log('directNameList',this.directNameList)
             },
             /*  城市数据展示  */
-            getAllDateSurvey(){
+            getAllCityInfo(){
                 this.citysContrastLoading = true
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    asrIDs: this.returnAsrID()
+                    startDate: this.toDay.substring(0,4) + '/01/01',
+                    endDate: this.toDay,
                 }
-                api.getApi(this.apiVar.Count + '/GetSurveyV2', params).then(res=>{
-                    if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        sessFun.loginTimeout()       // 登录超时
-                    } else {
-                        let dataArr = res.data
+                api.getApi(this.apiVar.report + '/api/v2/getCityInfo', params).then(res=>{
+                    console.log('城市数据展示表格res',res)
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        sessFun.loginTimeout()
+                    } else if (res.data.SysCode === 200200) {
+                        let dataArr = res.data.data
                         let cityDataTable = []
-                        // 社区、广告门、点位
-                        for (let key of dataArr.adsInfo.asrList) {
-                            let tempObj = {
-                                countRes: key.countRes || 0,
-                                countAds: key.countAdS || 0,
-                                city: this.returnAsName(key.asrID) || '--',
-                                countMedia: key.countMedia || 0,
-                                upPercent: 0,
-                                adOwners: 0,
-                                orders: 0,
-                                totalPrice: 0,
-                                asrID: key.asrID
-                            }
-                            cityDataTable.push(tempObj)
+                        for (let key of dataArr) {
+                            cityDataTable.push({
+                                countRes: key.resourceCount || 0,
+                                countAds: key.totalAdsCount || 0,
+                                city: this.returnAsName(key.asrId) || '--',
+                                countMedia: key.mediaCount || 0,
+                                upPercent: this.keepTwoDecimal(key.publishRate * 100),
+                                adOwners: key.advertisementCount,
+                                orders: key.orderCount,
+                                totalPrice: key.orderSale,
+                                asrID: key.asrId
+                            })
                         }
-                        this.cityCompareTable = cityDataTable
-                        for (let bKey of dataArr.countATC) {
-                            for (let cKey of this.cityCompareTable) {
-                                if (bKey.asrID == cKey.asrID) {
-                                    cKey.adOwners = bKey.countcID
-                                    cKey.orders = bKey.apCount
-                                    cKey.totalPrice = Math.floor(bKey.totalSum / 100) //bKey.totalSum
-                                    break
-                                }
-                            }
-                        }
-                        for (let pKey of dataArr.publicationRateInfo) {
-                            for (let cKey of this.cityCompareTable) {
-                                if (pKey.asrID == cKey.asrID) {
-                                    cKey.upPercent = Math.floor(pKey.publishRate * 10000) / 100
-                                    break
-                                }
-                            }
-                        }
+                        this.cityCompareTable = cityDataTable.sort(this.compareSort('countRes'))
                         this.citysContrastLoading = false
                         this.getCityDataShow()
+                    } else {
+                        sessFun.messageFun('warning', res.data.MSG)
                     }
-                }).catch(err => {
-                    console.log('概况相关汇总数据接口error')
-                    this.citysContrastLoading = false
-                });
+                })
             },
             // 城市数据展示
             getCityDataShow(){
                 console.log('地图getCityDataShow', this.cityCompareTable)
-                this.cityCompareTable = this.cityCompareTable.sort(this.compareSort('countRes'))
+                // this.cityCompareTable = this.cityCompareTable.sort(this.compareSort('countRes'))
                 this.chinaMapDataMax = this.cityCompareTable[0].countRes
                 for (let cityKey of this.cityCompareTable) {
                     this.setChinaMapData(cityKey)
@@ -682,7 +666,7 @@
                         console.log('时间切换');
                 }
             },
-            // 城市对比上刊率 - 日期选择 cityKeyDataDate
+            // 城市对比上刊率 - 日期选择
             cityCompareChangeTime(String,index){
                 let starT = ''
                 let endT = ''
@@ -690,7 +674,6 @@
                     // 城市数据对比
                     let compareLen = this.isMonthLength(this.compareCityTime)
                     if (compareLen > 5) {
-                        // this.compareCityTime = this.beforeCompareCityTime.concat()
                         if (index === '0') {
                             starT = this.compareCityTime[0]
                             endT = timeFormat.getSpecifiedDateStr(this.compareCityTime[0], -5).substring(0, 7)
@@ -784,7 +767,6 @@
                 this.cityBattleLoading = true
                 this.cityBattleLineSeries = []
                 this.cityBattleLineStep = 0
-                // let cityArr = ['1', '2', '3', '4', '5', '6','7']
                 console.log('------------',this.selectCityLine)
                 for (let key of this.selectCityLine) {
                     if (name === '社区数') {
@@ -1228,7 +1210,6 @@
             },
             forCityKeyData() {
                 this.cityBattlePieStep = 0
-                // let cityArr = ['1', '2', '3', '4', '5', '6', '7']
                 for (let key of this.cityList) {
                     if(key.value === '0'){
                         continue
@@ -1471,6 +1452,15 @@
                 let compareMonth2 = dataTime[1].substr(5, 2)
                 let compareLen = (compareYear2 - compareYear1) * 12 + (compareMonth2 - compareMonth1)
                 return compareLen
+            },
+            // 保留两位小数
+            keepTwoDecimal(num){
+                if (!num && num !== 0) {
+                    return 0;
+                }
+                let result = parseFloat(num);
+                result = Math.round(num * 100) / 100;
+                return result;
             },
         },
     }

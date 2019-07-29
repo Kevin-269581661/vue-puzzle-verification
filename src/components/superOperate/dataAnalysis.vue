@@ -70,8 +70,8 @@
                     {value: '2', label: '上海多邻网络'},
                     {value: '3', label: '广州亲粤邻'},
                     {value: '4', label: '深圳亲邻交互'},
-                    {value: '5', label: '成都亲邻'},
-                    {value: '6', label: '重庆亲邻'},
+                    {value: '5', label: '成都亲邻科技'},
+                    {value: '6', label: '重庆亲邻科技'},
                     {value: '7', label: '天津亲邻众联'},
                     // {value: '1160',label: '天津测试公司'},
                     // {value: '1162', label: '经营报表-测试公司'}

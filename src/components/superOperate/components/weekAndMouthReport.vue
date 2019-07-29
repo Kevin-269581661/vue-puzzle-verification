@@ -504,14 +504,6 @@
             delRowSelect(index){
                 this.recipientData.splice(index,1)
             },
-            // 根据权限公司返回 asrIDs
-            returnAsrID(){
-                if (this.selectCity == '0'){
-                    return '1,2,3,4,5,6,7'
-                }else{
-                    return this.selectCity
-                }
-            },
         },
     }
 </script>
@@ -649,6 +641,11 @@
 
     .recipient_add_btn i{
         color:rgba(24,144,255,1);
+    }
+
+    .chance_find_table /deep/ .el-table__body-wrapper{
+        height: 405px;
+        overflow-y: auto;
     }
 
     /deep/ .el-dialog__header{

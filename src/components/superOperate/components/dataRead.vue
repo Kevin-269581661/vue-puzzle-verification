@@ -159,7 +159,7 @@
                         <p class="ad_sale_li_text">较上个月
                             <i class="el-icon-back" v-show="adSaleHeaderData.comparePoint !== 0 && adSaleHeaderData.comparePoint !== '--'"
                                :class="adSaleHeaderData.comparePoint < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
-                            <span>{{adSaleHeaderData.comparePoint}}%</span>
+                            <span>{{returnAbs(adSaleHeaderData.comparePoint)}}%</span>
                         </p>
                     </li>
                     <li class="ad_sale_li">
@@ -168,7 +168,7 @@
                         <p class="ad_sale_li_text">较上个月
                             <i class="el-icon-back" v-show="adSaleHeaderData.compareMonthPublish !== 0 && adSaleHeaderData.compareMonthPublish !== '--'"
                                :class="adSaleHeaderData.compareMonthPublish < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
-                            <span>{{adSaleHeaderData.compareMonthPublish}}%</span>
+                            <span>{{returnAbs(adSaleHeaderData.compareMonthPublish)}}%</span>
                         </p>
                     </li>
                     <li class="ad_sale_li">
@@ -177,7 +177,7 @@
                         <p class="ad_sale_li_text"> 较上个月
                             <i class="el-icon-back" v-show="adSaleHeaderData.compareMedia !== 0 && adSaleHeaderData.compareMedia !== '--'"
                                :class="adSaleHeaderData.compareMedia < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
-                            <span>{{adSaleHeaderData.compareMedia}}%</span>
+                            <span>{{returnAbs(adSaleHeaderData.compareMedia)}}%</span>
                         </p>
                     </li>
                     <li class="ad_sale_li">
@@ -186,7 +186,7 @@
                         <p class="ad_sale_li_text"> 较上个月
                             <i class="el-icon-back" v-show="adSaleHeaderData.compareOrder !== 0 && adSaleHeaderData.compareOrder !== '--'"
                                :class="adSaleHeaderData.compareOrder < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
-                            <span>{{adSaleHeaderData.compareOrder}}%</span>
+                            <span>{{returnAbs(adSaleHeaderData.compareOrder)}}%</span>
                         </p>
                     </li>
                     <li class="ad_sale_li">
@@ -195,7 +195,7 @@
                         <p class="ad_sale_li_text"> 较上个月
                             <i class="el-icon-back" v-show="adSaleHeaderData.compareSale !== 0 && adSaleHeaderData.compareSale !== '--'"
                                :class="adSaleHeaderData.compareSale < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
-                            <span>{{adSaleHeaderData.compareSale}}%</span>
+                            <span>{{returnAbs(adSaleHeaderData.compareSale)}}%</span>
                         </p>
                     </li>
                 </ul>
@@ -236,10 +236,7 @@
                     <span class="box_card_title_right" style="float: right; padding: 3px 0">数据更新至{{toDay}}</span>
                 </div>
                 <el-row :gutter="16">
-                    <el-col :span="12" class="el_col_charts"
-                            v-loading="adInventoriedLoading"
-                            element-loading-text="玩命加载中..."
-                            element-loading-background="rgba(255, 255, 255)">
+                    <el-col :span="12" class="el_col_charts">
                         <div class="select_box">
                             <el-select v-model="adInventoriedType" size="small" placeholder="请选择" @change="getAdInventoriedData">
                                 <el-option
@@ -261,12 +258,14 @@
                                 <span slot="reference">估算销售额 <i class="el-icon-warning-outline"></i></span>
                             </el-popover>
                         </p>
-                        <div class="bar_charts el_col_bar" id="ad_inventoried" ref="adInventoriedPie" style="height: 328px;width: 100%"></div>
-                    </el-col>
-                    <el-col :span="12" class="el_col_charts"
-                            v-loading="adInventoryLoading"
+                        <div class="el_col_bar"
+                            v-loading="adInventoriedLoading"
                             element-loading-text="玩命加载中..."
                             element-loading-background="rgba(255, 255, 255)">
+                            <div class="bar_charts" id="ad_inventoried" ref="adInventoriedPie" style="height: 328px;width: 100%"></div>
+                        </div>
+                    </el-col>
+                    <el-col :span="12" class="el_col_charts">
                         <div class="select_box">
                             <el-select v-model="adInventoryType" size="small" placeholder="请选择" @change="getAdInventoryData">
                                 <el-option
@@ -288,7 +287,10 @@
                                 <span slot="reference">估算销售额 <i class="el-icon-warning-outline"></i></span>
                             </el-popover>
                         </p>
-                        <div class="el_col_bar">
+                        <div class="el_col_bar"
+                             v-loading="adInventoryLoading"
+                             element-loading-text="玩命加载中..."
+                             element-loading-background="rgba(255, 255, 255)">
                             <div class="bar_charts" id="ad_inventory_future" ref="adInventoryPie" style="height: 328px;width: 100%"></div>
                         </div>
                     </el-col>
@@ -611,15 +613,15 @@
             },
             selectCity(newVal, oldVal) {
                 this.selectCity = newVal
-                if(this.selectCity === '0'){
+                if (this.selectCity === '0') {
                     this.isAllCity = true
-                }else{
+                } else {
                     this.isAllCity = false
                 }
                 if (this.activeName === 'first') {
                     this.getDataRead();
                 } else {
-                    if(this.selectCity != this.oldSelectCity){
+                    if (this.selectCity != this.oldSelectCity) {
                         this.isGetData = false
                     } else {
                         this.isGetData = true
@@ -659,7 +661,6 @@
             } else {
                 this.isAllCity = true
             }
-            // console.log('this.isAllCity',this.isAllCity)
             this.echartsListener();
             this.setTime();
         },
@@ -938,7 +939,7 @@
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                     startDate: this.toDay,
-                    endDate: timeFormat.returnDayCount(1,'/') //this.toDay,
+                    endDate: timeFormat.returnDayCount(1,'/')
                 }
                 if (this.selectCity !== '0') {
                     params.asrIds = this.returnAsrID()
@@ -993,9 +994,8 @@
                 let barArr = []
                 for (let key in dataObj) {
                     // 右侧图表
-                    barArr = [
-                        '', dataObj[key].count, dataObj[key].adsCount, dataObj[key].adsWeekCount
-                    ]
+                    // x轴刻度名称、方案订单数、点位数、点位面周
+                    barArr = ['', dataObj[key].count, dataObj[key].adsCount, dataObj[key].adsWeekCount]
                     // 左侧list
                     let obj = {
                         name: '',
@@ -1006,17 +1006,14 @@
                     if (key === 'createPlanInfo') {
                         barArr[0] = '创建方案'
                         this.toDayPreceptBarData[1] = barArr
-                        //
                         obj.name = '创建方案'
                     } else if (key === 'lockPlanInfo') {
                         barArr[0] = '预锁方案'
                         this.toDayPreceptBarData[2] = barArr
-
                         obj.name = '预锁方案'
                     } else if (key === 'orderInfo') {
                         barArr[0] = '生成订单'
                         this.toDayPreceptBarData[3] = barArr
-
                         obj.name = '生成订单'
                     }
                     tableList.push(obj)
@@ -1223,14 +1220,19 @@
             setAdSaleHeaderData(dataObj) {
                 let {curMonthInfo,preMonthInfo} = dataObj
                 this.adSaleHeaderData = {
+                    // 点位总量(面·周)
                     pointCount: curMonthInfo.pointCount,
                     comparePoint: preMonthInfo.pointCount ? this.keepTwoDecimal((curMonthInfo.pointCount - preMonthInfo.pointCount) / preMonthInfo.pointCount * 100) : '--',
+                    // 月均上刊率
                     monthPublishRate: curMonthInfo.monthPublishRate ? Math.floor(curMonthInfo.monthPublishRate * 10000) / 100 : 0,
                     compareMonthPublish:  preMonthInfo.monthPublishRate ? this.keepTwoDecimal((curMonthInfo.monthPublishRate - preMonthInfo.monthPublishRate) / preMonthInfo.monthPublishRate * 100) : '--',
+                    // 当前禁用媒体数量(面)
                     forbiddenMediaCount: curMonthInfo.forbiddenAdsCount,
                     compareMedia:  preMonthInfo.forbiddenAdsCount ? this.keepTwoDecimal((curMonthInfo.forbiddenAdsCount - preMonthInfo.forbiddenAdsCount) / preMonthInfo.forbiddenAdsCount * 100) : '--',
+                    // 成交订单
                     orderCount: curMonthInfo.orderCount,
-                    compareOrder: preMonthInfo.orderCount ? this.keepTwoDecimal((curMonthInfo.orderCount - preMonthInfo.orderCount) / preMonthInfo.orderCount * 100) : 0,
+                    compareOrder: preMonthInfo.orderCount ? this.keepTwoDecimal((curMonthInfo.orderCount - preMonthInfo.orderCount) / preMonthInfo.orderCount * 100) : '--',
+                    // 账面销售额
                     sale: curMonthInfo.sale,
                     compareSale: preMonthInfo.sale ? this.keepTwoDecimal((curMonthInfo.sale - preMonthInfo.sale) / preMonthInfo.sale * 100) : '--',
                 }
@@ -2147,6 +2149,14 @@
                 let result = parseFloat(num);
                 result = Math.round(num * 100) / 100;
                 return result;
+            },
+            // 返回数的绝对值
+            returnAbs(num) {
+                if (typeof num === 'number' && !isNaN(num)) {
+                    return Math.abs(num)
+                } else {
+                    return num
+                }
             },
             // 指定日期为今年的第几周
             returnRankingWeekOnYear(date){

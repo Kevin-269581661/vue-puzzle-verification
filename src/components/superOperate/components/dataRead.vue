@@ -1297,8 +1297,15 @@
                 this.adSaleData.adsDisabled = JSON.parse(JSON.stringify(adsDisabled))
                 // 上刊率
                 this.adSaleData.publishRate = publishRate
-                this.adSaleData.totalNum = parseInt(totalNum * 1.4)
-                console.log('左侧柱状图',this.adSaleData,totalNum)
+                // this.adSaleData.totalNum = parseInt(totalNum * 1.4)
+                // 设置最大值
+                totalNum = parseInt(totalNum * 1.5).toString()
+                let maxNum = totalNum.substring(0, 2)
+                for (let i = 0; i < totalNum.length - 2; i++) {
+                    maxNum += '0'
+                }
+                this.adSaleData.totalNum = maxNum
+                console.log('左侧柱状图',this.adSaleData,totalNum,maxNum)
                 this.initAdSaleBar();
             },
             // 设置右侧饼状图数据
@@ -1391,7 +1398,8 @@
                         {
                             type: 'value',
                             max: this.adSaleData.totalNum,
-                            splitNumber: 6,
+                            interval: Math.ceil(this.adSaleData.totalNum / 5),
+                            splitNumber: 5,
                             axisLine: {
                                 // show:false,
                                 //坐标轴线条相关设置(颜色等)
@@ -1417,10 +1425,10 @@
                         },
                         {
                             type: 'value',
-                            min: -500,
+                            min: -400,
                             max: 100,
                             interval: 100,
-                            splitNumber: 6,
+                            splitNumber: 5,
                             show:false,
                             axisLine: {
                                 //坐标轴线条相关设置(颜色等)

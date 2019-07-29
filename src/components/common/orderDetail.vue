@@ -194,7 +194,7 @@
                                         </el-select>
                                         <!--进度条-->
                                         <div class="progress">
-                                            <el-progress :percentage="upImgPercent"></el-progress>
+                                            <el-progress :percentage="upImgPercent" :text-inside="true"></el-progress>
                                             <span>{{ currUpNum }} / {{totalUpNum}}</span>
                                         </div>
                                     </div>
@@ -310,7 +310,7 @@
                                         </el-select>
                                         <!--进度条-->
                                         <div class="progress">
-                                            <el-progress :percentage="downImgPercent"></el-progress>
+                                            <el-progress :percentage="downImgPercent" :text-inside="true"></el-progress>
                                             <span>{{ currDownNum }} / {{ totalDownNum }}</span>
                                         </div>
                                     </div>
@@ -1568,7 +1568,8 @@ export default {
                         this.totalUpNum = dataInfo.totalCount;
                         this.totalUpPageNum = dataInfo.searchCount;
                         this.currUpNum = dataInfo.hasPhotoCount;
-                        this.upImgPercent = this.totalUpNum? Math.ceil((this.currUpNum / this.totalUpNum)*100):0;
+                        // this.upImgPercent = this.totalUpNum? Math.ceil((this.currUpNum / this.totalUpNum)*100):0;
+                        this.upImgPercent = this.totalUpNum? Number(((this.currUpNum / this.totalUpNum)*100).toFixed(2)):0;
                         for(let data of dataInfo.dataList){
                             for(let item of data.photoList){
                                 item.name = item.pID+'.png',
@@ -1609,7 +1610,8 @@ export default {
                         this.totalDownNum = dataInfo.totalCount;
                         this.totalDownPageNum = dataInfo.searchCount;
                         this.currDownNum = dataInfo.hasPhotoCount;
-                        this.downImgPercent = this.totalDownNum? Math.ceil((this.currDownNum / this.totalDownNum)*100):0;
+                        // this.downImgPercent = this.totalDownNum? Math.ceil((this.currDownNum / this.totalDownNum)*100):0;
+                        this.downImgPercent = this.totalDownNum?Number(((this.currDownNum / this.totalDownNum)*100).toFixed(2)):0;
                         for(let data of dataInfo.dataList){
                             for(let item of data.photoList){
                                 item.name = item.pID+'.png',
@@ -2879,7 +2881,7 @@ export default {
     }
 
     /deep/ .el-progress-bar__outer {
-        height: 10px !important;
+        height: 16px !important;
     }
 
     /deep/ .el-progress-bar {

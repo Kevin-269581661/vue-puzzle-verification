@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="keywords" content="亲邻，亲邻科技"/>
+    <meta name="description" content="深圳市亲邻科技有限公司成立于2015年，总部设立在深圳，是一家专注于社区领域的营销与服务商。公司拥有成熟的社区营销服务团队及完备的物联网开发技术团队，通过为社区提供免费的智能软硬件设备，为业主提供便捷与安全的智慧社区服务。" />
+    <!--#以上代码告诉IE浏览器，IE8/9及以后的版本都会以最高版本IE来渲染页面。-->
+    <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
+    <meta http-equiv="X-UA-Compatible" content="IE=7,9">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <!--#以上代码IE=edge告诉IE使用最新的引擎渲染网页，chrome=1则可以激活Chrome Frame.-->
+    <title>深圳市亲邻科技有限公司</title>
+    <link rel="stylesheet" href="css/lib/reset.css">
+    <link rel="stylesheet" href="css/lib/bootstrap.min.css">
+    <link rel="stylesheet" href="css/lib/animate.css">
+    <link rel="stylesheet" href="css/commom.css">
+    <link rel="stylesheet" href="css/itlgCommunity.css">
+    <link rel="icon" href="images/index/favicon.ico"/>
+    <!-- HTML5 Shiv 和 Respond.js 用于让 IE8 支持 HTML5元素和媒体查询 -->
+    <!-- 注意： 如果通过 file://  引入 Respond.js 文件，则该文件无法起效果 -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?3d24d025fcb986b0988e5380c0a3d857";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+
+</head>
+<body>
+<div class="itlgCommunity-wrap">
+    <div class="index-nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">
+                        <img alt="亲邻科技" src="images/index/logo2.png">
+                    </a>
+                </div>
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <div class="collapse navbar-collapse nav-list" id="navbarNav">
+                        <ul class="nav navbar-nav" id="index_nav">
+                            <li>
+                                <a class="nav-link" href="index.html">首页</a>
+                            </li>
+                            <li>
+                                <a class="nav-link" href="CommMarketing.html">社区营销</a>
+                            </li>
+                            <li class="active">
+                                <a class="nav-link" href="#">智慧社区</a>
+                            </li>
+                            <li>
+                                <a class="nav-link" href="aboutQinlin.html">关于亲邻</a>
+                            </li>
+                            <li>
+                                <a class="nav-link" target="_blank" href="https://www.qinlinad.com/login">QADN</a>
+                            </li>
+                            <li>
+                                <a class="nav-link" target="_blank" href="http://base.qlkeji.cn">物业后台</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </nav>
+    </div>
+    <div class="commMarket-banner-wrap">
+        <div class="commMarket-banner">
+            <div class="comm-banner-content-wrap">
+                <div class="comm-banner-content">
+                    <div class="banner-content-left txt-animate-delay">
+                        <h3 class="animated fadeInLeft ">智慧社区综合解决方案</h3>
+                        <p class="animated fadeInLeft">与超过850家物业公司达成战略合作伙伴关系</p>
+                        <p class="animated fadeInLeft">
+                            <button data-toggle="modal" data-target="#videoModal"><img
+                                    src="images/commMarket/play-circle.png" alt="">了解更多
+                            </button>
+                        </p>
+                    </div>
+                    <div class="banner-content-right animated fadeInRight">
+                        <img src="images/index/home_third_community/part2-rightimg.png" alt="">
+                        <div class="animate-img animate6">
+                            <img src="images/index/home_third_community/home_third_community_cloud@2x.png" alt="">
+                            <img src="images/index/home_third_community/home_third_community_sun@2x.png" alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="comm-banner-box">
+                <ul>
+                    <li>
+                        <img src="images/itlgCommunity/marketing_second_door@2x.png" alt="">
+                        <h5>人行通道解决方案</h5>
+                        <p>智能门禁专业定制免费运维</p>
+                    </li>
+                    <li>
+                        <img src="images/itlgCommunity/marketing_second_computer@2x.png" alt="">
+                        <h5>物业信息智能化管理</h5>
+                        <p>住户信息集中管理高效便捷</p>
+                    </li>
+                    <li>
+                        <img src="images/itlgCommunity/marketing_second_safe@2x.png" alt="">
+                        <h5>社区安防严格把控</h5>
+                        <p>物业监控有效防范安全隐患</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--视频弹框-->
+    <div class="modal fade" id="videoModal" data-backdrop="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- 模态框主体 -->
+                <div class="modal-body">
+                    <video id="index_Video" controls controlslist="nodownload"
+                           src="https://guanwang-1256017579.cos.ap-guangzhou.myqcloud.com/wuye.mp4">
+                        您的浏览器暂不支持播放该视频，请升级至最新版浏览器。
+                    </video>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="commMarket-content-wrap">
+        <div class="content-part content-part1">
+            <div class="content-title">
+                <h3 class="wow fadeIn" data-wow-offset="100">社区智能门禁系统</h3>
+                <p class="wow fadeInUp" data-wow-offset="100">
+                    运用先进的物联技术和严密的安防技术，不断研发社区智能软硬件设备，为住户提供便捷与安全的智慧社区服务，实现智慧物业管理目标 </p>
+            </div>
+            <div class="content-pics">
+                <div class="txt-box-wrap">
+                    <div class="txt-box txt-box1 animated">
+                        <div class="txt-box-top">
+                            <div class="img-wrap">
+                                <img src="images/itlgCommunity/marketing_third_host@1.5x.jpg" alt="">
+                            </div>
+                            <div>
+                                <h6>门禁主机</h6>
+                                <p>Host</p>
+                                <span class="line"></span>
+                            </div>
+                        </div>
+                        <div class="txt-box-bottom">
+                            <p>专门为写字楼、住宅、办公室、楼宇、公共通道等出入口的控制而推出的非联网门禁控制器，为用户提供一个简单直接的门禁系统解决方案 </p>
+                        </div>
+                    </div>
+                    <div class="txt-box txt-box2">
+                        <div class="txt-box-top">
+                            <div class="img-wrap">
+                                <img src="images/itlgCommunity/marketing_third_lock@2x.jpg" alt="">
+                            </div>
+                            <div>
+                                <h6>磁力锁</h6>
+                                <p>Magnetic lock</p>
+                                <span class="line"></span>
+                            </div>
+                        </div>
+                        <div class="txt-box-bottom">
+                            <p>利用电生磁的原理，当电流通过硅钢片时，电磁力锁会产生强大吸力紧紧吸附铁板，从而达到锁门的效果。门禁系统识别人员正确后即断电，电磁锁失去吸力即可开门
+                            </p>
+                        </div>
+                    </div>
+                    <div class="txt-box txt-box3">
+                        <div class="txt-box-top">
+                            <div class="img-wrap">
+                                <img src="images/itlgCommunity/marketing_third_motor@2x.jpg" alt="">
+                            </div>
+                            <div>
+                                <h6>电动机</h6>
+                                <p>Motor</p>
+                                <span class="line">
+
+                                </span>
+                            </div>
+                        </div>
+                        <div class="txt-box-bottom">
+                            <p>传动分级精细，且稳定性强，维护方便，具有振动小、噪音低、密封性好、抗腐蚀等优点，可自由调节开关速度和停顿时间，能耗低，运转3000次耗电低至0.2度</p>
+                        </div>
+                    </div>
+                    <div class="txt-box txt-box4">
+                        <div class="txt-box-top">
+                            <div class="img-wrap">
+                                <img src="images/itlgCommunity/marketing_third_doorcloser@2x.jpg" alt="">
+                            </div>
+                            <div>
+                                <h6>闭门器</h6>
+                                <p>Door closer</p>
+                                <span class="line"></span>
+                            </div>
+                        </div>
+                        <div class="txt-box-bottom">
+                            <p>两断调速，关门速度平稳，摇臂安装和滑轨安装双向选择。滑轨安装带停门块，具有停门功能。调速阀位于闭门器正面，装上滑动改版，方便调节，使闭门器整体感更强</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="txt-img-wrap">
+                    <div class="lines">
+                        <div class="line1-wrap">
+                            <span class="line1"></span>
+                            <span class="line2"></span>
+                        </div>
+                        <div class="line2-wrap">
+                            <span class="line1"></span>
+                            <span class="line2"></span>
+                        </div>
+                        <div class="line3-wrap">
+                            <span class="line1"></span>
+                            <span class="line2"></span>
+                        </div>
+                        <div class="line4-wrap">
+                            <span class="line1"></span>
+                            <span class="line2"></span>
+                        </div>
+                    </div>
+                    <img src="images/itlgCommunity/marketing_third_door@1.5x.jpg" alt="">
+                    <ol>
+                        <li class="dot dot1"></li>
+                        <li class="dot dot2"></li>
+                        <li class="dot dot3"></li>
+                        <li class="dot dot4"></li>
+                    </ol>
+                </div>
+
+            </div>
+            <div class="txt-more-wrap">
+                <button data-toggle="modal" data-target="#doorModal">查看更多</button>
+            </div>
+            <div class="modal fade" id="doorModal" data-backdrop="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <!-- 模态框主体 -->
+                        <div class="modal-body">
+                            <div class="doorModal-wrapper">
+                                <div class="doorModal">
+                                    <div class="left-door">
+                                        <ul id="left-door-ul">
+                                            <li>
+                                                <ul class="left-door-ul-ul">
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz01.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz02.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz03.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz04.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz05.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz06.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz07.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz08.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz09.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz10.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz10d.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz11.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz11d.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz12.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz12d.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz13.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz14.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz15.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz16.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz17.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz18.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz19.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz20.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz21.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz22.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz23.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/bz24.jpg"
+                                                                              alt=""></li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <ul class="left-door-ul-ul">
+                                                    <li class="animated"><img src="images/itlgCommunity/door/xf01.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/xf02.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/xf03.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/xf04.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/xf05.jpg"
+                                                                              alt=""></li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <ul class="left-door-ul-ul">
+                                                    <li class="animated"><img src="images/itlgCommunity/door/fb01.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/fb02.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/fb03.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/fb04.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/fb05.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/fb06.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/fb07.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/fb08.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/fb09.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/fb10.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/fb11.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/fb12.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/fb13.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/fb14.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/fb15.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/fb16.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/fb17.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/fb18.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/fb19.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/fb20.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/fb21.jpg"
+                                                                              alt=""></li>
+                                                    <li class="animated"><img src="images/itlgCommunity/door/fb22.jpg"
+                                                                              alt=""></li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="right-tab">
+                                        <ol id="right-tab-ol">
+                                            <li class="active">标准门</li>
+                                            <li>消防门</li>
+                                            <li>非标门</li>
+                                        </ol>
+                                        <div class="line"></div>
+                                        <ul id="right-tab-ul">
+                                            <li>
+                                                <dl class="active">
+                                                    <dt>JP-B-001</dt>
+                                                    <dd>1250mm*1500mm 广告门（电机门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-002</dt>
+                                                    <dd>1400mm*1500mm 广告门（电机门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-003</dt>
+                                                    <dd>1600mm*1500mm 广告门（电机门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-004</dt>
+                                                    <dd>1250mm*1500mm 护栏式抗风式广告门</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-005</dt>
+                                                    <dd>1400mm*1500mm 护栏式抗风式广告门</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-006</dt>
+                                                    <dd>1600mm*1500mm 护栏式抗风式广告门</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-007</dt>
+                                                    <dd>1250mm*1500mm 广告门（闭门器）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-008</dt>
+                                                    <dd>1400mm*1500mm 广告门（闭门器）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-009</dt>
+                                                    <dd>1600mm*1500mm 广告门（闭门器）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-010-D</dt>
+                                                    <dd>1250mm*2200mm 广告门（闭门器）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-010</dt>
+                                                    <dd>1250mm*2200mm 广告门（闭门器）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-011-D</dt>
+                                                    <dd>1400mm*2200mm 广告门（闭门器）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-011</dt>
+                                                    <dd>1400mm*2200mm 广告门（闭门器）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-012-D</dt>
+                                                    <dd>1600mm*2200mm 广告门（闭门器）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-012</dt>
+                                                    <dd>1600mm*2200mm 广告门（闭门器）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-013</dt>
+                                                    <dd>1250mm*2200mm 广告门（电机门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-014</dt>
+                                                    <dd>1400mm*2200mm 广告门（电机门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-015</dt>
+                                                    <dd>1600mm*2200mm 广告门（电机门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-016</dt>
+                                                    <dd>1400mm*1800mm 广告门（电机门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-017</dt>
+                                                    <dd>1800mm*1500mm 广告门（电机门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-018</dt>
+                                                    <dd>1020mm*1370mm 灯箱</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-019</dt>
+                                                    <dd>1000mm*1600mm 灯箱</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-020</dt>
+                                                    <dd>1400mm*2500mm 灯箱</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-021</dt>
+                                                    <dd>1022mm*1715mm 带底座固定式广告屏</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-022</dt>
+                                                    <dd>1112mm*1500mm 不带底座固定式广告屏</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-023</dt>
+                                                    <dd>1250mm*1500mm 不带底座固定式广告屏</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-B-024</dt>
+                                                    <dd>1250mm*2200mm 不带底座固定式广告屏</dd>
+                                                </dl>
+
+                                            </li>
+                                            <li>
+                                                <dl class="active">
+                                                    <dt>JP-消防门-001</dt>
+                                                    <dd>活动副立柱-1（消防门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-消防门-002</dt>
+                                                    <dd>活动副立柱-2（消防门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-消防门-003</dt>
+                                                    <dd>活动副立柱-3（消防门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-消防门-004</dt>
+                                                    <dd>常规对开无小门（消防门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-消防门-004</dt>
+                                                    <dd>常规有小门（消防门）</dd>
+                                                </dl>
+                                            </li>
+                                            <li>
+                                                <dl class="active">
+                                                    <dt>JP-非标-001</dt>
+                                                    <dd>1250mm*1200mm 广告门（电机门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-非标-002</dt>
+                                                    <dd>1400mm*1200mm 广告门（电机门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-非标-003</dt>
+                                                    <dd>1600mm*1200mm 广告门（电机门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-非标-004</dt>
+                                                    <dd>1800mm*1200mm 广告门（电机高低脚门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-非标-005</dt>
+                                                    <dd>1400mm*1500mm 护拦门（电机高低脚门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-非标-006</dt>
+                                                    <dd>900mm*1200mm 护拦门（闭门器门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-非标-007</dt>
+                                                    <dd>1120mm*1800mm 广告门（无副立柱电机门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-非标-008</dt>
+                                                    <dd>1070mm*2200mm 广告门（无副立柱电机门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-非标-009</dt>
+                                                    <dd>1100mm*2200mm 广告门（铰链插销门扇）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-非标-010</dt>
+                                                    <dd>1250mm*1800mm 广告门（电机门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-非标-011</dt>
+                                                    <dd>1600mm*1800mm 广告门（电机门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-非标-012</dt>
+                                                    <dd>1830mm*1800mm 广告门（电机门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-非标-013</dt>
+                                                    <dd>2000mm*1500mm 广告门（电机门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-非标-014</dt>
+                                                    <dd>1400mm*2400mm 广告门（闭门器门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-非标-015</dt>
+                                                    <dd>1980mm*2200mm 广告门（闭门器活动护拦门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-非标-016</dt>
+                                                    <dd>1600mm*2200mm 护拦门（电机门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-非标-017</dt>
+                                                    <dd>1250mm*2200mm 广告门（电机门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-非标-018</dt>
+                                                    <dd>2330mm*1500mm 广告门（对开电机门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-非标-019</dt>
+                                                    <dd>3200mm*2200mm 闭门器（组合广告门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-非标-020</dt>
+                                                    <dd>1250mm*1900mm 广告门（电机门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-非标-021</dt>
+                                                    <dd>1250mm*1500mm 广告门（防尾随门）</dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>JP-非标-022</dt>
+                                                    <dd>1250mm*2200mm 广告门（防尾随门）</dd>
+                                                </dl>
+                                            </li>
+
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content-part content-part2">
+            <div class="content-title">
+                <h3 class="wow fadeIn" data-wow-offset="100">多元化智能开门方式</h3>
+            </div>
+            <div class="content-tabs">
+                <div class="tabs-tab">
+                    <div class="tablist-wrap">
+                        <div class="tabs-line"></div>
+                        <ul>
+                            <li class="active">APP开门</li>
+                            <li>扫码开门</li>
+                            <li>人脸识别开门</li>
+                            <li>小程序开门</li>
+                            <li>小米NFC开门</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="tabs-box-wrap">
+                    <div class="tabs-box">
+                        <div class="box box1 animated">
+                            <span class="player_img"></span>
+                            <video preload controlslist="nodownload" id="appVideo"
+                                   src="https://guanwang-1256017579.cos.ap-guangzhou.myqcloud.com/appkaimen.mp4">
+                                您的浏览器暂不支持播放该视频，请升级至最新版浏览器。
+                            </video>
+                        </div>
+                        <div class="box box2 animated">
+                            <span class="player_img"></span>
+                            <video preload controlslist="nodownload" id="smVideo"
+                                   src="https://guanwang-1256017579.cos.ap-guangzhou.myqcloud.com/saomakaimen.mp4">
+                                您的浏览器暂不支持播放该视频，请升级至最新版浏览器。
+                            </video>
+                        </div>
+
+                        <div class="box box3 animated">
+                            <span class="player_img"></span>
+                            <video preload controlslist="nodownload" id="rlVideo"
+                                   src="https://guanwang-1256017579.cos.ap-guangzhou.myqcloud.com/renlianshibie.mp4">
+                                您的浏览器暂不支持播放该视频，请升级至最新版浏览器。
+                            </video>
+                        </div>
+                        <div class="box box4 animated">
+                            <span class="player_img"></span>
+                            <video preload controlslist="nodownload" id="xcxVideo"
+                                   src="https://guanwang-1256017579.cos.ap-guangzhou.myqcloud.com/xiaochengxukaimen.mp4">
+                                您的浏览器暂不支持播放该视频，请升级至最新版浏览器。
+                            </video>
+                        </div>
+                        <div class="box box5 animated">
+                            <span class="player_img"></span>
+                            <video preload controlslist="nodownload" id="nfcVideo"
+                                   src="https://guanwang-1256017579.cos.ap-guangzhou.myqcloud.com/nfckaimen.mp4">
+                                您的浏览器暂不支持播放该视频，请升级至最新版浏览器。
+                            </video>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content-part content-part3">
+            <div class="content-title">
+                <h3 class="wow fadeIn" data-wow-offset="100">服务超过5000万家庭</h3>
+            </div>
+            <div class="content-pics">
+                <div class="slider-wrap">
+                    <div id="pics-carousel" class="carousel slide">
+                        <!-- 轮播图片 -->
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <ul>
+                                    <li>
+                                        <img src="images/itlgCommunity/houseimg01.jpg" alt="">
+                                    </li>
+                                    <li>
+                                        <img src="images/itlgCommunity/houseimg02.jpg" alt="">
+                                    </li>
+                                    <li>
+                                        <img src="images/itlgCommunity/houseimg03.jpg" alt="">
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="carousel-item">
+                                <ul>
+                                    <li>
+                                        <img src="images/itlgCommunity/1.jpg" alt="">
+                                    </li>
+                                    <li>
+                                        <img src="images/itlgCommunity/2.jpg" alt="">
+                                    </li>
+                                    <li>
+                                        <img src="images/itlgCommunity/3.jpg" alt="">
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="carousel-item">
+                                <ul>
+                                    <li>
+                                        <img src="images/itlgCommunity/4.jpg" alt="">
+                                    </li>
+                                    <li>
+                                        <img src="images/itlgCommunity/5.jpg" alt="">
+                                    </li>
+                                    <li>
+                                        <img src="images/itlgCommunity/6.jpg" alt="">
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <a class="slider-wrap-btn left-btn" href="#pics-carousel" data-slide="prev"></a>
+                        <a class="slider-wrap-btn right-btn" href="#pics-carousel" data-slide="next"></a>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content-part content-part4">
+            <div class="content-part4-wrap">
+                <div class="content-title">
+                    <h3 class="wow fadeIn" data-wow-offset="100">智慧物业管理服务体系</h3>
+                </div>
+                <div class="content-pics">
+                    <div class="left-tabs wow fadeInLeft">
+                        <ul>
+                            <li>
+                                <span class="left-line"></span>
+                            </li>
+                            <li class="active">
+                                <div class="right-txt">
+                                    <h6>集成多平台的消息推送</h6>
+                                    <p>物业通知集中管理，各类消息线上一键发送 </p>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="right-txt">
+                                    <h6>完善的物业基础服务</h6>
+                                    <p>物业缴费、快捷保修、快递代收、访客预约等基础服务一应俱全 </p>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="right-txt">
+                                    <h6>自由定制的服务入口</h6>
+                                    <p>物业可根据实际需求，在微信、支付宝服务入口为不同小区住户提供对应服务 </p>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="right-txt">
+                                    <h6>丰富多元的第三方应用</h6>
+                                    <p>亲邻联合优质SAAS厂商、智能硬件厂商和应用开发者为物业提供各类社区场景工具 </p>
+                                </div>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <div class="right-content wow fadeInRight">
+                        <ul>
+                            <li class="right-content-li ">
+                                <img src="images/itlgCommunity/market_fifth_01.png" alt="">
+                            </li>
+                            <li class="right-content-li ">
+                                <img src="images/itlgCommunity/marketing_fifth_platform@2x.png" alt="">
+                            </li>
+                            <li class="right-content-li ">
+                                <img src="images/itlgCommunity/marketing_six_platform@2x.png" alt="">
+                            </li>
+                            <li class="right-content-li ">
+                                <img src="images/itlgCommunity/marketing_seven@2x.png" alt="">
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content-part content-part5">
+            <div class="content-title">
+                <h3 class="wow fadeIn" data-wow-offset="100">众多知名物业公司加持</h3>
+            </div>
+            <div class="part5-content-pics">
+                <ul>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="index-footer">
+        <div class="part3">
+            <div class="form-wrap">
+                <h3>联系我们</h3>
+                <div class="form-radio">
+                    <label class="form--label">
+                        <input id="wy" class="form--radio" type="radio" value="1" name="rule" checked>
+                        <span class="form--radioInput"></span>物业进驻
+                    </label>
+                    <label class="form--label">
+                        <input id="mall" class="form--radio" type="radio" value="2" name="rule">
+                        <span class="form--radioInput"></span>商城进驻
+                    </label>
+                    <label class="form--label">
+                        <input id="ad" class="form--radio" type="radio" value="4" name="rule">
+                        <span class="form--radioInput"></span>广告投放
+                    </label>
+                    <label class="form--label">
+                        <input id="coop" class="form--radio" type="radio" value="3" name="rule">
+                        <span class="form--radioInput"></span>合作加盟
+                    </label>
+                    <!--<label><input name="rule" type="radio" class="radioclass" checked />物业进驻</label>
+                    <label><input name="rule" type="radio" class="radioclass" />商城进驻</label>
+                    <label><input name="rule" type="radio" class="radioclass" />成为运营者</label>-->
+                </div>
+                <div class="form-input">
+                    <input id="companyName" type="text" placeholder="企业名称">
+                    <div>
+                        <input id="linkMan" type="text" placeholder="联系人姓名">
+                        <input id="city" type="text" placeholder="所在城市">
+                    </div>
+                    <div>
+                        <input id="phone" type="text" placeholder="联系人手机">
+                        <input id="email" type="text" placeholder="联系人邮箱">
+                    </div>
+                    <textarea name="content" id="content" cols="30" rows="10" placeholder="请填写您要咨询的内容"></textarea>
+                    <div style="justify-content: space-between">
+                        <div class="drag">
+                            <div class="slider-bg"></div>
+                            <div class="slider-text" onselectstart="return false;">请拖动滑块验证</div>
+                            <div class="slider-btn"></div>
+                        </div>
+                        <button id="submitBtn" onclick="subfun();">提交</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-txt">
+            <div class="footer-top">
+                <div class="footer-top-left">
+                    <dl>
+                        <dt>合作</dt>
+                        <dd><a href="CommMarketing.html">广告投放</a></dd>
+                        <dd><a href="itlgCommunity.html">智能门禁</a></dd>
+                        <!--<dd><a href="#">便捷物业</a></dd>-->
+                    </dl>
+                    <dl>
+                        <dt>关于</dt>
+                        <dd><a href="aboutQinlin.html">公司简介</a></dd>
+                        <dd><a href="recruitment.html">招聘信息</a></dd>
+                        <dd><a href="mediaReportPdf.html" target="_blank">媒体价值报告</a></dd>
+                    </dl>
+                    <dl>
+                        <dt>联系我们</dt>
+                        <dd><span class="footer-icon1"><img src="images/index/home_bottom_icon_location@2x.png" alt=""></span>深圳市南山区朗山路紫光信息港A栋308-312
+                        </dd>
+                        <dd><span class="footer-icon2"><img src="images/index/home_bottom_icon_phone@2x.png"
+                                                            alt=""></span>0755-23608113
+                        </dd>
+                        <dd><span class="footer-icon3"><img src="images/index/home_bottom_icon_email@2x.png"
+                                                            alt=""></span>shangwu@qinlinkeji.com
+                        </dd>
+                    </dl>
+                </div>
+                <div class="footer-top-right">
+                    <ul>
+                        <li>
+                            <img src="images/index/szqlCode.png" alt="">
+                            <p>亲邻科技公众号</p>
+                        </li>
+                        <li>
+                            <img src="images/index/qlshqCode.png" alt="">
+                            <p>亲邻生活圈公众号</p>
+                        </li>
+                        <li>
+                            <img src="images/index/qlappCode.png" alt="">
+                            <p>亲邻开门APP</p>
+                        </li>
+                        <li>
+                            <img src="images/index/xsscCode.png" alt="">
+                            <p>销售手册H5版</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Copyright © 2017 Qinlin Technology. All rights reserved. 深圳市亲邻科技有限公司 版权所有 粤ICP备15007183号</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="js/lib/jquery-3.3.1.min.js"></script>
+<script src="js/lib/bootstrap.min.js"></script>
+<script src="js/lib/wow.min.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/itlg.js"></script>
+<script>
+    new WOW().init();
+</script>
+</body>
+</html>

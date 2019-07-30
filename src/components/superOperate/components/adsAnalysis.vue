@@ -730,7 +730,7 @@
                         return true
                     }
                 })
-                console.log('result',result)
+                // console.log('result',result)
                 if(!result){
                     this.areaList.push({
                         text: val,

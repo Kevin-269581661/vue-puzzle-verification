@@ -684,6 +684,7 @@
                 this.getChanceFindEcharts();
                 this.getChanceFindTable();
                 this.oldSelectCity = this.selectCity
+                this.adSaleActiveWeek = '0'
             },
             // 统一监听
             echartsListener(){
@@ -818,10 +819,18 @@
                         borderColor: '#dddddd',
                         borderWidth: 1,
                         formatter: (params)=> {
+                            let val = 0
+                            if (this.basicTotalType === 'rate') {
+                                val = params[0].data + '%'
+                            } else if (this.basicTotalType === 'sale' || this.basicTotalType === 'price') {
+                                val = this.priceFormat(params[0].data)
+                            } else {
+                                val = params[0].data
+                            }
                             return '<p class="echarts_tooltip_title">' + '<span>' + params[0].name + '</span>' + '</p>' + '<br/>' +
                                 '<p class="echarts_tooltip_content">' +
                                 '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params[0].name +
-                                '</span>' + params[0].data + (this.basicTotalType === 'rate' ? '%' : '') + '</p>'
+                                '</span>' + val + '</p>'
                         },
                     },
                     grid: {
@@ -2140,11 +2149,11 @@
                     return this.selectCity
                 }
             },
-            // 价格加上逗号
+            // 价格加上逗号-整数
             priceFormat(price) {
                 if (price) {
-                    price = commaFormat.init(price)
-                    return price.split('.')[0]
+                    price = commaFormat.format(price.toFixed(0))
+                    return price
                 } else {
                     return 0
                 }

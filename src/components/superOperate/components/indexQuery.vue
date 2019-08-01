@@ -780,27 +780,23 @@
                 required: true
             },
         },
-        watch:{
-            sessionData(newVal,oldVal){
+        watch: {
+            sessionData(newVal, oldVal) {
                 this.sessionData = newVal
             },
-            selectCity(newVal,oldVal){
+            selectCity(newVal, oldVal) {
                 this.selectCity = newVal
                 if (this.activeName === 'third') {
                     this.getIndexQueryData()
                 } else {
-                    // if(this.selectCity != this.oldSelectCity){
-                    //     this.isGetData = false
-                    // } else {
-                    //     this.isGetData = true
-                    // }
+                    this.isGetData = false
                 }
             },
-            activeName(newVal,oldVal){
+            activeName(newVal, oldVal) {
                 console.log('指标查询activeName',newVal,'oldVal',oldVal)
                 this.activeName = newVal
                 // 关键数据总量/增量趋势 - 社区接口
-                if(this.activeName === 'third'){
+                if (this.activeName === 'third') {
                     if (!this.isGetData) {
                         // 统一调用接口
                         this.getIndexQueryData()

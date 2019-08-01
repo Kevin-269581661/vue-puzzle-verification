@@ -340,7 +340,10 @@
                             <el-table
                                 :data="chanceFindTable"
                                 class="chance_find_table"
-                                style="width: 100%">
+                                style="width: 100%"
+                                v-loading="chanceFindTableLoading"
+                                element-loading-text="玩命加载中..."
+                                element-loading-background="rgba(255, 255, 255)">
                                 <el-table-column
                                     prop="name"
                                     label="客户名称"
@@ -551,6 +554,7 @@
                 },
                 // 机会挖掘表格
                 chanceFindTable:[],
+                chanceFindTableLoading: true,
                 // 饼状图的lengt的itemStyle富文本
                 itemStyle: {
                     rich:{
@@ -633,31 +637,29 @@
                 }
             },
             activeName(newVal, oldVal) {
-                console.log('数据概览newVal',newVal,'oldVal',oldVal)
+                console.log('数据概览newVal', newVal, 'oldVal', oldVal)
                 this.activeName = newVal
-                // if (this.activeName === 'first') {
-                    if (!this.isGetData) {
-                    console.log('统一调用接口',this.isGetData)
-                        // 统一调用接口
-                        this.getDataRead()
-                        // this.isGetData = true
-                    } else {
-                        // 数据总览
-                        this.initTotalDataBar();
-                        // 当天概况
-                        this.initToDayPreceptBar();
-                        // 广告销售 - 柱状图
-                        this.initAdSaleBar();
-                        // 广告销售  - 饼状图
-                        this.initAdSalePie();
-                        // 广告库存 - 左侧
-                        this.initAdInventoriedPie();
-                        // 广告库存 - 右侧
-                        this.initAdInventoryPie();
-                        // 机会挖掘
-                        this.initChanceFindPie();
-                    }
-                // }
+                if (!this.isGetData) {
+                    console.log('统一调用接口', this.isGetData)
+                    // 统一调用接口
+                    this.getDataRead()
+                    // this.isGetData = true
+                } else {
+                    // 数据总览
+                    this.initTotalDataBar();
+                    // 当天概况
+                    this.initToDayPreceptBar();
+                    // 广告销售 - 柱状图
+                    this.initAdSaleBar();
+                    // 广告销售  - 饼状图
+                    this.initAdSalePie();
+                    // 广告库存 - 左侧
+                    this.initAdInventoriedPie();
+                    // 广告库存 - 右侧
+                    this.initAdInventoryPie();
+                    // 机会挖掘
+                    this.initChanceFindPie();
+                }
             }
         },
         mounted(){
@@ -668,8 +670,6 @@
             }
             this.echartsListener();
             this.setTime();
-            // this.getDataRead();
-            // this.isGetData = true
         },
         methods:{
             // 统一调用接口
@@ -745,9 +745,6 @@
                     endDate: this.totalDataYear + '/12/31',
                     asrIds: this.returnAsrID()
                 }
-                // if (this.selectCity !== '0') {
-                //     params.asrIds = this.returnAsrID()
-                // }
                 api.getApi(this.apiVar.report + '/api/v2/getOverview', params).then(res => {
                     console.log('数据总总览-表头接口', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
@@ -775,8 +772,8 @@
             setTotalDataBar(){
                 this.totalDataBarLoading = true
                 let arr = []
-                for(let key of this.basicTotalBarData){
-                    switch (this.basicTotalType){
+                for (let key of this.basicTotalBarData) {
+                    switch (this.basicTotalType) {
                         case '社区':
                             arr.push(key.resourceCount)
                             break;
@@ -784,7 +781,7 @@
                             arr.push(key.advertDoorCount)
                             break;
                         case '年上刊率':
-                            arr.push(key.publishRate ?  Math.floor(key.publishRate * 10000)/100 : 0)
+                            arr.push(key.publishRate ? Math.floor(key.publishRate * 10000) / 100 : 0)
                             break;
                         case '订单':
                             arr.push(key.orderCount)
@@ -801,7 +798,7 @@
                     }
                 }
                 this.basicTotalBarDataShow = arr
-                console.log('this.basicTotalBarDataShow',this.basicTotalBarDataShow)
+                console.log('this.basicTotalBarDataShow', this.basicTotalBarDataShow)
                 this.initTotalDataBar()
             },
             // 数据总览 头部柱状图
@@ -960,9 +957,6 @@
                     endDate: timeFormat.returnDayCount(1,'/'),
                     asrIds: this.returnAsrID()
                 }
-                // if (this.selectCity !== '0') {
-                //     params.asrIds = this.returnAsrID()
-                // }
                 api.getApi(this.apiVar.report + '/api/v2/getSurvey', params).then(res => {
                     console.log('当天概况-表头接口', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
@@ -993,9 +987,6 @@
                     endDate: timeFormat.returnDayCount(1,'/'),
                     asrIds: this.returnAsrID()
                 }
-                // if (this.selectCity !== '0') {
-                //     params.asrIds = this.returnAsrID()
-                // }
                 api.getApi(this.apiVar.report + '/api/v2/getBehaviorInfo', params).then(res => {
                     console.log('当天概况-图表接口', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
@@ -1222,9 +1213,6 @@
                     endDate: this.adSaleMonth + '/' + monthDayNum,
                     asrIds: this.returnAsrID()
                 }
-                // if (this.selectCity !== '0') {
-                //     params.asrIds = this.returnAsrID()
-                // }
                 api.getApi(this.apiVar.report + '/api/v2/getAdvertSales', params).then(res => {
                     console.log('广告销售-顶部数据接口res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
@@ -1270,9 +1258,6 @@
                     endDate: this.adSaleMonth + '/' + monthDayNum,
                     asrIds: this.returnAsrID()
                 }
-                // if (this.selectCity !== '0') {
-                //     params.asrIds = this.returnAsrID()
-                // }
                 api.getApi(this.apiVar.report + '/api/v2/getAdsInfoByWeek', params).then(res => {
                     console.log('广告销售-左侧数据接口res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
@@ -1713,14 +1698,10 @@
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    // startDate: this.toDay.substring(0,4) + '/01/01',
                     startDate: this.toDay,
                     type: this.adInventoriedType,
                     asrIds: this.returnAsrID()
                 }
-                // if (this.selectCity !== '0') {
-                //     params.asrIds = this.returnAsrID()
-                // }
                 api.getApi(this.apiVar.report + '/api/v2/getAdsInventoryInfo', params).then(res => {
                     console.log('广告库存数据接口 - 过去', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
@@ -1762,9 +1743,6 @@
                     type: this.adInventoryType,
                     asrIds: this.returnAsrID()
                 }
-                // if (this.selectCity !== '0') {
-                //     params.asrIds = this.returnAsrID()
-                // }
                 api.getApi(this.apiVar.report + '/api/v2/getAdsFutureInventoryInfo', params).then(res => {
                     console.log('广告库存数据接口 - 未来', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
@@ -1970,9 +1948,6 @@
                     endDate: this.chanceFindDate[1],
                     asrIds: this.returnAsrID()
                 }
-                // if (this.selectCity !== '0') {
-                //     params.asrIds = this.returnAsrID()
-                // }
                 // console.log('机会挖掘饼状图params',params)
                 api.getApi(this.apiVar.report + '/api/v2/getCustomerInfo', params).then(res => {
                     console.log('机会挖掘饼状图接口res', res)
@@ -2004,6 +1979,7 @@
             },
             // 表格接口 getCustomerCooperative
             getChanceFindTable(){
+                this.chanceFindTableLoading = true
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
@@ -2013,9 +1989,6 @@
                     pageSize: 5000,
                     asrIds: this.returnAsrID()
                 }
-                // if (this.selectCity !== '0') {
-                //     params.asrIds = this.returnAsrID()
-                // }
                 api.getApi(this.apiVar.report + '/api/v2/getCustomerCooperative', params).then(res => {
                     console.log('机会挖掘表格接口res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
@@ -2026,6 +1999,7 @@
                     } else {
                         sessFun.messageFun('warning', res.data.MSG)
                     }
+                    this.chanceFindTableLoading = false
                 })
             },
             setChanceFindTabelData(dataList) {
@@ -2168,16 +2142,12 @@
             // 根据权限公司返回 asrIDs
             returnAsrID() {
                 if (this.selectCity == '0') {
-                    // let asrIDs = []
-                    // for (let key of this.headerCityList) {
-                    //     asrIDs.push(key.value)
-                    // }
-                    // return asrIDs.join(',')
-                    let asrIDs = this.headerCityList.map((item) => {
-                        if(item.value !== '0'){
-                            return item.value
+                    let asrIDs = []
+                    for (let key of this.headerCityList) {
+                        if (key.value !== '0') {
+                            asrIDs.push(key.value)
                         }
-                    })
+                    }
                     return asrIDs.join(',')
                 } else {
                     return this.selectCity

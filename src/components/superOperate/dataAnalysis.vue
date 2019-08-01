@@ -121,17 +121,6 @@
                     this.headerCityList = JSON.parse(JSON.stringify(cityArr))
                     this.selectCity = cityArr[0].value
                     this.isAllCity = false
-                    // this.activeName = 'first';
-                    // if (this.sessionData.rela === '直营') {
-                        // this.isQinLinCity = true
-                    //     let timer1 = setTimeout(() => {
-                    //         this.activeName = 'first';
-                    //         clearTimeout(timer1)
-                    //     }, 10)
-                    // } else {
-                    //     this.isQinLinCity = false
-                    //     this.activeName = 'third'
-                    // }
                     console.log('this.headerCityList', this.headerCityList)
                 }
             },
@@ -161,12 +150,7 @@
                         this.selectCity = arr[0].value
                         this.directNameList = directName
                         this.isAllCity = true
-                        // this.isQinLinCity = true
                         console.log('headerCityList',this.headerCityList)
-                        // let timer = setTimeout(() => {
-                        //     this.activeName = 'first';
-                        //     clearTimeout(timer)
-                        // }, 10)
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }

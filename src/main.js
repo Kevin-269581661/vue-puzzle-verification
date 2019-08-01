@@ -44,8 +44,7 @@ import 'font-awesome/css/font-awesome.css'
 router.beforeEach((to, from, next) => {
 	// 加上mta
 	console.log(process.env, 'process.env---');
-	// let env = process.env.EVN_CONFIG;
-	let env = 'test';
+	let env = process.env.EVN_CONFIG;
 	var _mtac = {"senseQuery":1};
 	(function() {
 		var mta = document.createElement("script");

@@ -33,6 +33,7 @@
                             filterable
                             size="small"
                             style="width: 100%"
+                            clearable
                             @change="handleChange">
                         </el-cascader>
                     </li>
@@ -573,28 +574,38 @@
             // 根据市级城市rid，获取它的下属区、县
             handleChange(value) {
                 console.log('handleChange', value)
-                this.regionOpt = ''
-                let cityRID = value[1]
-                let regionArr = areaPackageNew.findArea(cityRID)
-                this.cityArea.cName =areaToTextNew.toTextCity(value[1])
-                console.log('获取选中城市的区域', regionArr,'this.cityArea',this.cityArea)
-                let region = []
-                for (let i = 0; i < regionArr.length; i++) {
-                    let obj = {label: regionArr[i].rName, value: regionArr[i].rID}
-                    region.push(obj)
+                this.regionOpt = []
+                this.selectRName = ''
+                this.cityArea.rName = ''
+                if (value.length) {
+                    let cityRID = value[1]
+                    let regionArr = areaPackageNew.findArea(cityRID)
+                    this.cityArea.cName = areaToTextNew.toTextCity(value[1])
+                    console.log('获取选中城市的区域', regionArr, 'this.cityArea', this.cityArea)
+                    let region = []
+                    for(let key of regionArr){
+                        region.push({
+                            label: key.rName,
+                            value: key.rID
+                        })
+                    }
+                    this.regionOpt = region
+                    console.log('this.regionOpt', this.regionOpt, 'selectedOptions', this.selectedOptions)
+                } else {
+                    this.cityArea.cName = ''
                 }
-                this.regionOpt = region
-
-                console.log('this.regionOpt', this.regionOpt,'selectedOptions',this.selectedOptions)
-
             },
             //获取区域
             getRegion(val){
-                console.log('获取区域val',val,this.regionOpt)
-                for(let key of this.regionOpt){
-                    if(key.value == val){
-                        this.cityArea.rName = key.label
+                console.log('获取区域val', val, this.regionOpt)
+                if (val) {
+                    for (let key of this.regionOpt) {
+                        if (key.value == val) {
+                            this.cityArea.rName = key.label
+                        }
                     }
+                } else {
+                    this.cityArea.rName = ''
                 }
                 console.log('选择的区域为',this.cityArea)
             },

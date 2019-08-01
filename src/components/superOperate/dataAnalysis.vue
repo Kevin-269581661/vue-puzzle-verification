@@ -14,11 +14,11 @@
                 </el-select>
             </div>
             <el-tabs v-model="activeName" @tab-click="tabHandleClick">
-                <el-tab-pane label="数据概览" name="first" v-if="isQinLinCity">
-                    <data-read :sessionData="sessionData" :directNameList="directNameList"
+                <el-tab-pane label="数据概览" name="first"><!--v-if="isQinLinCity"-->
+                    <data-read :sessionData="sessionData" :directNameList="directNameList" :headerCityList="headerCityList"
                                :selectCity="selectCity" :activeName="activeName"></data-read>
                 </el-tab-pane>
-                <el-tab-pane label="周报/月报" name="second" v-if="!isAllCity && isQinLinCity">
+                <el-tab-pane label="周报/月报" name="second" v-if="!isAllCity">
                     <weekAndMouth-report :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName"></weekAndMouth-report>
                 </el-tab-pane>
                 <el-tab-pane label="指标查询" name="third">
@@ -57,9 +57,9 @@
                 // 是否城市对比
                 isCitys: false,
                 // 是否是直营城市
-                isQinLinCity: false,
+                // isQinLinCity: false,
                 // 当前tabs
-                activeName: '',
+                activeName: 'first',
                 // 数据截止时间
                 toTime:'',
                 // 顶部Tab城市选择
@@ -79,7 +79,7 @@
                 // 直营公司名称
                 directNameList: [],
                 // 当前选择的城市
-                selectCity: '0',
+                selectCity: '',
                 //
                 tabContentLoading: true,
             }
@@ -121,15 +121,6 @@
                     this.headerCityList = JSON.parse(JSON.stringify(cityArr))
                     this.selectCity = cityArr[0].value
                     this.isAllCity = false
-                    if (this.sessionData.rela === '直营') {
-                        this.isQinLinCity = true
-                        let timer1 = setTimeout(() => {
-                            this.activeName = 'first';
-                            clearTimeout(timer1)
-                        }, 10)
-                    } else {
-                        this.activeName = 'third'
-                    }
                     console.log('this.headerCityList', this.headerCityList)
                 }
             },
@@ -156,20 +147,16 @@
                             })
                         }
                         this.headerCityList = arr
+                        this.selectCity = arr[0].value
                         this.directNameList = directName
                         this.isAllCity = true
-                        this.isQinLinCity = true
                         console.log('headerCityList',this.headerCityList)
-                        let timer = setTimeout(() => {
-                            this.activeName = 'first';
-                            clearTimeout(timer)
-                        }, 10)
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }
                 }).catch(err=>{
                     this.messageFun('warning', '直营公司获取异常')
-                    this.activeName = 'third'
+                    // this.activeName = 'third'
                 })
             },
             // tabs切换

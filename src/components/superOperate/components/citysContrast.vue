@@ -303,6 +303,7 @@
                 cityList: [],
                 nowMonth: '',               // 当前月份日期
                 totalDataYear: '',          // 当前年份
+                toDay:'',
                 citysContrastLoading: true,
                 //城市对比
                 //全国数据表格

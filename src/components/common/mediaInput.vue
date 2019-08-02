@@ -2949,9 +2949,9 @@
 
 <style scoped>
     .mediaList_content{
-        width: 92%;
+        /*width: 92%;*/
         background: #ffffff;
-        margin: 16px auto;
+        margin: 16px 64px 0;
         padding-bottom: 32px;
     }
     /deep/ .ad_index_footer {

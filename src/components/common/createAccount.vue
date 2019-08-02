@@ -484,7 +484,7 @@
             },
             //注册接口
             createFun() {
-                let account = this.setSubmitData();                
+                let account = this.setSubmitData();
                 console.log('提交的账号信息', account);
                 api.postApi(this.apiVar.UCAPI+"/RegUser", account)
                     .then(res => {
@@ -639,10 +639,8 @@
 
     /*按钮*/
     .content_bottom_btn {
-        position: absolute;
-        bottom: -100px;
-        margin-bottom: 22px;
-        left: 45.3%;
+        margin: 32px 64px 0;
+        text-align: center;
     }
 
     .content_bottom_btn button {
@@ -650,21 +648,6 @@
         height: 34px;
         outline: none;
         cursor: pointer;
-    }
-
-    .content_bottom_btn button.create {
-        background: #108ee9;
-        border-radius: 2px;
-        font-size: 14px;
-        border: none;
-        color: #ffffff;
-    }
-
-    .content_bottom_btn button.cancel {
-        background: #f5f6fa;
-        border: none;
-        font-size: 14px;
-        color: #979797;
     }
 
     /*客户信息表单*/

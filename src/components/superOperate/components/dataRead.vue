@@ -1985,8 +1985,8 @@
                     token: this.sessionData.token,
                     startDate: this.chanceFindDate[0],
                     endDate: this.chanceFindDate[1],
-                    pageNo: 1,
-                    pageSize: 5000,
+                    // pageNo: 1,
+                    // pageSize: 5000,
                     asrIds: this.returnAsrID()
                 }
                 api.getApi(this.apiVar.report + '/api/v2/getCustomerCooperative', params).then(res => {

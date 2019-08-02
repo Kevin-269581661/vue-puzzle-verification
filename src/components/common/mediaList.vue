@@ -183,18 +183,18 @@
                                     </span>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item
-                                            @click.native.prevent="confirmBox($event,scope.$index, scope.row)"
+                                            @click.native.prevent="confirmBox('待安装',scope.$index, scope.row)"
                                             :disabled="scope.row.mState === '待安装'">待安装
                                         </el-dropdown-item>
                                         <el-dropdown-item
-                                            @click.native.prevent="confirmBox($event,scope.$index, scope.row)">正常
+                                            @click.native.prevent="confirmBox('正常',scope.$index, scope.row)">正常
                                         </el-dropdown-item>
                                         <el-dropdown-item
-                                            @click.native.prevent="confirmBox($event,scope.$index, scope.row)"
+                                            @click.native.prevent="confirmBox('待维修',scope.$index, scope.row)"
                                             :disabled="scope.row.mState === '待维修'">待维修
                                         </el-dropdown-item>
                                         <el-dropdown-item
-                                            @click.native.prevent="confirmBox($event,scope.$index, scope.row)"
+                                            @click.native.prevent="confirmBox('禁用',scope.$index, scope.row)"
                                             :disabled="scope.row.mState === '禁用'">禁用
                                         </el-dropdown-item>
                                     </el-dropdown-menu>
@@ -624,20 +624,27 @@
             // 确认提交禁用/正常
             submitDoorState(){
                 let status = ''
-                if (this.normalToDisabled) {
-                    status = '禁用'
+                if (this.doorState.mState || this.doorState.adState) {
+                    if (this.normalToDisabled) {
+                        status = '禁用'
+                    } else {
+                        status = '正常'
+                    }
+                    if (this.doorState.mState) {
+                        this.setMediaStatus(status)
+                    } else {
+                        this.setMediaStatus(status, 'submitDS')
+                    }
                 } else {
-                    status = '正常'
-                }
-                if (this.doorState.mState) {
-                    this.setMediaStatus(status)
-                } else {
-                    this.setMediaStatus(status, 'submitDS')
+                    Message({
+                        type: 'warning',
+                        message: '请选择类型'
+                    });
                 }
             },
             //确认框
-            confirmBox(e, index, rows) {
-                let Status = e.target.innerText;
+            confirmBox(str, index, rows) {
+                let Status = str//e.target.innerText;
                 console.log('状态', Status)
                 console.log('行内容', rows)//mState
                 if (rows.mState == Status ) {
@@ -709,7 +716,8 @@
                 let asState = ''
                 console.log('this.rowData.asState.B',this.rowData.asState.B,' this.doorState', this.doorState.adState)
                 if (letter === 'submitDS' && this.normalToDisabled) {
-                    if((this.rowData.asState.A == '0' && this.doorState.adState === 'B') || (this.rowData.asState.B == '0' && this.doorState.adState === 'A')){
+                    if((this.rowData.asState.A == '0' && this.doorState.adState === 'B') ||
+                        (this.rowData.asState.B == '0' && this.doorState.adState === 'A')){
                         console.log('两面都是同一状态')
                         asState = this.return_mStateNum(Status)
                         mstate = asState
@@ -723,6 +731,7 @@
                 } else {
                     mstate = this.return_mStateNum(Status)
                 }
+                console.log('--------mstate',mstate)
                 if(num === '1'){
                     asState = mstate
                     this.setMediaStatusApi(Status,letter,mstate,asState,num)
@@ -739,6 +748,7 @@
                         dangerouslyUseHTMLString: true,
                         type: 'warning'
                     }).then(() => {
+                        console.log('11111111111',mstate)
                         this.setMediaStatusApi(Status,letter,mstate,asState)
                     }).catch(() => {
                         Message({
@@ -747,9 +757,9 @@
                         })
                     })
                 }
-
             },
             setMediaStatusApi(Status,letter,mstate,asState,number){
+                console.log('+++++++++++mstate',mstate)
                 let uid = this.sessionData.uID
                 let mid = this.rowData.mID
                 let submitLoading =  this.$loading({
@@ -773,7 +783,7 @@
                     params.data.asLabs = this.doorState.adState
                     params.data.asState = asState
                 }
-                console.log('params',params)
+                console.log('params',JSON.stringify(params))
                 api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('修改状态：', res)
                     if (res.data.SysCode === 200200 || res.data.MSG === '操作成功') {
@@ -831,15 +841,15 @@
             },
             return_mStateNum(mState){
                 if (mState == '正常') {
-                    return '1'
+                    return '1';
                 } else if (mState == '禁用') {
-                    return '0'
+                    return '0';
                 } else if (mState == '待安装') {
-                    return '2'
+                    return '2';
                 } else if (mState == '待维修') {
-                    return '3'
-                }else{
-                    return ''
+                    return '3';
+                } else {
+                    return '';
                 }
             },
             // 跳转到媒体详情界面

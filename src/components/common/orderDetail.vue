@@ -3067,7 +3067,7 @@ export default {
 
     /* 搜索 */
     .search-row {
-        margin: 0 32px;
+        margin: 16px 32px 0;
     }
 
     .search_col {
@@ -3174,6 +3174,7 @@ export default {
         border-bottom: 1px solid #e6e7e9;
         height: 53px;
         line-height: 54px;
+        margin: 0;
     }
 
     /deep/ .mediaList_wrap .baojiadan .el-tabs__header {

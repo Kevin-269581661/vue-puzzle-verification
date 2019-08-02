@@ -41,10 +41,36 @@ import '../static/css/footer.css'
 import 'font-awesome/css/font-awesome.css'
 
 
+router.beforeEach((to, from, next) => {
+	// 加上mta
+	console.log(process.env, 'process.env---');
+	let env = process.env.EVN_CONFIG;
+	var _mtac = {"senseQuery":1};
+	(function() {
+		var mta = document.createElement("script");
+		mta.src = "//pingjs.qq.com/h5/stats.js?v2.0.4";
+		mta.setAttribute("name", "MTAH5");
+		if(env == 'test'){
+			mta.setAttribute("sid", "500692127");
+			mta.setAttribute("cid", "500692130");
+		}else if(env == 'gray'){
+			mta.setAttribute("sid", "500692128");
+			mta.setAttribute("cid", "500692131");
+		}else if(env == 'prod'){
+			mta.setAttribute("sid", "500692129");
+			mta.setAttribute("cid", "500692132");
+		}
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(mta, s);
+	})();
+	next();
+});
+
+
 /* eslint-disable no-new */
 new Vue({
-  el: '#app',
-  router,
-  components: { App },
-  template: '<App/>'
+	el: '#app',
+	router,
+	components: { App },
+	template: '<App/>'
 });

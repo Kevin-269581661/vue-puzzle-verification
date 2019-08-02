@@ -229,7 +229,7 @@
             initWebsocket() {
                 if ("WebSocket" in window) {
                     let wsuri = "wss://www.qinlinad.com/UCAPI/ScanLogin?type=PC"
-                    // let wsuri = "wss://beta.qinlinad.com/UCAPI/ScanLogin?type=PC"
+                    // let wsuri = "wss://test-qadn.qinlindmp.com/UCAPI/ScanLogin?type=PC"
                     this.websock = new WebSocket(wsuri);// 这里面的this都指向vue
                     this.websock.onopen = this.websocketOpen
                     this.websock.onmessage = this.websocketOnMessage

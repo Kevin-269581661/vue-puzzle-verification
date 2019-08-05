@@ -860,7 +860,7 @@
                         accept=".xlsx,.xls"
                         :action="doUpload"
                         :show-file-list="true"
-                        :file-list="fileData"                        
+                        :file-list="fileData"
                         :http-request="uploadFile"
                         :on-remove="fileRemove"
                         :multiple="false">
@@ -1161,7 +1161,7 @@
                     {buildlabel: '中端住宅', buildValue: '中端住宅'},
                     {buildlabel: '普通住宅', buildValue: '普通住宅'},
                     {buildlabel: '单体楼', buildValue: '单体楼'},
-                    {buildlabel: '别墅', buildlabel: '别墅'},
+                    {buildlabel: '别墅', buildValue: '别墅'},
                     {buildlabel: '洋房', buildValue: '洋房'},
                     {buildlabel: '商住', buildValue: '商住'}
                 ],
@@ -1170,7 +1170,7 @@
                     {buildlabel: '中端住宅', buildValue: '中端住宅'},
                     {buildlabel: '普通住宅', buildValue: '普通住宅'},
                     {buildlabel: '单体楼', buildValue: '单体楼'},
-                    {buildlabel: '别墅', buildlabel: '别墅'},
+                    {buildlabel: '别墅', buildValue: '别墅'},
                     {buildlabel: '洋房', buildValue: '洋房'},
                     {buildlabel: '商住', buildValue: '商住'}
                 ],
@@ -1273,7 +1273,7 @@
                 // 是否导入方案
                 isImport: false,
                 importType: '',
-                isShowTag: true,                
+                isShowTag: true,
                 // 当前上传文件的数据- 表格
                 fileData:[],
                 // 导入excel部分失败弹出框
@@ -1715,7 +1715,7 @@
                         asLab: data.asLab,
                         assetTag: data.assetTag,
                         schedules: data.schedules,
-                        pointId: data.pointId,                        
+                        pointId: data.pointId,
                     };
                     resultarr[0].showList.push(obj);
                 }
@@ -1730,7 +1730,7 @@
                         asLab: info.asLab,
                         assetTag: info.assetTag,
                         schedules: timeFormat.toDate(data.pbStar, '.')+'-'+timeFormat.toDate(data.pbEnd, '.'),
-                        pointId: data.pointId,                        
+                        pointId: data.pointId,
                     };
                     resultarr[1].showList.push(obj);
                 }

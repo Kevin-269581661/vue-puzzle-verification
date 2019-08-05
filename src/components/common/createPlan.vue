@@ -992,7 +992,7 @@
                         accept=".xlsx,.xls"
                         :action="doUpload"
                         :show-file-list="true"
-                        :file-list="fileData"                        
+                        :file-list="fileData"
                         :http-request="uploadFile"
                         :on-remove="fileRemove"
                         :multiple="false">
@@ -1002,7 +1002,7 @@
                     </el-upload>
                 </el-col>
             </el-row>
-            <!-- <el-row v-if="importType=='2' && isShowTag" class="warning_box">
+            <el-row v-if="importType=='2' && isShowTag" class="warning_box">
                 <el-col :span="2">
                     <i class="el-icon-warning" style="color:#FAAD14"></i>
                 </el-col>
@@ -1012,7 +1012,7 @@
                 <el-col :span="2">
                     <i class="el-icon-close" @click="hideTag()"></i>
                 </el-col>
-            </el-row> -->
+            </el-row>
             <span slot="footer" class="dialog-footer">
                 <el-button plain size="small" @click="isImport = false">取 消</el-button>
                 <el-button size="small" type="primary" @click="submitUpload()">导 入</el-button>
@@ -1259,7 +1259,7 @@
                     {buildlabel: '中端住宅', buildValue: '中端住宅'},
                     {buildlabel: '普通住宅', buildValue: '普通住宅'},
                     {buildlabel: '单体楼', buildValue: '单体楼'},
-                    {buildlabel: '别墅', buildlabel: '别墅'},
+                    {buildlabel: '别墅', buildValue: '别墅'},
                     {buildlabel: '洋房', buildValue: '洋房'},
                     {buildlabel: '商住', buildValue: '商住'}
                 ],
@@ -1268,7 +1268,7 @@
                     {buildlabel: '中端住宅', buildValue: '中端住宅'},
                     {buildlabel: '普通住宅', buildValue: '普通住宅'},
                     {buildlabel: '单体楼', buildValue: '单体楼'},
-                    {buildlabel: '别墅', buildlabel: '别墅'},
+                    {buildlabel: '别墅', buildValue: '别墅'},
                     {buildlabel: '洋房', buildValue: '洋房'},
                     {buildlabel: '商住', buildValue: '商住'}
                 ],
@@ -1771,9 +1771,21 @@
                     this.messageFun('warning','请先选择投放城市')
                 }
             },
+            // 导出空点导出次数接口
+            postDownLoadNum(type){
+                let data = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    type,
+                };
+                api.postApi(this.apiVar.Advertisement+"/AddExportLog", data).then(res =>{
+                    console.log(res);
+                });
+            },
             /*step1*/
             // 导出数据
             exportExcelData: function(){
+                this.postDownLoadNum(0);
                 // this.planForm.throwCity = [110100, 440100];
                 if(this.planForm.throwCity.length){
                     let loadingPoint = this.$loading({
@@ -2213,7 +2225,7 @@
                         asLab: data.asLab,
                         assetTag: data.assetTag,
                         schedules: data.schedules,
-                        pointId: data.pointId,                        
+                        pointId: data.pointId,
                     };
                     resultarr[0].showList.push(obj);
                 }
@@ -2228,7 +2240,7 @@
                         asLab: info.asLab,
                         assetTag: info.assetTag,
                         schedules: timeFormat.toDate(data.pbStar, '.')+'-'+timeFormat.toDate(data.pbEnd, '.'),
-                        pointId: data.pointId,                        
+                        pointId: data.pointId,
                     };
                     resultarr[1].showList.push(obj);
                 }

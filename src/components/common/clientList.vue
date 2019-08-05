@@ -12,14 +12,14 @@
 			<div class="mediaList_container">
 				<el-row>
                     <el-col>
-                        <el-input placeholder="请输入内容" v-model="searchInfo.keyword" class="input-with-select" size="small">
+                        <el-input placeholder="请输入内容" v-model="searchInfo.keyword" class="input_select" size="small">
                             <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
                                 <el-option label="公司品牌" value="1"></el-option>
                                 <el-option label="公司名称" value="2"></el-option>
                                 <el-option label="联系人" value="3"></el-option>
                             </el-select>
                         </el-input>
-                        <el-date-picker class="input-with-select" size="small" v-model="searchInfo.date" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="创建日期" end-placeholder="创建日期">
+                        <el-date-picker class="input_select" size="small" v-model="searchInfo.date" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="创建日期" end-placeholder="创建日期">
                         </el-date-picker>
                         <el-select v-model="searchInfo.company" placeholder="请选择公司" size="small" v-if="sessionData.uType !='BD'">
                             <el-option v-for="item of companyArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -363,7 +363,7 @@ export default {
     margin-left: 0;
 }
 
-.input-with-select /deep/ .el-input__inner {
+.input_select /deep/ .el-input__inner {
     font-size: 14px;
 }
 

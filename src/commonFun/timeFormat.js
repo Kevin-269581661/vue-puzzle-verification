@@ -272,15 +272,12 @@ timeFormat.getWorkWeek = function (format,date = new Date()) {
     let weekIndex = dd.getDay();
     let star = ''
     let end = ''
-    if(weekIndex < 6){
-        star = this.returnDayCount(-(weekIndex + 1),format,new Date(date))
+    if (weekIndex < 6) {
+        star = this.returnDayCount(-(weekIndex + 1), format, new Date(date))
+        end = this.returnDayCount((5 - weekIndex), format, dd)
     } else {
-        star = this.returnDayCount(6 - weekIndex,format,new Date(date))
-    }
-    if(weekIndex < 6){
-        end = this.returnDayCount((5 - weekIndex),format,dd)
-    } else {
-        end = this.returnDayCount((12 - weekIndex),format,new Date(date))
+        star = this.returnDayCount(6 - weekIndex, format, new Date(date))
+        end = this.returnDayCount((12 - weekIndex), format, new Date(date))
     }
     return [star,end]
 }

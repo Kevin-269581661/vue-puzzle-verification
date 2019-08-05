@@ -6,17 +6,22 @@
                 <div slot="header" class="clearfix">
                     <span class="box_card_title">数据概览</span>
                     <span class="box_card_title_right">
-                        统计周期：{{showDate[0]}} - {{showDate[1]}}
+                        统计周期：{{timeList[0]}} - {{timeList[1]}}
                     </span>
                 </div>
                 <el-row :gutter="16">
                     <el-col :span="12" class="el_col_echarts">
-                        <p class="issue_report_title">上刊/空刊/禁用比值</p>
-                        <div class="bar_charts el_col_bar" id="issue_report" ref="issueReportBar"
-                             style="height: 320px;width: 100%"
-                             v-loading="issueReportBarLoading"
-                             element-loading-text="玩命加载中..."
-                             element-loading-background="rgba(255, 255, 255)">
+                        <div v-if="isHaveissueReport">
+                            <p class="issue_report_title">上刊/空刊/禁用比值</p>
+                            <div class="bar_charts el_col_bar" id="issue_report" ref="issueReportBar"
+                                 style="height: 320px;width: 100%"
+                                 v-loading="issueReportBarLoading"
+                                 element-loading-text="玩命加载中..."
+                                 element-loading-background="rgba(255, 255, 255)">
+                            </div>
+                        </div>
+                        <div v-else class="had_not_data">
+                            <no-search-result ></no-search-result>
                         </div>
                     </el-col>
                     <el-col :span="12">
@@ -95,14 +100,17 @@
                             min-width="125"
                             label="投放周期">
                         </el-table-column>
+                        <div slot="empty">
+                            <no-search-result></no-search-result>
+                        </div>
                     </el-table>
                 </div>
             </el-card>
         </div>
         <!--发件图标-->
-        <div class="subscriber_icon" @click="subscriberDialogVisible = true">
+   <!--     <div class="subscriber_icon" @click="subscriberDialogVisible = true">
             <img class="subscriber_icon_position" src="../../../assets/images/position.png" alt="">
-        </div>
+        </div>-->
         <el-dialog
             title="订阅报告"
             :visible.sync="subscriberDialogVisible"
@@ -136,8 +144,13 @@
 <script>
     import api from '../../../api/api';
     import timeFormat from '../../../commonFun/timeFormat';
+    import noSearchResult from "../../../components/common/components/noSearchResult";
+    import sessFun from '../../../commonFun/sessFun';
     export default {
         name: "weekAndMouthReport",
+        components:{
+            noSearchResult
+        },
         data(){
             return{
                 isGetData: false,
@@ -149,6 +162,7 @@
                 // 头部显示的时间
                 showDate:[],
                 weekOverviewData: '',
+                isHaveissueReport: true,
                 // 饼状图
                 issueReportBarLoading: true,
                 issueReportPieEcharts:'',
@@ -216,6 +230,7 @@
                         // 本周在线客户列表
                         this.getWeekOnlineUserData()
                         this.getWeekOnLineCount()
+                        this.isGetData = true
                     }
                 }
             }
@@ -235,9 +250,10 @@
             // 设置初始时间
             setTime() {
                 this.starTime = timeFormat.returnDayCount(0,'/')
-                let date = timeFormat.getWorkWeek('/')
+                // 七天前日期
+                let beforeDate = timeFormat.returnDayCount(-7,'/')
+                let date = timeFormat.getWorkWeek('/',beforeDate)
                 this.timeList = JSON.parse(JSON.stringify(date))
-                this.showDate = timeFormat.getWorkWeek('/')
                 console.log('_________',this.timeList)
             },
             // 数据总览接口
@@ -246,22 +262,30 @@
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    startDate: this.timeList[0],
-                    endDate: this.timeList[1],
-                    asrIds: 1
+                    startDate: this.starTime,
+                    // endDate: this.timeList[1],
+                    asrIds: this.sessionData.asrID
                 }
                 console.log('数据总览params',params)
                 api.getApi(this.apiVar.report + '/api/v2/getWeekOverview', params).then(res => {
                     console.log('数据总览接口res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
-                        this.weekOverviewData = res.data.data
-                        this.setEchartsData(dataObj)
-                        this.setIssueReportTableData(dataObj)
+                        if (dataObj) {
+                            this.weekOverviewData = res.data.data
+                            this.setEchartsData(dataObj)
+                            this.setIssueReportTableData(dataObj)
+                        } else {
+                            sessFun.messageFun('warning', '暂无数据!')
+                            this.issueReportBarLoading = false
+                            this.isHaveissueReport = false
+                        }
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
+                        this.issueReportBarLoading = false
+                        this.isHaveissueReport = false
                     }
                 })
             },
@@ -344,7 +368,7 @@
                             let precent;
                             for (let key of this.issueReportPieData.data) {
                                 if (key.name == name) {
-                                    precent = parseFloat((key.value / total) * 100).toFixed(2) + '%'
+                                    precent = (total ? parseFloat((key.value / total) * 100).toFixed(2) : 0 )+ '%'
                                     value = key.value
                                 }
                             }
@@ -417,7 +441,7 @@
                 api.getApi(this.apiVar.report + '/api/v2/listOnlineCustomCountInfo', params).then(res => {
                     console.log('本周在线统计res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         this.WeekOnLineCount = {
@@ -426,7 +450,7 @@
                             userCount: dataObj.userCount,
                         }
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -444,11 +468,11 @@
                 api.getApi(this.apiVar.report + '/api/v2/getOnlineCustom', params).then(res => {
                     console.log('本周在线客户res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         this.setOnlineCustomData(res.data.data)
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -480,26 +504,6 @@
             delRowSelect(index){
                 this.recipientData.splice(index,1)
             },
-            // 根据权限公司返回 asrIDs
-            returnAsrID(){
-                if (this.selectCity == '0'){
-                    return '1,2,3,4,5,6,7'
-                }else{
-                    return this.selectCity
-                }
-            },
-            // 操作提示统一方法
-            messageFun(mesType,mes){
-                this.$message({
-                    message: mes,
-                    type: mesType,
-                    showClose: true,
-                })
-            },
-            loginTimeout(){
-                this.messageFun('warning',"登录超时,请重新登录");
-                this.$router.push("/login");
-            },
         },
     }
 </script>
@@ -527,6 +531,13 @@
 
     .el_col_echarts{
         position: relative;
+    }
+
+    .weekA_mouth_report .had_not_data{
+        height: 220px;
+        background: rgba(0, 108, 255, 0.02);
+        border: 1px solid rgba(232, 232, 232, 1);
+        font-size: 14px;
     }
 
     .issue_report_title{
@@ -630,6 +641,11 @@
 
     .recipient_add_btn i{
         color:rgba(24,144,255,1);
+    }
+
+    .chance_find_table /deep/ .el-table__body-wrapper{
+        height: 405px;
+        overflow-y: auto;
     }
 
     /deep/ .el-dialog__header{

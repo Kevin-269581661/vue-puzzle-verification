@@ -463,7 +463,7 @@
                     {buildlabel: '高端住宅', buildValue: '高端住宅'},
                     {buildlabel: '普通住宅', buildValue: '普通住宅'},
                     {buildlabel: '单体楼', buildValue: '单体楼'},
-                    {buildlabel: '别墅', buildlabel: '别墅'},
+                    {buildlabel: '别墅', buildValue: '别墅'},
                     {buildlabel: '洋房', buildValue: '洋房'},
                     {buildlabel: '商住', buildValue: '商住'}
                 ],
@@ -471,7 +471,7 @@
                     {buildlabel: '高端住宅', buildValue: '高端住宅'},
                     {buildlabel: '普通住宅', buildValue: '普通住宅'},
                     {buildlabel: '单体楼', buildValue: '单体楼'},
-                    {buildlabel: '别墅', buildlabel: '别墅'},
+                    {buildlabel: '别墅', buildValue: '别墅'},
                     {buildlabel: '洋房', buildValue: '洋房'},
                     {buildlabel: '商住', buildValue: '商住'}
                 ],

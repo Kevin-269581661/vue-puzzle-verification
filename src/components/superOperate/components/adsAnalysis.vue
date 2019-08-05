@@ -169,7 +169,7 @@
                                             <em slot="suffix" style="position: relative;top: 2px">%</em>
                                         </el-input>
                                     </div>
-                                    <div class="upPercent-wrap-mask" v-show="cinputFocus">
+                                    <div class="upPercent-wrap-mask" v-if="cinputFocus">
                                         <el-button type="text" @click="pClear">清除</el-button>
                                         <el-button plain class="confirm" @click="pConfirm">确定</el-button>
                                     </div>
@@ -326,7 +326,7 @@
                                     <el-table-column
                                         prop="area"
                                         label="区域"
-                                        :filters="[{ text: '天河区', value: '天河区' }, { text: '越秀区', value:'越秀区' }]"
+                                        :filters="areaList"
                                         :filter-method="filterArea"
                                         min-width="10%">
                                     </el-table-column>
@@ -343,7 +343,7 @@
                                     <el-table-column
                                         prop="adNo"
                                         label="广告编号"
-                                        :filters="[{ text: 'A', value: 'A' }, { text: 'B', value: 'B' }]"
+                                        :filters="[{ text: 'A', value: 'A' }, { text: 'B', value: 'B' }, { text: 'ABC', value: 'ABC' }]"
                                         :filter-method="filterAdNo"
                                         min-width="10%">
                                     </el-table-column>
@@ -396,6 +396,7 @@
     import commaFormat from '../../../commonFun/commaFormat';
     import timeFormat from '../../../commonFun/timeFormat';
     import noSearchResult from "../../../components/common/components/noSearchResult";
+    import sessFun from '../../../commonFun/sessFun';
     export default {
         name: "adsAnalysis",
         components:{
@@ -438,7 +439,7 @@
                 adsPageNum: 1,      // 当前页数
                 adsTotalPage: 1,    // 总页数
                 adsPageSize: 50,
-                loadingAds: true, // 点位上刊率列表 - 滚动加载
+                loadingMoreAds: true, // 点位上刊率列表 - 滚动加载
                 // 点位上刊率
                 poiSearchTime: '最近半年',
                 resSearchDate: [],   // 社区上刊率列表 - 时间段
@@ -455,6 +456,7 @@
                 beforeResRateList: [],  // 搜索前的resRateList
                 resRateListIndxe:0,
                 resRateList: [],
+                areaList: [],
                 resTableKey: 1,
                 loadingRes: true,     // 社区上刊率列表 - 滚动加载
                 // 点位使用概况
@@ -518,6 +520,7 @@
                     selectWrap.addEventListener('scroll', function () {
                         const scrollDistance = this.scrollHeight - this.scrollTop - this.clientHeight
                         if (scrollDistance <= 100) {
+                            console.log('1')
                             binding.value()
                         }
                     })
@@ -587,7 +590,7 @@
                 api.getApi(this.apiVar.Count + '/GetSpotUsedInfo', params).then(res => {
                     console.log('参数', params, '点位使用概况', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else {
                         let adsData = res.data
                         this.adsUserData = {
@@ -610,9 +613,9 @@
                     console.log('点位使用概况error')
                 })
             },
-            // 社区社区列表 - 接口 this.setPageNoAndTableDataRes()
+            // 社区社区列表 - 接口
             getResRateFun(){
-                console.log('resPageNum',this.resPageNum)
+                console.log('resPageNum',this.resPageNum,this.pUpMin)
                 let params = {
                     uid:this.sessionData.uID,
                     token: this.sessionData.token,
@@ -622,8 +625,8 @@
                     createEnd: this.resCreatDate[1],
                     wd: this.resInputVal,
                     asrIDs: this.returnAsrID(), //this.currCity,
-                    maxPercent: this.pUpMax,
-                    minPercent: this.pUpMin,
+                    maxPercent:isNaN(Number(this.pUpMax)) ? '' : this.pUpMax,
+                    minPercent: isNaN(Number(this.pUpMin)) ? '' : this.pUpMin,
                     pageSize: this.resPageSize,
                     pageNum: this.resPageNum
                 }
@@ -635,16 +638,16 @@
                 api.postApi(this.apiVar.Count + '/GetResPublicationRateV2',params).then(res=> {
                     console.log('社区社区列表-接口', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()
-                    }else{
-                        if(res.data.list.length > 0){
-                            console.log('res.data.list',res.data.list)
+                        sessFun.loginTimeout()
+                    } else {
+                        if (res.data.list.length > 0) {
+                            console.log('res.data.list', res.data.list)
                             this.resTotalPage = res.data.totalPage
                             this.resPageNum++
                             this.setResTableData(res.data.list)
                             this.loadingRes = true
-                        }else{
-                            this.$message.warning('社区社区列表,在该时段暂无数据！');
+                        } else {
+                            sessFun.messageFun('warning', '社区社区列表,在该时段暂无数据!')
                         }
                         this.resLoading = false
                     }
@@ -673,9 +676,9 @@
                     createStar: this.adsCreatDate[0],
                     createEnd: this.adsCreatDate[1],
                     wd: this.adsInputVal,
-                    asrIDs: this.returnAsrID(), //this.currCity,
-                    maxPercent: this.cUpMax,
-                    minPercent: this.cUpMin,
+                    asrIDs: this.returnAsrID(),
+                    maxPercent: isNaN(Number(this.cUpMax)) ? '' : this.cUpMax,//this.cUpMax,
+                    minPercent: isNaN(Number(this.cUpMin)) ? '' : this.cUpMin,//this.cUpMin,
                     pageSize: this.adsPageSize,
                     pageNum: this.adsPageNum,
                 }
@@ -687,15 +690,16 @@
                 api.postApi(this.apiVar.Count + '/GetSpotPublicationRateV2',params).then(res=>{
                     console.log('点位社区列表 - 接口',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     }else {
                         if(res.data.list.length > 0){
                             this.adsTotalPage = res.data.totalPage
                             this.adsPageNum++
                             this.setAdsTableData(res.data.list)
-                            this.loadingAds = true
+                            this.loadingMoreAds = true
                         }else{
-                            this.$message.warning('点位社区列表,在该时段暂无数据！');
+                            // this.$message.warning('点位社区列表,在该时段暂无数据！');
+                            sessFun.messageFun('warning','点位社区列表,在该时段暂无数据！')
                         }
                         this.adsLoading = false
                     }
@@ -714,8 +718,25 @@
                         adDoorName: key.mTitle,
                         adNo: key.asLab,
                     })
+                    this.setAreaList(key.rName)
                 }
-                console.log('adsRateList',this.adsRateList)
+                console.log('adsRateList',this.adsRateList,this.areaList)
+            },
+            // 设置下拉区域过滤选项
+            setAreaList(val){
+                // this.areaList
+                let result = this.areaList.some(item=>{
+                    if(item.value == val){
+                        return true
+                    }
+                })
+                // console.log('result',result)
+                if(!result){
+                    this.areaList.push({
+                        text: val,
+                        value: val
+                    })
+                }
             },
             // 点位分析 - 功能方法
             // 城市切换过滤
@@ -723,7 +744,7 @@
                 this.setPageNoAndTableDataRes()
                 this.loadingRes = false
                 this.getResRateFun()
-                this.loadingAds = false
+                this.loadingMoreAds = false
                 this.setPageNoAndTableDataAds()
                 this.getAdsRateFun()
             },
@@ -765,15 +786,16 @@
             },
             // 点位上刊率 - 滚动监听
             adsLoadMore(){
-                if(this.loadingAds){
-                    this.loadingAds = false
-                    if(this.adsTotalPage >= this.adsPageNum){
+                console.log('点位上刊率 - 滚动监听',this.loadingMoreAds)
+                if (this.loadingMoreAds) {
+                    this.loadingMoreAds = false
+                    if (this.adsTotalPage >= this.adsPageNum) {
                         this.adsLoading = true
                         this.getAdsRateFun()
-                    }else{
+                    } else {
                         console.log('点位已无数据')
                     }
-                }else{
+                } else {
                     this.handleClick()
                     console.log('点位else')
                 }
@@ -784,10 +806,7 @@
                 if(val === 'res'){
                     if(this.resSelectVal === '社区名称') {
                         if (this.resInputVal === '') {
-                            this.$message({
-                                type: 'warning',
-                                message: '搜索内容为空',
-                            })
+                            sessFun.messageFun('warning','搜索内容为空!')
                         } else {
                             this.setPageNoAndTableDataRes()
                             this.getResRateFun()
@@ -796,10 +815,7 @@
                 }else if(val === 'ads'){
                     if(this.adsSelectVal === '社区名称'){
                         if(this.adsInputVal === ''){
-                            this.$message({
-                                type: 'warning',
-                                message: '搜索内容为空',
-                            })
+                            sessFun.messageFun('warning','搜索内容为空!')
                         }else{
                             this.setPageNoAndTableDataAds()
                             this.getAdsRateFun()
@@ -812,7 +828,8 @@
                 if (this.thirdActiveName === 'first') {
                     this.resTableKey = this.resTableKey === 1 ? 2 : 1
                 } else if (this.thirdActiveName === 'second') {
-                    this.adsTableKey = this.adsTableKey === 1 ? 2 : 1
+                    // this.adsTableKey = this.adsTableKey === 1 ? 2 : 1
+                    // ++this.adsTableKey
                 }
             },
             // 点位分析-搜索框置空
@@ -850,13 +867,11 @@
             },
             //点位，上刊率确定
             cConfirm() {
-                // alert('12312')
                 if(this.cUpMin !== '' && this.cUpMax !== ''){
-                    if(Number(this.cUpMin) >= Number(this.cUpMax)){
-                        this.$message({
-                            type:'warning',
-                            message: '请填写正确的区间'
-                        })
+                    let isMin = Number(this.cUpMin)
+                    let isMax = Number(this.cUpMax)
+                    if (isNaN(isMin) || isNaN(isMax) || isMin >= isMax) {
+                        sessFun.messageFun('warning','请填写正确的区间!')
                     }else{
                         this.setPageNoAndTableDataAds()
                         this.getAdsRateFun()
@@ -867,11 +882,12 @@
             // 社区上刊率
             resBlur(){
                 // console.log('失去焦点')
-                if (this.pUpMin === '' && this.pUpMax === '' && !this.cinputFocus) {
+                if (this.pUpMin === '' && this.pUpMax === '') {
+                    this.cinputFocus = false
                     this.setPageNoAndTableDataAds()
                     this.getAdsRateFun()
                 }
-                this.cinputFocus = false
+
             },
             // 社区 - 清除
             pClear() {
@@ -885,11 +901,11 @@
             pConfirm() {
                 console.log('社区上刊率',this.pUpMin,this.pUpMax)
                 if (this.pUpMin !== '' && this.pUpMax !== '') {
-                    if (Number(this.pUpMin) >= Number(this.pUpMax)) {
-                        this.$message({
-                            type: 'warning',
-                            message: '请填写正确的区间'
-                        })
+                    let isMin = Number(this.pUpMin)
+                    let isMax = Number(this.pUpMax)
+                    // console.log('isMin',isMin,'isMax',isMax)
+                    if (isNaN(isMin) || isNaN(isMax) || isMin >= isMax) {
+                        sessFun.messageFun('warning','请填写正确的区间!')
                     } else {
                         this.setPageNoAndTableDataRes()
                         this.getResRateFun()
@@ -907,23 +923,24 @@
             },
             // 点位上刊率部分数据初始化
             setPageNoAndTableDataAds(){
-                this.loadingAds = false
+                this.loadingMoreAds = false
                 this.adsLoading = true
                 this.adsRateList = []
+                this.areaList = []
                 this.adsPageNum = 1
             },
             // 资源社区表格导出
             exportExcel_res(){
-                this.$message.warning('导出excel可能需要一分钟甚至更长时间')
+                sessFun.messageFun('warning','导出excel可能需要一分钟甚至更长时间!')
                 let params = {
-                    uid: this.session_userData.uID,
-                    token: this.session_userData.token,
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
                     onStart: this.resSearchDate[0],
                     onEnd: this.resSearchDate[1],
                     asrIDs: this.returnAsrID(),// this.currCity,
                     wd: this.resInputVal,
-                    maxPercent: this.pUpMax,
-                    minPercent: this.pUpMin,
+                    maxPercent: isNaN(Number(this.pUpMax)) ? '' : this.pUpMax,
+                    minPercent: isNaN(Number(this.pUpMin)) ? '' : this.pUpMin,
                 }
                 for(let i in params){
                     if(params[i] === '' || params[i] === undefined){
@@ -934,7 +951,7 @@
                     , params).then(res=>{
                     console.log('社区上刊率导出',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else {
                         // console.log('社区上刊率导出',res.headers);
                         let blob = new Blob([res.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
@@ -952,8 +969,8 @@
             // 点位表格导出
             exportExcel_ads(){
                 let params = {
-                    uid: this.session_userData.uID,
-                    token: this.session_userData.token,
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
                     onStart: this.adsSearchDate[0],
                     onEnd: this.adsSearchDate[1],
                     asrIDs: this.returnAsrID(),//this.currCity,
@@ -969,7 +986,7 @@
                 api.getApi_file(this.apiVar.Count + '/ExportSpotPublicationRate',params).then(res=>{
                     console.log('点位上刊率导出',res.headers)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else{
                         let blob = new Blob([res.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
                         let downloadElement = document.createElement('a');
@@ -1008,6 +1025,14 @@
                     return '1,2,3,4,5,6,7'
                 }else{
                     return this.selectCity
+                }
+            },
+            validateNum(value) {
+                let reg = /^\d+(\.\d+)?$/
+                if (value !== '' && !(reg.test(value))) {
+                    return true
+                } else {
+                    return false
                 }
             },
             // 价格加上逗号
@@ -1262,6 +1287,7 @@
 
     /*表格*/
     .ads_analysis /deep/ .el-table__body-wrapper{
+        overflow-y: auto;
         min-height: 371px;
         height: 371px;
     }

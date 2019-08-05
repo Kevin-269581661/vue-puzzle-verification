@@ -29,44 +29,45 @@
                                 format="yyyy"
                                 placeholder="选择年"
                                 :clearable="false"
+                                :picker-options="totalDataOptionsStar"
                                 @change="changeYear">
                             </el-date-picker>
                         </div>
                     </div>
                 </div>
                 <div class="data_kind" :class="isAllCity ? 'data_kind_all_city' : ''">
-                    <div class="data_box" :class="basicTotalType === 'res' ? 'box_active' : ''"
-                         @click="totalActiveFun('res')">
+                    <div class="data_box" :class="basicTotalType === '社区' ? 'box_active' : ''"
+                         @click="totalActiveFun('社区')">
                         <h4>社区</h4>
                         <p>{{basicTotalData.resourceCount}}</p>
                     </div>
-                    <div class="data_box" :class="basicTotalType === 'adDoor' ? 'box_active' : ''"
-                         @click="totalActiveFun('adDoor')">
+                    <div class="data_box" :class="basicTotalType === '广告门' ? 'box_active' : ''"
+                         @click="totalActiveFun('广告门')">
                         <h4>广告门</h4>
                         <p>{{basicTotalData.advertDoorCount}}</p>
                     </div>
-                    <div class="data_box" :class="basicTotalType === 'rate' ? 'box_active' : ''"
-                         @click="totalActiveFun('rate')">
+                    <div class="data_box" :class="basicTotalType === '年上刊率' ? 'box_active' : ''"
+                         @click="totalActiveFun('年上刊率')">
                         <h4>年上刊率</h4>
                         <p>{{basicTotalData.publishRate}}%</p>
                     </div>
-                    <div class="data_box" :class="basicTotalType === 'order' ? 'box_active' : ''"
-                         @click="totalActiveFun('order')">
+                    <div class="data_box" :class="basicTotalType === '订单' ? 'box_active' : ''"
+                         @click="totalActiveFun('订单')">
                         <h4>订单</h4>
                         <p>{{basicTotalData.orderCount}}</p>
                     </div>
-                    <div class="data_box" :class="basicTotalType === 'sale' ? 'box_active' : ''"
-                         @click="totalActiveFun('sale')">
+                    <div class="data_box" :class="basicTotalType === '销售额' ? 'box_active' : ''"
+                         @click="totalActiveFun('销售额')">
                         <h4>销售额</h4>
                         <p>￥{{priceFormat(basicTotalData.sale)}}</p>
                     </div>
-                    <div class="data_box" :class="basicTotalType === 'price' ? 'box_active' : ''"
-                         @click="totalActiveFun('price')">
+                    <div class="data_box" :class="basicTotalType === '客单价' ? 'box_active' : ''"
+                         @click="totalActiveFun('客单价')">
                         <h4>客单价</h4>
                         <p>￥{{priceFormat(basicTotalData.orderSale)}}</p>
                     </div>
-                    <div class="data_box" :class="basicTotalType === 'adver' ? 'box_active' : ''"
-                         @click="totalActiveFun('adver')">
+                    <div class="data_box" :class="basicTotalType === '广告主' ? 'box_active' : ''"
+                         @click="totalActiveFun('广告主')">
                         <h4>广告主</h4>
                         <p>{{basicTotalData.advertisementCount}}</p>
                         <!--setTotalDataBar-->
@@ -147,6 +148,7 @@
                             placeholder="选择月"
                             :clearable="false"
                             @change="adSaleChange">
+                            <!--:picker-options="adSaleOptionsStar"-->
                         </el-date-picker>
                     </div>
                 </div>
@@ -154,41 +156,46 @@
                     <li class="ad_sale_li">
                         <h3 class="ad_sale_li_title">点位总量(面·周)</h3>
                         <p class="ad_sale_li_num">{{adSaleHeaderData.pointCount || 0}}</p>
-                        <p class="ad_sale_li_text">
-                            较上个月 <i class="el-icon-back" :class="adSaleHeaderData.comparePoint >= 0 ? 'ad_sale_top_icon' : 'ad_sale_bottom_icon'"></i>
-                            <span>{{adSaleHeaderData.comparePoint}}%</span>
+                        <p class="ad_sale_li_text">较上个月
+                            <i class="el-icon-back" v-show="adSaleHeaderData.comparePoint !== 0 && adSaleHeaderData.comparePoint !== '--'"
+                               :class="adSaleHeaderData.comparePoint < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
+                            <span>{{returnAbs(adSaleHeaderData.comparePoint)}}%</span>
                         </p>
                     </li>
                     <li class="ad_sale_li">
                         <h3 class="ad_sale_li_title">月均上刊率</h3>
                         <p class="ad_sale_li_num">{{adSaleHeaderData.monthPublishRate || 0}}%</p>
-                        <p class="ad_sale_li_text">
-                            较上个月 <i class="el-icon-back" :class="adSaleHeaderData.compareMonthPublish >= 0 ? 'ad_sale_top_icon' : 'ad_sale_bottom_icon'"></i>
-                            <span>{{adSaleHeaderData.compareMonthPublish}}%</span>
+                        <p class="ad_sale_li_text">较上个月
+                            <i class="el-icon-back" v-show="adSaleHeaderData.compareMonthPublish !== 0 && adSaleHeaderData.compareMonthPublish !== '--'"
+                               :class="adSaleHeaderData.compareMonthPublish < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
+                            <span>{{returnAbs(adSaleHeaderData.compareMonthPublish)}}%</span>
                         </p>
                     </li>
                     <li class="ad_sale_li">
                         <h3 class="ad_sale_li_title">当前禁用媒体数量(面)</h3>
                         <p class="ad_sale_li_num">{{adSaleHeaderData.forbiddenMediaCount || 0}}</p>
-                        <p class="ad_sale_li_text">
-                            较上个月 <i class="el-icon-back" :class="adSaleHeaderData.compareMedia >= 0 ? 'ad_sale_top_icon' : 'ad_sale_bottom_icon'"></i>
-                            <span>{{adSaleHeaderData.compareMedia}}%</span>
+                        <p class="ad_sale_li_text"> 较上个月
+                            <i class="el-icon-back" v-show="adSaleHeaderData.compareMedia !== 0 && adSaleHeaderData.compareMedia !== '--'"
+                               :class="adSaleHeaderData.compareMedia < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
+                            <span>{{returnAbs(adSaleHeaderData.compareMedia)}}%</span>
                         </p>
                     </li>
                     <li class="ad_sale_li">
                         <h3 class="ad_sale_li_title">成交订单</h3>
                         <p class="ad_sale_li_num">{{adSaleHeaderData.orderCount}}</p>
                         <p class="ad_sale_li_text"> 较上个月
-                            <i class="el-icon-back" :class="adSaleHeaderData.compareOrder >= 0 ? 'ad_sale_top_icon' : 'ad_sale_bottom_icon'"></i>
-                            <span>{{adSaleHeaderData.compareOrder}}%</span>
+                            <i class="el-icon-back" v-show="adSaleHeaderData.compareOrder !== 0 && adSaleHeaderData.compareOrder !== '--'"
+                               :class="adSaleHeaderData.compareOrder < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
+                            <span>{{returnAbs(adSaleHeaderData.compareOrder)}}%</span>
                         </p>
                     </li>
                     <li class="ad_sale_li">
                         <h3 class="ad_sale_li_title">账面销售额</h3>
                         <p class="ad_sale_li_num">¥ {{priceFormat(adSaleHeaderData.sale)}}</p>
                         <p class="ad_sale_li_text"> 较上个月
-                            <i class="el-icon-back" :class="adSaleHeaderData.compareSale >= 0 ? 'ad_sale_top_icon' : 'ad_sale_bottom_icon'"></i>
-                            <span>{{adSaleHeaderData.compareSale}}%</span>
+                            <i class="el-icon-back" v-show="adSaleHeaderData.compareSale !== 0 && adSaleHeaderData.compareSale !== '--'"
+                               :class="adSaleHeaderData.compareSale < 0 ? 'ad_sale_bottom_icon' : 'ad_sale_top_icon'"></i>
+                            <span>{{returnAbs(adSaleHeaderData.compareSale)}}%</span>
                         </p>
                     </li>
                 </ul>
@@ -229,10 +236,7 @@
                     <span class="box_card_title_right" style="float: right; padding: 3px 0">数据更新至{{toDay}}</span>
                 </div>
                 <el-row :gutter="16">
-                    <el-col :span="12" class="el_col_charts"
-                            v-loading="adInventoriedLoading"
-                            element-loading-text="玩命加载中..."
-                            element-loading-background="rgba(255, 255, 255)">
+                    <el-col :span="12" class="el_col_charts">
                         <div class="select_box">
                             <el-select v-model="adInventoriedType" size="small" placeholder="请选择" @change="getAdInventoriedData">
                                 <el-option
@@ -254,12 +258,14 @@
                                 <span slot="reference">估算销售额 <i class="el-icon-warning-outline"></i></span>
                             </el-popover>
                         </p>
-                        <div class="bar_charts el_col_bar" id="ad_inventoried" ref="adInventoriedPie" style="height: 328px;width: 100%"></div>
-                    </el-col>
-                    <el-col :span="12" class="el_col_charts"
-                            v-loading="adInventoryLoading"
+                        <div class="el_col_bar"
+                            v-loading="adInventoriedLoading"
                             element-loading-text="玩命加载中..."
                             element-loading-background="rgba(255, 255, 255)">
+                            <div class="bar_charts" id="ad_inventoried" ref="adInventoriedPie" style="height: 328px;width: 100%"></div>
+                        </div>
+                    </el-col>
+                    <el-col :span="12" class="el_col_charts">
                         <div class="select_box">
                             <el-select v-model="adInventoryType" size="small" placeholder="请选择" @change="getAdInventoryData">
                                 <el-option
@@ -281,7 +287,10 @@
                                 <span slot="reference">估算销售额 <i class="el-icon-warning-outline"></i></span>
                             </el-popover>
                         </p>
-                        <div class="el_col_bar">
+                        <div class="el_col_bar"
+                             v-loading="adInventoryLoading"
+                             element-loading-text="玩命加载中..."
+                             element-loading-background="rgba(255, 255, 255)">
                             <div class="bar_charts" id="ad_inventory_future" ref="adInventoryPie" style="height: 328px;width: 100%"></div>
                         </div>
                     </el-col>
@@ -331,7 +340,10 @@
                             <el-table
                                 :data="chanceFindTable"
                                 class="chance_find_table"
-                                style="width: 100%">
+                                style="width: 100%"
+                                v-loading="chanceFindTableLoading"
+                                element-loading-text="玩命加载中..."
+                                element-loading-background="rgba(255, 255, 255)">
                                 <el-table-column
                                     prop="name"
                                     label="客户名称"
@@ -373,6 +385,7 @@
     import api from '../../../api/api';
     import commaFormat from '../../../commonFun/commaFormat';
     import timeFormat from '../../../commonFun/timeFormat';
+    import sessFun from '../../../commonFun/sessFun'
     export default {
         name: "dataRead",
         data(){
@@ -382,10 +395,13 @@
                 colorList: ['#2FC25B','#1890FF','#FACC14','#36cbcb'],
                 isAllCity: true,
                 toDay: '',
+                timeData:{
+                    maxYear: '',
+                },
                 isGetData: false,
                 // 前一次-全局选择的城市
                 oldSelectCity: '0',
-                basicTotalType: 'res',
+                basicTotalType: '社区',
                 // 数据总览
                 basicTotalData: {
                     resourceCount: 0,
@@ -538,6 +554,7 @@
                 },
                 // 机会挖掘表格
                 chanceFindTable:[],
+                chanceFindTableLoading: true,
                 // 饼状图的lengt的itemStyle富文本
                 itemStyle: {
                     rich:{
@@ -562,7 +579,17 @@
                             padding: 8
                         }
                     }
-                }
+                },
+                totalDataOptionsStar: {
+                    disabledDate: (time) => {
+                        return time.getTime() < Date.parse('2015/01/01') || time.getTime() > Date.parse(this.timeData.maxYear)
+                    }
+                },
+                // adSaleOptionsStar: {
+                //     disabledDate: (time) => {
+                //         return time.getTime() < Date.parse('2015/01') || time.getTime() > Date.parse(this.timeData.maxYear)
+                //     }
+                // },
             }
         },
         props:{
@@ -581,6 +608,10 @@
             directNameList:{
                 type: Array,
                 required: true,
+            },
+            headerCityList:{
+                type: Array,
+                required: true,
             }
         },
         watch: {
@@ -590,15 +621,15 @@
             },
             selectCity(newVal, oldVal) {
                 this.selectCity = newVal
-                if(this.selectCity === '0'){
+                if (this.selectCity === '0') {
                     this.isAllCity = true
-                }else{
+                } else {
                     this.isAllCity = false
                 }
                 if (this.activeName === 'first') {
                     this.getDataRead();
                 } else {
-                    if(this.selectCity != this.oldSelectCity){
+                    if (this.selectCity != this.oldSelectCity) {
                         this.isGetData = false
                     } else {
                         this.isGetData = true
@@ -606,29 +637,28 @@
                 }
             },
             activeName(newVal, oldVal) {
-                console.log('数据概览newVal',newVal,'oldVal',oldVal)
+                console.log('数据概览newVal', newVal, 'oldVal', oldVal)
                 this.activeName = newVal
-                if (this.activeName === 'first') {
-                    if (!this.isGetData) {
-                        // 统一调用接口
-                        this.getDataRead()
-                        this.isGetData = true
-                    } else {
-                        // 数据总览
-                        this.initTotalDataBar();
-                        // 当天概况
-                        this.initToDayPreceptBar();
-                        // 广告销售 - 柱状图
-                        this.initAdSaleBar();
-                        // 广告销售  - 饼状图
-                        this.initAdSalePie();
-                        // 广告库存 - 左侧
-                        this.initAdInventoriedPie();
-                        // 广告库存 - 右侧
-                        this.initAdInventoryPie();
-                        // 机会挖掘
-                        this.initChanceFindPie();
-                    }
+                if (!this.isGetData) {
+                    console.log('统一调用接口', this.isGetData)
+                    // 统一调用接口
+                    this.getDataRead()
+                    // this.isGetData = true
+                } else {
+                    // 数据总览
+                    this.initTotalDataBar();
+                    // 当天概况
+                    this.initToDayPreceptBar();
+                    // 广告销售 - 柱状图
+                    this.initAdSaleBar();
+                    // 广告销售  - 饼状图
+                    this.initAdSalePie();
+                    // 广告库存 - 左侧
+                    this.initAdInventoriedPie();
+                    // 广告库存 - 右侧
+                    this.initAdInventoryPie();
+                    // 机会挖掘
+                    this.initChanceFindPie();
                 }
             }
         },
@@ -638,7 +668,6 @@
             } else {
                 this.isAllCity = true
             }
-            // console.log('this.isAllCity',this.isAllCity)
             this.echartsListener();
             this.setTime();
         },
@@ -662,6 +691,8 @@
                 this.getChanceFindEcharts();
                 this.getChanceFindTable();
                 this.oldSelectCity = this.selectCity
+                this.adSaleActiveWeek = '0'
+                this.isGetData = true
             },
             // 统一监听
             echartsListener(){
@@ -690,6 +721,7 @@
                 let starTime = timeFormat.returnDayCount(-30,'/')
                 this.chanceFindDate = [starTime, endTime]
                 console.log('starTime',starTime,'endTime',endTime)
+                this.timeData.maxYear = timeFormat.getSpecifiedDateStr(this.toDay,-12)
             },
             /*  数据总量  */
             changeYear(val){
@@ -711,14 +743,12 @@
                     token: this.sessionData.token,
                     startDate: this.totalDataYear + '/01/01',
                     endDate: this.totalDataYear + '/12/31',
-                }
-                if (this.selectCity !== '0') {
-                    params.asrIds = this.returnAsrID()
+                    asrIds: this.returnAsrID()
                 }
                 api.getApi(this.apiVar.report + '/api/v2/getOverview', params).then(res => {
                     console.log('数据总总览-表头接口', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         this.basicTotalData = {
@@ -734,7 +764,7 @@
                         console.log('basicTotalData',this.basicTotalData)
                         this.setTotalDataBar()
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -742,33 +772,33 @@
             setTotalDataBar(){
                 this.totalDataBarLoading = true
                 let arr = []
-                for(let key of this.basicTotalBarData){
-                    switch (this.basicTotalType){
-                        case 'res':
+                for (let key of this.basicTotalBarData) {
+                    switch (this.basicTotalType) {
+                        case '社区':
                             arr.push(key.resourceCount)
                             break;
-                        case 'adDoor':
+                        case '广告门':
                             arr.push(key.advertDoorCount)
                             break;
-                        case 'rate':
-                            arr.push(key.publishRate ?  Math.floor(key.publishRate * 10000)/100 : 0)
+                        case '年上刊率':
+                            arr.push(key.publishRate ? Math.floor(key.publishRate * 10000) / 100 : 0)
                             break;
-                        case 'order':
+                        case '订单':
                             arr.push(key.orderCount)
                             break;
-                        case 'sale':
+                        case '销售额':
                             arr.push(key.sale)
                             break;
-                        case 'price':
+                        case '客单价':
                             arr.push(key.orderSale)
                             break;
-                        case 'adver':
+                        case '广告主':
                             arr.push(key.advertisementCount)
                             break;
                     }
                 }
                 this.basicTotalBarDataShow = arr
-                console.log('this.basicTotalBarDataShow',this.basicTotalBarDataShow)
+                console.log('this.basicTotalBarDataShow', this.basicTotalBarDataShow)
                 this.initTotalDataBar()
             },
             // 数据总览 头部柱状图
@@ -795,10 +825,18 @@
                         borderColor: '#dddddd',
                         borderWidth: 1,
                         formatter: (params)=> {
+                            let val = 0
+                            if (this.basicTotalType === '年上刊率') {
+                                val = params[0].data + '%'
+                            } else if (this.basicTotalType === '销售额' || this.basicTotalType === '客单价') {
+                                val = this.priceFormat(params[0].data)
+                            } else {
+                                val = params[0].data
+                            }
                             return '<p class="echarts_tooltip_title">' + '<span>' + params[0].name + '</span>' + '</p>' + '<br/>' +
                                 '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params[0].name +
-                                '</span>' + params[0].data + (this.basicTotalType === 'rate' ? '%' : '') + '</p>'
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + this.basicTotalType +
+                                '</span>' + val + '</p>'
                         },
                     },
                     grid: {
@@ -916,15 +954,13 @@
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                     startDate: this.toDay,
-                    endDate: timeFormat.returnDayCount(1,'/') //this.toDay,
-                }
-                if (this.selectCity !== '0') {
-                    params.asrIds = this.returnAsrID()
+                    endDate: timeFormat.returnDayCount(1,'/'),
+                    asrIds: this.returnAsrID()
                 }
                 api.getApi(this.apiVar.report + '/api/v2/getSurvey', params).then(res => {
                     console.log('当天概况-表头接口', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         this.basicToDayData = {
@@ -938,7 +974,7 @@
                                 forbiddenPointCount: dataObj.forbiddenPointCount,
                         }
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -949,19 +985,17 @@
                     token: this.sessionData.token,
                     startDate: this.toDay,
                     endDate: timeFormat.returnDayCount(1,'/'),
-                }
-                if (this.selectCity !== '0') {
-                    params.asrIds = this.returnAsrID()
+                    asrIds: this.returnAsrID()
                 }
                 api.getApi(this.apiVar.report + '/api/v2/getBehaviorInfo', params).then(res => {
                     console.log('当天概况-图表接口', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         this.setToDatyPreceptData(dataObj)
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -971,9 +1005,8 @@
                 let barArr = []
                 for (let key in dataObj) {
                     // 右侧图表
-                    barArr = [
-                        '', dataObj[key].count, dataObj[key].adsCount, dataObj[key].adsWeekCount
-                    ]
+                    // x轴刻度名称、方案订单数、点位数、点位面周
+                    barArr = ['', dataObj[key].count, dataObj[key].adsCount, dataObj[key].adsWeekCount]
                     // 左侧list
                     let obj = {
                         name: '',
@@ -984,17 +1017,14 @@
                     if (key === 'createPlanInfo') {
                         barArr[0] = '创建方案'
                         this.toDayPreceptBarData[1] = barArr
-                        //
                         obj.name = '创建方案'
                     } else if (key === 'lockPlanInfo') {
                         barArr[0] = '预锁方案'
                         this.toDayPreceptBarData[2] = barArr
-
                         obj.name = '预锁方案'
                     } else if (key === 'orderInfo') {
                         barArr[0] = '生成订单'
                         this.toDayPreceptBarData[3] = barArr
-
                         obj.name = '生成订单'
                     }
                     tableList.push(obj)
@@ -1162,8 +1192,9 @@
             },
             /*  广告销售  */
             // 月份选择
-            adSaleChange(){
-                console.log('this.adSaleMonth',this.adSaleMonth)
+            adSaleChange() {
+                console.log('this.adSaleMonth', this.adSaleMonth)
+                this.adSaleActiveWeek = '0'
                 this.getAdSaleHeaderData()
                 this.getAdSaleData()
             },
@@ -1180,19 +1211,17 @@
                     token: this.sessionData.token,
                     startDate: this.adSaleMonth + '/01',
                     endDate: this.adSaleMonth + '/' + monthDayNum,
-                }
-                if (this.selectCity !== '0') {
-                    params.asrIds = this.returnAsrID()
+                    asrIds: this.returnAsrID()
                 }
                 api.getApi(this.apiVar.report + '/api/v2/getAdvertSales', params).then(res => {
                     console.log('广告销售-顶部数据接口res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         this.setAdSaleHeaderData(dataObj)
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -1200,16 +1229,21 @@
             setAdSaleHeaderData(dataObj) {
                 let {curMonthInfo,preMonthInfo} = dataObj
                 this.adSaleHeaderData = {
+                    // 点位总量(面·周)
                     pointCount: curMonthInfo.pointCount,
-                    comparePoint: this.keepTwoDecimal((curMonthInfo.pointCount - preMonthInfo.pointCount) / preMonthInfo.pointCount * 100),
+                    comparePoint: preMonthInfo.pointCount ? this.keepTwoDecimal((curMonthInfo.pointCount - preMonthInfo.pointCount) / preMonthInfo.pointCount * 100) : '--',
+                    // 月均上刊率
                     monthPublishRate: curMonthInfo.monthPublishRate ? Math.floor(curMonthInfo.monthPublishRate * 10000) / 100 : 0,
-                    compareMonthPublish: this.keepTwoDecimal((curMonthInfo.monthPublishRate - preMonthInfo.monthPublishRate) / preMonthInfo.monthPublishRate * 100),
-                    forbiddenMediaCount: curMonthInfo.forbiddenMediaCount,
-                    compareMedia:  this.keepTwoDecimal((curMonthInfo.forbiddenMediaCount - preMonthInfo.forbiddenMediaCount) / preMonthInfo.forbiddenMediaCount * 100),
+                    compareMonthPublish:  preMonthInfo.monthPublishRate ? this.keepTwoDecimal((curMonthInfo.monthPublishRate - preMonthInfo.monthPublishRate) / preMonthInfo.monthPublishRate * 100) : '--',
+                    // 当前禁用媒体数量(面)
+                    forbiddenMediaCount: curMonthInfo.forbiddenAdsCount,
+                    compareMedia:  preMonthInfo.forbiddenAdsCount ? this.keepTwoDecimal((curMonthInfo.forbiddenAdsCount - preMonthInfo.forbiddenAdsCount) / preMonthInfo.forbiddenAdsCount * 100) : '--',
+                    // 成交订单
                     orderCount: curMonthInfo.orderCount,
-                    compareOrder: this.keepTwoDecimal((curMonthInfo.orderCount - preMonthInfo.orderCount) / preMonthInfo.orderCount * 100),
+                    compareOrder: preMonthInfo.orderCount ? this.keepTwoDecimal((curMonthInfo.orderCount - preMonthInfo.orderCount) / preMonthInfo.orderCount * 100) : '--',
+                    // 账面销售额
                     sale: curMonthInfo.sale,
-                    compareSale: this.keepTwoDecimal((curMonthInfo.sale - preMonthInfo.sale) / preMonthInfo.sale * 100),
+                    compareSale: preMonthInfo.sale ? this.keepTwoDecimal((curMonthInfo.sale - preMonthInfo.sale) / preMonthInfo.sale * 100) : '--',
                 }
                 console.log('this.adSaleHeaderData',this.adSaleHeaderData)
             },
@@ -1222,21 +1256,19 @@
                     token: this.sessionData.token,
                     startDate: this.adSaleMonth + '/01',
                     endDate: this.adSaleMonth + '/' + monthDayNum,
-                }
-                if (this.selectCity !== '0') {
-                    params.asrIds = this.returnAsrID()
+                    asrIds: this.returnAsrID()
                 }
                 api.getApi(this.apiVar.report + '/api/v2/getAdsInfoByWeek', params).then(res => {
                     console.log('广告销售-左侧数据接口res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         this.adSaleList = res.data.data
                         this.setAdSalePieData(this.adSaleList[0])
                         this.adSaleWeekSelectList = this.setWeekSelectList(this.adSaleList)
                         this.setAdSaleBarData()
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -1245,23 +1277,22 @@
                 console.log('设置广告销售图表数据',this.adSaleList)
                 let weekList = []
                 for (let key of this.adSaleWeekSelectList) {
-                    weekList.push(key.label)
+                    weekList.push(key.label+ '('+ key.time)
                 }
                 let beenSold = []
                 let unSold = []
                 let adsDisabled = []
                 let publishRate = []
                 let totalNum = 0
-                let i = 0
                 for (let aKey of this.adSaleList) {
-                    if (i < 1) {
-                        totalNum += aKey.soldAdsCount + aKey.unsoldAdsCount + (aKey.forbiddenAdsCount || 0)
+                    let sum = aKey.soldAdsCount + aKey.unsoldAdsCount + (aKey.forbiddenAdsCount || 0)
+                    if(sum > totalNum){
+                        totalNum = sum
                     }
                     beenSold.push(aKey.soldAdsCount)
                     unSold.push(aKey.unsoldAdsCount)
                     adsDisabled.push(aKey.forbiddenAdsCount || 0)
                     publishRate.push(Math.floor(aKey.publishRate * 10000) / 100)
-                    i++
                 }
                 // 周
                 this.adSaleData.weekList = JSON.parse(JSON.stringify(weekList))
@@ -1273,8 +1304,15 @@
                 this.adSaleData.adsDisabled = JSON.parse(JSON.stringify(adsDisabled))
                 // 上刊率
                 this.adSaleData.publishRate = publishRate
-                this.adSaleData.totalNum = parseInt(totalNum * 1.5)
-                console.log('左侧柱状图',this.adSaleData)
+                // this.adSaleData.totalNum = parseInt(totalNum * 1.4)
+                // 设置最大值
+                totalNum = parseInt(totalNum * 1.5).toString()
+                let maxNum = totalNum.substring(0, 2)
+                for (let i = 0; i < totalNum.length - 2; i++) {
+                    maxNum += '0'
+                }
+                this.adSaleData.totalNum = maxNum
+                console.log('左侧柱状图',this.adSaleData,totalNum,maxNum)
                 this.initAdSaleBar();
             },
             // 设置右侧饼状图数据
@@ -1314,7 +1352,6 @@
                         borderColor: '#dddddd',
                         borderWidth: 1,
                         formatter: function (params) {
-                            // console.log('params',params)
                             let title = '';
                             let arr = [];
                             let total = params[1].value + params[2].value + params[3].value
@@ -1361,6 +1398,12 @@
                             textStyle: {
                                 fontFamily: "DINPro-Regular",
                                 color: "#2C313C" //坐标轴刻度文字的颜色
+                            },
+                            formatter: function(val) {
+                                // 字符串数组
+                                let strs = val.split('(');
+                                let str = strs[0] + '\n' + strs[1]
+                                return str
                             }
                         },
                     },
@@ -1368,8 +1411,8 @@
                         {
                             type: 'value',
                             max: this.adSaleData.totalNum,
-                            // interval: (this.adSaleData.totalNum / 6).toFixed(0),
-                            splitNumber: 6,
+                            interval: Math.ceil(this.adSaleData.totalNum / 5),
+                            splitNumber: 5,
                             axisLine: {
                                 // show:false,
                                 //坐标轴线条相关设置(颜色等)
@@ -1395,10 +1438,10 @@
                         },
                         {
                             type: 'value',
-                            min: -500,
+                            min: -400,
                             max: 100,
                             interval: 100,
-                            splitNumber: 6,
+                            splitNumber: 5,
                             show:false,
                             axisLine: {
                                 //坐标轴线条相关设置(颜色等)
@@ -1453,6 +1496,13 @@
                                 normal: {
                                     label: {
                                         show: true,//是否展示
+                                        formatter: (num) => {
+                                            if (this.adSaleData.totalNum) {
+                                                if ((num.value / this.adSaleData.totalNum) < 0.029) {
+                                                    return ''
+                                                }
+                                            }
+                                        }
                                     },
                                     color: this.colorList[2]
                                 }
@@ -1468,6 +1518,13 @@
                                 normal: {
                                     label: {
                                         show: true,//是否展示
+                                        formatter: (num) => {
+                                            if (this.adSaleData.totalNum) {
+                                                if ((num.value / this.adSaleData.totalNum) < 0.029) {
+                                                    return ''
+                                                }
+                                            }
+                                        }
                                     },
                                     color: this.colorList[1]
                                 }
@@ -1483,6 +1540,13 @@
                                 normal: {
                                     label: {
                                         show: true,// 是否展示
+                                        formatter: (num) => {
+                                            if (this.adSaleData.totalNum) {
+                                                if ((num.value / this.adSaleData.totalNum) < 0.029) {
+                                                    return ''
+                                                }
+                                            }
+                                        }
                                     },
                                     color: this.colorList[0]
                                 }
@@ -1505,14 +1569,13 @@
                             },
                             //思路一：给series集合末尾多加一栏用于展示合计，但是值都是0；
                             // 缺点：必须根据xAxis的data生成一组为空的数据，且tooltip不能加trigger: 'axis',这个条件，不然会展示合计：0
-                            data:[0,0,0,0,0]
+                            data:[0,0,0,0,0,0]
                         }
-
                     ]
                 };
                 let series = option["series"];
                 let totalFun = function (params) {
-                    let total =0;
+                    let total = 0;
                     for (let i = 1, l = series.length; i < l; i++) {
                         total += series[i].data[params.dataIndex]
                     }
@@ -1566,10 +1629,10 @@
                         formatter: (name)=> {
                             let value;
                             let precent;
-                            for (let i = 0; i < this.mediaSaleData.data.length; i++) {
-                                if (this.mediaSaleData.data[i].name == name) {
-                                    precent = parseFloat((this.mediaSaleData.data[i].value / total) * 100).toFixed(2) + '%'
-                                    value = this.mediaSaleData.data[i].value
+                            for(let key of this.mediaSaleData.data){
+                                if (key.name == name) {
+                                    precent = (total ? parseFloat((key.value / total) * 100).toFixed(2) : 0) + '%'
+                                    value = key.value
                                 }
                             }
                             let arr = ["{a|" + name + "}","{b|"+"|}","{c|" + precent + "}","{d|" + value + "}"]
@@ -1635,17 +1698,14 @@
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    // startDate: this.toDay.substring(0,4) + '/01/01',
                     startDate: this.toDay,
-                    type: this.adInventoriedType
-                }
-                if (this.selectCity !== '0') {
-                    params.asrIds = this.returnAsrID()
+                    type: this.adInventoriedType,
+                    asrIds: this.returnAsrID()
                 }
                 api.getApi(this.apiVar.report + '/api/v2/getAdsInventoryInfo', params).then(res => {
                     console.log('广告库存数据接口 - 过去', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         let arr = []
@@ -1668,7 +1728,7 @@
                         }
                         this.initAdInventoriedPie();
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -1680,15 +1740,13 @@
                     token: this.sessionData.token,
                     startDate: timeFormat.returnDayCount(1,'/'),
                     // endDate: this.toDay.substring(0,4) + '-12-31',
-                    type: this.adInventoryType
-                }
-                if (this.selectCity !== '0') {
-                    params.asrIds = this.returnAsrID()
+                    type: this.adInventoryType,
+                    asrIds: this.returnAsrID()
                 }
                 api.getApi(this.apiVar.report + '/api/v2/getAdsFutureInventoryInfo', params).then(res => {
                     console.log('广告库存数据接口 - 未来', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         let arr = []
@@ -1709,7 +1767,7 @@
                         }
                         this.initAdInventoryPie();
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -1878,6 +1936,7 @@
             /*  机会挖掘  */
             changeFindDate(){
                 this.getChanceFindEcharts()
+                this.getChanceFindTable()
             },
             // 左侧图表接口
             getChanceFindEcharts(){
@@ -1887,15 +1946,13 @@
                     token: this.sessionData.token,
                     startDate: this.chanceFindDate[0],
                     endDate: this.chanceFindDate[1],
-                }
-                if (this.selectCity !== '0') {
-                    params.asrIds = this.returnAsrID()
+                    asrIds: this.returnAsrID()
                 }
                 // console.log('机会挖掘饼状图params',params)
                 api.getApi(this.apiVar.report + '/api/v2/getCustomerInfo', params).then(res => {
                     console.log('机会挖掘饼状图接口res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout();
+                        sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         let dataArr = []
@@ -1916,33 +1973,33 @@
                         this.chanceFindPieData.data = dataArr;
                         this.initChanceFindPie();
                     } else {
-                        this.messageFun('warning', res.data.MSG);
+                        sessFun.messageFun('warning', res.data.MSG)
                     }
                 })
             },
             // 表格接口 getCustomerCooperative
             getChanceFindTable(){
+                this.chanceFindTableLoading = true
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                     startDate: this.chanceFindDate[0],
                     endDate: this.chanceFindDate[1],
-                    pageNo: 1,
-                    pageSize: 5000,
-                }
-                if (this.selectCity !== '0') {
-                    params.asrIds = this.returnAsrID()
+                    // pageNo: 1,
+                    // pageSize: 5000,
+                    asrIds: this.returnAsrID()
                 }
                 api.getApi(this.apiVar.report + '/api/v2/getCustomerCooperative', params).then(res => {
                     console.log('机会挖掘表格接口res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout();
+                        sessFun.loginTimeout();
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         this.setChanceFindTabelData(dataObj)
                     } else {
-                        this.messageFun('warning', res.data.MSG);
+                        sessFun.messageFun('warning', res.data.MSG)
                     }
+                    this.chanceFindTableLoading = false
                 })
             },
             setChanceFindTabelData(dataList) {
@@ -2071,11 +2128,12 @@
             setWeekSelectList(list){
                 console.log('list',list)
                 let weeks = []
-                let month = (new Date(this.returnFormatDate(list[1].startDate))).getMonth()+1;
+                let month = (new Date(this.returnFormatDate(list[1].startDate))).getMonth() + 1;
                 for (let i = 0; i < list.length; i++) {
                     weeks.push({
                         value: i.toString(),
-                        label: month + '月第' + (i + 1) + '周'
+                        label: month + '月第' + (i + 1) + '周',
+                        time: list[i].startDate.substring(5,10) + '-' +list[i].endDate.substring(5,10),
                     })
                 }
                 console.log('weeks',weeks)
@@ -2084,28 +2142,42 @@
             // 根据权限公司返回 asrIDs
             returnAsrID() {
                 if (this.selectCity == '0') {
-                    return '1,2,3,4,5,6,7'
+                    let asrIDs = []
+                    for (let key of this.headerCityList) {
+                        if (key.value !== '0') {
+                            asrIDs.push(key.value)
+                        }
+                    }
+                    return asrIDs.join(',')
                 } else {
                     return this.selectCity
                 }
             },
-            // 价格加上逗号
+            // 价格加上逗号-整数
             priceFormat(price) {
                 if (price) {
-                    price = commaFormat.init(price)
-                    return price.substring(price, price.length - 3);
+                    price = commaFormat.format(price.toFixed(0))
+                    return price
                 } else {
                     return 0
                 }
             },
             // 保留两位小数
             keepTwoDecimal(num){
-                let result = parseFloat(num);
-                if (isNaN(result)) {
+                if (!num && num !== 0) {
                     return 0;
                 }
+                let result = parseFloat(num);
                 result = Math.round(num * 100) / 100;
                 return result;
+            },
+            // 返回数的绝对值
+            returnAbs(num) {
+                if (typeof num === 'number' && !isNaN(num)) {
+                    return Math.abs(num)
+                } else {
+                    return num
+                }
             },
             // 指定日期为今年的第几周
             returnRankingWeekOnYear(date){
@@ -2123,18 +2195,6 @@
             // 日期格式在new Date()前全部转换成yyyy/mm/dd格式 - 主要为了兼容safari
             returnFormatDate(date) {
                 return date.toString().replace(/[-\.]/g, "/")
-            },
-            // 操作提示统一方法
-            messageFun(mesType, mes) {
-                this.$message({
-                    message: mes,
-                    type: mesType,
-                    showClose: true,
-                })
-            },
-            loginTimeout() {
-                this.messageFun('warning', "登录超时,请重新登录");
-                this.$router.push("/login");
             },
         }
     }
@@ -2467,7 +2527,7 @@
         background:rgba(0,0,0,0);
     }
 
-    .chance_find_table /deep/ .el-table__body-wrapper{
+    .chance_find_table /deep/ .el-table__body-wrapper,.chance_find_table /deep/ .el-table__empty-block{
         height: 218px;
         min-height: 218px;
         overflow-y: auto;

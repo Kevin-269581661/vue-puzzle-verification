@@ -60,7 +60,7 @@
                                         {{city.city+'('+city.num+'面,'+formatTime(city.pdStart)+'至'+formatTime(city.pdEnd)+')'}}
                                     </p>
                                 </div>
-                                <div v-if="!isAll" v-for="item of scope.row.companyList" :key="item.rid" class="city_p">
+                                <div v-if="!isAll" v-for="item of scope.row.companyList" :key="item.rid+'-'+item.asrID" class="city_p">
                                     <p v-for="city of item.cityList" :key="city.city">
                                         {{city.city+'('+city.num+'面,'+formatTime(city.pdStart)+'至'+formatTime(city.pdEnd)+')'}}
                                     </p>
@@ -74,7 +74,7 @@
                         </el-table-column>
                         <el-table-column class="Status" prop="apState" label="状态" min-width="6%" show-overflow-tooltip>
                             <template slot-scope="scope">
-                                <point-state :state-text="stateToText(scope.row.apState).text" :color="stateToText(scope.row.apState).color"></point-state>                                                                
+                                <point-state :state-text="stateToText(scope.row.apState).text" :color="stateToText(scope.row.apState).color"></point-state>
                             </template>
                         </el-table-column>
                         <el-table-column label="操作" width="100px" v-if="!(role=='OP' || role=='AD')">
@@ -86,7 +86,7 @@
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item :disabled="(scope.row.apState==0)||(scope.row.apState==5)||(role!='SM') " @click.native.prevent="finishOrder(scope.row)" class="finish">结束订单</el-dropdown-item>
                                         <el-dropdown-item :disabled="(role!='SM')" @click.native.prevent="applyPhoto(scope.row)" class="finish">申请画像</el-dropdown-item>
-                                        <el-dropdown-item :disabled="(scope.row.apState==0)||(scope.row.apState==5)||(role!='MD')" @click.native.prevent="changePoint(scope.row.apID)" class="update">更换点位
+                                        <el-dropdown-item :disabled="(scope.row.apState==0)||(scope.row.apState==5)||(role!='MD')" @click.native.prevent="changePoint(scope.row)" class="update">更换点位
                                         </el-dropdown-item>
                                         <!-- <el-dropdown-item @click.native.prevent="inputBox1" class="watch">监控备注</el-dropdown-item> -->
                                         <!--<el-dropdown-item disabled="disabled" class="push">推送任务</el-dropdown-item>-->
@@ -136,7 +136,7 @@ import sessFun from "../../commonFun/sessFun.js";
 // 画像申请
 import applyphoto from './components/applyPhoto.vue';
 import noSearchResult from "./components/noSearchResult.vue";
-import pointState from './components/pointState.vue';    
+import pointState from './components/pointState.vue';
 
 
 import {
@@ -485,10 +485,10 @@ export default {
             }
         },
         // 更换点位
-        changePoint(apid) {
+        changePoint(row) {
             sessionStorage.setItem('change_point', 'yes');
-            sessionStorage.setItem("order_apid", apid);
-            this.$router.push("./orderDetail");
+            sessionStorage.setItem("order_apid", row.apID);
+            sessionStorage.setItem('order_citylist', JSON.stringify(row.companyList));
         },
         // 状态转换成文本
         stateToText(val) {
@@ -518,7 +518,7 @@ export default {
                 this.searchInfo.orderby = column.prop;
                 this.searchInfo.desc = 1;
             }
-            this.currPage = 1;            
+            this.currPage = 1;
             this.searchFun();
         },
         // 价格加上逗号
@@ -890,7 +890,7 @@ a {
 }
 
 /deep/ .el-table td .cell{
-    padding: 2px 10px;    
+    padding: 2px 10px;
     height: auto;
     line-height: 28px;
 }

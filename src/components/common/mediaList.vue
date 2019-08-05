@@ -33,6 +33,7 @@
                             filterable
                             size="small"
                             style="width: 100%"
+                            clearable
                             @change="handleChange">
                         </el-cascader>
                     </li>
@@ -182,18 +183,18 @@
                                     </span>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item
-                                            @click.native.prevent="confirmBox($event,scope.$index, scope.row)"
+                                            @click.native.prevent="confirmBox('待安装',scope.$index, scope.row)"
                                             :disabled="scope.row.mState === '待安装'">待安装
                                         </el-dropdown-item>
                                         <el-dropdown-item
-                                            @click.native.prevent="confirmBox($event,scope.$index, scope.row)">正常
+                                            @click.native.prevent="confirmBox('正常',scope.$index, scope.row)">正常
                                         </el-dropdown-item>
                                         <el-dropdown-item
-                                            @click.native.prevent="confirmBox($event,scope.$index, scope.row)"
+                                            @click.native.prevent="confirmBox('待维修',scope.$index, scope.row)"
                                             :disabled="scope.row.mState === '待维修'">待维修
                                         </el-dropdown-item>
                                         <el-dropdown-item
-                                            @click.native.prevent="confirmBox($event,scope.$index, scope.row)"
+                                            @click.native.prevent="confirmBox('禁用',scope.$index, scope.row)"
                                             :disabled="scope.row.mState === '禁用'">禁用
                                         </el-dropdown-item>
                                     </el-dropdown-menu>
@@ -573,28 +574,38 @@
             // 根据市级城市rid，获取它的下属区、县
             handleChange(value) {
                 console.log('handleChange', value)
-                this.regionOpt = ''
-                let cityRID = value[1]
-                let regionArr = areaPackageNew.findArea(cityRID)
-                this.cityArea.cName =areaToTextNew.toTextCity(value[1])
-                console.log('获取选中城市的区域', regionArr,'this.cityArea',this.cityArea)
-                let region = []
-                for (let i = 0; i < regionArr.length; i++) {
-                    let obj = {label: regionArr[i].rName, value: regionArr[i].rID}
-                    region.push(obj)
+                this.regionOpt = []
+                this.selectRName = ''
+                this.cityArea.rName = ''
+                if (value.length) {
+                    let cityRID = value[1]
+                    let regionArr = areaPackageNew.findArea(cityRID)
+                    this.cityArea.cName = areaToTextNew.toTextCity(value[1])
+                    console.log('获取选中城市的区域', regionArr, 'this.cityArea', this.cityArea)
+                    let region = []
+                    for(let key of regionArr){
+                        region.push({
+                            label: key.rName,
+                            value: key.rID
+                        })
+                    }
+                    this.regionOpt = region
+                    console.log('this.regionOpt', this.regionOpt, 'selectedOptions', this.selectedOptions)
+                } else {
+                    this.cityArea.cName = ''
                 }
-                this.regionOpt = region
-
-                console.log('this.regionOpt', this.regionOpt,'selectedOptions',this.selectedOptions)
-
             },
             //获取区域
             getRegion(val){
-                console.log('获取区域val',val,this.regionOpt)
-                for(let key of this.regionOpt){
-                    if(key.value == val){
-                        this.cityArea.rName = key.label
+                console.log('获取区域val', val, this.regionOpt)
+                if (val) {
+                    for (let key of this.regionOpt) {
+                        if (key.value == val) {
+                            this.cityArea.rName = key.label
+                        }
                     }
+                } else {
+                    this.cityArea.rName = ''
                 }
                 console.log('选择的区域为',this.cityArea)
             },
@@ -613,20 +624,27 @@
             // 确认提交禁用/正常
             submitDoorState(){
                 let status = ''
-                if (this.normalToDisabled) {
-                    status = '禁用'
+                if (this.doorState.mState || this.doorState.adState) {
+                    if (this.normalToDisabled) {
+                        status = '禁用'
+                    } else {
+                        status = '正常'
+                    }
+                    if (this.doorState.mState) {
+                        this.setMediaStatus(status)
+                    } else {
+                        this.setMediaStatus(status, 'submitDS')
+                    }
                 } else {
-                    status = '正常'
-                }
-                if (this.doorState.mState) {
-                    this.setMediaStatus(status)
-                } else {
-                    this.setMediaStatus(status, 'submitDS')
+                    Message({
+                        type: 'warning',
+                        message: '请选择类型'
+                    });
                 }
             },
             //确认框
-            confirmBox(e, index, rows) {
-                let Status = e.target.innerText;
+            confirmBox(str, index, rows) {
+                let Status = str//e.target.innerText;
                 console.log('状态', Status)
                 console.log('行内容', rows)//mState
                 if (rows.mState == Status ) {
@@ -698,7 +716,8 @@
                 let asState = ''
                 console.log('this.rowData.asState.B',this.rowData.asState.B,' this.doorState', this.doorState.adState)
                 if (letter === 'submitDS' && this.normalToDisabled) {
-                    if((this.rowData.asState.A == '0' && this.doorState.adState === 'B') || (this.rowData.asState.B == '0' && this.doorState.adState === 'A')){
+                    if((this.rowData.asState.A == '0' && this.doorState.adState === 'B') ||
+                        (this.rowData.asState.B == '0' && this.doorState.adState === 'A')){
                         console.log('两面都是同一状态')
                         asState = this.return_mStateNum(Status)
                         mstate = asState
@@ -712,6 +731,7 @@
                 } else {
                     mstate = this.return_mStateNum(Status)
                 }
+                console.log('--------mstate',mstate)
                 if(num === '1'){
                     asState = mstate
                     this.setMediaStatusApi(Status,letter,mstate,asState,num)
@@ -728,6 +748,7 @@
                         dangerouslyUseHTMLString: true,
                         type: 'warning'
                     }).then(() => {
+                        console.log('11111111111',mstate)
                         this.setMediaStatusApi(Status,letter,mstate,asState)
                     }).catch(() => {
                         Message({
@@ -736,9 +757,9 @@
                         })
                     })
                 }
-
             },
             setMediaStatusApi(Status,letter,mstate,asState,number){
+                console.log('+++++++++++mstate',mstate)
                 let uid = this.sessionData.uID
                 let mid = this.rowData.mID
                 let submitLoading =  this.$loading({
@@ -762,7 +783,7 @@
                     params.data.asLabs = this.doorState.adState
                     params.data.asState = asState
                 }
-                console.log('params',params)
+                console.log('params',JSON.stringify(params))
                 api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('修改状态：', res)
                     if (res.data.SysCode === 200200 || res.data.MSG === '操作成功') {
@@ -820,15 +841,15 @@
             },
             return_mStateNum(mState){
                 if (mState == '正常') {
-                    return '1'
+                    return '1';
                 } else if (mState == '禁用') {
-                    return '0'
+                    return '0';
                 } else if (mState == '待安装') {
-                    return '2'
+                    return '2';
                 } else if (mState == '待维修') {
-                    return '3'
-                }else{
-                    return ''
+                    return '3';
+                } else {
+                    return '';
                 }
             },
             // 跳转到媒体详情界面

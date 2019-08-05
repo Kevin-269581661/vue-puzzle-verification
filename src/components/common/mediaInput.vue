@@ -623,7 +623,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="addMedia">
                             <div class="addMediaBtn" @click="roadGateAddFun()">+ 新增媒体</div>
                         </div>
@@ -1444,18 +1443,16 @@
                         that.resMap.setCurrentCity("广州")                                     // 设置地图显示的城市 此项是必须设置的
                     }
                     that.resMap.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
-                    if(that.recForm.resname){
-                        // setTimeout(()=>{
-                            that.searchResName =  that.recForm.resname
-                            that.searchFun()
-                        // },500)
+                    if (that.recForm.resname) {
+                        that.searchResName = that.recForm.resname
+                        that.searchFun()
                     }
                     that.mapLoading = false
                 })
             },
             // 地图获取经纬度
             searchFun(){
-                console.log('1百度地图搜索',this.recForm.resname)
+                console.log(this.searchResName,'1百度地图搜索',this.recForm.resname)
                 let lnglat = ''
                 let that = this
                 let options = {
@@ -1489,7 +1486,7 @@
                 };
                 console.log('3options',options)
                 let local = new BMap.LocalSearch(this.resMap,options)
-                local.search(this.resAddres.city + this.recForm.resname)
+                local.search(this.resAddres.city + this.searchResName)
                 console.log('4')
             },
             //获取点击标注的坐标
@@ -1498,15 +1495,15 @@
                     if(mkey.marker == e.target){
                         this.searchResData.address =mkey.address
                         this.searchResData.title = mkey.title
-                        console.log('点击到相同的标注',mkey) // searchInfowindow target address title
+                        // console.log('点击到相同的标注',mkey) // searchInfowindow target address title
                     }else{
-                        console.log('不相同的标注',mkey)
+                        // console.log('不相同的标注',mkey)
                     }
                 }
                 let addr = {lng:e.point.lng,lat:e.point.lat} // lng经度；lat纬度
                 let point = new BMap.Point(addr.lng,addr.lat)
                 this.getResDataInfoByPoint(point)
-                console.log('点击事件e',e,addr)
+                // console.log('点击事件e',e,addr)
             },
             // 根据坐标获取省市区、地址
             getResDataInfoByPoint(point){
@@ -2952,9 +2949,9 @@
 
 <style scoped>
     .mediaList_content{
-        width: 92%;
+        /*width: 92%;*/
         background: #ffffff;
-        margin: 16px auto;
+        margin: 16px 64px 0;
         padding-bottom: 32px;
     }
     /deep/ .ad_index_footer {

@@ -76,7 +76,7 @@
                             <el-row class="form_row" type="flex" :gutter="72">
                                 <el-col :span="6">
                                     <el-form-item label="公司名称:" prop="cName">
-                                        <el-input v-model.trim="companyForm.cName" placeholder="请输入公司具体地址" clearable></el-input>
+                                        <el-input v-model.trim="companyForm.cName" placeholder="请输入公司名称" clearable></el-input>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="6">
@@ -682,11 +682,11 @@ export default {
                     if (userMsg.SysCode == 100200) {
                         if(code==300200){
                             // this.changRoute('成功修改客户和公司信息,是否跳转到列表页面');
-                            this.$router.push("./clientDetail");                            
+                            this.$router.push("./clientDetail");
                         }else if(code == 100403){
                            this.changRoute('成功修改客户信息,没有权限修改公司信息,是否跳转到列表页面');
                         }else{
-                           this.$router.push("./clientDetail"); 
+                           this.$router.push("./clientDetail");
                         //    this.changRoute('成功修改客户信息,是否跳转到列表页面');
                         }
                     } else if(userMsg.SysCode == 100302){
@@ -834,7 +834,7 @@ export default {
 }
 
 .form_row,
-/deep/.el-textarea, 
+/deep/.el-textarea,
 /deep/.el-textarea__inner,
 /deep/.el-autocomplete,
 /deep/.el-cascader,

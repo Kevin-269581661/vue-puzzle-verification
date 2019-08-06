@@ -2029,211 +2029,6 @@
                     }
                 })
             },
-            // 提交前校验单城市报价单价格是否大于2000w
-            vaildCityQuotation(){
-                for(let key of this.quotation){
-                    for(let i in key.priceMsg){
-                        // console.log('提交前校验单城市报价单价格是否大于2000w',key.priceMsg[i].total)
-                        if(key.priceMsg[i].total > 20000000){
-                            this.isCityPrice = true
-                            break
-                        }
-                    }
-                }
-            },
-            // 初始化方案选点
-            SetADBFun() {
-                let params = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token,
-                    apid: this.apid
-                }
-                console.log('初始化方案选点',params)
-                api.postApi(this.apiVar.Advertisement + '/SetADB', params).then(res => {
-                    console.log('初始化方案选点', res)
-                    if (res.data.SysCode == 300200 || res.data.MSG === '操作成功') {
-                        // this.getPDIDFun(apid)
-                        this.creatAdPlan(this.apid)
-                    } else {
-                        if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                            this.loginTimeout()       // 登录超时
-                        } else {
-                            this.messageFun('warning','选点信息提交失败！')
-                        }
-                        this.ADloading.close()
-                    }
-                })
-            },
-            // 创建方案基本信息及投放城市详情(报价单数据提交)
-            creatAdPlan(apid){
-                console.log('creatAdPlan',this.quotation)
-                let arr = []
-                for(let key of this.quotation){
-                    for(let i in key.priceMsg){
-                        let minTime = ''
-                        let maxTime = ''
-                        if (key.priceMsg[i].schedules.length > 0 && key.priceMsg[i].schedules !== '' && key.priceMsg[i].schedules !== null) {
-                            let timeList = key.priceMsg[i].schedules.join(',')
-                            let schedulesArr = timeFormat.returnTimeArr(timeList,',','-')
-                            minTime = schedulesArr[0]
-                            maxTime = schedulesArr[schedulesArr.length - 1]
-                        } else {
-                            minTime = this.dateInput[0]
-                            maxTime = this.dateInput[1]
-                        }
-                        if(this.apMinTime === ''){
-                            this.apMinTime = minTime
-                        }else{
-                            if(this.apMinTime > minTime){
-                                this.apMinTime = minTime
-                            }
-                        }
-                        let pdid = this.getpdidByCityAndMType(i,key.city,key.asrID)
-                        console.log('pdid',pdid)
-                        arr.push({
-                            "pdID": pdid ? pdid : '',
-                            "pdRemark": key.priceMsg[i].remark || '',
-                            "rID": key.rid,
-                            "asrID": key.asrID,
-                            "pdDays":  key.priceMsg[i].tfl,
-                            "pdFreeNum": key.priceMsg[i].GMDate,                                  // 赠送面*天
-                            "pdStar": minTime.split(".").join('-'),
-                            "pdEnd": maxTime.split(".").join('-'),
-                            "pdAdFee": parseInt(key.priceMsg[i].advertyPrice * 100),              // 广告费用
-                            "pdNum": key.priceMsg[i].ADNumber,                                    // 点位数
-                            "pdAdMake": Number((key.priceMsg[i].makePrice * 100).toFixed(0)),     // 实计制作费用
-                            "pdTotal": Number((key.priceMsg[i].cash * 100).toFixed(0)),
-                            "pdSendFee": Number((key.priceMsg[i].zyzh * 100).toFixed(0)),
-                            "pdOtherFee": Number((key.priceMsg[i].other * 100).toFixed(0)),
-                            "pdType": i === 'adDoor' ? 0 : 1
-                        })
-                    }
-                }
-                console.log('城市详情',arr)
-                let params = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token,
-                    apId: apid,
-                    detail: JSON.stringify(arr),
-                }
-                console.log('编辑方案params',params)
-                api.postApi(this.apiVar.Advertisement + '/CreateAPDBatch', params).then(res=>{
-                    console.log('编辑方案',res)
-                    if(res.data.SysCode == 200200){
-                        this.PushADBFun(res.data.Data)
-                    }else if(res.data.SysCode == 300500){
-                        this.ADloading.close()
-                        this.messageFun('warning',res.data.MSG)
-                    }else if(res.data.SysCode == 100302 || res.data.MSG === '登陆超时'){
-                        this.ADloading.close()
-                        this.loginTimeout()
-                    }else{
-                        this.ADloading.close()
-                        this.messageFun('warning','价格信息提交失败')
-                    }
-                })
-            },
-            getpdidByCityAndMType(mType,city,asrID) {
-                console.log('this.pdidList',this.pdidList,mType,city,asrID)
-                for(let key of this.pdidList){
-                    if(mType === 'adDoor' && key.pdType == 0 && key.city === city && asrID == key.asrID){
-                        return key.pdID
-                    }else if (mType === 'roadGate' && key.pdType == 1 && key.city === city && asrID == key.asrID){
-                        return key.pdID
-                    }
-                }
-                return false
-            },
-            PushADBFun(data) {
-                let ADBData = data
-                let shopingArr = this.shopingList
-                console.log('shopingArr', shopingArr)
-                console.log('this.city', this.city)
-                let cityArr = []
-                for (let j = 0; j < ADBData.length; j++) {
-                    let cityObj = {city: ADBData[j].city, pdID: ADBData[j].pdID, pdType: ADBData[j].pdType,asrID:ADBData[j].asrID}
-                    cityArr.push(cityObj)
-                }
-                console.log('cityArr', cityArr)
-                let pbSetTime = this.timestampToTime(Date.parse(new Date()))    //
-                console.log('当前日期时间', pbSetTime)
-                let arr = []
-                for (let i = 0; i < shopingArr.length; i++) {
-                    for (let n = 0; n < cityArr.length; n++) {
-                        if (shopingArr[i].city == cityArr[n].city && shopingArr[i].asrID == cityArr[n].asrID) {
-                            if(cityArr[n].pdType == 0 && shopingArr[i].mVehicle === '广告门'){
-                                arr.push({
-                                    asID: shopingArr[i].asID,
-                                    pdID: cityArr[n].pdID,
-                                    pbStar: shopingArr[i].schedules.split('-')[0],
-                                    pbEnd: shopingArr[i].schedules.split('-')[1],
-                                    uID: this.sessionData.uID,
-                                    pbSetTime: pbSetTime,
-                                    mapCenterName: shopingArr[i].mapCenter
-                                })
-                                break
-                            }else if(cityArr[n].pdType == 1 && shopingArr[i].mVehicle === '道闸'){
-                                for(let key of shopingArr[i].asID){
-                                    // for(let key of shopingArr[i].asIDs.split(',')){
-                                    arr.push({
-                                        asID: key,
-                                        pdID: cityArr[n].pdID,
-                                        pbStar: shopingArr[i].schedules.split('-')[0],
-                                        pbEnd: shopingArr[i].schedules.split('-')[1],
-                                        uID: this.sessionData.uID,
-                                        pbSetTime: pbSetTime,
-                                        mapCenterName: shopingArr[i].mapCenter
-                                    })
-                                }
-                                break
-                            }
-                        }
-                    }
-                }
-                console.log('PushADBFun的arr', arr)
-                let postData = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token,
-                    abList: arr
-                }
-                api.postApi_json(this.apiVar.Advertisement + '/PushADB?uid='+this.sessionData.uID+'&token='+this.sessionData.token,postData).then(res => {
-                    console.log('PushADB提交选点', res)
-                    this.ADloading.close()
-                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
-                    } else {
-                        if (res.data === '' || res.data === null) {
-                            this.messageFun('warning','提交选点失败')
-                        } else {
-                            this.active = 3
-                            if (this.workInSync) {
-                                this.CreateShareADSFun()
-                            }
-                            if(this.apMinTime <= this.dateTime){
-                                this.messageFun('warning','该方案的投放期已经开始，建议立即发布该方案！')
-                            }else{
-                                this.messageFun('success','投放城市的报价信息提交成功')
-                            }
-                        }
-                    }
-                })
-            },
-            CreateShareADSFun() {
-                let urlPath = location.href
-                console.log(urlPath)
-                let aiInfo = {apname: this.planName, cname: this.cName, cband: this.cBand}
-                let params = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token,
-                    apid: this.editApid,
-                    aiinfo: JSON.stringify(aiInfo)
-                }
-                api.postApi(this.apiVar.Advertisement+'/CreateShareCode', params).then(res => {
-                    console.log('生成协同选点aiCode', res)
-                    this.shareADUrl = this.apiVar.qadnUrl + '/shareADList?apid=' + this.editApid + '&aicode=' + res.data.aiCode
-                    this.active = 3
-                })
-            },
             // 获取广告点位列表
             getAdList() {
                 console.log('当前页码',this.pageNo,'当前时间',this.dateInput)
@@ -3340,7 +3135,7 @@
                 } else if (this.active === 2) {
                     this.isCityPrice = false
                     this.vaildCityQuotation()
-                    if (!this.isCityPrice){
+                    if (!this.isCityPrice) {
                         if (letter === 'workInSync') {
                             this.workInSync = true
                         }
@@ -3350,9 +3145,9 @@
                             spinner: 'el-icon-loading',
                             background: 'rgba(0, 0, 0, 0.7)'
                         })
-                        this.SetADBFun()    // 创建方案
-                    }else{
-                        this.messageFun('warning','单城市总价格大于系统支持的最大价格（2000万）')
+                        this.UpdateAdPlanFun() // 创建方案
+                    } else {
+                        this.messageFun('warning', '单城市总价格大于系统支持的最大价格（2000万）')
                     }
                 }
                 if (this.active > 3) {
@@ -3379,6 +3174,156 @@
                         return false;
                     }
                 });
+            },
+            // 提交前校验单城市报价单价格是否大于2000w
+            vaildCityQuotation(){
+                for(let key of this.quotation){
+                    for(let i in key.priceMsg){
+                        // console.log('提交前校验单城市报价单价格是否大于2000w',key.priceMsg[i].total)
+                        if(key.priceMsg[i].total > 20000000){
+                            this.isCityPrice = true
+                            break
+                        }
+                    }
+                }
+            },
+            // 设置提交的详情数据
+            setDetailData() {
+                console.log('creatAdPlan', this.quotation)
+                let cityDetailList = []
+                for (let key of this.quotation) {
+                    for (let i in key.priceMsg) {
+                        let minTime = ''
+                        let maxTime = ''
+                        if (key.priceMsg[i].schedules && key.priceMsg[i].schedules.length > 0) {
+                            // 排期整合，获取最小最大的日期
+                            let timeList = key.priceMsg[i].schedules.join(',')
+                            let schedulesArr = timeFormat.returnTimeArr(timeList,',','-')
+                            minTime = schedulesArr[0]
+                            maxTime = schedulesArr[schedulesArr.length - 1]
+                        } else {
+                            minTime = timeFormat.returnDayCount(1,'/')  //this.dateInput[0]
+                            maxTime = timeFormat.returnDayCount(14,'/') //this.dateInput[1]
+                        }
+                        if (this.apMinTime === '') {
+                            this.apMinTime = minTime
+                        } else {
+                            if (this.apMinTime > minTime) {
+                                this.apMinTime = minTime
+                            }
+                        }
+                        let pdid = this.getpdidByCityAndMType(i,key.city,key.asrID)
+                        console.log('pdid',pdid)
+                        cityDetailList.push({
+                            "pdID": pdid ? pdid : '',
+                            "pdRemark": key.priceMsg[i].remark || '',
+                            "rID": key.rid,
+                            "city": key.city,
+                            "asrID": key.asrID,
+                            "pdDays":  key.priceMsg[i].tfl,
+                            "pdFreeNum": key.priceMsg[i].GMDate,                                  // 赠送面*天
+                            "pdStar": minTime,  // minTime.split(".").join('-'),
+                            "pdEnd": maxTime,   // maxTime.split(".").join('-'),
+                            "pdAdFee": parseInt(key.priceMsg[i].advertyPrice * 100),              // 广告费用
+                            "pdNum": key.priceMsg[i].ADNumber,                                    // 点位数
+                            "pdAdMake": Number((key.priceMsg[i].makePrice * 100).toFixed(0)),     // 实计制作费用
+                            "pdTotal": Number((key.priceMsg[i].cash * 100).toFixed(0)),
+                            "pdSendFee": Number((key.priceMsg[i].zyzh * 100).toFixed(0)),
+                            "pdOtherFee": Number((key.priceMsg[i].other * 100).toFixed(0)),
+                            "pdType": i === 'adDoor' ? 0 : 1,
+                            "abList": [],
+                        })
+                    }
+                }
+                // console.log('城市详情',cityDetailList)
+                console.log('购物车数据',this.shopingList)
+                // 点位与城市详情关联
+                let pbSetTime = this.timestampToTime(Date.parse(new Date()))
+                for (let key of this.shopingList) {
+                    for (let detailKey of cityDetailList) {
+                        if (key.city === detailKey.city && key.asrID == detailKey.asrID) {
+                            let adsData = {
+                                asID: key.asID,
+                                pdID: '',
+                                pbStar: key.schedules.split('-')[0],
+                                pbEnd: key.schedules.split('-')[1],
+                                uID: this.sessionData.uID,
+                                pbSetTime: pbSetTime,
+                                mapCenterName: key.mapCenter
+                            }
+                            if (key.mVehicle === '广告门' && detailKey.pdType === 0) {
+                                adsData.pdID = detailKey.pdID
+                                detailKey.abList.push(adsData)
+                                break
+                            } else if (key.mVehicle === '道闸' && detailKey.pdType === 1) {
+                                adsData.pdID = detailKey.pdID
+                                detailKey.abList.push(adsData)
+                                break
+                            }
+                        }
+                    }
+                }
+                console.log('城市详情cityDetailList',cityDetailList)
+                return cityDetailList
+            },
+            // 编辑方案
+            UpdateAdPlanFun(){
+                let detail = this.setDetailData()
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    apId: this.apid,
+                    detail: JSON.stringify(detail),
+                }
+                console.log('params',params)
+                api.postApi(this.apiVar.Advertisement + '/UpdateAdPlan', params).then(res => {
+                    console.log('编辑方案', res)
+                    this.ADloading.close()
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        this.loginTimeout()
+                    } else if (res.data.SysCode === 200200) {
+                        this.active = 3
+                        if (this.workInSync) {
+                            this.CreateShareADSFun()
+                        }
+                        if (this.apMinTime <= this.dateTime) {
+                            this.messageFun('warning', '该方案的投放期已经开始，建议立即发布该方案！')
+                        } else {
+                            this.messageFun('success', '方案编辑成功')
+                        }
+                    } else {
+                        this.messageFun('warning', '提交选点失败')
+                    }
+                })
+            },
+            // 根据城市和公司id返回pdid
+            getpdidByCityAndMType(mType, city, asrID) {
+                console.log('this.pdidList', this.pdidList, mType, city, asrID)
+                for (let key of this.pdidList) {
+                    if (mType === 'adDoor' && key.pdType == 0 && key.city === city && asrID == key.asrID) {
+                        return key.pdID
+                    } else if (mType === 'roadGate' && key.pdType == 1 && key.city === city && asrID == key.asrID) {
+                        return key.pdID
+                    }
+                }
+                return false
+            },
+            // 生成协同链接
+            CreateShareADSFun() {
+                let urlPath = location.href
+                console.log(urlPath)
+                let aiInfo = {apname: this.planName, cname: this.cName, cband: this.cBand}
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    apid: this.editApid,
+                    aiinfo: JSON.stringify(aiInfo)
+                }
+                api.postApi(this.apiVar.Advertisement+'/CreateShareCode', params).then(res => {
+                    console.log('生成协同选点aiCode', res)
+                    this.shareADUrl = this.apiVar.qadnUrl + '/shareADList?apid=' + this.editApid + '&aicode=' + res.data.aiCode
+                    this.active = 3
+                })
             },
             // 继续创建
             continueCreate() {

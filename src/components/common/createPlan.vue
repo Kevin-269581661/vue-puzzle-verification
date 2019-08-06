@@ -836,7 +836,7 @@
             <el-button plain v-if="active === 0" type="default" @click="exportEmpty()">导空点</el-button>
 
             <el-button @click="next" v-if="active == 0 || active == 1" type="primary">下一步</el-button>
-            <el-button @click="next" v-if="active == 2" type="primary">创建方案 </el-button>
+            <el-button @click="next" v-if="active == 2" type="primary" :disabled="createBtn">创建方案 </el-button>
 
             <!-- <p v-if="active === 0" style="color: #666;font-size: 14px;margin-top:10px;">备注：导空点功能目前导出的为最近一年的空点</p> -->
 
@@ -1448,6 +1448,7 @@
                 activeAdPlan: '',                 // 当前选择的方案
                 routePath: '',
                 isSelect: false,                  // 判断是否已经选择过点位
+                createBtn: false,                 // 创建的方案的按钮禁用-防止多次点击
             };
         },
         mounted() {
@@ -1569,45 +1570,40 @@
                 this.planForm.throwCity.push(this.indexData.rid)
             },
             // 获取权限下的城市列表
-            getCityList(){
-                // if (this.saleManageLevel == 1 && this.sessionData.authorCity == '0') {
-                //     this.cityOther = true
-                //     this.cityOptions = areaArr.province()
-                // } else {
-                    this.cityOther = false
-                    let params = {
-                        uid: this.sessionData.uID,
-                        token: this.sessionData.token
-                    }
-                    if(!this.isBD){
-                        params.suID = this.BDData.uid
-                    }
-                    api.getApi(this.apiVar.Advertisement + '/GetFanganCity', params).then(res => {
-                        console.log('获取权限下的城市列表', res.data)
-                        if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                            this.loginTimeout()       // 登录超时
-                        } else if(res.data.SysCode === 100200 || res.data.MSG === '该用户暂未分配公司！'){
-                            this.messageFun('warning','该用户暂未分配公司')
-                        } else {
-                            if (res.data !== '' && res.data !== null) {
-                                let resData = res.data
-                                let cityList = []
-                                for (let j = 0; j < resData.length; j++) {
-                                    let cityObj = {
-                                        label: resData[j].rName,
-                                        value: resData[j].rID.toString(),
-                                    }
-                                    cityList.push(cityObj);
+            getCityList() {
+                this.cityOther = false
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token
+                }
+                if (!this.isBD) {
+                    params.suID = this.BDData.uid
+                }
+                api.getApi(this.apiVar.Advertisement + '/GetFanganCity', params).then(res => {
+                    console.log('获取权限下的城市列表', res.data)
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        this.loginTimeout()       // 登录超时
+                    } else if (res.data.SysCode === 100200 || res.data.MSG === '该用户暂未分配公司！') {
+                        this.messageFun('warning', res.data.MSG)
+                    } else {
+                        if (res.data !== '' && res.data !== null) {
+                            let resData = res.data
+                            let cityList = []
+                            for (let j = 0; j < resData.length; j++) {
+                                let cityObj = {
+                                    label: resData[j].rName,
+                                    value: resData[j].rID.toString(),
                                 }
-                                this.throwCity = cityList
-                                console.log('cityList', cityList)
-                                this.cityOptions = areaArr.province()
-                            } else {
-                                this.messageFun('warning','城市数据获取异常')
+                                cityList.push(cityObj);
                             }
+                            this.throwCity = cityList
+                            console.log('cityList', cityList)
+                            this.cityOptions = areaArr.province()
+                        } else {
+                            this.messageFun('warning', '城市数据获取异常')
                         }
-                    })
-                // }
+                    }
+                })
             },
             // 下一步
             next() {
@@ -1625,6 +1621,11 @@
                         this.messageFun('warning','请选择点位')
                     }
                 } else if (this.active === 2) {
+                    this.createBtn = true
+                    let timer = setTimeout(()=>{
+                        this.createBtn = false
+                        clearTimeout(timer)
+                    },500)
                     this.isCityPrice = false
                     this.vaildCityQuotation()
                     // console.log('this.isCityPrice',this.isCityPrice)
@@ -1649,7 +1650,7 @@
             prev() {
                 if (this.active < 1) {
                     this.active = 0;
-                }else {
+                } else {
                     this.active--;
                 }
             },
@@ -5068,7 +5069,7 @@
                             if(this.apMinTime <= this.dateTime){
                                 this.messageFun('warning','该方案的投放期已经开始，建议立即发布该方案！')
                             }else{
-                                this.messageFun('success','投放城市的报价信息提交成功')
+                                this.messageFun('success','方案创建成功')
                             }
                             // 清除后台缓存
                             let params = {

@@ -94,7 +94,7 @@
                         </el-table-column>
                         <el-table-column class="tac" prop="apState" label="状态" min-width="6.1%" show-overflow-tooltip>
                             <template slot-scope="scope">
-                                <point-state :state-text="stateToText(scope.row.apState).text" :color="stateToText(scope.row.apState).color"></point-state>                                                                
+                                <point-state :state-text="stateToText(scope.row.apState).text" :color="stateToText(scope.row.apState).color"></point-state>
                             </template>
                         </el-table-column>
                         <el-table-column label="操作" width="100px" v-if="!(role=='OP' || role=='AD')">
@@ -199,7 +199,7 @@ import sessFun from "../../commonFun/sessFun.js";
 import cacheAdPlan from "../../commonFun/cacheAdPlan"
 import downloadVacancy from "../../components/common/components/vacancyDownload.vue"
 import noSearchResult from "./components/noSearchResult.vue";
-import pointState from './components/pointState.vue';    
+import pointState from './components/pointState.vue';
 
 
 import {
@@ -522,7 +522,7 @@ export default {
                 this.searchInfo.orderby = column.prop;
                 this.searchInfo.desc = 1;
             }
-            this.currPage = 1;            
+            this.currPage = 1;
             this.searchFun();
         },
         // 新建方案
@@ -841,7 +841,7 @@ export default {
                         }
                     }
                 }
-    
+
                 if (this.isLock) {
                     this.LockCity(arr, 'L');
                 } else {
@@ -1093,7 +1093,6 @@ export default {
         },
         // 放弃继续编辑
         cancelEdit(){
-
             this.$confirm('放弃后将清除该方案信息及点位!', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -1147,7 +1146,7 @@ a {
 }
 
 /*筛选*/
-.el-checkbox + .el-checkbox {
+/deep/ .el-checkbox-group .el-checkbox + .el-checkbox {
     margin-left: 0;
 }
 

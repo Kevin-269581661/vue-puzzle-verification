@@ -3067,11 +3067,7 @@ export default {
 
     /* 搜索 */
     .search-row {
-        margin: 16px 32px 0;
-    }
-
-    .search_col {
-        margin-left: 8px;
+        margin: 0 32px 0;
     }
 
     /*日期控件*/
@@ -3096,7 +3092,6 @@ export default {
         padding: 5px 20px;
 
     }
-
 
     .imgPreview /deep/ .el-dialog{
         width: 35%;
@@ -3174,7 +3169,7 @@ export default {
         border-bottom: 1px solid #e6e7e9;
         height: 53px;
         line-height: 54px;
-        margin: 0;
+        /*margin: 0;*/
     }
 
     /deep/ .mediaList_wrap .baojiadan .el-tabs__header {

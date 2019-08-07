@@ -937,6 +937,8 @@
                     token: this.sessionData.token,
                     onStart: this.resSearchDate[0],
                     onEnd: this.resSearchDate[1],
+                    createStar: this.resCreatDate[0],
+                    createEnd: this.resCreatDate[1],
                     asrIDs: this.returnAsrID(),// this.currCity,
                     wd: this.resInputVal,
                     maxPercent: isNaN(Number(this.pUpMax)) ? '' : this.pUpMax,
@@ -973,10 +975,12 @@
                     token: this.sessionData.token,
                     onStart: this.adsSearchDate[0],
                     onEnd: this.adsSearchDate[1],
-                    asrIDs: this.returnAsrID(),//this.currCity,
+                    createStar: this.adsCreatDate[0],
+                    createEnd: this.adsCreatDate[1],
+                    asrIDs: this.returnAsrID(),
                     wd: this.adsInputVal,
-                    maxPercent: this.cUpMax,
-                    minPercent: this.cUpMin,
+                    maxPercent: isNaN(Number(this.cUpMax)) ? '' : this.cUpMax,
+                    minPercent: isNaN(Number(this.cUpMin)) ? '' : this.cUpMin,
                 }
                 for(let i in params){
                     if(params[i] === '' || params[i] === undefined){

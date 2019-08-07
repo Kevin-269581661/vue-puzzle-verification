@@ -28,6 +28,7 @@
                         </el-dialog>
                         <div class="handleBtn">
                             <!-- <el-button plain @click="changeRemark = true" :disabled="usableBtn">监播备注</el-button> -->
+                            <el-button type="plain">换画</el-button>
                             <el-button type="primary" :disabled="usableBtn" v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0" @click="changePoint">换点</el-button>
                             <!--监播备注对话框-->
                             <el-dialog title="监播备注" :visible.sync="changeRemark" width="30%">
@@ -219,7 +220,8 @@
                                                 <div class="upload-img">
                                                     <div  class="img_box" v-for="(item,index) in updata.upImgArr"
                                                           @mouseenter="showPreImg = item.pID"
-                                                          @mouseleave="showPreImg = null">
+                                                          @mouseleave="showPreImg = null"
+                                                          :key="index">
                                                         <img class="upload_img_item" :src="item.url">
                                                         <label class="icon_success">
                                                             <i class="el-icon-check"></i>
@@ -336,7 +338,8 @@
                                                 <div class="upload-img">
                                                     <div  class="img_box" v-for="(item,index) in downData.downImgArr"
                                                           @mouseenter="showPreImg = item.pID"
-                                                          @mouseleave="showPreImg = null">
+                                                          @mouseleave="showPreImg = null"
+                                                          :key="index">
                                                         <img class="upload_img_item" :src="item.url">
                                                         <label class="icon_success">
                                                             <i class="el-icon-check"></i>
@@ -372,15 +375,16 @@
                                         </div>
                                     </div>
                                     <div class="pager">
-                                        <el-pagination v-if="paginationShow"
-                                                       background
-                                                       :current-page.sync="currDownPage"
-                                                       :page-sizes="[6, 12]"
-                                                       :page-size="pageDownSize"
-                                                       layout="sizes, prev, pager, next, jumper"
-                                                       :total="totalDownPageNum"
-                                                       @size-change="sizeChange"
-                                                       @current-change='changePage'>
+                                        <el-pagination 
+                                            v-if="paginationShow"
+                                            background
+                                            :current-page.sync="currDownPage"
+                                            :page-sizes="[6, 12]"
+                                            :page-size="pageDownSize"
+                                            layout="sizes, prev, pager, next, jumper"
+                                            :total="totalDownPageNum"
+                                            @size-change="sizeChange"
+                                            @current-change='changePage'>
                                         </el-pagination>
                                     </div>
                                     <div class="up-report-bottom">
@@ -398,6 +402,11 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </el-tab-pane>
+                    <el-tab-pane label="换画报告" name="sixth">
+                        <div class="changepic_box">
+                            <change-pic></change-pic>
                         </div>
                     </el-tab-pane>
                 </el-tabs>
@@ -439,8 +448,8 @@
                     title="画面备注信息"
                     :visible.sync="showPhotoRemark">
                     <p class="inline_dialog">
-                        <el-input v-model="resNameSec" placeholder="请输入资源名称"></el-input>
-                        <el-select v-model="mapName" placeholder="请选择地图中心点">
+                        <el-input v-model="resNameSec" placeholder="请输入资源名称" size="small"></el-input>
+                        <el-select v-model="mapName" placeholder="请选择地图中心点" size="small">
                             <el-option v-for="(item, index) of mapArr" :key="index" :label="item.name" :value="item.name"></el-option>
                         </el-select>
                         <el-button size="small" type="primary" @click="searchInfo()" :disabled="!isSearch">搜索</el-button>
@@ -538,6 +547,7 @@ import material from "./components/materialInfo.vue";
 import detail from "./components/detailInfo.vue";
 import addAds from "./components/addAds"
 import noSearchResult from "./components/noSearchResult.vue";
+import changePic from "./components/changePic.vue";
 
 import {
     Table,
@@ -571,6 +581,7 @@ export default {
         material,
         detail,
         addAds,
+        changePic,
         noSearchResult,
         elTable: Table,
         elTableColumn: TableColumn,
@@ -2989,6 +3000,10 @@ export default {
         margin-bottom: 10px;
     }
 
+    /* 换画 */
+    .changepic_box{
+        margin: 16px 32px 32px;
+    }
     /*按钮*/
     .content_bottom_btn {
         width: 100%;
@@ -3086,7 +3101,7 @@ export default {
         top: -2px;
     }
 
-    /deep/ .el-input__inner {
+    /deep/ .search-row .el-input__inner {
         width: 260px;
         height: 32px;
         line-height: 32px;

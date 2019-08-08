@@ -92,4 +92,4 @@
  `onSuccess` | 是 | function | --- | 打印成功信息 | 拼接成功时的回调
  `onError` | 否 | function | --- | 打印失败信息 | 拼接失败时的回调
 
-
+可以clone下来，运行demo演示示例。

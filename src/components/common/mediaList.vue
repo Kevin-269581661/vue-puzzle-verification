@@ -164,10 +164,10 @@
                                         <div slot="content">
                                             A面:{{scope.row.asState.A == '1' ? '正常' : '禁用'}}  B面:{{scope.row.asState.B == '1' ? '正常' : '禁用'}}
                                         </div>
-                                        <point-state :state-text="stateToText(scope.row.mState).text" :color="stateToText(scope.row.mState).color"></point-state>
+                                        <point-state :state-text="scope.row.mState" :color="stateToText(scope.row.mState).color"></point-state>
                                     </el-tooltip>
                                 </span>
-                                <point-state v-else :state-text="stateToText(scope.row.mState).text" :color="stateToText(scope.row.mState).color"></point-state>
+                                <point-state v-else :state-text="scope.row.mState" :color="stateToText(scope.row.mState).color"></point-state>
                             </template>
                         </el-table-column>
                         <el-table-column

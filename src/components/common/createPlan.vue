@@ -15,14 +15,22 @@
                             </el-form-item>
                             <el-form-item label="所属销售：" prop="ownerSales">
                                 <el-input v-if="isBD" v-model="planForm.ownerSales" disabled></el-input>
-                                <!--BDData.realName-->
-                                <el-autocomplete
-                                    v-else
-                                    v-model="planForm.ownerSales"
-                                    :fetch-suggestions="querySearchAsync"
-                                    placeholder="请输入账号"
-                                >
-                                </el-autocomplete>
+                                <el-select v-model="planForm.ownerSales" v-else
+                                    filterable
+                                    remote
+                                    clearable
+                                    placeholder="请输入关键词"
+                                    :remote-method="querySearchAsync"
+                                    :loading="salerListLoading"
+                                    :highlight-first-item="true"
+                                    @change="changeSaler">
+                                    <el-option
+                                        v-for="item in salerList"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                    </el-option>
+                                </el-select>
                             </el-form-item>
                             <el-form-item label="公司名称：" prop="companyName">
                                 <el-select v-model="planForm.companyName" @change="GetBrandByCid" placeholder="请选择公司名称" filterable>
@@ -1296,6 +1304,10 @@
                     ownerBU: '',    // 所属联系人
                     planRemark: '',
                 },
+                // 媒介选择所属销售列表
+                salerList:[],
+                // 获取销售选项loading
+                salerListLoading: true,
                 //
                 industryID: '',     // 所选公司所在的行业
                 planRules: {
@@ -2481,9 +2493,11 @@
                                     for (let t = 0; t < this.throwCity.length; t++) {
                                         if (city_rid === this.throwCity[t].value) {
                                             this.throwCity.splice(t, 1)
+                                            break
                                         }
                                     }
                                     this.planForm.throwCity.splice(n, 1)
+                                    break
                                 }
                             }
                         }
@@ -2540,52 +2554,58 @@
                     }
                 }
             },
-            // 登录用户为媒介输入销售用户名去获取该销售的信息以便获取接下来的城市、公司、品牌、投放城市等信息
-            querySearchAsync(queryString, callback) {
-                let uid = this.sessionData.uID
-                if (queryString) {
-                    let params = {
-                        uid: uid,
-                        token: this.sessionData.token,
-                        sname: queryString
-                    }
-                    api.postApi(this.apiVar.UCAPI+'/GetUserName', params).then(res => {
-                        console.log('GetUserName', res)
-                        if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                            this.loginTimeout()
-                        } else {
-                            console.log('媒介销售信息', this.BDData)
-                            if (res.data.uID) {
-                                this.BDData.uid = res.data.uID
-                                this.saleManageLevel = res.data.saleManageLevel || 0
-                                console.log('GetUserName数据包', res.data)
-                                res.data.value = res.data.realName;
-                                this.BDData.realName = res.data.realName
-                                this.planForm.ownerSales = res.data.realName
-                                // 重新输入账号时，初始化部分数据
-                                this.planForm.companyName = ''
-                                this.planForm.companyBrand = ''
-                                this.planForm.ownerBU = ''
-                                this.planForm.throwCity = []
-                                this.dynamicTags = []
-                                this.throwCity = []
-                                this.getCityList()
-                                this.Get_cName()
-                                let results = [res.data];
-                                callback(results);
-                            } else {
-                                this.BDData.uid = '0'
-                                this.messageFun('warning',res.data.MSG)
-                                callback([]);
-                            }
-                        }
+            // 选择所属销售
+            changeSaler(val){
+                console.log('选择所属销售',val)
+                // 重新输入账号时，初始化部分数据
+                this.planForm.companyName = ''
+                this.planForm.companyBrand = ''
+                this.planForm.ownerBU = ''
+                this.planForm.throwCity = []
+                this.dynamicTags = []
+                this.throwCity = []
+                this.$refs['planForm'].clearValidate()
+                if (val) {
+                    this.BDData.uid = val
+                    this.getCityList()
+                    this.Get_cName()
+                } else {
 
-                    });
-                }else{
-                    callback([]);
                 }
             },
-            //获取公司名称列表MyCustomer
+            // 登录用户为媒介输入销售用户名去获取该销售的信息以便获取接下来的城市、公司、品牌、投放城市等信息
+            querySearchAsync(query) {
+                if (query !== '') {
+                    this.salerListLoading = true;
+                    let params = {
+                        uid: this.sessionData.uID,
+                        token: this.sessionData.token,
+                        keyword: query
+                    }
+                    api.postApi(this.apiVar.UCAPI + '/findBDUserByKeyword',params).then(res => {
+                        console.log('findBDUserByKeyword', res)
+                        if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                            this.loginTimeout()
+                        } else if (res.data.SysCode === 200200) {
+                            let arr = []
+                            for (let key of res.data.data) {
+                                arr.push({
+                                    label: key.realName + '(' + key.sName + ')',
+                                    value: key.uID,
+                                    saleManageLevel: key.saleManageLevel,
+                                })
+                            }
+                            this.salerList = arr
+                        } else {
+                            this.salerList = [];
+                        }
+                        this.salerListLoading = false;
+                    })
+                } else {
+                    this.salerList = [];
+                    this.salerListLoading = false;
+                }
+            },
             Get_cName() {
                 let params = {
                     uid: this.BDData.uid,

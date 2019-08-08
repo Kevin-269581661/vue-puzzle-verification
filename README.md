@@ -3,7 +3,7 @@
 ## 效果展示
 ### 1. 简单用法:
 ![简单用法](./vue-puzzle-verification/src/assets/demo-img/简单用法.jpg)   
-```javascript
+```html
 <div class="login-box">
   <button @click="handleClick(1)">最简单用法</button>
   <div class="puzzle-box">
@@ -16,7 +16,7 @@
 ```
 ### 2. 拼图形滑块:
 ![拼图形滑块](./vue-puzzle-verification/src/assets/demo-img/拼图形滑块.jpg)   
- ```javascript
+ ```html
 <div class="login-box">
   <button @click="handleClick(2)">拼图形滑块</button>
   <div class="puzzle-box">
@@ -31,7 +31,7 @@
  ```
 ### 3. 控制大小:
 ![控制大小](./vue-puzzle-verification/src/assets/demo-img/控制大小.jpg)   
-```javascript
+```html
 <div class="login-box">
   <button @click="handleClick(3)">控制大小</button>
   <div class="puzzle-box">
@@ -48,7 +48,7 @@
 ```
 ### 4. 控制误差:
 ![控制误差](./vue-puzzle-verification/src/assets/demo-img/控制误差.jpg)      
-```javascript
+```html
 <div class="login-box">
   <button @click="handleClick(4)">控制误差</button>
   <div class="puzzle-box">
@@ -64,7 +64,7 @@
 ```
 ### 5. 滑块出现的范围:
 ![滑块出现的范围](./vue-puzzle-verification/src/assets/demo-img/滑块出现的范围.png)     
-```javascript
+```html
 <div class="login-box">
   <button @click="handleClick(5)">控制滑块出现位置范围</button>
   <div class="puzzle-box">

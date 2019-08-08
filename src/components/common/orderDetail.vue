@@ -499,8 +499,10 @@
                         </el-table-column>
                         <el-table-column prop="imgUrl" label="操作" width="80">
                             <template slot-scope="scope">
-                                <el-button size="small" icon="el-icon-picture" :style="{'color':scope.row.imgUrl?'#108DE7':''}" @click="previewImg(scope.row)" :disabled="!scope.row.imgUrl"></el-button>
-                                <el-button size="small" icon="el-icon-delete" :style="{'color':scope.row.imgUrl?'#108DE7':''}" @click="deleteOneImg(scope.row, scope.$index)" :disabled="!scope.row.imgUrl"></el-button>
+                                <i class="el-icon-picture" :style="{color:scope.row.imgUrl?'#108DE7':'', margin: '0 10px'}" @click="previewImg(scope.row)" :disabled="!scope.row.imgUrl"></i>
+                                <i class="el-icon-delete" :style="{color:scope.row.imgUrl?'#108DE7':''}" @click="deleteOneImg(scope.row, scope.$index)" :disabled="!scope.row.imgUrl"></i>
+                                <!-- <el-button size="small" icon="el-icon-picture" :style="{'color':scope.row.imgUrl?'#108DE7':''}" @click="previewImg(scope.row)" :disabled="!scope.row.imgUrl"></el-button>
+                                <el-button size="small" icon="el-icon-delete" :style="{'color':scope.row.imgUrl?'#108DE7':''}" @click="deleteOneImg(scope.row, scope.$index)" :disabled="!scope.row.imgUrl"></el-button> -->
                             </template>
                         </el-table-column>
 
@@ -571,7 +573,6 @@ import {
     MessageBox,
     Message
 } from "element-ui";
-import timeFormat from '../../commonFun/timeFormat.js';
 import sessFun from '../../commonFun/sessFun.js';
 
 export default {
@@ -1083,9 +1084,14 @@ export default {
         },
         // 表格数据格式
         setTableData(item){
-            let timeRange = timeFormat.toDate(item.lStar, '/') +'-'+ timeFormat.toDate(item.lEnd, '/');
-            let timeRange1 = timeFormat.toDate(item.lStar, '/') +'-'+ timeFormat.toDate(item.lSetTime, '/');
+            let timeRange = dateFormat.toDate(item.lStar, '/') +'-'+ dateFormat.toDate(item.lEnd, '/');
+            let timeRange1 = dateFormat.toDate(item.lStar, '/') +'-'+ dateFormat.toDate(item.lSetTime, '/');
             let obj = {
+                resID: item.resID,
+                lID: item.lID,
+                lStar: item.lStar,
+                lEnd: item.lEnd,
+                asID: item.asID,
                 resName: item.resName,
                 mTitle: item.mTitle,
                 asLab: item.asLab,
@@ -1093,14 +1099,10 @@ export default {
                 rName: item.rName,
                 map: item.mapCenterName,
                 timeRange: item.lState==2? timeRange1 : timeRange,
+                changePicTime: '',
                 remark: item.remark?item.remark:'',
                 imgUrl: item.picUrl?item.picUrl:'',
                 uploadUser: item.uploadUser?item.uploadUser:'',
-                resID: item.resID,
-                lID: item.lID,
-                lStar: item.lStar,
-                lEnd: item.lEnd,
-                asID: item.asID,
                 isSelect: false,
             };
             return obj;

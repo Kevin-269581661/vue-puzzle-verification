@@ -693,15 +693,15 @@ export default {
                     if(this.houselist.length){
                         this.showPhoto = true;
                     } else{
-                        Message.info('部分社区审核中');
+                        sessFun.messageFun('info', '部分社区审核中');
                     }
                 }else {
-                    Message.warning(res.data.MSG);
+                    sessFun.messageFun('warning', res.data.MSG);
                 }
             });
         },
         cancelApply() {
-            Message.info('取消画像申请');
+            sessFun.messageFun('info', '取消画像申请');
             this.showPhoto = !this.showPhoto;
         },
         confirmApply(data) {

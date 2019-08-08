@@ -2,58 +2,60 @@
   <div class="container">
     <div class="login-box">
       <button @click="handleClick(1)">最简单用法</button>
-      <button @click="handleClick(2)">方形滑块</button>
-      <button @click="handleClick(3)">拼图形滑块</button>
-      <button @click="handleClick(4)">大小可控</button>
-      <button @click="handleClick(5)">位置可控</button>
       <div class="puzzle-box">
         <PuzzleVerification
-          v-model="isVerificationShow"
-          :onSuccess="handleSuccess1"
+          v-model="isVerificationShow1"
+          :onSuccess="handleSuccess"
         />
+      </div>
+    </div>
+
+    <div class="login-box">
+      <button @click="handleClick(2)">拼图形滑块</button>
+      <div class="puzzle-box">
         <PuzzleVerification
-          v-model="isVerificationShow"
+          v-model="isVerificationShow2"
+          :puzzleImgList="puzzleImgList"
+          blockType="puzzle"
+          :onSuccess="handleSuccess"
+        />
+      </div>
+    </div>
+
+    <div class="login-box">
+      <button @click="handleClick(3)">控制大小</button>
+      <div class="puzzle-box">
+        <PuzzleVerification
+          v-model="isVerificationShow3"
           width="300"
           height="200"
-          :puzzleImgList="puzzleImgList"
           blockSize="80"
-          deviation="10"
           blockRadius="5"
-          blockType="puzzle"
-          wraperPadding="50"
+          :onSuccess="handleSuccess"
         />
+      </div>
+    </div>
+
+    <div class="login-box">
+      <button @click="handleClick(4)">控制误差</button>
+      <div class="puzzle-box">
         <PuzzleVerification
-          v-model="isVerificationShow"
-          width="300"
-          height="200"
+          v-model="isVerificationShow4"
           :puzzleImgList="puzzleImgList"
-          blockSize="80"
-          deviation="10"
-          blockRadius="5"
+          deviation="20"
           blockType="puzzle"
-          wraperPadding="50"
+          :onSuccess="handleSuccess"
         />
+      </div>
+    </div>
+
+    <div class="login-box">
+      <button @click="handleClick(5)">控制滑块出现位置范围</button>
+      <div class="puzzle-box">
         <PuzzleVerification
-          v-model="isVerificationShow"
-          width="300"
-          height="200"
-          :puzzleImgList="puzzleImgList"
-          blockSize="80"
-          deviation="10"
-          blockRadius="5"
-          blockType="puzzle"
+          v-model="isVerificationShow5"
           wraperPadding="50"
-        />
-        <PuzzleVerification
-          v-model="isVerificationShow"
-          width="300"
-          height="200"
-          :puzzleImgList="puzzleImgList"
-          blockSize="80"
-          deviation="10"
-          blockRadius="5"
-          blockType="puzzle"
-          wraperPadding="50"
+          :onSuccess="handleSuccess"
         />
       </div>
     </div>
@@ -73,7 +75,11 @@ export default {
       isVerificationShow3: false,
       isVerificationShow4: false,
       isVerificationShow5: false,
-      puzzleImgList:[]
+      puzzleImgList:[
+        require("../assets/thumbnail-img01.jpg"),
+        require("../assets/thumbnail-img02.jpg"),
+        require("../assets/thumbnail-img03.jpg")
+      ]
     }
   },
   watch: {
@@ -85,8 +91,23 @@ export default {
     handleSuccess() {
       console.log('验证成功了')
     },
-    handleClick () {
-      this.isVerificationShow = true;
+    handleClick (n) {
+      switch(n) {
+        case 1:
+          this.isVerificationShow1 = true;
+          break;
+        case 2:
+          this.isVerificationShow2 = true;
+          break;
+        case 3:
+          this.isVerificationShow3 = true;
+          break;
+        case 4:
+          this.isVerificationShow4 = true;
+          break;
+        default:
+          this.isVerificationShow5 = true;
+      }
     }
   }
 }
@@ -95,9 +116,11 @@ export default {
   .container {
     padding-top: 100px;
     position: relative;
+    display: flex;
+    flex-flow: row wrap;
     .login-box {
-      width: 300px;
-      margin: 0 auto;
+      width: 400px;
+      height: 300px;
     }
     .puzzle-box {
       position: absolute;

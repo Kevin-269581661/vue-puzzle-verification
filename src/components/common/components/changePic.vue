@@ -3,8 +3,8 @@
     <div class="pic_box">
         <!-- 上下刊 -->
         <template v-if="type==1 || type == 2">
-            <!-- <template>
-                <el-radio-group v-model="mediaDownType" size="medium" @change="changeDownMedia()" class="radio_style">
+            <template>
+                <el-radio-group v-model="publishSearchInfo.mediaType" size="medium" @change="changeMedia()" class="radio_style">
                     <el-radio-button label="广告门"></el-radio-button>
                     <el-radio-button label="道闸"></el-radio-button>
                 </el-radio-group>
@@ -12,22 +12,22 @@
             </template>
 
             <div class="up-loader-header">
-                <el-cascader :options="citys" v-model="citySelect" @change="searchImgChange()">
+                <el-cascader :options="publishSearchInfo.citys" v-model="publishNumInfo.citySelect" @change="searchImgChange()">
                 </el-cascader>
-                <el-select placeholder="请选择资源" filterable v-model="allhouse" @change="searchImg()">
-                    <el-option v-for="(item, index) of allResource" :key="index" :label="item.resName" :value="item.value"></el-option>
+                <el-select placeholder="请选择资源" filterable v-model="publishNumInfo.allhouse" @change="searchImg()">
+                    <el-option v-for="(item, index) of publishSearchInfo.allResource" :key="index" :label="item.resName" :value="item.value"></el-option>
                 </el-select>
-                <el-select placeholder="请选择监播图" v-model="allPic" @change="searchImg()">
+                <el-select placeholder="请选择监播图" v-model="publishNumInfo.allPic" @change="searchImg()">
                     <el-option label="已上传" value="2"></el-option>
                     <el-option label="未上传" value="3"></el-option>
                 </el-select>
                 <div class="progress">
-                    <el-progress :percentage="downImgPercent" :text-inside="true"></el-progress>
-                    <span>{{ currDownNum }} / {{ totalDownNum }}</span>
+                    <el-progress :percentage="publishNumInfo.percent" :text-inside="true"></el-progress>
+                    <span>{{ publishNumInfo.currNum }} / {{ publishNumInfo.totalNum }}</span>
                 </div>
-            </div> -->
+            </div>
         </template>
-        <!-- 换画 -->
+        <!-- 换画报告 -->
         <template v-else>
             <div class="list_pic">
                 <div class="pic_left">
@@ -77,18 +77,30 @@
             </div>
         </template>
 
-        <!-- 换画报告 -->
+        <!-- 图片列表 -->
         <div class="imgs_box">
             <div class="imgs_point">
                 <div class="point_item" v-for="(item, index) of imageArr" :key="index">
                     <div class="detail_top">
-                        <p>{{ item.city+item.rName }}-{{ item.resName }}-{{ item.mTitle }}-{{ item.asLab }}</p>
+                        <el-tooltip class="item" effect="dark" :content='item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab' placement="bottom" v-if='(item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab).length>23'>
+                            <span>{{wordlimit(item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab, 23)}}</span>
+                        </el-tooltip>
+                        <span v-else>{{item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab}}</span>
+                        <p class="car_header">
+                            <el-tooltip class="item" effect="dark" :content="item.assetTag" placement="bottom" v-if="item.assetTag&&item.assetTag.length>10">
+                                <span><i class="el-icon-date date_fa" type="text"></i>{{wordlimit(item.assetTag, 10)}}</span>
+                            </el-tooltip>
+                            <span v-else><i class="el-icon-date date_fa" type="text"></i>{{item.assetTag}}</span>
+                            <span v-if="type ==1 || type ==2"><i class="el-icon-date date_fa" type="text"></i>{{item.timeRange}}</span>
+                            <span v-if="type==3"><i class="el-icon-date date_fa" type="text"></i>换画日期:{{ item.changePicTime }}</span>
+                        </p>
+                        <!-- <p>{{ item.city+item.rName }}-{{ item.resName }}-{{ item.mTitle }}-{{ item.asLab }}</p>
                         <p class="car_header">
                             <span>
                                 <i class="el-icon-date date_fa" type="text"></i>{{ item.assetTag }}</span>
                             <span>
                                 <i class="el-icon-date date_fa" type="text"></i>换画日期:{{ item.changePicTime }}</span>
-                        </p>
+                        </p> -->
                     </div>
                     <div class="detail_con">
                         <div class="img_box"
@@ -110,23 +122,23 @@
                             </div>
                         </div>
 
-                            <!-- :key="index+'-'+currUpPage+'-1'" -->
-                        <!-- <el-upload class="upload_plus"
-                            @click.native="saveId(updata)"
-                            :class="{disabled:uploadDisabled(updata.upImgArr)}"
+                        <el-upload class="upload_plus"
+                            :key="index+'-'+pageInfo.currPage+'-1'"
+                            @click.native="saveId(item)"
+                            :class="{disabled:uploadDisabled(item.photoList)}"
                             :action="doUpload"
                             :http-request="uploadImg"
                             :limit="6"
                             list-type="picture-card"
                             :show-file-list="true"
-                            :file-list="updata.upImgArr"
+                            :file-list="item.photoList"
                             :before-upload="beforeAvatarUpload"
                             :before-remove="beforeImgRemove"
                             :on-preview="handlePictureCardPreview"
                             :on-remove="handleRemove"
                             :on-exceed="handleExceed" multiple>
                             <i class="el-icon-plus"></i>
-                        </el-upload> -->
+                        </el-upload>
                     </div>
                 </div>
             </div>
@@ -136,6 +148,13 @@
         <div class="pager">
             <el-pagination v-if="pageInfo.paginationShow" background :current-page.sync="pageInfo.currPage" :page-sizes="[6, 12]" :page-size="pageInfo.pageSize" layout="sizes, prev, pager, next, jumper" :total="pageInfo.totalNum" @size-change="sizeChange" @current-change='changePage'>
             </el-pagination>
+        </div>
+
+        <div class="up-report-bottom">
+            <!-- <el-button plain @click="downloadImg('SK')" :loading="downLoading">导出图片</el-button>
+            <el-button type="primary" @click="submitUpload('SK')">保存</el-button>
+            <el-button plain @click="showH5('SK')">查看H5</el-button>
+            <el-button plain @click="updateReport('SK')" :loading="updateLoading">更新报告</el-button> -->
         </div>
 
         <!-- 换画弹出框 -->
@@ -243,10 +262,12 @@
 </template>
 
 <script>
-import noSearchResult from "./noSearchResult.vue";
 import { api } from "../../../api/api.js";
+import noSearchResult from "./noSearchResult.vue";
 import timeFormat from '../../../commonFun/timeFormat.js';
 import sessFun from '../../../commonFun/sessFun.js';
+// 时间格式化
+import dateFormat from "../../../commonFun/timeFormat.js";
 
 export default {
     components: {
@@ -260,6 +281,28 @@ export default {
     },
     data() {
         return {
+            // 上下刊搜索
+            publishSearchInfo:{
+                // 媒体类型
+                mediaType: '广告门',
+                // 城市选择
+                citySelect: [],
+                // 资源选择
+                allhouse: '',
+                // 监播图选择
+                allPic: '',
+                // 搜索列表
+                // 城市列表
+                citys: [],
+                // 资源列表
+                allResource: [],
+            },
+            // 上下刊百分比数量等
+            publishNumInfo:{
+                percent: 0,
+                currNum: 0,
+                totalNum: 0,
+            },
             // 搜索信息
             searchInfo: {
                 mediaType: "",
@@ -478,6 +521,39 @@ export default {
         }
     },
     methods: {
+        // 获取图片列表
+        getImgArr(){
+            let type = this.type;
+            if(type == 1 || type ==2){
+                // 上下刊报告列表
+                this.searchFun();
+            }else if(type == 3){
+                // 换画报告列表
+                this.search();
+            }
+        },
+        changeMedia(){
+            let { mediaType } = this.publishSearchInfo;
+            // if(mediaType == '广告门'){
+            //     this.allResource = this.mediaAdData;
+            //     this.citys = this.AdCitys;
+            //     this.allResource.concat();
+            //     this.citys.concat();
+            // }
+            // if(mediaType == '道闸'){
+            //     this.allResource = this.mediaDaoData
+            //     this.citys = this.DaoCitys;
+            //     this.allResource.concat();
+            //     this.citys.concat();
+            // }
+            // this.currUpPage = 1;
+            // this.currDownPage = 1;
+            // this.citySelect = [];
+            // this.allhouse = '';
+            // this.allPic = '';
+
+            this.searchFun();
+        },
         /**
          * 换画报告列表
          */
@@ -548,7 +624,7 @@ export default {
         },
         searchInfoFun(){
             let info = this.searchDataFormat();
-            // this.getMaterInfo(info);
+            this.getMaterInfo(info);
         },
         getMaterInfo(params){
             api.postApi(this.apiVar.Advertisement+'/GetAdMaterial', params).then(res =>{
@@ -718,10 +794,13 @@ export default {
         // 改变页数
         sizeChange(pageVal) {
             this.pageInfo.currPage = 1;
+            this.pageInfo.pageSize = pageVal;
+            this.getImgArr();
         },
         // 点击页数
         changePage(page) {
             this.pageInfo.currPage = page;
+            this.getImgArr();
         },
         // 查看图片
         previewImg(row) {
@@ -748,16 +827,696 @@ export default {
         saveAll() {
             this.isShowPic = false;
             console.log(this.pointArr);
-        }
+        },
+
+        // 上下刊报告
+        searchFun(){
+            let info = {};
+            if(this.type == 1){
+                info = this.searchFormat('SK');
+            }else if(this.type == 2){
+                info = this.searchFormat('XK');
+            }
+            this.getImgInfo(info);
+        },
+        // 搜索数据格式化
+        searchFormat(type){
+            let { uID, token } = this.sessionData;
+            let { currPage, pageSize } = this.pageInfo;
+            console.log('----currpage---', currPage, pageSize);
+            let { mediaType, citySelect, allhouse, allPic } = this.publishSearchInfo;
+            let info = {
+                uid: uID,
+                token: token,
+                apId: sessionStorage.getItem('order_apid'),
+                pType: type,
+                pageNum: currPage,
+                pageSize: pageSize,
+                mVehicle: mediaType,
+            };
+
+            if(allPic){
+                if(allPic == '2'){
+                    info.hasUpload = "true";
+                }
+                if(allPic == '3'){
+                    info.hasUpload = "false";
+                }
+            }
+            if(citySelect.length){
+                if(citySelect[0] == '全部'){
+                    // this.searchFun();
+                }else{
+                    info.city = citySelect[0];
+                    info.district = citySelect[1];
+                }
+            }
+            if(allhouse){
+                info.resid = allhouse;
+            }
+            console.log('type---', info);
+            return info;
+        },
+        // 上下刊报告列表
+        getImgInfo(params){
+            api.postApi(this.apiVar.Advertisement+"/GetImg", params)
+                .then(res => {
+                    if (!res.data.SysCode) {
+                        console.log(res.data);
+                        let dataInfo = res.data;
+                        let percent = dataInfo.totalCount? Number(((dataInfo.hasPhotoCount / dataInfo.totalCount)*100).toFixed(2)) : 0;
+                        this.publishNumInfo = {
+                            percent: percent,
+                            currNum: dataInfo.hasPhotoCount,
+                            totalNum: dataInfo.totalCount,
+                        };
+
+                        this.pageInfo = {
+                            ...this.pageInfo,
+                            ...({totalNum: dataInfo.searchCount}),
+                        };
+                        for(let data of dataInfo.dataList){
+                            for(let item of data.photoList){
+                                item.name = item.pID+'.png',
+                                item.url = item.pURL;
+                                item.pID = item.pID;
+                                item.isCollection = false
+                            }
+                            let time = dateFormat.toDate(data.lStar, "/") + "-" +dateFormat.toDate(data.lEnd, "/");
+                            data.timeRange = time;
+                            data.upImgArr = data.photoList;
+                        }
+                        this.imageArr = dataInfo.dataList;
+                        // this.checkImgStatus('SK');
+                        console.log('this.imageArr',this.imageArr)
+                        // this.UpReportLoading = false;
+                        if(dataInfo.totalCount == 0){
+                            Message.warning('暂无数据');
+                        }
+                    } else if (res.data.SysCode == 100302) {
+                        this.loginTimeout();
+                    } else {
+                        Message.warning(res.data.MSG);
+                    }
+                })
+                .catch(res => {
+                    // this.UpReportLoading = false;
+                    console.log(res);
+                });
+        },
+
+
+        // 获取上刊图片数据
+        getUpImgInfo(params) {
+            api.postApi(this.apiVar.Advertisement+"/GetImg", params)
+                .then(res => {
+                    if (!res.data.SysCode) {
+                        console.log(res.data);
+                        let dataInfo = res.data;
+                        this.totalUpNum = dataInfo.totalCount;
+                        this.totalUpPageNum = dataInfo.searchCount;
+                        this.currUpNum = dataInfo.hasPhotoCount;
+                        // this.upImgPercent = this.totalUpNum? Math.ceil((this.currUpNum / this.totalUpNum)*100):0;
+                        this.upImgPercent = this.totalUpNum? Number(((this.currUpNum / this.totalUpNum)*100).toFixed(2)):0;
+                        for(let data of dataInfo.dataList){
+                            for(let item of data.photoList){
+                                item.name = item.pID+'.png',
+                                item.url = item.pURL;
+                                item.pID = item.pID;
+                                item.isCollection = false
+                            }
+                            let time = this.formatTime(data.lStar) + "-" +this.formatTime(data.lEnd);
+                            data.timeRange = time;
+                            data.upImgArr = data.photoList;
+                        }
+                        this.pageUpReportArr = dataInfo.dataList;
+                        this.checkImgStatus('SK')
+                        console.log('this.pageUpReportArr',this.pageUpReportArr)
+                        this.UpReportLoading = false;
+                        if(dataInfo.totalCount == 0){
+                            Message.warning('暂无数据');
+                        }
+                    } else if (res.data.SysCode == 100302) {
+                        this.loginTimeout();
+                    } else {
+                        Message.warning(res.data.MSG);
+                    }
+                })
+                .catch(res => {
+                    this.UpReportLoading = false;
+                    console.log(res);
+                });
+        },
+        // 获取下刊图片数据
+        getDownImgInfo(params) {
+            api.postApi(this.apiVar.Advertisement+"/GetImg", params)
+                .then(res => {
+                    if (!res.data.SysCode) {
+                        console.log(res.data);
+                        let dataInfo = res.data;
+                        this.totalDownNum = dataInfo.totalCount;
+                        this.totalDownPageNum = dataInfo.searchCount;
+                        this.currDownNum = dataInfo.hasPhotoCount;
+                        // this.downImgPercent = this.totalDownNum? Math.ceil((this.currDownNum / this.totalDownNum)*100):0;
+                        this.downImgPercent = this.totalDownNum?Number(((this.currDownNum / this.totalDownNum)*100).toFixed(2)):0;
+                        for(let data of dataInfo.dataList){
+                            for(let item of data.photoList){
+                                item.name = item.pID+'.png',
+                                item.url = item.pURL;
+                                item.pID = item.pID;
+                                item.isCollection = false;
+                            }
+                            let time = this.formatTime(data.lStar) + "-" +this.formatTime(data.lEnd);
+                            data.timeRange = time;
+                            data.downImgArr = data.photoList;
+                        }
+                        this.pageDownReportArr = dataInfo.dataList;
+                        this.checkImgStatus('XK')
+                        this.DownReportLoading = false;
+                        if(dataInfo.totalCount == 0){
+                            Message.warning('暂无数据');
+                        }
+                    } else if (res.data.SysCode == 100302) {
+                        this.loginTimeout();
+                    } else {
+                        Message.warning(res.data.MSG);
+                    }
+                })
+                .catch(res => {
+                    this.DownReportLoading = false;
+                    console.log(res);
+                });
+        },
+        // 检查图片是否已收藏
+        checkImgStatus(type){
+            //advertisement/GetUserStatusByPid
+            let pIDList = this.returnPIDList(type)
+            if(!pIDList.length){
+                return
+            }
+            let params = {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                pids: pIDList.join(','),
+            }
+            console.log('params',params)
+            api.getApi(this.apiVar.Advertisement + '/GetUserStatusByPid',params).then(res=>{
+                console.log('检测图片收藏状态res',res)
+                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                    this.loginTimeout()
+                } else if (res.data.SysCode === 200200) {
+                    this.setImgStatus(res.data.data,type)
+                } else {
+                    this.messageFun('warning', res.data.MSG)
+                }
+            })
+        },
+        // 返回PIDList
+        returnPIDList(type){
+            let reportList = []
+            if(type === 'SK'){
+                reportList = this.pageUpReportArr
+            }else if (type === 'XK'){
+                reportList = this.pageDownReportArr
+            }
+            console.log(type,'reportList',reportList)
+            let pIDList = []
+            for(let key of reportList){
+                let imgArr = type === 'SK' ? key.upImgArr : key.downImgArr
+                for(let imgKey of imgArr){
+                    pIDList.push(imgKey.pID)
+                }
+            }
+            return pIDList
+        },
+        // 给上下刊添加图片的收藏状态
+        setImgStatus(data,type){
+            console.log('给上下刊添加图片的收藏状态',data)
+            let reportList = []
+            if(type === 'SK'){
+                reportList = this.pageUpReportArr
+            }else if (type === 'XK'){
+
+            }
+            console.log(type,'添加图片的收藏状态',reportList)
+            for (let key of reportList) {
+                let imgArr = type === 'SK' ? key.upImgArr : key.downImgArr
+                for (let imgKey of imgArr) {
+                    for (let pKey of data) {
+                        if (pKey.pid == imgKey.pID) {
+                            imgKey.isCollection = pKey.isCollection
+                            break
+                        }
+                    }
+                }
+            }
+            console.log('reportList',reportList,this.pageUpReportArr)
+        },
+        // 字段截取
+        wordlimit(word, num) {
+            if(document.body.clientWidth<=1366){
+                if (word && (word.length > num)) {
+                    return word = word.substr(0, num) + '...';
+                }
+                return word;
+            }else{
+                return word;
+            }
+        },
+        // 隐藏上传组件
+        uploadDisabled(imgList){
+            // console.log(imgList);
+            return imgList.length>5;
+        },
+        // 上刊图片上传
+        submitUpload(type){
+            if(!this.constractArr.length){
+                return;
+            }
+            this.addload = this.$loading({
+                lock: true,
+                text: '保存数据中,请稍等...',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
+            let arr = this.uploadImgArr;
+
+            this.UploadTime = parseInt( arr.length / 6 );
+            let a1 = arr.length % 6;
+            if(a1 > 0){
+                this.UploadTime++;
+            }
+            this.submitUpload_(type, 1)
+
+        },
+        submitUpload_(type, index){
+            if(!this.constractArr.length){
+                return;
+            }
+            let arr = this.uploadImgArr;
+
+            if(this.UploadTime >= index){
+                let timeArr = [];
+                let formData = new FormData();
+                for(let i = (index-1)*6, iLen = arr.length; i<=iLen; i++ ){
+                    if(timeArr.length < 6){
+                        if(i >= iLen){
+                            api.postUpload_file(this.doUpload, formData).then(res =>{
+                                console.log(res);
+                                if(!res.data.SysCode){
+                                    let result = res.data;
+                                    for(let data of result){
+                                        this.uploadPidArr.push(data);
+                                    }
+                                    index++;
+                                    this.submitUpload_(type, index);
+                                }else{
+                                    this.addload.close();
+                                    Message.warning(res.data.MSG);
+                                }
+                            })
+                            break;
+                        }else{
+                            timeArr.push(i);
+                            formData.append('file[]', arr[i]);
+                        }
+                    }else{
+                        if(timeArr.length >= 6){
+                            api.postUpload_file(this.doUpload, formData).then(res =>{
+                                console.log(res);
+                                if(!res.data.SysCode){
+                                    let result = res.data;
+                                    for(let data of result){
+                                        this.uploadPidArr.push(data);
+                                    }
+                                    index++;
+                                    this.submitUpload_(type, index);
+                                }else{
+                                    this.addload.close();
+                                    Message.warning(res.data.MSG);
+                                }
+                            })
+                            break;
+                        }
+                    }
+
+                }
+            }else{
+                console.log('++++this.uploadPidArr++++', this.uploadPidArr);
+                this.uploadConect(type, this.uploadPidArr);
+            }
+        },
+        uploadConect(type, result){
+            let uid = this.sessionData.uID;
+            let token = this.sessionData.token;
+            let imgsTypes =  this.constractArr;
+            let pidarr = this.uploadPidArr;
+            for(let t = 0, tLen=pidarr.length; t<tLen; t++){
+                pidarr[t].pAlt = imgsTypes[t].pAlt
+                pidarr[t].pRemarks = imgsTypes[t].pRemarks;
+                pidarr[t].pType = type;
+                pidarr[t].ptID = imgsTypes[t].ptID;
+                pidarr[t].ptP = imgsTypes[t].ptP;
+                pidarr[t].puID = imgsTypes[t].puID;
+                pidarr[t].realName = imgsTypes[t].realName;
+            }
+
+            let imgs = {
+                imgs: pidarr
+            };
+            console.log('pidarr---', pidarr);
+            api.postApi_json(this.apiVar.Advertisement+'/SetImgList?uid='+uid+'&token='+token, imgs).then(res =>{
+                console.log(res.data);
+                this.addload.close();
+                if(res.data.SysCode == 300200){
+                    Message.success(res.data.MSG);
+                    this.constractArr = [];
+                    this.uploadImgArr = [];
+                    this.uploadPidArr = [];
+                    this.UploadTime = 0;
+                    this.searchFun();
+                } else if (res.data.SysCode == 100302) {
+                    this.loginTimeout();
+                } else {
+                    Message.warning(res.data.MSG);
+                }
+            }).catch(res =>{
+                this.addload.close();
+            });
+        },
+        // 收藏
+        saveImgFun(item,index,type){
+            console.log('保存图片', item,index)
+            let params = {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                lId: item.lID,
+                pId: type === 'SK' ? item.upImgArr[index].pID : item.downImgArr[index].pID,
+                picUrl: type === 'SK' ? item.upImgArr[index].url : item.downImgArr[index].url,
+                type: this.planPanel === 'forth' ? 0 : this.planPanel === 'fifth' ? 1 : "",
+            }
+            if (!params.lId) {
+                this.messageFun('warning', '图片信息异常无法保存！')
+                return
+            }
+            if (params.type === "") {
+                delete params.type
+            }
+            console.log('params', params)
+            api.postApi(this.apiVar.Advertisement + '/imageCollection/add', params).then(res => {
+                console.log('图片收藏res', res)
+                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                    this.loginTimeout()
+                } else if (res.data.SysCode === 200200) {
+                    if(type === 'SK'){
+                        item.upImgArr[index].isCollection = true
+                    }else if(type === 'XK'){
+                        item.downImgArr[index].isCollection = true
+                    }
+                    this.messageFun('success', '收藏成功')
+                } else {
+                    this.messageFun('warning', res.data.MSG)
+                }
+            })
+        },
+        // 取消收藏
+        cancelImgFun(item,index,type){
+            console.log('取消收藏',item,index)
+            let params = {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                pId: type === 'SK' ? item.upImgArr[index].pID : item.downImgArr[index].pID,
+            }
+            api.postApi(this.apiVar.Advertisement + '/imageCollection/remove', params).then(res => {
+                console.log('取消收藏res', res)
+                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                    this.loginTimeout()
+                } else if (res.data.SysCode === 200200) {
+                    if(type === 'SK'){
+                        item.upImgArr[index].isCollection = false
+                    }else if(type === 'XK'){
+                        item.downImgArr[index].isCollection = false
+                    }
+                    this.messageFun('success', '取消成功')
+                } else {
+                    this.messageFun('warning', res.data.MSG)
+                }
+            })
+        },
+        // 删除已上传的图片
+        deleteImg(item){
+            console.log('删除item',item)
+            if(item.pID){
+                this.$confirm('确定移除这张图片吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.handleRemove(item)
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+            }
+        },
+        // 上传图片
+        uploadImg(params){
+            console.log('parmas---', params);
+            var fileObj = params.file;
+            this.constractArr.push(this.upLoadObj);
+            this.uploadImgArr.push(fileObj);
+        },
+        // 点击上传图片按钮之时进行储存所需数据(asid, ptp等)
+        saveId(row) {
+            console.log("row------", row);
+            let palt = this.orderDetail.apName+'-'+row.resName+"-"+row.mTitle+row.asLab;
+            let ptp = sessionStorage.getItem("order_apid");
+            let account = this.sessionData.username;
+            let username = this.sessionData.realName;
+            let prk = {
+                plan: this.orderDetail.apName ? this.orderDetail.apName : "",
+                res: row.resName ? row.resName : "",
+                media: row.mTitle ? row.mTitle : "",
+                city: row.city ? row.city : "",
+                area: row.rName ? row.rName : "",
+                asLab: row.asLab ? row.asLab : "",
+                lstart: row.lStar ? row.lStar : "",
+                lend: row.lEnd ? row.lEnd : "",
+                assettag: row.assetTag ? row.assetTag : "",
+                brand: this.orderDetail.bTitle ? this.orderDetail.bTitle : "",
+                account: account ? account : "",
+                username: username ? username : "",
+                resid: row.resID ? row.resID : "",
+                address: row.resAddress ? row.resAddress : "",
+                lid: row.lID ? row.lID : ""
+            };
+            let obj = {
+                pAlt: palt,
+                pID: '',
+                pRemarks: JSON.stringify(prk),
+                pSrc: '',
+                pType: 'SK',
+                pURL: "",
+                pUTime: '',
+                ptID: row.mVehicle=='广告门' ? row.asID: row.mID,
+                ptP: ptp,
+                puID: 0,
+                realName: account,
+            };
+            this.upLoadObj = obj;
+        },
+        beforeImgRemove(file, fileList){
+            if(file.pID){
+                return this.$confirm(`确定移除这张图片吗？`);
+            }
+        },
+        // 限制只能上传png,jpeg格式的照片
+        beforeAvatarUpload(file) {
+            const isIMAGE = file.type === "image/jpeg" || file.type === "image/png";
+            const isLt1M = file.size / 1024 / 1024 < 8;
+
+            if (!isIMAGE) {
+                Message.error("只能上传jpg/png图片!");
+            }
+            if (!isLt1M) {
+                Message.error("上传文件大小不能超过 8MB!");
+            }
+            return isIMAGE&&isLt1M;
+        },
+        // 超过图片上传个数
+        handleExceed(files, fileList) {
+            console.log(files, fileList);
+            Message.warning(`当前限制选择 6 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+        },
+        // 查看预览图片
+        handlePictureCardPreview(file) {
+            this.dialogImageUrl = file.url;
+            this.dialogVisible = true;
+        },
+        //删除照片
+        handleRemove(file, fileList) {
+            console.log('fdasl--ff', file, fileList);
+            if(file.pID){
+                let type = file.pType;
+                let info = file;
+                file.pType = 'del';
+                let uid = this.sessionData.uID;
+                let token = this.sessionData.token;
+                let img = {
+                    imgs: [info]
+                };
+                api.postApi_json(this.apiVar.Advertisement+'/SetImgList?uid='+uid+'&token='+token, img)
+                    .then(res => {
+                        console.log(res.data);
+                        // 实时更新进度条
+                        if (res.data.SysCode == 300200) {
+                            Message.success(res.data.MSG);
+                            this.allPic = '';
+                            this.searchFun();
+                        } else if (res.data.SysCode == 100302) {
+                            this.loginTimeout();
+                        } else {
+                            Message.warning(res.data.MSG);
+                        }
+                    })
+                    .catch(res => {
+                        console.log(res);
+                    });
+            }else{
+                let upLoad = this.uploadImgArr;
+                for(let i = 0, iLen = upLoad.length; i<iLen; i++ ){
+                    if(file.uid == upLoad[i].uid){
+                        upLoad.splice(i, 1);
+                        this.constractArr.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+        },
+        /**
+         * 导出图片包、查看H5.更新报告
+         */
+        // 导出图片包
+        downloadImg(type){
+            let info = {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                apId: this.orderDetail.apID,
+                type: type=='SK' ? 0 : 1,
+                apName: this.orderDetail.apName,
+                downtype: 1
+            };
+            this.downLoading = true;
+            const tempPage = window.open('', '_blank');
+            api.getApi(this.apiVar.Advertisement+'/DownloadImgPackage', info).then(res =>{
+                if(res.data.SysCode == 200200){
+                    // let routeUrl = this.$router.resolve({
+                    //     path: "/progressDown",
+                    //     query: info,
+                    // });
+                    // window.open(routeUrl.href, '_blank');
+
+                    let routeUrl = this.$router.resolve({
+                        path: "/progressDown",
+                        query: info,
+                    });
+                    tempPage.location = routeUrl.href;
+                }else if(res.data.SysCode == 100302){
+                    this.loginTimeout();
+                }else{
+                    Message.warning(res.data.MSG);
+                }
+                this.downLoading = false;
+            }).catch(err =>{
+                this.downLoading = false;
+            });
+        },
+        // 更新报告
+        updateReport(type){
+            let info = {
+                apId: this.orderDetail.apID,
+                type: type,
+            };
+            this.updateLoading = true;
+            api.postApi(this.apiVar.Advertisement+"/UpdateSXReport", info).then(res =>{
+                console.log(res.data);
+                if(res.data.SysCode == 200200){
+                    Message.success(res.data.MSG);
+                }else if(res.data.SysCode == 100302){
+                    this.loginTimeout();
+                }else{
+                    Message.warning(res.data.MSG);
+                }
+                this.updateLoading = false;
+            }).catch(err =>{
+                console.log(err);
+                this.updateLoading = false;
+            });
+        },
+        // 查看h5上下刊刊报告按钮
+        showH5(type){
+            let apid = sessionStorage.getItem('order_apid');
+            let tempwindow = window.open();
+            api.getApi(this.apiVar.UCAPI+'/EncryptNo', {num: apid}).then(res =>{
+                console.log(res.data);
+                tempwindow.location = "/Report?"+type+"="+res.data.EncryptCode;
+            }).catch(res =>{
+                console.log(res);
+            });
+        },
     },
     mounted(){
         this.sessionData = sessFun.getSess();
-        this.searchInfoFun();
+        // this.searchInfoFun();
+        // 获取报告列表
+        this.getImgArr();
     },
 };
 </script>
 
 <style scoped>
+/* 上下刊 */
+.radio_style {
+    vertical-align: top;
+}
+.up-loader-header {
+    position: relative;
+}
+
+.progress {
+    float: right;
+}
+
+/deep/ .up-loader-header .el-input__inner {
+    height: 32px;
+    width: 180px;
+}
+.progress span {
+    position: relative;
+    top: 8px;
+    left: 0;
+    font-size: 14px;
+    color: #666666;
+}
+/deep/ .el-progress-bar__outer {
+    height: 16px !important;
+}
+
+/deep/ .el-progress-bar {
+    width: 100%;
+}
+
+/deep/ .el-progress {
+    position: absolute;
+    line-height: 1;
+    width: 43%;
+    right: 65px;
+    top: 10px;
+}
+
+/* 图片列表 */
 .list_pic {
     display: flex;
     justify-content: space-between;
@@ -961,6 +1720,10 @@ export default {
 .pager {
     height: 32px;
     text-align: right;
+}
+.up-report-bottom {
+    text-align: center;
+    margin: 20px;
 }
 
 /* 弹出框 */

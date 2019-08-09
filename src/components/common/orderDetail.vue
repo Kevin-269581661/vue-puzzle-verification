@@ -156,10 +156,14 @@
                         <material :material="materialInfo" :daomater="daoInfo" :loading="maLoading" v-if="planPanel=='third'"></material>
                     </el-tab-pane>
                     <el-tab-pane label="上刊报告" name="forth" :disabled="usableBtn||role =='OP'">
-                        <change-pic :type="1"></change-pic>
+                        <div class="changepic_box" v-if="planPanel=='forth'">                        
+                            <change-pic :type="1"></change-pic>
+                        </div>
                     </el-tab-pane>
                     <el-tab-pane label="下刊报告" name="fifth" :disabled="usableBtn||role =='OP'">
-                        <change-pic :type="2"></change-pic>
+                        <div class="changepic_box" v-if="planPanel=='fifth'">
+                            <change-pic :type="2"></change-pic>
+                        </div>
                     </el-tab-pane>
                     <el-tab-pane label="换画报告" name="sixth">
                         <div class="changepic_box">
@@ -787,20 +791,6 @@ export default {
                     console.log(res);
                 });
         },
-        // 被终止了的选点根据条件不显示上下刊报告
-        filterInitData(arr){
-            let result = [];
-            for(let data of arr){
-                let finish = dateFormat.toDate(data.lSetTime, '');
-                let start = dateFormat.toDate(data.lStar, '');
-                if(data.lState ==2 &&  finish < start){
-
-                }else{
-                    result.push(data);
-                }
-            }
-            return result;
-        },
         // 搜索数据格式化
         searchFormat(type){
             let session = this.sessionData;
@@ -842,158 +832,11 @@ export default {
         searchFun(){
             if(this.planPanel == 'forth'){
                 let upinfo = this.searchFormat('SK');
-                this.getUpImgInfo(upinfo);
+                // this.getUpImgInfo(upinfo);
             }else if(this.planPanel == "fifth"){
                 let downinfo = this.searchFormat('XK');
-                this.getDownImgInfo(downinfo);
+                // this.getDownImgInfo(downinfo);
             }
-        },
-        // 获取上刊图片数据
-        getUpImgInfo(params) {
-            api.postApi(this.apiVar.Advertisement+"/GetImg", params)
-                .then(res => {
-                    if (!res.data.SysCode) {
-                        console.log(res.data);
-                        let dataInfo = res.data;
-                        this.totalUpNum = dataInfo.totalCount;
-                        this.totalUpPageNum = dataInfo.searchCount;
-                        this.currUpNum = dataInfo.hasPhotoCount;
-                        // this.upImgPercent = this.totalUpNum? Math.ceil((this.currUpNum / this.totalUpNum)*100):0;
-                        this.upImgPercent = this.totalUpNum? Number(((this.currUpNum / this.totalUpNum)*100).toFixed(2)):0;
-                        for(let data of dataInfo.dataList){
-                            for(let item of data.photoList){
-                                item.name = item.pID+'.png',
-                                item.url = item.pURL;
-                                item.pID = item.pID;
-                                item.isCollection = false
-                            }
-                            let time = this.formatTime(data.lStar) + "-" +this.formatTime(data.lEnd);
-                            data.timeRange = time;
-                            data.upImgArr = data.photoList;
-                        }
-                        this.pageUpReportArr = dataInfo.dataList;
-                        this.checkImgStatus('SK')
-                        console.log('this.pageUpReportArr',this.pageUpReportArr)
-                        this.UpReportLoading = false;
-                        if(dataInfo.totalCount == 0){
-                            Message.warning('暂无数据');
-                        }
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
-                    } else {
-                        Message.warning(res.data.MSG);
-                    }
-                })
-                .catch(res => {
-                    this.UpReportLoading = false;
-                    console.log(res);
-                });
-        },
-
-        // 获取下刊图片数据
-        getDownImgInfo(params) {
-            api.postApi(this.apiVar.Advertisement+"/GetImg", params)
-                .then(res => {
-                    if (!res.data.SysCode) {
-                        console.log(res.data);
-                        let dataInfo = res.data;
-                        this.totalDownNum = dataInfo.totalCount;
-                        this.totalDownPageNum = dataInfo.searchCount;
-                        this.currDownNum = dataInfo.hasPhotoCount;
-                        // this.downImgPercent = this.totalDownNum? Math.ceil((this.currDownNum / this.totalDownNum)*100):0;
-                        this.downImgPercent = this.totalDownNum?Number(((this.currDownNum / this.totalDownNum)*100).toFixed(2)):0;
-                        for(let data of dataInfo.dataList){
-                            for(let item of data.photoList){
-                                item.name = item.pID+'.png',
-                                item.url = item.pURL;
-                                item.pID = item.pID;
-                                item.isCollection = false;
-                            }
-                            let time = this.formatTime(data.lStar) + "-" +this.formatTime(data.lEnd);
-                            data.timeRange = time;
-                            data.downImgArr = data.photoList;
-                        }
-                        this.pageDownReportArr = dataInfo.dataList;
-                        this.checkImgStatus('XK')
-                        this.DownReportLoading = false;
-                        if(dataInfo.totalCount == 0){
-                            Message.warning('暂无数据');
-                        }
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
-                    } else {
-                        Message.warning(res.data.MSG);
-                    }
-                })
-                .catch(res => {
-                    this.DownReportLoading = false;
-                    console.log(res);
-                });
-        },
-        // 检查图片是否已收藏
-        checkImgStatus(type){
-            //advertisement/GetUserStatusByPid
-            let pIDList = this.returnPIDList(type)
-            if(!pIDList.length){
-                return
-            }
-            let params = {
-                uid: this.sessionData.uID,
-                token: this.sessionData.token,
-                pids: pIDList.join(','),
-            }
-            console.log('params',params)
-            api.getApi(this.apiVar.Advertisement + '/GetUserStatusByPid',params).then(res=>{
-                console.log('检测图片收藏状态res',res)
-                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                    this.loginTimeout()
-                } else if (res.data.SysCode === 200200) {
-                    this.setImgStatus(res.data.data,type)
-                } else {
-                    this.messageFun('warning', res.data.MSG)
-                }
-            })
-        },
-        // 返回PIDList
-        returnPIDList(type){
-            let reportList = []
-            if(type === 'SK'){
-                reportList = this.pageUpReportArr
-            }else if (type === 'XK'){
-                reportList = this.pageDownReportArr
-            }
-            console.log(type,'reportList',reportList)
-            let pIDList = []
-            for(let key of reportList){
-                let imgArr = type === 'SK' ? key.upImgArr : key.downImgArr
-                for(let imgKey of imgArr){
-                    pIDList.push(imgKey.pID)
-                }
-            }
-            return pIDList
-        },
-        // 给上下刊添加图片的收藏状态
-        setImgStatus(data,type){
-            console.log('给上下刊添加图片的收藏状态',data)
-            let reportList = []
-            if(type === 'SK'){
-                reportList = this.pageUpReportArr
-            }else if (type === 'XK'){
-
-            }
-            console.log(type,'添加图片的收藏状态',reportList)
-            for (let key of reportList) {
-                let imgArr = type === 'SK' ? key.upImgArr : key.downImgArr
-                for (let imgKey of imgArr) {
-                    for (let pKey of data) {
-                        if (pKey.pid == imgKey.pID) {
-                            imgKey.isCollection = pKey.isCollection
-                            break
-                        }
-                    }
-                }
-            }
-            console.log('reportList',reportList,this.pageUpReportArr)
         },
         // 区域二级联动
         getCitys(arr) {
@@ -1162,361 +1005,6 @@ export default {
         // 排期筛选
         filterTimeRange(value, row) {
             return row.timeRange === value;
-        },
-        // 字段截取
-        wordlimit(word, num) {
-            if(document.body.clientWidth<=1366){
-                if (word && (word.length > num)) {
-                    return word = word.substr(0, num) + '...';
-                }
-                return word;
-            }else{
-                return word;
-            }
-        },
-        // 隐藏上传组件
-        uploadDisabled(imgList){
-            // console.log(imgList);
-            return imgList.length>5;
-        },
-        // 上刊图片上传
-        submitUpload(type){
-            if(!this.constractArr.length){
-                return;
-            }
-            this.addload = this.$loading({
-                lock: true,
-                text: '保存数据中,请稍等...',
-                spinner: 'el-icon-loading',
-                background: 'rgba(0, 0, 0, 0.7)'
-            });
-            let arr = this.uploadImgArr;
-
-            this.UploadTime = parseInt( arr.length / 6 );
-            let a1 = arr.length % 6;
-            if(a1 > 0){
-                this.UploadTime++;
-            }
-            this.submitUpload_(type, 1)
-
-        },
-        submitUpload_(type, index){
-            if(!this.constractArr.length){
-                return;
-            }
-            let arr = this.uploadImgArr;
-
-            if(this.UploadTime >= index){
-                let timeArr = [];
-                let formData = new FormData();
-                for(let i = (index-1)*6, iLen = arr.length; i<=iLen; i++ ){
-                    if(timeArr.length < 6){
-                        if(i >= iLen){
-                            api.postUpload_file(this.doUpload, formData).then(res =>{
-                                console.log(res);
-                                if(!res.data.SysCode){
-                                    let result = res.data;
-                                    for(let data of result){
-                                        this.uploadPidArr.push(data);
-                                    }
-                                    index++;
-                                    this.submitUpload_(type, index);
-                                }else{
-                                    this.addload.close();
-                                    Message.warning(res.data.MSG);
-                                }
-                            })
-                            break;
-                        }else{
-                            timeArr.push(i);
-                            formData.append('file[]', arr[i]);
-                        }
-                    }else{
-                        if(timeArr.length >= 6){
-                            api.postUpload_file(this.doUpload, formData).then(res =>{
-                                console.log(res);
-                                if(!res.data.SysCode){
-                                    let result = res.data;
-                                    for(let data of result){
-                                        this.uploadPidArr.push(data);
-                                    }
-                                    index++;
-                                    this.submitUpload_(type, index);
-                                }else{
-                                    this.addload.close();
-                                    Message.warning(res.data.MSG);
-                                }
-                            })
-                            break;
-                        }
-                    }
-
-                }
-            }else{
-                console.log('++++this.uploadPidArr++++', this.uploadPidArr);
-                this.uploadConect(type, this.uploadPidArr);
-            }
-        },
-        uploadConect(type, result){
-            let uid = this.sessionData.uID;
-            let token = this.sessionData.token;
-            let imgsTypes =  this.constractArr;
-            let pidarr = this.uploadPidArr;
-            for(let t = 0, tLen=pidarr.length; t<tLen; t++){
-                pidarr[t].pAlt = imgsTypes[t].pAlt
-                pidarr[t].pRemarks = imgsTypes[t].pRemarks;
-                pidarr[t].pType = type;
-                pidarr[t].ptID = imgsTypes[t].ptID;
-                pidarr[t].ptP = imgsTypes[t].ptP;
-                pidarr[t].puID = imgsTypes[t].puID;
-                pidarr[t].realName = imgsTypes[t].realName;
-            }
-
-            let imgs = {
-                imgs: pidarr
-            };
-            console.log('pidarr---', pidarr);
-            api.postApi_json(this.apiVar.Advertisement+'/SetImgList?uid='+uid+'&token='+token, imgs).then(res =>{
-                console.log(res.data);
-                this.addload.close();
-                if(res.data.SysCode == 300200){
-                    Message.success(res.data.MSG);
-                    this.constractArr = [];
-                    this.uploadImgArr = [];
-                    this.uploadPidArr = [];
-                    this.UploadTime = 0;
-                    this.searchFun();
-                } else if (res.data.SysCode == 100302) {
-                    this.loginTimeout();
-                } else {
-                    Message.warning(res.data.MSG);
-                }
-            }).catch(res =>{
-                this.addload.close();
-            });
-        },
-        // 收藏
-        saveImgFun(item,index,type){
-            console.log('保存图片', item,index)
-            let params = {
-                uid: this.sessionData.uID,
-                token: this.sessionData.token,
-                lId: item.lID,
-                pId: type === 'SK' ? item.upImgArr[index].pID : item.downImgArr[index].pID,
-                picUrl: type === 'SK' ? item.upImgArr[index].url : item.downImgArr[index].url,
-                type: this.planPanel === 'forth' ? 0 : this.planPanel === 'fifth' ? 1 : "",
-            }
-            if (!params.lId) {
-                this.messageFun('warning', '图片信息异常无法保存！')
-                return
-            }
-            if (params.type === "") {
-                delete params.type
-            }
-            console.log('params', params)
-            api.postApi(this.apiVar.Advertisement + '/imageCollection/add', params).then(res => {
-                console.log('图片收藏res', res)
-                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                    this.loginTimeout()
-                } else if (res.data.SysCode === 200200) {
-                    if(type === 'SK'){
-                        item.upImgArr[index].isCollection = true
-                    }else if(type === 'XK'){
-                        item.downImgArr[index].isCollection = true
-                    }
-                    this.messageFun('success', '收藏成功')
-                } else {
-                    this.messageFun('warning', res.data.MSG)
-                }
-            })
-        },
-        // 取消收藏
-        cancelImgFun(item,index,type){
-            console.log('取消收藏',item,index)
-            let params = {
-                uid: this.sessionData.uID,
-                token: this.sessionData.token,
-                pId: type === 'SK' ? item.upImgArr[index].pID : item.downImgArr[index].pID,
-            }
-            api.postApi(this.apiVar.Advertisement + '/imageCollection/remove', params).then(res => {
-                console.log('取消收藏res', res)
-                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                    this.loginTimeout()
-                } else if (res.data.SysCode === 200200) {
-                    if(type === 'SK'){
-                        item.upImgArr[index].isCollection = false
-                    }else if(type === 'XK'){
-                        item.downImgArr[index].isCollection = false
-                    }
-                    this.messageFun('success', '取消成功')
-                } else {
-                    this.messageFun('warning', res.data.MSG)
-                }
-            })
-        },
-        // 删除已上传的图片
-        deleteImg(item){
-            console.log('删除item',item)
-            if(item.pID){
-                this.$confirm('确定移除这张图片吗?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    this.handleRemove(item)
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消删除'
-                    });
-                });
-            }
-        },
-        uploadImg(params){
-            console.log('parmas---', params);
-            var fileObj = params.file;
-            this.constractArr.push(this.upLoadObj);
-            this.uploadImgArr.push(fileObj);
-        },
-        // 点击上传图片按钮之时进行储存所需数据(asid, ptp等)
-        saveId(row) {
-            console.log("row------", row);
-            let palt = this.orderDetail.apName+'-'+row.resName+"-"+row.mTitle+row.asLab;
-            let ptp = sessionStorage.getItem("order_apid");
-            let account = this.sessionData.username;
-            let username = this.sessionData.realName;
-            let prk = {
-                plan: this.orderDetail.apName ? this.orderDetail.apName : "",
-                res: row.resName ? row.resName : "",
-                media: row.mTitle ? row.mTitle : "",
-                city: row.city ? row.city : "",
-                area: row.rName ? row.rName : "",
-                asLab: row.asLab ? row.asLab : "",
-                lstart: row.lStar ? row.lStar : "",
-                lend: row.lEnd ? row.lEnd : "",
-                assettag: row.assetTag ? row.assetTag : "",
-                brand: this.orderDetail.bTitle ? this.orderDetail.bTitle : "",
-                account: account ? account : "",
-                username: username ? username : "",
-                resid: row.resID ? row.resID : "",
-                address: row.resAddress ? row.resAddress : "",
-                lid: row.lID ? row.lID : ""
-            };
-            let obj = {
-                pAlt: palt,
-                pID: '',
-                pRemarks: JSON.stringify(prk),
-                pSrc: '',
-                pType: 'SK',
-                pURL: "",
-                pUTime: '',
-                ptID: row.mVehicle=='广告门' ? row.asID: row.mID,
-                ptP: ptp,
-                puID: 0,
-                realName: account,
-            };
-            this.upLoadObj = obj;
-        },
-        beforeImgRemove(file, fileList){
-            if(file.pID){
-                return this.$confirm(`确定移除这张图片吗？`);
-            }
-        },
-        // 限制只能上传png,jpeg格式的照片
-        beforeAvatarUpload(file) {
-            const isIMAGE = file.type === "image/jpeg" || file.type === "image/png";
-            const isLt1M = file.size / 1024 / 1024 < 8;
-
-            if (!isIMAGE) {
-                Message.error("只能上传jpg/png图片!");
-            }
-            if (!isLt1M) {
-                Message.error("上传文件大小不能超过 8MB!");
-            }
-            return isIMAGE&&isLt1M;
-        },
-        // 超过图片上传个数
-        handleExceed(files, fileList) {
-            console.log(files, fileList);
-            Message.warning(`当前限制选择 6 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
-        },
-        //删除照片
-        handleRemove(file, fileList) {
-            console.log('fdasl--ff', file, fileList);
-            if(file.pID){
-                let type = file.pType;
-                let info = file;
-                file.pType = 'del';
-                let uid = this.sessionData.uID;
-                let token = this.sessionData.token;
-                let img = {
-                    imgs: [info]
-                };
-                api.postApi_json(this.apiVar.Advertisement+'/SetImgList?uid='+uid+'&token='+token, img)
-                    .then(res => {
-                        console.log(res.data);
-                        // 实时更新进度条
-                        if (res.data.SysCode == 300200) {
-                            Message.success(res.data.MSG);
-                            this.allPic = '';
-                            this.searchFun();
-                        } else if (res.data.SysCode == 100302) {
-                            this.loginTimeout();
-                        } else {
-                            Message.warning(res.data.MSG);
-                        }
-                    })
-                    .catch(res => {
-                        console.log(res);
-                    });
-            }else{
-                let upLoad = this.uploadImgArr;
-                for(let i = 0, iLen = upLoad.length; i<iLen; i++ ){
-                    if(file.uid == upLoad[i].uid){
-                        upLoad.splice(i, 1);
-                        this.constractArr.splice(i, 1);
-                        break;
-                    }
-                }
-            }
-        },
-        // 查看预览图片
-        handlePictureCardPreview(file) {
-            this.dialogImageUrl = file.url;
-            this.dialogVisible = true;
-        },
-        // 更新报告
-        updateReport(type){
-            let info = {
-                apId: this.orderDetail.apID,
-                type: type,
-            };
-            this.updateLoading = true;
-            api.postApi(this.apiVar.Advertisement+"/UpdateSXReport", info).then(res =>{
-                console.log(res.data);
-                if(res.data.SysCode == 200200){
-                    Message.success(res.data.MSG);
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
-                }else{
-                    Message.warning(res.data.MSG);
-                }
-                this.updateLoading = false;
-            }).catch(err =>{
-                console.log(err);
-                this.updateLoading = false;
-            });
-        },
-        // 查看h5上下刊刊报告按钮
-        showH5(type){
-            let apid = sessionStorage.getItem('order_apid');
-            let tempwindow = window.open();
-            api.getApi(this.apiVar.UCAPI+'/EncryptNo', {num: apid}).then(res =>{
-                console.log(res.data);
-                tempwindow.location = "/Report?"+type+"="+res.data.EncryptCode;
-            }).catch(res =>{
-                console.log(res);
-            });
         },
         // 取消修改合同编号
         cancelChangeID() {
@@ -1783,52 +1271,6 @@ export default {
             // this.IsAddPoint = true
             this.dialogAddPoint = false;
             // Message.info("已取消操作");
-        },
-        // 时间戳转换成日期格式 2018-06-18 10:33:24
-        timestampToTime(timestamp) {
-            let date = new Date(timestamp);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
-            let Y = date.getFullYear() + '-';
-            let M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
-            let D = date.getDate() + ' ';
-            let h = date.getHours() + ':';
-            let m = date.getMinutes() + ':';
-            let s = date.getSeconds();
-            return Y + M + D + h + m + s;
-        },
-        // 导出图片包
-        downloadImg(type){
-            let info = {
-                uid: this.sessionData.uID,
-                token: this.sessionData.token,
-                apId: this.orderDetail.apID,
-                type: type=='SK' ? 0 : 1,
-                apName: this.orderDetail.apName,
-                downtype: 1
-            };
-            this.downLoading = true;
-            const tempPage = window.open('', '_blank');
-            api.getApi(this.apiVar.Advertisement+'/DownloadImgPackage', info).then(res =>{
-                if(res.data.SysCode == 200200){
-                    // let routeUrl = this.$router.resolve({
-                    //     path: "/progressDown",
-                    //     query: info,
-                    // });
-                    // window.open(routeUrl.href, '_blank');
-
-                    let routeUrl = this.$router.resolve({
-                        path: "/progressDown",
-                        query: info,
-                    });
-                    tempPage.location = routeUrl.href;
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
-                }else{
-                    Message.warning(res.data.MSG);
-                }
-                this.downLoading = false;
-            }).catch(err =>{
-                this.downLoading = false;
-            });
         },
         // 操作提示统一方法
         messageFun(mesType,mes){
@@ -2126,151 +1568,12 @@ export default {
         text-align: right;
         padding-right: 20px;
     }
-    .third-wrap{
-        margin-bottom: 32px;
-    }
-    /*上刊报告*/
-    .imgs-box {
-        margin: 0 auto;
-    }
-
-    .up-loader-header {
-        position: relative;
-    }
-
-    .progress {
-        float: right;
-    }
-
-    /deep/ .up-loader-header .el-input__inner {
-        height: 32px;
-        width: 180px;
-    }
-
-    .moreimgs {
-        width: 100%;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-around;
-    }
-
-    .progress span {
-        position: relative;
-        top: 8px;
-        left: 0;
-        font-size: 14px;
-        color: #666666;
-    }
-
-    /deep/ .el-progress-bar__outer {
-        height: 16px !important;
-    }
-
-    /deep/ .el-progress-bar {
-        width: 100%;
-    }
-
-    /deep/ .el-progress {
-        position: absolute;
-        line-height: 1;
-        width: 43%;
-        right: 65px;
-        top: 10px;
-    }
-
-    .img-car {
-        font-size: 14px;
-        color: #666666;
-        background: rgba(247, 247, 247, 1);
-    }
-
-    .car_header {
-        border-top: 1px solid #dedede;
-    }
-
-    .car_header span {
-        color: rgba(153, 153, 153, 1);
-        line-height: 17px;
-    }
-
-    .date_fa {
-        margin-right: 5px;
-    }
-
-    .up-loader-Imgpanel {
-        margin-top: 11px;
-        display: inline-block;
-        margin-right: 2.6%;
-        border: 1px solid #ebeef5;
-        width: 22%;
-        max-width: 383px;
-        min-width: 350px;
-    }
-
-    /*上传图片*/
-    /deep/ .el-card__header {
-        font-size: 14px;
-        height: 66px;
-        color: #666666;
-        background: rgba(247, 247, 247, 1);
-        padding: 11px 12px;
-    }
-
-    /deep/ .el-card__body {
-        padding: 0;
-        height: 260px;
-        overflow: hidden;
-    }
-
-    .upload-img span {
-        position: absolute;
-        top: 30px;
-        left: 30px;
-        font-size: 14px;
-        color: #666666;
-    }
-
-    /deep/ .el-upload--picture-card {
-        width: 30%;
-        height: 105px;
-        line-height: 105px;
-        margin: 4.2% 1.6% 0 1.6%;
-        background: rgba(251, 251, 251, 1);
-        border-radius: 4px;
-        border: 1px dashed #dedede;
-        text-align: center;
-    }
-
-    /deep/ .el-upload-list--picture-card .el-upload-list__item {
-        width: 30%;
-        height: 105px;
-        margin: 4.2% 1.6% 0 1.6%;
-    }
-
-    /deep/ .up-loader-Imgpanel .el-card {
-        border: none;
-    }
-
     /*页码*/
     .pager {
         height: 32px;
         margin-top: 30px;
         text-align: right;
     }
-
-    /deep/ .forth-wrap .el-radio-group {
-        margin-bottom: 10px;
-    }
-
-    .up-report-bottom {
-        text-align: center;
-        margin: 20px;
-    }
-
-    .up-report-bottom-checkbox {
-        margin-bottom: 10px;
-    }
-
     /* 换画 */
     .changepic_box{
         margin: 16px 32px 32px;
@@ -2303,26 +1606,6 @@ export default {
     }
 
     /*选择点位*/
-    /deep/ .type-select .el-input,
-    /deep/ .type-select .el-input__inner {
-        width: 95px;
-        position: relative;
-        top: 0;
-        left: -5px;
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
-        padding-right: 0;
-        padding-left: 10px;
-        height: 32px;
-    }
-
-    /deep/ .date-select.el-input__inner {
-        width: 237px;
-        position: relative;
-        left: 1px;
-        height: 32px;
-    }
-
     /deep/ .el-date-editor .el-range__icon {
         position: relative;
         top: -2px;
@@ -2361,12 +1644,6 @@ export default {
     }
 
     /*日期控件*/
-    .block {
-        display: inline-block;
-        margin-left: 2px;
-        position: relative;
-    }
-
     /deep/ .el-range-separator {
         position: relative;
         top: -2px;
@@ -2427,27 +1704,6 @@ export default {
     }
 
     /* 物料信息弹出框 */
-    .car-title {
-        background: #E6F7FF;
-        border: 1px solid #BAE7FF;
-        border-radius: 4px;
-        margin-bottom: 10px;
-        padding: 5px;
-    }
-
-    .car-title h4 {
-        font-size: 14px;
-        display: inline-block;
-    }
-
-    .car-title span {
-        font-size: 14px;
-        font-weight: normal;
-        margin: 0 6px;
-        cursor: pointer;
-        color: #1890ff;
-    }
-
     /deep/ .el-pagination .el-select .el-input .el-input__inner {
         width: 100px;
     }
@@ -2489,79 +1745,12 @@ export default {
             margin-bottom: 12px;
         }
     }
-
-    /deep/ .disabled .el-upload--picture-card {
-        /*display: none;*/
-    }
-
-    .radio_style {
-        vertical-align: top;
-    }
     /deep/ .el-upload-list__item.is-success{
         display: none;
     }
-    /**/
-    .img_box {
-        width: 30%;
-        height: 105px;
-        margin: 4.2% 1.6% 0 1.6%;
-        float: left;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .upload_img_item {
-        width: 100%;
-        height: 100%;
-    }
-    .icon_success{
-        display: block;
-        position: absolute;
-        right: -15px;
-        top: -6px;
-        width: 40px;
-        height: 24px;
-        background: #13ce66;
-        text-align: center;
-        -webkit-transform: rotate(45deg);
-        transform: rotate(45deg);
-        -webkit-box-shadow: 0 0 1pc 1px rgba(0,0,0,.2);
-        box-shadow: 0 0 1pc 1px rgba(0,0,0,.2)
-    }
-    .icon_success i{
-        color: #fff;
-        font-size: 12px;
-        margin-top: 11px;
-        transform: rotate(-45deg);
-    }
-    .icon_box{
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        top:0;
-        left: 0;
-        background: rgba(0,0,0,.5);
-        cursor:pointer;
-    }
-    .img_box_icon {
-        width: 100%;
-        margin-top:40%;
-        text-align: center;
-    }
-    .img_box_icon i{
-        color: #fff;
-        font-size: 22px;
-    }
-    .img_box_icon i.icon_save {
-        color: #FFD517;
-    }
-
+    
     /deep/ .disabled .el-upload--picture-card {
         display: none;
-    }
-
-    .radio_style {
-        vertical-align: top;
     }
 
     /deep/ .el-table__expanded-cell[class*=cell] .el-form {

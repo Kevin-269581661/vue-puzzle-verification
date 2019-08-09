@@ -184,3 +184,30 @@ body .el-table colgroup.gutter {
     background: #C1C1C1;
     border-radius: 4px;
 }
+
+/*导航栏样式覆盖*/
+.el-menu-item,
+.el-submenu__title{
+    font-size: 16px;
+}
+
+.el-menu--horizontal .el-menu-item:not(:first-child):hover,
+.el-menu--horizontal>.el-submenu .el-submenu__title:hover{
+    color: rgb(255, 255, 255) !important;
+    border-bottom-color: rgb(255, 255, 255) !important;
+}
+
+.el-submenu.is-active .el-submenu__title i{
+    color: #fff;
+    font-size: 14px;
+}
+
+.el-menu--popup{
+    min-width: 140px;
+}
+.el-menu--popup .el-menu-item{
+    font-size: 14px;
+}
+.el-menu--horizontal .el-menu--popup .el-menu-item:hover{
+    color: rgb(255, 255, 255) !important;
+}

@@ -119,5 +119,6 @@
         padding: 16px 32px;
         text-align: left;
         min-height: 179px;
+        background: #fff;
     }
 </style>

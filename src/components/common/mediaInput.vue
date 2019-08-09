@@ -1169,7 +1169,7 @@
                     }
                 ],
                 liveTime: '',                   // 资源时间
-                doUpload: '/advertisement/UpLoad',     //https://beta.qinlinad.com,
+                doUpload: this.apiVar.qadnUrl + '/advertisement/UpLoad',     //https://beta.qinlinad.com,
                 resImg: {                       // 上传图片附带参数
                     uid: JSON.parse(sessionStorage.getItem('session_data')).uID,
                     pid: '',                // 图片id
@@ -1692,9 +1692,9 @@
                             if (JSON.stringify(resData) == "{}") {
                                 callback();
                             } else {
-                                if(resData.resId == this.recForm.resID){
+                                if (resData.resId == this.recForm.resID) {
                                     callback();
-                                }else{
+                                } else {
                                     this.isResError = true
                                     this.resCommentData.mediaNum = resData.mediaCount
                                     this.resCommentData.resName = resData.resName

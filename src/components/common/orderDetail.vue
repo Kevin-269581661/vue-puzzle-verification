@@ -27,17 +27,8 @@
                             </span>
                         </el-dialog>
                         <div class="handleBtn">
-                            <!-- <el-button plain @click="changeRemark = true" :disabled="usableBtn">监播备注</el-button> -->
                             <el-button type="plain">换画</el-button>
                             <el-button type="primary" :disabled="usableBtn" v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0" @click="changePoint">换点</el-button>
-                            <!--监播备注对话框-->
-                            <el-dialog title="监播备注" :visible.sync="changeRemark" width="30%">
-                                <el-input type="textarea" v-model="remark" :rows="2"></el-input>
-                                <span slot="footer" class="dialog-footer">
-                                    <el-button plain @click="cancelChangeRemark">取 消</el-button>
-                                    <el-button type="primary" @click="confirmChangeRemark">确 定</el-button>
-                                </span>
-                            </el-dialog>
                         </div>
                     </div>
                     <div>
@@ -49,8 +40,6 @@
                 <el-tabs v-model="planPanel" @tab-click="handleClick()">
                     <el-tab-pane label="选点排期" name="first">
                         <div class="first-wrap box-wrap">
-                            <!-- <h4 v-if="!showTitle">选点排期
-                            </h4> -->
                             <h4 v-if="showTitle">
                                 更换点位
                                <span>单位:面&nbsp;&nbsp; 首次投放:{{nowPointNum}}&nbsp;&nbsp; 中止投放:{{stopPointNum}} &nbsp;&nbsp;&nbsp; 新增面数:{{addNewPointNum}} &nbsp;&nbsp;&nbsp; 累计投放:{{setpointArr.length}} </span>
@@ -164,249 +153,17 @@
                         <ap-quotation @detailInfo="setInfo" :quotationData="quotation" :copydata="copyAsidArr" :isorder="true" :shopingList="[]" class="price_quo"></ap-quotation>
                     </el-tab-pane>
                     <el-tab-pane label="物料信息" name="third" :disabled="usableBtn">
-                        <p class="search-row">
-                            <el-button type="primary" size="small" @click="uploadMater()">添加上画信息</el-button>
-                            <!-- <el-button type="primary" size="small" @click="uploadMater()">添加上画备注</el-button> -->
-                        </p>
-                        <material :material="materialInfo" :daomater="daoInfo" :loading="maLoading"></material>
+                        <material :material="materialInfo" :daomater="daoInfo" :loading="maLoading" v-if="planPanel=='third'"></material>
                     </el-tab-pane>
                     <el-tab-pane label="上刊报告" name="forth" :disabled="usableBtn||role =='OP'">
-                        <div class="forth-wrap box-wrap">
-                            <div class="panel" v-loading="UpReportLoading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
-                                <div class="up-report">
-                                    <template>
-                                        <el-radio-group v-model="mediaUpType" size="medium" @change="changeUpMedia()" class="radio_style">
-                                            <el-radio-button label="广告门"></el-radio-button>
-                                            <el-radio-button label="道闸"></el-radio-button>
-                                        </el-radio-group>
-                                        <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
-                                    </template>
-
-                                    <div class="up-loader-header">
-                                        <el-cascader :options="citys" v-model="citySelect" @change="searchImgChange()">
-                                        </el-cascader>
-                                        <el-select placeholder="请选择资源" filterable v-model="allhouse" @change="searchImg()">
-                                            <el-option v-for="(item, index) of allResource" :key="index" :label="item.resName" :value="item.text"></el-option>
-                                        </el-select>
-                                        <el-select placeholder="请选择监播图" v-model="allPic" @change="searchImg()">
-                                            <!-- <el-option label="全部监播图" value="1"></el-option> -->
-                                            <el-option label="已上传" value="2"></el-option>
-                                            <el-option label="未上传" value="3"></el-option>
-                                        </el-select>
-                                        <!--进度条-->
-                                        <div class="progress">
-                                            <el-progress :percentage="upImgPercent" :text-inside="true"></el-progress>
-                                            <span>{{ currUpNum }} / {{totalUpNum}}</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="imgs-box">
-                                        <div class="up-loader-Imgpanel" v-for="(updata,index) in pageUpReportArr" :key="index">
-
-                                            <el-card class="box-card" shadow="never">
-                                                <div slot="header" class="clearfix img-car">
-                                                    <el-tooltip class="item" effect="dark" :content='updata.city+"-"+updata.rName+"-"+updata.resName+"-"+updata.mTitle+"-"+updata.asLab' placement="bottom" v-if='(updata.city+"-"+updata.rName+"-"+updata.resName+"-"+updata.mTitle+"-"+updata.asLab).length>23'>
-                                                        <span>{{wordlimit(updata.city+"-"+updata.rName+"-"+updata.resName+"-"+updata.mTitle+"-"+updata.asLab, 23)}}</span>
-                                                    </el-tooltip>
-                                                    <span v-else>{{updata.city+"-"+updata.rName+"-"+updata.resName+"-"+updata.mTitle+"-"+updata.asLab}}</span>
-                                                    <p class="car_header">
-                                                        <el-tooltip class="item" effect="dark" :content="updata.assetTag" placement="bottom" v-if="updata.assetTag&&updata.assetTag.length>10">
-                                                            <span style="margin-right:10px;"><i class="el-icon-date date_fa" type="text"></i>{{wordlimit(updata.assetTag, 10)}}</span>
-                                                        </el-tooltip>
-                                                        <span v-else style="margin-right:10px;"><i class="el-icon-date date_fa" type="text"></i>{{updata.assetTag}}</span>
-                                                        <span><i class="el-icon-date date_fa" type="text"></i>{{updata.timeRange}}</span>
-                                                    </p>
-                                                </div>
-                                                <div class="upload-img">
-                                                    <div  class="img_box" v-for="(item,index) in updata.upImgArr"
-                                                          @mouseenter="showPreImg = item.pID"
-                                                          @mouseleave="showPreImg = null"
-                                                          :key="index">
-                                                        <img class="upload_img_item" :src="item.url">
-                                                        <label class="icon_success">
-                                                            <i class="el-icon-check"></i>
-                                                        </label>
-                                                        <div class="icon_box" v-if="showPreImg === item.pID">
-                                                            <p class="img_box_icon">
-                                                                <i class="el-icon-search" @click="handlePictureCardPreview(item)"></i>
-                                                                <i v-if="!item.isCollection" class="el-icon-star-off" @click="saveImgFun(updata,index,'SK')"></i>
-                                                                <i v-if="item.isCollection" class="el-icon-star-on icon_save" @click="cancelImgFun(updata,index,'SK')"></i>
-                                                                <i class="el-icon-delete" @click="deleteImg(item)"></i>
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <el-upload class="upload_plus"
-                                                        :key="index+'-'+currUpPage+'-1'"
-                                                        @click.native="saveId(updata)"
-                                                        :class="{disabled:uploadDisabled(updata.upImgArr)}"
-                                                        :action="doUpload"
-                                                        :http-request="uploadImg"
-                                                        :limit="6"
-                                                        list-type="picture-card"
-                                                        :show-file-list="true"
-                                                        :file-list="updata.upImgArr"
-                                                        :before-upload="beforeAvatarUpload"
-                                                        :before-remove="beforeImgRemove"
-                                                        :on-preview="handlePictureCardPreview"
-                                                        :on-remove="handleRemove"
-                                                        :on-exceed="handleExceed" multiple>
-                                                        <i class="el-icon-plus"></i>
-                                                    </el-upload>
-                                                </div>
-                                            </el-card>
-                                        </div>
-                                    </div>
-                                    <div class="pager">
-                                        <el-pagination
-                                            v-if="paginationShow"
-                                            background
-                                            :current-page.sync="currUpPage"
-                                            :page-sizes="[6, 12]"
-                                            :page-size="pageUpSize"
-                                            layout="sizes, prev, pager, next, jumper"
-                                            :total="totalUpPageNum"
-                                            @size-change="sizeChange"
-                                            @current-change='changePage'>
-                                        </el-pagination>
-                                    </div>
-                                    <div class="up-report-bottom">
-                                        <!-- <div class="up-report-bottom-checkbox"> -->
-                                            <!--<el-checkbox v-model="sendReportchecked">生成报告同时发送至客户邮箱：444094173@qq.com-->
-                                            <!--<el-button type="text">修改</el-button>-->
-                                            <!--</el-checkbox>-->
-                                        <!-- </div> -->
-                                        <div class="up-report-bottom-btns">
-                                            <el-button plain @click="downloadImg('SK')" :loading="downLoading">导出图片</el-button>
-                                            <el-button type="primary" @click="submitUpload('SK')">保存</el-button>
-                                            <el-button plain @click="showH5('SK')">查看H5</el-button>
-                                            <el-button plain @click="updateReport('SK')" :loading="updateLoading">更新报告</el-button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <change-pic :type="1"></change-pic>
                     </el-tab-pane>
                     <el-tab-pane label="下刊报告" name="fifth" :disabled="usableBtn||role =='OP'">
-                        <div class="forth-wrap box-wrap">
-                            <!-- <h4>下刊报告</h4> -->
-                            <div class="panel" v-loading="DownReportLoading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
-                                <div class="up-report">
-                                    <template>
-                                        <el-radio-group v-model="mediaDownType" size="medium" @change="changeDownMedia()" class="radio_style">
-                                            <el-radio-button label="广告门"></el-radio-button>
-                                            <el-radio-button label="道闸"></el-radio-button>
-                                        </el-radio-group>
-                                        <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
-                                    </template>
-
-                                    <div class="up-loader-header">
-                                        <el-cascader :options="citys" v-model="citySelect" @change="searchImgChange()">
-                                        </el-cascader>
-                                        <el-select placeholder="请选择资源" filterable v-model="allhouse" @change="searchImg()">
-                                            <el-option v-for="(item, index) of allResource" :key="index" :label="item.resName" :value="item.value"></el-option>
-                                        </el-select>
-                                        <el-select placeholder="请选择监播图" v-model="allPic" @change="searchImg()">
-                                            <!-- <el-option label="全部监播图" value="1"></el-option> -->
-                                            <el-option label="已上传" value="2"></el-option>
-                                            <el-option label="未上传" value="3"></el-option>
-                                        </el-select>
-                                        <!--进度条-->
-                                        <div class="progress">
-                                            <el-progress :percentage="downImgPercent" :text-inside="true"></el-progress>
-                                            <span>{{ currDownNum }} / {{ totalDownNum }}</span>
-                                        </div>
-                                    </div>
-
-
-                                    <div class="imgs-box">
-                                        <div class="up-loader-Imgpanel" v-for="(downData,index) in pageDownReportArr" :key="index">
-
-                                            <el-card class="box-card" shadow="never">
-                                                <div slot="header" class="clearfix img-car">
-                                                    <el-tooltip class="item" effect="dark" :content='downData.city+"-"+downData.rName+"-"+downData.resName+"-"+downData.mTitle+"-"+downData.asLab' placement="bottom" v-if='(downData.city+"-"+downData.rName+"-"+downData.resName+"-"+downData.mTitle+"-"+downData.asLab).length>23'>
-                                                        <span>{{wordlimit(downData.city+"-"+downData.rName+"-"+downData.resName+"-"+downData.mTitle+"-"+downData.asLab, 23)}}</span>
-                                                    </el-tooltip>
-                                                    <span v-else>{{downData.city+"-"+downData.rName+"-"+downData.resName+"-"+downData.mTitle+"-"+downData.asLab}}</span>
-                                                    <p class="car_header">
-                                                        <el-tooltip class="item" effect="dark" :content="downData.assetTag" placement="bottom" v-if="downData.assetTag && downData.assetTag.length>10">
-                                                            <span style="margin-right:10px;"><i class="el-icon-date date_fa" type="text"></i>{{wordlimit(downData.assetTag, 10)}}</span>
-                                                        </el-tooltip>
-                                                        <span v-else style="margin-right:10px;"><i class="el-icon-date date_fa" type="text"></i>{{downData.assetTag}}</span>
-                                                        <span><i class="el-icon-date date_fa" type="text"></i>{{downData.timeRange}}</span>
-                                                    </p>
-                                                </div>
-                                                <div class="upload-img">
-                                                    <div  class="img_box" v-for="(item,index) in downData.downImgArr"
-                                                          @mouseenter="showPreImg = item.pID"
-                                                          @mouseleave="showPreImg = null"
-                                                          :key="index">
-                                                        <img class="upload_img_item" :src="item.url">
-                                                        <label class="icon_success">
-                                                            <i class="el-icon-check"></i>
-                                                        </label>
-                                                        <div class="icon_box" v-if="showPreImg === item.pID">
-                                                            <p class="img_box_icon">
-                                                                <i class="el-icon-search" @click="handlePictureCardPreview(item)"></i>
-                                                                <i v-if="!item.isCollection" class="el-icon-star-off" @click="saveImgFun(downData,index,'XK')"></i>
-                                                                <i v-if="item.isCollection" class="el-icon-star-on icon_save" @click="cancelImgFun(downData,index,'XK')"></i>
-                                                                <i class="el-icon-delete" @click="deleteImg(item)"></i>
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <el-upload class="upload_plus"
-                                                        @click.native="saveId(downData)"
-                                                        :class="{disabled:uploadDisabled(downData.downImgArr)}"
-                                                        :key="index+'-'+currUpPage+'-1'"
-                                                        :action="doUpload"
-                                                        :http-request="uploadImg"
-                                                        list-type="picture-card"
-                                                        :file-list="downData.downImgArr"
-                                                        :limit="6"
-                                                        :before-upload="beforeAvatarUpload"
-                                                        :before-remove="beforeImgRemove"
-                                                        :on-preview="handlePictureCardPreview"
-                                                        :on-remove="handleRemove"
-                                                        :on-exceed="handleExceed" multiple>
-                                                        <i class="el-icon-plus"></i>
-                                                    </el-upload>
-                                                </div>
-                                            </el-card>
-
-                                        </div>
-                                    </div>
-                                    <div class="pager">
-                                        <el-pagination 
-                                            v-if="paginationShow"
-                                            background
-                                            :current-page.sync="currDownPage"
-                                            :page-sizes="[6, 12]"
-                                            :page-size="pageDownSize"
-                                            layout="sizes, prev, pager, next, jumper"
-                                            :total="totalDownPageNum"
-                                            @size-change="sizeChange"
-                                            @current-change='changePage'>
-                                        </el-pagination>
-                                    </div>
-                                    <div class="up-report-bottom">
-                                        <div class="up-report-bottom-checkbox">
-                                            <!--<el-checkbox v-model="sendReportchecked">生成报告同时发送至客户邮箱：444094173@qq.com-->
-                                            <!--<el-button type="text">修改</el-button>-->
-                                            <!--</el-checkbox>-->
-                                        </div>
-                                        <div class="up-report-bottom-btns">
-                                            <el-button plain @click="downloadImg('XK')" :loading="downLoading">导出图片</el-button>
-                                            <el-button type="primary" @click="submitUpload('XK')">保存</el-button>
-                                            <el-button plain @click="showH5('XK')">查看H5</el-button>
-                                            <el-button plain @click="updateReport('XK')" :loading="updateLoading">更新报告</el-button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <change-pic :type="2"></change-pic>
                     </el-tab-pane>
                     <el-tab-pane label="换画报告" name="sixth">
                         <div class="changepic_box">
-                            <change-pic></change-pic>
+                            <change-pic :type="3"></change-pic>
                         </div>
                     </el-tab-pane>
                 </el-tabs>
@@ -440,90 +197,6 @@
                     <span slot="footer" class="dialog-footer">
                         <el-button plain @click="isFinish = false">取消</el-button>
                         <el-button type="primary" @click="conFirmStopAds">确 定</el-button>
-                    </span>
-                </el-dialog>
-
-                <!-- 上传上画素材、备注弹框 -->
-                <el-dialog
-                    title="画面备注信息"
-                    :visible.sync="showPhotoRemark">
-                    <p class="inline_dialog">
-                        <el-input v-model="resNameSec" placeholder="请输入资源名称" size="small"></el-input>
-                        <el-select v-model="mapName" placeholder="请选择地图中心点" size="small">
-                            <el-option v-for="(item, index) of mapArr" :key="index" :label="item.name" :value="item.name"></el-option>
-                        </el-select>
-                        <el-button size="small" type="primary" @click="searchInfo()" :disabled="!isSearch">搜索</el-button>
-                        <el-button plain size="small" @click="resetInfo()" :disabled="!isReset">重置</el-button>
-                    </p>
-                    <p style="margin-top:15px;">
-                        <!-- <el-button size="small">添加画像</el-button> -->
-                        <el-upload
-                            :action="doUpload"
-                            :show-file-list='false'
-                            :on-success="materImgSuccess"
-                            :before-upload="materImgBeforeUpload"
-                            :disabled="!shopList.length"
-                            style="display:inline-block;"
-                        >
-                            <el-button plain size="small">添加画像</el-button>
-                        </el-upload>
-                        <el-button plain size="small" @click="openRemark()">添加备注</el-button>
-                    </p>
-                    <p style="margin-top:15px;">
-                        <div class="car-title">
-                            <i class="el-icon-info" style="color: #1890FF;"></i>
-                            <h4>添加点位备注数量<span>{{remarkNum}}</span>个
-                                <!-- <span @click="clearAll()" style="cursor: pointer">&nbsp; &nbsp;清空</span> -->
-                            </h4>
-                        </div>
-                    </p>
-                    <el-table :data="materInfoArr" border height="450" ref="multipleTable" v-loading="materloading" v-loadmore="materLoadMore" @select="handleSelect" @select-all="handleSelectAll" class="table_mater">
-                        <el-table-column type="selection" width="41px" scope="scope" >
-                        </el-table-column>
-                        </el-table-column>
-                        <el-table-column prop="resName" label="资源名称">
-                        </el-table-column>
-                        <el-table-column prop="mTitle" label="媒体名称">
-                        </el-table-column>
-                        <el-table-column prop="asLab" label="面" width="60">
-                        </el-table-column>
-                        <el-table-column prop="city" label="城市" width="90">
-                        </el-table-column>
-                        <el-table-column prop="rName" label="区域" width="90">
-                        </el-table-column>
-                        <el-table-column prop="map" label="地图中心点">
-                        </el-table-column>
-                        <el-table-column prop="timeRange" label="排期" min-width="120" :filters="filtersData" :filter-method="filterTimeRange">
-                        </el-table-column>
-                        <el-table-column prop="remark" label="上画备注">
-                        </el-table-column>
-                        <el-table-column prop="imgUrl" label="操作" width="80">
-                            <template slot-scope="scope">
-                                <i class="el-icon-picture" :style="{color:scope.row.imgUrl?'#108DE7':'', margin: '0 10px'}" @click="previewImg(scope.row)" :disabled="!scope.row.imgUrl"></i>
-                                <i class="el-icon-delete" :style="{color:scope.row.imgUrl?'#108DE7':''}" @click="deleteOneImg(scope.row, scope.$index)" :disabled="!scope.row.imgUrl"></i>
-                                <!-- <el-button size="small" icon="el-icon-picture" :style="{'color':scope.row.imgUrl?'#108DE7':''}" @click="previewImg(scope.row)" :disabled="!scope.row.imgUrl"></el-button>
-                                <el-button size="small" icon="el-icon-delete" :style="{'color':scope.row.imgUrl?'#108DE7':''}" @click="deleteOneImg(scope.row, scope.$index)" :disabled="!scope.row.imgUrl"></el-button> -->
-                            </template>
-                        </el-table-column>
-
-                        <div slot="empty">
-                            <no-search-result></no-search-result>
-                        </div>
-                    </el-table>
-                    <p style="text-align:center;margin-top:20px;">
-                        <el-button type="primary" size="small" @click="saveAll()">保存</el-button>
-                    </p>
-                </el-dialog>
-
-                <!-- 添加备注弹出框 -->
-                <el-dialog
-                    title="添加备注"
-                    width="40%"
-                    :visible.sync="showRemark">
-                    <el-input type="textarea" :rows="2" placeholder="请输入备注信息" v-model="remarkInfo" :maxlength="100"> </el-input>
-                    <span slot="footer" class="dialog-footer">
-                        <el-button plain @click="showRemark = false" size="small">取消</el-button>
-                        <el-button type="primary" @click="saveRemark()" size="small">确 定</el-button>
                     </span>
                 </el-dialog>
             </div>
@@ -682,32 +355,6 @@ export default {
             materialInfo:[],
             // 道闸物料信息
             daoInfo:[],
-            // 是否显示上传素材弹框
-            showPhotoRemark: false,
-            // 是否显示上画备注弹框
-            showRemark: false,
-            // 备注信息内容
-            remarkInfo: '',
-            // 备注数量
-            // remarkNum: 0,
-            // 物料资源名称搜索
-            resNameSec: '',
-            // 地图中心点选择
-            mapName: '',
-            // 地图中心点数组:
-            mapArr: [],
-            // loading
-            materloading: true,
-            // 物料信息弹出框的选点信息
-            materInfoArr:[],
-            currInfoPage: 1,
-            maInfoSize: 10,
-            totalInfoPage: 0,
-            loading_maInfo: false,
-            // 勾选的数据
-            shopList:[],
-            isSearch: true,
-            isReset: true,
             // 上刊报告Arr
             pageUpReportArr: [],
             upImgPercent: 0,
@@ -771,9 +418,6 @@ export default {
             //上传照片
             dialogImageUrl: "",
             dialogVisible: false,
-            //监播备注
-            remark: "",
-            changeRemark: false,
             //选点排期标题
             showTitle: false,
             //选点排期按钮
@@ -799,20 +443,6 @@ export default {
         this.getInitData();
         // 选点排期
         this.getSetPoint();
-    },
-    directives: {
-        loadmore: {
-            bind: function (el, binding) {
-                const selectWrap = el.querySelector('.el-table__body-wrapper')
-                selectWrap.addEventListener('scroll', function () {
-                    const scrollDistance = this.scrollHeight - this.scrollTop - this.clientHeight;
-                    // console.log('滚动的距离',scrollDistance)
-                    if (scrollDistance <= 100) {
-                        binding.value()
-                    }
-                })
-            }
-        }
     },
     computed: {
         // 现投放面数
@@ -850,18 +480,6 @@ export default {
                     }
                 }
                 return addNum;
-            }
-        },
-        // 已经备注的数量
-        remarkNum(){
-            if (this.materInfoArr.length) {
-                let num = 0;
-                for (let data of this.materInfoArr) {
-                    if (data.remark) {
-                        num++;
-                    }
-                }
-                return num;
             }
         },
     },
@@ -969,347 +587,6 @@ export default {
             if (this.planPanel == "fifth") {
                 // this.getDownImgInfo();
                 this.searchFun();
-            }
-        },
-        // 获取地图中心点
-        getMapCenter(){
-            let params = {
-                uid: this.sessionData.uID,
-                token: this.sessionData.token,
-                apID: sessionStorage.getItem('order_apid'),
-                queryType: 0,
-            };
-            api.getApi(this.apiVar.Advertisement+'/GetAdMaterial', params).then(res =>{
-                console.log('res.data-----', res.data);
-                if(!res.data.SysCode && res.data.length){
-                    for(let data of res.data){
-                        let obj = {
-                            name: data
-                        };
-                        this.mapArr.push(obj);
-                    }
-                }
-            });
-        },
-        // 物料信息上传上画弹出框
-        uploadMater(){
-            this.showPhotoRemark = true;
-            this.shopList = [];
-            this.currInfoPage = 1;
-            this.materInfoArr = [];
-            this.mapArr = [];
-            let info = this.searchDataFormat();
-            this.getMaterInfo(info);
-            this.getMapCenter();
-        },
-        // 物料弹出框滚动加载
-        materLoadMore(){
-            if(this.loading_maInfo){
-                this.loading_maInfo = false;
-                if(this.currInfoPage <= this.totalInfoPage){
-                    this.searchInfoFun();
-                }
-            }
-        },
-        searchInfoFun(){
-            let info = this.searchDataFormat();
-            this.getMaterInfo(info);
-        },
-        getMaterInfo(params){
-            api.postApi(this.apiVar.Advertisement+'/GetAdMaterial', params).then(res =>{
-                console.log(res.data);
-                if(res.data.total >= 0){
-                    let dataInfo = res.data;
-                    // 物料信息弹出框的选点信息
-                    this.totalInfoPage = dataInfo.totalPage;
-                    let dataArr = dataInfo.list;
-                    this.materInfoArr = this.materInfoArr.concat(this.formatData(dataArr));
-                    this.loading_maInfo = true;
-                    this.currInfoPage++;
-                    this.SelectioUpdate();
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
-                }else{
-                    Message.warning(res.data.MSG);
-                }
-                this.materloading = false;
-            }).catch(err =>{
-                this.materloading = false;
-            });
-        },
-        // 搜索数据格式化
-        searchDataFormat(){
-            let res = this.resNameSec;
-            let map = this.mapName;
-            let info = {
-                uid: this.sessionData.uID,
-                token: this.sessionData.token,
-                pageNo: this.currInfoPage,
-                pageSize: this.maInfoSize,
-                apID: sessionStorage.getItem('order_apid')
-            };
-            if(res){
-                info.resName = res;
-            }
-            if(map){
-                info.mapCenterName = map;
-            }
-            return info;
-        },
-        // 物料信息弹出框搜索
-        searchInfo(){
-            console.log(this.resNameSec, this.mapName, this.materInfoArr);
-            if(this.resNameSec || this.mapName){
-                this.isSearch = false;
-                let timer = setTimeout(()=>{
-                    this.isSearch = true;
-                    clearTimeout(timer);
-                }, 1000);
-                this.materInfoArr = [];
-                this.loading_maInfo = false;
-                this.materloading = true;
-                this.currInfoPage = 1;
-                this.searchInfoFun();
-            }else{
-                Message.warning('请输入搜索条件');
-            }
-        },
-        formatData(arr){
-            let result = [];
-            for(let data of arr){
-                let obj = this.setTableData(data);
-                result.push(obj);
-            }
-            return result;
-        },
-        // 表格数据格式
-        setTableData(item){
-            let timeRange = dateFormat.toDate(item.lStar, '/') +'-'+ dateFormat.toDate(item.lEnd, '/');
-            let timeRange1 = dateFormat.toDate(item.lStar, '/') +'-'+ dateFormat.toDate(item.lSetTime, '/');
-            let obj = {
-                resID: item.resID,
-                lID: item.lID,
-                lStar: item.lStar,
-                lEnd: item.lEnd,
-                asID: item.asID,
-                resName: item.resName,
-                mTitle: item.mTitle,
-                asLab: item.asLab,
-                city: item.city,
-                rName: item.rName,
-                map: item.mapCenterName,
-                timeRange: item.lState==2? timeRange1 : timeRange,
-                changePicTime: '',
-                remark: item.remark?item.remark:'',
-                imgUrl: item.picUrl?item.picUrl:'',
-                uploadUser: item.uploadUser?item.uploadUser:'',
-                isSelect: false,
-            };
-            return obj;
-        },
-        // 物料信息弹出框重置
-        resetInfo(){
-            this.mapName = '';
-            this.resNameSec = '';
-            this.materInfoArr = [];
-            this.loading_maInfo = false;
-            this.materloading = true;
-            this.currInfoPage = 1;
-            this.isReset = false;
-            let timer = setTimeout(()=>{
-                this.isReset = true;
-                clearTimeout(timer);
-            }, 1000);
-            this.searchInfoFun();
-        },
-        // 打开备注框
-        openRemark(){
-            if(!this.shopList.length){
-                Message.warning('请先勾选需要备注的选点');
-                return;
-            }
-            this.remarkInfo = '';
-            this.showRemark = true;
-        },
-        // 上传图片之前的格式大小判断
-        materImgBeforeUpload(file){
-            const isJPG = file.type === "image/jpeg" || file.type === "image/png";;
-            const isLt2M = file.size / 1024 / 1024 < 2;
-
-            if (!isJPG) {
-                Message.error('只能上传jpg/png图片!');
-            }
-            if (!isLt2M) {
-                Message.error('图片大小不能超过 2MB!');
-            }
-            return isJPG && isLt2M;
-        },
-        // 上传图片成功后、
-        materImgSuccess(res, file){
-            console.log('res----file----', res, file, this.shopList);
-            // this.copyAsidArr  imgUrl
-            // this.materInfoArr   imgUrl
-            // this.shopList
-            for(let data of this.shopList){
-                data.imgUrl = res[0].pURL;
-            }
-            for(let data of this.materInfoArr){
-                for(let item of this.shopList){
-                    if(data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd){
-                        data.imgUrl = item.imgUrl;
-                        data.uploadUser = this.sessionData.uID;
-                        break;
-                    }
-                }
-            }
-
-        },
-        // 清空
-        // clearAll(){},
-        // 勾选一条
-        handleSelect(selection, row){
-            console.log('selection___________', selection, row);
-			row.isSelect = !row.isSelect;
-			console.log('row.isSelect-------', row.isSelect);
-			if(row.isSelect){
-				let bool = true;
-				for(let data of this.shopList){
-					if(data.asID == row.asID  && data.lStar == row.lStar && data.lEnd == row.lEnd ){
-						bool = false;
-						break;
-					}
-				}
-				if(bool){
-					this.shopList.push(row);
-				}
-
-			}else{
-
-				for(let i = 0; i< this.shopList.length; i++){
-					if(this.shopList[i].asID == row.asID && this.shopList[i].lStar == row.lStar && this.shopList[i].lEnd == row.lEnd ){
-						this.shopList.splice(i, 1);
-					}
-				}
-			}
-			console.log('this.shopList-----', this.shopList);
-        },
-        // 全选
-        handleSelectAll(selection){
-            console.log('selection___fdas____', selection);
-			if(selection.length){
-				for(let data of this.materInfoArr){
-					data.isSelect = true;
-					let bool = true;
-					for(let item of this.shopList){
-						if(data.asID == item.asID  && data.lStar == item.lStar && data.lEnd == item.lEnd ){
-							console.log('重复了');
-							bool = false;
-							break;
-						}
-					}
-					if(bool){
-						this.shopList.push(data);
-					}
-				}
-				console.log('this.shopListSelectTrue',this.shopList);
-			}else{
-				for(let data of this.materInfoArr){
-					data.isSelect = false;
-					for(let i = 0; i< this.shopList.length; i++){
-						if(this.shopList[i].asID == data.asID && this.shopList[i].lStar == data.lStar && this.shopList[i].lEnd == data.lEnd ){
-							this.shopList.splice(i, 1);
-							break;
-						}
-					}
-				}
-				console.log('取消全选之后的数据', this.shopList);
-			}
-        },
-        // 是否勾选更新
-		SelectioUpdate(){
-			let timer = setTimeout(() => {
-                for(let item of this.shopList){
-                    for(let data of this.materInfoArr){
-                        if(item.asID == data.asID && item.lStar == data.lStar && item.lEnd == data.lEnd){
-                            data.isSelect = true;
-                            data.remark = item.remark;
-                            data.imgUrl = item.imgUrl;
-                            this.$refs.multipleTable.toggleRowSelection(data, true);
-                        }
-                    }
-                }
-				clearTimeout(timer);
-			}, 0);
-		},
-        // 保存备注
-        saveRemark(){
-            this.showRemark = false;
-            console.log('this.remarkInfo---', this.remarkInfo, this.shopList);
-            for(let data of this.shopList){
-                data.remark = this.remarkInfo;
-            }
-            for(let data of this.materInfoArr){
-                for(let item of this.shopList){
-                    if(data.asID == item.asID && data.lStar == item.lStar && data.lEnd  == item.lEnd){
-                        data.remark = item.remark;
-                        break;
-                    }
-                }
-            }
-            console.log(this.materInfoArr, this.shopList);
-        },
-        // 查看图片
-        previewImg(row){
-            this.dialogImageUrl = row.imgUrl;
-            this.dialogVisible = true;
-        },
-        // 删除图片链接
-        deleteOneImg(row, index){
-            for(let data of this.materInfoArr){
-                if(data.asID == row.asID && data.lStar == row.lStar && data.lEnd == row.lEnd){
-                    data.imgUrl = '';
-                    // Message.success('删除成功');
-                    break;
-                }
-            }
-        },
-        // 保存所有信息
-        saveAll(){
-            console.log('this.materInfoArr---', this.materInfoArr);
-            if(this.shopList.length){
-                let result = [];
-                for(let data of this.materInfoArr){
-                    if(data.imgUrl || data.remark){
-                        let obj = {
-                            "lID": data.lID,
-                            "picUrl": data.imgUrl,
-                            "remark": data.remark,
-                            "uploadUser": data.uploadUser? data.uploadUser : this.sessionData.uID
-                        };
-                        result.push(obj);
-                    }
-                }
-                if(result.length){
-                    let info = {
-                        uid: this.sessionData.uID,
-                        token: this.sessionData.token,
-                        adMaterails: JSON.stringify(result),
-                    };
-                    api.postApi(this.apiVar.Advertisement+ '/AddAdMaterial', info).then(res =>{
-                        console.log(res.data);
-                        if(res.data.SysCode == 200200){
-                            Message.success(res.data.MSG);
-                        }else if(res.data.SysCode == 100302){
-                            this.loginTimeout();
-                        }else{
-                            Message.warning(res.data.MSG);
-                        }
-                    });
-                }else{
-                    Message.warning('没有需要保存的点');
-                }
-            }else{
-                Message.warning('请先勾选选点');
             }
         },
         //返回列表
@@ -2286,6 +1563,7 @@ export default {
             Message.warning("登录超时,请重新登录")
             this.$router.push("/login");
         },
+        // 终止点位
         conFirmStopAds(){
             let info = {
                 uid: this.sessionData.uID,
@@ -2392,15 +1670,6 @@ export default {
                     Message.info("已取消操作");
                 });
 
-        },
-
-        cancelChangeRemark() {
-            this.changeRemark = false;
-            Message.info("取消修改监播备注");
-        },
-        confirmChangeRemark() {
-            this.changeRemark = false;
-            Message.success("修改监播备注成功");
         },
         //点击换点
         changePoint() {

@@ -1,52 +1,81 @@
 <!-- 换画tab -->
 <template>
     <div class="pic_box">
-        <div class="list_pic">
-            <div class="pic_left">
-                <span class="compare">&lt;</span>
+        <!-- 上下刊 -->
+        <template v-if="type==1 || type == 2">
+            <!-- <template>
+                <el-radio-group v-model="mediaDownType" size="medium" @change="changeDownMedia()" class="radio_style">
+                    <el-radio-button label="广告门"></el-radio-button>
+                    <el-radio-button label="道闸"></el-radio-button>
+                </el-radio-group>
+                <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
+            </template>
 
-                <span class="pain_span">换画1</span>
-                <span class="pain_span">换画2</span>
-                <span class="pain_span">换画3</span>
-                <span class="pain_span">换画33</span>
+            <div class="up-loader-header">
+                <el-cascader :options="citys" v-model="citySelect" @change="searchImgChange()">
+                </el-cascader>
+                <el-select placeholder="请选择资源" filterable v-model="allhouse" @change="searchImg()">
+                    <el-option v-for="(item, index) of allResource" :key="index" :label="item.resName" :value="item.value"></el-option>
+                </el-select>
+                <el-select placeholder="请选择监播图" v-model="allPic" @change="searchImg()">
+                    <el-option label="已上传" value="2"></el-option>
+                    <el-option label="未上传" value="3"></el-option>
+                </el-select>
+                <div class="progress">
+                    <el-progress :percentage="downImgPercent" :text-inside="true"></el-progress>
+                    <span>{{ currDownNum }} / {{ totalDownNum }}</span>
+                </div>
+            </div> -->
+        </template>
+        <!-- 换画 -->
+        <template v-else>
+            <div class="list_pic">
+                <div class="pic_left">
+                    <span class="compare">&lt;</span>
 
-                <span class="compare">&gt;</span>
+                    <span class="pain_span">换画1</span>
+                    <span class="pain_span">换画2</span>
+                    <span class="pain_span">换画3</span>
+                    <span class="pain_span">换画33</span>
+
+                    <span class="compare">&gt;</span>
+                </div>
+                <div class="process">
+                    <el-button type="primary">编辑报告</el-button>
+                    <span class="process_box">
+                        <el-progress :percentage="50" :text-inside="true" :stroke-width="16"></el-progress>
+                        3300 / 2600
+                    </span>
+                </div>
             </div>
-            <div class="process">
-                <el-button type="primary">编辑报告</el-button>
-                <span class="process_box">
-                    <el-progress :percentage="50" :text-inside="true" :stroke-width="16"></el-progress>
-                    3300 / 2600
-                </span>
+            <!-- 搜索 -->
+            <div class="search_pic">
+                <el-row :gutter="32">
+                    <el-col>
+                        <span>媒体类型:</span>
+                        <el-select v-model="searchInfo.mediaType" placeholder="请选择媒体类型" size="small">
+                            <el-option v-for="item of searchInfo.mediaTypeArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                        </el-select>
+                    </el-col>
+                    <el-col>
+                        <span>城市区域:</span>
+                        <el-cascader :options="searchInfo.citys" v-model="searchInfo.city" placeholder="请选择城市区域" filterable size="small"></el-cascader>
+                    </el-col>
+                    <el-col>
+                        <span>资源名称:</span>
+                        <el-select v-model="searchInfo.resName" placeholder="请选择资源名称" size="small">
+                            <el-option v-for="item of searchInfo.resArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                        </el-select>
+                    </el-col>
+                    <el-col>
+                        <span>监播状态:</span>
+                        <el-select v-model="searchInfo.status" placeholder="请选择监播状态" size="small">
+                            <el-option v-for="item of searchInfo.statusArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                        </el-select>
+                    </el-col>
+                </el-row>
             </div>
-        </div>
-        <!-- 搜索 -->
-        <div class="search_pic">
-            <el-row :gutter="32">
-                <el-col>
-                    <span>媒体类型:</span>
-                    <el-select v-model="searchInfo.mediaType" placeholder="请选择媒体类型" size="small">
-                        <el-option v-for="item of searchInfo.mediaTypeArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                    </el-select>
-                </el-col>
-                <el-col>
-                    <span>城市区域:</span>
-                    <el-cascader :options="searchInfo.citys" v-model="searchInfo.city" placeholder="请选择城市区域" filterable size="small"></el-cascader>
-                </el-col>
-                <el-col>
-                    <span>资源名称:</span>
-                    <el-select v-model="searchInfo.resName" placeholder="请选择资源名称" size="small">
-                        <el-option v-for="item of searchInfo.resArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                    </el-select>
-                </el-col>
-                <el-col>
-                    <span>监播状态:</span>
-                    <el-select v-model="searchInfo.status" placeholder="请选择监播状态" size="small">
-                        <el-option v-for="item of searchInfo.statusArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                    </el-select>
-                </el-col>
-            </el-row>
-        </div>
+        </template>
 
         <!-- 换画报告 -->
         <div class="imgs_box">
@@ -62,23 +91,27 @@
                         </p>
                     </div>
                     <div class="detail_con">
-                        <div class="img_box" v-for="(img, imgIndex) of item.photoList" :key="imgIndex">
+                        <div class="img_box"
+                            v-for="(img, imgIndex) of item.photoList"
+                            @mouseenter="showPreImg = img.pID"
+                            @mouseleave="showPreImg = null"
+                            :key="imgIndex">
                             <img class="upload_img_item" :src="img.url">
                             <label class="icon_success">
                                 <i class="el-icon-check"></i>
                             </label>
-                            <div class="icon_box">
+                            <div class="icon_box" v-if="showPreImg === img.pID">
                                 <p class="img_box_icon">
-                                    <i class="el-icon-search"></i>
-                                    <i class="el-icon-star-off"></i>
-                                    <!-- <i class="el-icon-star-on icon_save"></i> -->
-                                    <i class="el-icon-delete"></i>
+                                    <i class="el-icon-search" @click="previewImg(img.url)"></i>
+                                    <i class="el-icon-star-off" v-if="!img.isCollection" @click="saveImgFun(img, imgIndex)"></i>
+                                    <i v-if="img.isCollection" class="el-icon-star-on icon_save" @click="cancelImgFun(img, imgIndex)"></i>
+                                    <i class="el-icon-delete" @click="deleteImg(img)"></i>
                                 </p>
                             </div>
                         </div>
 
+                            <!-- :key="index+'-'+currUpPage+'-1'" -->
                         <!-- <el-upload class="upload_plus"
-                            :key="index+'-'+currUpPage+'-1'"
                             @click.native="saveId(updata)"
                             :class="{disabled:uploadDisabled(updata.upImgArr)}"
                             :action="doUpload"
@@ -94,167 +127,6 @@
                             :on-exceed="handleExceed" multiple>
                             <i class="el-icon-plus"></i>
                         </el-upload> -->
-                        <el-upload class="upload_plus" action="https://jsonplaceholder.typicode.com/posts/" :show-file-list="true" list-type="picture-card" multiple>
-                            <i class="el-icon-plus"></i>
-                        </el-upload>
-                    </div>
-                </div>
-                <div class="point_item">
-                    <div class="detail_top">
-                        <p>广州市天河区-东方雅苑-西门-B</p>
-                        <p class="car_header">
-                            <span>
-                                <i class="el-icon-date date_fa" type="text"></i>005B201811GZ-X795</span>
-                            <span>
-                                <i class="el-icon-date date_fa" type="text"></i>换画日期:2018/03/08</span>
-                        </p>
-                    </div>
-                    <div class="detail_con">
-
-                        <!-- <el-upload class="upload_plus"
-                            :key="index+'-'+currUpPage+'-1'"
-                            @click.native="saveId(updata)"
-                            :class="{disabled:uploadDisabled(updata.upImgArr)}"
-                            :action="doUpload"
-                            :http-request="uploadImg"
-                            :limit="6"
-                            list-type="picture-card"
-                            :show-file-list="true"
-                            :file-list="updata.upImgArr"
-                            :before-upload="beforeAvatarUpload"
-                            :before-remove="beforeImgRemove"
-                            :on-preview="handlePictureCardPreview"
-                            :on-remove="handleRemove"
-                            :on-exceed="handleExceed" multiple>
-                            <i class="el-icon-plus"></i>
-                        </el-upload> -->
-                        <el-upload class="upload_plus" action="https://jsonplaceholder.typicode.com/posts/" :show-file-list="true" list-type="picture-card" multiple>
-                            <i class="el-icon-plus"></i>
-                        </el-upload>
-                    </div>
-                </div>
-                <div class="point_item">
-                    <div class="detail_top">
-                        <p>广州市天河区-东方雅苑-西门-B</p>
-                        <p class="car_header">
-                            <span>
-                                <i class="el-icon-date date_fa" type="text"></i>005B201811GZ-X795</span>
-                            <span>
-                                <i class="el-icon-date date_fa" type="text"></i>换画日期:2018/03/08</span>
-                        </p>
-                    </div>
-                    <div class="detail_con">
-                        <div class="img_box">
-                            <img class="upload_img_item" src="../../../assets/images/code.jpg">
-                            <label class="icon_success">
-                                <i class="el-icon-check"></i>
-                            </label>
-                            <div class="icon_box">
-                                <p class="img_box_icon">
-                                    <i class="el-icon-search"></i>
-                                    <i class="el-icon-star-off"></i>
-                                    <!-- <i class="el-icon-star-on icon_save"></i> -->
-                                    <i class="el-icon-delete"></i>
-                                </p>
-                            </div>
-                        </div>
-                        <div class="img_box">
-                            <img class="upload_img_item" src="../../../assets/images/code.jpg">
-                            <label class="icon_success">
-                                <i class="el-icon-check"></i>
-                            </label>
-                            <div class="icon_box">
-                                <p class="img_box_icon">
-                                    <i class="el-icon-search"></i>
-                                    <i class="el-icon-star-off"></i>
-                                    <!-- <i class="el-icon-star-on icon_save"></i> -->
-                                    <i class="el-icon-delete"></i>
-                                </p>
-                            </div>
-                        </div>
-                        <div class="img_box">
-                            <img class="upload_img_item" src="../../../assets/images/code.jpg">
-                            <label class="icon_success">
-                                <i class="el-icon-check"></i>
-                            </label>
-                            <div class="icon_box">
-                                <p class="img_box_icon">
-                                    <i class="el-icon-search"></i>
-                                    <i class="el-icon-star-off"></i>
-                                    <!-- <i class="el-icon-star-on icon_save"></i> -->
-                                    <i class="el-icon-delete"></i>
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- <el-upload class="upload_plus"
-                            :key="index+'-'+currUpPage+'-1'"
-                            @click.native="saveId(updata)"
-                            :class="{disabled:uploadDisabled(updata.upImgArr)}"
-                            :action="doUpload"
-                            :http-request="uploadImg"
-                            :limit="6"
-                            list-type="picture-card"
-                            :show-file-list="true"
-                            :file-list="updata.upImgArr"
-                            :before-upload="beforeAvatarUpload"
-                            :before-remove="beforeImgRemove"
-                            :on-preview="handlePictureCardPreview"
-                            :on-remove="handleRemove"
-                            :on-exceed="handleExceed" multiple>
-                            <i class="el-icon-plus"></i>
-                        </el-upload> -->
-                        <el-upload class="upload_plus" action="https://jsonplaceholder.typicode.com/posts/" :show-file-list="true" list-type="picture-card" multiple>
-                            <i class="el-icon-plus"></i>
-                        </el-upload>
-                    </div>
-                </div>
-                <div class="point_item">
-                    <div class="detail_top">
-                        <p>广州市天河区-东方雅苑-西门-B</p>
-                        <p class="car_header">
-                            <span>
-                                <i class="el-icon-date date_fa" type="text"></i>005B201811GZ-X795</span>
-                            <span>
-                                <i class="el-icon-date date_fa" type="text"></i>换画日期:2018/03/08</span>
-                        </p>
-                    </div>
-                    <div class="detail_con">
-                        <div class="img_box">
-                            <img class="upload_img_item" src="../../../assets/images/code.jpg">
-                            <label class="icon_success">
-                                <i class="el-icon-check"></i>
-                            </label>
-                            <div class="icon_box">
-                                <p class="img_box_icon">
-                                    <i class="el-icon-search"></i>
-                                    <i class="el-icon-star-off"></i>
-                                    <!-- <i class="el-icon-star-on icon_save"></i> -->
-                                    <i class="el-icon-delete"></i>
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- <el-upload class="upload_plus"
-                            :key="index+'-'+currUpPage+'-1'"
-                            @click.native="saveId(updata)"
-                            :class="{disabled:uploadDisabled(updata.upImgArr)}"
-                            :action="doUpload"
-                            :http-request="uploadImg"
-                            :limit="6"
-                            list-type="picture-card"
-                            :show-file-list="true"
-                            :file-list="updata.upImgArr"
-                            :before-upload="beforeAvatarUpload"
-                            :before-remove="beforeImgRemove"
-                            :on-preview="handlePictureCardPreview"
-                            :on-remove="handleRemove"
-                            :on-exceed="handleExceed" multiple>
-                            <i class="el-icon-plus"></i>
-                        </el-upload> -->
-                        <el-upload class="upload_plus" action="https://jsonplaceholder.typicode.com/posts/" :show-file-list="true" list-type="picture-card" multiple>
-                            <i class="el-icon-plus"></i>
-                        </el-upload>
                     </div>
                 </div>
             </div>
@@ -299,7 +171,6 @@
             <el-table :data="pointArr" border height="450" ref="multipleTable" v-loading="dialogPage.pointLoading" v-loadmore="pointLoadMore" @select="handleSelect" @select-all="handleSelectAll" class="table_mater">
                 <el-table-column type="selection" width="41px" scope="scope">
                 </el-table-column>
-                </el-table-column>
                 <el-table-column prop="resName" label="资源">
                 </el-table-column>
                 <el-table-column prop="mTitle" label="媒体">
@@ -320,7 +191,7 @@
                 </el-table-column>
                 <el-table-column prop="imgUrl" label="操作" width="80">
                     <template slot-scope="scope">
-                        <i class="el-icon-picture" :style="{color:scope.row.imgUrl?'#108DE7':'', margin: '0 10px'}" @click="previewImg(scope.row)" :disabled="!scope.row.imgUrl"></i>
+                        <i class="el-icon-picture" :style="{color:scope.row.imgUrl?'#108DE7':'', margin: '0 10px'}" @click="previewImg(scope.row.imgUrl)" :disabled="!scope.row.imgUrl"></i>
                         <i class="el-icon-delete" :style="{'color':scope.row.imgUrl?'#108DE7':''}" @click="deleteOneImg(scope.row, scope.$index)" :disabled="!scope.row.imgUrl"></i>
                     </template>
                 </el-table-column>
@@ -381,6 +252,12 @@ export default {
     components: {
         noSearchResult
     },
+    props:{
+        type:{
+            type: Number,
+            default: 1
+        },
+    },
     data() {
         return {
             // 搜索信息
@@ -436,7 +313,12 @@ export default {
                     city: '广州市',
                     rName: '天河区',
                     changePicTime: '2019/09/09',
-                    photoList: [],
+                    photoList: [
+                        {
+                            url: '',
+                            pID: 1,
+                        }
+                    ],
                 },
                 {
                     resId: 2,
@@ -447,9 +329,16 @@ export default {
                     city: '广州市',
                     rName: '天河区',
                     changePicTime: '2019/09/09',
-                    photoList: [],
+                    photoList: [
+                        {
+                            url: '',
+                            pID: 2,
+                        }
+                    ],
                 },
             ],
+            //显示预览图蒙版
+            showPreImg: null,
             // 是否展示换画弹框
             isShowPic: false,
             // 弹出框搜索
@@ -482,6 +371,7 @@ export default {
             dialogPage:{
                 loading_maInfo: false,
                 currInfoPage: 1,
+                pageSize: 10,
                 totalInfoPage: 0,
                 // pointLoading: true,
                 pointLoading: false,
@@ -599,10 +489,33 @@ export default {
         getResArr(){
             // this.searchInfo.resArr
         },
+        // 获取换画报告列表
+        getData(params){
+            // this.imageArr
+            // this.pageInfo
+        },
         // 搜索
         search(){
             console.log(this.searchInfo);
-
+            let info = this.searchPointFormat();
+            this.getData(info);
+        },
+        // 搜索换画列表条件
+        searchPointFormat(){
+            let { uID, token } = this.sessionData;
+            let { mediaType, city, resName, status } = this.searchInfo;
+            let { currPage, pageSize } = this.pageInfo;
+            let info = {
+                uid: uID,
+                token: token,
+                pageNo: currPage,
+                pageSize: pageSize,
+                ...( mediaType && { mediaType }),
+                ...( city.length && { city: city[0] }),
+                ...( resName && { resName }),
+                ...( status && { status })
+            };
+            return info;
         },
         /**
          *  选择换画点位弹出框
@@ -618,28 +531,24 @@ export default {
         },
         // 搜索数据格式化
         searchDataFormat(){
+            let { uID, token } = this.sessionData;
             let { resName, picState, mapName } = this.dialogInfo;
+            let { currInfoPage, pageSize } = this.dialogPage;
             let info = {
-                uid: this.sessionData.uID,
-                token: this.sessionData.token,
-                pageNo: this.currInfoPage,
-                pageSize: this.maInfoSize,
-                apID: sessionStorage.getItem('order_apid')
+                uid: uID,
+                token: token,
+                pageNo: currInfoPage,
+                pageSize: pageSize,
+                apID: sessionStorage.getItem('order_apid'),
+                ...( resName && { resName }),
+                ...( mapName && { mapCenterName: mapName }),
+                ...( picState && { picState })
             };
-            if(resName){
-                info.resName = resName;
-            }
-            if(mapName){
-                info.mapCenterName = mapName;
-            }
-            if(picState){
-                info.picState = picState;
-            }
             return info;
         },
         searchInfoFun(){
             let info = this.searchDataFormat();
-            this.getMaterInfo(info);
+            // this.getMaterInfo(info);
         },
         getMaterInfo(params){
             api.postApi(this.apiVar.Advertisement+'/GetAdMaterial', params).then(res =>{

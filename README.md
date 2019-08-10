@@ -1,5 +1,7 @@
 # vue-puzzle-verification
 封装的一个用于登录验证的拼图的vue组件，使用了canvas画图和拖拽的一些技巧。canvas的API很好用，可以画出各种图形。
+## 使用方法
+* `npm i vue-puzzle-verification` 安装使用
 ## 效果展示
 ### 1. 简单用法:
 ![简单用法](./vue-puzzle-verification/src/assets/demo-img/简单用法.jpg)   

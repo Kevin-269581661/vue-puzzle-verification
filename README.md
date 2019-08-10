@@ -7,7 +7,7 @@
 import PuzzleVerification from 'vue-puzzle-verification'
 Vue.use(PuzzleVerification)
 ```
-* 在.vue文件中HTML里，直接使用<PuzzleVerification/>即可
+* 在.vue文件中HTML里，直接使用`<PuzzleVerification/>`即可
 ## 效果展示
 ### 1. 简单用法:
 ![简单用法](./vue-puzzle-verification/src/assets/demo-img/简单用法.jpg)   

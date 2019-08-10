@@ -498,6 +498,7 @@ export default {
 
 .puzzle-container {
 	position: relative;
+	display: inline-block;
 	padding: 15px 15px 28px;
 	border: 1px solid #ddd;
 	background: #ffffff;

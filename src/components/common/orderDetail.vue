@@ -27,7 +27,7 @@
                             </span>
                         </el-dialog>
                         <div class="handleBtn">
-                            <el-button type="plain">换画</el-button>
+                            <el-button type="plain" @click="changePain()">换画</el-button>
                             <el-button type="primary" :disabled="usableBtn" v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0" @click="changePoint">换点</el-button>
                         </div>
                     </div>
@@ -157,12 +157,12 @@
                     </el-tab-pane>
                     <el-tab-pane label="上刊报告" name="forth" :disabled="usableBtn||role =='OP'">
                         <div class="changepic_box" v-if="planPanel=='forth'">                        
-                            <change-pic :type="1"></change-pic>
+                            <change-pic :type="1" :order-detail="orderDetail"></change-pic>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane label="下刊报告" name="fifth" :disabled="usableBtn||role =='OP'">
                         <div class="changepic_box" v-if="planPanel=='fifth'">
-                            <change-pic :type="2"></change-pic>
+                            <change-pic :type="2" :order-detail="orderDetail"></change-pic>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane label="换画报告" name="sixth">
@@ -1271,6 +1271,11 @@ export default {
             // this.IsAddPoint = true
             this.dialogAddPoint = false;
             // Message.info("已取消操作");
+        },
+        // 换画
+        changePain(){
+            this.planPanel = 'sixth';
+            
         },
         // 操作提示统一方法
         messageFun(mesType,mes){

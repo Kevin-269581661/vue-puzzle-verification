@@ -29,22 +29,17 @@
         </template>
         <!-- 换画报告 -->
         <template v-else>
-            <div class="list_pic">
+            <div class="list_pic" v-if="painList.length">
                 <div class="pic_left">
-                    <span class="compare">&lt;</span>
-
-                    <span class="pain_span">换画1</span>
-                    <span class="pain_span">换画2</span>
-                    <span class="pain_span">换画3</span>
-                    <span class="pain_span">换画33</span>
-
-                    <span class="compare">&gt;</span>
+                    <el-button icon="el-icon-arrow-left" plain class="compare" @click="toLeft()" :disabled="activePainIndex == 0"></el-button>
+                    <span :class="['pain_span', activePainIndex==index ? 'active':'']" v-for="(item, index) of painList" :key="item.id" @click="changePain(index)">{{ item.name }}</span>
+                    <el-button icon="el-icon-arrow-right" plain class="compare" @click="toRight()" :disabled="activePainIndex == painList.length-1"></el-button>
                 </div>
                 <div class="process">
-                    <el-button type="primary">编辑报告</el-button>
+                    <el-button type="primary" @click="editReport()">编辑报告</el-button>
                     <span class="process_box">
                         <el-progress :percentage="50" :text-inside="true" :stroke-width="16"></el-progress>
-                        3300 / 2600
+                        {{ publishNumInfo.currNum }} / {{ publishNumInfo.totalNum}}
                     </span>
                 </div>
             </div>
@@ -151,10 +146,10 @@
         </div>
 
         <div class="up-report-bottom">
-            <!-- <el-button plain @click="downloadImg('SK')" :loading="downLoading">导出图片</el-button>
+            <el-button plain @click="downloadImg('SK')" :loading="downLoading">导出图片</el-button>
             <el-button type="primary" @click="submitUpload('SK')">保存</el-button>
             <el-button plain @click="showH5('SK')">查看H5</el-button>
-            <el-button plain @click="updateReport('SK')" :loading="updateLoading">更新报告</el-button> -->
+            <el-button plain @click="updateReport('SK')" :loading="updateLoading">更新报告</el-button>
         </div>
 
         <!-- 换画弹出框 -->
@@ -230,8 +225,9 @@
             <el-row>
                 <el-col class="flex_box">
                     <span>
-                        <b style="color:#FF0000;">*</b> 换画日期：</span>
-                    <el-date-picker size="small" v-model="editInfo.date" value-format="yyyy/MM/dd" format="yyyy/MM/dd" type="date" placeholder="选择日期">
+                        <b style="color:#FF0000;">*</b> 换画日期：
+                    </span>
+                    <el-date-picker size="small" v-model="editInfo.date" value-format="yyyy/MM/dd" format="yyyy/MM/dd" type="date" placeholder="选择日期" :picker-options="pickerOptions">
                     </el-date-picker>
                 </el-col>
                 <el-col class="flex_box">
@@ -278,6 +274,10 @@ export default {
             type: Number,
             default: 1
         },
+        orderDetail:{
+            type: Object,
+            // default: {},
+        },
     },
     data() {
         return {
@@ -297,12 +297,43 @@ export default {
                 // 资源列表
                 allResource: [],
             },
+
+            // 上传图片
+            formData: new FormData(),
+            addload:'',
+            // 所有的图片组合
+            uploadImgArr: [],
+            // 关联属性数组
+            constractArr:[],
+            // 上传图片后返回的数据数组
+            uploadPidArr: [],
+            updateLoading: false,
+            // 导出订单图片包
+            downLoading: false,
+
             // 上下刊百分比数量等
             publishNumInfo:{
                 percent: 0,
                 currNum: 0,
                 totalNum: 0,
             },
+            // 换画名称列表
+            painList: [
+                {
+                    id: 1,
+                    name: '换画1'
+                },
+                {
+                    id: 2,
+                    name: '换画2',
+                },
+                {
+                    id: 3,
+                    name: '换画33'
+                }
+            ],
+            // 换画当前点击
+            activePainIndex: 0,
             // 搜索信息
             searchInfo: {
                 mediaType: "",
@@ -498,12 +529,27 @@ export default {
             dialogImageUrl: "",
             // 上传图片以及换画日期弹出框
             isShowEdit: false,
-            doUpload: "",
+            // 上传图片地址
+            doUpload: "/advertisement/UpLoad",
             editInfo: {
                 date: "",
                 url: "",
                 remark: ""
-            }
+            },
+            // 时间控件限制范围
+            dateRange:{
+                beginDate: '2019/08/08',
+                endDate: '2019/08/20'
+            },
+            pickerOptions:{
+                disabledDate: (time) => {
+                    let beginDateVal = new Date(this.dateRange.beginDate).getTime()+60*60*24*1000;
+                    let endDateVal = new Date(this.dateRange.endDate).getTime()-60*60*24*1000;
+                    if (beginDateVal || endDateVal) {
+                        return (time.getTime() < beginDateVal) || (time.getTime() > endDateVal);
+                    }
+                }
+            },
         };
     },
     directives: {
@@ -592,6 +638,36 @@ export default {
                 ...( status && { status })
             };
             return info;
+        },
+        // 点击左边
+        toLeft(){
+            if(this.activePainIndex <= 0){
+                this.activePainIndex = 0;
+            }else{
+                this.activePainIndex--;
+            }
+            this.changePain(this.activePainIndex);
+        },
+        // 点击右边
+        toRight(){
+            if(this.activePainIndex < this.painList.length - 1){
+                this.activePainIndex++;
+            }else{
+                this.activePainIndex = this.painList.length -1;
+            }
+            this.changePain(this.activePainIndex);            
+        },
+        // 点击换画名称
+        changePain(index){
+            this.activePainIndex = index;
+            // 去获取换画列表
+            // 换画id
+            let painId = this.painList[index].id;
+            this.search();
+        },
+        // 编辑报告
+        editReport(){
+            this.isShowPic = true;
         },
         /**
          *  选择换画点位弹出框
@@ -815,9 +891,11 @@ export default {
         cancelChange() {
             this.isShowEdit = false;
         },
+        // 保存上传图片
         confirmChange() {
             this.isShowEdit = false;
             console.log(this.editInfo);
+            
         },
         // 取消
         cancel() {
@@ -831,6 +909,7 @@ export default {
 
         // 上下刊报告
         searchFun(){
+            this.pageInfo.paginationShow = false;
             let info = {};
             if(this.type == 1){
                 info = this.searchFormat('SK');
@@ -838,6 +917,9 @@ export default {
                 info = this.searchFormat('XK');
             }
             this.getImgInfo(info);
+            this.$nextTick(function () {
+                this.pageInfo.paginationShow = true;
+            });
         },
         // 搜索数据格式化
         searchFormat(type){
@@ -1480,6 +1562,7 @@ export default {
 /* 上下刊 */
 .radio_style {
     vertical-align: top;
+    margin-bottom: 10px;
 }
 .up-loader-header {
     position: relative;
@@ -1522,6 +1605,10 @@ export default {
     justify-content: space-between;
     margin-bottom: 16px;
 }
+.pic_left{
+    display: flex;
+    justify-content: flex-start;
+}
 .pain_span {
     display: inline-block;
     height: 32px;
@@ -1531,16 +1618,21 @@ export default {
     border-radius: 4px;
     border: 1px solid rgba(0, 0, 0, 0.15);
     color: rgba(0, 0, 0, 0.25);
+    margin-right: 8px;
+    cursor: pointer;
 }
 .compare {
+    margin-right: 8px;
     width: 32px;
+    min-width: 32px;
     display: inline-block;
     height: 32px;
     line-height: 32px;
     text-align: center;
     border-radius: 4px;
     border: 1px solid rgba(0, 0, 0, 0.15);
-    color: rgba(0, 0, 0, 0.25);
+    color: rgba(0, 0, 0, 0.65);
+    cursor: pointer;
 }
 /* 选中 */
 .active {
@@ -1629,22 +1721,43 @@ export default {
     margin-right: 4px;
 }
 /* 详情内容 */
-.detail_con {
-    margin: 16px;
+.detail_con span {
+    /* margin: 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
+    flex-wrap: wrap; */
+
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    font-size: 14px;
+    color: #666666;
+}
+/deep/ .el-upload--picture-card {
+    width: 30%;
+    height: 105px;
+    line-height: 105px;
+    margin: 4.2% 1.6% 0 1.6%;
+    background: rgba(251, 251, 251, 1);
+    border-radius: 4px;
+    border: 1px dashed #dedede;
+    text-align: center;
 }
 
+/deep/ .el-upload-list--picture-card .el-upload-list__item {
+    width: 30%;
+    height: 105px;
+    margin: 4.2% 1.6% 0 1.6%;
+}
 .img_box {
-    width: 105px;
+    /* width: 105px; */
     height: 105px;
 
-    /* width: 30%; */
-    /* margin: 4.2% 1.6% 0 1.6%; */
-
-    margin-bottom: 16px;
+    width: 30%;
+    margin: 4.2% 1.6% 0 1.6%;
+    
+    /* margin-bottom: 16px; */
     float: left;
     position: relative;
     overflow: hidden;
@@ -1695,27 +1808,26 @@ export default {
 .img_box_icon i.icon_save {
     color: #ffd517;
 }
+/deep/ .disabled .el-upload--picture-card {
+    display: none;
+}
 /deep/.detail_con .el-upload--picture-card {
-    width: 105px;
+    /* width: 105px; */
     height: 105px;
     line-height: 105px;
 
-    /* width: 30%; */
-    /* margin: 4.2% 1.6% 0 1.6%; */
-    margin: 0;
-    margin-bottom: 16px;
+    width: 30%;
+    margin: 4.2% 1.6% 0 1.6%;
+    /* margin: 0;
+    margin-bottom: 16px; */
 
     background: rgba(251, 251, 251, 1);
     border-radius: 4px;
     border: 1px dashed #dedede;
     text-align: center;
+    
 }
 
-/deep/.detail_con .el-upload-list--picture-card .el-upload-list__item {
-    width: 30%;
-    height: 105px;
-    margin: 4.2% 1.6% 0 1.6%;
-}
 /* 分页 */
 .pager {
     height: 32px;

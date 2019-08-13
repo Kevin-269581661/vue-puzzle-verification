@@ -336,7 +336,7 @@
                                              class="demo-ruleForm">
                                         <el-row :gutter="76" class="from_row">
                                             <el-col :span="6" class="el_col_box">
-                                                <el-form-item label="媒体名称" prop="mediaName">
+                                                <el-form-item label="媒体名称" prop="mediaName" ref="adMediaName">
                                                     <el-input v-model="item.mediaForm.mediaName" placeholder="例：东门"></el-input>
                                                 </el-form-item>
                                             </el-col>
@@ -503,12 +503,13 @@
                                              class="demo-ruleForm">
                                         <el-row :gutter="76" class="from_row">
                                             <el-col :span="6">
-                                                <el-form-item label="媒体名称" prop="mediaName">
+                                                <el-form-item label="媒体名称" prop="mediaName" ref="adMediaName">
                                                     <el-input v-model="item.roadGateForm.mediaName" placeholder="例：东门"></el-input>
                                                 </el-form-item>
                                             </el-col>
                                             <el-col :span="6" class="el_col_box">
-                                                <el-form-item label="资产编号" prop="assetId" ref="ResAssetId" :rules="item.roadGateForm.assetIdBolean ? assetIdRules: mediaRules.assetId">
+                                                <el-form-item label="资产编号" prop="assetId" ref="ResAssetId"
+                                                              :rules="item.roadGateForm.assetIdBolean ? assetIdRules: mediaRules.assetId">
                                                         <el-input v-model.trim="item.roadGateForm.assetId" placeholder="例:0034FASF342-X21"
                                                                   :disabled="item.roadGateForm.assetIdBolean"></el-input>
                                                 </el-form-item>
@@ -1065,6 +1066,7 @@
                     ],
                     assetId: [
                         {required: true, message: '资产编号不能为空!', trigger: ['blur','change']},
+                        {validator: validateAssetId, trigger: 'change'},
                         {validator: this.validateAssetTag, trigger: 'blur'},
                         {max: 40, message: '最多只能输入40个字节!', trigger: ['blur','change']}
                     ],
@@ -1079,7 +1081,6 @@
                     ],
                     adSizeH: [
                         {required: true, type: 'string', message: '不能为空且只能输入数字!', trigger: ['blur','change']},
-                        // {type: 'number', min: 1, max: 9999999, message: '最大值9999999', trigger: 'blur'},
                         {validator: validatePrice, trigger: ['blur','change']},
                     ],
                     visualW: [
@@ -1090,21 +1091,18 @@
                         {required: true, type: 'string', message: '不能为空且只能输入数字!', trigger: ['blur','change']},
                         {validator: validatePrice, trigger: ['blur','change']},
                     ],
-                    // mediaRemark: [
-                    //     {max: 200, message: '最多只能输入200个字符', trigger: 'change'}
-                    // ],
                 },
                 //道闸表单验证
                 roadGateRules:{
                     mediaName: [
                         {required: true, message: '媒体名称不能为空!', trigger: ['blur','change']},
                         {validator: validateSpace, trigger: 'blur'},
+                        {validator: this.validateMediaName, trigger: 'blur'},
                         {max: 40, message: '最多只能输入40个字节!', trigger: 'change'}
                     ],
                     usableNum: [
                         {validator: validateNum, trigger: 'change'},
                         {required: true, message: '可投面数不能为空!', trigger: ['blur','change']},
-                        // { type:'number', min:1, max:26, message:'最多可投26面',trigger:'blur'},
                     ],
                     mstate: [
                         {required: true, message: '请选择媒体状态!', trigger: ['blur','change']},
@@ -1112,6 +1110,7 @@
                     assetId: [
                         {required: true, message: '资产编号不能为空!', trigger: ['blur','change']},
                         {validator: validateAssetId, trigger: 'change'},
+                        {validator: this.validateAssetTag, trigger: 'blur'},
                         {max: 40, message: '最多只能输入40个字节!', trigger: 'change'}
                     ],
                     LBSizeW: [
@@ -1130,9 +1129,6 @@
                         {required: true, type: 'string', message: '不能为空且只能输入数字!', trigger: ['blur','change']},
                         {validator: validatePrice, trigger: 'change'},
                     ],
-                    // mediaRemark: [
-                    //     {max: 200, message: '最多只能输入200个字符', trigger: 'change'}
-                    // ],
                 },
                 recFormImg: '',              // 资源图片
                 mediaFormImg: '',            // 媒体图片
@@ -1698,7 +1694,6 @@
             },
             // 按所属公司的城市区域检查是否有重复的资源名称
             isHaveCommenName(rule, value, callback){
-                // recForm.resname
                 if(this.recForm.resname !== '' && this.resAddres.area !== '' && this.resAddres.city !== ''){
                     let params = {
                         uid: this.sessionData.uID,
@@ -1736,25 +1731,30 @@
                     })
                 }
             },
-            //资产编号校验去重
-            validateAssetTag(rule, value, callback){
-                console.log('value----',value)
-                let arr = this.arrMedia.filter((item, index, list) => {
-                    if (item.mediaForm.assetId === value) {
+            // 查找重名资产编号个数及初始化
+            filterAssetTag(mediaList,formName,value){
+                let arr = mediaList.filter((item, index, list) => {
+                    item.isAssetIdError = false
+                    item.assetIdCommentData.mediaName = ''
+                    item.assetIdCommentData.resName = ''
+                    item.assetIdCommentData.updateTime = ''
+                    if (item[formName].assetId === value) {
+                        this.$refs[formName][index].clearValidate('ResAssetId');
                         return item
                     }
                 })
-                console.log('媒体名称校验去重',arr)
-                if (arr.length >= 2) {
-                    for(let key of this.arrMedia) {
-                        if (key.mediaForm.assetId === value) {
-                            key.isAssetIdError = true
-                            key.assetIdCommentData.mediaName = this.resData.mediaName
-                            key.assetIdCommentData.resName = this.resData.resName
-                            key.assetIdCommentData.updateTime = this.resData.createTime
-                        }
-                    }
-                    callback(new Error(' '))
+                return arr
+            },
+            //资产编号校验去重
+            validateAssetTag(rule, value, callback){
+                console.log('value----',value)
+                // 广告门
+                let adArr = this.filterAssetTag(this.arrMedia,'mediaForm',value)
+                // 道闸
+                let rgArr = this.filterAssetTag(this.roadGateMedia,'roadGateForm',value)
+                console.log('资产编号校验去重',adArr,rgArr)
+                if ((adArr.length + rgArr.length) >= 2) {
+                    callback(new Error('这个资产编号已在该小区内存在!'))
                 } else {
                     console.log('_________资产编号是否重复_________')
                     let params = {
@@ -1807,40 +1807,67 @@
                         }
                     }
                 }
+                // 道闸
+                for (let key of this.roadGateMedia) {
+                    if (key.roadGateForm.assetId === value) {
+                        if (flag) {
+                            key.isAssetIdError = true
+                            key.assetIdCommentData.mediaName = resData.mediaName
+                            key.assetIdCommentData.resName = resData.resName
+                            key.assetIdCommentData.updateTime = resData.createTime
+                            break
+                        } else {
+                            key.isAssetIdError = false
+                        }
+                    }
+                }
             },
             // 媒体名称校验去重
             validateMediaName(rule, value, callback) {
-                let arr = this.arrMedia.filter((item, index, list) => {
+                console.log('广告门',this.arrMedia,'道闸',this.roadGateMedia)
+                // 广告门
+                let adArr = this.arrMedia.filter((item, index, list) => {
+                    this.$refs['mediaForm'][index].clearValidate('adMediaName');
                     if (item.mediaForm.mediaName === value) {
                         return item
                     }
                 })
-                if (arr.length >= 2) {
-                    callback(new Error('这个媒体名称已在同小区内存在!'))
+                // 道闸 roadGateMedia
+                let rgArr = this.roadGateMedia.filter((item, index, list) => {
+                    this.$refs['roadGateForm'][index].clearValidate('adMediaName');
+                    console.log('item',item.roadGateForm)
+                    if (item.roadGateForm.mediaName === value) {
+                        return item
+                    }
+                })
+                if ((adArr.length + rgArr.length) >= 2) {
+                    // console.log('存在相同媒体名称value-----',value)
+                    let timer = setTimeout(()=>{
+                        clearTimeout(timer)
+                        callback(new Error('这个媒体名称已在同小区内存在!'))
+                    },50)
                 } else {
                     callback();
                 }
-                console.log('媒体名称校验去重',arr)
+                console.log('媒体名称校验去重',adArr,rgArr)
             },
             // 广告门输入框和下拉框失去光标
             adDoorBlur(name,index){
-                console.log('name',name)
+                console.log('广告门name',name)
                 // 手动触发校验 validateField
-                this.$refs.mediaForm[index].validateField(name,(valid)=>{
-                    // console.log('错误提示信息',valid)
-                    if (!valid){
+                this.$refs.mediaForm[index].validateField(name, (valid) => {
+                    if (!valid) {
                         console.log('校验通过')
-                    }else{
+                    } else {
                         console.log('校验不通过')
                     }
                 })
             },
             // 道闸 roadGate
             roadGateBlur(name,index){
-                console.log('name',name)
+                console.log('道闸name',name)
                 // 手动触发校验 validateField
                 this.$refs.roadGateForm[index].validateField(name,(valid)=>{
-                    // console.log('错误提示信息',valid)
                     if (!valid){
                         console.log('校验通过')
                     }else{
@@ -2173,7 +2200,6 @@
                 this.resImgUrl = file.url
                 this.resImgDialog = true
             },
-
             // 设置媒体图片信息
             saveImgInfo(m_title) {
                 this.messageFun('warning','该功能暂未开放')
@@ -2336,17 +2362,11 @@
                     this.$refs.recForm.validateField(key, (valid) => {
                         if (!valid) {
                             i++
-                            // console.log('校验通过')
                             if (i >= validateResArr.length - 1 && !isValidateMedia) {
                                 isValidateMedia = true
-                                // 广告门校验
-                                // if (this.arrMedia.length <= 1) {
-                                //     this.m_boolean.isOne = true
-                                // }
                                 this.adDoorValidateFrom(adDoorFrom, 0)
                             }
                         } else {
-                            // console.log('校验不通过')
                             this.messageFun('warning','必填项信息不能为空或填写有误！')
                         }
                     })
@@ -2361,28 +2381,24 @@
                         || mediaList[index].mediaForm.doorType || mediaList[index].mediaForm.adSizeW
                         || mediaList[index].mediaForm.visualH) {
                         this.$refs[fromName][index].validate((valid) => {
-                            console.log('222222222222222222广告门表单222222222222222222')
+                            console.log('-----------广告门表单-----------')
                             if (valid) {
                                 index += 1
                                 // console.log('广告门通过',index)
                                 this.m_boolean.flag = true
                                 this.adDoorValidateFrom(fromName,index)
                             } else {
-                                console.log('广告门不通过')
-                                this.messageFun('warning','必填项信息不能为空或填写有误！')
+                                console.log('广告门不通过',valid)
+                                this.messageFun('warning','必填项信息不能为空或填写有误!')
                                 this.m_boolean.flag = false
                                 return
                             }
                         })
                     } else {
-                        // this.m_boolean.flag = false
                         index += 1
                         this.adDoorValidateFrom(fromName,index)
                     }
                 } else {
-                    // if (this.roadGateMedia.length <= 1) {
-                    //     this.rt_boolean.isOne = true
-                    // }
                     this.rgValidateFrom('roadGateForm',0)
                 }
 
@@ -2424,22 +2440,22 @@
                 if (this.m_boolean.flag || this.rt_boolean.flag) {
                     if (this.PathHaveEdit) {                    // 判断是创建还是修改
                         console.log('编辑--------')
-                        // this.Editloading = this.$loading({
-                        //     lock: true,
-                        //     text: '保存中...',
-                        //     spinner: 'el-icon-loading',
-                        //     background: 'rgba(0, 0, 0, 0.7)'
-                        // })
-                        // this.postEditMsg()
+                        this.Editloading = this.$loading({
+                            lock: true,
+                            text: '保存中...',
+                            spinner: 'el-icon-loading',
+                            background: 'rgba(0, 0, 0, 0.7)'
+                        })
+                        this.postEditMsg()
                     } else {
                         console.log('创建--------')
-                        // this.Editloading = this.$loading({
-                        //     lock: true,
-                        //     text: '创建中...',
-                        //     spinner: 'el-icon-loading',
-                        //     background: 'rgba(0, 0, 0, 0.7)'
-                        // })
-                        // this.createRec()
+                        this.Editloading = this.$loading({
+                            lock: true,
+                            text: '创建中...',
+                            spinner: 'el-icon-loading',
+                            background: 'rgba(0, 0, 0, 0.7)'
+                        })
+                        this.createRec()
                     }
                 } else {
                     this.$refs['mediaForm'][0].validate((valid) => {
@@ -2472,6 +2488,7 @@
             },
             // 清除表单校验
             clearFromValidate(){
+                console.log('清除表单校验------')
                 let timer = setTimeout(()=>{
                     this.$refs['recForm'].clearValidate();
                     for (let i = 0; i < this.arrMedia.length; i++) {

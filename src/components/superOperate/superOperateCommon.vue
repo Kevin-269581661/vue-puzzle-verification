@@ -39,7 +39,7 @@
                 <el-menu-item index="/superOperate/compact">文件下载</el-menu-item>
             </el-submenu>
             <el-menu-item index="/superOperate/tvOrderList">电视广告</el-menu-item>
-            <el-submenu index="9" class="user_center">
+            <el-submenu index="9" class="user_center" popper-class="user_center_item">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">
                     {{userName}}
@@ -167,5 +167,10 @@
         height: 34px;
         border-radius: 50%;
         vertical-align: middle;
+    }
+</style>
+<style>
+    .user_center_item .el-menu--popup{
+        min-width: 160px;
     }
 </style>

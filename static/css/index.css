@@ -203,7 +203,7 @@ body .el-table colgroup.gutter {
 }
 
 .el-menu--popup{
-    min-width: 140px;
+    min-width: 128px;
 }
 .el-menu--popup .el-menu-item{
     font-size: 14px;

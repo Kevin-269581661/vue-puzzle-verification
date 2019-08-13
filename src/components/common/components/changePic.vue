@@ -89,13 +89,6 @@
                             <span v-if="type ==1 || type ==2"><i class="el-icon-date date_fa" type="text"></i>{{item.timeRange}}</span>
                             <span v-if="type==3"><i class="el-icon-date date_fa" type="text"></i>换画日期:{{ item.changePicTime }}</span>
                         </p>
-                        <!-- <p>{{ item.city+item.rName }}-{{ item.resName }}-{{ item.mTitle }}-{{ item.asLab }}</p>
-                        <p class="car_header">
-                            <span>
-                                <i class="el-icon-date date_fa" type="text"></i>{{ item.assetTag }}</span>
-                            <span>
-                                <i class="el-icon-date date_fa" type="text"></i>换画日期:{{ item.changePicTime }}</span>
-                        </p> -->
                     </div>
                     <div class="detail_con">
                         <div class="img_box"
@@ -109,7 +102,7 @@
                             </label>
                             <div class="icon_box" v-if="showPreImg === img.pID">
                                 <p class="img_box_icon">
-                                    <i class="el-icon-search" @click="previewImg(img.url)"></i>
+                                    <i class="el-icon-search" @click="previewImg(img.pURL)"></i>
                                     <i class="el-icon-star-off" v-if="!img.isCollection" @click="saveImgFun(img, imgIndex)"></i>
                                     <i v-if="img.isCollection" class="el-icon-star-on icon_save" @click="cancelImgFun(img, imgIndex)"></i>
                                     <i class="el-icon-delete" @click="deleteImg(img)"></i>
@@ -232,7 +225,7 @@
                 </el-col>
                 <el-col class="flex_box">
                     <span>换画素材：</span>
-                    <el-upload :action="doUpload" :show-file-list='false' class="upload_box">
+                    <el-upload :action="doUpload" :show-file-list='false' class="upload_box" :http-request="uploadChange">
                         <span class="upload_border">
                             <i class="el-icon-plus"></i>
                             <span>上传图片</span>
@@ -299,7 +292,6 @@ export default {
             },
 
             // 上传图片
-            formData: new FormData(),
             addload:'',
             // 所有的图片组合
             uploadImgArr: [],
@@ -531,6 +523,7 @@ export default {
             isShowEdit: false,
             // 上传图片地址
             doUpload: "/advertisement/UpLoad",
+            formData: new FormData(),
             editInfo: {
                 date: "",
                 url: "",
@@ -879,8 +872,8 @@ export default {
             this.getImgArr();
         },
         // 查看图片
-        previewImg(row) {
-            this.dialogImageUrl = row.imgUrl;
+        previewImg(url) {
+            this.dialogImageUrl = url;
             this.dialogVisible = true;
         },
         // 换画上传图片等
@@ -891,11 +884,17 @@ export default {
         cancelChange() {
             this.isShowEdit = false;
         },
+        // 上传换画素材
+        uploadChange(params){
+            let fileObj = params.file;
+            this.formData = new FormData();
+            formData.append('file', fileObj);
+        },
         // 保存上传图片
         confirmChange() {
             this.isShowEdit = false;
             console.log(this.editInfo);
-            
+            // if(){}
         },
         // 取消
         cancel() {

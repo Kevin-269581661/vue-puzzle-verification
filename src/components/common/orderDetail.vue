@@ -8,7 +8,7 @@
                     <a href="#">订单详情</a>
                 </p>
             </div>
-            <!--资源信息mediaMana_content_top-->
+            <!--资源信息-->
             <div class="mediaList_wrap">
                 <div class="content_top_wrap" v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                     <div class="plan-title">
@@ -227,29 +227,6 @@ import detail from "./components/detailInfo.vue";
 import addAds from "./components/addAds"
 import noSearchResult from "./components/noSearchResult.vue";
 import changePic from "./components/changePic.vue";
-
-import {
-    Table,
-    TableColumn,
-    Tabs,
-    TabPane,
-    Button,
-    Upload,
-    Card,
-    Dialog,
-    Checkbox,
-    Select,
-    Option,
-    Input,
-    Cascader,
-    Progress,
-    Pagination,
-    Popover,
-    Form,
-    FormItem,
-    MessageBox,
-    Message
-} from "element-ui";
 import sessFun from '../../commonFun/sessFun.js';
 
 export default {
@@ -261,70 +238,17 @@ export default {
         addAds,
         changePic,
         noSearchResult,
-        elTable: Table,
-        elTableColumn: TableColumn,
-        elTabs: Tabs,
-        elTabPane: TabPane,
-        elButton: Button,
-        elUpload: Upload,
-        elCard: Card,
-        elDialog: Dialog,
-        elCheckbox: Checkbox,
-        elSelect: Select,
-        elOption: Option,
-        elInput: Input,
-        elCascader: Cascader,
-        elProgress: Progress,
-        elPagination: Pagination,
-        elPopover: Popover,
-        elForm: Form,
-        elFormItem: FormItem,
     },
     data() {
         return {
-            updateLoading: false,
-            // 上传图片
-            formData: new FormData(),
-            addload:'',
-            // 所有的图片组合
-            uploadImgArr: [],
-            // 关联属性数组
-            constractArr:[],
-            // 上传图片后返回的数据数组
-            uploadPidArr: [],
-            mediaDownType: '广告门',
-            mediaUpType: '广告门',
-            // 媒体类型为广告门的资源
-            mediaAdData: [],
-            // 媒体类型为道闸的资源
-            mediaDaoData: [],
-            // 媒体类型为广告门的城市区域
-            AdCitys: [],
-            // 媒体类型为道闸的城市区域
-            DaoCitys: [],
-            mediaDaoData: [],
             // session信息
             sessionData: {},
             isDown: false,
             //加载中
             loading: true,
             maLoading: true,
-            UpReportLoading: true,
-            DownReportLoading: true,
             // 判断
             role: "",
-            paginationShow: true,
-            // 当前页
-            currUpPage: 1,
-            currDownPage: 1,
-            currUpNum: 0,
-            totalUpNum: 0,
-            pageUpSize: 6,
-            pageDownSize: 6,
-            currDownNum: 0,
-            totalDownNum: 0,
-            totalUpPageNum: 0,
-            totalDownPageNum: 0,
             // 订单详情头部
             orderDetail: {
                 AdDoor:{},
@@ -359,25 +283,6 @@ export default {
             materialInfo:[],
             // 道闸物料信息
             daoInfo:[],
-            // 上刊报告Arr
-            pageUpReportArr: [],
-            upImgPercent: 0,
-            // 下刊报告Arr
-            pageDownReportArr: [],
-            downImgPercent: 0,
-            // 上传图片地址
-            doUpload: "/advertisement/UpLoad",
-            // doUpload: "https://beta.qinlinad.com/advertisement/UpLoad",
-            upLoadObj:{},
-            //上刊报告市区级联
-            citys: [],
-            citySelect: [],
-            //上刊报告社区和监播图
-            allResource: [],
-            allhouse: "",
-            allPic: "",
-            // 下刊图片
-            downImg: [],
             // 默认合同编号(如果订单详情没有合同编号)
             apQC: "",
             // 图片显示放大按钮控件
@@ -548,34 +453,6 @@ export default {
             this.sessionData = sessFun.getSess();
             this.role = this.sessionData.uType;
         },
-        // 页数大小改变
-        sizeChange(pageVal) {
-            console.log("pageVal", pageVal);
-            if(this.planPanel == 'forth'){
-                this.currUpPage = 1;
-                this.UpReportLoading = true;
-                this.pageUpSize = pageVal;
-                this.searchFun();
-            }else if(this.planPanel == 'fifth'){
-                this.currDownPage = 1;
-                this.DownReportLoading = true;
-                this.pageDownSize = pageVal;
-                this.searchFun();
-            }
-        },
-        // 分页功能
-        changePage(page) {
-            console.log('page----', page);
-            if(this.planPanel == 'forth'){
-                this.UpReportLoading = true;
-                this.currUpPage = page;
-                this.searchFun();
-            }else if(this.planPanel == 'fifth'){
-                this.DownReportLoading = true;
-                this.currDownPage = page;
-                this.searchFun();
-            }
-        },
         // tab点击
         handleClick() {
             this.allPic = '';
@@ -583,14 +460,6 @@ export default {
             this.citySelect = [];
             if (this.planPanel == "first") {
                 this.getSetPoint();
-            }
-            if (this.planPanel == "forth") {
-                // this.getUpImgInfo();
-                this.searchFun();
-            }
-            if (this.planPanel == "fifth") {
-                // this.getDownImgInfo();
-                this.searchFun();
             }
         },
         //返回列表
@@ -723,25 +592,6 @@ export default {
                         console.log('城市filter',this.filterCityData)
                         this.filtersArea = filterFormat(result, "rName");
                         this.filtersData = filterFormat(result, "timeRange");
-                        // 上下刊包括头部搜索数据源
-                        this.mediaAdData = filterFormat(mediaAd, 'resID', "resName");
-                        this.mediaDaoData = filterFormat(mediaDao, 'resID', "resName");
-                        // this.allResource = filterFormat(result, 'resID', "resName");
-
-                        // 区域二级联动
-                        this.AdCitys = this.getCitys(cityAd);
-                        this.AdCitys.unshift({
-                            value: "全部",
-                            label: "全部"
-                        });
-                        this.DaoCitys = this.getCitys(mediaDao);
-                        this.DaoCitys.unshift({
-                            value: "全部",
-                            label: "全部"
-                        });
-                        this.allResource = this.mediaAdData;
-                        this.citys = this.AdCitys;
-                        console.log('resource--', this.allResource);
 
                         // 广告门物料信息
                         let mInfo = initData.gateMaterialInfo;
@@ -791,89 +641,6 @@ export default {
                     console.log(res);
                 });
         },
-        // 搜索数据格式化
-        searchFormat(type){
-            let session = this.sessionData;
-            let info = {
-                uid: session.uID,
-                token: session.token,
-                apId: sessionStorage.getItem('order_apid'),
-                pType: type,
-                pageNum: (type =='SK') ? this.currUpPage : this.currDownPage,
-                pageSize: (type =='SK') ? this.pageUpSize : this.pageDownSize,
-                mVehicle: (type =='SK') ? this.mediaUpType : this.mediaDownType,
-            };
-            let citySelect = this.citySelect;
-            let allhouse = this.allhouse;
-            let allPic = this.allPic;
-
-            if(allPic){
-                if(allPic == '2'){
-                    info.hasUpload = "true";
-                }
-                if(allPic == '3'){
-                    info.hasUpload = "false";
-                }
-            }
-            if(citySelect.length){
-                if(citySelect[0] == '全部'){
-                    // this.searchFun();
-                }else{
-                    info.city = citySelect[0];
-                    info.district = citySelect[1];
-                }
-            }
-            if(allhouse){
-                info.resid = allhouse;
-            }
-            console.log('type---', info);
-            return info;
-        },
-        searchFun(){
-            if(this.planPanel == 'forth'){
-                let upinfo = this.searchFormat('SK');
-                // this.getUpImgInfo(upinfo);
-            }else if(this.planPanel == "fifth"){
-                let downinfo = this.searchFormat('XK');
-                // this.getDownImgInfo(downinfo);
-            }
-        },
-        // 区域二级联动
-        getCitys(arr) {
-            let cityArr = [];
-            for (let data of arr) {
-                let obj = {
-                    value: data.city,
-                    label: data.city,
-                    children: []
-                };
-                if (
-                    JSON.stringify(cityArr).indexOf(JSON.stringify(obj)) === -1
-                ) {
-                    cityArr.push(obj);
-                }
-            }
-            for (let item of cityArr) {
-                for (let data of arr) {
-                    let areaObj = {
-                        value: data.rName,
-                        label: data.rName
-                    };
-                    if (data.city == item.value) {
-                        // 去重
-                        if (
-                            JSON.stringify(item.children).indexOf(
-                                JSON.stringify(areaObj)
-                            ) === -1
-                        ) {
-                            item.children.push(areaObj);
-                        }
-                    }
-                }
-            }
-            console.log("cityArr---------------fda", cityArr);
-            return cityArr;
-        },
         // 时间格式规范 年月日
         formatTime(val) {
             return dateFormat.toDate(val, "/");
@@ -906,48 +673,6 @@ export default {
                 this.currentSetpoint = this.setpointArr;
             }
         },
-        changeUpMedia(){
-            if(this.mediaUpType == '广告门'){
-                this.allResource = this.mediaAdData;
-                this.citys = this.AdCitys;
-                this.allResource.concat();
-                this.citys.concat();
-            }
-            if(this.mediaUpType == '道闸'){
-                this.allResource = this.mediaDaoData
-                this.citys = this.DaoCitys;
-                this.allResource.concat();
-                this.citys.concat();
-            }
-            this.currUpPage = 1;
-            this.currDownPage = 1;
-            this.citySelect = [];
-            this.allhouse = '';
-            this.allPic = '';
-
-            this.searchFun();
-            console.log('citys----dfsa', this.citys);
-        },
-        changeDownMedia(){
-            if(this.mediaDownType == '广告门'){
-                this.allResource = this.mediaAdData;
-                this.citys = this.AdCitys;
-                this.allResource.concat();
-                this.citys.concat();
-            }
-            if(this.mediaDownType == '道闸'){
-                this.allResource = this.mediaDaoData
-                this.citys = this.DaoCitys;
-                this.allResource.concat();
-                this.citys.concat();
-            }
-            this.currUpPage = 1;
-            this.currDownPage = 1;
-            this.citySelect = [];
-            this.allhouse = '';
-            this.allPic = '';
-            this.searchFun();
-        },
         // 搜索
         search() {
             // 账号，姓名
@@ -968,31 +693,6 @@ export default {
                 return;
             }
             this.currentSetpoint = this.setpointArr;
-        },
-        searchImgChange(){
-            let citySelect = this.citySelect;
-            if(citySelect[0] == "全部"){
-                this.allPic = '';
-                this.allhouse ='';
-            }
-            this.searchImg();
-        },
-        // 上下刊搜索图片
-        searchImg() {
-            this.currUpPage = 1;
-            this.currDownPage = 1;
-            let citySelect = this.citySelect;
-            let allhouse = this.allhouse;
-            let allPic = this.allPic;
-
-            if(citySelect || allhouse || cityWord || (status>=0)){
-                this.currentOrder = [];
-                this.loading_point = false;
-                this.currPage = 1;
-                this.searchFun();
-            }else{
-                this.$message.warning('请输入搜索条件');
-            }
         },
         // 城市筛选
         filterCity(value, row) {
@@ -1275,7 +975,7 @@ export default {
         // 换画
         changePain(){
             this.planPanel = 'sixth';
-            
+
         },
         // 操作提示统一方法
         messageFun(mesType,mes){

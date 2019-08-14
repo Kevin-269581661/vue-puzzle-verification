@@ -213,6 +213,7 @@
 </template>
 
 <script>
+import { Message, MessageBox } from 'element-ui';
 import { api } from "../../api/api.js";
 // 价格格式化
 import commaFormat from "../../commonFun/commaFormat.js";
@@ -220,6 +221,7 @@ import commaFormat from "../../commonFun/commaFormat.js";
 import filterFormat from "../../commonFun/filterTableData.js";
 // 时间格式化
 import dateFormat from "../../commonFun/timeFormat.js";
+import sessFun from '../../commonFun/sessFun.js';
 // 报价单
 import apQuotation from './components/apQuotation.vue'
 import material from "./components/materialInfo.vue";
@@ -227,7 +229,6 @@ import detail from "./components/detailInfo.vue";
 import addAds from "./components/addAds"
 import noSearchResult from "./components/noSearchResult.vue";
 import changePic from "./components/changePic.vue";
-import sessFun from '../../commonFun/sessFun.js';
 
 export default {
     name: "orderDetail",
@@ -974,8 +975,45 @@ export default {
         },
         // 换画
         changePain(){
-            this.planPanel = 'sixth';
+            // this.planPanel = 'sixth';
+            MessageBox.confirm(
+                "注：换画时间需在对应点位排期时间内",
+                "是否创建新的换画报告\n",
+                {
+                    dangerouslyUseHTMLString: true,
+                    confirmButtonText: "确定",
+                    cancelButtonText: "取消",
+                    type: "warning"
+                }
+            ).then(() => {
+                this.addPainReport();
+            });
+        },
+        // 新增换画报告
+        addPainReport(){
+            let info = {
+                apId: this.orderDetail.apID
+            };
+            api.postApi(this.apiVar.replace+'/list', info).then(res =>{
+                console.log(res);
+                if(res.data.code == 200){
+                    let len = res.data.data.length;
+                    let painInfo = {
+                        apId: this.orderDetail.apID,
+                        replaceRecordName: `换画${len+1}`,
+                    };
+                    
+                    api.postApi(this.apiVar.replace+'/addPainReport', painInfo).then(res =>{
+                        
+                    });
 
+                }else if(res.data.code == 302){
+                    sessFun.loginTimeout();
+                }else{
+                    sessFun.messageFun('warning', res.data.msg);
+                }
+            });
+            
         },
         // 操作提示统一方法
         messageFun(mesType,mes){
@@ -1024,10 +1062,6 @@ export default {
 
     /deep/ .el-tabs__nav-scroll {
         padding-left: 28px;
-    }
-
-    .baojiadan /deep/ .el-tabs__nav-scroll {
-        padding-left: 0;
     }
 
     .box-wrap > h4 {
@@ -1421,15 +1455,6 @@ export default {
         border-bottom: 1px solid #e6e7e9;
         height: 53px;
         line-height: 54px;
-        margin: 0;
-    }
-
-    /deep/ .mediaList_wrap .baojiadan .el-tabs__header {
-        border-bottom: none;
-        height: 38px;
-        line-height: 38px;
-        background-color: #f5f7fa;
-        border-bottom: 1px solid #e4e7ed;
         margin: 0;
     }
 

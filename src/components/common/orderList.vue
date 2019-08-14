@@ -88,8 +88,6 @@
                                         <el-dropdown-item :disabled="(role!='SM')" @click.native.prevent="applyPhoto(scope.row)" class="finish">申请画像</el-dropdown-item>
                                         <el-dropdown-item :disabled="(scope.row.apState==0)||(scope.row.apState==5)||(role!='MD')" @click.native.prevent="changePoint(scope.row)" class="update">更换点位
                                         </el-dropdown-item>
-                                        <!-- <el-dropdown-item @click.native.prevent="inputBox1" class="watch">监控备注</el-dropdown-item> -->
-                                        <!--<el-dropdown-item disabled="disabled" class="push">推送任务</el-dropdown-item>-->
                                     </el-dropdown-menu>
                                 </el-dropdown>
                             </template>
@@ -126,38 +124,17 @@
 </template>
 
 <script>
+import { MessageBox, Message } from 'element-ui';
 import { api } from "../../api/api";
 // 时间格式化
 import dateFormat from "../../commonFun/timeFormat.js";
 // 价格格式化
 import commaFormat from "../../commonFun/commaFormat.js";
 import sessFun from "../../commonFun/sessFun.js";
-
 // 画像申请
 import applyphoto from './components/applyPhoto.vue';
 import noSearchResult from "./components/noSearchResult.vue";
 import pointState from './components/pointState.vue';
-
-
-import {
-    Button,
-    CheckboxGroup,
-    Checkbox,
-    Input,
-    Dropdown,
-    DropdownItem,
-    DropdownMenu,
-    Row,
-    Table,
-    TableColumn,
-    DatePicker,
-    Tooltip,
-    Dialog,
-    MessageBox,
-    Message,
-    Select,
-    Option
-} from "element-ui";
 
 export default {
     name: "projectList",
@@ -165,21 +142,6 @@ export default {
         applyphoto,
         noSearchResult,
         pointState,
-        elButton: Button,
-        elCheckboxGroup: CheckboxGroup,
-        elCheckbox: Checkbox,
-        elInput: Input,
-        elDropdown: Dropdown,
-        elDropdownItem: DropdownItem,
-        elDropdownMenu: DropdownMenu,
-        elRow: Row,
-        elTable: Table,
-        elTableColumn: TableColumn,
-        elDatePicker: DatePicker,
-        elTooltip: Tooltip,
-        elDialog: Dialog,
-        elSelect: Select,
-        elOption: Option,
     },
     data() {
         return {
@@ -750,43 +712,8 @@ export default {
                 }
             });
         },
-
-        //提示框
-        inputBox1() {
-            Message.warning("该功能尚未完善");
-            // MessageBox.prompt("请输入监控备注", "提示", {
-            //     confirmButtonText: "确定",
-            //     cancelButtonText: "取消",
-            //     inputType: "textarea",
-            //     inputPattern: /^.{1,100}$/,
-            //     inputErrorMessage: "监控备注超过100字,请缩减"
-            // })
-            //     .then(() => {
-            //         Message.success("监控备注输入成功");
-            //     })
-            //     .catch(() => {
-            //         Message.info("取消输入");
-            //     });
-        }
-        //状态
     }
 };
-
-$(function() {
-    /*window.onresize = function () {
-		if ($(window.width >= 1366)) {
-			$('.el-table-filter').css({
-			left: '1145'
-			})
-		}
-		};*/
-    var Status = $(".el-table__row")
-        .find("td")
-        .text();
-    if (Status === "已完成") {
-        $(".watch").attr("disabled", "disabled");
-    }
-});
 </script>
 
 <style scoped>

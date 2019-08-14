@@ -33,7 +33,7 @@
                 <el-menu-item index="/media/questionAndAnswer">操作说明</el-menu-item>
                 <el-menu-item index="/media/compact">文件下载</el-menu-item>
             </el-submenu>
-            <el-submenu index="9" class="user_center">
+            <el-submenu index="9" class="user_center" popper-class="user_center_item">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">
                     {{userName}}

@@ -211,3 +211,6 @@ body .el-table colgroup.gutter {
 .el-menu--horizontal .el-menu--popup .el-menu-item:hover{
     color: rgb(255, 255, 255) !important;
 }
+.user_center_item .el-menu--popup{
+    min-width: 160px;
+}

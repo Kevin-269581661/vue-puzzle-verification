@@ -169,8 +169,3 @@
         vertical-align: middle;
     }
 </style>
-<style>
-    .user_center_item .el-menu--popup{
-        min-width: 160px;
-    }
-</style>

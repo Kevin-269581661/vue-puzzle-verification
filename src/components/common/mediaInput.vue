@@ -3364,12 +3364,6 @@
         height: 125px;
         overflow: hidden;
     }
-    /*.el-checkbox-group {*/
-        /*position: relative;*/
-        /*top: 5px;*/
-        /*left: -10px;*/
-        /*margin-bottom: -10px;*/
-    /*}*/
 
     /*新增媒体*/
     .add_media_btn {

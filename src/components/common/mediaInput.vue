@@ -806,6 +806,15 @@
                     }
                 }
             }
+            // 判断是否包含有特殊字符 // “-”、“/”、“_”
+            let validateSpecialString = (rule, value, callback) =>{
+                let reg = /[\/\-_]/
+                if (reg.test(value)) {
+                    callback(new Error('不可填写特殊符号!'));
+                } else {
+                    callback();
+                }
+            }
             return {
                 isUpload: true,
                 assetIdBolean: false,
@@ -948,6 +957,7 @@
                     resname: [
                         {required: true, message: '资源名称不能为空!', trigger: ['blur','change']},
                         {validator: validateSpace, trigger: ['blur','change']},
+                        {validator: validateSpecialString, trigger: ['blur','change']},
                         {validator: this.isHaveCommenName,trigger: 'blur'},
                         {max: 40, message: '最多只能输入40个字节', trigger: 'change'}
                     ],
@@ -1054,6 +1064,7 @@
                     mediaName: [
                         {required: true, message: '媒体名称不能为空!', trigger: ['blur','change']},
                         {validator: validateSpace, trigger: ['blur','change']},
+                        {validator: validateSpecialString, trigger: ['blur','change']},
                         {validator: this.validateMediaName, trigger: 'blur'},
                         {max: 40, message: '最多只能输入40个字节!', trigger: ['blur','change']}
                     ],

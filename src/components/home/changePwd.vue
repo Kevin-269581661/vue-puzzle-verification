@@ -154,6 +154,7 @@ h4 {
     color: #000;
     width: 100%;
     text-align: left;
+    font-weight:600;
 }
 .changePwd-box {
     width: 310px;

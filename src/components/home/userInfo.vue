@@ -210,6 +210,7 @@ h4 {
     font-size: 20px;
     color: #000;
     width: 100%;
+    font-weight:600;
     text-align: left;
 }
 .userInfo_box{

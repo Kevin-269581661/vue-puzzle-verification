@@ -1742,95 +1742,97 @@
                     })
                 }
             },
-            // 查找重名资产编号个数及初始化
-            filterAssetTag(mediaList,formName,value){
-                let arr = mediaList.filter((item, index, list) => {
-                    item.isAssetIdError = false
-                    item.assetIdCommentData.mediaName = ''
-                    item.assetIdCommentData.resName = ''
-                    item.assetIdCommentData.updateTime = ''
-                    if (item[formName].assetId === value) {
-                        this.$refs[formName][index].clearValidate('ResAssetId');
-                        return item
+            //资产编号校验去重
+            validateAssetTag(rule, value, callback) {
+                console.log('_________资产编号是否重复_________',value)
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    "service": "GetMediaResInfo",
+                    "data": {
+                        "assetTag": value,
+                        "asrId": this.sessionData.asrID,
+                    }
+                }
+                console.log('params', params)
+                api.postApi_new(this.apiVar.Media, params).then(res => {
+                    console.log('资产编号校验去重res', res)
+                    if (res.data.SysCode == 200200) {
+                        let resData = res.data.data
+                        console.log('小区信息', this.recForm)
+                        if (JSON.stringify(resData) == "{}") {
+                            let number = this.filterlocalAssetId(resData, value)
+                            if (number >= 2) {
+                                callback(new Error('这个资产编号已在该小区内存在!'))
+                            } else {
+                                callback();
+                            }
+                        } else {
+                            let flag = this.filterAssetId(resData, value)
+                            if (flag) {
+                                callback(new Error(' '))
+                            } else {
+                                callback();
+                            }
+                        }
+                    } else if (res.data.SysCode == 100302) {
+                        this.loginTimeout()
+                    } else {
+                        this.messageFun('warning', '资产编号查重异常!')
                     }
                 })
-                return arr
             },
-            //资产编号校验去重
-            validateAssetTag(rule, value, callback){
-                console.log('value----',value)
-                // 广告门
-                let adArr = this.filterAssetTag(this.arrMedia,'mediaForm',value)
-                // 道闸
-                let rgArr = this.filterAssetTag(this.roadGateMedia,'roadGateForm',value)
-                console.log('资产编号校验去重',adArr,rgArr)
-                if ((adArr.length + rgArr.length) >= 2) {
-                    callback(new Error('这个资产编号已在该小区内存在!'))
-                } else {
-                    console.log('_________资产编号是否重复_________')
-                    let params = {
-                        uid: this.sessionData.uID,
-                        token: this.sessionData.token,
-                        "service":"GetMediaResInfo",
-                        "data":{
-                            "assetTag": value,
-                            "asrId": this.sessionData.asrID,
-                        }
-                    }
-                    console.log('params',params)
-                    api.postApi_new(this.apiVar.Media,params).then(res=>{
-                        console.log('资产编号校验去重res',res)
-                        if (res.data.SysCode == 200200) {
-                            let resData = res.data.data
-                            console.log('小区信息',this.recForm)
-                            if (JSON.stringify(resData) == "{}") {
-                                this.filterAssetId(resData,value,false)
-                                callback();
-                            } else {
-                                if (resData.resId == this.recForm.resID) {
-                                    this.filterAssetId(resData,value,false)
-                                    callback();
-                                } else {
-                                    this.filterAssetId(resData,value,true)
-                                    callback(new Error(' '))
-                                }
-                            }
-                        } else if (res.data.SysCode == 100302) {
-                            this.loginTimeout()
-                        } else {
-                            this.messageFun('warning', '资产编号查重异常!')
-                        }
-                    })
-                }
-            },
-            // 判断同资源下资产编号是否重复
-            filterAssetId(resData,value,flag){
+            // 接口返回为空时校验当前是否有重复的
+            filterlocalAssetId(resData,value){
+                let num = 0
                 for (let key of this.arrMedia) {
                     if (key.mediaForm.assetId === value) {
-                        if (flag) {
+                        key.isAssetIdError = false
+                        num++
+                    }
+                }
+                for (let rgKey of this.roadGateMedia) {
+                    if (rgKey.roadGateForm.assetId === value) {
+                        rgKey.isAssetIdError = false
+                        num++
+                    }
+                }
+                return num
+            },
+            // 判断同资源下资产编号是否重复
+            filterAssetId(resData,value){
+                let adDoor = false
+                let roadGate = false
+                for (let key of this.arrMedia) {
+                    if (key.mediaForm.assetId === value) {
+                        if (resData.mId !== key.mediaForm.mid) {
                             key.isAssetIdError = true
                             key.assetIdCommentData.mediaName = resData.mediaName
                             key.assetIdCommentData.resName = resData.resName
                             key.assetIdCommentData.updateTime = resData.createTime
-                            break
+                            adDoor = true
                         } else {
                             key.isAssetIdError = false
                         }
                     }
                 }
-                // 道闸
                 for (let key of this.roadGateMedia) {
                     if (key.roadGateForm.assetId === value) {
-                        if (flag) {
+                        if (resData.mId !== key.roadGateForm.mid) {
                             key.isAssetIdError = true
                             key.assetIdCommentData.mediaName = resData.mediaName
                             key.assetIdCommentData.resName = resData.resName
                             key.assetIdCommentData.updateTime = resData.createTime
-                            break
+                            roadGate = true
                         } else {
                             key.isAssetIdError = false
                         }
                     }
+                }
+                if (adDoor || roadGate) {
+                    return true
+                } else {
+                    return false
                 }
             },
             // 媒体名称校验去重
@@ -1838,15 +1840,12 @@
                 console.log('广告门',this.arrMedia,'道闸',this.roadGateMedia)
                 // 广告门
                 let adArr = this.arrMedia.filter((item, index, list) => {
-                    this.$refs['mediaForm'][index].clearValidate('adMediaName');
                     if (item.mediaForm.mediaName === value) {
                         return item
                     }
                 })
-                // 道闸 roadGateMedia
+                // 道闸
                 let rgArr = this.roadGateMedia.filter((item, index, list) => {
-                    this.$refs['roadGateForm'][index].clearValidate('adMediaName');
-                    console.log('item',item.roadGateForm)
                     if (item.roadGateForm.mediaName === value) {
                         return item
                     }

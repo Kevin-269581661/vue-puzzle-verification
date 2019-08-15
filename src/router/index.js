@@ -117,6 +117,7 @@ export default new Router({
                 {path: '/admin/mediaList', component: mediaList},
                 {path: '/admin/mediaDetail', component: mediaDetail},
                 {path: '/admin/companyList', component: companyList},
+                {path: '/admin/myInfo', component: myInfo},
             ]
         },
         //超级运营

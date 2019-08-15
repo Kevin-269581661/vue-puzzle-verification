@@ -3,7 +3,7 @@
         <!--导航栏-->
         <el-menu
             router
-            :default-active="$route.path"
+            :default-active="isActive"
             class="el-menu-nav"
             mode="horizontal"
             @select="handleSelect"
@@ -19,6 +19,14 @@
             <el-menu-item index="/admin/companyList">公司管理</el-menu-item>
             <el-menu-item index="/admin/mediaList">媒体管理</el-menu-item>
             <el-menu-item index="/admin/SMqinlinzk">亲邻智邻</el-menu-item>
+            <el-submenu index="6" class="user_center" popper-class="user_center_item">
+                <template slot="title">
+                    <img class="user_avator" :src="avator" alt="">
+                    {{userName}}
+                </template>
+                <el-menu-item index="/admin/myInfo">个人中心</el-menu-item>
+                <el-menu-item index="/login">退出登陆</el-menu-item>
+            </el-submenu>
         </el-menu>
 
         <!--body-->
@@ -86,6 +94,29 @@
                 let utype = this.sessionData.uType
                 this.userName = uTypeToText.toText(utype) + '-' + this.sessionData.realName;
                 console.log(this.userName)
+            },
+            // 路由切换
+            handleSelect(key, keyPath) {
+                console.log(key, keyPath);
+                // 退出登录
+                if(key === '/login'){
+                    sessionStorage.clear();
+                }
+            },
+        },
+        computed:{
+            isActive(val) {
+                console.log(val, 'isActive', this.$route.path)
+                let path = this.$route.path
+                let routePath = ''
+                if (path.includes('/createAccount')) {
+                    routePath = '/admin/accountList'
+                } else if(path.includes('/mediaDetail')){
+                    routePath = '/admin/mediaList'
+                } else {
+                    routePath = path
+                }
+                return  routePath
             },
         }
     }

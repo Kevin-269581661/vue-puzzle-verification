@@ -3,7 +3,7 @@
         <!--导航栏-->
         <el-menu
             router
-            :default-active="$route.path"
+            :default-active="isActive"
             class="el-menu-nav"
             mode="horizontal"
             @select="handleSelect"
@@ -17,7 +17,7 @@
             </el-menu-item>
             <el-menu-item index="/superOperate">首页</el-menu-item>
             <el-submenu index="2">
-                <template slot="title">其他模块</template>
+                <template slot="title">常用模块</template>
                 <el-menu-item index="/superOperate/mediaList">媒体管理</el-menu-item>
                 <el-menu-item index="/superOperate/clientList">客户管理</el-menu-item>
                 <el-menu-item index="/superOperate/planList">方案管理</el-menu-item>
@@ -145,6 +145,31 @@
                 if(key === '/login'){
                     sessionStorage.clear();
                 }
+            },
+        },
+        computed:{
+            isActive(val) {
+                console.log(val, 'isActive', this.$route.path)
+                let path = this.$route.path
+                let routePath = ''
+                if (path.includes('/mediaDetail')) {
+                    routePath = '/superOperate/mediaList'
+                } else if (path.includes('/planDetail')) {
+                    routePath = '/superOperate/planList'
+                } else if (path.includes('/orderDetail')) {
+                    routePath = '/superOperate/orderList'
+                } else if (path.includes('/clientDetail')) {
+                    routePath = '/superOperate/clientList'
+                } else if (path.includes('/createAccount')) {
+                    routePath = '/superOperate/accountList'
+                } else if (path.includes('/tvOrderDetail')) {
+                    routePath = '/superOperate/tvOrderList'
+                } else if (path.includes('/settingPrice')) {
+                    routePath = '/superOperate/publishPriceList'
+                } else {
+                    routePath = path
+                }
+                return  routePath
             },
         }
     }

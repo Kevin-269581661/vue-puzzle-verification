@@ -493,7 +493,7 @@ export default {
                     }
                 })
                 if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                    this.loginTimeout()
+                    sessFun.loginTimeout()
                 } else if (res.data.SysCode === 200200) {
                     for (let key of res.data.data) {
                         let industryNames = this.getIndustryNamebyId([key.parentInstdustryId,key.instdustryId])
@@ -508,7 +508,7 @@ export default {
                         this.addcBrandIndex++
                     }
                 } else {
-                    this.messageFun('warning', res.data.MSG)
+                    sessFun.messageFun('warning', res.data.MSG)
                 }
                 console.log('所选公司原有品牌',this.cBrandTags)
             });
@@ -846,7 +846,7 @@ export default {
                             //    this.changRoute('成功修改客户信息,是否跳转到列表页面');
                         }
                     } else if (userMsg.SysCode == 100302) {
-                        this.loginTimeout();
+                        sessFun.loginTimeout();
                     } else {
                         Message.warning(userMsg.MSG);
                     }

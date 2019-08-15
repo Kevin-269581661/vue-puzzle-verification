@@ -3,7 +3,7 @@
         <!--导航栏-->
         <el-menu
             router
-            :default-active="$route.path"
+            :default-active="isActive"
             class="el-menu-nav"
             mode="horizontal"
             @select="handleSelect"
@@ -121,6 +121,28 @@
                 if(key === '/login'){
                     sessionStorage.clear();
                 }
+            },
+
+        },
+        computed:{
+            isActive(val) {
+                console.log(val, 'isActive', this.$route.path)
+                let path = this.$route.path
+                let routePath = ''
+                if (path.includes('/mediaDetail') || path.includes('/mediaEdit') || path.includes('/mediaInput')) {
+                    routePath = '/media/mediaList'
+                } else if (path.includes('/editPlan') || path.includes('/planDetail') || path.includes('/createPlan')) {
+                    routePath = '/media/planList'
+                } else if (path.includes('/orderDetail')) {
+                    routePath = '/media/orderList'
+                } else if (path.includes('/clientDetail') || path.includes('/clientDetail')) {
+                    routePath = '/superOperate/clientList'
+                } else if (path.includes('/projectDetail')) {
+                    routePath = '/media/projectList'
+                }  else {
+                    routePath = path
+                }
+                return  routePath
             },
         }
     }

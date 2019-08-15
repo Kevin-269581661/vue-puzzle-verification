@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import sessFun from './commonFun/sessFun.js';
 
 Vue.config.productionTip = false;
 
@@ -66,6 +67,31 @@ router.beforeEach((to, from, next) => {
 	next();
 });
 
+// 拦截响应
+axios.interceptors.response.use(
+	response => {
+		let res = response.data;
+		if(res.SysCode == 100302){
+			sessionStorage.clear();
+			sessFun.loginTimeout();
+		}
+		return response;
+	},
+	err => {
+		console.log(err);
+		if (err.response) {
+			switch (err.response.status) {
+				case 401:
+					sessionStorage.clear();
+					router.replace({
+						path: '/login',
+					})
+				break;
+			}
+		}
+		return Promise.reject(err)
+	}
+);
 
 /* eslint-disable no-new */
 new Vue({

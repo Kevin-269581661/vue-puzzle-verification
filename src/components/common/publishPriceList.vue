@@ -386,8 +386,6 @@ export default {
                             result.push(obj);
                         }
                         this.companyArr = result;
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
                     }else{
                         Message.warning(res.data.MSG);
                     }
@@ -432,8 +430,6 @@ export default {
                         result.push(obj);
                     }
                     this.allProvince = result;
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
                 }else{
                     Message.warning(res.data.MSG);
                 }
@@ -454,8 +450,6 @@ export default {
                     }
                     this.totalNum = resinfo.totalSize;
                     this.publishPriceList = result;
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
                 }else{
                     Message.warning(res.data.MSG);
                 }
@@ -739,10 +733,6 @@ export default {
                     }
                 }
             }
-        },
-        loginTimeout(){
-            Message.warning("登录超时,请重新登录");
-            this.$router.push("/login");
         },
     }
 };

@@ -246,8 +246,6 @@ export default {
                             result.push(obj);
                         }
                         this.companyData = result;
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
                     }else{
                         Message.warning(res.data.MSG);
                     }
@@ -267,8 +265,6 @@ export default {
                             result.push(obj);
                         }
                         this.companyData = result;
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
                     }else{
                         Message.warning(res.data.MSG);
                     }
@@ -298,9 +294,7 @@ export default {
                     }
 
                     this.filterCityData = result;
-                } else if (res.data.SysCode == 100302) {
-                    this.loginTimeout();
-                } else {
+                }else {
                     Message.warning(res.data.MSG);
                 }
             });
@@ -342,21 +336,17 @@ export default {
         getData(params){
             api.postApi(this.apiVar.Advertisement+'/GetOrderList', params).then(res =>{
                 console.log(res.data);
-                if(res.data.SysCode == 100302){
-                    this.loginTimeout();
-                }else{
-                    if(!res.data.SysCode){
-                        let dataInfo = res.data;
-                        this.totalNum = dataInfo.totalCount;
-                        let dataArr = dataInfo.orderList;
-                        this.currentOrder = this.funcData(dataArr);
-                        this.loading = false;
-                        if(dataInfo.totalPage == 0){
-                            Message.warning('暂无数据');
-                        }
-                    }else{
-                        Message.warning(res.data.MSG);
+                if(!res.data.SysCode){
+                    let dataInfo = res.data;
+                    this.totalNum = dataInfo.totalCount;
+                    let dataArr = dataInfo.orderList;
+                    this.currentOrder = this.funcData(dataArr);
+                    this.loading = false;
+                    if(dataInfo.totalPage == 0){
+                        Message.warning('暂无数据');
                     }
+                }else{
+                    Message.warning(res.data.MSG);
                 }
             });
         },
@@ -511,8 +501,6 @@ export default {
                         if (res.data.SysCode == 300200) {
                             Message.success(res.data.MSG);
                             this.$set(row, "apState", 5);
-                        } else if (res.data.SysCode == 100302) {
-                            this.loginTimeout();
                         } else {
                             Message.warning(res.data.MSG);
                         }
@@ -549,10 +537,6 @@ export default {
                 clearTimeout(timer);
             }, 1000);
             this.searchFun();
-        },
-        loginTimeout(){
-            Message.warning("登录超时,请重新登录");
-            this.$router.push("/login");
         },
         // 申请画像
         applyPhoto(row){
@@ -592,8 +576,6 @@ export default {
                         console.log('resultaRR---------', resultArr);
                         this.getIsOpenRes(resultArr);
                         // this.loading = false;
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
                     } else {
                         Message.warning(res.data.MSG);
                     }
@@ -636,9 +618,6 @@ export default {
             api.getApi(this.apiVar.QZhike+'/SelectByApID', info).then(res=>{
                 console.log(res.data);
                 if(res.data){
-                    if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
-                    }
                     let result = res.data;
                     // 过滤后已经申请的社区
                     for(let i = 0; i< arr.length; i++){
@@ -705,9 +684,7 @@ export default {
                         }
                     }
                     this.houselist.push();
-                } else if (res.data.SysCode == 100302) {
-                    this.loginTimeout();
-                } else {
+                }else {
                     Message.warning(res.data.MSG);
                 }
             });

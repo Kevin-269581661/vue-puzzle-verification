@@ -268,8 +268,6 @@
                                 value: item.id,
                             };
                         }): [];
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
                     }else{
                         this.messageFun('warning', res.data.MSG);
                     }
@@ -297,8 +295,6 @@
                                 label: item.realName
                             }
                         });
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
                     }else{
                         // this.messageFun('warning', res.data.MSG);
                     }
@@ -345,22 +341,18 @@
             getData(params){
                 api.getApi(this.apiVar.publishPaintTask+'/list', params).then(res =>{
                     console.log(res.data);
-                    if(res.data.SysCode == 100302){
-                        this.loginTimeout();
-                    }else{
-                        if(res.data.SysCode == 200200){
-                            console.log(res.data);
-                            let dataInfo = res.data;
-                            this.totalNum = dataInfo.total;
-                            let dataArr = dataInfo.data;
-                            this.projectList = this.funcData(dataArr);
-                            this.loading = false;
-                            if(dataInfo.total == 0){
-                                this.messageFun('warning', '暂无数据');
-                            }
-                        }else{
-                        this.messageFun('warning', res.data.MSG);
+                    if(res.data.SysCode == 200200){
+                        console.log(res.data);
+                        let dataInfo = res.data;
+                        this.totalNum = dataInfo.total;
+                        let dataArr = dataInfo.data;
+                        this.projectList = this.funcData(dataArr);
+                        this.loading = false;
+                        if(dataInfo.total == 0){
+                            this.messageFun('warning', '暂无数据');
                         }
+                    }else{
+                        this.messageFun('warning', res.data.MSG);
                     }
                 });
             },
@@ -514,8 +506,6 @@
                         });
                         this.messageFun('success', res.data.MSG);
                         this.isShowDistri = false;
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
                     }else{
                         this.messageFun('warning', res.data.MSG);
                     }
@@ -524,10 +514,6 @@
                     this.disTriLoading = false;
                     console.log(err);
                 });
-            },
-            loginTimeout() {
-                this.messageFun('warning', "登录超时,请重新登录");
-                this.$router.push("/login");
             },
             // 操作提示统一方法
             messageFun(mesType, mes){

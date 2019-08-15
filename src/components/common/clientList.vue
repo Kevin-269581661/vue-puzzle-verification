@@ -184,8 +184,6 @@ export default {
                         result.push(obj);
                     }
                     this.companyArr = result;
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
                 }else{
                     Message.warning(res.data.MSG);
                 }
@@ -236,24 +234,20 @@ export default {
         getData(params){
             api.getApi(this.apiVar.Advertisement+'/GetCustomer', params).then(res =>{
                 console.log(res.data);
-                if(res.data.SysCode == 100302){
-                    this.loginTimeout();
-                }else{
-                    if(!res.data.SysCode){
-                        let dataInfo = res.data.page;
-                        this.totalNum = dataInfo.total;
-                        let dataArr = dataInfo.list;
-                        this.currentPlan = this.funcData(dataArr);
-                        this.loading = false;
-                        if (dataInfo.totalSize == 0) {
-                            this.$Message.warning('暂无数据');
-                        }
-                        if(dataInfo.totalPage == 0){
-                            Message.warning('暂无数据');
-                        }
-                    }else{
-                        Message.warning(res.data.MSG);
+                if(!res.data.SysCode){
+                    let dataInfo = res.data.page;
+                    this.totalNum = dataInfo.total;
+                    let dataArr = dataInfo.list;
+                    this.currentPlan = this.funcData(dataArr);
+                    this.loading = false;
+                    if (dataInfo.totalSize == 0) {
+                        this.$Message.warning('暂无数据');
                     }
+                    if(dataInfo.totalPage == 0){
+                        Message.warning('暂无数据');
+                    }
+                }else{
+                    Message.warning(res.data.MSG);
                 }
             });
         },
@@ -348,10 +342,6 @@ export default {
             }
             this.currPage = 1;            
             this.searchFun();
-        },
-        loginTimeout(){
-            Message.warning("登录超时,请重新登录");
-            this.$router.push("/login");
         },
     }
 };

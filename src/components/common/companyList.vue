@@ -220,22 +220,18 @@
             getData(params){
                 api.getApi(this.apiVar.UCAPI+'/AscrList', params).then(res =>{
                     console.log(res.data);
-                    if(res.data.SysCode == 100302){
-                        this.loginTimeout();
-                    }else{
-                        if(!res.data.SysCode){
-                            console.log(res.data);
-                            let dataInfo = res.data;
-                            this.totalNum = dataInfo.count;
-                            let dataArr = dataInfo.data;
-                            this.companyList = this.funcData(dataArr);
-                            this.loading = false;
-                            if(dataInfo.totalpage == 0){
-                                Message.warning('暂无数据');
-                            }
-                        }else{
-                            Message.warning(res.data.MSG);
+                    if(!res.data.SysCode){
+                        console.log(res.data);
+                        let dataInfo = res.data;
+                        this.totalNum = dataInfo.count;
+                        let dataArr = dataInfo.data;
+                        this.companyList = this.funcData(dataArr);
+                        this.loading = false;
+                        if(dataInfo.totalpage == 0){
+                            Message.warning('暂无数据');
                         }
+                    }else{
+                        Message.warning(res.data.MSG);
                     }
                 });
             },
@@ -338,8 +334,6 @@
                                     Message.success(res.data.MSG);
                                     this.isShowNew = false;
                                     this.reset();
-                                }else if(res.data.SysCode == 100302){
-                                    this.loginTimeout();
                                 }else{
                                     Message.warning(res.data.MSG);
                                 }
@@ -368,8 +362,6 @@
                                         break;
                                     }
                                 }
-                            }else if(res.data.SysCode == 100302){
-                                this.loginTimeout();
                             }else{
                                 Message.warning(res.data.MSG);
                             }
@@ -439,8 +431,6 @@
                             if (res.data.SysCode == 100200) {
                                 Message.success("操作成功");
                                 row.state = row.state==1 ? 0 : 1;
-                            } else if (res.data.SysCode == 100302) {
-                                this.loginTimeout();
                             } else {
                                 Message.warning(res.data.MSG);
                             }
@@ -463,10 +453,6 @@
                     type: row.type-0,
                     asrID: row.asrID,
                 };
-            },
-            loginTimeout() {
-                Message.warning("登录超时,请重新登录");
-                this.$router.push("/login");
             },
         },
         mounted(){

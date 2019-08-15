@@ -166,8 +166,8 @@
                         </div>
                     </el-tab-pane>
                     <el-tab-pane label="换画报告" name="sixth">
-                        <div class="changepic_box">
-                            <change-pic :type="3"></change-pic>
+                        <div class="changepic_box" v-if="planPanel=='sixth'">
+                            <change-pic :type="3" :from-type="fromType"></change-pic>
                         </div>
                     </el-tab-pane>
                 </el-tabs>
@@ -341,6 +341,8 @@ export default {
             downLoading: false,
             //显示预览图蒙版
             showPreImg: null,
+            // 换画
+            fromType: false,
         };
     },
     created() {
@@ -528,9 +530,7 @@ export default {
                         // this.orderDetail = info;
                         console.log('orderDetail',this.orderDetail)
                         this.apQC = this.orderDetail.apQC ? this.orderDetail.apQC : this.getContractNo(this.orderDetail.rID);
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
-                    } else {
+                    }else {
                         Message.warning(res.data.MSG);
                     }
                 })
@@ -630,9 +630,7 @@ export default {
 
                         this.loading = false;
                         this.maLoading = false;
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
-                    } else {
+                    }else {
                         Message.warning(res.data.MSG);
                     }
                 })
@@ -737,8 +735,6 @@ export default {
                     if (res.data.SysCode == 300200) {
                         this.$set(this.orderDetail, "apQC", qc);
                         Message.success(res.data.MSG);
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
                     } else {
                         Message.warning(res.data.MSG);
                     }
@@ -747,10 +743,6 @@ export default {
                     console.log(res);
                 });
             this.changeCID = false;
-        },
-        loginTimeout() {
-            Message.warning("登录超时,请重新登录")
-            this.$router.push("/login");
         },
         // 终止点位
         conFirmStopAds(){
@@ -783,8 +775,6 @@ export default {
                             this.$set(this.nowRow, 'finishTimeRange', time);
                             this.isFinish = false;
                             Message.success("终止成功");
-                        } else if (res.data.SysCode == 100302) {
-                            this.loginTimeout();
                         } else {
                             Message.warning(res.data.MSG);
                         }
@@ -845,8 +835,6 @@ export default {
                                 Message.warning('系统异常,请稍后重试');
                             }
 
-                        } else if (res.data.SysCode == 100302) {
-                            this.loginTimeout();
                         } else {
                             Message.warning(res.data.MSG);
                         }
@@ -946,11 +934,8 @@ export default {
             api.postApi_json(this.apiVar.Advertisement + '/SetPDAS?uid='+ userData.uID + '&token=' + userData.token,
                 JSON.stringify(postData)).then(res => {
                 console.log('添加选点返回信息', res)
-                addload.close()
-                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                    // addload.close()
-                    this.loginTimeout()
-                } else if (res.data.SysCode === 300500) {
+                addload.close();
+                if (res.data.SysCode === 300500) {
                     Message.warning(res.data.MSG)
                 }else {
                     if (res.data === '' || res.data === null) {
@@ -975,7 +960,6 @@ export default {
         },
         // 换画
         changePain(){
-            // this.planPanel = 'sixth';
             MessageBox.confirm(
                 "注：换画时间需在对应点位排期时间内",
                 "是否创建新的换画报告\n",
@@ -990,30 +974,33 @@ export default {
             });
         },
         // 新增换画报告
-        addPainReport(){
-            let info = {
-                apId: this.orderDetail.apID
-            };
-            api.postApi(this.apiVar.replace+'/list', info).then(res =>{
-                console.log(res);
-                if(res.data.code == 200){
-                    let len = res.data.data.length;
-                    let painInfo = {
-                        apId: this.orderDetail.apID,
-                        replaceRecordName: `换画${len+1}`,
-                    };
-                    
-                    api.postApi(this.apiVar.replace+'/addPainReport', painInfo).then(res =>{
-                        
-                    });
+        addPainReport(){       
+            this.planPanel = 'sixth';                            
+            this.fromType = !this.fromType;
 
-                }else if(res.data.code == 302){
-                    sessFun.loginTimeout();
-                }else{
-                    sessFun.messageFun('warning', res.data.msg);
-                }
-            });
-            
+            // let info = {
+            //     apId: this.orderDetail.apID
+            // };
+            // api.postApi(this.apiVar.replace+'/list', info).then(res =>{
+            //     console.log(res);
+            //     if(res.data.SysCode == 200200){
+            //         let len = res.data.data.length;
+            //         let painInfo = {
+            //             apId: this.orderDetail.apID,
+            //             replaceRecordName: `换画${len+1}`,
+            //         };
+            //         api.postApi(this.apiVar.replace+'/addPainReport', painInfo).then(res =>{
+            //             if(res.data.SysCode == 200200){
+            //                 this.planPanel = 'sixth';                            
+            //                 this.fromType = !this.fromType;
+            //             }else{
+            //                 sessFun.messageFun('warning', res.data.msg);
+            //             }
+            //         });
+            //     }else{
+            //         sessFun.messageFun('warning', res.data.msg);
+            //     }
+            // });
         },
         // 操作提示统一方法
         messageFun(mesType,mes){

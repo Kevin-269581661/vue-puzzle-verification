@@ -38,7 +38,7 @@
                 <div class="process">
                     <el-button type="primary" @click="editReport()">编辑报告</el-button>
                     <span class="process_box">
-                        <el-progress :percentage="50" :text-inside="true" :stroke-width="16"></el-progress>
+                        <el-progress :percentage="publishNumInfo.percent" :text-inside="true" :stroke-width="16"></el-progress>
                         {{ publishNumInfo.currNum }} / {{ publishNumInfo.totalNum}}
                     </span>
                 </div>
@@ -271,6 +271,9 @@ export default {
             type: Object,
             // default: {},
         },
+        fromType:{
+            type: Boolean,
+        },
     },
     data() {
         return {
@@ -303,7 +306,7 @@ export default {
             // 导出订单图片包
             downLoading: false,
 
-            // 上下刊百分比数量等
+            // 上下刊以及换画百分比数量等
             publishNumInfo:{
                 percent: 0,
                 currNum: 0,
@@ -545,6 +548,21 @@ export default {
             },
         };
     },
+    mounted(){
+        console.log(this.fromType, 'fromtype----');
+        this.sessionData = sessFun.getSess();
+        // 获取报告列表
+        this.getImgArr();
+    },
+    watch:{
+        fromType(newVal, oldVal){
+            console.log(newVal, oldVal);
+            let len = this.painList.length;
+            console.log(this.painList, 'painlist----', len);
+            this.activePainIndex = len-1;
+            this.editReport();
+        },
+    },
     directives: {
         loadmore: {
             bind: function (el, binding) {
@@ -563,7 +581,7 @@ export default {
         // 获取全部换画列表(换画名称以及id)
         getPainList(){
             let info = {
-                apId: this.orderDetail.apID
+                apId: sessionStorage.getItem('order_apid')
             };
             api.postApi(this.apiVar.replace+'/list', info).then(res =>{
                 console.log(res);
@@ -572,7 +590,7 @@ export default {
                         return{
                             ...item,
                             id: item.replaceRecordId,
-                            name: item.replaceRecordName
+                            name: item.replaceRecordName,
                         };
                     });
                 }else if(res.data.code == 302){
@@ -585,34 +603,19 @@ export default {
         // 获取图片列表
         getImgArr(){
             let type = this.type;
+            console.log(type, 'type---');
             if(type == 1 || type ==2){
                 // 上下刊报告列表
                 this.searchFun();
             }else if(type == 3){
+                // 获取换画名称列表
+                this.getPainList();
                 // 换画报告列表
                 this.search();
             }
         },
         changeMedia(){
             let { mediaType } = this.publishSearchInfo;
-            // if(mediaType == '广告门'){
-            //     this.allResource = this.mediaAdData;
-            //     this.citys = this.AdCitys;
-            //     this.allResource.concat();
-            //     this.citys.concat();
-            // }
-            // if(mediaType == '道闸'){
-            //     this.allResource = this.mediaDaoData
-            //     this.citys = this.DaoCitys;
-            //     this.allResource.concat();
-            //     this.citys.concat();
-            // }
-            // this.currUpPage = 1;
-            // this.currDownPage = 1;
-            // this.citySelect = [];
-            // this.allhouse = '';
-            // this.allPic = '';
-
             this.searchFun();
         },
         searchImgChange(){
@@ -648,12 +651,49 @@ export default {
         getData(params){
             // this.imageArr
             // this.pageInfo
+            api.postApi(this.apiVar.replace +"/", params).then(res =>{
+                console.log(res);
+                if(res.data.SysCode == 200200){
+                    let dataInfo = res.data;
+                    let percent = dataInfo.totalCount? Number(((dataInfo.hasPhotoCount / dataInfo.totalCount)*100).toFixed(2)) : 0;
+                    this.publishNumInfo = {
+                        percent: percent,
+                        currNum: dataInfo.hasPhotoCount,
+                        totalNum: dataInfo.totalCount,
+                    };
+
+                    this.pageInfo = {
+                        ...this.pageInfo,
+                        ...({totalNum: dataInfo.total}),
+                    };
+                    for(let data of dataInfo.dataList){
+                        for(let item of data.photoList){
+                            item.name = item.pID+'.png',
+                            item.url = item.pURL;
+                            item.pID = item.pID;
+                            item.isCollection = false
+                        }
+                        let time = dateFormat.toDate(data.lStar, "/") + "-" +dateFormat.toDate(data.lEnd, "/");
+                        data.timeRange = time;
+                    }
+                    this.imageArr = dataInfo.dataList;
+                    this.checkImgStatus();
+                    if(dataInfo.totalCount == 0){
+                        Message.warning('暂无数据');
+                    }
+                }else{
+                    sessFun.messageFun('warning', res.data.MSG);
+                }
+            });
         },
         // 搜索
         search(){
-            console.log(this.searchInfo);
+            this.pageInfo.paginationShow = false;            
             let info = this.searchPointFormat();
             this.getData(info);
+            this.$nextTick(function () {
+                this.pageInfo.paginationShow = true;
+            });
         },
         // 搜索换画列表条件
         searchPointFormat(){
@@ -665,9 +705,9 @@ export default {
                 token: token,
                 pageNo: currPage,
                 pageSize: pageSize,
-                ...( mediaType && { mediaType }),
-                ...( city.length && { city: city[0] }),
-                ...( resName && { resName }),
+                ...( mediaType && { mType: mediaType }),
+                ...( city.length && { rId: city[1] }),
+                ...( resName && { resId: resName }),
                 ...( status && { status })
             };
             return info;
@@ -701,6 +741,7 @@ export default {
         // 编辑报告
         editReport(){
             this.isShowPic = true;
+            this.searchInfoFun();
         },
         /**
          *  选择换画点位弹出框
@@ -724,7 +765,8 @@ export default {
                 token: token,
                 pageNo: currInfoPage,
                 pageSize: pageSize,
-                apID: sessionStorage.getItem('order_apid'),
+                apId: sessionStorage.getItem('order_apid'),
+                replaceRecordId: this.painList[this.activePainIndex].id,
                 ...( resName && { resId: resName }),
                 ...( mapName && { mapCenterName: mapName }),
                 ...( picState && { replaceStatus: picState })
@@ -749,8 +791,6 @@ export default {
                         totalInfoPage: dataInfo.totalPage,
                     };
                     this.selectioUpdate();
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
                 }else{
                     Message.warning(res.data.MSG);
                 }
@@ -1063,9 +1103,7 @@ export default {
                         if(dataInfo.totalCount == 0){
                             Message.warning('暂无数据');
                         }
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
-                    } else {
+                    }else {
                         Message.warning(res.data.MSG);
                     }
                 })
@@ -1086,10 +1124,8 @@ export default {
             }
             console.log('params',params)
             api.getApi(this.apiVar.Advertisement + '/GetUserStatusByPid',params).then(res=>{
-                console.log('检测图片收藏状态res',res)
-                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                    this.loginTimeout();
-                } else if (res.data.SysCode === 200200) {
+                console.log('检测图片收藏状态res',res);
+                if (res.data.SysCode === 200200) {
                     this.setImgStatus(res.data.data);
                 } else {
                     sessFun.messageFun('warning', res.data.MSG);
@@ -1262,9 +1298,7 @@ export default {
                     this.uploadPidArr = [];
                     this.UploadTime = 0;
                     this.searchFun();
-                } else if (res.data.SysCode == 100302) {
-                    this.loginTimeout();
-                } else {
+                }else {
                     Message.warning(res.data.MSG);
                 }
             }).catch(res =>{
@@ -1292,10 +1326,8 @@ export default {
             }
             console.log('params', params)
             api.postApi(this.apiVar.Advertisement + '/imageCollection/add', params).then(res => {
-                console.log('图片收藏res', res)
-                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                    this.loginTimeout()
-                } else if (res.data.SysCode === 200200) {
+                console.log('图片收藏res', res);
+                if (res.data.SysCode === 200200) {
                     item.photoList[index].isCollection = true;
                     sessFun.messageFun('success', '收藏成功')
                 } else {
@@ -1312,10 +1344,8 @@ export default {
                 pId: item.photoList[index].pID,
             }
             api.postApi(this.apiVar.Advertisement + '/imageCollection/remove', params).then(res => {
-                console.log('取消收藏res', res)
-                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                    this.loginTimeout()
-                } else if (res.data.SysCode === 200200) {
+                console.log('取消收藏res', res);
+                if (res.data.SysCode === 200200) {
                     item.photoList[index].isCollection = false;
                     sessFun.messageFun('success', '取消成功')
                 } else {
@@ -1435,9 +1465,7 @@ export default {
                             Message.success(res.data.MSG);
                             this.allPic = '';
                             this.searchFun();
-                        } else if (res.data.SysCode == 100302) {
-                            this.loginTimeout();
-                        } else {
+                        }else {
                             Message.warning(res.data.MSG);
                         }
                     })
@@ -1484,8 +1512,6 @@ export default {
                         query: info,
                     });
                     tempPage.location = routeUrl.href;
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
                 }else{
                     Message.warning(res.data.MSG);
                 }
@@ -1506,8 +1532,6 @@ export default {
                 console.log(res.data);
                 if(res.data.SysCode == 200200){
                     Message.success(res.data.MSG);
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
                 }else{
                     Message.warning(res.data.MSG);
                 }
@@ -1529,12 +1553,6 @@ export default {
                 console.log(res);
             });
         },
-    },
-    mounted(){
-        this.sessionData = sessFun.getSess();
-        // this.searchInfoFun();
-        // 获取报告列表
-        this.getImgArr();
     },
 };
 </script>

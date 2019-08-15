@@ -212,8 +212,6 @@
                             result.push(obj);
                         }
                         this.companyData = result;
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
                     }else{
                         Message.warning(res.data.MSG);
                     }
@@ -243,22 +241,18 @@
             getData(params){
                 api.getApi(this.apiVar.UCAPI+'/GetUserList', params).then(res =>{
                     console.log(res.data);
-                    if(res.data.SysCode == 100302){
-                        this.loginTimeout();
-                    }else{
-                        if(!res.data.SysCode){
-                            let dataInfo = res.data;
-                            this.totalNum = dataInfo.count;
-                            let dataArr = dataInfo.data;
-                            this.currAccount = this.funcData(dataArr);
-                            this.loading = false;
-                            this.isSearch = false;
-                            if(dataInfo.totalpage == 0){
-                                Message.warning('暂无数据');
-                            }
-                        }else{
-                            Message.warning(res.data.MSG);
+                    if(!res.data.SysCode){
+                        let dataInfo = res.data;
+                        this.totalNum = dataInfo.count;
+                        let dataArr = dataInfo.data;
+                        this.currAccount = this.funcData(dataArr);
+                        this.loading = false;
+                        this.isSearch = false;
+                        if(dataInfo.totalpage == 0){
+                            Message.warning('暂无数据');
                         }
+                    }else{
+                        Message.warning(res.data.MSG);
                     }
                 });
             },
@@ -411,8 +405,6 @@
                                 if (res.data.SysCode == 200200) {
                                     Message.success(res.data.MSG);
                                     row.uState = row.uState ? 0 : 1;
-                                } else if (res.data.SysCode == 100302) {
-                                    this.loginTimeout();
                                 } else {
                                     Message.warning(res.data.MSG);
                                 }
@@ -430,10 +422,6 @@
                 sessionStorage.setItem("userId", row.uID);
                 this.$router.push("./createAccount?edit=y");
             },
-            loginTimeout() {
-                Message.warning("登录超时,请重新登录");
-                this.$router.push("/login");
-            }
         }
     };
 </script>

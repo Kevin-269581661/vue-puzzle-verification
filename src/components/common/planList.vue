@@ -371,8 +371,6 @@ export default {
                             result.push(obj);
                         }
                         this.companyData = result;
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
                     }else{
                         this.messageFun('warning', res.data.MSG);
                     }
@@ -392,8 +390,6 @@ export default {
                             result.push(obj);
                         }
                         this.companyData = result;
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
                     }else{
                         this.messageFun('warning', res.data.MSG);
                     }
@@ -406,21 +402,17 @@ export default {
         getData(params){
             api.getApi(this.apiVar.Advertisement+'/GetProposal', params).then(res =>{
                 console.log(res.data);
-                if(res.data.SysCode == 100302){
-                    this.loginTimeout();
-                }else{
-                    if(!res.data.SysCode){
-                        let dataInfo = res.data;
-                        this.totalNum = dataInfo.total;
-                        let dataArr = dataInfo.list;
-                        this.currentPlan = this.funcData(dataArr);
-                        this.loading = false;
-                        if(dataInfo.totalpage == 0){
-                            this.messageFun('warning', '暂无数据');
-                        }
-                    }else{
-                        this.messageFun('warning', res.data.MSG);
+                if(!res.data.SysCode){
+                    let dataInfo = res.data;
+                    this.totalNum = dataInfo.total;
+                    let dataArr = dataInfo.list;
+                    this.currentPlan = this.funcData(dataArr);
+                    this.loading = false;
+                    if(dataInfo.totalpage == 0){
+                        this.messageFun('warning', '暂无数据');
                     }
+                }else{
+                    this.messageFun('warning', res.data.MSG);
                 }
             });
         },
@@ -464,8 +456,6 @@ export default {
                         });
                     }
                     this.filterCityData = result;
-                } else if (res.data.SysCode == 100302) {
-                    this.loginTimeout();
                 } else {
                     this.messageFun('warning', res.data.MSG);
                 }
@@ -656,8 +646,6 @@ export default {
                             }).catch(() => {
                                 Message.info('已取消操作');
                             });
-                        } else if(res.data.SysCode == 100302){
-                            this.loginTimeout();
                         } else {
                             this.messageFun('warning', res.data.MSG);
                         }
@@ -680,9 +668,7 @@ export default {
             api.postApi(this.apiVar.Advertisement+"/SetAdPlan", info)
                 .then(res => {
                     console.log(res);
-                    if(res.data.SysCode == 100302){
-                        this.loginTimeout();
-                    }else if(res.data.SysCode == 300200){
+                    if(res.data.SysCode == 300200){
                         // 查看是否被锁
                         api.postApi(this.apiVar.Advertisement+"/CheckLock", info).then(res =>{
                             console.log(res.data);
@@ -727,8 +713,6 @@ export default {
                             break;
                         }
                     }
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
                 }else if(res.data.SysCode == 300500){
                     if(res.data.asList){
                         // 存在点位被占，是否立即去方案详情修改？
@@ -895,8 +879,6 @@ export default {
                     this.currentPlan.push();
                     this.messageFun('success', res.data.MSG);
 
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
                 }else if(res.data.SysCode == 300500){
                     if(res.data.asList){
                         // 存在点位被占，是否立即去方案详情修改？
@@ -1077,11 +1059,6 @@ export default {
                 clearTimeout(timer);
             }, 1000);
             this.searchFun();
-        },
-        // 是否预锁搜索
-        loginTimeout(){
-            this.messageFun('warning', "登录超时,请重新登录");
-            this.$router.push("/login");
         },
         // 操作提示统一方法
         messageFun(mesType, mes){

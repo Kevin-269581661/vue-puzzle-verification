@@ -54,6 +54,9 @@
                         <el-button plain @click="importMedia" v-if="showImportBtn">导入媒体</el-button>
                         <el-button plain @click="maintain" v-if="!showImportBtn">维护管理</el-button>
                     </li>
+                    <li class="handel_ul_li push_map_btn">
+                        <el-button plain @click="showPushMap" v-if="showImportBtn">推送地图</el-button>
+                    </li>
                 </div>
                 <div class="table_wrap">
                     <el-table
@@ -164,10 +167,10 @@
                                         <div slot="content">
                                             A面:{{scope.row.asState.A == '1' ? '正常' : '禁用'}}  B面:{{scope.row.asState.B == '1' ? '正常' : '禁用'}}
                                         </div>
-                                        <point-state :state-text="stateToText(scope.row.mState).text" :color="stateToText(scope.row.mState).color"></point-state>
+                                        <point-state :state-text="scope.row.mState" :color="stateToText(scope.row.mState).color"></point-state>
                                     </el-tooltip>
                                 </span>
-                                <point-state v-else :state-text="stateToText(scope.row.mState).text" :color="stateToText(scope.row.mState).color"></point-state>
+                                <point-state v-else :state-text="scope.row.mState" :color="stateToText(scope.row.mState).color"></point-state>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -313,6 +316,49 @@
                     </el-table-column>
                 </el-table>
             </el-dialog>
+            <!--推送地图-->
+            <el-dialog
+                title="推送地图"
+                :visible.sync="pushMapDialogVisible"
+                :close-on-click-modal="false"
+                custom-class="Import_dialog"
+                :show-close="false"
+                top="30vh"
+                width="448px">
+                <div class="push_map_box">
+                    <div>
+                        <span>推送日期：</span>
+                        <el-date-picker
+                            v-model="selectDay"
+                            size="small"
+                            type="daterange"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期"
+                            value-format="yyyy/MM/dd"
+                            format="yyyy/MM/dd"
+                            :picker-options="dayOptionsSelect">
+                        </el-date-picker>
+                        <!--<el-select v-model="selectDay" placeholder="单选，提供最近三天" size="small">-->
+                            <!--<el-option-->
+                                <!--v-for="(item,index) in dayList"-->
+                                <!--:key="index"-->
+                                <!--:label="item.label"-->
+                                <!--:value="item.value">-->
+                            <!--</el-option>-->
+                        <!--</el-select>-->
+                    </div>
+                    <p class="push_map_box_p" v-show="isShowTag">
+                        <i class="el-icon-warning" style="color:#FAAD14"></i>
+                        请选择推送的日期，将当日新增的媒体推送至地图
+                        <i class="el-icon-close" @click="hideTag()"></i>
+                    </p>
+                </div>
+                <div slot="footer" class="">
+                    <el-button @click="pushMapDialogVisible = false">取 消</el-button>
+                    <el-button type="primary"  @click="submitPushMap">确 认</el-button>
+                </div>
+            </el-dialog>
         </div>
     </div>
 </template>
@@ -324,6 +370,7 @@
     import sessFun from "../../commonFun/sessFun.js";
     import noSearchResult from "./components/noSearchResult.vue";
     import pointState from './components/pointState.vue';
+    import timeFormat from '../../commonFun/timeFormat';
 
     import {
         Form,
@@ -422,6 +469,25 @@
                 excelObj:{successNum: 0, failNum: 0},   // 导入excel之后返回的失败成功点数
                 ImportLoading: '',                      // 导入excel提交loading
                 showImportBtn: false,                   // SA才显示导入媒体按钮
+                pushMapDialogVisible: false,            // 推送地图弹出框
+                isShowTag: true,
+                selectDay: [],                          // 选择的时间
+                canSelectDayTime:[],                    // 限制选择区间
+                dayList: [
+                    {
+                        value:'2019/08/15',
+                        label:'2019/08/15',
+                    },
+                    {
+                        value:'2019/08/16',
+                        label:'2019/08/16',
+                    },
+                ],
+                dayOptionsSelect: {
+                    disabledDate: (time) => {
+                        return time.getTime() < Date.parse(this.canSelectDayTime[0]) || time.getTime() > Date.parse(this.canSelectDayTime[1])
+                    }
+                },
             }
         },
         mounted: function () {
@@ -439,6 +505,10 @@
                 this.showImportBtn = false
             }
             this.getData();
+            let endTime = timeFormat.returnDayCount(0,'/');
+            let startTime = timeFormat.returnDayCount(-180,'/');
+            this.canSelectDayTime = [startTime,endTime]
+            console.log('canSelectDayTime',this.canSelectDayTime)
         },
         methods: {
             // 状态转换
@@ -472,8 +542,43 @@
                 this.$router.push('./mediaInput');
             },
             // 维护管理
-            maintain(){
+            maintain() {
                 this.$router.push('./maintainList');
+            },
+            // 推送地图
+            showPushMap() {
+                this.pushMapDialogVisible = true
+            },
+            // 确认推送
+            submitPushMap() {
+                this.pushMapDialogVisible = true
+                if (this.selectDay.length && this.selectDay.length >= 2) {
+                    let params = {
+                        uid: this.sessionData.uID,
+                        token: this.sessionData.token,
+                        service: "SynchronizeMediaToDTWYAction",
+                        data: {
+                            startDate: this.selectDay[0],
+                            endDate: this.selectDay[1],
+                        }
+                    }
+                    console.log('params',params)
+                    api.postApi_new(this.apiVar.Media, params).then(res => {
+                        console.log('确认推送接口', res)
+                        if (res.data.SysCode === 200200) {
+                            sessFun.messageFun('success', '推送成功')
+                        } else if (res.data.SysCode === 100302) {
+                            sessFun.loginTimeout()
+                        } else {
+                            sessFun.messageFun('warning', '推送失败')
+                        }
+                    })
+                } else {
+                    sessFun.messageFun('warning', '请选择日期')
+                }
+            },
+            hideTag(){
+                this.isShowTag = false;
             },
             filterChange(filters){
                 console.log('filters',filters)
@@ -1098,6 +1203,12 @@
     .handel_ul_li_btn{
         width: 32%;
     }
+    .push_map_btn{
+        width: 10%;
+        float: right;
+        text-align: right;
+        margin-right: 0
+    }
     /*下拉搜索框*/
     /deep/ .el-input-group__prepend {
         width: 64px;
@@ -1236,5 +1347,28 @@
         margin: 0 6px;
         cursor: pointer;
         color: #1890ff;
+    }
+
+    /*  推送地图  */
+    .push_map_box /deep/ .el-select.el-select--small{
+        width: 333px;
+    }
+    .push_map_box /deep/ .el-date-editor{
+        width: 333px;
+    }
+
+    .push_map_box_p{
+        height:32px;
+        background:rgba(255,251,230,1);
+        border-radius:4px;
+        border:1px solid rgba(255,229,143,1);
+        line-height: 32px;
+        padding:  0 16px;
+        margin-top: 16px;
+    }
+
+    .push_map_box_p /deep/ .el-icon-close{
+        cursor: pointer;
+        margin-left: 24px;
     }
 </style>

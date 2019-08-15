@@ -91,7 +91,7 @@
                                 <el-col :span="6">
                                     <el-form-item label="公司名称:" prop="cName">
                                         <el-select
-                                            v-model.trim="companyForm.cName" 
+                                            v-model.trim="companyForm.cName"
                                             filterable
                                             remote
                                             reserve-keyword
@@ -115,7 +115,11 @@
                                 </el-col>
                                 <el-col :span="6">
                                     <el-form-item label="行业分类:" prop="industryIdArr">
-                                        <el-cascader :options="bussiness" v-model="companyForm.industryIdArr" change-on-select @change="handleChange" filterable></el-cascader>
+                                        <el-cascader :options="bussiness"
+                                                     v-model="companyForm.industryIdArr"
+                                                     @change="handleChange"
+                                                     filterable>
+                                        </el-cascader>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="6">
@@ -126,16 +130,27 @@
                             </el-row>
                             <el-row class="form_row" type="flex" :gutter="72">
                                 <el-col :span="6">
-                                    <el-form-item label="公司品牌:" prop="cBrand" class="tags">
-                                        <el-tag v-for="tag in oldBrandTags" :key="tag.bID">
-                                            {{tag.bTitle}}
-                                        </el-tag>
-                                        <el-tag v-for="(tag, index) in companyTags" :key="index" closable :disable-transitions="false" @close="handleClose(tag)">
-                                            {{tag}}
-                                        </el-tag>
-                                        <el-input style="width: 90px" class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm" @blur="handleInputConfirm" clearable>
-                                        </el-input>
-                                        <el-button v-else class="button-new-tag" size="small" @click="showInput">新增品牌</el-button>
+                                    <el-form-item label="公司品牌:" prop="cBrand" ref="cBrand">
+                                        <div class="cBrand_box" :class="isHavecBrand ? '' : 'cBrand_is_empty'">
+                                            <el-tooltip class="item"
+                                                        v-for="(item,index) in cBrandTags"
+                                                        :key="index"
+                                                        effect="dark"
+                                                        placement="bottom">
+                                                        <div slot="content">行业：{{item.industryNames}}</div>
+                                                        <el-tag
+                                                            size="small"
+                                                            type="info"
+                                                            :key="index"
+                                                            closable
+                                                            :disable-transitions="false"
+                                                            @click.native="tagsClick(index)"
+                                                            @close="tagsClose(index)">
+                                                            {{item.brandName}}
+                                                        </el-tag>
+                                            </el-tooltip>
+                                            <el-button class="button_new_tag" plain size="small" @click="showAddDialog">+ 添加</el-button>
+                                        </div>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="6">
@@ -153,6 +168,56 @@
                 </div>
             </div>
         </div>
+        <el-dialog
+            title="添加品牌"
+            :visible.sync="addcBrandDialogVisible"
+            width="448px"
+            :show-close="false">
+            <ul>
+                <li class="li_box">
+                    <span>公司品牌:</span>
+                    <el-input size="small" placeholder="请输入品牌名称" v-model="addcBrand.brand"></el-input>
+                </li>
+                <li class="li_box">
+                    <span>所属行业:</span>
+                    <el-cascader :options="bussiness" size="small" class="plan-select" v-model="addcBrand.industryList"
+                                 :clearable="true"
+                                 @change="changeIndustry"
+                                 change-on-select
+                                 filterable>
+                    </el-cascader>
+                </li>
+            </ul>
+            <div slot="footer" class="dialog-footer">
+                <el-button plain @click="addcBrandDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="addcBrandConfige">确 定</el-button>
+            </div>
+        </el-dialog>
+        <!--编辑品牌-->
+        <el-dialog
+            title="编辑品牌"
+            :visible.sync="editcBrandDialogVisible"
+            width="448px"
+            :show-close="false">
+            <ul>
+                <li class="li_box">
+                    <span>公司品牌:</span>
+                    <el-input size="small" placeholder="请输入品牌名称" v-model="addcBrand.brand"></el-input>
+                </li>
+                <li class="li_box">
+                    <span>所属行业:</span>
+                    <el-cascader :options="bussiness" size="small" class="plan-select" v-model="addcBrand.industryList"
+                                 :clearable="true"
+                                 @change="changeIndustry"
+                                 filterable>
+                    </el-cascader>
+                </li>
+            </ul>
+            <div slot="footer" class="dialog-footer">
+                <el-button plain @click="editcBrandDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="addcBrandConfige('edit')">确 定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -244,6 +309,15 @@ export default {
                 callback();
             }
         };
+        var cBrandValidate = (rule,value,callback) =>{
+            if (this.cBrandTags.length) {
+                this.isHavecBrand = true
+                callback();
+            } else {
+                this.isHavecBrand = false
+                callback(new Error('请添加公司品牌!'));
+            }
+        }
         return {
             // 账号远程搜索
             loading: false,
@@ -258,10 +332,6 @@ export default {
             allProvince: [],
             //行业分类
             bussiness: [],
-            // 公司所对应的原来的品牌
-            oldBrandTags: [],
-            //tags
-            companyTags: [],
             inputVisible: false,
             inputValue: "",
             //表单
@@ -296,122 +366,75 @@ export default {
                 iID: "",
                 // 公司id
                 cID: "",
-                iName: ""
+                iName: "",
+                // 公司品牌
+                cBrandTags: '',
             },
             clientRules: {
                 realname: [
-                    {
-                        required: true,
-                        message: "联系人不能为空",
-                        trigger: "blur"
-                    },
-                    {
-                        max: 30,
-                        message: "最多只能输入30个字节",
-                        trigger: "blur"
-                    }
+                    { required: true, message: "联系人不能为空", trigger: "blur" },
+                    { max: 30, message: "最多只能输入30个字节", trigger: "blur" }
                 ],
                 sname: [
-                    {
-                        required: true,
-                        message: "账户名不能为空",
-                        trigger: "blur"
-                    },
-                    {
-                        max: 50,
-                        message: "最多只能输入50个字节",
-                        trigger: "blur"
-                    },
+                    { required: true, message: "账户名不能为空", trigger: "blur" },
+                    { max: 50, message: "最多只能输入50个字节", trigger: "blur" },
                     { validator: validatesSname, trigger: ['blur','change']}
                 ],
                 position: [
-                    {
-                        required: true,
-                        message: "职位不能为空",
-                        trigger: "blur"
-                    },
-                    {
-                        max: 30,
-                        message: "最多只能输入30个字节",
-                        trigger: "blur"
-                    }
+                    { required: true, message: "职位不能为空", trigger: "blur" },
+                    { max: 30, message: "最多只能输入30个字节", trigger: "blur" }
                 ],
                 phone: [
-                    {
-                        required: true,
-                        message: "手机号码不能为空",
-                        trigger: "blur"
+                    { required: true,message: "手机号码不能为空",trigger: "blur"
                     },
-                    {
-                        type: "number",
-                        message: "只能输入数字",
-                        trigger: "blur"
-                    },
+                    { type: "number",message: "只能输入数字",trigger: "blur"},
                     { validator: validatePhone, trigger: "blur" }
                 ],
                 email: [
                     // {required: false, trigger: 'blur'},
                     { validator: validateEmail, trigger: "blur" },
-                    {
-                        type: "email",
-                        message: "请输入正确的邮箱地址",
-                        trigger: "blur,change"
-                    }
+                    { type: "email",message: "请输入正确的邮箱地址",trigger: "blur,change"}
                 ],
-                // cityArr :[
-                // 	{required:true, message:'请选择所在地', trigger:'blur'}
-                // ]
                 telphone: [{ validator: validateFixphone, trigger: "blur" }],
                 division: [
-                    {
-                        max: 40,
-                        message: "最多只能输入40个字节",
-                        trigger: "blur"
-                    }
+                    { max: 40,message: "最多只能输入40个字节",trigger: "blur"}
                 ]
             },
             companyRules: {
                 cName: [
-                    {
-                        required: true,
-                        message: "公司名称不能为空",
-                        trigger: "blur"
-                    },
-                    {
-                        max: 50,
-                        message: "最多只能输入50个字节",
-                        trigger: "blur"
-                    }
+                    {required: true, message: "公司名称不能为空", trigger: "blur"},
+                    {max: 50,message: "最多只能输入50个字节",trigger: "blur"}
                 ],
                 cAddress: [
-                    // {required: true, message:'公司地址不能为空', trigger:'blur'},
-                    {
-                        max: 200,
-                        message: "最多只能输入200个字节",
-                        trigger: "blur"
-                    }
+                    {max: 200,message: "最多只能输入200个字节",trigger: "blur"}
+                ],
+                cBrand:[
+                    {required: true, validator: cBrandValidate, trigger: "blur"}
                 ],
                 cRemark: [
-                    {
-                        max: 200,
-                        message: "最多只能输入200个字符",
-                        trigger: "blur"
-                    }
+                    { max: 200,message: "最多只能输入200个字符",trigger: "blur"}
                 ],
                 industryIdArr: [
-                    {
-                        required: true,
-                        message: "请选择行业分类",
-                        trigger: "blur"
-                    }
+                    {required: true,message: "请选择行业分类",trigger: "blur"}
                 ],
                 cityArr: [
-                    {
-                        required: true,
-                        message: "请选择所在城市",
-                        trigger: "blur"
-                    }
+                    {required: true,message: "请选择所在城市",trigger: "blur"}
                 ]
+            },
+            // 公司品牌
+            cBrandTags: [],
+            // 待删除的品牌
+            delcBrand:[],
+            // 自定义-添加品牌时的唯一标示id
+            addcBrandIndex: 0,
+            // 标示公司品牌是否通过了表单校验
+            isHavecBrand: true,
+            // 添加品牌的弹出框
+            addcBrandDialogVisible: false,
+            editcBrandDialogVisible: false,
+            addcBrand:{
+                brand:'',
+                industryList:[],
             }
         };
     },
@@ -441,7 +464,7 @@ export default {
                 };
                 this.loading = true;
                 api.postApi(this.apiVar.UCAPI+"/CheckUserName", info).then(res => {
-                    this.loading = false;                    
+                    this.loading = false;
                     if (res.data.SysCode == 200200) {
                         let results = [{ value: query, label: query }];
                         this.searchArr = results;
@@ -476,6 +499,7 @@ export default {
         getIndustry() {
             let arr = JSON.parse(sessionStorage.getItem("industry"));
             this.bussiness = industryToText.cascader(arr);
+            console.log('this.bussiness',this.bussiness)
         },
         // 获取所有区域信息
         getAreaData() {
@@ -485,11 +509,10 @@ export default {
         handleItemChange(val) {
             console.log("select", val);
         },
-        // 输入获取公司信息(远程搜索)        
+        // 输入获取公司信息(远程搜索)
         remoteMethodCom(query){
             this.companyArr = [];
             if(query){
-                let session = this.sessionData;
                 let info = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
@@ -497,7 +520,7 @@ export default {
                 };
                 this.comLoading = true;
                 api.postApi(this.apiVar.Advertisement+"/GetCompanyInfo", info).then(res => {
-                    this.comLoading = false;                    
+                    this.comLoading = false;
                     if (res.data) {
                         for (let i of res.data) {
                             i.value = i.cID;
@@ -515,8 +538,6 @@ export default {
                     }
                 });
             }else{
-                this.oldBrandTags = [];
-                this.companyTags = [];
                 this.companyForm.industryIdArr = [];
                 this.companyForm.cityArr = [];
                 this.companyForm.cRemark = '';
@@ -525,7 +546,7 @@ export default {
         },
         // 选择公司
         handleSelect() {
-            this.companyTags = [];
+            // this.companyTags = [];
             let item = '';
             for(let data of this.companyArr){
                 if(data.cID == this.companyForm.cName){
@@ -543,40 +564,73 @@ export default {
                 item.cAddress = item.cAddress;
                 item.cRemark = item.cRemark;
                 item.iID = item.iID;
-    
+
                 // 获取公司所在地的中文名称
                 let cityRID = item.rID.toString().substring(0, 2) + "0000";
                 let areaRID = item.rID.toString().substring(0, 4) + "00";
                 this.handleItemChange([cityRID, areaRID]);
-    
-                // item.cityArr = [cityRID, areaRID];
+
                 this.$set(item, "cityArr", [cityRID, areaRID]);
-    
+
                 // 获取公司原有的品牌信息
-                let bInfo = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token,
-                    cid: item.cID,
-                };
-                api.getApi(this.apiVar.Advertisement+"/GetBrand", bInfo).then(res => {
-                    console.log(res.data);
-                    this.oldBrandTags = res.data;
-                });
-    
+                this.getCBrandBycID(item.cID)
+
                 // 公司信息所在行业
                 let arr = JSON.parse(sessionStorage.getItem("industry"));
                 // 如果有行业id则cascader显示出对应的行业
-                let industryResult = [
-                    industryToText.getpiID(item.iID, arr),
-                    item.iID
-                ];
-                item.industryIdArr = industryResult;
-    
+                let piID = industryToText.getpiID(item.iID, arr);
+                console.log('父亲行业id',piID,item.iID)
+                if (piID) {
+                    let industryResult = [piID, item.iID];
+                    item.industryIdArr = industryResult;
+                } else {
+                    // 找不到父亲行业id
+                    item.industryIdArr = []
+                }
+
                 this.companyForm = item;
                 // 保存一份旧公司信息以便来判断是否改变公司信息
                 this.oldcompanyInfo = JSON.parse(JSON.stringify(item));
                 // this.$refs["companyForm"].clearValidate();
+                console.log('选择的公司信息------',this.companyForm)
             }
+        },
+        // 获取公司原有的品牌信息
+        getCBrandBycID(cID){
+            // 获取公司原有的品牌信息
+            let bInfo = {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                cid: cID,
+            };
+            api.getApi(this.apiVar.Advertisement+"/GetBrand", bInfo).then(res => {
+                console.log('获取公司原有的品牌信息',res.data);
+                // 先排除存在cID的tag
+                this.cBrandTags = this.cBrandTags.filter((item, index, arr) => {
+                    if (!item.cID || !item.bID) {
+                        return item
+                    }
+                })
+                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                    this.loginTimeout()
+                } else if (res.data.SysCode === 200200) {
+                    for (let key of res.data.data) {
+                        let industryNames = this.getIndustryNamebyId([key.parentInstdustryId,key.instdustryId])
+                        this.cBrandTags.push({
+                            id: this.addcBrandIndex,
+                            brandName: key.bTitle,
+                            industryList: [key.parentInstdustryId,key.instdustryId],
+                            industryNames: industryNames.join('/'),
+                            cID: key.cID,
+                            bID: key.bID,
+                        })
+                        this.addcBrandIndex++
+                    }
+                } else {
+                    this.messageFun('warning', res.data.MSG)
+                }
+                console.log('所选公司原有品牌',this.cBrandTags)
+            });
         },
         // 创建
         submitData() {
@@ -603,8 +657,8 @@ export default {
                 // 先搜索公司，如果有则不添加，没有则提交信息添加公司
                 if (this.companyForm.cID) {
                     // 如果有新填入品牌则新增品牌
-                    if (this.companyTags.length) {
-                        this.addBrand(this.companyTags, this.companyForm.cID);
+                    if (this.cBrandTags.length) {
+                        this.addBrand(this.companyForm.cID);
                     }
                     // console.log('clientForm', this.validateForm('clientForm'));
                     // 修改公司信息
@@ -638,21 +692,144 @@ export default {
             }
             return false;
         },
-        // 新增品牌
-        addBrand(arr, cID) {
-            for (let brand of arr) {
-                let AbInfo = {
+        //显示添加品牌弹出框
+        showAddDialog(){
+            this.addcBrandDialogVisible = true
+            this.addcBrand = {
+                brand: '',
+                industryList: []
+            }
+        },
+        // 删除品牌
+        tagsClose(index) {
+            if (this.cBrandTags[index].bID) {
+                this.delcBrand.push(this.cBrandTags[index])
+            }
+            this.cBrandTags.splice(index, 1)
+            // 手动校验 公司品牌
+            this.$refs.companyForm.validateField('cBrand', (valid) => {})
+        },
+        // 显示品牌编辑
+        tagsClick(index) {
+            console.log('显示品牌编辑',index)
+            this.addcBrand = {
+                id: this.cBrandTags[index].id,
+                brand: this.cBrandTags[index].brandName,
+                industryList: this.cBrandTags[index].industryList.concat(),
+            }
+            this.editcBrandDialogVisible = true
+        },
+        // 添加品牌时选择的行业
+        changeIndustry(val) {
+            console.log('添加品牌时选择的行业', val, this.addcBrand)
+        },
+        // 确定添加/编辑品牌
+        addcBrandConfige(val) {
+            if (!this.addcBrand.brand) {
+                sessFun.messageFun('warning', '请输入品牌名称!')
+                return
+            }
+            if (this.addcBrand.industryList.length < 2) {
+                sessFun.messageFun('warning', '请选择所属行业!')
+                return
+            }
+            // 根据id去获取名称以显示
+            let industryNames = this.getIndustryNamebyId(this.addcBrand.industryList)
+            if (val === 'edit') {
+                // 编辑品牌
+                console.log('编辑------',this.addcBrand)
+                for (let key of this.cBrandTags) {
+                    if (key.id === this.addcBrand.id) {
+                        console.log('key.id',key.id)
+                        key.brandName = this.addcBrand.brand
+                        key.industryList = this.addcBrand.industryList.concat()
+                        key.industryNames = industryNames.join('/')
+                        break
+                    }
+                }
+                this.editcBrandDialogVisible = false
+            } else {
+                // 添加品牌
+                console.log('添加------',this.addcBrand)
+                this.cBrandTags.push({
+                    id: this.addcBrandIndex,
+                    brandName: this.addcBrand.brand,
+                    industryList: this.addcBrand.industryList.concat(),
+                    industryNames: industryNames.join('/')
+                })
+                this.addcBrandDialogVisible = false
+                this.addcBrandIndex++
+            }
+            // 手动校验 公司品牌
+            this.$refs.companyForm.validateField('cBrand', (valid) => {})
+            console.log('this.cBrandTags', this.cBrandTags)
+        },
+        // 新增/编辑品牌
+        addBrand(cID) {
+            for (let key of this.cBrandTags) {
+                if (key.bID) {
+                    let params = {
+                        uid: this.sessionData.uID,
+                        token: this.sessionData.token,
+                        bTitle: key.brandName,
+                        bId: key.bID,
+                        instdustryId: key.industryList[1],
+                    };
+                    console.log('编辑品牌参数',params)
+                    api.getApi(this.apiVar.Advertisement + "/UpdateBrand", params).then(res => {
+                        console.log(res.data);
+                    });
+                } else {
+                    let AbInfo = {
+                        uid: this.sessionData.uID,
+                        token: this.sessionData.token,
+                        bt: key.brandName,
+                        cid: cID,
+                        instdustryId: key.industryList[1],
+                    };
+                    console.log('新增品牌AbInfo', AbInfo)
+                    api.getApi(this.apiVar.Advertisement + "/AddBrand", AbInfo).then(res => {
+                        console.log(res.data);
+                    });
+                }
+            }
+            // 存在删除公司原品牌
+            if (this.delcBrand.length) {
+                this.delcBrandFun()
+            }
+            this.cBrandTags = []
+        },
+        // 存在删除公司原品牌
+        delcBrandFun(){
+            for (let key of this.delcBrand) {
+                let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    bt: brand,
-                    cid: cID
+                    bId: key.bID,
+                    cId: key.cID,
                 };
-                api.getApi(this.apiVar.Advertisement+"/AddBrand", AbInfo).then(res => {
-                    console.log(res.data);
-                    this.oldBrandTags.push(res.data);
+                console.log('删除品牌params', params)
+                api.getApi(this.apiVar.Advertisement + "/DelBrand", params).then(res => {
+                    console.log('删除----', res.data);
                 });
             }
-            this.companyTags = [];
+        },
+        // 根据id获取行业的名称
+        getIndustryNamebyId(idList) {
+            let industryNames = []
+            for (let key of this.bussiness) {
+                if (key.iID == idList[0]) {
+                    industryNames.push(key.label)
+                    for (let cKey of key.children) {
+                        if (cKey.iID == idList[1]) {
+                            industryNames.push(cKey.label)
+                            break
+                        }
+                    }
+                    break
+                }
+            }
+            return industryNames
         },
         // 更新公司信息
         updateCompany() {
@@ -675,10 +852,10 @@ export default {
                 cremark: cForm.cRemark ? cForm.cRemark : ""
             };
             console.log("companyInfo-------", companyInfo);
-            if(this.isChangeCom()){
+            if (this.isChangeCom()) {
                 // 修改公司信息
                 api
-                    .postApi(this.apiVar.Advertisement+"/SetMyCom", companyInfo)
+                    .postApi(this.apiVar.Advertisement + "/SetMyCom", companyInfo)
                     .then(res => {
                         let mes = res.data;
                         if (mes.SysCode == 300200) {
@@ -687,20 +864,20 @@ export default {
                             let puid = this.sessionData.uID;
                             let cid = this.companyForm.cID;
                             this.regUser(puid, cid, mes.SysCode);
-                        } else if(mes.SysCode == 100403) {
+                        } else if (mes.SysCode == 100403) {
                             // Message.warning(mes.MSG);
                             // 注册用户
                             let puid = this.sessionData.uID;
                             let cid = this.companyForm.cID;
                             this.regUser(puid, cid, mes.SysCode);
-                        }else{
+                        } else {
                             Message.warning(mes.MSG);
                         }
                     })
                     .catch(res => {
                         console.log(res);
                     });
-            }else{
+            } else {
                 // 注册客户
                 let puid = this.sessionData.uID;
                 let cid = this.companyForm.cID;
@@ -717,36 +894,30 @@ export default {
             // caddr       String          公司通讯地址
             // cremark     String          公司备注信息
             let cForm = this.companyForm;
+            let brands = []
+            for(let key of this.cBrandTags){
+                brands.push(key.brandName)
+            }
             let companyInfo = {
                 uid: this.sessionData.uID,
                 token: this.sessionData.token,
                 cname: cForm.cName,
                 iid: cForm.industryIdArr[1],
                 rid: cForm.cityArr[1],
-                cbrand: this.companyTags.join(","),
+                cbrand: brands.join(","),
                 caddr: cForm.cAddress,
                 cremark: cForm.cRemark
             };
-            // let companyInfo ={};
-            // companyInfo.uid = JSON.parse(sessionStorage.getItem('session_data')).uID;
-            // companyInfo.cname = this.companyForm.cName;
-            // companyInfo.iid = this.companyForm.industryIdArr[1];
-            // companyInfo.rid = this.companyForm.cityArr[1];
-            // companyInfo.cbrand = this.companyTags.join(',');
-            // companyInfo.caddr = this.companyForm.cAddress;
-            // companyInfo.cremark = this.companyForm.cRemark;
-            console.log(companyInfo);
+            console.log('注册公司参数',companyInfo);
             // 注册公司
-            api
-                .getApi(this.apiVar.Advertisement+"/AddCom", companyInfo)
+            api.getApi(this.apiVar.Advertisement+"/AddCom", companyInfo)
                 .then(res => {
                     console.log(res.data);
-
                     let userMsg = res.data;
                     if ((!userMsg.SysCode) && (res.data)) {
-                        // 新增品牌
-                        if (this.companyTags.length) {
-                            this.addBrand(this.companyTags, res.data.cID);
+                        // 新增品牌 cBrandTags
+                        if (this.cBrandTags.length) {
+                            this.addBrand(res.data.cID);
                         }
                         // 注册客户
                         let puid = this.sessionData.uID;
@@ -845,45 +1016,18 @@ export default {
                     this.$router.push("./clientList");
                 })
                 .catch(res => {
-                    this.companyTags = [];
-                    this.oldBrandTags = [];
+                    this.cBrandTags = []
                 });
         },
         //重置表单
         resetForm() {
             this.$refs["companyForm"].resetFields();
             this.$refs["clientForm"].resetFields();
-            this.companyTags = [];
+            this.cBrandTags = [];
         },
         // 取消返回
         goBack() {
             this.$router.push("./clientList");
-        },
-        //删除/显示/添加tags
-        handleClose(tag) {
-            this.companyTags.splice(this.companyTags.indexOf(tag), 1);
-        },
-        showInput() {
-            this.inputVisible = true;
-            this.$nextTick(() => {
-                this.$refs.saveTagInput.$refs.input.focus();
-            });
-        },
-        handleInputConfirm() {
-            let inputValue = this.inputValue;
-            if (inputValue) {
-                let temp = [];
-                for (let item of this.oldBrandTags) {
-                    temp.push(item.bTitle);
-                }
-                let comBol = this.companyTags.includes(inputValue);
-                let tempBol = temp.includes(inputValue);
-                if (!comBol && !tempBol) {
-                    this.companyTags.push(inputValue);
-                }
-            }
-            this.inputVisible = false;
-            this.inputValue = "";
         },
         loginTimeout(){
             Message.warning("登录超时,请重新登录");
@@ -894,130 +1038,138 @@ export default {
 </script>
 
 <style scoped>
-.content_top_wrap,
-.content_bottom_wrap {
-    background: #ffffff;
-    padding-top: 3px;
-}
+    .content_top_wrap,
+    .content_bottom_wrap {
+        background: #ffffff;
+        padding-top: 3px;
+    }
 
-.content_top_wrap .content_top_head {
-    width: 100%;
-    height: 35px;
-    border-bottom: 1px solid #dedede;
-}
+    .content_top_wrap .content_top_head {
+        width: 100%;
+        height: 35px;
+        border-bottom: 1px solid #dedede;
+    }
 
-.content_bottom_wrap .content_bottom_head {
-    width: 100%;
-    height: 35px;
-    border-bottom: 1px solid #dedede;
-}
+    .content_bottom_wrap .content_bottom_head {
+        width: 100%;
+        height: 35px;
+        border-bottom: 1px solid #dedede;
+    }
 
-.content_top_wrap .content_top_head h2,
-.content_bottom_wrap .content_bottom_head h2 {
-    font-size: 16px;
-    color: #2c313c;
-    font-weight: bold;
-    padding-left: 16px;
-    height: 24px;
-    margin-top: 8px;
-}
+    .content_top_wrap .content_top_head h2,
+    .content_bottom_wrap .content_bottom_head h2 {
+        font-size: 16px;
+        color: #2c313c;
+        font-weight: bold;
+        padding-left: 16px;
+        height: 24px;
+        margin-top: 8px;
+    }
 
-.content_top_form_wrap,
-.content_bottom_form_wrap {
-    padding: 24px 32px;
-}
+    .content_top_form_wrap,
+    .content_bottom_form_wrap {
+        padding: 24px 32px;
+    }
 
-/*按钮*/
-.content_bottom_btn {
-    width: 100%;
-    text-align: center;
-    margin-bottom: 20px;
-    margin-top: 20px;
-}
+    /*按钮*/
+    .content_bottom_btn {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 20px;
+        margin-top: 20px;
+    }
 
-/*tags样式*/
-.el-tag {
-    margin-right: 5px;
-}
+    /* 新增品牌 */
+    .button_new_tag{
+        height: 26px;
+        width: 58px;
+        line-height: 24px;
+        border:1px dashed rgba(217,217,217,1);
+        color:rgba(102,102,102,1);
+    }
 
-.button-new-tag {
-    margin-left: 10px;
-    height: 32px;
-    line-height: 30px;
-    padding-top: 0;
-    padding-bottom: 0;
-}
+    /* 弹出框 */
+    /deep/ .el-dialog__body{
+        padding: 16px 24px;
+    }
 
-.input-new-tag {
-    width: 90px !important;
-    margin-left: 10px !important;
-    vertical-align: bottom;
-}
+    .li_box{
+        margin-bottom: 16px;
+    }
 
-/deep/ .input-new-tag .el-input__suffix {
-    top: -4px;
-    right: 14px;
-}
+    .li_box /deep/ .el-input.el-input--small,
+    .li_box /deep/ .el-cascader{
+        width: 330px;
+    }
 
-/deep/ .button-new-tag {
-    margin-left: 0;
-    position: relative;
-    top: -1px;
-}
+    /*tags样式*/
+    .cBrand_box {
+        min-height: 65px;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        padding: 8px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
 
-/deep/ .tags .el-form-item__error {
-    display: none;
-}
+    .cBrand_is_empty{
+        border-color: #f56c6c;
+    }
 
-/deep/ .tags .el-input {
-    width: 90px !important;
-    height: 34px;
-}
+    .cBrand_box /deep/ .el-tag {
+        color:rgba(0,0,0,0.65);
+        background:rgba(245,245,245,1);
+        border-radius:2px;
+        border:1px solid rgba(217,217,217,1);
+        margin-right: 6px;
+        margin-bottom: 8px;
+    }
+    .cBrand_box .el-tag /deep/ .el-icon-close{
+        color:rgba(0,0,0,0.65);
+    }
 
-/deep/ .el-tag {
-    height: 34px;
-    line-height: 32px;
-}
+    /deep/ .el-form.demo-ruleForm {
+        display: flex;
+        flex-wrap: wrap;
+    }
 
-/deep/ .button-new-tag {
-    height: 34px;
-    line-height: 32px;
-}
+    .form_row,
+    /deep/ .el-textarea,
+    /deep/ .el-textarea__inner,
+    /deep/ .el-autocomplete,
+    /deep/ .el-cascader,
+    /deep/ .el-input__inner,
+    /deep/ .el-select,
+    /deep/ .el-input,
+    /deep/ .form_row .el-form-item {
+        width: 100%;
+        resize: none;
+    }
 
-/deep/ .el-form.demo-ruleForm {
-    display: flex;
-    flex-wrap: wrap;
-}
+    /*样式改版*/
+    /deep/ .el-scrollbar__wrap {
+        display: none;
+    }
 
-.form_row,
-/deep/.el-textarea, 
-/deep/.el-textarea__inner,
-/deep/.el-autocomplete,
-/deep/.el-cascader,
-/deep/ .el-input__inner,
-/deep/ .el-select,
-/deep/.el-input,
-/deep/ .form_row .el-form-item{
-    width: 100%;
-    resize: none;
-}
-/*样式改版*/
-/deep/ .el-scrollbar__wrap{
-    display: none;
-}
-/deep/ .el-form-item__label{
-    float: none;
-    line-height: 32px;
-    color: rgba(0,0,0,0.85);
-}
-/deep/ .el-form-item__content{
-    margin-left: 0 !important;
-}
-/deep/ .el-input__inner{
-    height: 32px;
-    text-align: left;
-    line-height: 35px;
-    padding-right: 20px;
-    text-align: left;
-}
+    /deep/ .el-form-item__label {
+        float: none;
+        line-height: 32px;
+        color: rgba(0, 0, 0, 0.85);
+    }
+
+    /deep/ .el-form-item__content {
+        margin-left: 0 !important;
+        line-height: unset;
+    }
+
+    /deep/ .el-input__inner {
+        height: 32px;
+        text-align: left;
+        line-height: 35px;
+        padding-right: 20px;
+        text-align: left;
+    }
+
+    /deep/ .el-textarea__inner{
+        min-height: 83px !important;
+    }
 </style>

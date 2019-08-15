@@ -1889,12 +1889,12 @@
                     iend: this.TOrderDate[1],
                     asrIDs: this.returnAsrID()
                 }
-                api.getApi(this.apiVar.Count + '/GetIOrder', params).then(res =>{
+                api.getApi(this.apiVar.Count + '/GetIndustryOrder', params).then(res =>{
                     console.log(params,'行业订单总量趋势 - 接口',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         sessFun.loginTimeout()
-                    } else {
-                        let dataArr = res.data
+                    } else if(res.data.SysCode === 200200){
+                        let dataArr = res.data.data
                         if (dataArr.length > 0) {
                             let orderPrice = {name: dataArr[0].iName,iid: val, type: 'line', data: []}
                             let orderNumber = {name: dataArr[0].iName,iid: val, type: 'line', data: []}
@@ -1920,8 +1920,10 @@
                             this.totalOrderDate = orderMonths
                             this.busOrderLine()
                         } else {
-                            sessFun.messageFun('warning','行业订单总量趋势,在该时段暂无数据')
+                            sessFun.messageFun('warning', '行业订单总量趋势,在该时段暂无数据')
                         }
+                    }else{
+                        sessFun.messageFun('warning', '行业订单总量趋势,在该时段暂无数据')
                     }
                 })
             },

@@ -408,8 +408,7 @@
                     return info;
                 }
             },
-            // 获取上/下刊图片数据
-            getUpImgInfo(params) {
+            getImgList(params){
                 this.firstBodyLoading = true
                 for (let i in params) {
                     console.log(params[i])
@@ -417,44 +416,102 @@
                         delete params[i]
                     }
                 }
-                // params.selectType = 'res'
-                api.getApi(this.apiVar.Advertisement + "/GetImgList", params)
-                    .then(res => {
-                        if (!res.data.SysCode) {
-                            console.log(res.data);
-                            let dataInfo = res.data;
-                            this.galleryPageData.totalpageNum = dataInfo.total;
-                            if (dataInfo.total) {
-                                for (let data of dataInfo.list) {
-                                    if ((typeof data.pRemarks) == 'string') {
-                                        data.pRemarks = JSON.parse(data.pRemarks);
-                                    }
-                                }
-                                this.pageUpImgArr = dataInfo.list;
-                                console.log('pageup----', this.pageUpImgArr);
-                                if (this.pageUpImgArr.length) {
-                                    this.showPic = 3;
-                                } else {
-                                    this.showPic = 1;
-                                    Message.warning('暂无数据');
-                                }
-                            } else {
-                                this.showPic = 1;
-                                Message.warning('暂无数据');
-                            }
-                        } else if (res.data.SysCode == 100302) {
-                            this.loginTimeout();
-                        } else {
-                            this.pageUpImgArr = [];
-                            this.showPic = 1;
-                            Message.warning(res.data.MSG);
+                api.getApi(this.apiVar.Advertisement + "/GetImgListV2", params).then(res=>{
+                    console.log('案例库res',res)
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        this.loginTimeout()
+                    } else if (res.data.SysCode === 200200) {
+                        let resData = res.data.data
+                        let imgList = []
+                        for (let key of resData) {
+                            imgList.push({
+                                pUrl: key.picUrl,
+                                // id: key.id,
+                                pID: key.id,
+                                userId: key.userId,
+                                pUTime: key.publishDate,
+                                isCollection: key.isCollection,
+                                lId: key.lId,
+                                pRemarks: {
+                                    plan: key.orderName,
+                                    res: key.resourceName,
+                                    media: key.mediaName,
+                                    city: key.cityName,
+                                    asLab: key.asLable,
+                                    brand: key.brandName || '--',
+                                    username: key.userName,
+                                    assettag: key.assetNumber || '--',
+                                    address: key.address || '--',
+                                },
+                            })
                         }
-                        this.firstBodyLoading = false
-                        this.isSearch = true;
-                    }).catch(res => {
-                        console.log(res);
-                        this.isSearch = true;
-                    });
+                        if (imgList.length > 0) {
+                            this.showPic = 3
+                        } else {
+                            this.showPic = 1
+                        }
+                        this.galleryPageData.totalpageNum = res.data.total
+                        this.pageUpImgArr = imgList
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                        this.showPic = 1
+                    }
+                    this.firstBodyLoading = false
+                    this.isSearch = true;
+                }).catch(err=>{
+                    console.log('err',err)
+                    this.isSearch = true;
+                })
+            },
+            // 获取上/下刊图片数据
+            getUpImgInfo(params) {
+                this.getImgList(params)
+                // this.firstBodyLoading = true
+                // for (let i in params) {
+                //     console.log(params[i])
+                //     if (!params[i]) {
+                //         delete params[i]
+                //     }
+                // }
+                // // params.selectType = 'res'
+                // api.getApi(this.apiVar.Advertisement + "/GetImgList", params)
+                //     .then(res => {
+                //         console.log('GetImgList',res)
+                //         if (!res.data.SysCode) {
+                //             console.log(res.data);
+                //             let dataInfo = res.data;
+                //             this.galleryPageData.totalpageNum = dataInfo.total;
+                //             if (dataInfo.total) {
+                //                 for (let data of dataInfo.list) {
+                //                     if ((typeof data.pRemarks) == 'string') {
+                //                         data.pRemarks = JSON.parse(data.pRemarks);
+                //                     }
+                //                 }
+                //                 this.pageUpImgArr = dataInfo.list;
+                //                 console.log('pageup----', this.pageUpImgArr);
+                //                 if (this.pageUpImgArr.length) {
+                //                     this.showPic = 3;
+                //                 } else {
+                //                     this.showPic = 1;
+                //                     Message.warning('暂无数据');
+                //                 }
+                //             } else {
+                //                 this.showPic = 1;
+                //                 Message.warning('暂无数据');
+                //             }
+                //         } else if (res.data.SysCode == 100302) {
+                //             this.loginTimeout();
+                //         } else {
+                //             this.pageUpImgArr = [];
+                //             this.showPic = 1;
+                //             Message.warning(res.data.MSG);
+                //         }
+                //         this.firstBodyLoading = false
+                //         this.isSearch = true;
+                //     }).catch(res => {
+                //         console.log(res);
+                //         this.isSearch = true;
+                //     });
             },
             // 获取收藏夹图片列表
             getCollectImgList(params) {

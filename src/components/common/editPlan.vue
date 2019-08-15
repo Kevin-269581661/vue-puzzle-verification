@@ -1450,24 +1450,24 @@
             },
             // 确认上传
             submitUpload(){
-                if(this.fileData.length){
+                if (this.fileData.length) {
                     let ridsArr = [];
-                    for(let data of this.city){
+                    for (let data of this.city) {
                         ridsArr.push(data.rid);
                     }
-                    let rids =  ridsArr.join(',');
+                    let rids = ridsArr.join(',');
                     let sess = this.sessionData;
                     let info = `?uid=${sess.uID}&token=${
-                    sess.token}&suId=${this.BDData.uid}&rids=${rids}&excludedApId=${this.activeAdPlan?this.activeAdPlan:''}`;
+                        sess.token}&suId=${this.BDData.uid}&rids=${rids}&excludedApId=${this.activeAdPlan ? this.activeAdPlan : ''}`;
                     let formData = new FormData();
                     formData.append('file', this.fileData[0]);
-                    if(this.importType == '2'){
+                    if (this.importType == '2') {
                         this.adsImport(formData, info);
-                    }else{
+                    } else {
                         this.resImport(formData, info);
                     }
-                }else{
-                    this.messageFun('warning', '请先上传文件');
+                } else {
+                    sessFun.messageFun('warning', '请先上传文件');
                 }
             },
             // 点位导入
@@ -1490,9 +1490,9 @@
                             this.showUploadFail = true;
                         }
                     }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
+                        sessFun.loginTimeout();
                     }else{
-                        this.messageFun('warning',res.data.MSG)
+                        sessFun.messageFun('warning',res.data.MSG)
                     }
                 }).catch(res =>{
                     console.log(res);
@@ -1513,9 +1513,9 @@
                         this.importInfoData = importInfo;
                         this.showUploadFail = true;
                     }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
+                        sessFun.loginTimeout();
                     }else{
-                        this.messageFun('warning',res.data.MSG)
+                        sessFun.messageFun('warning',res.data.MSG)
                     }
                     Loading.close();
                 }).catch(res =>{
@@ -1614,7 +1614,7 @@
                     }
                 }
                 console.log('this.shopingList----', this.shopingList);
-                this.messageFun('success','成功导入'+arr.length+'条数据')
+                sessFun.messageFun('success','成功导入'+arr.length+'条数据')
                 this.isImport = false;
                 this.computeMedia_AD();
                 this.judgeByselect();
@@ -1764,9 +1764,9 @@
                                 };
                             });
                         }else if(res.data.SysCode == 100302){
-                            this.loginTimeout();
+                            sessFun.loginTimeout();
                         }else{
-                            this.messageFun('warning',res.data.MSG)
+                            sessFun.messageFun('warning',res.data.MSG)
                         }
                     }).catch(err =>{
                         console.log(err);
@@ -1806,9 +1806,9 @@
                             }
                             this.judgeByselect();
                         }else if(res.data.SysCode == 100302){
-                            this.loginTimeout();
+                            sessFun.loginTimeout();
                         }else{
-                            this.messageFun('warning',res.data.MSG)
+                            sessFun.messageFun('warning',res.data.MSG)
                         }
                         this.isCopy = false;
                     }).catch(err =>{
@@ -1997,9 +1997,9 @@
                         }
                         this.rejectAdPlan = tempList
                     } else if (res.data.SysCode == 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else {
-                        this.messageFun('warning',res.data.MSG)
+                        sessFun.messageFun('warning',res.data.MSG)
                     }
                 })
             },
@@ -2015,7 +2015,7 @@
                 api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('广告限制列表', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else if(res.data.SysCode === 200200 ){
                         let limit = res.data.data
                         let limitArr = []
@@ -2051,7 +2051,7 @@
                 api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('选点列表：', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()       // 登录超时
+                        sessFun.loginTimeout()       // 登录超时
                     } else if (res.data.SysCode === 200200) {
                         if(res.data.data.list !== undefined && res.data.data.list.length > 0){
                             let ADList = res.data.data.list
@@ -2066,7 +2066,7 @@
                         }
                         this.loading = false
                     } else {
-                        this.messageFun('warning',res.data.MSG)
+                        sessFun.messageFun('warning',res.data.MSG)
                         this.loading = false
                     }
                     this.searchBtnAbled = false
@@ -2199,7 +2199,7 @@
                         this.getAdList()
                         this.beforeDate = this.dateInput
                     }else if(!this.dateInput){
-                        this.messageFun('warning','搜索时间不能为空!')
+                        sessFun.messageFun('warning','搜索时间不能为空!')
                         this.searchBtnAbled = false
                     }else{
                         this.searchBtnAbled = false
@@ -2272,9 +2272,9 @@
                     } else {
                         tempwindow.close()
                         if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                            this.loginTimeout()       // 登陆超时
+                            sessFun.loginTimeout()       // 登陆超时
                         } else {
-                            this.messageFun('warning',res.data.MSG + ',请尝试重新点击')
+                            sessFun.messageFun('warning',res.data.MSG + ',请尝试重新点击')
                         }
                     }
                 }).catch(err => {
@@ -2296,13 +2296,13 @@
                 if(IsBoolean){
                     console.log('一键选点',this.oneKeyPointData)
                     if(Number(this.oneKeyPointData.TotalPoint) < Number(this.oneKeyPointData.pointNumByRes)){
-                        this.messageFun('warning','每小区选择的个数不能大于点位总量')
+                        sessFun.messageFun('warning','每小区选择的个数不能大于点位总量')
                     }else{
                         this.oneKeySelectPoint()
                     }
 
                 }else{
-                    this.messageFun('warning','信息填写有误')
+                    sessFun.messageFun('warning','信息填写有误')
                 }
 
             },
@@ -2415,20 +2415,20 @@
                         this.computeMedia_AD()
                         this.judgeByselect()
                         if(this.oneKeyPointData.TotalPoint == res.data.length){
-                            this.messageFun('success','成功选择了'+ res.data.length +'面')
+                            sessFun.messageFun('success','成功选择了'+ res.data.length +'面')
                         }else{
-                            this.messageFun('warning','满足条件的点位不足'+this.oneKeyPointData.TotalPoint+'面,成功选择了'+ res.data.length +'面')
+                            sessFun.messageFun('warning','满足条件的点位不足'+this.oneKeyPointData.TotalPoint+'面,成功选择了'+ res.data.length +'面')
                         }
 
                     }else{
-                        this.messageFun('warning','选择失败')
+                        sessFun.messageFun('warning','选择失败')
                     }
                     oneKeyPointLoading.close()
                 })
                 let timer = setTimeout(()=>{
                     if(!IsXhr){
                         // console.log('取消一键选点')
-                        this.messageFun('warning','点位选择异常')
+                        sessFun.messageFun('warning','点位选择异常')
                         oneKeyPointLoading.close()
                     }else{
                         // console.log('一键选点已成功')
@@ -2637,7 +2637,7 @@
                     this.setPageNoAndTableData()
                     this.getAdList()
                 }else{
-                    this.messageFun('warning','被占查询状态下，无效切换!')
+                    sessFun.messageFun('warning','被占查询状态下，无效切换!')
                 }
             },
             // 媒体等级过滤
@@ -2670,7 +2670,7 @@
             // 住户数量过滤
             tableHeaderFilter_h() {
                 if (this.houseNum[0] == '' || this.houseNum[1] == '') {
-                    this.messageFun('warning','数据区间填写有误!')
+                    sessFun.messageFun('warning','数据区间填写有误!')
                 } else {
                     let tagName = '住户数量:' + this.houseNum[0] + "-" + this.houseNum[1]
                     this.isHaveThisTag('houseNum', tagName)
@@ -2684,7 +2684,7 @@
             // 楼盘价格过滤
             tableHeaderFilter_p() {
                 if (this.buildPrice[0] == '' || this.buildPrice[1] == '') {
-                    this.messageFun('warning','数据区间填写有误!')
+                    sessFun.messageFun('warning','数据区间填写有误!')
                 } else {
                     let tagName = '楼盘价格:' + this.buildPrice[0] + "-" + this.buildPrice[1]
                     this.isHaveThisTag('buildPrice', tagName)
@@ -2698,7 +2698,7 @@
             // 年份过滤
             tableHeaderFilterByLiveYear() {
                 if (this.liveYear[0] == '' || this.liveYear[1] == '') {
-                    this.messageFun('warning','数据区间填写有误!')
+                    sessFun.messageFun('warning','数据区间填写有误!')
                 } else {
                     let tagName = '入住年份:' + this.liveYear[0] + "-" + this.liveYear[1]
                     this.isHaveThisTag('liveYear', tagName)
@@ -2724,7 +2724,7 @@
             //人流量过滤
             tableHeaderFilterByPeopleFlow() {
                 if (this.peopleFlow[0] == '' || this.peopleFlow[1] == '') {
-                    this.messageFun('warning','数据区间填写有误!')
+                    sessFun.messageFun('warning','数据区间填写有误!')
                 } else {
                     let tagName = '人流量:' + this.peopleFlow[0] + "-" + this.peopleFlow[1]
                     this.isHaveThisTag('peopleFlow', tagName)
@@ -2738,7 +2738,7 @@
             // 车流量过滤
             tableHeaderFilterByCarFlow() {
                 if (this.carFlow[0] == '' || this.carFlow[1] == '') {
-                    this.messageFun('warning','数据区间填写有误!')
+                    sessFun.messageFun('warning','数据区间填写有误!')
                 } else {
                     let tagName = '车流量:' + this.carFlow[0] + "-" + this.carFlow[1]
                     this.isHaveThisTag('carFlow', tagName)
@@ -2752,7 +2752,7 @@
             // 车位数过滤
             tableHeaderFilterByParkSpaceNum(){
                 if(this.parkSpaceNum[0] == '' || this.parkSpaceNum[1]){
-                    this.messageFun('warning','数据区间填写有误!')
+                    sessFun.messageFun('warning','数据区间填写有误!')
                 }else{
                     let tagName = '车位数:' + this.parkSpaceNum[0] + "-" + this.parkSpaceNum[1]
                     this.isHaveThisTag('parkSpaceNum',tagName)
@@ -3130,7 +3130,7 @@
                     if (this.shopingList.length !== 0) {
                         this.getFA_remark()         // 获取原投放城市详情的备注信息，再去this.creatTab()、 this.getShopingCityName() 、this.computeCityDiffAsIdNum() 、this.quotationFun()
                     } else {
-                        this.messageFun('warning','请选择点位')
+                        sessFun.messageFun('warning','请选择点位')
                     }
                 } else if (this.active === 2) {
                     this.isCityPrice = false
@@ -3147,7 +3147,7 @@
                         })
                         this.UpdateAdPlanFun() // 创建方案
                     } else {
-                        this.messageFun('warning', '单城市总价格大于系统支持的最大价格（2000万）')
+                        sessFun.messageFun('warning', '单城市总价格大于系统支持的最大价格（2000万）')
                     }
                 }
                 if (this.active > 3) {
@@ -3280,19 +3280,19 @@
                     console.log('编辑方案', res)
                     this.ADloading.close()
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         this.active = 3
                         if (this.workInSync) {
                             this.CreateShareADSFun()
                         }
                         if (this.apMinTime <= this.dateTime) {
-                            this.messageFun('warning', '该方案的投放期已经开始，建议立即发布该方案！')
+                            sessFun.messageFun('warning', '该方案的投放期已经开始，建议立即发布该方案！')
                         } else {
-                            this.messageFun('success', '方案编辑成功')
+                            sessFun.messageFun('success', '方案编辑成功')
                         }
                     } else {
-                        this.messageFun('warning', '提交选点失败')
+                        sessFun.messageFun('warning', '提交选点失败')
                     }
                 })
             },
@@ -3339,7 +3339,7 @@
                 oInput.select();                // 选择对象
                 document.execCommand("Copy"); // 执行浏览器复制命令
                 oInput.style.display = 'none';
-                this.messageFun('success','复制成功')
+                sessFun.messageFun('success','复制成功')
             },
             // step3 获取方案的各投放城市的原备注信息
             getFA_remark() {
@@ -3353,7 +3353,7 @@
                 api.getApi(this.apiVar.Advertisement + '/GetAPD', params).then(res => {
                     console.log('获取pdid', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else {
                         this.active++
                         let APDData = res.data
@@ -3617,7 +3617,7 @@
                     }
                 }else{
                     let active = this.activeName;
-                    this.messageFun('warning', `没有${active=='1'?'广告门':'道闸'}数据`);
+                    sessFun.messageFun('warning', `没有${active=='1'?'广告门':'道闸'}数据`);
                 }
             },
             // 同资源保留个数
@@ -3628,15 +3628,15 @@
                 if(resultArr.length){
                     this.getResultData(resultArr);
                     if(len != resultArr.length){
-                        this.messageFun('success',`成功保留同资源${num}个点位！`);
+                        sessFun.messageFun('success',`成功保留同资源${num}个点位！`);
                     }else{
-                        this.messageFun('warning', '暂无同资源可移除的点位！')
+                        sessFun.messageFun('warning', '暂无同资源可移除的点位！')
                     }
                     this.computeMedia_AD();
                     this.resetPlanList();
                     this.judgeByselect();
                 }else{
-                    this.messageFun('warning', '暂无同资源可移除的点位！')
+                    sessFun.messageFun('warning', '暂无同资源可移除的点位！')
                 }
             },
             // 随机保留num个数点位
@@ -3702,15 +3702,15 @@
                     resultArr = this.isEnoughMedia(type, resultArr);
                     this.getResultData(resultArr);
                     if(len != resultArr.length){
-                        this.messageFun('success',`成功移除同门${type}面的点位！`)
+                        sessFun.messageFun('success',`成功移除同门${type}面的点位！`)
                     }else{
-                        this.messageFun('warning', '暂无可移除点位')
+                        sessFun.messageFun('warning', '暂无可移除点位')
                     }
                     this.computeMedia_AD();
                     this.resetPlanList();
                     this.judgeByselect();
                 } else {
-                    this.messageFun('warning', '暂无可移除点位！')
+                    sessFun.messageFun('warning', '暂无可移除点位！')
                 }
             },
             // 同一媒体是否有a/b面
@@ -3973,7 +3973,7 @@
             getShareADList() {
                 if (this.shareADSData.aiCode !== undefined && this.shareADSData.aiCode !== null) {
                     let time = timeFormat.toDateTime(this.shareADSData.aisTime, ".") || ''
-                    this.messageFun('warning','未更新选点，上次提交时间为' + time)
+                    sessFun.messageFun('warning','未更新选点，上次提交时间为' + time)
                 } else {
                     let ShareLoading = this.$loading({
                         lock: true,
@@ -4000,13 +4000,13 @@
                                     this.getShowList();
                                 } else {
                                     // 未更新选点
-                                    this.messageFun('warning','暂无数据可获取')
+                                    sessFun.messageFun('warning','暂无数据可获取')
                                 }
                                 ShareLoading.close()
                             })
                         } else {
                             ShareLoading.close()
-                            this.messageFun('warning','暂无数据可获取')
+                            sessFun.messageFun('warning','暂无数据可获取')
                         }
                     })
                 }
@@ -4042,7 +4042,7 @@
                     }
                 }
                 let time = timeFormat.toDateTime(this.shareADSData.aisTime, "-") //this.shareADSData.aisTime
-                this.messageFun('success','更新选点共' + shareNum + '面(带小红点),上次提交时间:' + time)
+                sessFun.messageFun('success','更新选点共' + shareNum + '面(带小红点),上次提交时间:' + time)
             },
             // 购物车-获取地图选择的点位列表
             getMapADList() {
@@ -4061,14 +4061,14 @@
                         if(this.mapADList.length > 0){
                             this.setShopDataByMapAD()
                         } else {
-                            this.messageFun('warning','数据为空')
+                            sessFun.messageFun('warning','数据为空')
                             this.getMapLoading.close()
                         }
                     } else if(res.data.code == '100302' || res.data.MSG === "登陆超时"){
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else {
                         this.getMapLoading.close()
-                        this.messageFun('warning','数据获取异常')
+                        sessFun.messageFun('warning','数据获取异常')
                     }
                 })
             },
@@ -4164,7 +4164,7 @@
                     this.shopingList = tempArr
                 }
                 this.getMapLoading.close()
-                this.messageFun('success','成功获取到' + tempArr.length + '条数据')
+                sessFun.messageFun('success','成功获取到' + tempArr.length + '条数据')
 
                 this.typeShopList = this.getTypeList();
                 this.getShowList();
@@ -4248,7 +4248,7 @@
                     }
                 }
                 if (num > 0) {
-                    this.messageFun('success','成功移除' + num + '条数据')
+                    sessFun.messageFun('success','成功移除' + num + '条数据')
 
                     this.getResultData(arr);
 
@@ -4256,7 +4256,7 @@
                     this.resetPlanList()
                     this.judgeByselect()
                 } else {
-                    this.messageFun('warning','暂无同行回避点位!')
+                    sessFun.messageFun('warning','暂无同行回避点位!')
                 }
             },
             // 更换排期
@@ -4343,7 +4343,7 @@
                     }
                 }
                 if(arr.length <= 0){
-                    this.messageFun('warning','请选择新的排期!')
+                    sessFun.messageFun('warning','请选择新的排期!')
                     return
                 }
                 let params = {
@@ -4353,14 +4353,14 @@
                     this.sessionData.uID + '&token=' + this.sessionData.token, params).then(res=>{
                     console.log('提交点位新排期', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else {
                         if (res.data === '' || res.data === null) {
-                            this.messageFun('warning','更换排期失败')
+                            sessFun.messageFun('warning','更换排期失败')
                         } else {
                             let adsData = res.data
                             if(adsData.errorList.length <= 0 && adsData.successList.length > 0){
-                                this.messageFun('success','更换排期成功')
+                                sessFun.messageFun('success','更换排期成功')
                                 this.setSuccessScheduled(adsData.successList)
                             }else{
                                 if(adsData.successList.length > 0){
@@ -4555,14 +4555,14 @@
                         this.getResultData(arr);
                         this.allCheckboxUpdata()
                         this.computeMedia_AD()
-                        this.messageFun('success','删除成功')
+                        sessFun.messageFun('success','删除成功')
                         // this.ADLockNum = 0
                         this.resetPlanList()      // 重置planList的勾选
                     }).catch(() => {
-                        this.messageFun('info','已取消删除')
+                        sessFun.messageFun('info','已取消删除')
                     });
                 }else{
-                    this.messageFun('warning','无数据可删除')
+                    sessFun.messageFun('warning','无数据可删除')
                 }
 
             },
@@ -4589,14 +4589,14 @@
                     this.getShowList();
 
                     if (haveADLock) {
-                        this.messageFun('success','移除成功')
+                        sessFun.messageFun('success','移除成功')
                         this.computeMedia_AD()
                     } else {
-                        this.messageFun('warning','暂无被占点位')
+                        sessFun.messageFun('warning','暂无被占点位')
                     }
                 }).catch(() => {
                     this.eventType = '';
-                    this.messageFun('info','取消成功')
+                    sessFun.messageFun('info','取消成功')
                 })
                 // this.ADLockNum = 0
                 this.resetPlanList()
@@ -4624,17 +4624,17 @@
                             this.typeShopList = this.getTypeList();
                             this.getShowList();
                             this.computeMedia_AD()
-                            this.messageFun('success','删除成功')
+                            sessFun.messageFun('success','删除成功')
                         }).catch(() => {
                             this.eventType = '';
-                            this.messageFun('info','已取消删除')
+                            sessFun.messageFun('info','已取消删除')
                         });
                         this.resetPlanList()
                     }else{
-                        this.messageFun('warning','没有客户选点信息')
+                        sessFun.messageFun('warning','没有客户选点信息')
                     }
                 }else{
-                    this.messageFun('warning','请先获取客户选择的点位，再移除非客户选择的点位')
+                    sessFun.messageFun('warning','请先获取客户选择的点位，再移除非客户选择的点位')
                 }
 
             },
@@ -4871,7 +4871,7 @@
                         this.FanganInfoByApid()           //获取方案详情
                         this.dialogVisible();
                     } else {
-                        this.messageFun('warning',res.data.MSG)
+                        sessFun.messageFun('warning',res.data.MSG)
                     }
                 }).catch(res => {
                     console.log(res);
@@ -4918,7 +4918,7 @@
                         this.getAdList()    // 获取选点列表
                         this.getRejectPlanList()    // 获取排斥方案列表
                     } else {
-                        this.messageFun('warning',res.data.MSG)
+                        sessFun.messageFun('warning',res.data.MSG)
                     }
                 })
             },
@@ -5009,7 +5009,7 @@
             shopingBeforeClose() {
                 for (let j = 0; j < this.shopingList.length; j++) {
                     if (this.shopingList[j].lState !== undefined && this.shopingList[j].lState.length > 0) {
-                        this.messageFun('warning','请先删除完被占点位再进行其它操作')
+                        sessFun.messageFun('warning','请先删除完被占点位再进行其它操作')
                         break;
                     }
                     if (j >= this.shopingList.length - 1) {
@@ -5072,11 +5072,11 @@
                     this.isOccupied = false    // 被占搜索时隐藏过滤条件
                     let dataArr = res.data
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时'){
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     }else{
                         this.planList = []
                         if (res.data === '' || res.data === null || res.data.length <= 0){
-                            this.messageFun('warning','暂无该小区被占信息')
+                            sessFun.messageFun('warning','暂无该小区被占信息')
                         }else{
                             let arr = []
                             for(let key of dataArr){
@@ -5115,22 +5115,6 @@
                     }
                     this.searchBtnAbled = false
                 })
-            },
-            // 操作提示统一方法
-            messageFun(mesType,mes){
-                this.$message({
-                    message: mes,
-                    type: mesType,
-                    showClose: true,
-                })
-            },
-            // 登录超时
-            loginTimeout() {
-                this.$message({
-                    message: '登录超时或权限异常,请重新登录',
-                    type: 'warning'
-                })
-                this.$router.push('/login')
             },
         }
     }

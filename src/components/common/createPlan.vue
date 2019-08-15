@@ -15,14 +15,22 @@
                             </el-form-item>
                             <el-form-item label="所属销售：" prop="ownerSales">
                                 <el-input v-if="isBD" v-model="planForm.ownerSales" disabled></el-input>
-                                <!--BDData.realName-->
-                                <el-autocomplete
-                                    v-else
-                                    v-model="planForm.ownerSales"
-                                    :fetch-suggestions="querySearchAsync"
-                                    placeholder="请输入账号"
-                                >
-                                </el-autocomplete>
+                                <el-select v-model="planForm.ownerSales" v-else
+                                           filterable
+                                           remote
+                                           clearable
+                                           placeholder="请输入关键词"
+                                           :remote-method="querySearchAsync"
+                                           :loading="salerListLoading"
+                                           :highlight-first-item="true"
+                                           @change="changeSaler">
+                                    <el-option
+                                        v-for="item in salerList"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                    </el-option>
+                                </el-select>
                             </el-form-item>
                             <el-form-item label="公司名称：" prop="companyName">
                                 <el-select v-model="planForm.companyName" @change="GetBrandByCid" placeholder="请选择公司名称" filterable>
@@ -836,7 +844,7 @@
             <el-button plain v-if="active === 0" type="default" @click="exportEmpty()">导空点</el-button>
 
             <el-button @click="next" v-if="active == 0 || active == 1" type="primary">下一步</el-button>
-            <el-button @click="next" v-if="active == 2" type="primary">创建方案 </el-button>
+            <el-button @click="next" v-if="active == 2" type="primary" :disabled="createBtn">创建方案 </el-button>
 
             <!-- <p v-if="active === 0" style="color: #666;font-size: 14px;margin-top:10px;">备注：导空点功能目前导出的为最近一年的空点</p> -->
 
@@ -1069,14 +1077,14 @@
             :visible.sync="isCopy"
             title="复制方案"
             width="450px"
-            >
+        >
             <el-select v-model="orderName" size="small"
-                filterable
-                remote
-                reserve-keyword
-                placeholder="请输入关键词"
-                :remote-method="remoteGetOrder"
-                :loading="loadingOrder"
+                       filterable
+                       remote
+                       reserve-keyword
+                       placeholder="请输入关键词"
+                       :remote-method="remoteGetOrder"
+                       :loading="loadingOrder"
             >
                 <el-option v-for="item of orderArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
@@ -1296,6 +1304,10 @@
                     ownerBU: '',    // 所属联系人
                     planRemark: '',
                 },
+                // 媒介选择所属销售列表
+                salerList:[],
+                // 获取销售选项loading
+                salerListLoading: true,
                 //
                 industryID: '',     // 所选公司所在的行业
                 planRules: {
@@ -1451,6 +1463,7 @@
                 activeAdPlan: '',                 // 当前选择的方案
                 routePath: '',
                 isSelect: false,                  // 判断是否已经选择过点位
+                createBtn: false,                 // 创建的方案的按钮禁用-防止多次点击
             };
         },
         mounted() {
@@ -1596,16 +1609,16 @@
                                     label: resData[j].rName,
                                     value: resData[j].rID.toString(),
                                 }
-                                this.throwCity = cityList
-                                console.log('cityList', cityList)
-                                this.cityOptions = areaArr.province()
+                                cityList.push(cityObj);
                             }
+                            this.throwCity = cityList
+                            console.log('cityList', cityList)
+                            this.cityOptions = areaArr.province()
                         } else {
-                            sessFun.messageFun('warning','城市数据获取异常')
+                            sessFun.messageFun('warning', '城市数据获取异常')
                         }
                     }
                 })
-                // }
             },
             // 下一步
             next() {
@@ -1623,6 +1636,11 @@
                         sessFun.messageFun('warning','请选择点位')
                     }
                 } else if (this.active === 2) {
+                    this.createBtn = true
+                    let timer = setTimeout(()=>{
+                        this.createBtn = false
+                        clearTimeout(timer)
+                    },500)
                     this.isCityPrice = false
                     this.vaildCityQuotation()
                     // console.log('this.isCityPrice',this.isCityPrice)
@@ -1647,7 +1665,7 @@
             prev() {
                 if (this.active < 1) {
                     this.active = 0;
-                }else {
+                } else {
                     this.active--;
                 }
             },
@@ -1964,7 +1982,7 @@
                     let rids = this.planForm.throwCity.join(',');
                     let sess = this.sessionData;
                     let info = `?uid=${sess.uID}&token=${
-                    sess.token}&suId=${this.BDData.uid}&rids=${rids}&excludedApId=${this.activeAdPlan?this.activeAdPlan:''}`;
+                        sess.token}&suId=${this.BDData.uid}&rids=${rids}&excludedApId=${this.activeAdPlan?this.activeAdPlan:''}`;
                     let formData = new FormData();
                     formData.append('file', this.fileData[0]);
                     if(this.importType == '2'){
@@ -2478,9 +2496,11 @@
                                     for (let t = 0; t < this.throwCity.length; t++) {
                                         if (city_rid === this.throwCity[t].value) {
                                             this.throwCity.splice(t, 1)
+                                            break
                                         }
                                     }
                                     this.planForm.throwCity.splice(n, 1)
+                                    break
                                 }
                             }
                         }
@@ -2537,17 +2557,36 @@
                     }
                 }
             },
+            // 选择所属销售
+            changeSaler(val){
+                console.log('选择所属销售',val)
+                // 重新输入账号时，初始化部分数据
+                this.planForm.companyName = ''
+                this.planForm.companyBrand = ''
+                this.planForm.ownerBU = ''
+                this.planForm.throwCity = []
+                this.dynamicTags = []
+                this.throwCity = []
+                this.$refs['planForm'].clearValidate()
+                if (val) {
+                    this.BDData.uid = val
+                    this.getCityList()
+                    this.Get_cName()
+                } else {
+
+                }
+            },
             // 登录用户为媒介输入销售用户名去获取该销售的信息以便获取接下来的城市、公司、品牌、投放城市等信息
-            querySearchAsync(queryString, callback) {
-                let uid = this.sessionData.uID
-                if (queryString) {
+            querySearchAsync(query) {
+                if (query !== '') {
+                    this.salerListLoading = true;
                     let params = {
-                        uid: uid,
+                        uid: this.sessionData.uID,
                         token: this.sessionData.token,
-                        sname: queryString
+                        keyword: query
                     }
-                    api.postApi(this.apiVar.UCAPI+'/GetUserName', params).then(res => {
-                        console.log('GetUserName', res)
+                    api.postApi(this.apiVar.UCAPI + '/findBDUserByKeyword',params).then(res => {
+                        console.log('findBDUserByKeyword', res)
                         if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                             sessFun.loginTimeout()
                         } else if (res.data.SysCode === 200200) {
@@ -2561,38 +2600,15 @@
                             }
                             this.salerList = arr
                         } else {
-                            console.log('媒介销售信息', this.BDData)
-                            if (res.data.uID) {
-                                this.BDData.uid = res.data.uID
-                                this.saleManageLevel = res.data.saleManageLevel || 0
-                                console.log('GetUserName数据包', res.data)
-                                res.data.value = res.data.realName;
-                                this.BDData.realName = res.data.realName
-                                this.planForm.ownerSales = res.data.realName
-                                // 重新输入账号时，初始化部分数据
-                                this.planForm.companyName = ''
-                                this.planForm.companyBrand = ''
-                                this.planForm.ownerBU = ''
-                                this.planForm.throwCity = []
-                                this.dynamicTags = []
-                                this.throwCity = []
-                                this.getCityList()
-                                this.Get_cName()
-                                let results = [res.data];
-                                callback(results);
-                            } else {
-                                this.BDData.uid = '0'
-                                sessFun.messageFun('warning',res.data.MSG)
-                                callback([]);
-                            }
+                            this.salerList = [];
                         }
-
-                    });
-                }else{
-                    callback([]);
+                        this.salerListLoading = false;
+                    })
+                } else {
+                    this.salerList = [];
+                    this.salerListLoading = false;
                 }
             },
-            //获取公司名称列表MyCustomer
             Get_cName() {
                 let params = {
                     uid: this.BDData.uid,
@@ -2731,19 +2747,19 @@
                 this.areaName = '全市'           // step2当前选中的区域
                 this.mediaType = '广告门'
                 let inputPath = this.$route.fullPath
-               if(inputPath.indexOf('unfinishedPlan') !== -1){
+                if(inputPath.indexOf('unfinishedPlan') !== -1){
                     // this.unfinishedData.planData.throwCity
-                   console.log('缓存方案再编辑',this.unfinishedData.planData)
+                    console.log('缓存方案再编辑',this.unfinishedData.planData)
                     let arr = []
                     for(let key of this.shopingList){
                         if(this.unfinishedData.planData.baseInfo.throwCity.includes(key.rid)){
                             arr.push(key)
                         }
                     }
-                   this.shopingList = arr
+                    this.shopingList = arr
                 }else{
-                   this.shopingList = []           // 购物车
-               }
+                    this.shopingList = []           // 购物车
+                }
                 this.limitList = []             // 初始化广告限制
                 this.filterCondition = []       // 过滤条件tag
                 this.mState = ''                // 媒体状态
@@ -3176,7 +3192,7 @@
                         tempwindow.close()
                         if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                             sessFun.loginTimeout()       // 登陆超时
-                     } else {
+                        } else {
                             sessFun.messageFun('warning',res.data.MSG + ',请尝试重新点击')
                         }
                     }
@@ -4015,12 +4031,12 @@
                                         }
                                     }
                                     // if(shopArr[i].mapCenter !== centerName){
-                                        if (shopArr[i].mapCenter !== '') {
-                                            shopArr[i].mapCenter = shopArr[i].mapCenter + ',' + centerName
-                                        } else {
-                                            console.log('mapCenter为空')
-                                            shopArr[i].mapCenter = centerName
-                                        }
+                                    if (shopArr[i].mapCenter !== '') {
+                                        shopArr[i].mapCenter = shopArr[i].mapCenter + ',' + centerName
+                                    } else {
+                                        console.log('mapCenter为空')
+                                        shopArr[i].mapCenter = centerName
+                                    }
                                     // }
                                 }
                                 ifBoolea = false
@@ -4268,27 +4284,27 @@
             // 获取事件
             getEventList(){
                 let arr = [
-                        {
-                            label: '移除被占点位',
-                            value: 1,
-                        },
-                        // {
-                        //     label: '移除非客户的选点',
-                        //     value: 2,
-                        // },
-                        {
-                            label: '移除同行已选小区',
-                            value: 3,
-                        },
-                        {
-                            label: '同资源保留1个点位',
-                            value: 5,
-                        },
-                        {
-                            label: '同资源保留2个点位',
-                            value: 6,
-                        },
-                    ];
+                    {
+                        label: '移除被占点位',
+                        value: 1,
+                    },
+                    // {
+                    //     label: '移除非客户的选点',
+                    //     value: 2,
+                    // },
+                    {
+                        label: '移除同行已选小区',
+                        value: 3,
+                    },
+                    {
+                        label: '同资源保留1个点位',
+                        value: 5,
+                    },
+                    {
+                        label: '同资源保留2个点位',
+                        value: 6,
+                    },
+                ];
                 let currTab = this.activeName;
                 if(currTab == 1){
                     let temp = [
@@ -5174,7 +5190,7 @@
                 })
                 // 同步缓存一份到localStorage
                 // if(this.routePath.includes('unfinishedPlan')){
-                    cacheAdPlan.setData(planInfo)
+                cacheAdPlan.setData(planInfo)
                 // }
             },
             // 设置方案信息

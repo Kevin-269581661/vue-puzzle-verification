@@ -374,7 +374,7 @@
 
 <script>
     import api from "../../api/api.js";
-    import sessFun from "../../commonFun/sessFun.js";    
+    import sessFun from "../../commonFun/sessFun.js";
     import XLSX from 'xlsx'
     export default {
         name: "createPlan",
@@ -957,17 +957,22 @@
                 }
                 api.getApi(this.apiVar.Advertisement+'/GetBrand', cidParams).then(res => {
                     console.log('公司品牌', res.data)
-                    let CBrand = res.data
-                    let BrandList = []
-                    for (let i = 0; i < CBrand.length; i++) {
-                        let brandObj = {
-                            label: CBrand[i].bTitle,
-                            value: CBrand[i].bID
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        this.loginTimeout()
+                    } else if (res.data.SysCode === 200200) {
+                        let CBrand = res.data.data
+                        let BrandList = []
+                        for (let key of CBrand) {
+                            BrandList.push({
+                                label: key.bTitle,
+                                value: key.bID
+                            })
                         }
-                        BrandList.push(brandObj)
+                        this.companyBrand = BrandList
+                        console.log('品牌列表列表',this.companyBrand)
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
                     }
-                    this.companyBrand = BrandList
-                    console.log('品牌列表列表',this.companyBrand)
                 })
                 // 选择公司后过滤联系人列表customer
                 let customerList = this.customer

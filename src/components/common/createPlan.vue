@@ -1314,6 +1314,9 @@
                     companyName: [
                         {required: true, message: '请选择公司名称', trigger: 'change'},
                     ],
+                    companyBrand: [
+                        {required: true, message: '请选择公司品牌', trigger: 'change'},
+                    ],
                     throwCity: [
                         {required: true, message: '请选择投放城市(可多选)', trigger: 'change'},
                     ],
@@ -1569,44 +1572,39 @@
                 this.planForm.throwCity.push(this.indexData.rid)
             },
             // 获取权限下的城市列表
-            getCityList(){
-                // if (this.saleManageLevel == 1 && this.sessionData.authorCity == '0') {
-                //     this.cityOther = true
-                //     this.cityOptions = areaArr.province()
-                // } else {
-                    this.cityOther = false
-                    let params = {
-                        uid: this.sessionData.uID,
-                        token: this.sessionData.token
-                    }
-                    if(!this.isBD){
-                        params.suID = this.BDData.uid
-                    }
-                    api.getApi(this.apiVar.Advertisement + '/GetFanganCity', params).then(res => {
-                        console.log('获取权限下的城市列表', res.data)
-                        if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                            this.loginTimeout()       // 登录超时
-                        } else if(res.data.SysCode === 100200 || res.data.MSG === '该用户暂未分配公司！'){
-                            this.messageFun('warning','该用户暂未分配公司')
-                        } else {
-                            if (res.data !== '' && res.data !== null) {
-                                let resData = res.data
-                                let cityList = []
-                                for (let j = 0; j < resData.length; j++) {
-                                    let cityObj = {
-                                        label: resData[j].rName,
-                                        value: resData[j].rID.toString(),
-                                    }
-                                    cityList.push(cityObj);
+            getCityList() {
+                this.cityOther = false
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token
+                }
+                if (!this.isBD) {
+                    params.suID = this.BDData.uid
+                }
+                api.getApi(this.apiVar.Advertisement + '/GetFanganCity', params).then(res => {
+                    console.log('获取权限下的城市列表', res.data)
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        sessFun.loginTimeout()       // 登录超时
+                    } else if (res.data.SysCode === 100200 || res.data.MSG === '该用户暂未分配公司！') {
+                        sessFun.messageFun('warning', res.data.MSG)
+                    } else {
+                        if (res.data !== '' && res.data !== null) {
+                            let resData = res.data
+                            let cityList = []
+                            for (let j = 0; j < resData.length; j++) {
+                                let cityObj = {
+                                    label: resData[j].rName,
+                                    value: resData[j].rID.toString(),
                                 }
                                 this.throwCity = cityList
                                 console.log('cityList', cityList)
                                 this.cityOptions = areaArr.province()
-                            } else {
-                                this.messageFun('warning','城市数据获取异常')
-                            }
+                            } 
+                        }else {
+                            sessFun.messageFun('warning','城市数据获取异常')
                         }
-                    })
+                    }  
+                })
                 // }
             },
             // 下一步
@@ -1622,7 +1620,7 @@
                         this.creatTab()                 // 报价单tab
                         this.getBand()                  // 获取公司品牌
                     } else {
-                        this.messageFun('warning','请选择点位')
+                        sessFun.messageFun('warning','请选择点位')
                     }
                 } else if (this.active === 2) {
                     this.isCityPrice = false
@@ -1637,7 +1635,7 @@
                         });
                         this.creatAdPlan()    // 创建方案 当前价格大于系统支持的最大价格
                     } else {
-                        this.messageFun('warning','单城市总价格大于系统支持的最大价格（2000万）')
+                        sessFun.messageFun('warning','单城市总价格大于系统支持的最大价格（2000万）')
                     }
 
                 }
@@ -1665,7 +1663,7 @@
                     if(this.emptyRange.length){
                         this.dateRangeEmpty();
                     }else{
-                        this.messageFun('warning','请先选择日期')
+                        sessFun.messageFun('warning','请先选择日期')
                     }
                 }
             },
@@ -1696,12 +1694,12 @@
                             let filename = returnobj.city.join('-')+'-'+ info.startTime+'~'+info.endTime+'空位表';
                             sheetExcel.toDownload(allHead, returnobj.arr, filename);
                         }else{
-                            this.messageFun('warning','此城市没有点位')
+                            sessFun.messageFun('warning','此城市没有点位')
                         }
                     }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
+                        sessFun.loginTimeout();
                     }else{
-                        this.messageFun('warning',res.data.MSG)
+                        sessFun.messageFun('warning',res.data.MSG)
                     }
                     loadingPoint.close();
                 }).catch(err =>{
@@ -1764,11 +1762,11 @@
                 return str;
             },
             // 导出空位表
-            exportEmpty(){
-                if(this.planForm.throwCity.length){
+            exportEmpty() {
+                if (this.planForm.throwCity.length) {
                     this.showEmptyPoint = true;
-                }else{
-                    this.messageFun('warning','请先选择投放城市')
+                } else {
+                    sessFun.messageFun('warning', '请先选择投放城市')
                 }
             },
             // 导出空点导出次数接口
@@ -1841,12 +1839,12 @@
                             let filename = returnobj.filename+'-'+ date[0].substring(0, 10)+'~'+date[date.length-1].substring(11)+'空位表';
                             sheetExcel.toDownload(allHead, returnobj.arr, filename);
                         }else{
-                            this.messageFun('warning','此城市没有点位')
+                            sessFun.messageFun('warning','此城市没有点位')
                         }
                         loadingPoint.close();
                     });
                 }else{
-                    this.messageFun('warning','请先选择投放城市')
+                    sessFun.messageFun('warning','请先选择投放城市')
                 }
             },
             // 处理数据
@@ -1975,7 +1973,7 @@
                         this.resImport(formData, info);
                     }
                 }else{
-                    this.messageFun('warning', '请先上传文件');
+                    sessFun.messageFun('warning', '请先上传文件');
                 }
             },
             // 点位导入
@@ -1998,9 +1996,9 @@
                             this.showUploadFail = true;
                         }
                     }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
+                        sessFun.loginTimeout();
                     }else{
-                        this.messageFun('warning',res.data.MSG)
+                        sessFun.messageFun('warning',res.data.MSG)
                     }
                 }).catch(res =>{
                     console.log(res);
@@ -2021,9 +2019,9 @@
                         this.importInfoData = importInfo;
                         this.showUploadFail = true;
                     }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
+                        sessFun.loginTimeout();
                     }else{
-                        this.messageFun('warning',res.data.MSG)
+                        sessFun.messageFun('warning',res.data.MSG)
                     }
                     Loading.close();
                 }).catch(res =>{
@@ -2269,9 +2267,9 @@
                                 };
                             });
                         }else if(res.data.SysCode == 100302){
-                            this.loginTimeout();
+                            sessFun.loginTimeout();
                         }else{
-                            this.messageFun('warning',res.data.MSG)
+                            sessFun.messageFun('warning',res.data.MSG)
                         }
                     }).catch(err =>{
                         console.log(err);
@@ -2306,9 +2304,9 @@
                             }
                             this.judgeByselect();
                         }else if(res.data.SysCode == 100302){
-                            this.loginTimeout();
+                            sessFun.loginTimeout();
                         }else{
-                            this.messageFun('warning',res.data.MSG)
+                            sessFun.messageFun('warning',res.data.MSG)
                         }
                         this.isCopy = false;
                     }).catch(err =>{
@@ -2316,7 +2314,7 @@
                         this.isCopy = false;
                     });
                 }else{
-                    Message.warning('请先选择要复制的方案');
+                    sessFun.messageFun('warning','请先选择要复制的方案')
                 }
             },
             // 构建复制方案数据格式
@@ -2448,7 +2446,7 @@
                     console.log('downUrl-----', this.downUrl);
                     this.showEmpty = true;
                 }else{
-                    this.messageFun('warning','请先选择投放城市')
+                    sessFun.messageFun('warning','请先选择投放城市')
                 }
             },
             // 复制空位导出链接
@@ -2461,12 +2459,12 @@
                 oInput.select();                // 选择对象
                 document.execCommand("Copy"); // 执行浏览器复制命令
                 oInput.style.display = 'none';
-                this.messageFun('success','复制成功')
+                sessFun.messageFun('success','复制成功')
             },
             // step1投放城市权限是全国时spliceCity、showInput、handleInputConfirm
             spliceCity(tag) { // step1方案创建,删除选择城市
                 if(this.indexData.city.includes(tag)){
-                    this.messageFun('warning',tag + '为地图选择所在城市，不可删除')
+                    sessFun.messageFun('warning',tag + '为地图选择所在城市，不可删除')
                     return
                 }
                 this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
@@ -2493,7 +2491,7 @@
             removeCity(val){
                 console.log('非全国，移除城市val',val,this.planForm.throwCity)
                 if (this.indexData.rid == val) {
-                    this.messageFun('warning',this.indexData.city + '为选择的地图点位所在城市，不可删除')
+                    sessFun.messageFun('warning',this.indexData.city + '为选择的地图点位所在城市，不可删除')
                     this.planForm.throwCity.push(val)
                     this.$refs['planThrowCity'].clearValidate()
                 }
@@ -2530,7 +2528,7 @@
                                         this.selectedOptions = [];
                                         break
                                     } else {
-                                        this.messageFun('warning','不可以选择重复的城市')
+                                        sessFun.messageFun('warning','不可以选择重复的城市')
                                     }
                                 }
                             }
@@ -2551,7 +2549,17 @@
                     api.postApi(this.apiVar.UCAPI+'/GetUserName', params).then(res => {
                         console.log('GetUserName', res)
                         if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                            this.loginTimeout()
+                            sessFun.loginTimeout()
+                        } else if (res.data.SysCode === 200200) {
+                            let arr = []
+                            for (let key of res.data.data) {
+                                arr.push({
+                                    label: key.realName + '(' + key.sName + ')',
+                                    value: key.uID,
+                                    saleManageLevel: key.saleManageLevel,
+                                })
+                            }
+                            this.salerList = arr
                         } else {
                             console.log('媒介销售信息', this.BDData)
                             if (res.data.uID) {
@@ -2574,7 +2582,7 @@
                                 callback(results);
                             } else {
                                 this.BDData.uid = '0'
-                                this.messageFun('warning',res.data.MSG)
+                                sessFun.messageFun('warning',res.data.MSG)
                                 callback([]);
                             }
                         }
@@ -2626,18 +2634,23 @@
                     cid: val,
                     token: this.sessionData.token
                 }
-                api.getApi(this.apiVar.Advertisement +'/GetBrand', cidParams).then(res => {
+                api.getApi(this.apiVar.Advertisement + '/GetBrand', cidParams).then(res => {
                     console.log('公司品牌', res.data)
-                    let CBrand = res.data
-                    let BrandList = []
-                    for (let i = 0; i < CBrand.length; i++) {
-                        let brandObj = {
-                            label: CBrand[i].bTitle,
-                            value: CBrand[i].bID
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        sessFun.loginTimeout()
+                    } else if (res.data.SysCode === 200200) {
+                        let CBrand = res.data.data
+                        let BrandList = []
+                        for (let key of CBrand) {
+                            BrandList.push({
+                                label: key.bTitle,
+                                value: key.bID
+                            })
                         }
-                        BrandList.push(brandObj)
+                        this.companyBrand = BrandList
+                    } else {
+                        sessFun.messageFun('warning', res.data.MSG)
                     }
-                    this.companyBrand = BrandList
                 })
                 // 选择公司后过滤联系人列表customer
                 let customerList = this.customer
@@ -2761,9 +2774,9 @@
                         }
                         this.rejectAdPlan = tempList
                     } else if (res.data.SysCode == 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else {
-                        this.messageFun('warning',res.data.MSG)
+                        sessFun.messageFun('warning',res.data.MSG)
                     }
                 })
             },
@@ -2779,7 +2792,7 @@
                 api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('广告限制列表', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else if(res.data.SysCode === 200200 ){
                         let limit = res.data.data
                         let limitArr = []
@@ -2883,7 +2896,7 @@
                     api.postApi_new(this.apiVar.Media, params).then(res => {
                         console.log('选点列表：', res)
                         if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                            this.loginTimeout()       // 登录超时
+                            sessFun.loginTimeout()       // 登录超时
                         } else if (res.data.SysCode === 200200) {
                             if (res.data.data.list !== undefined && res.data.data.list.length > 0) {
                                 let ADList = res.data.data.list
@@ -2898,7 +2911,7 @@
                             }
                             this.loading = false
                         } else {
-                            this.messageFun('warning',res.data.MSG)
+                            sessFun.messageFun('warning',res.data.MSG)
                             this.loading = false
                         }
                         this.searchBtnAbled = false
@@ -3028,7 +3041,7 @@
                         this.getAdList()
                         this.beforeDate = this.dateInput
                     }else if(!this.dateInput){
-                        this.messageFun('warning','搜索时间不能为空')
+                        sessFun.messageFun('warning','搜索时间不能为空')
                         this.searchBtnAbled = false
                     }else{
                         this.searchBtnAbled = false
@@ -3082,11 +3095,11 @@
                     this.isOccupied = false    // 被占搜索时隐藏过滤条件
                     let dataArr = res.data
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时'){
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     }else{
                         if (res.data === '' || res.data === null ||  res.data.length <= 0){
                             this.planList = []
-                            this.messageFun('warning','暂无该小区被占信息')
+                            sessFun.messageFun('warning','暂无该小区被占信息')
                         }else{
                             let arr = []
                             for(let key of dataArr){
@@ -3162,9 +3175,9 @@
                     } else {
                         tempwindow.close()
                         if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                            this.loginTimeout()       // 登陆超时
+                            sessFun.loginTimeout()       // 登陆超时
                      } else {
-                            this.messageFun('warning',res.data.MSG + ',请尝试重新点击')
+                            sessFun.messageFun('warning',res.data.MSG + ',请尝试重新点击')
                         }
                     }
                 }).catch(err => {
@@ -3184,12 +3197,12 @@
 
                 if(IsBoolean){
                     if(Number(this.oneKeyPointData.TotalPoint) < Number(this.oneKeyPointData.pointNumByRes)){
-                        this.messageFun('warning','每小区选择的个数不能大于点位总量')
+                        sessFun.messageFun('warning','每小区选择的个数不能大于点位总量')
                     }else{
                         this.oneKeySelectPoint()
                     }
                 }else{
-                    this.messageFun('warning','信息填写有误')
+                    sessFun.messageFun('warning','信息填写有误')
                 }
 
             },
@@ -3244,7 +3257,7 @@
                     let tempArr = []
                     let resArr = res.data
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     }else if(resArr !== '' && resArr.length > 0){
                         for(let key of res.data){
                             let selectInfo = {
@@ -3303,18 +3316,18 @@
                         this.computeMedia_AD()
                         this.judgeByselect()
                         if (this.oneKeyPointData.TotalPoint == res.data.length) {
-                            this.messageFun('success','成功选择了' + res.data.length + '面')
+                            sessFun.messageFun('success','成功选择了' + res.data.length + '面')
                         } else {
-                            this.messageFun('warning','满足条件的点位不足' + this.oneKeyPointData.TotalPoint + '面,成功选择了' + res.data.length + '面')
+                            sessFun.messageFun('warning','满足条件的点位不足' + this.oneKeyPointData.TotalPoint + '面,成功选择了' + res.data.length + '面')
                         }
                     }else{
-                        this.messageFun('warning','选择失败,暂无匹配点位')
+                        sessFun.messageFun('warning','选择失败,暂无匹配点位')
                     }
                     oneKeyPointLoading.close()
                 })
                 let timer = setTimeout(()=>{
                     if(!IsXhr){
-                        this.messageFun('warning','点位选择异常')
+                        sessFun.messageFun('warning','点位选择异常')
                         oneKeyPointLoading.close()
                     }else{
                         // console.log('一键选点已成功')
@@ -3445,24 +3458,24 @@
             },
             // 修改搜索中的媒体状态 filterCondition
             mStateChange(state) {
-                if(this.selectValue !== '被占查询'){
-                    console.log('切换媒体状态',state,this.mState)
+                if (this.selectValue !== '被占查询') {
+                    console.log('切换媒体状态', state, this.mState)
                     let stateName = ''
-                    if(state === '1'){
+                    if (state === '1') {
                         stateName = '正常'
-                    }else{
+                    } else {
                         stateName = '待安装'
                     }
-                    this.isHaveThisTag('mstate',stateName)
+                    this.isHaveThisTag('mstate', stateName)
                     if (stateName !== '不限') {
-                        this.getAdsParamsData.mState  = state
-                    }else{
+                        this.getAdsParamsData.mState = state
+                    } else {
                         this.getAdsParamsData.mState = ''
                     }
                     this.setPageNoAndTableData()
                     this.getAdList()
-                }else{
-                    this.messageFun('warning','被占查询状态下，无效切换!')
+                } else {
+                    sessFun.messageFun('warning', '被占查询状态下，无效切换!')
                 }
             },
             // 媒体等级过滤
@@ -3495,7 +3508,7 @@
             // 住户数量过滤
             tableHeaderFilter_h() {
                 if (this.houseNum[0] == '' || this.houseNum[1] == '') {
-                    this.messageFun('warning','数据区间填写有误')
+                    sessFun.messageFun('warning','数据区间填写有误')
                 } else {
                     let tagName = '住户数量:' + this.houseNum[0] + "-" + this.houseNum[1]
                     this.isHaveThisTag('houseNum', tagName)
@@ -3509,7 +3522,7 @@
             // 楼盘价格过滤
             tableHeaderFilter_p() {
                 if (this.buildPrice[0] == '' || this.buildPrice[1] == '') {
-                    this.messageFun('warning','数据区间填写有误')
+                    sessFun.messageFun('warning','数据区间填写有误')
                 } else {
                     let tagName = '楼盘价格:' + this.buildPrice[0] + "-" + this.buildPrice[1]
                     this.isHaveThisTag('buildPrice', tagName)
@@ -3523,7 +3536,7 @@
             // 年份过滤
             tableHeaderFilterByLiveYear() {
                 if (this.liveYear[0] == '' || this.liveYear[1] == '') {
-                    this.messageFun('warning','数据区间填写有误')
+                    sessFun.messageFun('warning','数据区间填写有误')
                 } else {
                     let tagName = '入住年份:' + this.liveYear[0] + "-" + this.liveYear[1]
                     this.isHaveThisTag('liveYear', tagName)
@@ -3549,7 +3562,7 @@
             //人流量过滤
             tableHeaderFilterByPeopleFlow() {
                 if (this.peopleFlow[0] == '' || this.peopleFlow[1] == '') {
-                    this.messageFun('warning','数据区间填写有误')
+                    sessFun.messageFun('warning','数据区间填写有误')
                 } else {
                     let tagName = '人流量:' + this.peopleFlow[0] + "-" + this.peopleFlow[1]
                     this.isHaveThisTag('peopleFlow', tagName)
@@ -3563,7 +3576,7 @@
             // 车流量过滤
             tableHeaderFilterByCarFlow() {
                 if (this.carFlow[0] == '' || this.carFlow[1] == '') {
-                    this.messageFun('warning','数据区间填写有误')
+                    sessFun.messageFun('warning','数据区间填写有误')
                 } else {
                     let tagName = '车流量:' + this.carFlow[0] + "-" + this.carFlow[1]
                     this.isHaveThisTag('carFlow', tagName)
@@ -3577,7 +3590,7 @@
             // 车位数过滤
             tableHeaderFilterByParkSpaceNum(){
                 if(this.parkSpaceNum[0] == '' || this.parkSpaceNum[1]){
-                    this.messageFun('warning','数据区间填写有误')
+                    sessFun.messageFun('warning','数据区间填写有误')
                 }else{
                     let tagName = '车位数:' + this.parkSpaceNum[0] + "-" + this.parkSpaceNum[1]
                     this.isHaveThisTag('parkSpaceNum',tagName)
@@ -3860,14 +3873,14 @@
                         if(this.mapADList.length > 0){
                             this.setShopDataByMapAD()
                         } else {
-                            this.messageFun('warning','数据为空')
+                            sessFun.messageFun('warning','数据为空')
                             this.getMapLoading.close()
                         }
                     } else if(res.data.code == '100302' || res.data.MSG === "登陆超时"){
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else {
                         this.getMapLoading.close()
-                        this.messageFun('warning','数据获取异常')
+                        sessFun.messageFun('warning','数据获取异常')
                     }
                 })
             },
@@ -3968,7 +3981,7 @@
                 if(this.getMapLoading){
                     this.getMapLoading.close()
                 }
-                this.messageFun('success','成功获取到' + tempArr.length + '条数据')
+                sessFun.messageFun('success','成功获取到' + tempArr.length + '条数据')
 
                 this.typeShopList = this.getTypeList();
                 this.getShowList();
@@ -4061,14 +4074,14 @@
                     }
                 }
                 if (num > 0) {
-                    this.messageFun('success','成功移除' + num + '条数据')
+                    sessFun.messageFun('success','成功移除' + num + '条数据')
                     this.getResultData(arr);
 
                     this.computeMedia_AD()
                     this.resetPlanList()
                     this.judgeByselect()
                 } else {
-                    this.messageFun('warning','暂无同行回避点位')
+                    sessFun.messageFun('warning','暂无同行回避点位')
                 }
             },
             // 清空购物车
@@ -4083,13 +4096,13 @@
                         this.getResultData(arr);
                         this.allCheckboxUpdata()
                         this.computeMedia_AD()
-                        this.messageFun('success','删除成功')
+                        sessFun.messageFun('success','删除成功')
                         this.resetPlanList()      // 重置planList的勾选
                     }).catch(() => {
-                        this.messageFun('info','已取消删除')
+                        sessFun.messageFun('info','已取消删除')
                     })
                 }else{
-                    this.messageFun('warning','无数据可删除')
+                    sessFun.messageFun('warning','无数据可删除')
                 }
 
             },
@@ -4330,7 +4343,7 @@
                     }
                 }else{
                     let active = this.activeName;
-                    this.messageFun('warning', `没有${active=='1'?'广告门':'道闸'}数据`);
+                    sessFun.messageFun('warning', `没有${active=='1'?'广告门':'道闸'}数据`);
                 }
             },
             // 清空被占的点位
@@ -4356,14 +4369,14 @@
                     this.getShowList();
 
                     if (haveADLock) {
-                        this.messageFun('success','移除成功')
+                        sessFun.messageFun('success','移除成功')
                         this.computeMedia_AD()
                     } else {
-                        this.messageFun('warning','暂无被占点位')
+                        sessFun.messageFun('warning','暂无被占点位')
                     }
                 }).catch(() => {
                     this.eventType = '';
-                    this.messageFun('info','取消成功')
+                    sessFun.messageFun('info','取消成功')
                 })
                 // this.ADLockNum = 0
                 this.resetPlanList()
@@ -4376,15 +4389,15 @@
                 if(resultArr.length){
                     this.getResultData(resultArr);
                     if(len != resultArr.length){
-                        this.messageFun('success',`成功保留同资源${num}个点位！`);
+                        sessFun.messageFun('success',`成功保留同资源${num}个点位！`);
                     }else{
-                        this.messageFun('warning', '暂无同资源可移除的点位！')
+                        sessFun.messageFun('warning', '暂无同资源可移除的点位！')
                     }
                     this.computeMedia_AD();
                     this.resetPlanList();
                     this.judgeByselect();
                 }else{
-                    this.messageFun('warning', '暂无同资源可移除的点位！')
+                    sessFun.messageFun('warning', '暂无同资源可移除的点位！')
                 }
             },
             // 随机保留num个数点位
@@ -4450,15 +4463,15 @@
                     resultArr = this.isEnoughMedia(type, resultArr);
                     this.getResultData(resultArr);
                     if(len != resultArr.length){
-                        this.messageFun('success',`成功移除同门${type}面的点位！`)
+                        sessFun.messageFun('success',`成功移除同门${type}面的点位！`)
                     }else{
-                        this.messageFun('warning', '暂无可移除点位')
+                        sessFun.messageFun('warning', '暂无可移除点位')
                     }
                     this.computeMedia_AD();
                     this.resetPlanList();
                     this.judgeByselect();
                 } else {
-                    this.messageFun('warning', '暂无可移除点位！')
+                    sessFun.messageFun('warning', '暂无可移除点位！')
                 }
             },
             // 同一媒体是否有a/b面
@@ -4999,7 +5012,7 @@
                         sessionStorage.setItem('cityArea', JSON.stringify(cityArea));
                     }else{
                         this.ADloading.close()
-                        this.messageFun('warning','方案创建失败')
+                        sessFun.messageFun('warning','方案创建失败')
                     }
                 })
             },
@@ -5058,17 +5071,17 @@
                     console.log('PushADB提交选点', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         this.ADloading.close()
-                        this.loginTimeout()
+                        sessFun.loginTimeout()
                     } else {
                         if (res.data === '' || res.data === null) {
-                            this.messageFun('warning','提交选点失败')
+                            sessFun.messageFun('warning','提交选点失败')
                         } else {
                             this.ADloading.close()
                             this.active = 3
                             if(this.apMinTime <= this.dateTime){
-                                this.messageFun('warning','该方案的投放期已经开始，建议立即发布该方案！')
+                                sessFun.messageFun('warning','该方案的投放期已经开始，建议立即发布该方案！')
                             }else{
-                                this.messageFun('success','投放城市的报价信息提交成功')
+                                sessFun.messageFun('success','方案创建成功')
                             }
                             // 清除后台缓存
                             let params = {
@@ -5127,7 +5140,7 @@
                 oInput.select();                // 选择对象
                 document.execCommand("Copy"); // 执行浏览器复制命令
                 oInput.style.display = 'none';
-                this.messageFun('success','复制成功')
+                sessFun.messageFun('success','复制成功')
             },
             // 公用方法
             // 方案异常时，存储当前方案基本数据及购物车点位等临时信息
@@ -5211,22 +5224,6 @@
                 let m = (date.getMinutes() < 10 ? '0'+ date.getMinutes() : date.getMinutes())+ ':'; //date.getMinutes() + ':';
                 let s = date.getSeconds() < 10 ? '0'+ date.getSeconds() : date.getSeconds();        //date.getSeconds();
                 return Y + M + D + h + m + s;
-            },
-            // 操作提示统一方法
-            messageFun(mesType,mes){
-                this.$message({
-                    message: mes,
-                    type: mesType,
-                    showClose: true,
-                })
-            },
-            // 登录超时
-            loginTimeout() {
-                this.$message({
-                    message: '登录超时或权限异常,请重新登录',
-                    type: 'warning'
-                })
-                this.$router.push('/login')
             },
         },
     }

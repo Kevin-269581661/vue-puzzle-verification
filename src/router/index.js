@@ -13,7 +13,7 @@ const questionAndAnswer =()=> import('../components/common/questionAndAnswer')
 //404
 const NotFountPage = () => import('../components/common/NotFoundPage.vue')
 //管理员
-const admin = () => import('../components/admin/admin_common.vue')
+const admin = () => import('../components/admin/adminCommon.vue')
 const SMqinlinzk = () => import('../components/admin/SMqinlinzk.vue')
 
 // 空点导出
@@ -54,16 +54,16 @@ const mapMessage = () => import('../components/common/mapMessage.vue')
 //超级运营
 const adminIndex = () => import('../components/superOperate/superOperate_index.vue')
 const ADlimitList = () => import('../components/superOperate/ADlimitList.vue')
-const superOperateCommon = () => import('../components/superOperate/superOperate_common.vue')
+const superOperateCommon = () => import('../components/superOperate/superOperateCommon.vue')
 const dataAnalysis = () => import('../components/superOperate/dataAnalysis.vue')
 
 //普通运营
 const operateIndex = () => import('../components/operate/operate_index.vue')
-const operateCommon = () => import('../components/operate/operate_common.vue')
+const operateCommon = () => import('../components/operate/operateCommon.vue')
 
 //媒介
 const mediaIndex = () => import('../components/media/media_index.vue')
-const mediaCommon = () => import('../components/media/media_common.vue')
+const mediaCommon = () => import('../components/media/mediaCommon.vue')
 const projectList = () => import('../components/common/projectList.vue')
 const projectDetail = () => import('../components/common/projectDetail.vue')
 
@@ -71,11 +71,11 @@ const projectDetail = () => import('../components/common/projectDetail.vue')
 const saleIndex = () => import('../components/sale/sale_index.vue')
 const createClient = () => import('../components/sale/createClient.vue')
 const editClient = () => import('../components/sale/editClient.vue')
-const saleCommon = () => import('../components/sale/sale_common.vue')
+const saleCommon = () => import('../components/sale/saleCommon.vue')
 
 //广告主
 const adOwnerIndex = () => import('../components/adOwner/adOwner_index.vue')
-const adOwnerCommon = () => import('../components/adOwner/adOwner_common.vue')
+const adOwnerCommon = () => import('../components/adOwner/adOwnerCommon.vue')
 const ADReport = () => import('../components/adOwner/ADqinlinzkReport.vue')
 const ADqinlinzk = () => import('../components/adOwner/ADqinlinzk.vue')
 const totalView = () => import('../components/adOwner/totalView.vue')
@@ -117,6 +117,7 @@ export default new Router({
                 {path: '/admin/mediaList', component: mediaList},
                 {path: '/admin/mediaDetail', component: mediaDetail},
                 {path: '/admin/companyList', component: companyList},
+                {path: '/admin/myInfo', component: myInfo},
             ]
         },
         //超级运营
@@ -131,7 +132,7 @@ export default new Router({
                 {path: '/superOperate/mediaDetail', component: mediaDetail},
                 {path: '/superOperate/clientList', component: clientList},
                 {path: '/superOperate/planList', component: planList,
-                    // meta:{keepAlive: true} // 这个组件需要缓存 true                    
+                    // meta:{keepAlive: true} // 这个组件需要缓存 true
                 },
                 {path: '/superOperate/publishPriceList', component: publishPriceList},
                 {path: '/superOperate/createAccount', component: createAccount},
@@ -261,6 +262,7 @@ export default new Router({
                 {path: '/adOwner/visitFrequency', component: visitFrequency},
                 {path: '/adOwner/hotSource', component: hotSource},
                 {path: '/adOwner/compact', component: compact},
+                {path: '/adOwner/myInfo', component: myInfo},
             ]
         },
         //404

@@ -21,6 +21,11 @@
                             密码设置
                         </span>
                     </el-menu-item>
+                    <el-menu-item index="3" @click="showCom('wxUnbind')">
+                        <span slot="title">
+                            微信解绑
+                        </span>
+                    </el-menu-item>
                 </el-menu>
             </el-aside>
             <el-main>
@@ -34,14 +39,16 @@
 </template>
 
 <script>
-    import userInfo from './userInfo'
-    import setPass from './changePwd'
+    import userInfo from './userInfo';
+    import setPass from './changePwd';
+    import wxUnbind from './wxUnbind'
 
     export default {
         name: "questionAndAnswer",
         components: {
             userInfo,
             setPass,
+            wxUnbind
         },
         data() {
             return {
@@ -107,5 +114,11 @@
     /deep/ .el-menu-item, .el-submenu__title{
         height: 48px;
         line-height: 48px;
+    }
+    /deep/ .myInfo_box{
+        padding: 16px 32px;
+        text-align: left;
+        min-height: 179px;
+        background: #fff;
     }
 </style>

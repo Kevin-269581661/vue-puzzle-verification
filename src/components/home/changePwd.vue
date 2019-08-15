@@ -1,5 +1,5 @@
 <template>
-	<div class="pass_box">
+	<div class="myInfo_box">
 		<!-- <h4>修改密码</h4> -->
 		<h4>密码设置</h4>
 		<div class="changePwd-box">
@@ -149,16 +149,12 @@ export default {
 </script>
 
 <style scoped>
-.pass_box{
-    padding: 20px;
-    background: #fff;
-}
 h4 {
     font-size: 20px;
     color: #000;
     width: 100%;
-    padding-left: 20px;
     text-align: left;
+    font-weight:600;
 }
 .changePwd-box {
     width: 310px;

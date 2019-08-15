@@ -15,22 +15,14 @@
                             </el-form-item>
                             <el-form-item label="所属销售：" prop="ownerSales">
                                 <el-input v-if="isBD" v-model="planForm.ownerSales" disabled></el-input>
-                                <el-select v-model="planForm.ownerSales" v-else
-                                    filterable
-                                    remote
-                                    clearable
-                                    placeholder="请输入关键词"
-                                    :remote-method="querySearchAsync"
-                                    :loading="salerListLoading"
-                                    :highlight-first-item="true"
-                                    @change="changeSaler">
-                                    <el-option
-                                        v-for="item in salerList"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
+                                <!--BDData.realName-->
+                                <el-autocomplete
+                                    v-else
+                                    v-model="planForm.ownerSales"
+                                    :fetch-suggestions="querySearchAsync"
+                                    placeholder="请输入账号"
+                                >
+                                </el-autocomplete>
                             </el-form-item>
                             <el-form-item label="公司名称：" prop="companyName">
                                 <el-select v-model="planForm.companyName" @change="GetBrandByCid" placeholder="请选择公司名称" filterable>
@@ -844,7 +836,7 @@
             <el-button plain v-if="active === 0" type="default" @click="exportEmpty()">导空点</el-button>
 
             <el-button @click="next" v-if="active == 0 || active == 1" type="primary">下一步</el-button>
-            <el-button @click="next" v-if="active == 2" type="primary" :disabled="createBtn">创建方案 </el-button>
+            <el-button @click="next" v-if="active == 2" type="primary">创建方案 </el-button>
 
             <!-- <p v-if="active === 0" style="color: #666;font-size: 14px;margin-top:10px;">备注：导空点功能目前导出的为最近一年的空点</p> -->
 
@@ -1304,10 +1296,6 @@
                     ownerBU: '',    // 所属联系人
                     planRemark: '',
                 },
-                // 媒介选择所属销售列表
-                salerList:[],
-                // 获取销售选项loading
-                salerListLoading: true,
                 //
                 industryID: '',     // 所选公司所在的行业
                 planRules: {
@@ -1460,7 +1448,6 @@
                 activeAdPlan: '',                 // 当前选择的方案
                 routePath: '',
                 isSelect: false,                  // 判断是否已经选择过点位
-                createBtn: false,                 // 创建的方案的按钮禁用-防止多次点击
             };
         },
         mounted() {
@@ -1582,40 +1569,45 @@
                 this.planForm.throwCity.push(this.indexData.rid)
             },
             // 获取权限下的城市列表
-            getCityList() {
-                this.cityOther = false
-                let params = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token
-                }
-                if (!this.isBD) {
-                    params.suID = this.BDData.uid
-                }
-                api.getApi(this.apiVar.Advertisement + '/GetFanganCity', params).then(res => {
-                    console.log('获取权限下的城市列表', res.data)
-                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()       // 登录超时
-                    } else if (res.data.SysCode === 100200 || res.data.MSG === '该用户暂未分配公司！') {
-                        this.messageFun('warning', res.data.MSG)
-                    } else {
-                        if (res.data !== '' && res.data !== null) {
-                            let resData = res.data
-                            let cityList = []
-                            for (let j = 0; j < resData.length; j++) {
-                                let cityObj = {
-                                    label: resData[j].rName,
-                                    value: resData[j].rID.toString(),
-                                }
-                                cityList.push(cityObj);
-                            }
-                            this.throwCity = cityList
-                            console.log('cityList', cityList)
-                            this.cityOptions = areaArr.province()
-                        } else {
-                            this.messageFun('warning', '城市数据获取异常')
-                        }
+            getCityList(){
+                // if (this.saleManageLevel == 1 && this.sessionData.authorCity == '0') {
+                //     this.cityOther = true
+                //     this.cityOptions = areaArr.province()
+                // } else {
+                    this.cityOther = false
+                    let params = {
+                        uid: this.sessionData.uID,
+                        token: this.sessionData.token
                     }
-                })
+                    if(!this.isBD){
+                        params.suID = this.BDData.uid
+                    }
+                    api.getApi(this.apiVar.Advertisement + '/GetFanganCity', params).then(res => {
+                        console.log('获取权限下的城市列表', res.data)
+                        if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                            this.loginTimeout()       // 登录超时
+                        } else if(res.data.SysCode === 100200 || res.data.MSG === '该用户暂未分配公司！'){
+                            this.messageFun('warning','该用户暂未分配公司')
+                        } else {
+                            if (res.data !== '' && res.data !== null) {
+                                let resData = res.data
+                                let cityList = []
+                                for (let j = 0; j < resData.length; j++) {
+                                    let cityObj = {
+                                        label: resData[j].rName,
+                                        value: resData[j].rID.toString(),
+                                    }
+                                    cityList.push(cityObj);
+                                }
+                                this.throwCity = cityList
+                                console.log('cityList', cityList)
+                                this.cityOptions = areaArr.province()
+                            } else {
+                                this.messageFun('warning','城市数据获取异常')
+                            }
+                        }
+                    })
+                // }
             },
             // 下一步
             next() {
@@ -1633,11 +1625,6 @@
                         this.messageFun('warning','请选择点位')
                     }
                 } else if (this.active === 2) {
-                    this.createBtn = true
-                    let timer = setTimeout(()=>{
-                        this.createBtn = false
-                        clearTimeout(timer)
-                    },500)
                     this.isCityPrice = false
                     this.vaildCityQuotation()
                     // console.log('this.isCityPrice',this.isCityPrice)
@@ -1662,7 +1649,7 @@
             prev() {
                 if (this.active < 1) {
                     this.active = 0;
-                } else {
+                }else {
                     this.active--;
                 }
             },
@@ -2493,11 +2480,9 @@
                                     for (let t = 0; t < this.throwCity.length; t++) {
                                         if (city_rid === this.throwCity[t].value) {
                                             this.throwCity.splice(t, 1)
-                                            break
                                         }
                                     }
                                     this.planForm.throwCity.splice(n, 1)
-                                    break
                                 }
                             }
                         }
@@ -2554,58 +2539,52 @@
                     }
                 }
             },
-            // 选择所属销售
-            changeSaler(val){
-                console.log('选择所属销售',val)
-                // 重新输入账号时，初始化部分数据
-                this.planForm.companyName = ''
-                this.planForm.companyBrand = ''
-                this.planForm.ownerBU = ''
-                this.planForm.throwCity = []
-                this.dynamicTags = []
-                this.throwCity = []
-                this.$refs['planForm'].clearValidate()
-                if (val) {
-                    this.BDData.uid = val
-                    this.getCityList()
-                    this.Get_cName()
-                } else {
-
-                }
-            },
             // 登录用户为媒介输入销售用户名去获取该销售的信息以便获取接下来的城市、公司、品牌、投放城市等信息
-            querySearchAsync(query) {
-                if (query !== '') {
-                    this.salerListLoading = true;
+            querySearchAsync(queryString, callback) {
+                let uid = this.sessionData.uID
+                if (queryString) {
                     let params = {
-                        uid: this.sessionData.uID,
+                        uid: uid,
                         token: this.sessionData.token,
-                        keyword: query
+                        sname: queryString
                     }
-                    api.postApi(this.apiVar.UCAPI + '/findBDUserByKeyword',params).then(res => {
-                        console.log('findBDUserByKeyword', res)
+                    api.postApi(this.apiVar.UCAPI+'/GetUserName', params).then(res => {
+                        console.log('GetUserName', res)
                         if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                             this.loginTimeout()
-                        } else if (res.data.SysCode === 200200) {
-                            let arr = []
-                            for (let key of res.data.data) {
-                                arr.push({
-                                    label: key.realName + '(' + key.sName + ')',
-                                    value: key.uID,
-                                    saleManageLevel: key.saleManageLevel,
-                                })
-                            }
-                            this.salerList = arr
                         } else {
-                            this.salerList = [];
+                            console.log('媒介销售信息', this.BDData)
+                            if (res.data.uID) {
+                                this.BDData.uid = res.data.uID
+                                this.saleManageLevel = res.data.saleManageLevel || 0
+                                console.log('GetUserName数据包', res.data)
+                                res.data.value = res.data.realName;
+                                this.BDData.realName = res.data.realName
+                                this.planForm.ownerSales = res.data.realName
+                                // 重新输入账号时，初始化部分数据
+                                this.planForm.companyName = ''
+                                this.planForm.companyBrand = ''
+                                this.planForm.ownerBU = ''
+                                this.planForm.throwCity = []
+                                this.dynamicTags = []
+                                this.throwCity = []
+                                this.getCityList()
+                                this.Get_cName()
+                                let results = [res.data];
+                                callback(results);
+                            } else {
+                                this.BDData.uid = '0'
+                                this.messageFun('warning',res.data.MSG)
+                                callback([]);
+                            }
                         }
-                        this.salerListLoading = false;
-                    })
-                } else {
-                    this.salerList = [];
-                    this.salerListLoading = false;
+
+                    });
+                }else{
+                    callback([]);
                 }
             },
+            //获取公司名称列表MyCustomer
             Get_cName() {
                 let params = {
                     uid: this.BDData.uid,
@@ -5089,7 +5068,7 @@
                             if(this.apMinTime <= this.dateTime){
                                 this.messageFun('warning','该方案的投放期已经开始，建议立即发布该方案！')
                             }else{
-                                this.messageFun('success','方案创建成功')
+                                this.messageFun('success','投放城市的报价信息提交成功')
                             }
                             // 清除后台缓存
                             let params = {

@@ -122,7 +122,7 @@
                             label="媒体类型"
                             min-width="7.4%"
                             :show-overflow-tooltip="true"
-                            >
+                        >
                         </el-table-column>
                         <el-table-column
                             prop="mTitle"
@@ -167,10 +167,10 @@
                                         <div slot="content">
                                             A面:{{scope.row.asState.A == '1' ? '正常' : '禁用'}}  B面:{{scope.row.asState.B == '1' ? '正常' : '禁用'}}
                                         </div>
-                                        <point-state :state-text="stateToText(scope.row.mState).text" :color="stateToText(scope.row.mState).color"></point-state>
+                                        <point-state :state-text="scope.row.mState" :color="stateToText(scope.row.mState).color"></point-state>
                                     </el-tooltip>
                                 </span>
-                                <point-state v-else :state-text="stateToText(scope.row.mState).text" :color="stateToText(scope.row.mState).color"></point-state>
+                                <point-state v-else :state-text="scope.row.mState" :color="stateToText(scope.row.mState).color"></point-state>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -340,12 +340,12 @@
                             :picker-options="dayOptionsSelect">
                         </el-date-picker>
                         <!--<el-select v-model="selectDay" placeholder="单选，提供最近三天" size="small">-->
-                            <!--<el-option-->
-                                <!--v-for="(item,index) in dayList"-->
-                                <!--:key="index"-->
-                                <!--:label="item.label"-->
-                                <!--:value="item.value">-->
-                            <!--</el-option>-->
+                        <!--<el-option-->
+                        <!--v-for="(item,index) in dayList"-->
+                        <!--:key="index"-->
+                        <!--:label="item.label"-->
+                        <!--:value="item.value">-->
+                        <!--</el-option>-->
                         <!--</el-select>-->
                     </div>
                     <p class="push_map_box_p" v-show="isShowTag">

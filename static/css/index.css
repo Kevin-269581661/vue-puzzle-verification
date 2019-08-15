@@ -194,7 +194,7 @@ body .el-table colgroup.gutter {
 .el-menu--horizontal .el-menu-item:not(:first-child):hover,
 .el-menu--horizontal>.el-submenu .el-submenu__title:hover{
     color: rgb(255, 255, 255) !important;
-    border-bottom-color: rgb(255, 255, 255) !important;
+    border-bottom-color: rgba(255, 255, 255,0) !important;
 }
 
 .el-submenu.is-active .el-submenu__title i{
@@ -213,4 +213,7 @@ body .el-table colgroup.gutter {
 }
 .user_center_item .el-menu--popup{
     min-width: 160px;
+}
+.el-menu--horizontal>.el-menu-item.is-active{
+    border-bottom: 3px solid #fff;
 }

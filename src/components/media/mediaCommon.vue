@@ -10,7 +10,7 @@
             background-color="#444"
             text-color="#999999"
             active-text-color="#fff">
-            <el-menu-item index="">
+            <el-menu-item index="" style="cursor: default">
                 <div class="logo_box">
                     <img src="../../assets/images/logo.png" alt="">
                 </div>

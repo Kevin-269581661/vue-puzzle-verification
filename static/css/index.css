@@ -140,7 +140,7 @@ body .el-table colgroup.gutter {
 /* 信息弹出框样式覆盖 */
 .el-message{
 	box-shadow:0px 4px 12px 0px rgba(0,0,0,0.15);
-	border-color: none;
+	/*border-color: none;*/
 	border: none;
 	background: #fff;
 }
@@ -214,6 +214,7 @@ body .el-table colgroup.gutter {
 .user_center_item .el-menu--popup{
     min-width: 160px;
 }
-.el-menu--horizontal>.el-menu-item.is-active{
+.el-menu--horizontal>.el-menu-item.is-active,
+.el-menu--horizontal>.el-submenu.is-active .el-submenu__title{
     border-bottom: 3px solid #fff;
 }

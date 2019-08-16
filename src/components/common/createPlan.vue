@@ -1307,7 +1307,7 @@
                 // 媒介选择所属销售列表
                 salerList:[],
                 // 获取销售选项loading
-                salerListLoading: true,
+                salerListLoading: false,
                 //
                 industryID: '',     // 所选公司所在的行业
                 planRules: {

@@ -9,7 +9,7 @@
                 <div class="ad_mediaInfo_head">
                     <h2>{{resData.resName}}</h2>
                     <div class="ad_mediaInfo_head_btn">
-                        <el-button plain size="mini" @click="edit('add')">添加媒体</el-button>
+                        <el-button plain size="mini" @click="edit('add')" v-if="haveEdit">添加媒体</el-button>
                         <el-button plain size="mini" style="color:rgba(0,0,0,0.65)" @click="showResImg" >小区全貌</el-button>
                         <el-button type="primary" @click="edit" v-if="haveEdit" size="mini">编辑</el-button>
                     </div>
@@ -189,7 +189,6 @@
                 <!--媒介载体-->
                 <div class="ad_ad">
                     <div v-if="haveEdit && activeMedia === 'first'" class="connect_door">
-                        <!--<el-button size="small" type="primary" @click="connectDoorFun">设置连排门</el-button>-->
                         <span class="connect_door_btn" @click="connectDoorFun">设置连排门</span>
                     </div>
                     <el-tabs v-model="activeMedia">
@@ -396,7 +395,7 @@
             </ul>
             <div class="add_row_btn" @click="addRowSelect()">+ 添加连排门</div>
             <div slot="footer" class="dialog-footer">
-                <el-button size="small" @click="ConnectDoorDialogVisible = false">取 消</el-button>
+                <el-button plain size="small" @click="ConnectDoorDialogVisible = false">取 消</el-button>
                 <el-button size="small" type="primary" @click="setConnectAdData" :disabled="isConnectBtn">确 定</el-button>
             </div>
         </el-dialog>
@@ -809,19 +808,24 @@
             },
             // 增加选择行
             addRowSelect() {
-                for (let key of this.connectOptions) {
-                    if (this.selectMedia.includes(key.value)) {
-                        key.disabled = true
-                    } else {
-                        key.disabled = false
+                if (this.connectAdArr.length < 26) {
+                    for (let key of this.connectOptions) {
+                        if (this.selectMedia.includes(key.value)) {
+                            key.disabled = true
+                        } else {
+                            key.disabled = false
+                        }
                     }
+                    this.connectAdArr.push({
+                        connID: '',
+                        selectMIDs: [],
+                        options: JSON.parse(JSON.stringify(this.connectOptions)),
+                        index: this.connectAdArr.length
+                    })
+                } else {
+                    sessFun.messageFun('warning', '暂不支持更多的连排门设置!')
                 }
-                this.connectAdArr.push({
-                    connID: '',
-                    selectMIDs: [],
-                    options: JSON.parse(JSON.stringify(this.connectOptions)),
-                    index: this.connectAdArr.length
-                })
+
             },
             // 删除选择行
             delRowSelect(index) {
@@ -911,7 +915,6 @@
                             } else {
                                 sessFun.messageFun('warning', '设置连排门失败!')
                             }
-                            // this.connectDoorFun()
                             connectAdloading.close()
                         })
                 }
@@ -1132,6 +1135,8 @@
         cursor: pointer;
     }
     .connect_door_h4{
+        width: 60.5px;
+        display: inline-block;
         font-weight:400;
         color:rgba(0,0,0,0.85);
         line-height: 22px;
@@ -1146,11 +1151,11 @@
         cursor: pointer;
         text-align: center;
         line-height: 32px;
-        margin-left: 59px;
+        margin-left: 65px;
     }
 
     /deep/ .el-dialog.connectAD{
-        width: 532px;
+        width: 535px;
     }
 
     /deep/ .connectAD .el-dialog__body{

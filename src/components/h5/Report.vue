@@ -4,7 +4,7 @@
             <div class="mediaMana_content_top">
                 <div class="content_top_wrap">
                     <div class="title">
-                        <h1>{{upReport.apName}}{{(Info.name =='SK')?'上刊':'下刊'}}报告 
+                        <h1>{{upReport.apName}}{{stateToText(Info.name)}}报告 
                             <span class="button_box">
                                 <el-button plain @click="getPTTx()" size="small" :loading="pptxLoading">导出PPTx</el-button>
                                 <el-button plain @click="getPTT()" size="small" :loading="pptLoading">导出PPT</el-button>
@@ -78,7 +78,7 @@
                                     </el-table-column>
                                     <el-table-column prop="hNum" label="户数" min-width="5.6%" align="right">
                                     </el-table-column>
-                                    <el-table-column label="媒体数量" prop="mediaNum" min-width="6.1%" align="right">
+                                    <el-table-column label="媒体数量" prop="adSpaceCount" min-width="6.1%" align="right">
                                     </el-table-column>
                                     <el-table-column label="操作" min-width="6.1%">
                                         <template slot-scope="scope">
@@ -316,6 +316,28 @@ export default {
         // this.searchFun();
     },
     methods: {
+        // 状态变中文
+        stateToText(type){
+            let arr = [
+                {
+                    name: 'SK',
+                    text: '上刊',
+                },
+                {
+                    name: 'XK',
+                    text: '下刊',
+                },
+                {
+                    name: 'CP',
+                    text: '换画'
+                }
+            ];
+            for(let data of arr){
+                if(data.name == type){
+                    return data.text;
+                }
+            }
+        },
         // tab点击
         handleClick() {
             if (this.planPanel == "third") {
@@ -394,13 +416,68 @@ export default {
             this.currUpPage = page;
             this.searchFun();
         },
+        // 根据type来获取数据
+        getDataFromType(){
+            let type = this.Info.name;
+            if(type == 'SK' || type =="XK"){
+                this.searchFun();
+            }else{
+                this.searchPain();
+            }
+        },
+        // 获取上下刊
         searchFun(){
             let info = this.searchFormat();
             this.getImgData(info);
         },
+        // 获取换画
+        searchPain(){
+            let info = this.searchPainFormat();
+            this.getPainImg(info);
+        },
         changeUpMedia(){
             this.currUpPage = 1;
             this.searchFun();
+        },
+        // 换画搜索数据格式化
+        searchPainFormat(){
+            let name = this.Info.name.toString().toLowerCase();
+            let val = this.Info.val;
+            let info = {
+                [name]: val,
+                pType: this.Info.name,
+                pageNum: this.currUpPage,
+                pageSize: this.pageUpSize,
+                mVehicle: this.mediaType,
+            };
+            console.log('type---', info);
+            return info;
+        },
+        // 获取换画图片数据
+        getPainImg(params){
+
+        },
+        // 获取换画数据
+        getPainData(){
+            let info = {
+                apId: '',
+                replaceRecordId: '',
+            };
+            api.postApi(this.apiVar.replace+"/report", info).then(res =>{
+                console.log(res.data);
+                let data = res.data;
+                // 换画抬头信息
+                this.upReport = this.getPainInfo(data.planInfo);
+                // 投放详情
+                let result = this.getResInfo(data.resInfo);
+                this.putDetail = result;
+                this.currPutDetail = JSON.parse(JSON.stringify(this.putDetail));
+                this.filterCityData = filterFormat(result, "city");
+                this.filtersArea = filterFormat(result, "rName");
+                // 发布情况
+                this.postDetail = this.getCityAdSpaceCount(data.cityAdSpaceCount);
+                this.loading = false;
+            });
         },
         // 搜索数据格式化
         searchFormat(){
@@ -440,7 +517,7 @@ export default {
                         // 上下刊抬头信息
                         this.upReport = this.getFangInfo(data.adPlanInfo);
                         // 投放详情
-                        let result = this.getResInfo(data.resInfo)
+                        let result = data.resInfo;
                         this.putDetail = result;
                         this.currPutDetail = JSON.parse(JSON.stringify(this.putDetail));
                         this.filterCityData = filterFormat(result, "city");
@@ -490,7 +567,7 @@ export default {
                 let obj = {
                     IsLock: item.IsLock,
                     adSize: item.adSize,
-                    mediaNum: item.adSpaceCount,
+                    adSpaceCount: item.adSpaceCount,
                     adViewSize: item.adViewSize,
                     asID: item.asID,
                     asLab: item.asLab,

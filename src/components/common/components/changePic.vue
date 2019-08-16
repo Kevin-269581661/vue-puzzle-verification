@@ -651,7 +651,7 @@ export default {
         getData(params){
             // this.imageArr
             // this.pageInfo
-            api.postApi(this.apiVar.replace +"/", params).then(res =>{
+            api.postApi(this.apiVar.replace +"/detailInfo", params).then(res =>{
                 console.log(res);
                 if(res.data.SysCode == 200200){
                     let dataInfo = res.data;
@@ -768,7 +768,7 @@ export default {
                 apId: sessionStorage.getItem('order_apid'),
                 replaceRecordId: this.painList[this.activePainIndex].id,
                 ...( resName && { resId: resName }),
-                ...( mapName && { mapCenterName: mapName }),
+                ...( mapName && { mapCenterId: mapName }),
                 ...( picState && { replaceStatus: picState })
             };
             return info;
@@ -778,7 +778,7 @@ export default {
             this.getMaterInfo(info);
         },
         getMaterInfo(params){
-            api.postApi(this.apiVar.replace+'/GetAdMaterial', params).then(res =>{
+            api.postApi(this.apiVar.replace+'/getAdspaces', params).then(res =>{
                 console.log(res.data);
                 if(res.data.total >= 0){
                     let dataInfo = res.data;

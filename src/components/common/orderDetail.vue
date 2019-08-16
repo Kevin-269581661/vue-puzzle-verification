@@ -978,29 +978,29 @@ export default {
             this.planPanel = 'sixth';                            
             this.fromType = !this.fromType;
 
-            // let info = {
-            //     apId: this.orderDetail.apID
-            // };
-            // api.postApi(this.apiVar.replace+'/list', info).then(res =>{
-            //     console.log(res);
-            //     if(res.data.SysCode == 200200){
-            //         let len = res.data.data.length;
-            //         let painInfo = {
-            //             apId: this.orderDetail.apID,
-            //             replaceRecordName: `换画${len+1}`,
-            //         };
-            //         api.postApi(this.apiVar.replace+'/addPainReport', painInfo).then(res =>{
-            //             if(res.data.SysCode == 200200){
-            //                 this.planPanel = 'sixth';                            
-            //                 this.fromType = !this.fromType;
-            //             }else{
-            //                 sessFun.messageFun('warning', res.data.msg);
-            //             }
-            //         });
-            //     }else{
-            //         sessFun.messageFun('warning', res.data.msg);
-            //     }
-            // });
+            let info = {
+                apId: this.orderDetail.apID
+            };
+            api.postApi(this.apiVar.replace+'/list', info).then(res =>{
+                console.log(res);
+                if(res.data.SysCode == 200200){
+                    let len = res.data.data.length;
+                    let painInfo = {
+                        apId: this.orderDetail.apID,
+                        replaceRecordName: `换画${len+1}`,
+                    };
+                    api.postApi(this.apiVar.replace+'/add', painInfo).then(res =>{
+                        if(res.data.SysCode == 200200){
+                            this.planPanel = 'sixth';                            
+                            this.fromType = !this.fromType;
+                        }else{
+                            sessFun.messageFun('warning', res.data.msg);
+                        }
+                    });
+                }else{
+                    sessFun.messageFun('warning', res.data.msg);
+                }
+            });
         },
         // 操作提示统一方法
         messageFun(mesType,mes){

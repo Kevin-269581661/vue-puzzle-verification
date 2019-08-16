@@ -185,11 +185,9 @@
             },
             // 每页条数切换
             sizeChange(val) {
-                this.pageSize = val;
-                if (this.currPage == 1) {
-                    this.searchFun();
-                }
                 this.currPage = 1;
+                this.pageSize = val;
+                this.searchFun();
             },
             // 获取公司
             getCompany(){

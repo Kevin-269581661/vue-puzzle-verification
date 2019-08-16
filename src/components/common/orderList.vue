@@ -38,7 +38,7 @@
                     <el-table border :data="currentOrder" style="width: 100%" @sort-change="sortChange" v-loading="loading" element-loading-text="玩命加载中" element-loading-spinner="el-icon-loading" :default-sort="{prop: 'appTime', order: 'descending'}">
                         <el-table-column label="订单名称" min-width="14.6%">
                             <template slot-scope="scope">
-                                <a href="javascript:void(0);" @click="ToDetail(scope.row)">{{scope.row.apName}}</a>
+                                <span style="color: #108ee9;cursor: pointer" @click="ToDetail(scope.row)">{{scope.row.apName}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="cName" label="客户名称" min-width="12.6%"  show-overflow-tooltip>

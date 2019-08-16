@@ -10,29 +10,27 @@
                 <h2>账号列表</h2>
             </div>
             <div class="mediaList_container">
-                <el-row class="search_row">
-                    <el-col>
-                        <el-input placeholder="请输入内容" v-model="searchInfo.keyword" class="input-with-select">
-                            <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
-                                <el-option label="姓名" value="1"></el-option>
-                                <el-option label="账号" value="2"></el-option>
-                            </el-select>
-                        </el-input>
-                        <el-select v-model="searchInfo.role" placeholder="请选择账号角色">
-                            <el-option v-for="item of roleList" :key="item.value" :label="item.text" :value="item.value" ></el-option>
+                <div class="flex_box search_row">
+                    <el-input placeholder="请输入内容" v-model="searchInfo.keyword" size="small" class="marginR">
+                        <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
+                            <el-option label="姓名" value="1"></el-option>
+                            <el-option label="账号" value="2"></el-option>
                         </el-select>
-                        <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable v-if="sessionData.ascType==0">
-                            <el-option v-for="item of companyData" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                        </el-select>
-                        <el-select v-model="searchInfo.state" placeholder="请选择状态">
-                            <el-option label="正常" value="1"></el-option>
-                            <el-option label="禁用" value="0"></el-option>
-                        </el-select>
-                        <el-button type="primary" icon="el-icon-search" @click="search()" :loading="isSearch">搜索</el-button>
-                        <el-button plain @click="reset()" :disabled="!isReset">重置</el-button>
-                        <el-button plain @click="newAccount()" v-if="showNewBtn">新建</el-button>
-                    </el-col>
-                </el-row>
+                    </el-input>
+                    <el-select v-model="searchInfo.role" placeholder="请选择账号角色" size="small" class="marginR">
+                        <el-option v-for="item of roleList" :key="item.value" :label="item.text" :value="item.value" ></el-option>
+                    </el-select>
+                    <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable v-if="sessionData.ascType==0" size="small" class="marginR">
+                        <el-option v-for="item of companyData" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    </el-select>
+                    <el-select v-model="searchInfo.state" placeholder="请选择状态" size="small" class="marginR">
+                        <el-option label="正常" value="1"></el-option>
+                        <el-option label="禁用" value="0"></el-option>
+                    </el-select>
+                    <el-button type="primary" icon="el-icon-search" @click="search()" :loading="isSearch" class="marginR">搜索</el-button>
+                    <el-button plain @click="reset()" :disabled="!isReset" class="marginR">重置</el-button>
+                    <el-button plain @click="newAccount()" v-if="showNewBtn" class="marginR">新建</el-button>
+                </div>
                 <div class="table_wrap">
                     <el-table border :data="currAccount" style="width: 100%"  @sort-change="sortChange" v-loading="loading"
                               element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading"
@@ -429,16 +427,19 @@
     a {
         color: #108ee9;
     }
-
+    .flex_box{
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .marginR{
+        margin-right: 6px;
+    }
+    .el-button+.el-button{
+        margin-left: 0;
+    }
     /*筛选*/
     .el-checkbox + .el-checkbox {
         margin-left: 0;
-    }
-
-    .input-with-select /deep/ .el-input__inner {
-        font-size: 14px;
-        height: 34px;
-        line-height: 34px;
     }
 
     /deep/ .plan-select .el-input__inner {

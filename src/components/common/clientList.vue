@@ -10,25 +10,23 @@
 				<h2>客户列表</h2>
 			</div>
 			<div class="mediaList_container">
-				<el-row>
-                    <el-col>
-                        <el-input placeholder="请输入内容" v-model="searchInfo.keyword" class="input_select" size="small">
-                            <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
-                                <el-option label="公司品牌" value="1"></el-option>
-                                <el-option label="公司名称" value="2"></el-option>
-                                <el-option label="联系人" value="3"></el-option>
-                            </el-select>
-                        </el-input>
-                        <el-date-picker class="input_select" size="small" v-model="searchInfo.date" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="创建日期" end-placeholder="创建日期">
-                        </el-date-picker>
-                        <el-select v-model="searchInfo.company" placeholder="请选择公司" size="small" v-if="sessionData.uType !='BD'">
-                            <el-option v-for="item of companyArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                <div class="flex_box">
+                    <el-input placeholder="请输入内容" v-model="searchInfo.keyword" size="small" class="marginR">
+                        <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
+                            <el-option label="公司品牌" value="1"></el-option>
+                            <el-option label="公司名称" value="2"></el-option>
+                            <el-option label="联系人" value="3"></el-option>
                         </el-select>
-                        <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
-                        <el-button plain @click="reset()" :disabled="!isReset">重置</el-button>
-                        <el-button plain @click="newClient()" v-if="showNewBtn">新建</el-button>
-                    </el-col>
-				</el-row>
+                    </el-input>
+                    <el-date-picker size="small" class="marginR" v-model="searchInfo.date" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="创建日期" end-placeholder="创建日期">
+                    </el-date-picker>
+                    <el-select v-model="searchInfo.company" placeholder="请选择公司" size="small" v-if="sessionData.uType !='BD'" class="marginR">
+                        <el-option v-for="item of companyArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    </el-select>
+                    <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch" class="marginR">搜索</el-button>
+                    <el-button plain @click="reset()" :disabled="!isReset" class="marginR">重置</el-button>
+                    <el-button plain @click="newClient()" v-if="showNewBtn" class="marginR">新建</el-button>
+                </div>
 				<div class="table_wrap">
 					<el-table border :data="currentPlan" @sort-change="sortChange" v-loading="loading" element-loading-text="玩命加载中..." element-loading-spinner="el-icon-loading" style="width: 100%" :default-sort="{prop: 'joinTime', order: 'descending'}">
 						<el-table-column prop="realName" label="联系人" min-width="6%" show-overflow-tooltip>
@@ -352,11 +350,16 @@ export default {
 .el-checkbox + .el-checkbox {
     margin-left: 0;
 }
-
-.input_select /deep/ .el-input__inner {
-    font-size: 14px;
+.flex_box{
+    display: flex;
+    flex-wrap: wrap;
 }
-
+.marginR{
+    margin-right: 6px;
+}
+.el-button+.el-button{
+    margin-left: 0;
+}
 .typeBox p {
     height: 30px;
     font-size: 12px;

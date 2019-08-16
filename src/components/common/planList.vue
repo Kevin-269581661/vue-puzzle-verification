@@ -10,41 +10,37 @@
                 <h2>方案列表</h2>
             </div>
             <div class="mediaList_container">
-                <el-row class="search_row">
-                    <el-col>
-                        <el-input placeholder="请输入内容" v-model="searchInfo.keyword" size="small" class="input-with-select">
-                            <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
-                                <el-option label="方案名称" value="1"></el-option>
-                                <el-option label="客户名称" value="2"></el-option>
-                                <el-option label="品牌名称" value="3"></el-option>
-                            </el-select>
-                        </el-input>
-                        <el-date-picker size="small" class="input-with-select" v-model="searchInfo.rangeDate" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
-                        </el-date-picker>
-                        <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small">
-                            <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
+                <div class="flex_box search_row">
+                    <el-input placeholder="请输入内容" v-model="searchInfo.keyword" size="small" class="marginR">
+                        <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
+                            <el-option label="方案名称" value="1"></el-option>
+                            <el-option label="客户名称" value="2"></el-option>
+                            <el-option label="品牌名称" value="3"></el-option>
                         </el-select>
-                        <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable size="small" v-if="isAll">
-                            <el-option v-for="item of companyData" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                        </el-select>
-                        <el-select v-model="searchInfo.cityWord" placeholder="请选择投放城市" filterable size="small">
-                            <el-option v-for="item of filterCityData" :key="item.rID" :label="item.text" :value="item.text"></el-option>
-                        </el-select>
-                        <el-select v-model="searchInfo.Lock" placeholder="是否预锁" size="small">
-                            <el-option label="已预锁" value="2"></el-option>
-                            <el-option label="未预锁" value="1"></el-option>
-                        </el-select>
-                        <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
-                        <el-button plain @click="reset()" :disabled="!isReset">重置</el-button>
-                    </el-col>
-                </el-row>
-                <el-row v-if="showNewBtn || !isNation" >
-                    <el-col>
-                        <el-button plain v-if="showNewBtn" @click="addOne()">新建</el-button>
-                        <el-button plain v-if="showNewBtn" @click="isOpenDownload=true">导空位</el-button>
-                        <el-button plain v-if="!isNation" @click="goToDiaPlate">点位表盘</el-button>
-                    </el-col>
-                </el-row>
+                    </el-input>
+                    <el-date-picker size="small" class="marginR" v-model="searchInfo.rangeDate" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
+                    </el-date-picker>
+                    <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small"  class="marginR">
+                        <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
+                    </el-select>
+                    <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable size="small" v-if="isAll"  class="marginR">
+                        <el-option v-for="item of companyData" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    </el-select>
+                    <el-select v-model="searchInfo.cityWord" placeholder="请选择投放城市" filterable size="small" class="marginR">
+                        <el-option v-for="item of filterCityData" :key="item.rID" :label="item.text" :value="item.text"></el-option>
+                    </el-select>
+                    <el-select v-model="searchInfo.Lock" placeholder="是否预锁" size="small" class="marginR">
+                        <el-option label="已预锁" value="2"></el-option>
+                        <el-option label="未预锁" value="1"></el-option>
+                    </el-select>
+                    <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch" class="marginR">搜索</el-button>
+                    <el-button plain @click="reset()" :disabled="!isReset" class="marginR">重置</el-button>
+                    <template v-if="showNewBtn || !isNation" >
+                        <el-button plain v-if="showNewBtn" @click="addOne()" class="marginR">新建</el-button>
+                        <el-button plain v-if="showNewBtn" @click="isOpenDownload=true" class="marginR">导空位</el-button>
+                        <el-button plain v-if="!isNation" @click="goToDiaPlate" class="marginR">点位表盘</el-button>
+                    </template>
+                </div>
                 <div class="table_wrap">
                     <el-table border :data="currentPlan" style="width: 100%" @sort-change="sortChange" v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                         <el-table-column prop="apName" label="方案名称" min-width="14.9%">
@@ -1116,9 +1112,6 @@ export default {
 };
 </script>
 <style scoped>
-.search_row{
-    margin-bottom: 16px;
-}
 a {
     color: #108ee9;
 }
@@ -1168,9 +1161,13 @@ a {
     border-radius: 4px;
 }
 
-.input-with-select /deep/ .el-input__inner {
-    font-size: 14px;
-    vertical-align: middle;
+.flex_box{
+    display: flex;
+    flex-wrap: wrap;
+}
+.marginR{
+    margin-right: 6px;
+    margin-bottom: 16px;
 }
 
 /deep/ .el-date-editor .el-range-separator {
@@ -1217,6 +1214,12 @@ a {
     color: #409EFF;
 }
 
+.mediaList_wrap .mediaList_container .table_wrap{
+    margin: 0 auto 16px;
+}
+.el-button+.el-button{
+    margin-left: 0;
+}
 .table_wrap .city_p span{
     float: none !important;
 }

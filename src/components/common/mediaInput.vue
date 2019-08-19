@@ -2358,7 +2358,6 @@
             // 表单验证 resFrom:资源表单、adDoorFrom：广告门的表单、rgFrom：道闸的表单
             submitForm(resFrom,adDoorFrom,rgFrom){
                 console.log('校验开始-----------')
-                let isValidateMedia = false
                 this.submitBtnIsAble = true
                 let timer = setTimeout(()=>{
                     this.submitBtnIsAble = false
@@ -2366,20 +2365,29 @@
                 },500)
                 // 资源表单校验
                 let validateResArr = ['rt','city','region','resname','resaddr','lat','lng','floorType','households','buildingNum','liveTime']
-                let i = 0
+                let validatesPro = []; //Promise.all要用到的参数, 存放每次请求的Promise对象
                 for (let key of validateResArr) {
-                    this.$refs.recForm.validateField(key, (valid) => {
-                        if (!valid) {
-                            i++
-                            if (i >= validateResArr.length - 1 && !isValidateMedia) {
-                                isValidateMedia = true
-                                this.adDoorValidateFrom(adDoorFrom, 0)
+                    let validate = new Promise((resolve, reject)=>{
+                        this.$refs.recForm.validateField(key, (valid) => {
+                            // valid为错误信息，不为空这表示错误
+                            if (!valid) {
+                                resolve(true);
+                            } else {
+                                reject(false);
                             }
-                        } else {
-                            this.messageFun('warning','必填项信息不能为空或填写有误！')
-                        }
+                        })
                     })
+                    validatesPro.push(validate)
                 }
+                Promise.all(validatesPro).then((res)=> {
+                    // 验证全部通过
+                    console.log('验证全部通过',res)
+                    this.adDoorValidateFrom(adDoorFrom, 0)
+                }).catch((err)=> {
+                    console.log("验证失败",err)
+                    //验证失败 提示reject失败状态的值
+                    this.messageFun('warning','必填项信息不能为空或填写有误！')
+                });
             },
             // 广告门校验
             adDoorValidateFrom(fromName,index){
@@ -2801,7 +2809,7 @@
                 console.log('recObj', recObj)
                 let SetResCTObj = {
                     resid: this.resData.resID,
-                    rid: '',//recObj.region,
+                    rid: '',
                     ta: recObj.business,
                     resname: recObj.resname,
                     resaddr: recObj.resaddr,

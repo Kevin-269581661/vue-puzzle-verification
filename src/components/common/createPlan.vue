@@ -1374,12 +1374,6 @@
                 dateTime: '',                   // 获取今天日期
                 ADLimit: [                      // step2 广告限制
                     {value: '地产', label: '地产'},
-                    {value: '汽车', label: '汽车'},
-                    {value: '美容', label: '美容'},
-                    {value: '餐饮', label: '餐饮'},
-                    {value: '食品', label: '食品'},
-                    {value: '金融', label: '金融'},
-                    {value: '医学', label: '医学'},
                 ],
                 limitName: '全部',               // 当前广告限制高亮，默认为全部
                 limitList: [],                  // 当前选择的广告限制

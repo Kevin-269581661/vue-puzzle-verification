@@ -869,6 +869,7 @@
                 console.log('this.connectAdArr', this.connectAdArr)
                 this.isConnectBtn = true
                 let isGreaterThanOne = true
+                let isConnHaveDoor = true       // 已有连排门不能为空
                 let arr = []
                 for (let key of this.connectAdArr) {
                     let obj = {connID: '', mIDs: ''}
@@ -882,6 +883,10 @@
                         arr.push(obj)
                     } else if (key.selectMIDs.length === 1) {
                         isGreaterThanOne = false
+                    } else {
+                        if (key.connID) {
+                            isConnHaveDoor = false
+                        }
                     }
                 }
                 console.log('arr---', arr)
@@ -890,6 +895,9 @@
                     sessFun.messageFun('warning', '同一个连排门最少需要两个广告门!')
                 } else if (!arr.length) {
                     sessFun.messageFun('warning', '连排门数据不能为空!')
+                    this.isConnectBtn = false
+                } else if (!isConnHaveDoor) {
+                    sessFun.messageFun('warning', '已存在的连排门不能为空，不需要该连排门可点击删除!')
                     this.isConnectBtn = false
                 } else {
                     let connectAdloading = this.$loading({

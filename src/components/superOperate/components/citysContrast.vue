@@ -788,7 +788,7 @@
                 }
             },
             // 城市数据对比 - 接口
-            getCityTotalAndIncrement(asrID,url,String){
+            getCityTotalAndIncrement(asrID,url,String) {
                 let onStart = this.returnDate(this.compareCityTime[0],'start')
                 let onEnd = this.returnDate(this.compareCityTime[1])
                 let params = {
@@ -963,35 +963,34 @@
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                     asrIDs: this.returnAsrID(),
-                    onStart:this.cityRateCompareDate[0],
-                    onEnd:this.cityRateCompareDate[1]
+                    startDate:this.cityRateCompareDate[0].split('-').join('/'),
+                    endDate:this.cityRateCompareDate[1].split('-').join('/'),
                 }
-                api.getApi(this.apiVar.Count + '/GetPublicationRateByCityCompare', params).then(res=>{
+                // api.getApi(this.apiVar.Count + '/GetPublicationRateByCityCompare', params).then(res=>{
+                api.getApi(this.apiVar.report + '/api/v2/getCityPublishRate', params).then(res=>{
                     console.log('城市上刊率对比',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         sessFun.loginTimeout()       // 登录超时
-                    } else {
-                        let dataArr = res.data
-                        if (dataArr.length > 0) {
-                            this.cityRateCompareData = dataArr
-                            let rateList = []
-                            let cityList = []
-                            for (let val of dataArr) {
-                                rateList.push(Math.round(val.publicationRate * 10000) / 100)
-                                if (val.asName.length > 6) {
-                                    cityList.push(val.asName.substring(0, val.asName.length - 6))
-                                } else {
-                                    cityList.push(val.asName)
-                                }
+                    } else if (res.data.SysCode === 200200) {
+                        let dataArr = res.data.data
+                        this.cityRateCompareData = dataArr
+                        let rateList = []
+                        let cityList = []
+                        for (let val of dataArr) {
+                            rateList.push(Math.round(val.rate * 10000) / 100)
+                            if (val.name.length > 6) {
+                                cityList.push(val.name.substring(0, val.name.length - 6))
+                            } else {
+                                cityList.push(val.name)
                             }
-                            this.cityRateCompareShowData.name = cityList
-                            this.cityRateCompare = cityList
-                            this.cityRateCompareShowData.value = rateList
-                            console.log('城市上刊率对比', this.cityRateCompareShowData)
-                            this.cityPercentBattleBar()
-                        } else {
-                            sessFun.messageFun('warning', '城市上刊率对比,在该时段暂无数据!')
                         }
+                        this.cityRateCompareShowData.name = cityList
+                        this.cityRateCompare = cityList
+                        this.cityRateCompareShowData.value = rateList
+                        console.log('城市上刊率对比', this.cityRateCompareShowData)
+                        this.cityPercentBattleBar()
+                    } else {
+                        sessFun.messageFun('warning', '城市上刊率对比,在该时段暂无数据!')
                     }
                     this.cityPercentBattleLoading = false
                 })

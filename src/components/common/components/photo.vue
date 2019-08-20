@@ -79,9 +79,9 @@
             saveImgFun(item) {
                 console.log('保存图片', item)
                 let lID = ''
-                if(this.tabType === 'first'){
-                    lID = item.adsInfo ? item.adsInfo.lID : ''
-                }else{
+                if (this.tabType === 'first') {
+                    lID = item.lId //item.adsInfo ? item.adsInfo.lID : ''
+                } else {
                     lID = item.pRemarks.lid
                 }
                 let params = {
@@ -172,7 +172,7 @@
                                 <p class="mask_icon">
                                     <span v-if="isShowCollect">
                                         <i v-if="!img.isCollection" class="el-icon-star-off" @click="saveImgFun(img)" ></i>
-                                        <i v-if="img.isCollection" class="el-icon-star-on icon_save" @click="cancelImgFun(img)" ></i>
+                                        <i v-else="img.isCollection" class="el-icon-star-on icon_save" @click="cancelImgFun(img)" ></i>
                                     </span>
                                     <i class="el-icon-search" @click="handlePictureCardPreview(img)"></i>
                                 </p>

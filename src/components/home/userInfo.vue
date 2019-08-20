@@ -1,5 +1,5 @@
 <template>
-	<div class="pass_box">
+	<div class="myInfo_box">
 		<h4>基本资料</h4>
 		<div class="userInfo_box">
             <div class="info_left">
@@ -206,15 +206,11 @@ export default {
 </script>
 
 <style scoped>
-.pass_box{
-    padding: 20px;
-    background: #fff;
-}
 h4 {
     font-size: 20px;
     color: #000;
     width: 100%;
-    padding-left: 20px;
+    font-weight:600;
     text-align: left;
 }
 .userInfo_box{

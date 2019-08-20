@@ -489,6 +489,7 @@ export default {
             sessionStorage.setItem('change_point', 'yes');
             sessionStorage.setItem("order_apid", row.apID);
             sessionStorage.setItem('order_citylist', JSON.stringify(row.companyList));
+            this.$router.push("./orderDetail");            
         },
         // 状态转换成文本
         stateToText(val) {

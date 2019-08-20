@@ -1648,10 +1648,12 @@ export default {
     line-height: 32px;
     border-radius: 4px;
     border: 1px solid rgba(0, 0, 0, 0.15);
-    display: inline-block;
     margin-left: 16px;
     padding: 0 10px;
     font-size: 12px;
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
 }
 /deep/.process_box .el-progress {
     display: inline-block;

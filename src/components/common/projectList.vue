@@ -11,7 +11,7 @@
             </div>
             <el-row class="fix_date">
                 <el-col>
-                    <el-date-picker class="input-with-select" v-model="searchInfo.rangeDate" @change="changeDate()" align="right" size="small" type="daterange" range-separator="-" format="yyyy/MM/dd" value-format="yyyy/MM/dd" >
+                    <el-date-picker v-model="searchInfo.rangeDate" @change="changeDate()" align="right" size="small" type="daterange" range-separator="-" format="yyyy/MM/dd" value-format="yyyy/MM/dd" >
                     </el-date-picker>
                 </el-col>
             </el-row>
@@ -269,7 +269,7 @@
                             };
                         }): [];
                     }else{
-                        this.messageFun('warning', res.data.MSG);
+                        sessFun.messageFun('warning', res.data.MSG);
                     }
                 }).catch(err =>{
                     console.log(err);
@@ -296,7 +296,7 @@
                             }
                         });
                     }else{
-                        // this.messageFun('warning', res.data.MSG);
+                        // sessFun.messageFun('warning', res.data.MSG);
                     }
                 }).catch(err =>{
                     console.log(err);
@@ -349,10 +349,10 @@
                         this.projectList = this.funcData(dataArr);
                         this.loading = false;
                         if(dataInfo.total == 0){
-                            this.messageFun('warning', '暂无数据');
+                            sessFun.messageFun('warning', '暂无数据');
                         }
                     }else{
-                        this.messageFun('warning', res.data.MSG);
+                        sessFun.messageFun('warning', res.data.MSG);
                     }
                 });
             },
@@ -430,7 +430,7 @@
                     this.currPage = 1;
                     this.searchFun();
                 }else{
-                    this.messageFun('warning', '请输入搜索条件');
+                    sessFun.messageFun('warning', '请输入搜索条件');
                 }
             },
             // 重置
@@ -504,24 +504,16 @@
                             }
                             return t;
                         });
-                        this.messageFun('success', res.data.MSG);
+                        sessFun.messageFun('success', res.data.MSG);
                         this.isShowDistri = false;
                     }else{
-                        this.messageFun('warning', res.data.MSG);
+                        sessFun.messageFun('warning', res.data.MSG);
                     }
                     this.disTriLoading = false;
                 }).catch(err =>{
                     this.disTriLoading = false;
                     console.log(err);
                 });
-            },
-            // 操作提示统一方法
-            messageFun(mesType, mes){
-                this.$message({
-                    message: mes,
-                    type: mesType,
-                    showClose: true,
-                })
             },
         },
         mounted(){
@@ -559,12 +551,7 @@
     /deep/ .popper__arrow {
         display: none;
     }
-
-    .input-with-select /deep/ .el-input__inner {
-        font-size: 14px;
-        height: 34px;
-        vertical-align: middle;
-    }
+    
     /deep/ .el-date-editor--daterange.el-input__inner{
         width: 240px;
         min-width: 240px;

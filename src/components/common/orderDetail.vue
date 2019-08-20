@@ -1232,63 +1232,6 @@ export default {
         width: 100%;
     }
 
-    .plan-detail {
-        font-size: 14px;
-        color: #333333;
-        padding-left: 41px;
-    }
-
-    .plan-detail-left {
-        float: left;
-        width: 78%;
-    }
-
-    .plan-detail-left ul {
-        width: 100%;
-        float: left;
-        display: flex;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        text-align: left;
-    }
-
-    .plan-detail-left ul li {
-        float: left;
-        width: 280px;
-        margin-bottom: 12px;
-        display: flex;
-    }
-
-    .plan-detail-left ul li em {
-        font-size: 14px;
-        color: #666666;
-    }
-
-    .plan-detail-right {
-        width: 20%;
-        float: right;
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .plan-detail-right dl {
-        float: left;
-        text-align: right;
-    }
-
-    .plan-detail-right dt {
-        font-size: 14px;
-        color: rgba(0, 0, 0, 0.45);
-    }
-
-    .plan-detail-right dd {
-        margin-top: 4px;
-        display: inline-block;
-        font-size: 20px;
-        font-weight: bold;
-        color: rgba(0, 0, 0, 0.85);
-    }
-
     /*物料信息*/
     /deep/ .el-table_2_column_16 .cell {
         text-align: right;
@@ -1450,16 +1393,6 @@ export default {
         .plan-title .handleBtn {
             position: absolute;
             top: 30px;
-        }
-
-        .plan-detail-right {
-            width: 15%;
-        }
-
-        .plan-detail-left ul li {
-            float: left;
-            width: 400px;
-            margin-bottom: 12px;
         }
     }
     /deep/ .el-upload-list__item.is-success{

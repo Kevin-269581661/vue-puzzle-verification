@@ -143,7 +143,7 @@ export default {
 
 .plan-detail-left ul li {
     float: left;
-    width: 280px;
+    min-width: 280px;
     margin-bottom: 12px;
 }
 

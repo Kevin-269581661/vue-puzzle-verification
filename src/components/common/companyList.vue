@@ -10,24 +10,24 @@
                 <h2>公司列表</h2>
             </div>
             <div class="mediaList_container">
-                <el-row class="mediaList_handel">
-                    <el-col :span="6">
+                <el-row :gutter="32">
+                    <el-col class="name_row">
                         <span>公司名称:</span>
                         <el-input v-model="searchInfo.keyword" placeholder="请输入" size="small"></el-input>
                     </el-col>
-                    <el-col :span="6">
+                    <el-col>
                         <span>公司类型:</span>
                         <el-select v-model="searchInfo.type" placeholder="请选择" size="small">
                             <el-option v-for="item of typeArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-col>
-                    <el-col :span="6">
+                    <el-col>
                         <span>状态:</span>
                         <el-select v-model="searchInfo.state" placeholder="请选择" size="small">
                             <el-option v-for="item of stateArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-col>
-                    <el-col :span="6">
+                    <el-col>
                         <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">查询</el-button>
                         <el-button plain @click="reset()">重置</el-button>
                         <el-button plain @click="newCom()" v-if="showNewBtn">新建</el-button>
@@ -462,11 +462,23 @@
     };
 </script>
 <style scoped>
-    /deep/.mediaList_container .el-input{
-        max-width: 180px;
-    }
     a{
         color: #108ee9;
+    }
+    /deep/.el-row span{
+        font-size: 14px;
+    }
+    /deep/.el-col-24{
+        width: auto;
+    }
+    /deep/.el-col-24:not(:last-child){
+        min-width: 25%;
+    }
+    /deep/.el-row .el-select{
+        width: calc(98% - 60px);
+    }
+    /deep/.name_row .el-input{
+        width: calc(98% - 60px);        
     }
 </style>
 

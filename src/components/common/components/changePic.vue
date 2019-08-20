@@ -578,6 +578,20 @@ export default {
         }
     },
     methods: {
+        // 获取图片列表
+        getImgArr(){
+            let type = this.type;
+            console.log(type, 'type---');
+            if(type == 1 || type ==2){
+                // 上下刊报告列表
+                this.searchFun();
+            }else if(type == 3){
+                // 获取换画名称列表
+                this.getPainList();
+                // 换画报告列表
+                this.search();
+            }
+        },
         // 获取全部换画列表(换画名称以及id)
         getPainList(){
             let info = {
@@ -600,22 +614,16 @@ export default {
                 }
             });
         },
-        // 获取图片列表
-        getImgArr(){
-            let type = this.type;
-            console.log(type, 'type---');
-            if(type == 1 || type ==2){
-                // 上下刊报告列表
-                this.searchFun();
-            }else if(type == 3){
-                // 获取换画名称列表
-                this.getPainList();
-                // 换画报告列表
-                this.search();
-            }
-        },
+        // 修改媒体类型
         changeMedia(){
-            let { mediaType } = this.publishSearchInfo;
+            this.pageInfo.currPage = 1;
+            this.publishSearchInfo = {
+                ...this.publishSearchInfo,
+                citySelect: [],
+                allhouse: '',
+                allPic: '',
+            };
+            
             this.searchFun();
         },
         searchImgChange(){

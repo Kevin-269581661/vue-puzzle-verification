@@ -130,7 +130,7 @@ export default {
 
 .plan-detail-left {
     float: left;
-    width: 78%;
+    width: 78.5%;
 }
 
 .plan-detail-left ul {
@@ -143,16 +143,8 @@ export default {
 
 .plan-detail-left ul li {
     float: left;
-    width: 280px;
-    margin-bottom: 12px;
-}
-
-.plan-detail-left ul li:nth-child(3n-2) {
-    /*width: 350px;*/
-}
-
-.plan-detail-left ul li:nth-child(3n-1) {
-    /*width: 248px;*/
+    width: calc(33% - 16px);
+    margin: 0 16px 12px 0;
 }
 
 .plan-detail-left ul li em {
@@ -168,9 +160,7 @@ export default {
     line-height: 22px;
     min-width: 75px;
 }
-.tooltip_p span{
-    /* margin-top: 10px; */
-}
+
 .plan-detail-right {
     display: flex;
     justify-content: space-between;

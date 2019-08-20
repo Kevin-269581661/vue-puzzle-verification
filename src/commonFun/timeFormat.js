@@ -281,4 +281,33 @@ timeFormat.getWorkWeek = function (format,date = new Date()) {
     }
     return [star,end]
 }
+// 指定日期转化为星期几
+timeFormat.returnWeekByDate = function (date = new Date()) {
+    let week = new Date(date).getDay();
+    let weekName = ''
+    switch (week){
+        case 0:
+            weekName = '星期天';
+            break;
+        case 1:
+            weekName = '星期一';
+            break;
+        case 2:
+            weekName = '星期二';
+            break;
+        case 3:
+            weekName = '星期三';
+            break;
+        case 4:
+            weekName = '星期四';
+            break;
+        case 5:
+            weekName = '星期五';
+            break;
+        case 6:
+            weekName = '星期六';
+            break;
+    }
+    return weekName
+}
 export default timeFormat;

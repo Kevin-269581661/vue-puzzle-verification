@@ -512,8 +512,8 @@
     }
 
     .ad_breadcrumb p{
-        width: 92%;
-        margin: 0 auto;
+        /*width: 92%;*/
+        margin: 0 64px;
     }
 
     .ad_breadcrumb p a{

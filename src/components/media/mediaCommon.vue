@@ -130,14 +130,17 @@
                 let path = this.$route.path
                 let routePath = ''
                 if (path.includes('/mediaDetail') || path.includes('/mediaEdit') || path.includes('/mediaInput')) {
+                    // 媒体管理
                     routePath = '/media/mediaList'
-                } else if (path.includes('/editPlan') || path.includes('/planDetail') || path.includes('/createPlan')) {
+                } else if (path.includes('/editPlan') || path.includes('/planDetail')
+                    || path.includes('/createPlan') || path.includes('/adsDialPlate')) {
+                    // 方案管理
                     routePath = '/media/planList'
                 } else if (path.includes('/orderDetail')) {
+                    // 订单管理
                     routePath = '/media/orderList'
-                } else if (path.includes('/clientDetail') || path.includes('/clientDetail')) {
-                    routePath = '/superOperate/clientList'
                 } else if (path.includes('/projectDetail')) {
+                    // 工程管理
                     routePath = '/media/projectList'
                 }  else {
                     routePath = path

@@ -28,7 +28,7 @@
                                 <span class="ad_mediaInfoPanel_row_title">所在区域：</span><span>{{resData.cityArea}}</span>
                             </el-col>
                             <el-col :span="6">
-                                <span class="ad_mediaInfoPanel_row_title">资源别名：</span><span>{{resData.resAlias}}</span>
+                                <span class="ad_mediaInfoPanel_row_title">资源别名：</span><span>{{resData.resAlias || '--'}}</span>
                             </el-col>
                         </el-row>
                     </div>
@@ -39,7 +39,7 @@
                                 <span class="ad_mediaInfoPanel_row_title">资源地址：</span><span>{{resData.resAddress}}</span>
                             </el-col>
                             <el-col :span="6">
-                                <span class="ad_mediaInfoPanel_row_title">地址别名：</span><span>{{resData.addressAlias ||  '--'}}</span>
+                                <span class="ad_mediaInfoPanel_row_title">地址别名：</span><span>{{resData.addressAlias || '--'}}</span>
                             </el-col>
                             <el-col :span="6">
                                 <span class="ad_mediaInfoPanel_row_title">经纬度：</span><span>{{resData.latLng}}</span>
@@ -141,7 +141,7 @@
                         </el-row>
                         <el-row class="row-bg row_box">
                             <el-col :span="6">
-                                <span class="ad_mediaInfoPanel_row_title">出入口数：</span><span>{{resData.EntryExitNum}}</span>
+                                <span class="ad_mediaInfoPanel_row_title">出入口数：</span><span>{{resData.EntryExitNum || '--'}}</span>
                             </el-col>
                             <el-col :span="6">
                                 <span class="ad_mediaInfoPanel_row_title">车位数：</span><span>{{resData.carNumber}}</span>
@@ -161,7 +161,7 @@
                                 <span class="ad_mediaInfoPanel_row_title">开发商：</span><span>{{resData.developer || '--'}}</span>
                             </el-col>
                             <el-col :span="6">
-                                <span class="ad_mediaInfoPanel_row_title">物业公司：</span><span>{{resData.propertyManagement || resData.pmc}}</span>
+                                <span class="ad_mediaInfoPanel_row_title">物业公司：</span><span>{{resData.propertyManagement || resData.pmc || '--'}}</span>
                             </el-col>
                             <el-col :span="6">
                                 <span class="ad_mediaInfoPanel_row_title">物业费：</span><span>{{resData.managementFee || '--'}}</span>

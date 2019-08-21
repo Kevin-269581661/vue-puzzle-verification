@@ -3242,22 +3242,31 @@
                 for (let key of this.shopingList) {
                     for (let detailKey of cityDetailList) {
                         if (key.city === detailKey.city && key.asrID == detailKey.asrID) {
-                            let adsData = {
-                                asID: key.asID,
-                                pdID: '',
-                                pbStar: key.schedules.split('-')[0],
-                                pbEnd: key.schedules.split('-')[1],
-                                uID: this.sessionData.uID,
-                                pbSetTime: pbSetTime,
-                                mapCenterName: key.mapCenter
-                            }
                             if (key.mVehicle === '广告门' && detailKey.pdType === 0) {
-                                adsData.pdID = detailKey.pdID
+                                let adsData = {
+                                    asID: key.asID,
+                                    pdID: detailKey.pdID,
+                                    pbStar: key.schedules.split('-')[0],
+                                    pbEnd: key.schedules.split('-')[1],
+                                    uID: this.sessionData.uID,
+                                    pbSetTime: pbSetTime,
+                                    mapCenterName: key.mapCenter
+                                }
+                                // adsData.pdID = detailKey.pdID
                                 detailKey.abList.push(adsData)
                                 break
                             } else if (key.mVehicle === '道闸' && detailKey.pdType === 1) {
-                                adsData.pdID = detailKey.pdID
-                                detailKey.abList.push(adsData)
+                                for (let akey of key.asID) {
+                                    detailKey.abList.push({
+                                        asID: akey,
+                                        pdID: detailKey.pdID,
+                                        pbStar: key.schedules.split('-')[0],
+                                        pbEnd: key.schedules.split('-')[1],
+                                        uID: this.sessionData.uID,
+                                        pbSetTime: pbSetTime,
+                                        mapCenterName: key.mapCenter
+                                    })
+                                }
                                 break
                             }
                         }

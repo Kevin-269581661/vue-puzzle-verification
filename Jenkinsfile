@@ -6,8 +6,6 @@ pipeline {
         stage('Build') {
             steps {
                 sh '''
-                    /usr/bin/npm config set registry https://registry.npm.taobao.org
-                    /usr/bin/npm install
                     /usr/bin/npm run build
                 '''
             }

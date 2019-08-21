@@ -54,7 +54,7 @@
                     </el-col>
                     <el-col>
                         <span>城市区域:</span>
-                        <el-cascader :options="searchInfo.citys" v-model="searchInfo.city" placeholder="请选择城市区域" filterable size="small"></el-cascader>
+                        <el-cascader :options="searchInfo.citys" v-model="searchInfo.city" placeholder="请选择城市区域" filterable size="small" @change="painCityChange()"></el-cascader>
                     </el-col>
                     <el-col>
                         <span>资源名称:</span>
@@ -277,6 +277,7 @@ export default {
     },
     data() {
         return {
+            baseURL: 'http://192.168.1.239:8020',
             // 上下刊搜索
             publishSearchInfo:{
                 // 媒体类型
@@ -553,6 +554,10 @@ export default {
         this.sessionData = sessFun.getSess();
         // 获取报告列表
         this.getImgArr();
+        // 获取城市区域
+        this.getCitys();
+        // 获取资源列表
+        this.getResArr();
     },
     watch:{
         fromType(newVal, oldVal){
@@ -578,6 +583,17 @@ export default {
         }
     },
     methods: {
+        // 改变页数
+        sizeChange(pageVal) {
+            this.pageInfo.currPage = 1;
+            this.pageInfo.pageSize = pageVal;
+            this.getImgArr();
+        },
+        // 点击页数
+        changePage(page) {
+            this.pageInfo.currPage = page;
+            this.getImgArr();
+        },
         // 获取图片列表
         getImgArr(){
             let type = this.type;
@@ -592,12 +608,240 @@ export default {
                 this.search();
             }
         },
+        // 获取城市区域
+        getCitys(){
+            let info = {
+                apId: sessionStorage.getItem('order_apid'),
+            };
+            api.getApi(this.baseURL+this.apiVar.replace+"/plan/region", info).then(res =>{
+                console.log(res);
+                if(res.data.SysCode == 200200){
+                    let resArr = res.data.data;
+                    let result = this.formatCitys(resArr);
+                    this.searchInfo.citys = result;
+                    this.publishSearchInfo.citys = result;
+                }else{
+                    sessFun.messageFun(res.data.MSG);
+                }
+            });
+        },
+        formatCitys(arr){
+            arr = arr.map(item=>{
+                return {
+                    ...item,
+                    label: item.cityName,
+                    value: item.cityId,
+                    children: item.districtDtoList.map(data =>{
+                        return {
+                            ...data,
+                            label: data.districtName,
+                            value: data.districtId
+                        };
+                    })
+                };
+            });
+            arr.unshift({
+                value: "全部",
+                label: "全部"
+            });
+            return arr;
+        },
+        // 获取资源列表
+        getResArr(cityId='', areaId=''){
+            let info = {
+                apId: sessionStorage.getItem('order_apid'),
+                cityId: cityId,
+                districtId: areaId
+            };
+            console.log(info);
+            api.getApi(this.baseURL+this.apiVar.replace+'/plan/resInfo', info).then(res =>{
+                console.log(res);
+                if(res.data.SysCode == 200200){
+                    let result = res.data.data.map(item =>{
+                        return {
+                            ...item,
+                            label: item.resName,
+                            value: item.resID,
+                        };
+                    });
+                    this.searchInfo.resArr = result;
+                    this.publishSearchInfo.allResource = result;
+                }else{
+                    sessFun.messageFun(res.data.MSG);
+                }
+            });
+        },
+        // 修改媒体类型
+        changeMedia(){
+            this.pageInfo.currPage = 1;
+            this.publishSearchInfo = {
+                ...this.publishSearchInfo,
+                citySelect: [],
+                allhouse: '',
+                allPic: '',
+            };
+            this.searchFun();
+        },
+        searchImgChange(){
+            let { citySelect } = this.publishSearchInfo;
+            if(citySelect[0] == "全部"){
+                this.publishSearchInfo = {
+                    ...this.publishSearchInfo,
+                    allhouse: '',
+                    allPic: '',
+                };
+            }else{
+                let cityId = citySelect[0];
+                let areaId = citySelect[1];
+                this.getResArr(cityId, areaId);
+            }
+            this.searchImg();
+        },
+        // 上下刊搜索图片
+        searchImg() {
+            let { citySelect, allhouse, allPic } = this.publishSearchInfo;
+            if(citySelect.length || allhouse || allPic){
+                this.pageInfo.currPage = 1;
+                this.searchFun();
+            }else{
+                this.$message.warning('请输入搜索条件');
+            }
+        },
+        // 上下刊报告
+        searchFun(){
+            this.pageInfo.paginationShow = false;
+            let info = {};
+            if(this.type == 1){
+                info = this.searchFormat('SK');
+            }else if(this.type == 2){
+                info = this.searchFormat('XK');
+            }
+            this.getImgInfo(info);
+            this.$nextTick(function () {
+                this.pageInfo.paginationShow = true;
+            });
+        },
+        // 搜索数据格式化
+        searchFormat(type){
+            let { uID, token } = this.sessionData;
+            let { currPage, pageSize } = this.pageInfo;
+            let { mediaType, citySelect, allhouse, allPic } = this.publishSearchInfo;
+            let info = {
+                uid: uID,
+                token: token,
+                apId: sessionStorage.getItem('order_apid'),
+                pType: type,
+                pageNum: currPage,
+                pageSize: pageSize,
+                mVehicle: mediaType,
+            };
+
+            if(allPic){
+                if(allPic == '2'){
+                    info.hasUpload = "true";
+                }
+                if(allPic == '3'){
+                    info.hasUpload = "false";
+                }
+            }
+            if(citySelect.length){
+                if(citySelect[0] == '全部'){
+                    // this.searchFun();
+                }else{
+                    info.city = citySelect[0];
+                    info.district = citySelect[1];
+                }
+            }
+            if(allhouse){
+                info.resid = allhouse;
+            }
+            console.log('type---', info);
+            return info;
+        },
+        // 上下刊报告列表
+        getImgInfo(params){
+            api.postApi(this.apiVar.Advertisement+"/GetImg", params)
+                .then(res => {
+                    if (!res.data.SysCode) {
+                        console.log(res.data);
+                        let dataInfo = res.data;
+                        let percent = dataInfo.totalCount? Number(((dataInfo.hasPhotoCount / dataInfo.totalCount)*100).toFixed(2)) : 0;
+                        this.publishNumInfo = {
+                            percent: percent,
+                            currNum: dataInfo.hasPhotoCount,
+                            totalNum: dataInfo.totalCount,
+                        };
+
+                        this.pageInfo = {
+                            ...this.pageInfo,
+                            ...({totalNum: dataInfo.searchCount}),
+                        };
+                        for(let data of dataInfo.dataList){
+                            for(let item of data.photoList){
+                                item.name = item.pID+'.png',
+                                item.url = item.pURL;
+                                item.pID = item.pID;
+                                item.isCollection = false
+                            }
+                            let time = dateFormat.toDate(data.lStar, "/") + "-" +dateFormat.toDate(data.lEnd, "/");
+                            data.timeRange = time;
+                        }
+                        this.imageArr = dataInfo.dataList;
+                        this.checkImgStatus();
+                        if(dataInfo.totalCount == 0){
+                            Message.warning('暂无数据');
+                        }
+                    }else {
+                        Message.warning(res.data.MSG);
+                    }
+                })
+                .catch(res => {
+                    console.log(res);
+                });
+        },
+        // 检查图片是否已收藏
+        checkImgStatus(){
+            let pIDList = this.returnPIDList();
+            if(!pIDList.length){
+                return;
+            }
+            let params = {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                pids: pIDList.join(','),
+            }
+            console.log('params',params)
+            api.getApi(this.apiVar.Advertisement + '/GetUserStatusByPid',params).then(res=>{
+                console.log('检测图片收藏状态res',res);
+                if (res.data.SysCode === 200200) {
+                    this.setImgStatus(res.data.data);
+                } else {
+                    sessFun.messageFun('warning', res.data.MSG);
+                }
+            })
+        },
+        // 返回PIDList
+        returnPIDList(){
+            let reportList = this.imageArr;
+            console.log('reportList',reportList);
+            let pIDList = [];
+            for(let key of reportList){
+                let imgArr = key.photoList;
+                for(let imgKey of imgArr){
+                    pIDList.push(imgKey.pID);
+                }
+            }
+            return pIDList;
+        },
+        /**
+         * 换画报告列表
+         */
         // 获取全部换画列表(换画名称以及id)
         getPainList(){
             let info = {
                 apId: sessionStorage.getItem('order_apid')
             };
-            api.postApi(this.apiVar.replace+'/list', info).then(res =>{
+            api.getApi(this.baseURL+this.apiVar.replace+'/report/list', info).then(res =>{
                 console.log(res);
                 if(res.data.code == 200){
                     this.painList = res.data.data.map(item =>{
@@ -614,52 +858,9 @@ export default {
                 }
             });
         },
-        // 修改媒体类型
-        changeMedia(){
-            this.pageInfo.currPage = 1;
-            this.publishSearchInfo = {
-                ...this.publishSearchInfo,
-                citySelect: [],
-                allhouse: '',
-                allPic: '',
-            };
-            
-            this.searchFun();
-        },
-        searchImgChange(){
-            let citySelect = this.citySelect;
-            if(citySelect[0] == "全部"){
-                this.allPic = '';
-                this.allhouse ='';
-            }
-            this.searchImg();
-        },
-        // 上下刊搜索图片
-        searchImg() {
-            let { citySelect, allhouse, allPic } = this.publishSearchInfo;
-            if(citySelect.length || allhouse || allPic){
-                this.pageInfo.currPage = 1;
-                this.searchFun();
-            }else{
-                this.$message.warning('请输入搜索条件');
-            }
-        },
-        /**
-         * 换画报告列表
-         */
-        // 获取城市区域
-        getCitys(){
-            // this.searchInfo.citys
-        },
-        // 获取资源列表
-        getResArr(){
-            // this.searchInfo.resArr
-        },
         // 获取换画报告列表
         getData(params){
-            // this.imageArr
-            // this.pageInfo
-            api.postApi(this.apiVar.replace +"/detailInfo", params).then(res =>{
+            api.postApi(this.baseURL+this.apiVar.replace +"/report/detailInfo", params).then(res =>{
                 console.log(res);
                 if(res.data.SysCode == 200200){
                     let dataInfo = res.data;
@@ -693,6 +894,23 @@ export default {
                     sessFun.messageFun('warning', res.data.MSG);
                 }
             });
+        },
+        // 城市区域变化
+        painCityChange(){
+            let { city } = this.searchInfo;
+            if(city[0] == "全部"){
+                this.searchInfo = {
+                    ...this.searchInfo,
+                    city: [],
+                    resName: "",
+                    status: "",
+                };
+            }else{
+                let cityId = city[0];
+                let areaId = city[1];
+                this.getResArr(cityId, areaId);
+            }
+            this.search();
         },
         // 搜索
         search(){
@@ -953,17 +1171,6 @@ export default {
             this.searchInfoFun();
             console.log(this.dialogInfo);
         },
-        // 改变页数
-        sizeChange(pageVal) {
-            this.pageInfo.currPage = 1;
-            this.pageInfo.pageSize = pageVal;
-            this.getImgArr();
-        },
-        // 点击页数
-        changePage(page) {
-            this.pageInfo.currPage = page;
-            this.getImgArr();
-        },
         // 查看图片
         previewImg(url) {
             this.dialogImageUrl = url;
@@ -1025,133 +1232,6 @@ export default {
         saveAll() {
             this.isShowPic = false;
             console.log(this.pointArr);
-        },
-
-        // 上下刊报告
-        searchFun(){
-            this.pageInfo.paginationShow = false;
-            let info = {};
-            if(this.type == 1){
-                info = this.searchFormat('SK');
-            }else if(this.type == 2){
-                info = this.searchFormat('XK');
-            }
-            this.getImgInfo(info);
-            this.$nextTick(function () {
-                this.pageInfo.paginationShow = true;
-            });
-        },
-        // 搜索数据格式化
-        searchFormat(type){
-            let { uID, token } = this.sessionData;
-            let { currPage, pageSize } = this.pageInfo;
-            let { mediaType, citySelect, allhouse, allPic } = this.publishSearchInfo;
-            let info = {
-                uid: uID,
-                token: token,
-                apId: sessionStorage.getItem('order_apid'),
-                pType: type,
-                pageNum: currPage,
-                pageSize: pageSize,
-                mVehicle: mediaType,
-            };
-
-            if(allPic){
-                if(allPic == '2'){
-                    info.hasUpload = "true";
-                }
-                if(allPic == '3'){
-                    info.hasUpload = "false";
-                }
-            }
-            if(citySelect.length){
-                if(citySelect[0] == '全部'){
-                    // this.searchFun();
-                }else{
-                    info.city = citySelect[0];
-                    info.district = citySelect[1];
-                }
-            }
-            if(allhouse){
-                info.resid = allhouse;
-            }
-            console.log('type---', info);
-            return info;
-        },
-        // 上下刊报告列表
-        getImgInfo(params){
-            api.postApi(this.apiVar.Advertisement+"/GetImg", params)
-                .then(res => {
-                    if (!res.data.SysCode) {
-                        console.log(res.data);
-                        let dataInfo = res.data;
-                        let percent = dataInfo.totalCount? Number(((dataInfo.hasPhotoCount / dataInfo.totalCount)*100).toFixed(2)) : 0;
-                        this.publishNumInfo = {
-                            percent: percent,
-                            currNum: dataInfo.hasPhotoCount,
-                            totalNum: dataInfo.totalCount,
-                        };
-
-                        this.pageInfo = {
-                            ...this.pageInfo,
-                            ...({totalNum: dataInfo.searchCount}),
-                        };
-                        for(let data of dataInfo.dataList){
-                            for(let item of data.photoList){
-                                item.name = item.pID+'.png',
-                                item.url = item.pURL;
-                                item.pID = item.pID;
-                                item.isCollection = false
-                            }
-                            let time = dateFormat.toDate(data.lStar, "/") + "-" +dateFormat.toDate(data.lEnd, "/");
-                            data.timeRange = time;
-                        }
-                        this.imageArr = dataInfo.dataList;
-                        this.checkImgStatus();
-                        if(dataInfo.totalCount == 0){
-                            Message.warning('暂无数据');
-                        }
-                    }else {
-                        Message.warning(res.data.MSG);
-                    }
-                })
-                .catch(res => {
-                    console.log(res);
-                });
-        },
-        // 检查图片是否已收藏
-        checkImgStatus(){
-            let pIDList = this.returnPIDList();
-            if(!pIDList.length){
-                return;
-            }
-            let params = {
-                uid: this.sessionData.uID,
-                token: this.sessionData.token,
-                pids: pIDList.join(','),
-            }
-            console.log('params',params)
-            api.getApi(this.apiVar.Advertisement + '/GetUserStatusByPid',params).then(res=>{
-                console.log('检测图片收藏状态res',res);
-                if (res.data.SysCode === 200200) {
-                    this.setImgStatus(res.data.data);
-                } else {
-                    sessFun.messageFun('warning', res.data.MSG);
-                }
-            })
-        },
-        // 返回PIDList
-        returnPIDList(){
-            let reportList = this.imageArr;
-            console.log('reportList',reportList);
-            let pIDList = [];
-            for(let key of reportList){
-                let imgArr = key.photoList;
-                for(let imgKey of imgArr){
-                    pIDList.push(imgKey.pID);
-                }
-            }
-            return pIDList;
         },
         // 给上下刊添加图片的收藏状态
         setImgStatus(data){

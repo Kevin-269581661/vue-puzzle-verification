@@ -24,7 +24,6 @@ Vue.prototype.$echarts = echarts;
 
 // axios
 import axios from 'axios'
-Vue.prototype.$http = axios;
 axios.defaults.baseURL = process.env.API_ROOT;
 axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 // 全局变量
@@ -66,6 +65,24 @@ router.beforeEach((to, from, next) => {
 	})();
 	next();
 });
+
+//全局拦截器携带token
+axios.interceptors.request.use(
+	config => {
+		let sessionStr = sessionStorage.getItem('session_data');
+		let session = sessionStr ? JSON.parse(sessionStr) : '';
+		let uid = session ? session.uID: '';
+		let token = session ? session.token : '';
+		console.log(uid, token);
+		if (token) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
+			config.headers['token'] = token;
+			config.headers['uid'] = uid;
+		}
+		return config;
+	},
+	err => {
+		return Promise.reject(err);
+	});
 
 // 拦截响应
 axios.interceptors.response.use(

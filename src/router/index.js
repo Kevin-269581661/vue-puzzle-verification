@@ -56,6 +56,7 @@ const adminIndex = () => import('../components/superOperate/superOperate_index.v
 const ADlimitList = () => import('../components/superOperate/ADlimitList.vue')
 const superOperateCommon = () => import('../components/superOperate/superOperateCommon.vue')
 const dataAnalysis = () => import('../components/superOperate/dataAnalysis.vue')
+const communityPortrait = () => import('../components/superOperate/communityPortrait')
 
 //普通运营
 const operateIndex = () => import('../components/operate/operate_index.vue')
@@ -153,6 +154,7 @@ export default new Router({
                 {path: '/superOperate/maintainList', component: maintainList},
                 {path: '/superOperate/companyList', component: companyList},
                 {path: '/superOperate/compact', component: compact},
+                {path: '/superOperate/communityPortrait',component: communityPortrait},
             ]
         },
         //普通运营

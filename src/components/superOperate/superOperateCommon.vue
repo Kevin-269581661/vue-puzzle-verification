@@ -39,6 +39,7 @@
                 <el-menu-item index="/superOperate/compact">文件下载</el-menu-item>
             </el-submenu>
             <el-menu-item index="/superOperate/tvOrderList">电视广告</el-menu-item>
+            <el-menu-item index="/superOperate/communityPortrait">亲邻智邻</el-menu-item>
             <el-submenu index="9" class="user_center" popper-class="user_center_item">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">

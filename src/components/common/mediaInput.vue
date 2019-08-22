@@ -1720,23 +1720,41 @@
                         console.log('资源名称查重res',res)
                         if (res.data.SysCode == 200200) {
                             let resData = res.data.data
-                            if (JSON.stringify(resData) == "{}") {
-                                callback();
-                            } else {
-                                if (resData.resId == this.recForm.resID) {
-                                    callback();
-                                } else {
-                                    this.isResError = true
-                                    this.resCommentData.mediaNum = resData.mediaCount
-                                    this.resCommentData.resName = resData.resName
-                                    this.resCommentData.updateTime = resData.createTime
-                                    callback(new Error(' '))
+                            if (resData.length) {
+                                for (let key of resData) {
+                                    if (key.resId != this.recForm.resID) {
+                                        this.isResError = true
+                                        this.resCommentData.mediaNum = key.mediaCount
+                                        this.resCommentData.resName = key.resName
+                                        this.resCommentData.updateTime = key.createTime
+                                        break
+                                    }
                                 }
+                                if(this.isResError) {
+                                    callback(new Error(' '))
+                                } else {
+                                    callback();
+                                }
+                            } else {
+                                callback();
                             }
+                            // if (JSON.stringify(resData) == "{}") {
+                            //     callback();
+                            // } else {
+                            //     if (resData.resId == this.recForm.resID) {
+                            //         callback();
+                            //     } else {
+                            //         this.isResError = true
+                            //         this.resCommentData.mediaNum = resData.mediaCount
+                            //         this.resCommentData.resName = resData.resName
+                            //         this.resCommentData.updateTime = resData.createTime
+                            //         callback(new Error(' '))
+                            //     }
+                            // }
                         } else if (res.data.SysCode == 100302){
                             this.loginTimeout()
                         } else {
-                            this.messageFun('warning','资源名称查重异常!')
+                            this.messageFun('warning',res.data.MSG)
                         }
                     })
                 }
@@ -1759,25 +1777,40 @@
                     if (res.data.SysCode == 200200) {
                         let resData = res.data.data
                         console.log('小区信息', this.recForm)
-                        if (JSON.stringify(resData) == "{}") {
-                            let number = this.filterlocalAssetId(resData, value)
-                            if (number >= 2) {
-                                callback(new Error('这个资产编号已在该小区内存在!'))
-                            } else {
-                                callback();
-                            }
-                        } else {
+                        if (resData.length) {
                             let flag = this.filterAssetId(resData, value)
                             if (flag) {
                                 callback(new Error(' '))
                             } else {
                                 callback();
                             }
+                        } else {
+                            let number = this.filterlocalAssetId(resData, value)
+                            if (number >= 2) {
+                                callback(new Error('这个资产编号已在该小区内存在!'))
+                            } else {
+                                callback();
+                            }
                         }
+                        // if (JSON.stringify(resData) == "{}") {
+                        //     let number = this.filterlocalAssetId(resData, value)
+                        //     if (number >= 2) {
+                        //         callback(new Error('这个资产编号已在该小区内存在!'))
+                        //     } else {
+                        //         callback();
+                        //     }
+                        // } else {
+                        //     let flag = this.filterAssetId(resData, value)
+                        //     if (flag) {
+                        //         callback(new Error(' '))
+                        //     } else {
+                        //         callback();
+                        //     }
+                        // }
                     } else if (res.data.SysCode == 100302) {
                         this.loginTimeout()
                     } else {
-                        this.messageFun('warning', '资产编号查重异常!')
+                        this.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -1804,30 +1837,60 @@
                 let roadGate = false
                 for (let key of this.arrMedia) {
                     if (key.mediaForm.assetId === value) {
-                        if (resData.mId !== key.mediaForm.mid) {
-                            key.isAssetIdError = true
-                            key.assetIdCommentData.mediaName = resData.mediaName
-                            key.assetIdCommentData.resName = resData.resName
-                            key.assetIdCommentData.updateTime = resData.createTime
-                            adDoor = true
-                        } else {
-                            key.isAssetIdError = false
+                        for (let rKey of resData) {
+                            if (rKey.mId !== key.mediaForm.mid) {
+                                key.isAssetIdError = true
+                                key.assetIdCommentData.mediaName = rKey.mediaName
+                                key.assetIdCommentData.resName = rKey.resName
+                                key.assetIdCommentData.updateTime = rKey.createTime
+                                adDoor = true
+                            } else {
+                                key.isAssetIdError = false
+                            }
                         }
                     }
                 }
                 for (let key of this.roadGateMedia) {
                     if (key.roadGateForm.assetId === value) {
-                        if (resData.mId !== key.roadGateForm.mid) {
-                            key.isAssetIdError = true
-                            key.assetIdCommentData.mediaName = resData.mediaName
-                            key.assetIdCommentData.resName = resData.resName
-                            key.assetIdCommentData.updateTime = resData.createTime
-                            roadGate = true
-                        } else {
-                            key.isAssetIdError = false
+                        for (let rKey of resData) {
+                            if (rKey.mId !== key.roadGateForm.mid) {
+                                key.isAssetIdError = true
+                                key.assetIdCommentData.mediaName = rKey.mediaName
+                                key.assetIdCommentData.resName = rKey.resName
+                                key.assetIdCommentData.updateTime = rKey.createTime
+                                roadGate = true
+                            } else {
+                                key.isAssetIdError = false
+                            }
                         }
                     }
                 }
+                // for (let key of this.arrMedia) {
+                //     if (key.mediaForm.assetId === value) {
+                //         if (resData.mId !== key.mediaForm.mid) {
+                //             key.isAssetIdError = true
+                //             key.assetIdCommentData.mediaName = resData.mediaName
+                //             key.assetIdCommentData.resName = resData.resName
+                //             key.assetIdCommentData.updateTime = resData.createTime
+                //             adDoor = true
+                //         } else {
+                //             key.isAssetIdError = false
+                //         }
+                //     }
+                // }
+                // for (let key of this.roadGateMedia) {
+                //     if (key.roadGateForm.assetId === value) {
+                //         if (resData.mId !== key.roadGateForm.mid) {
+                //             key.isAssetIdError = true
+                //             key.assetIdCommentData.mediaName = resData.mediaName
+                //             key.assetIdCommentData.resName = resData.resName
+                //             key.assetIdCommentData.updateTime = resData.createTime
+                //             roadGate = true
+                //         } else {
+                //             key.isAssetIdError = false
+                //         }
+                //     }
+                // }
                 if (adDoor || roadGate) {
                     return true
                 } else {

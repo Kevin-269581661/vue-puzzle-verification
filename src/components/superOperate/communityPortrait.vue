@@ -1,0 +1,1350 @@
+<template>
+    <div class="community_portrait">
+        <div class="ad_mediaDetail_nav ">
+            <p><a href="#" style="color: #999">亲邻智邻</a></p>
+        </div>
+        <div class="portrait_main">
+            <div class="portrait_basic_info">
+                <img src="../../assets/images/resLogo.svg" alt="" style="vertical-align: middle">
+                <el-select v-model="selectRes" placeholder="请选择" size="small" filterable clearable>
+                    <el-option
+                        v-for="item in resList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                    </el-option>
+                </el-select>
+                <div class="community_main_info">
+                    <div class="community_info_row">
+                        <h4 class="community_info_h4">位置信息</h4>
+                        <el-row>
+                            <el-col :span="6">
+                                <label class="community_info_label">城市：</label><span>{{resData.city}}</span>
+                            </el-col>
+                            <el-col :span="6">
+                                <label class="community_info_label">区域：</label><span>{{resData.cityArea}}</span>
+                            </el-col>
+                            <el-col :span="6">
+                                <label class="community_info_label">商圈：</label><span>{{resData.tradingArea}}</span>
+                            </el-col>
+                            <el-col :span="6">
+                                <label class="community_info_label">详细地址：</label><span>{{resData.resAddress}}</span>
+                            </el-col>
+                        </el-row>
+                    </div>
+                    <div class="community_info_row">
+                        <h4 class="community_info_h4">社区类型</h4>
+                        <el-row>
+                            <el-col :span="6">
+                                <label class="community_info_label">资源类型：</label><span>{{resData.resType == 1 ? '社区' : '写字楼'}}</span>
+                            </el-col>
+                            <el-col :span="6">
+                                <label class="community_info_label">楼盘类型：</label><span>{{resData.houseType}}</span>
+                            </el-col>
+                            <el-col :span="6">
+                                <label class="community_info_label">楼盘价格：</label><span>{{resData.floorPrice}}</span>
+                            </el-col>
+                            <el-col :span="6">
+                                <label class="community_info_label">入住年份：</label><span>{{resData.joinTime}}</span>
+                            </el-col>
+                        </el-row>
+                    </div>
+                    <div class="community_info_row">
+                        <h4 class="community_info_h4">社区信息</h4>
+                        <el-row>
+                            <el-col :span="6">
+                                <label class="community_info_label">楼栋数量：</label><span>{{resData.buildingNum}}</span>
+                            </el-col>
+                            <el-col :span="6">
+                                <label class="community_info_label">住户数量：</label><span>{{resData.HouseNum}}</span>
+                            </el-col>
+                            <el-col :span="6">
+                                <label class="community_info_label">媒体数量：</label><span>{{resData.mediaNum}}</span>
+                            </el-col>
+                            <el-col :span="6">
+                                <label class="community_info_label">点位数量：</label><span>{{resData.adsNum}}</span>
+                            </el-col>
+                        </el-row>
+                    </div>
+                </div>
+            </div>
+            <div class="chart_wrap" v-show="isHaveData">
+                <!--性别情况、婚姻状况、子女预测-->
+                <div class="portrait_row">
+                    <el-row :gutter="24">
+                        <el-col :span="8">
+                            <el-card class="box-card">
+                                <div slot="header" class="clearfix">
+                                    <span class="box_card_title">性别情况</span>
+                                </div>
+                                <div class="box_main">
+                                    <div ref="sexConditionPie" style="width: 100%;height: 100%;"></div>
+                                </div>
+                            </el-card>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-card class="box-card">
+                                <div slot="header" class="clearfix">
+                                    <span class="box_card_title">婚姻状况</span>
+                                </div>
+                                <div class="box_main">
+                                    <div ref="marriagePie" style="width: 100%;height: 100%"></div>
+                                </div>
+                            </el-card>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-card class="box-card">
+                                <div slot="header" class="clearfix">
+                                    <span class="box_card_title">子女预测</span>
+                                </div>
+                                <div class="box_main">
+                                    <div ref="childrenForecastPie" style="width: 100%;height: 100%"></div>
+                                </div>
+                            </el-card>
+                        </el-col>
+                    </el-row>
+                </div>
+                <!--年龄分布、生肖Top5-->
+                <div class="portrait_row">
+                    <el-row :gutter="24">
+                        <el-col :span="16">
+                            <el-card class="box-card">
+                                <div slot="header" class="clearfix">
+                                    <span class="box_card_title">年龄分布</span>
+                                </div>
+                                <div class="box_main">
+                                    <div ref="ageDataBar" style="width: 100%;height: 100%"></div>
+                                </div>
+                            </el-card>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-card class="box-card">
+                                <div slot="header" class="clearfix">
+                                    <span class="box_card_title">生肖Top5</span>
+                                </div>
+                                <div class="box_main">
+                                    <ul>
+                                        <li class="progress_li progress_li_title">
+                                            <span class="progress_li_name">生肖</span>
+                                            <span class="progress_li_num">占比</span>
+                                        </li>
+                                        <li class="progress_li" v-for="(item,index) in shengXiaoList" :key="index+1">
+                                            <span class="progress_li_name">{{item.label}}</span>
+                                            <span class="progress_li_value">{{item.value}}%</span>
+                                            <div class="progress_li_num">
+                                                <el-progress :percentage="item.value" :show-text="false"></el-progress>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </el-card>
+                        </el-col>
+                    </el-row>
+                </div>
+                <!--教育程度、职业分布、毕业院校-->
+                <div class="portrait_row">
+                    <el-row :gutter="24">
+                        <el-col :span="8">
+                            <el-card class="box-card">
+                                <div slot="header" class="clearfix">
+                                    <span class="box_card_title">教育程度</span>
+                                </div>
+                                <div class="box_main">
+                                    <ul class="little_height_ul">
+                                        <li class="progress_li progress_li_title">
+                                            <span class="progress_li_name">学历</span>
+                                            <span class="progress_li_num">占比</span>
+                                        </li>
+                                        <li class="progress_li" v-for="(item,index) in educationList" :key="index+1">
+                                            <span class="progress_li_name">{{item.label}}</span>
+                                            <span class="progress_li_value">{{item.value}}%</span>
+                                            <div class="progress_li_num">
+                                                <el-progress :percentage="item.value" :show-text="false"></el-progress>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </el-card>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-card class="box-card">
+                                <div slot="header" class="clearfix">
+                                    <span class="box_card_title">职业分布</span>
+                                </div>
+                                <div class="box_main">
+                                    <ul class="little_height_ul">
+                                        <li class="progress_li progress_li_title">
+                                            <span class="progress_li_name">职业</span>
+                                            <span class="progress_li_num">占比</span>
+                                        </li>
+                                        <li class="progress_li" v-for="(item,index) in professionDistributeList" :key="index+1">
+                                            <span class="progress_li_name">{{item.label}}</span>
+                                            <span class="progress_li_value">{{item.value}}%</span>
+                                            <div class="progress_li_num">
+                                                <el-progress :percentage="item.value" :show-text="false"></el-progress>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </el-card>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-card class="box-card">
+                                <div slot="header" class="clearfix">
+                                    <span class="box_card_title">毕业院校</span>
+                                </div>
+                                <div class="box_main">
+                                    <ul class="little_height_ul">
+                                        <li class="progress_li progress_li_title">
+                                            <span class="progress_li_name">学历</span>
+                                            <span class="progress_li_num">占比</span>
+                                        </li>
+                                        <li class="progress_li" v-for="(item,index) in schoolKindList" :key="index+1">
+                                            <span class="progress_li_name">{{item.label}}</span>
+                                            <span class="progress_li_value">{{item.value}}%</span>
+                                            <div class="progress_li_num">
+                                                <el-progress :percentage="item.value" :show-text="false"></el-progress>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </el-card>
+                        </el-col>
+                    </el-row>
+                </div>
+                <!--有车概率、有房概率、购买力-->
+                <div class="portrait_row">
+                    <el-row :gutter="24">
+                        <el-col :span="8">
+                            <el-card class="box-card">
+                                <div slot="header" class="clearfix">
+                                    <span class="box_card_title">有车概率</span>
+                                </div>
+                                <div class="box_main">
+                                    <div ref="haveCarPie" style="width: 100%;height: 100%"></div>
+                                </div>
+                            </el-card>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-card class="box-card">
+                                <div slot="header" class="clearfix">
+                                    <span class="box_card_title">有房概率</span>
+                                </div>
+                                <div class="box_main">
+                                    <div ref="haveHousePie" style="width: 100%;height: 100%"></div>
+                                </div>
+                            </el-card>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-card class="box-card">
+                                <div slot="header" class="clearfix">
+                                    <span class="box_card_title">购买力</span>
+                                </div>
+                                <div class="box_main">
+                                    <div ref="purchasingPowerPie" style="width: 100%;height: 100%"></div>
+                                </div>
+                            </el-card>
+                        </el-col>
+                    </el-row>
+                </div>
+                <!--手机设备-->
+                <div class="portrait_row">
+                    <el-card class="box-card">
+                        <div slot="header" class="clearfix">
+                            <span class="box_card_title">手机设备</span>
+                        </div>
+                        <div class="box_main">
+                            <el-row>
+                                <el-col :span="11">
+                                    <div ref="mobilePhonePie" style="width: 100%;height: 352px"></div>
+                                </el-col>
+                                <el-col :span="13">
+                                    <p class="progress_li progress_li_title">
+                                        <span class="progress_li_rate">排名</span>
+                                        <span class="progress_li_name">手机品牌</span>
+                                        <span class="progress_li_num">占比</span>
+                                    </p>
+                                    <ul class="little_height_ul mobile_phone_ul">
+                                        <li class="progress_li" v-for="(item,index) in mobilePhoneList" :key="index+1">
+                                            <span class="progress_li_rate">{{index + 1}}</span>
+                                            <span class="progress_li_name">{{item.label}}</span>
+                                            <span class="progress_li_value">{{item.value}}%</span>
+                                            <div class="progress_li_num">
+                                                <el-progress :percentage="item.value" :show-text="false"></el-progress>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </el-col>
+                            </el-row>
+                        </div>
+                    </el-card>
+                </div>
+            </div>
+            <div class="no_data" v-show="!isHaveData">
+                <el-card class="box-card">
+                    <div slot="header" class="clearfix">
+                        <span class="box_card_title">社区画像</span>
+                    </div>
+                    <div class="box_main" style="text-align: center;padding-top: 78px;height: 248px">
+                        <img src="../../assets/images/nofound.png" alt="暂无社区画像数据" width="122" height="83" />
+                        <p class="not_search">暂无社区画像数据</p>
+                    </div>
+                </el-card>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    import noSearchResult from "../../components/common/components/noSearchResult";
+    export default {
+        name: "communityPortrait",
+        components:{
+            noSearchResult
+        },
+        data(){
+            return{
+                colorArr: ['#F1627A','#1890FF','#4DCB73','#FFBE00','#48CBFF','#FF6C42'],
+                // 该小区是否有社区画像数据
+                isHaveData: true,
+                resList:[
+                    {
+                        label:'中信西关海花苑',
+                        value: '中信西关海花苑'
+                    }
+                ],
+                selectRes: '中信西关海花苑',
+                resData: {
+                    resName: '中信西关海花苑',
+                    resType: '1',
+                    city: '广州市',
+                    cityArea: '荔湾区',
+                    tradingArea: '江南西',
+                    houseType: '高端住宅',
+                    floorPrice: '20000',
+                    HouseNum: 188,
+                    buildingNum: 4,
+                    joinTime: '1997年',
+                    resAddress: '广州市荔湾区西湾路289号',
+                    mediaNum: 4,
+                    adsNum: 8
+                },
+                // 性别环状图表
+                sexPieEcharts: '',
+                // 婚姻状况
+                marriagePieEcharts: '',
+                // 子女预测
+                childrenForecastPieEcharts: '',
+                // 年龄分布
+                ageDataBarEcharts: '',
+                // 生肖top5
+                shengXiaoList:[
+                    {
+                        label: '鸡',
+                        value: 28,
+                    },
+                    {
+                        label: '狗',
+                        value: 24,
+                    },
+                    {
+                        label: '马',
+                        value: 17,
+                    },
+                    {
+                        label: '羊',
+                        value: 12,
+                    },
+                    {
+                        label: '龙',
+                        value: 5,
+                    },
+                ],
+                // 教育程度
+                educationList:[
+                    {
+                        label: '博士及以上',
+                        value: 10,
+                    },
+                    {
+                        label: '硕士',
+                        value: 13,
+                    },
+                    {
+                        label: '本科',
+                        value: 37,
+                    },
+                    {
+                        label: '专科',
+                        value: 20,
+                    },
+                    {
+                        label: '高中及以下',
+                        value: 5,
+                    },
+                    {
+                        label: '未知',
+                        value: 15,
+                    }
+                ],
+                // 职业分布
+                professionDistributeList:[
+                    {
+                        label: '土豪',
+                        value: 10,
+                    },
+                    {
+                        label: '高级白领',
+                        value: 13,
+                    },
+                    {
+                        label: '小白领',
+                        value: 37,
+                    },
+                    {
+                        label: '蓝领',
+                        value: 20,
+                    },
+                    {
+                        label: '收入很少',
+                        value: 5,
+                    },
+                    {
+                        label: '未知',
+                        value: 15,
+                    }
+                ],
+                // 毕业院校
+                schoolKindList:[
+                    {
+                        label: '工科',
+                        value: 30,
+                    },
+                    {
+                        label: '综合',
+                        value: 28,
+                    },
+                    {
+                        label: '师范',
+                        value: 16,
+                    },
+                    {
+                        label: '财经',
+                        value: 8,
+                    },
+                    {
+                        label: '广电',
+                        value: 5,
+                    },
+                    {
+                        label: '农林',
+                        value: 3,
+                    }
+                ],
+                // 有车概率
+                haveCarPieEcharts: '',
+                // 有房概率
+                haveHousePieEcharts: '',
+                // 购买力
+                purchasingPowerPieEcharts: '',
+                // 手机设备
+                mobilePhonePieEcharts: '',
+                // 手机品牌列表
+                mobilePhoneList: [
+                    {
+                        label: 'HUAWEI',
+                        value: 30,
+                    },
+                    {
+                        label: 'OPPO',
+                        value: 22,
+                    },
+                    {
+                        label: 'IPHONE',
+                        value: 19,
+                    },
+                    {
+                        label: 'HONOR',
+                        value: 16,
+                    },
+                    {
+                        label: 'XIAOMI',
+                        value: 15,
+                    },
+                    {
+                        label: 'VIVO',
+                        value: 12,
+                    },
+                    {
+                        label: 'MEIZU',
+                        value: 5,
+                    },
+                    {
+                        label: '红米',
+                        value: 4,
+                    },
+                ],
+            }
+        },
+        mounted() {
+            // 性别情况
+            this.initSexPie();
+            // 婚姻状况
+            this.initMarriagePie();
+            // 子女预测
+            this.initChildrenForecastPie();
+            // 年龄分布
+            this.initAgeDataBar();
+            // 有车概率
+            this.initHaveCarPie();
+            // 有房概率
+            this.initHaveHousePie();
+            // 购买力
+            this.initPurchasingPowerPie();
+            // 手机设备
+            this.initMobilePhonePie();
+            // 图表统一监听
+            this.echartsListener();
+        },
+        methods: {
+            // 统一监听
+            echartsListener(){
+                window.addEventListener("resize", ()=> {
+                    this.sexPieEcharts.resize();
+                    this.marriagePieEcharts.resize();
+                    this.childrenForecastPieEcharts.resize();
+                    this.haveCarPieEcharts.resize();
+                    this.haveHousePieEcharts.resize();
+                    // 购买力
+                    this.purchasingPowerPieEcharts.resize();
+                });
+            },
+            // 性别情况
+            initSexPie() {
+                this.sexPieEcharts = this.$echarts.init(this.$refs.sexConditionPie);
+                this.sexPieEcharts.setOption ({
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: (params)=> {
+                            return '<p class="echarts_tooltip_title">' +
+                                '<span>' + params.seriesName + '</span>' +
+                                '<span>' + '数据' + '</span>' +
+                                '</p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' + params.value + '</p>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC "></i>' +
+                                '占比' + '</span>' + params.percent + '%' +
+                                '</p>'
+                        },
+                        backgroundColor: '#FFFFFF',
+                        textStyle: {
+                            color: '#2C313C'
+                        },
+                        borderColor: '#ddd',
+                        borderWidth: 1,
+                        padding: 0,
+                    },
+                    grid: {
+                        // top: '3%',
+                        left: '5%',
+                        right: '5%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    legend: {
+                        bottom: 10,
+                        left: 'center',
+                    },
+                    series: [
+                        {
+                            name:'性别情况',
+                            type:'pie',
+                            radius: ['50%', '70%'],
+                            center: ['50%', '45%'],
+                            avoidLabelOverlap: false,
+                            color: this.colorArr,
+                            label: {
+                                emphasis: {
+                                    show: true,
+                                    textStyle: {
+                                        fontSize: '14',
+                                    }
+                                },
+                                textStyle: {
+                                    // color: '#666',
+                                    fontSize: 12
+                                },
+                                formatter: (params)=>{
+                                    // return  params.name + '(' +params.percent + '%)'
+                                    return params.percent  + '%'
+                                }
+                            },
+                            labelLine: {
+                                normal: {
+                                    length: 10,
+                                    length2: 6,
+                                    show: true
+                                }
+                            },
+                            data:[
+                                {value:335, name:'女'},
+                                {value:310, name:'男'},
+                                {value:234, name:'未知'},
+                            ]
+                        }
+                    ]
+                });
+            },
+            // 婚姻状况
+            initMarriagePie() {
+                this.marriagePieEcharts = this.$echarts.init(this.$refs.marriagePie);
+                this.marriagePieEcharts.setOption ({
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: (params)=> {
+                            return '<p class="echarts_tooltip_title">' +
+                                '<span>' + params.seriesName + '</span>' +
+                                '<span>' + '数据' + '</span>' +
+                                '</p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' + params.value + '</p>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC "></i>' +
+                                '占比' + '</span>' + params.percent + '%' +
+                                '</p>'
+                        },
+                        backgroundColor: '#FFFFFF',
+                        textStyle: {
+                            color: '#2C313C'
+                        },
+                        borderColor: '#ddd',
+                        borderWidth: 1,
+                        padding: 0,
+                    },
+                    grid: {
+                        // top: '3%',
+                        left: '5%',
+                        right: '5%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    legend: {
+                        bottom: 10,
+                        left: 'center',
+                    },
+                    series: [
+                        {
+                            name:'婚姻状况',
+                            type:'pie',
+                            radius: ['50%', '70%'],
+                            center: ['50%', '45%'],
+                            avoidLabelOverlap: false,
+                            color: this.colorArr,
+                            label: {
+                                emphasis: {
+                                    show: true,
+                                    textStyle: {
+                                        fontSize: '14',
+                                    }
+                                },
+                                textStyle: {
+                                    // color: '#666',
+                                    fontSize: 12
+                                },
+                                formatter: (params)=>{
+                                    // return  params.name + '(' +params.percent + '%)'
+                                    return params.percent  + '%'
+                                }
+                            },
+                            labelLine: {
+                                normal: {
+                                    length: 10,
+                                    length2: 6,
+                                    show: true
+                                }
+                            },
+                            data:[
+                                {value:335, name:'未婚'},
+                                {value:310, name:'已婚'},
+                                {value:234, name:'未知'},
+                            ]
+                        }
+                    ]
+                });
+            },
+            // 子女预测
+            initChildrenForecastPie() {
+                this.childrenForecastPieEcharts = this.$echarts.init(this.$refs.childrenForecastPie);
+                this.childrenForecastPieEcharts.setOption ({
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: (params)=> {
+                            return '<p class="echarts_tooltip_title">' +
+                                '<span>' + params.seriesName + '</span>' +
+                                '<span>' + '数据' + '</span>' +
+                                '</p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' + params.value + '</p>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC "></i>' +
+                                '占比' + '</span>' + params.percent + '%' +
+                                '</p>'
+                        },
+                        backgroundColor: '#FFFFFF',
+                        textStyle: {
+                            color: '#2C313C'
+                        },
+                        borderColor: '#ddd',
+                        borderWidth: 1,
+                        padding: 0,
+                    },
+                    grid: {
+                        // top: '3%',
+                        left: '5%',
+                        right: '5%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    legend: {
+                        bottom: 10,
+                        left: 'center',
+                    },
+                    series: [
+                        {
+                            name:'子女预测',
+                            type:'pie',
+                            radius: ['50%', '70%'],
+                            center: ['50%', '45%'],
+                            avoidLabelOverlap: false,
+                            color: ['#1890FF','#4DCB73'],
+                            label: {
+                                emphasis: {
+                                    show: true,
+                                    textStyle: {
+                                        fontSize: '16',
+                                    }
+                                },
+                                textStyle: {
+                                    // color: '#666',
+                                    fontSize: 12
+                                },
+                                formatter: (params)=>{
+                                    // return  params.name + '(' +params.percent + '%)'
+                                    return params.percent  + '%'
+                                }
+                            },
+                            labelLine: {
+                                normal: {
+                                    length: 10,
+                                    length2: 6,
+                                    show: true
+                                }
+                            },
+                            data:[
+                                {value:135, name:'有'},
+                                {value:410, name:'未知'},
+                            ]
+                        }
+                    ]
+                });
+            },
+            // 年龄分布
+            initAgeDataBar(){
+                if(this.ageDataBarEcharts){
+                    this.ageDataBarEcharts.dispose()
+                }
+                this.ageDataBarEcharts = this.$echarts.init(this.$refs.ageDataBar)
+                this.ageDataBarEcharts.setOption({
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                            type: 'shadow',        // 默认为直线，可选为：'line' | 'shadow'
+                            shadowStyle: {
+                                shadowColor: '#f5f5f5'
+                            }
+                        },
+                        backgroundColor: '#FFFFFF',
+                        padding: 0,
+                        borderColor: '#dddddd',
+                        borderWidth: 1,
+                        formatter: (params)=> {
+                            return '<p class="echarts_tooltip_title">' + '<span>' + '年龄分布' + '</span>' + '</p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params[0].name +
+                                '</span>' + params[0].data + '</p>'
+                        },
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        x: 100,     //控制x轴文字与底部的距离
+                        y2: 200,    // y2可以控制倾斜的文字与最右边的距离，放置倾斜的文字超过显示区域
+                        containLabel: true
+                    },
+                    xAxis: [
+                        {
+                            type: 'category',
+                            data: ['15岁以下','16-25岁','26-35岁','36-45岁','46-55岁','56岁以上','未知'],
+                            axisTick: {
+                                alignWithLabel: true
+                            },
+                            axisLine: {
+                                //坐标轴线条相关设置(颜色等)
+                                lineStyle: {
+                                    color: "#E8E8E8"
+                                }
+                            },
+                            axisLabel: {
+                                //坐标轴刻度标签
+                                margin: 7, //刻度标签与轴线之间的距离
+                                interval: 0,    //强制文字产生间隔
+                                textStyle: {
+                                    fontFamily: "DINPro-Regular",
+                                    color: "#2C313C" //坐标轴刻度文字的颜色
+                                },
+                                formatter: function(val) {
+                                    let strs = val.split(''); //字符串数组
+                                    let str = ''
+                                    for(let i = 0, s; s = strs[i++];) { //遍历字符串数组
+                                        str += s;
+                                        if(!(i % 8)) str += '\n'; //按需要求余
+                                    }
+                                    return str
+                                }
+                            },
+                        }
+                    ],
+                    yAxis: [
+                        {
+                            type: 'value',
+                            axisLine: {
+                                //坐标轴线条相关设置(颜色等)
+                                lineStyle: {
+                                    color: "#E8E8E8"
+                                }
+                            },
+                            axisLabel: {
+                                //坐标轴刻度标签
+                                margin: 7, //刻度标签与轴线之间的距离
+                                textStyle: {
+                                    fontFamily: "DINPro-Regular",
+                                    color: "#2C313C" //坐标轴刻度文字的颜色
+                                }
+                            },
+                            splitLine: {
+                                lineStyle: {
+                                    color: "#E8E8E8",
+                                    type: "dashed"
+                                }
+                            }
+                        }
+                    ],
+                    series: [
+                        {
+                            color: '#4AA6FC',
+                            name: '',
+                            type: 'bar',
+                            barWidth: '18%',
+                            data: [380,920,650,520,230,330,190]
+                        }
+                    ]
+                });
+            },
+            // 有车概率
+            initHaveCarPie() {
+                this.haveCarPieEcharts = this.$echarts.init(this.$refs.haveCarPie);
+                this.haveCarPieEcharts.setOption ({
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: (params)=> {
+                            return '<p class="echarts_tooltip_title">' +
+                                '<span>' + params.seriesName + '</span>' +
+                                '<span>' + '数据' + '</span>' +
+                                '</p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' + params.value + '</p>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC "></i>' +
+                                '占比' + '</span>' + params.percent + '%' +
+                                '</p>'
+                        },
+                        backgroundColor: '#FFFFFF',
+                        textStyle: {
+                            color: '#2C313C'
+                        },
+                        borderColor: '#ddd',
+                        borderWidth: 1,
+                        padding: 0,
+                    },
+                    grid: {
+                        // top: '3%',
+                        left: '5%',
+                        right: '5%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    legend: {
+                        bottom: 10,
+                        left: 'center',
+                        icon:'circle',
+                        itemWidth: 8,
+                        itemHeight: 8,
+                    },
+                    series: [
+                        {
+                            name:'有车概率',
+                            type:'pie',
+                            radius: ['50%', '70%'],
+                            center: ['50%', '45%'],
+                            avoidLabelOverlap: false,
+                            color: this.colorArr,
+                            label: {
+                                emphasis: {
+                                    show: true,
+                                    textStyle: {
+                                        fontSize: '16',
+                                    }
+                                },
+                                textStyle: {
+                                    // color: '#666',
+                                    fontSize: 12
+                                },
+                                formatter: (params)=>{
+                                    // return  params.name + '(' +params.percent + '%)'
+                                    return params.percent  + '%'
+                                }
+                            },
+                            labelLine: {
+                                normal: {
+                                    length: 10,
+                                    length2: 6,
+                                    show: true
+                                }
+                            },
+                            data:[
+                                {value:95, name:'高'},
+                                {value:310, name:'中高'},
+                                {value:234, name:'中等'},
+                                {value:134, name:'中低'},
+                                {value:200, name:'低'},
+                                {value:34, name:'未知'},
+                            ]
+                        }
+                    ]
+                });
+            },
+            // 有房概率
+            initHaveHousePie(){
+                this.haveHousePieEcharts = this.$echarts.init(this.$refs.haveHousePie);
+                this.haveHousePieEcharts.setOption ({
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: (params)=> {
+                            return '<p class="echarts_tooltip_title">' +
+                                '<span>' + params.seriesName + '</span>' +
+                                '<span>' + '数据' + '</span>' +
+                                '</p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' + params.value + '</p>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC "></i>' +
+                                '占比' + '</span>' + params.percent + '%' +
+                                '</p>'
+                        },
+                        backgroundColor: '#FFFFFF',
+                        textStyle: {
+                            color: '#2C313C'
+                        },
+                        borderColor: '#ddd',
+                        borderWidth: 1,
+                        padding: 0,
+                    },
+                    grid: {
+                        // top: '3%',
+                        left: '5%',
+                        right: '5%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    legend: {
+                        bottom: 10,
+                        left: 'center',
+                        icon:'circle',
+                        itemWidth: 8,
+                        itemHeight: 8,
+                    },
+                    series: [
+                        {
+                            name:'有房概率',
+                            type:'pie',
+                            radius: ['50%', '70%'],
+                            center: ['50%', '45%'],
+                            avoidLabelOverlap: false,
+                            color: this.colorArr,
+                            label: {
+                                emphasis: {
+                                    show: true,
+                                    textStyle: {
+                                        fontSize: '14',
+                                    }
+                                },
+                                textStyle: {
+                                    // color: '#666',
+                                    fontSize: 12
+                                },
+                                formatter: (params)=>{
+                                    // return  params.name + '(' +params.percent + '%)'
+                                    return params.percent  + '%'
+                                }
+                            },
+                            labelLine: {
+                                normal: {
+                                    length: 10,
+                                    length2: 6,
+                                    show: true
+                                }
+                            },
+                            data:[
+                                {value:95, name:'高'},
+                                {value:310, name:'中高'},
+                                {value:234, name:'中等'},
+                                {value:134, name:'中低'},
+                                {value:200, name:'低'},
+                                {value:34, name:'未知'},
+                            ]
+                        }
+                    ]
+                });
+            },
+            // 购买力
+            initPurchasingPowerPie(){
+                this.purchasingPowerPieEcharts = this.$echarts.init(this.$refs.purchasingPowerPie);
+                this.purchasingPowerPieEcharts.setOption ({
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: (params)=> {
+                            return '<p class="echarts_tooltip_title">' +
+                                '<span>' + params.seriesName + '</span>' +
+                                '<span>' + '数据' + '</span>' +
+                                '</p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' + params.value + '</p>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC "></i>' +
+                                '占比' + '</span>' + params.percent + '%' +
+                                '</p>'
+                        },
+                        backgroundColor: '#FFFFFF',
+                        textStyle: {
+                            color: '#2C313C'
+                        },
+                        borderColor: '#ddd',
+                        borderWidth: 1,
+                        padding: 0,
+                    },
+                    grid: {
+                        // top: '3%',
+                        left: '5%',
+                        right: '5%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    legend: {
+                        bottom: 10,
+                        left: 'center',
+                        icon:'circle',
+                        itemWidth: 8,
+                        itemHeight: 8,
+                    },
+                    series: [
+                        {
+                            name:'购买力',
+                            type:'pie',
+                            radius: ['50%', '70%'],
+                            center: ['50%', '45%'],
+                            avoidLabelOverlap: true,
+                            color: this.colorArr,
+                            label: {
+                                emphasis: {
+                                    show: true,
+                                    textStyle: {
+                                        fontSize: 14,
+                                    }
+                                },
+                                textStyle: {
+                                    // color: '#666',
+                                    fontSize: 12
+                                },
+                                formatter: (params)=>{
+                                    // return  params.name + '(' +params.percent + '%)'
+                                    return params.percent  + '%'
+                                }
+                            },
+                            labelLine: {
+                                normal: {
+                                    show: true,
+                                    length: 10,
+                                    length2: 6,
+                                }
+                            },
+                            data:[
+                                {value:95, name:'高'},
+                                {value:234, name:'中等'},
+                                {value:200, name:'低'},
+                                {value:34, name:'未知'},
+                            ]
+                        }
+                    ]
+                });
+            },
+            // 手机设备
+            initMobilePhonePie(){
+                this.mobilePhonePieEcharts = this.$echarts.init(this.$refs.mobilePhonePie);
+                this.mobilePhonePieEcharts.setOption ({
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: (params)=> {
+                            return '<p class="echarts_tooltip_title">' +
+                                '<span>' + params.seriesName + '</span>' +
+                                '<span>' + '数据' + '</span>' +
+                                '</p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' + params.value + '</p>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC "></i>' +
+                                '占比' + '</span>' + params.percent + '%' +
+                                '</p>'
+                        },
+                        backgroundColor: '#FFFFFF',
+                        textStyle: {
+                            color: '#2C313C'
+                        },
+                        borderColor: '#ddd',
+                        borderWidth: 1,
+                        padding: 0,
+                    },
+                    grid: {
+                        left: '5%',
+                        right: '5%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        right: '8%',
+                        top: 'center',
+                        icon:'circle',
+                        itemWidth: 10,
+                        itemHeight: 10,
+                        itemGap: 16,
+                    },
+                    series: [
+                        {
+                            name:'手机设备',
+                            type:'pie',
+                            radius: ['50%', '70%'],
+                            center: ['43%', '45%'],
+                            avoidLabelOverlap: true,
+                            color: this.colorArr,
+                            label: {
+                                emphasis: {
+                                    show: true,
+                                    textStyle: {
+                                        fontSize: 14,
+                                    }
+                                },
+                                textStyle: {
+                                    // color: '#666',
+                                    fontSize: 12
+                                },
+                                formatter: (params)=>{
+                                    // return  params.name + '(' +params.percent + '%)'
+                                    return params.percent  + '%'
+                                }
+                            },
+                            labelLine: {
+                                normal: {
+                                    length: 12,     // 视觉引导线第一段的长度
+                                    length2: 8,     // 视觉引导项第二段的长度
+                                    show: true
+                                }
+                            },
+                            data:[
+                                {value:95, name:'iphone'},
+                                {value:234, name:'Android'},
+                                {value:34, name:'未知'},
+                            ]
+                        }
+                    ]
+                });
+            },
+        },
+    }
+</script>
+
+<style scoped>
+    .portrait_main{
+        margin: 0 64px;
+        position: relative;
+    }
+
+    /* 小区信息 */
+    .portrait_basic_info{
+        min-height:275px;
+        background:rgba(255,255,255,1);
+        border:1px solid rgba(230,231,233,1);
+        margin-bottom: 24px;
+        padding: 24px;
+    }
+
+    .community_info_h4{
+        font-size:14px;
+        font-weight:600;
+        color:rgba(0,0,0,0.85);
+        line-height:22px;
+        margin-bottom: 8px;
+    }
+
+    .community_main_info{
+        padding: 16px 16px 0 36px;
+    }
+
+    .community_info_row{
+        font-size: 14px;
+        margin-bottom: 24px;
+    }
+
+    .community_info_row span{
+        color: #666666;
+    }
+
+    .community_info_row .community_info_label {
+        color: #333333;
+    }
+
+    /* 卡片样式覆盖 */
+    .community_portrait /deep/ .el-card{
+        overflow: unset;
+    }
+
+    /deep/ .el-card__body {
+        padding: 16px;
+    }
+
+    .portrait_row {
+        margin-bottom: 24px;
+    }
+
+    .box_main {
+        height: 352px;
+    }
+
+    .box_card_title {
+        font-size:16px;
+        font-weight:600;
+        color:rgba(44,49,60,1);
+    }
+
+    /* 进度条 */
+    .mobile_phone_ul{
+        height: 285px;
+        overflow-y: auto;
+    }
+
+    .progress_li {
+        display: flex;
+        height: 50px;
+        line-height: 50px;
+        font-size:14px;
+        padding: 0 8px;
+        color:rgba(44,49,60,1);
+        border-bottom: 1px solid rgba(233, 233, 233, 1);
+    }
+
+    .little_height_ul .progress_li{
+        height: 44px;
+        line-height: 44px;
+    }
+
+    .progress_li.progress_li_title{
+        color:rgba(151,151,151,1);
+    }
+
+    .progress_li_rate{
+        width: 58px;
+    }
+
+    .progress_li_name {
+        width: 92px;
+    }
+
+    .progress_li_value{
+        width: 36px;
+    }
+
+    .progress_li_num {
+        flex: 1;
+        -webkit-box-flex: 1;
+        -ms-flex: 1;
+    }
+
+    .progress_li_num /deep/ .el-progress {
+        top:44%;
+    }
+
+    /* echarts的tooltip样式 */
+    /deep/ .echarts_tooltip_title {
+        width: 180px;
+        height: 36px;
+        display: flex;
+        justify-content: space-between;
+        padding: 0px 10px;
+        align-items: center;
+        box-sizing: border-box;
+        margin-bottom: -20px;
+        color: #808080;
+        background-color:#F4F6F6;
+        font-size: 12px;
+    }
+
+    /deep/ .echarts_tooltip_content {
+        display: flex;
+        justify-content: space-between;
+        padding: 0px 10px;
+        box-sizing: border-box;
+        align-items: center;
+        font-size: 12px;
+        color: #2C313C;
+        height: 32px;
+        line-height: 32px;
+    }
+
+    /deep/ .echarts_tooltip_i {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
+
+    /* 滚动条 */
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 8px;
+        background: #FAFAFA;
+    }
+
+    ::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        background: rgba(0,0,0,0.2);
+        border-radius: 4px;
+    }
+
+    /* 无社区画像数据 */
+    .not_search{
+        margin-top: 24px;
+        color: rgba(0,0,0,0.45);
+    }
+</style>

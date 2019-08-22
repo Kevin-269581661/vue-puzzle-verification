@@ -242,7 +242,6 @@ export default {
     },
     data() {
         return {
-            baseURL: 'http://192.168.1.239:8020',
             // session信息
             sessionData: {},
             isDown: false,
@@ -982,7 +981,7 @@ export default {
             let info = {
                 apId: this.orderDetail.apID
             };
-            api.postApi(this.baseURL+this.apiVar.replace+'/report/list', info).then(res =>{
+            api.postApi(this.apiVar.replace+'/report/list', info).then(res =>{
                 console.log(res);
                 if(res.data.SysCode == 200200){
                     let len = res.data.data.length;
@@ -990,7 +989,7 @@ export default {
                         apId: this.orderDetail.apID,
                         replaceRecordName: `换画${len+1}`,
                     };
-                    api.postApi(this.baseURL+this.apiVar.replace+'/report/add', painInfo).then(res =>{
+                    api.postApi(this.apiVar.replace+'/report/add', painInfo).then(res =>{
                         if(res.data.SysCode == 200200){
                             this.planPanel = 'sixth';                            
                             this.fromType = !this.fromType;

@@ -277,7 +277,6 @@ export default {
     },
     data() {
         return {
-            baseURL: 'http://192.168.1.239:8020',
             // 上下刊搜索
             publishSearchInfo:{
                 // 媒体类型
@@ -613,7 +612,7 @@ export default {
             let info = {
                 apId: sessionStorage.getItem('order_apid'),
             };
-            api.getApi(this.baseURL+this.apiVar.replace+"/plan/region", info).then(res =>{
+            api.getApi(this.apiVar.replace+"/plan/region", info).then(res =>{
                 console.log(res);
                 if(res.data.SysCode == 200200){
                     let resArr = res.data.data;
@@ -654,7 +653,7 @@ export default {
                 districtId: areaId
             };
             console.log(info);
-            api.getApi(this.baseURL+this.apiVar.replace+'/plan/resInfo', info).then(res =>{
+            api.getApi(this.apiVar.replace+'/plan/resInfo', info).then(res =>{
                 console.log(res);
                 if(res.data.SysCode == 200200){
                     let result = res.data.data.map(item =>{
@@ -704,7 +703,7 @@ export default {
                 this.pageInfo.currPage = 1;
                 this.searchFun();
             }else{
-                this.$message.warning('请输入搜索条件');
+                sessFun.messageFun('warning', '请输入搜索条件');
             }
         },
         // 上下刊报告
@@ -789,10 +788,10 @@ export default {
                         this.imageArr = dataInfo.dataList;
                         this.checkImgStatus();
                         if(dataInfo.totalCount == 0){
-                            Message.warning('暂无数据');
+                            sessFun.messageFun('warning', '暂无数据');
                         }
                     }else {
-                        Message.warning(res.data.MSG);
+                        sessFun.messageFun('warning', res.data.MSG);
                     }
                 })
                 .catch(res => {
@@ -841,7 +840,7 @@ export default {
             let info = {
                 apId: sessionStorage.getItem('order_apid')
             };
-            api.getApi(this.baseURL+this.apiVar.replace+'/report/list', info).then(res =>{
+            api.getApi(this.apiVar.replace+'/report/list', info).then(res =>{
                 console.log(res);
                 if(res.data.code == 200){
                     this.painList = res.data.data.map(item =>{
@@ -860,7 +859,7 @@ export default {
         },
         // 获取换画报告列表
         getData(params){
-            api.postApi(this.baseURL+this.apiVar.replace +"/report/detailInfo", params).then(res =>{
+            api.postApi(this.apiVar.replace +"/report/detailInfo", params).then(res =>{
                 console.log(res);
                 if(res.data.SysCode == 200200){
                     let dataInfo = res.data;
@@ -888,7 +887,7 @@ export default {
                     this.imageArr = dataInfo.dataList;
                     this.checkImgStatus();
                     if(dataInfo.totalCount == 0){
-                        Message.warning('暂无数据');
+                        sessFun.messageFun('warning', '暂无数据');
                     }
                 }else{
                     sessFun.messageFun('warning', res.data.MSG);
@@ -1018,7 +1017,7 @@ export default {
                     };
                     this.selectioUpdate();
                 }else{
-                    Message.warning(res.data.MSG);
+                    sessFun.messageFun('warning', res.data.MSG);
                 }
                 this.dialogPage.pointLoading = false;
             }).catch(err =>{
@@ -1208,7 +1207,7 @@ export default {
                     this.updateData();
                 }
             }else{
-                Message.warning('请选择换画日期!');
+                sessFun.messageFun('warning', '请选择换画日期!');
             }
         },
         // 更新表格
@@ -1323,7 +1322,7 @@ export default {
                                     this.submitUpload_(type, index);
                                 }else{
                                     this.addload.close();
-                                    Message.warning(res.data.MSG);
+                                    sessFun.messageFun('warning', res.data.MSG);
                                 }
                             })
                             break;
@@ -1344,7 +1343,7 @@ export default {
                                     this.submitUpload_(type, index);
                                 }else{
                                     this.addload.close();
-                                    Message.warning(res.data.MSG);
+                                    sessFun.messageFun('warning', res.data.MSG);
                                 }
                             })
                             break;
@@ -1380,14 +1379,14 @@ export default {
                 console.log(res.data);
                 this.addload.close();
                 if(res.data.SysCode == 300200){
-                    Message.success(res.data.MSG);
+                    sessFun.messageFun('success', res.data.MSG);
                     this.constractArr = [];
                     this.uploadImgArr = [];
                     this.uploadPidArr = [];
                     this.UploadTime = 0;
                     this.searchFun();
                 }else {
-                    Message.warning(res.data.MSG);
+                    sessFun.messageFun('warning', res.data.MSG);
                 }
             }).catch(res =>{
                 this.addload.close();
@@ -1516,17 +1515,17 @@ export default {
             const isLt1M = file.size / 1024 / 1024 < 8;
 
             if (!isIMAGE) {
-                Message.error("只能上传jpg/png图片!");
+                sessFun.messageFun('error', "只能上传jpg/png图片!");
             }
             if (!isLt1M) {
-                Message.error("上传文件大小不能超过 8MB!");
+                sessFun.messageFun('error', "上传文件大小不能超过 8MB!");
             }
             return isIMAGE&&isLt1M;
         },
         // 超过图片上传个数
         handleExceed(files, fileList) {
             console.log(files, fileList);
-            Message.warning(`当前限制选择 6 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+            sessFun.messageFun('warning', `当前限制选择 6 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
         },
         // 查看预览图片
         handlePictureCardPreview(file) {
@@ -1550,11 +1549,11 @@ export default {
                         console.log(res.data);
                         // 实时更新进度条
                         if (res.data.SysCode == 300200) {
-                            Message.success(res.data.MSG);
+                            sessFun.messageFun('success', res.data.MSG);
                             this.allPic = '';
                             this.searchFun();
                         }else {
-                            Message.warning(res.data.MSG);
+                            sessFun.messageFun('warning', res.data.MSG);
                         }
                     })
                     .catch(res => {
@@ -1601,7 +1600,7 @@ export default {
                     });
                     tempPage.location = routeUrl.href;
                 }else{
-                    Message.warning(res.data.MSG);
+                    sessFun.messageFun('warning', res.data.MSG);
                 }
                 this.downLoading = false;
             }).catch(err =>{
@@ -1619,9 +1618,9 @@ export default {
             api.postApi(this.apiVar.Advertisement+"/UpdateSXReport", info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 200200){
-                    Message.success(res.data.MSG);
+                    sessFun.messageFun('success', res.data.MSG);
                 }else{
-                    Message.warning(res.data.MSG);
+                    sessFun.messageFun('warning', res.data.MSG);
                 }
                 this.updateLoading = false;
             }).catch(err =>{

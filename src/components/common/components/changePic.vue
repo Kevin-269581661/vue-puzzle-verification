@@ -149,7 +149,7 @@
         <el-dialog title="选择换画点位" :visible.sync="isShowPic">
             <el-row class="dialog_pic">
                 <span>资源名称:</span>
-                <el-select v-model="dialogInfo.resName" multiple filterable remote reserve-keyword placeholder="请输入资源名称" :remote-method="remoteMethod" :loading="dialogInfo.loading" size="small">
+                <el-select v-model="dialogInfo.resName" multiple filterable placeholder="请输入资源名称" size="small">
                     <el-option v-for="item in dialogInfo.resArr" :key="item.value" :label="item.label" :value="item.value">
                     </el-option>
                 </el-select>
@@ -438,17 +438,20 @@ export default {
                 picState: "",
                 mapName: "",
                 // 资源名称列表
-                loading: false,
                 resArr: [],
                 // 状态列表
                 stateArr: [
                     {
-                        label: "已指定换画点位",
+                        label: "全部换画点位",
                         value: 2
                     },
                     {
+                        label: "已指定换画点位",
+                        value: 1
+                    },
+                    {
                         label: "未指定换画点位",
-                        value: 3
+                        value: 0
                     }
                 ],
                 // 地图中心点列表
@@ -1005,6 +1008,11 @@ export default {
             };
             this.shoplist = [];
             this.pointArr = [];
+            // 获取资源名称列表
+            this.getDialogInfoResArr();
+            // 获取地图中心点
+            this.getMapArr();
+            // 获取表格数据
             this.searchInfoFun();
         },
         /**
@@ -1021,7 +1029,6 @@ export default {
         },
         // 搜索数据格式化
         searchDataFormat(){
-            console.log(this.painList, 'painlist', this.activePainIndex);
             let { resName, picState, mapName } = this.dialogInfo;
             let { currInfoPage, pageSize } = this.dialogPage;
             let info = {
@@ -1029,11 +1036,10 @@ export default {
                 pageSize: pageSize,
                 apId: sessionStorage.getItem('order_apid'),
                 replaceRecordId: this.painList[this.activePainIndex].id,
-                ...( resName.length && { resId: resName }),
+                ...( resName.length && { resIds: resName }),
                 ...( mapName && { mapCenterId: mapName }),
-                ...( picState && { replaceStatus: picState })
+                ...( picState>=0 && { replaceStatus: picState==2?'':picState })
             };
-            console.log(info, 'seachformat---');
             return info;
         },
         searchInfoFun(){
@@ -1055,6 +1061,11 @@ export default {
                             ...this.dialogPage,
                             loading_maInfo: true,
                             totalInfoPage: dataInfo.totalPage,
+                        };
+                        // 点位数量
+                        this.pointInfo = {
+                            pointNum: dataInfo.totalSize,
+                            setedNum: dataInfo.replaceCountSize
                         };
                         this.dialogPage.currInfoPage++;
                         this.selectioUpdate();
@@ -1159,19 +1170,37 @@ export default {
         getMapArr(){
             // this.dialogInfo.map = '';
         },
-        // 资源列表远程搜索
-        remoteMethod(query){
-            if(query){
-                this.dialogInfo.loading = true;
-                // this.getResArr(query);
-                // this.dialogInfo.resArr = ''
-            }else{
-                this.dialogInfo.resArr = [];
-            }
+        // 获取弹出框资源下拉列表
+        getDialogInfoResArr(){
+            let info = {
+                apId: sessionStorage.getItem('order_apid'),
+            };
+            api.getApi(this.apiVar.replace+'/plan/resInfo', info).then(res =>{
+                console.log(res);
+                if(res.data.SysCode == 200200){
+                    let result = res.data.data.map(item =>{
+                        return {
+                            ...item,
+                            label: item.resName,
+                            value: item.resID,
+                        };
+                    });
+                    this.dialogInfo.resArr = result;
+                }else{
+                    sessFun.messageFun(res.data.MSG);
+                }
+            });
         },
         // 换画点位搜索
         searchPoint() {
             console.log(this.dialogInfo);
+            this.dialogPage = {
+                loading_maInfo: false,
+                currInfoPage: 1,
+                totalInfoPage: 0,
+                pointLoading: true,
+            };
+            this.searchInfoFun();
         },
         // 重置
         resetPoint() {

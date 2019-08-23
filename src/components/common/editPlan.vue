@@ -3301,7 +3301,7 @@
                             sessFun.messageFun('success', '方案编辑成功')
                         }
                     } else {
-                        sessFun.messageFun('warning', '提交选点失败')
+                        sessFun.messageFun('warning', res.data.MSG)
                     }
                 })
             },

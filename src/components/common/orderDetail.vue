@@ -560,10 +560,6 @@ export default {
                     if (!res.data.SysCode) {
                         let initData = res.data;
                         let result = initData.adSpaceInfo;
-                        let mediaAd = [];
-                        let mediaDao = [];
-                        let cityAd = [];
-                        let cityDao = [];
                         // this.addNewAdsNum = res.data.isNewCount
                         for (let data of result) {
                             let time = this.formatTime(data.lStar) + "-" +this.formatTime(data.lEnd);
@@ -573,15 +569,6 @@ export default {
                                 finishTimeRange = this.formatTime(data.lStar)+"-"+this.formatTime(data.lSetTime);
                             }
                             data.finishTimeRange = finishTimeRange;
-                            if(data.mVehicle == '广告门'){
-                                mediaAd.push(data);
-                                cityAd.push(data);
-                            }
-                            if(data.mVehicle == '道闸'){
-                                mediaDao.push(data);
-                                cityDao.push(data);
-                            }
-
                         }
                         // 选点排期
                         this.copyAsidArr = JSON.parse(JSON.stringify(result));
@@ -975,13 +962,10 @@ export default {
         },
         // 新增换画报告
         addPainReport(){       
-            this.planPanel = 'sixth';                            
-            this.fromType = !this.fromType;
-
             let info = {
                 apId: this.orderDetail.apID
             };
-            api.postApi(this.apiVar.replace+'/report/list', info).then(res =>{
+            api.getApi(this.apiVar.replace+'/report/list', info).then(res =>{
                 console.log(res);
                 if(res.data.SysCode == 200200){
                     let len = res.data.data.length;
@@ -989,7 +973,7 @@ export default {
                         apId: this.orderDetail.apID,
                         replaceRecordName: `换画${len+1}`,
                     };
-                    api.postApi(this.apiVar.replace+'/report/add', painInfo).then(res =>{
+                    api.postApi_json(this.apiVar.replace+'/report/add', painInfo).then(res =>{
                         if(res.data.SysCode == 200200){
                             this.planPanel = 'sixth';                            
                             this.fromType = !this.fromType;
@@ -1044,7 +1028,7 @@ export default {
     }
 
     .price_quo {
-        margin: 0 32px;
+        margin: 18px 32px;
     }
 
     /deep/ .el-tabs__nav-scroll {
@@ -1114,64 +1098,6 @@ export default {
 
     /deep/ .el-tabs--border-card {
         box-shadow: none;
-    }
-
-    /deep/ .el-tabs--border-card > .el-tabs__content {
-        padding: 0 !important;
-    }
-
-    /deep/ .el-tabs__content {
-        width: 100%;
-    }
-
-    .panel {
-        margin: 0 32px;
-    }
-
-    .step3 {
-        padding: 0 105px;
-    }
-
-    .price {
-        width: 100%;
-        height: 300px;
-    }
-
-    .price-left {
-        box-sizing: border-box;
-        padding-right: 66px;
-        width: 49%;
-        float: left;
-        border-right: 1px dashed #d8d8d8;
-    }
-
-    .price-right {
-        width: 49%;
-        float: right;
-        padding-left: 66px;
-        box-sizing: border-box;
-    }
-
-    .price ul li {
-        font-size: 14px;
-        color: #666666;
-        border-bottom: 1px solid #d8d8d8;
-        height: 50px;
-        line-height: 50px;
-        margin-left: 19px;
-        margin-right: 28px;
-    }
-
-    .price ul li:last-child {
-        text-align: right;
-        border-bottom: none;
-        font-size: 18px;
-        color: #333333;
-        font-weight: bold;
-    }
-
-    .price ul li span {
-        float: right;
     }
 
     /*详情头部*/
@@ -1421,5 +1347,9 @@ export default {
     }
     /deep/ .table_wrap .el-table__body-wrapper{
         min-height: auto;
+    }
+
+    .box-wrap, #pane-second{
+        margin-bottom: 32px;
     }
 </style>

@@ -164,7 +164,7 @@
                 <el-button plain @click="searchPoint()">搜索</el-button>
                 <el-button plain @click="resetPoint()">重置</el-button>
                 <el-button type="primary" @click="showUpload()">换画</el-button>
-                <el-button plain>取消换画</el-button>
+                <el-button plain @click="cancelPain()">取消换画</el-button>
             </el-row>
             <div class="car-title">
                 <i class="el-icon-info" style="color: #1890FF;"></i>
@@ -180,26 +180,41 @@
                 </el-table-column>
                 <el-table-column prop="resName" label="资源">
                 </el-table-column>
-                <el-table-column prop="mTitle" label="媒体">
+                <el-table-column prop="mtitle" label="媒体">
                 </el-table-column>
                 <el-table-column prop="asLab" label="面" width="60">
                 </el-table-column>
-                <el-table-column prop="city" label="城市" width="90">
+                <el-table-column prop="cityName" label="城市" width="90">
                 </el-table-column>
-                <el-table-column prop="rName" label="区域" width="90">
+                <el-table-column prop="districtName" label="区域" width="90">
                 </el-table-column>
-                <el-table-column prop="map" label="地图中心点">
+                <el-table-column prop="mapCenterInfo" label="地图中心点">
+                    <template slot-scope="scope">
+                        <span>
+                            {{ scope.row.mapCenterInfo || '--'}}
+                        </span>
+                    </template>
                 </el-table-column>
                 <el-table-column prop="timeRange" label="排期" min-width="120">
                 </el-table-column>
-                <el-table-column prop="changePicTime" label="换画日期">
+                <el-table-column prop="replaceDate" label="换画日期">
+                    <template slot-scope="scope">
+                        <span>
+                            {{ scope.row.replaceDate || '--'}}
+                        </span>
+                    </template>
                 </el-table-column>
                 <el-table-column prop="remark" label="备注">
-                </el-table-column>
-                <el-table-column prop="imgUrl" label="操作" width="80">
                     <template slot-scope="scope">
-                        <i class="el-icon-picture" :style="{color:scope.row.imgUrl?'#108DE7':'', margin: '0 10px'}" @click="previewImg(scope.row.imgUrl)" :disabled="!scope.row.imgUrl"></i>
-                        <i class="el-icon-delete" :style="{'color':scope.row.imgUrl?'#108DE7':''}" @click="deleteOneImg(scope.row, scope.$index)" :disabled="!scope.row.imgUrl"></i>
+                        <span>
+                            {{ scope.row.remark || '--'}}
+                        </span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="picUrl" label="操作" width="80">
+                    <template slot-scope="scope">
+                        <i class="el-icon-picture" :style="{color:scope.row.picUrl?'#108DE7':'', margin: '0 10px'}" @click="previewImg(scope.row.picUrl)" :disabled="!scope.row.picUrl"></i>
+                        <i class="el-icon-delete" :style="{'color':scope.row.picUrl?'#108DE7':''}" @click="deleteOneImg(scope.row)" :disabled="!scope.row.picUrl"></i>
                     </template>
                 </el-table-column>
 
@@ -223,9 +238,15 @@
                     <el-date-picker size="small" v-model="editInfo.date" value-format="yyyy/MM/dd" format="yyyy/MM/dd" type="date" placeholder="选择日期" :picker-options="pickerOptions">
                     </el-date-picker>
                 </el-col>
-                <el-col class="flex_box">
+                <el-col class="flex_box imgpain_box">
                     <span>换画素材：</span>
-                    <el-upload :action="doUpload" :show-file-list='false' class="upload_box" :http-request="uploadChange">
+                    <el-upload 
+                        :action="doUpload" 
+                        list-type="picture-card"
+                        :file-list="imgUrl" 
+                        :before-upload="beforeUpload"
+                        :on-success="onsucess"                 
+                        :limit='1'>
                         <span class="upload_border">
                             <i class="el-icon-plus"></i>
                             <span>上传图片</span>
@@ -313,20 +334,21 @@ export default {
                 totalNum: 0,
             },
             // 换画名称列表
-            painList: [
-                {
-                    id: 1,
-                    name: '换画1'
-                },
-                {
-                    id: 2,
-                    name: '换画2',
-                },
-                {
-                    id: 3,
-                    name: '换画33'
-                }
-            ],
+            // painList: [
+            //     {
+            //         id: 1,
+            //         name: '换画1'
+            //     },
+            //     {
+            //         id: 2,
+            //         name: '换画2',
+            //     },
+            //     {
+            //         id: 3,
+            //         name: '换画33'
+            //     }
+            // ],
+            painList: [],
             // 换画当前点击
             activePainIndex: 0,
             // 搜索信息
@@ -412,7 +434,7 @@ export default {
             isShowPic: false,
             // 弹出框搜索
             dialogInfo: {
-                resName: "",
+                resName: [],
                 picState: "",
                 mapName: "",
                 // 资源名称列表
@@ -420,10 +442,6 @@ export default {
                 resArr: [],
                 // 状态列表
                 stateArr: [
-                    {
-                        label: "全部点位",
-                        value: 1
-                    },
                     {
                         label: "已指定换画点位",
                         value: 2
@@ -451,72 +469,73 @@ export default {
                 setedNum: 0
             },
             // 换画弹出框点位列表
-            pointArr: [
-                {
-                    resId: 1,
-                    resName: "中信西关海二期",
-                    mTitle: "保安亭西...",
-                    asLab: "B",
-                    city: "广州市",
-                    rName: "越秀区",
-                    map: "",
-                    lStar: '2019/09/09',
-                    lEnd: '2019/09/10',
-                    asID: 1,
-                    timeRange: "2019/09/09-2019/09/10",
-                    changePicTime: "2019/09/09",
-                    remark: "画面不要有折痕...",
-                    imgUrl: ""
-                },
-                {
-                    resId: 2,
-                    resName: "中信西关海二期",
-                    mTitle: "保安亭西...",
-                    asLab: "B",
-                    city: "广州市",
-                    rName: "越秀区",
-                    map: "",
-                    lStar: '2019/09/09',
-                    lEnd: '2019/09/10',
-                    asID: 2,
-                    timeRange: "2019/09/09-2019/09/10",
-                    changePicTime: "2019/09/09",
-                    remark: "画面不要有折痕...",
-                    imgUrl: ""
-                },
-                {
-                    resId: 3,
-                    resName: "中信西关海二期",
-                    mTitle: "保安亭西...",
-                    asLab: "B",
-                    city: "广州市",
-                    rName: "越秀区",
-                    map: "",
-                    lStar: '2019/09/09',
-                    lEnd: '2019/09/10',
-                    asID: 3,
-                    timeRange: "2019/09/09-2019/09/10",
-                    changePicTime: "2019/09/09",
-                    remark: "画面不要有折痕...",
-                    imgUrl: ""
-                },
-                {
-                    resId: 4,
-                    resName: "中信西关海二期",
-                    mTitle: "保安亭西...",
-                    asLab: "B",
-                    city: "广州市",
-                    rName: "越秀区",
-                    map: "",
-                    lStar: '2019/09/09',
-                    lEnd: '2019/09/10',
-                    asID: 4,
-                    timeRange: "2019/09/09-2019/09/10",
-                    changePicTime: "2019/09/09",
-                    remark: "画面不要有折痕...",
-                    imgUrl: ""
-                }
-            ],
+            // pointArr: [
+            //     {
+            //         resId: 1,
+            //         resName: "中信西关海二期",
+            //         mTitle: "保安亭西...",
+            //         asLab: "B",
+            //         city: "广州市",
+            //         rName: "越秀区",
+            //         map: "",
+            //         lStar: '2019/09/09',
+            //         lEnd: '2019/09/10',
+            //         asID: 1,
+            //         timeRange: "2019/09/09-2019/09/10",
+            //         changePicTime: "2019/09/09",
+            //         remark: "画面不要有折痕...",
+            //         imgUrl: ""
+            //     },
+            //     {
+            //         resId: 2,
+            //         resName: "中信西关海二期",
+            //         mTitle: "保安亭西...",
+            //         asLab: "B",
+            //         city: "广州市",
+            //         rName: "越秀区",
+            //         map: "",
+            //         lStar: '2019/09/09',
+            //         lEnd: '2019/09/10',
+            //         asID: 2,
+            //         timeRange: "2019/09/09-2019/09/10",
+            //         changePicTime: "2019/09/09",
+            //         remark: "画面不要有折痕...",
+            //         imgUrl: ""
+            //     },
+            //     {
+            //         resId: 3,
+            //         resName: "中信西关海二期",
+            //         mTitle: "保安亭西...",
+            //         asLab: "B",
+            //         city: "广州市",
+            //         rName: "越秀区",
+            //         map: "",
+            //         lStar: '2019/09/09',
+            //         lEnd: '2019/09/10',
+            //         asID: 3,
+            //         timeRange: "2019/09/09-2019/09/10",
+            //         changePicTime: "2019/09/09",
+            //         remark: "画面不要有折痕...",
+            //         imgUrl: ""
+            //     },
+            //     {
+            //         resId: 4,
+            //         resName: "中信西关海二期",
+            //         mTitle: "保安亭西...",
+            //         asLab: "B",
+            //         city: "广州市",
+            //         rName: "越秀区",
+            //         map: "",
+            //         lStar: '2019/09/09',
+            //         lEnd: '2019/09/10',
+            //         asID: 4,
+            //         timeRange: "2019/09/09-2019/09/10",
+            //         changePicTime: "2019/09/09",
+            //         remark: "画面不要有折痕...",
+            //         imgUrl: ""
+            //     }
+            // ],
+            pointArr: [],
             // 勾选的列表
             shoplist: [],
             // 图片放大弹出框
@@ -525,8 +544,9 @@ export default {
             // 上传图片以及换画日期弹出框
             isShowEdit: false,
             // 上传图片地址
-            doUpload: "/advertisement/UpLoad",
-            formData: new FormData(),
+            // doUpload: "/advertisement/UpLoad",
+            doUpload: "http://192.168.1.239/advertisement/UpLoad",
+            imgUrl: [],
             editInfo: {
                 date: "",
                 url: "",
@@ -539,11 +559,12 @@ export default {
             },
             pickerOptions:{
                 disabledDate: (time) => {
-                    let beginDateVal = new Date(this.dateRange.beginDate).getTime()+60*60*24*1000;
-                    let endDateVal = new Date(this.dateRange.endDate).getTime()-60*60*24*1000;
-                    if (beginDateVal || endDateVal) {
-                        return (time.getTime() < beginDateVal) || (time.getTime() > endDateVal);
-                    }
+                    return false;
+                    // let beginDateVal = new Date(this.dateRange.beginDate).getTime()+60*60*24*1000;
+                    // let endDateVal = new Date(this.dateRange.endDate).getTime()-60*60*24*1000;
+                    // if (beginDateVal || endDateVal) {
+                    //     return (time.getTime() < beginDateVal) || (time.getTime() > endDateVal);
+                    // }
                 }
             },
         };
@@ -561,10 +582,13 @@ export default {
     watch:{
         fromType(newVal, oldVal){
             console.log(newVal, oldVal);
-            let len = this.painList.length;
-            console.log(this.painList, 'painlist----', len);
-            this.activePainIndex = len-1;
-            this.editReport();
+            this.getPainList().then(res =>{
+                let len = this.painList.length;
+                console.log(this.painList, 'painlist----', len);
+                this.activePainIndex = len-1;
+                this.search();
+                this.editReport();
+            });
         },
     },
     directives: {
@@ -602,9 +626,10 @@ export default {
                 this.searchFun();
             }else if(type == 3){
                 // 获取换画名称列表
-                this.getPainList();
-                // 换画报告列表
-                this.search();
+                this.getPainList().then(res =>{
+                    // 换画报告列表
+                    this.search();
+                });
             }
         },
         // 获取城市区域
@@ -837,42 +862,44 @@ export default {
          */
         // 获取全部换画列表(换画名称以及id)
         getPainList(){
-            let info = {
-                apId: sessionStorage.getItem('order_apid')
-            };
-            api.getApi(this.apiVar.replace+'/report/list', info).then(res =>{
-                console.log(res);
-                if(res.data.code == 200){
-                    this.painList = res.data.data.map(item =>{
-                        return{
-                            ...item,
-                            id: item.replaceRecordId,
-                            name: item.replaceRecordName,
-                        };
-                    });
-                }else if(res.data.code == 302){
-                    sessFun.loginTimeout();
-                }else{
-                    sessFun.messageFun('warning', res.data.msg);
-                }
+            let promise = new Promise((resolve, reject) =>{
+                let info = {
+                    apId: sessionStorage.getItem('order_apid')
+                };
+                api.getApi(this.apiVar.replace+'/report/list', info).then(res =>{
+                    console.log(res, 'SysCode---');
+                    if(res.data.SysCode == 200200){
+                        this.painList = res.data.data.map(item =>{
+                            return{
+                                ...item,
+                                // id: item.replaceRecordId,
+                                name: item.replaceRecordName,
+                            };
+                        });
+                    }else{
+                        sessFun.messageFun('warning', res.data.MSG);
+                    }
+                    resolve();
+                });
             });
+            return promise;
         },
         // 获取换画报告列表
         getData(params){
-            api.postApi(this.apiVar.replace +"/report/detailInfo", params).then(res =>{
+            api.postApi_json(this.apiVar.replace +"/report/detailInfo", params).then(res =>{
                 console.log(res);
                 if(res.data.SysCode == 200200){
-                    let dataInfo = res.data;
+                    let dataInfo = res.data.data;
                     let percent = dataInfo.totalCount? Number(((dataInfo.hasPhotoCount / dataInfo.totalCount)*100).toFixed(2)) : 0;
                     this.publishNumInfo = {
                         percent: percent,
                         currNum: dataInfo.hasPhotoCount,
-                        totalNum: dataInfo.totalCount,
+                        totalNum: dataInfo.totalSize,
                     };
 
                     this.pageInfo = {
                         ...this.pageInfo,
-                        ...({totalNum: dataInfo.total}),
+                        ...({totalNum: dataInfo.totalSize}),
                     };
                     for(let data of dataInfo.dataList){
                         for(let item of data.photoList){
@@ -922,13 +949,13 @@ export default {
         },
         // 搜索换画列表条件
         searchPointFormat(){
-            let { uID, token } = this.sessionData;
+            console.log(this.painList, this.activePainIndex, 'point--active--');
             let { mediaType, city, resName, status } = this.searchInfo;
             let { currPage, pageSize } = this.pageInfo;
             let info = {
-                uid: uID,
-                token: token,
-                pageNo: currPage,
+                apId: sessionStorage.getItem('order_apid'),
+                replaceRecordId: this.painList[this.activePainIndex].id,
+                pageNum: currPage,
                 pageSize: pageSize,
                 ...( mediaType && { mType: mediaType }),
                 ...( city.length && { rId: city[1] }),
@@ -966,6 +993,18 @@ export default {
         // 编辑报告
         editReport(){
             this.isShowPic = true;
+            this.dialogPage = {
+                ...this.dialogPage,
+                currInfoPage: 1,
+            };
+            this.dialogInfo = {
+                ...this.dialogInfo,
+                resName: [],
+                picState: "",
+                mapName: "",
+            };
+            this.shoplist = [];
+            this.pointArr = [];
             this.searchInfoFun();
         },
         /**
@@ -973,49 +1012,53 @@ export default {
          */
         // 物料弹出框滚动加载
         pointLoadMore(){
-            if(this.loading_maInfo){
-                this.loading_maInfo = false;
-                if(this.currInfoPage <= this.totalInfoPage){
+            if(this.dialogPage.loading_maInfo){
+                this.dialogPage.loading_maInfo = false;
+                if(this.dialogPage.currInfoPage <= this.dialogPage.totalInfoPage){
                     this.searchInfoFun();
                 }
             }
         },
         // 搜索数据格式化
         searchDataFormat(){
-            let { uID, token } = this.sessionData;
+            console.log(this.painList, 'painlist', this.activePainIndex);
             let { resName, picState, mapName } = this.dialogInfo;
             let { currInfoPage, pageSize } = this.dialogPage;
             let info = {
-                uid: uID,
-                token: token,
-                pageNo: currInfoPage,
+                pageNum: currInfoPage,
                 pageSize: pageSize,
                 apId: sessionStorage.getItem('order_apid'),
                 replaceRecordId: this.painList[this.activePainIndex].id,
-                ...( resName && { resId: resName }),
+                ...( resName.length && { resId: resName }),
                 ...( mapName && { mapCenterId: mapName }),
                 ...( picState && { replaceStatus: picState })
             };
+            console.log(info, 'seachformat---');
             return info;
         },
         searchInfoFun(){
+            this.dialogPage.pointLoading = true;
             let info = this.searchDataFormat();
             this.getMaterInfo(info);
         },
         getMaterInfo(params){
-            api.postApi(this.apiVar.replace+'/getAdspaces', params).then(res =>{
+            api.postApi_json(this.apiVar.replace+'/report/getAdspaces', params).then(res =>{
                 console.log(res.data);
-                if(res.data.total >= 0){
-                    let dataInfo = res.data;
-                    // 物料信息弹出框的选点信息
-                    let dataArr = dataInfo.list;
-                    this.pointArr = this.pointArr.concat(this.formatData(dataArr));
-                    this.dialogPage = {
-                        loading_maInfo: true,
-                        currInfoPage: this.dialogPage.currInfoPage++,
-                        totalInfoPage: dataInfo.totalPage,
-                    };
-                    this.selectioUpdate();
+                if(res.data.SysCode == 200200){
+                    console.log(res.data.data);
+                    if(res.data.data.totalSize >= 0){
+                        let dataInfo = res.data.data;
+                        // 物料信息弹出框的选点信息
+                        let dataArr = dataInfo.dataList;
+                        this.pointArr = this.pointArr.concat(this.formatData(dataArr));
+                        this.dialogPage = {
+                            ...this.dialogPage,
+                            loading_maInfo: true,
+                            totalInfoPage: dataInfo.totalPage,
+                        };
+                        this.dialogPage.currInfoPage++;
+                        this.selectioUpdate();
+                    }
                 }else{
                     sessFun.messageFun('warning', res.data.MSG);
                 }
@@ -1034,29 +1077,10 @@ export default {
         },
         // 表格数据格式
         setTableData(item){
-            let timeRange = timeFormat.toDate(item.lStar, '/') +'-'+ timeFormat.toDate(item.lEnd, '/');
-            let timeRange1 = timeFormat.toDate(item.lStar, '/') +'-'+ timeFormat.toDate(item.lSetTime, '/');
+            let timeRange = timeFormat.toDate(item.beginDate, '/') +'-'+ timeFormat.toDate(item.endDate, '/');
             let obj = {
-                resName: item.resName,
-                mTitle: item.mTitle,
-                asLab: item.asLab,
-                city: item.city,
-                rName: item.region,
-                map: item.mapCenterInfo,
-                timeRange: item.lState==2? timeRange1 : timeRange,
-                changePicTime: item.replaceDate,
-                remark: item.remark?item.remark:'',
-                imgUrl: item.picUrl?item.picUrl:'',
-                // uploadUser: item.uploadUser?item.uploadUser:'',
-                resID: item.resID,
-                mID: item.mID,
-                lID: item.lID,
-                lStar: item.lStar,
-                lEnd: item.lEnd,
-                asID: item.asID,
-                cityId: item.cityId,
-                regionId: item.regionId,
-                status: item.status,
+                ...item,
+                timeRange: timeRange,
             };
             return obj;
         },
@@ -1123,9 +1147,9 @@ export default {
 		selectioUpdate(){
             for(let item of this.shoplist){
                 for(let data of this.pointArr){
-                    if(item.asID == data.asID && item.lStar == data.lStar && item.lEnd == data.lEnd){
+                    if(data.lid == item.lid){
                         data.remark = item.remark;
-                        data.imgUrl = item.imgUrl;
+                        data.picUrl = item.picUrl;
                         this.$refs.multipleTable.toggleRowSelection(data, true);
                     }
                 }
@@ -1175,37 +1199,69 @@ export default {
             this.dialogImageUrl = url;
             this.dialogVisible = true;
         },
+        // 删除图片链接
+        deleteOneImg(row){
+            for(let data of this.pointArr){
+                if(data.lid == row.lid){
+                    data.picUrl = '';
+                    break;
+                }
+            }
+            for(let data of this.shoplist){
+                if(data.lid == row.lid){
+                    data.picUrl = '';
+                    break;
+                }
+            }
+            this.pointArr.push();
+            console.log(this.pointArr);
+        },
         // 换画上传图片等
         showUpload() {
-            this.isShowEdit = true;
+            if(this.shoplist.length){
+                this.isShowEdit = true;
+                this.editInfo = {
+                    date: "",
+                    url: "",
+                    remark: ""
+                };
+            }else{
+                sessFun.messageFun('warning', '请先选择需要换画的点位!');
+            }
         },
         // 取消
         cancelChange() {
             this.isShowEdit = false;
         },
-        // 上传换画素材
-        uploadChange(params){
-            let fileObj = params.file;
-            this.formData = new FormData();
-            formData.append('file', fileObj);
+        // 上传图片之前的格式大小判断
+        beforeUpload(file){
+            const isJPG = file.type === "image/jpeg" || file.type === "image/png";;
+            const isLt2M = file.size / 1024 / 1024 < 2;
+
+            if (!isJPG) {
+                Message.error('只能上传jpg/png图片!');
+            }
+            if (!isLt2M) {
+                Message.error('图片大小不能超过 2MB!');
+            }
+            return isJPG && isLt2M;
+        },
+        // 上传成功
+        onsucess(res, file){
+            this.imgUrl = [];
+            let resImg = {name: '图片1', url: res[0].pURL};
+            this.imgUrl = [resImg];
+            console.log(this.imgUrl);
         },
         // 保存上传图片
         confirmChange() {
-            this.isShowEdit = false;
             console.log(this.editInfo);
             let { date, url, remark } = this.editInfo;
             this.editInfo.url = '';
             if(date){
-                // 先上传图片获取url
-                if(this.formData){
-                    api.postApi(this.formData).then(res =>{
-                        // this.editInfo.url = res.data.url;
-                        this.updateData();
-                    });
-
-                }else{
-                    this.updateData();
-                }
+                this.isShowEdit = false;
+                this.editInfo.url = this.imgUrl[0].url;
+                this.updateData();
             }else{
                 sessFun.messageFun('warning', '请选择换画日期!');
             }
@@ -1214,9 +1270,11 @@ export default {
         updateData(){
             let arr = this.shoplist;
             let { date, url, remark } = this.editInfo;
-            let result = arr.filter((item, index)=>{
+            let result = arr.map((item, index)=>{
                 if(Date.parse(item.beginDate) < Date.parse(date) && Date.parse(item.endDate) > Date.parse(date)){
-                    item.changePicTime = date;
+                    item.replaceDate = date;
+                    item.picUrl = url;
+                    item.remark = remark;
                 }
                 return true;
             });
@@ -1226,11 +1284,69 @@ export default {
         // 取消
         cancel() {
             this.isShowPic = false;
+            this.shoplist = [];
         },
         // 保存
         saveAll() {
-            this.isShowPic = false;
             console.log(this.pointArr);
+            if(this.shoplist.length){
+                this.isShowPic = false;
+                let result = [];
+                for(let data of this.pointArr){
+                    if(data.picUrl || data.remark){
+                        let obj = {
+                            ...data,
+                            status: 1,
+                            replaceRecordId: this.painList[this.activePainIndex].id                            
+                        };
+                        result.push(obj);
+                    }
+                }
+                if(result.length){
+                    api.postApi_json(this.apiVar.replace+ '/report/saveDetailInfo', result).then(res =>{
+                        console.log(res.data);
+                        if(res.data.SysCode == 200200){
+                            sessFun.messageFun('success', res.data.MSG);
+                        }else{
+                            sessFun.messageFun('warning', res.data.MSG);
+                        }
+                    });
+                }else{
+                    sessFun.messageFun('warning', '没有需要保存的点');
+                }
+            }else{
+                sessFun.messageFun('warning', '请先勾选选点');
+            }
+        },
+        // 取消换画
+        cancelPain(){
+            if(this.shoplist.length){
+                let result = [];
+                for(let data of this.pointArr){
+                    if(data.picUrl || data.remark){
+                        let obj = {
+                            ...data,
+                            status: 0,
+                            replaceRecordId: this.painList[this.activePainIndex].id
+                        };
+                        result.push(obj);
+                    }
+                }
+                if(result.length){
+                    api.postApi_json(this.apiVar.replace+ '/report/saveDetailInfo', result).then(res =>{
+                        console.log(res.data);
+                        if(res.data.SysCode == 200200){
+                            sessFun.messageFun('success', res.data.MSG);
+                        }else{
+                            sessFun.messageFun('warning', res.data.MSG);
+                        }
+                    });
+                }else{
+                    sessFun.messageFun('warning', '没有需要保存的点');
+                }
+            }else{
+                sessFun.messageFun('warning', '请先勾选选点');
+            }
         },
         // 给上下刊添加图片的收藏状态
         setImgStatus(data){
@@ -1823,7 +1939,7 @@ export default {
     font-size: 14px;
     color: #666666;
 }
-/deep/ .el-upload--picture-card {
+/deep/.img_box .el-upload--picture-card {
     width: 30%;
     height: 105px;
     line-height: 105px;
@@ -1834,7 +1950,7 @@ export default {
     text-align: center;
 }
 
-/deep/ .el-upload-list--picture-card .el-upload-list__item {
+/deep/.img_box .el-upload-list--picture-card .el-upload-list__item {
     width: 30%;
     height: 105px;
     margin: 4.2% 1.6% 0 1.6%;
@@ -1954,7 +2070,7 @@ export default {
 .flex_box {
     display: flex;
     justify-content: flex-start;
-    align-items: center;
+    /* align-items: center; */
     margin-bottom: 16px;
 }
 .flex_box > span {
@@ -1973,7 +2089,7 @@ export default {
     height: 104px;
     background: rgba(0, 0, 0, 0.02);
     border-radius: 4px;
-    border: 1px solid rgba(0, 0, 0, 0.15);
+    /* border: 1px solid rgba(0, 0, 0, 0.15); */
     display: flex;
     line-height: 1;
     flex-direction: column;
@@ -1985,7 +2101,23 @@ export default {
     font-size: 24px;
     color: rgba(0, 0, 0, 0.45);
 }
-
+.imgpain_box{
+    height: 104px;
+    overflow: hidden;
+}
+/deep/.imgpain_box .el-upload--picture-card{
+    border: 1px dashed #dedede;
+    width: 104px;
+    height: 104px;
+    margin: 0;
+}
+/deep/.imgpain_box .el-upload-list--picture-card .el-upload-list__item{
+    width: 104px;
+    height: 104px;
+}
+/deep/.imgpain_box .el-upload-list__item.is-success{
+    display: block;
+}
 /* 图片查看显示 */
 .imgPreview /deep/ .el-dialog {
     width: 35%;

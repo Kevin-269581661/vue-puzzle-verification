@@ -34,6 +34,9 @@ const apiVar = {
     engineer:'engineer/publishLine',
     // 分画模块相关
     publishPaintTask: '/engineer/publishPaintTask',
+    // 换画报告
+    // replace: '/replace/v1',
+    replace: 'http://192.168.1.239:8020/replace/v1',
     wuYouMap: wuYouMap,
     jsonLink: jsonLink,
     qadnUrl: process.env.API_ROOT?process.env.API_ROOT.substr(0, process.env.API_ROOT.length-1):''

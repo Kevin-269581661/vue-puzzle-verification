@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import sessFun from './commonFun/sessFun.js';
 
 Vue.config.productionTip = false;
 
@@ -23,7 +24,6 @@ Vue.prototype.$echarts = echarts;
 
 // axios
 import axios from 'axios'
-Vue.prototype.$http = axios;
 axios.defaults.baseURL = process.env.API_ROOT;
 axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 // 全局变量
@@ -66,6 +66,48 @@ router.beforeEach((to, from, next) => {
 	next();
 });
 
+let sessionStr = sessionStorage.getItem('session_data');
+let session = sessionStr ? JSON.parse(sessionStr) : '';
+//全局拦截器携带token
+axios.interceptors.request.use(
+	config => {
+		let uid = session ? session.uID: '';
+		let token = session ? session.token : '';
+		if (token) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
+			config.headers['token'] = token;
+			config.headers['uid'] = uid;
+		}
+		return config;
+	},
+	err => {
+		return Promise.reject(err);
+	});
+
+// 拦截响应
+axios.interceptors.response.use(
+	response => {
+		let res = response.data;
+		if(res.SysCode == 100302){
+			sessionStorage.clear();
+			sessFun.loginTimeout();
+		}
+		return response;
+	},
+	err => {
+		console.log(err);
+		if (err.response) {
+			switch (err.response.status) {
+				case 401:
+					sessionStorage.clear();
+					router.replace({
+						path: '/login',
+					})
+				break;
+			}
+		}
+		return Promise.reject(err)
+	}
+);
 
 /* eslint-disable no-new */
 new Vue({

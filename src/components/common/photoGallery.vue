@@ -527,10 +527,8 @@
                     delete params.asLabel
                 }
                 api.getApi(this.apiVar.Advertisement + '/imageCollection/list', params).then(res => {
-                    console.log('收藏夹图片列表res', res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
-                    } else if (res.data.SysCode === 200200) {
+                    console.log('收藏夹图片列表res', res);
+                    if (res.data.SysCode === 200200) {
                         let resData = res.data.data
                         let imgList = []
                         for (let key of resData) {
@@ -692,10 +690,6 @@
                     type: mesType,
                     showClose: true,
                 })
-            },
-            loginTimeout() {
-                Message.warning("登录超时,请重新登录");
-                this.$router.push("/login");
             },
 
             //筛选

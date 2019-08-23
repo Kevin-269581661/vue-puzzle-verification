@@ -4,23 +4,23 @@
             <div class="mediaMana_content_top">
                 <div class="content_top_wrap">
                     <div class="title">
-                        <h1>{{upReport.apName}}{{(Info.name =='SK')?'上刊':'下刊'}}报告 
+                        <h1>{{report.apName}}{{stateToText(Info.name)}}报告 
                             <span class="button_box">
                                 <el-button plain @click="getPTTx()" size="small" :loading="pptxLoading">导出PPTx</el-button>
                                 <el-button plain @click="getPTT()" size="small" :loading="pptLoading">导出PPT</el-button>
                                 <el-button plain @click="getPDF()" size="small" :loading="pdfLoading">导出PDF</el-button>
                             </span>
                         </h1>
-                        <h3>{{upReport.bTitle}} &nbsp;&nbsp;{{formatTime(upReport.apcTime)}}</h3>
+                        <h3>{{report.bTitle}} &nbsp;&nbsp;{{formatTime(report.apcTime)}}</h3>
                     </div>
                     <div class="detail">
                         <p>
                             <em>公司名称：</em>
-                            <i>{{upReport.cName}}</i>
+                            <i>{{report.cName}}</i>
                             <em>投放城市：</em>
-                            <i>{{upReport.rIDs}}</i>
-                            <em>投放面数：</em>
-                            <i>{{upReport.totalNum}}</i>
+                            <i>{{report.rIDs}}</i>
+                            <em>{{(Info.name=='SK'||Info.name=='XK')?'投放面数：': '换画面数：'}}</em>
+                            <i>{{report.asSpaceSum}}</i>
                         </p>
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                                     </el-table-column>
                                     <el-table-column prop="hNum" label="户数" min-width="5.6%" align="right">
                                     </el-table-column>
-                                    <el-table-column label="媒体数量" prop="mediaNum" min-width="6.1%" align="right">
+                                    <el-table-column label="媒体数量" prop="adSpaceCount" min-width="6.1%" align="right">
                                     </el-table-column>
                                     <el-table-column label="操作" min-width="6.1%">
                                         <template slot-scope="scope">
@@ -95,7 +95,7 @@
                     </el-tab-pane>
                     <el-tab-pane label="监播图片" name="third">
                         <div class="sec-wrap box-wrap">
-                            <el-radio-group v-model="mediaType" size="medium" @change="changeUpMedia()">
+                            <el-radio-group v-model="mediaType" size="medium" @change="changeMedia()">
                                 <el-radio-button label="广告门"></el-radio-button>
                                 <el-radio-button label="道闸"></el-radio-button>
                             </el-radio-group>
@@ -104,7 +104,7 @@
                                 </el-pagination>
                             </div>
                             <div class="typeOfRec">
-                                <div v-for="(up, upIndex) of upReportArr" :key="up.asID+'-'+upIndex" @mouseenter="showPreImg = upIndex" @mouseleave="showPreImg = null" class="pic_box">
+                                <div v-for="(up, upIndex) of reportArr" :key="up.asID+'-'+upIndex" @mouseenter="showPreImg = upIndex" @mouseleave="showPreImg = null" class="pic_box">
                                     <el-card shadow="hover" >
                                         <div slot="header" class="clearfix">
                                             <!-- <span>{{up.city+"-"+up.rName+"-"+up.resName+"-"+up.mTitle+"-"+up.asLab}}</span> -->
@@ -267,7 +267,7 @@ export default {
             totalUpNum: 0,
             //显示预览图蒙版
             showPreImg: null,
-            upReport: {},
+            report: {},
             //投放详情
             putDetail: [],
             currPutDetail: [],
@@ -290,10 +290,7 @@ export default {
             // 媒体类型
             mediaType: '广告门',
             // 监播图片
-            upReportArr: [],
-            currUpReportArr: [],
-            imgInfo: [],
-            currImgInfo: [],
+            reportArr: [],
             // 查看监播
             isShowImgArr: false,
             // 监播图片组合
@@ -312,10 +309,42 @@ export default {
     },
     created() {
         this.getRouter();
-        this.getData();
-        // this.searchFun();
+        this.getReportInfo();
     },
     methods: {
+        // 状态变中文
+        stateToText(type){
+            let arr = [
+                {
+                    name: 'SK',
+                    text: '上刊',
+                },
+                {
+                    name: 'XK',
+                    text: '下刊',
+                },
+                {
+                    name: 'CP',
+                    text: '换画'
+                }
+            ];
+            for(let data of arr){
+                if(data.name == type){
+                    return data.text;
+                }
+            }
+        },
+        // 获取图片列表
+        getReportInfo(){
+            let type = this.Info.name;
+            if(type == 'SK' || type =="XK"){
+                // 上下刊报告
+                this.getData();
+            }else{
+                // 获取换画
+                this.getPainData();
+            }
+        },
         // tab点击
         handleClick() {
             if (this.planPanel == "third") {
@@ -394,13 +423,89 @@ export default {
             this.currUpPage = page;
             this.searchFun();
         },
+        // 根据type来获取数据
+        getDataFromType(){
+            let type = this.Info.name;
+            if(type == 'SK' || type =="XK"){
+                this.searchFun();
+            }else{
+                this.searchPain();
+            }
+        },
+        // 获取上下刊
         searchFun(){
             let info = this.searchFormat();
             this.getImgData(info);
         },
-        changeUpMedia(){
+        // 获取换画
+        searchPain(){
+            let info = this.searchPainFormat();
+            this.getPainImg(info);
+        },
+        changeMedia(){
             this.currUpPage = 1;
-            this.searchFun();
+            this.getDataFromType();
+        },
+        // 换画搜索数据格式化
+        searchPainFormat(){
+            let name = this.Info.name.toString().toLowerCase();
+            let val = this.Info.val;
+            let info = {
+                [name]: val,
+                pType: this.Info.name,
+                pageNum: this.currUpPage,
+                pageSize: this.pageUpSize,
+                mVehicle: this.mediaType,
+            };
+            console.log('type---', info);
+            return info;
+        },
+        // 获取换画图片数据
+        getPainImg(params){
+            api.postApi_json(this.apiVar.replace +"/report/detailInfo", params).then(res =>{
+                console.log(res);
+                if(res.data.SysCode == 200200){
+                    let dataInfo = res.data;
+                        this.totalUpNum = dataInfo.totalCount;
+                        for(let data of dataInfo.dataList){
+                            for(let item of data.photoList){
+                                item.url = item.pURL;
+                            }
+                            let time = this.formatTime(data.lStar) + "-" +this.formatTime(data.lEnd);
+                            data.timeRange = time;
+                            data.upImgArr = data.photoList;
+                        }
+                        this.reportArr = dataInfo.dataList;
+
+                    if(dataInfo.totalCount == 0){
+                        sessFun.messageFun('warning', '暂无数据');
+                    }
+                }else{
+                    sessFun.messageFun('warning', res.data.MSG);
+                }
+            });
+        },
+        // 获取换画数据
+        getPainData(){
+            let info = {
+                apId: '',
+                replaceRecordId: '',
+            };
+            api.postApi(this.apiVar.replace+"/report/h5Detail", info).then(res =>{
+                console.log(res.data);
+                let data = res.data;
+                // 换画抬头信息
+                this.report = this.getFangInfo(data.planInfo);
+                // 投放详情
+                let result = this.getResInfo(data.replaceDetails);
+                this.putDetail = result;
+                this.currPutDetail = JSON.parse(JSON.stringify(this.putDetail));
+                this.filterCityData = filterFormat(result, "city");
+                this.filtersArea = filterFormat(result, "rName");
+                // 发布情况
+                this.postDetail = this.getCityAdSpaceCount(data.cityAdSpaceCount);
+                this.loading = false;
+            });
         },
         // 搜索数据格式化
         searchFormat(){
@@ -438,9 +543,10 @@ export default {
                         let data = res.data;
 
                         // 上下刊抬头信息
-                        this.upReport = this.getFangInfo(data.adPlanInfo);
+                        // this.report = this.getFangInfo(data.adPlanInfo);
+                        this.report = data.adPlanInfo;
                         // 投放详情
-                        let result = this.getResInfo(data.resInfo)
+                        let result = data.resInfo;
                         this.putDetail = result;
                         this.currPutDetail = JSON.parse(JSON.stringify(this.putDetail));
                         this.filterCityData = filterFormat(result, "city");
@@ -462,24 +568,24 @@ export default {
                 });
         },
         // 头部信息
-        getFangInfo(upInfo){
+        getFangInfo(data){
             let info = {
-                adcID: upInfo.adcID,
-                apID: upInfo.apID,
-                apName: upInfo.apName,
-                apQC: upInfo.apQC,
-                apState: upInfo.apState,
-                apTotal: upInfo.apTotal,
-                apcTime: dateFormat.toDate(upInfo.apcTime, '/'),
-                bTitle: upInfo.bTitle,
-                cName: upInfo.cName,
-                cuName: upInfo.cuName,
-                pdEnd: upInfo.pdEnd,
-                pdStar: upInfo.pdStar,
-                rID: upInfo.rID,
-                rIDs: upInfo.rIDs,
-                realName: upInfo.realName,
-                totalNum: upInfo.asSpaceSum,
+                adcID: data.adcID,
+                apID: data.apID,
+                apName: data.apName,
+                apQC: data.apQC,
+                apState: data.apState,
+                apTotal: data.apTotal,
+                apcTime: dateFormat.toDate(data.apcTime, '/'),
+                bTitle: data.bTitle,
+                cName: data.cName,
+                cuName: data.cuName,
+                pdEnd: data.pdEnd,
+                pdStar: data.pdStar,
+                rID: data.rID,
+                rIDs: data.rIDs,
+                realName: data.realName,
+                totalNum: data.asSpaceSum,
             };
             return info;
         },
@@ -490,7 +596,7 @@ export default {
                 let obj = {
                     IsLock: item.IsLock,
                     adSize: item.adSize,
-                    mediaNum: item.adSpaceCount,
+                    adSpaceCount: item.adSpaceCount,
                     adViewSize: item.adViewSize,
                     asID: item.asID,
                     asLab: item.asLab,
@@ -552,11 +658,11 @@ export default {
                             data.timeRange = time;
                             data.upImgArr = data.photoList;
                         }
-                        this.upReportArr = dataInfo.dataList;
+                        this.reportArr = dataInfo.dataList;
                         if(dataInfo.totalCount == 0){
                             Message.warning('暂无数据');
                         }
-                        console.log(this.upReportArr);
+                        console.log(this.reportArr);
                     } else if (res.data.SysCode == 100302) {
                         this.loginTimeout();
                     } else {
@@ -721,7 +827,7 @@ export default {
 }
 
 .plan-panel {
-    padding: 24px;
+    padding: 12px 24px;
     margin: 16px 64px;
     background: #fff;
 }

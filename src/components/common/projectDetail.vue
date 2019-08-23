@@ -335,8 +335,6 @@
                                 value: item.lineId,
                             };
                         }): [];
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
                     }else{
                         this.messageFun('warning', res.data.MSG);
                     }
@@ -365,8 +363,6 @@
                                 lineName: '',
                             };
                         }): [];
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
                     }else{
                         this.messageFun('warning', res.data.MSG);
                     }
@@ -404,8 +400,6 @@
                             }else{
                                 location.reload(false);
                             }
-                        }else if(res.data.SysCode == 100302){
-                            this.loginTimeout();
                         }else{
                             this.messageFun('warning', res.data.MSG);
                         }
@@ -438,8 +432,6 @@
                                 label: item.realName
                             }
                         });
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
                     }else{
                         // this.messageFun('warning', res.data.MSG);
                     }
@@ -468,8 +460,6 @@
                         }).join('/');
                         this.messageFun('success', res.data.MSG);
                         this.isShowDistri = false;
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
                     }else{
                         this.messageFun('warning', res.data.MSG);
                     }
@@ -498,8 +488,6 @@
                         this.currentOrder = this.tabOrderList[0].orderId.toString();
                         this.remainDay = this.countDay(this.projectInfo.photoTime);
                         this.getTableData(this.currentOrder);
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
                     }else{
                         this.messageFun('warning', res.data.MSG);
                     }
@@ -577,8 +565,6 @@
                             finishNum: resinfo.publishCount,
                             progress: (resinfo.publishProgress*100).toFixed(0),
                         };
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
                     }else{
                         this.messageFun('warning', res.data.MSG);
                     }
@@ -660,11 +646,6 @@
                     type: mesType,
                     showClose: true,
                 })
-            },
-            // 登录超时
-            loginTimeout() {
-                Message.warning("登录超时,请重新登录");
-                this.$router.push("/login");
             },
         },
         mounted(){

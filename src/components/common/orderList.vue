@@ -10,30 +10,28 @@
                 <h2>订单列表</h2>
             </div>
             <div class="mediaList_container">
-                <el-row class="search_row">
-                    <el-col>
-                        <el-input placeholder="请输入内容" v-model="searchInfo.keyword" class="input-with-select" size="small">
-                            <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
-                                <el-option label="订单名" value="1"></el-option>
-                                <el-option label="客户名" value="2"></el-option>
-                                <el-option label="合同编号" value="3"></el-option>
-                            </el-select>
-                        </el-input>
-                        <el-date-picker size="small" v-model="searchInfo.rangeDate" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
-                        </el-date-picker>
-                        <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable size="small" v-if="isAll">
-                            <el-option v-for="item of companyData" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                <div class="flex_box search_row">
+                    <el-input placeholder="请输入内容" v-model="searchInfo.keyword" size="small" class="marginR">
+                        <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
+                            <el-option label="订单名" value="1"></el-option>
+                            <el-option label="客户名" value="2"></el-option>
+                            <el-option label="合同编号" value="3"></el-option>
                         </el-select>
-                        <el-select v-model="searchInfo.cityWord" placeholder="请选择城市" filterable size="small">
-                            <el-option v-for="item of filterCityData" :key="item.rID" :label="item.text" :value="item.value"></el-option>
-                        </el-select>
-                        <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small">
-                            <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
-                        </el-select>
-                        <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
-                        <el-button plain @click="reset()" :disabled="!isReset">重置</el-button>
-                    </el-col>
-                </el-row>
+                    </el-input>
+                    <el-date-picker size="small" class="marginR" v-model="searchInfo.rangeDate" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
+                    </el-date-picker>
+                    <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable size="small" class="marginR" v-if="isAll">
+                        <el-option v-for="item of companyData" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    </el-select>
+                    <el-select v-model="searchInfo.cityWord" placeholder="请选择城市" filterable size="small" class="marginR">
+                        <el-option v-for="item of filterCityData" :key="item.rID" :label="item.text" :value="item.value"></el-option>
+                    </el-select>
+                    <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small" class="marginR">
+                        <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
+                    </el-select>
+                    <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch" class="marginR">搜索</el-button>
+                    <el-button plain @click="reset()" :disabled="!isReset" class="marginR">重置</el-button>
+                </div>
                 <div class="table_wrap">
                     <el-table border :data="currentOrder" style="width: 100%" @sort-change="sortChange" v-loading="loading" element-loading-text="玩命加载中" element-loading-spinner="el-icon-loading" :default-sort="{prop: 'appTime', order: 'descending'}">
                         <el-table-column label="订单名称" min-width="14.6%">
@@ -88,8 +86,6 @@
                                         <el-dropdown-item :disabled="(role!='SM')" @click.native.prevent="applyPhoto(scope.row)" class="finish">申请画像</el-dropdown-item>
                                         <el-dropdown-item :disabled="(scope.row.apState==0)||(scope.row.apState==5)||(role!='MD')" @click.native.prevent="changePoint(scope.row)" class="update">更换点位
                                         </el-dropdown-item>
-                                        <!-- <el-dropdown-item @click.native.prevent="inputBox1" class="watch">监控备注</el-dropdown-item> -->
-                                        <!--<el-dropdown-item disabled="disabled" class="push">推送任务</el-dropdown-item>-->
                                     </el-dropdown-menu>
                                 </el-dropdown>
                             </template>
@@ -126,38 +122,17 @@
 </template>
 
 <script>
+import { MessageBox, Message } from 'element-ui';
 import { api } from "../../api/api";
 // 时间格式化
 import dateFormat from "../../commonFun/timeFormat.js";
 // 价格格式化
 import commaFormat from "../../commonFun/commaFormat.js";
 import sessFun from "../../commonFun/sessFun.js";
-
 // 画像申请
 import applyphoto from './components/applyPhoto.vue';
 import noSearchResult from "./components/noSearchResult.vue";
 import pointState from './components/pointState.vue';
-
-
-import {
-    Button,
-    CheckboxGroup,
-    Checkbox,
-    Input,
-    Dropdown,
-    DropdownItem,
-    DropdownMenu,
-    Row,
-    Table,
-    TableColumn,
-    DatePicker,
-    Tooltip,
-    Dialog,
-    MessageBox,
-    Message,
-    Select,
-    Option
-} from "element-ui";
 
 export default {
     name: "projectList",
@@ -165,21 +140,6 @@ export default {
         applyphoto,
         noSearchResult,
         pointState,
-        elButton: Button,
-        elCheckboxGroup: CheckboxGroup,
-        elCheckbox: Checkbox,
-        elInput: Input,
-        elDropdown: Dropdown,
-        elDropdownItem: DropdownItem,
-        elDropdownMenu: DropdownMenu,
-        elRow: Row,
-        elTable: Table,
-        elTableColumn: TableColumn,
-        elDatePicker: DatePicker,
-        elTooltip: Tooltip,
-        elDialog: Dialog,
-        elSelect: Select,
-        elOption: Option,
     },
     data() {
         return {
@@ -284,8 +244,6 @@ export default {
                             result.push(obj);
                         }
                         this.companyData = result;
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
                     }else{
                         Message.warning(res.data.MSG);
                     }
@@ -305,8 +263,6 @@ export default {
                             result.push(obj);
                         }
                         this.companyData = result;
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
                     }else{
                         Message.warning(res.data.MSG);
                     }
@@ -336,9 +292,7 @@ export default {
                     }
 
                     this.filterCityData = result;
-                } else if (res.data.SysCode == 100302) {
-                    this.loginTimeout();
-                } else {
+                }else {
                     Message.warning(res.data.MSG);
                 }
             });
@@ -380,21 +334,17 @@ export default {
         getData(params){
             api.postApi(this.apiVar.Advertisement+'/GetOrderList', params).then(res =>{
                 console.log(res.data);
-                if(res.data.SysCode == 100302){
-                    this.loginTimeout();
-                }else{
-                    if(!res.data.SysCode){
-                        let dataInfo = res.data;
-                        this.totalNum = dataInfo.totalCount;
-                        let dataArr = dataInfo.orderList;
-                        this.currentOrder = this.funcData(dataArr);
-                        this.loading = false;
-                        if(dataInfo.totalPage == 0){
-                            Message.warning('暂无数据');
-                        }
-                    }else{
-                        Message.warning(res.data.MSG);
+                if(!res.data.SysCode){
+                    let dataInfo = res.data;
+                    this.totalNum = dataInfo.totalCount;
+                    let dataArr = dataInfo.orderList;
+                    this.currentOrder = this.funcData(dataArr);
+                    this.loading = false;
+                    if(dataInfo.totalPage == 0){
+                        Message.warning('暂无数据');
                     }
+                }else{
+                    Message.warning(res.data.MSG);
                 }
             });
         },
@@ -550,8 +500,6 @@ export default {
                         if (res.data.SysCode == 300200) {
                             Message.success(res.data.MSG);
                             this.$set(row, "apState", 5);
-                        } else if (res.data.SysCode == 100302) {
-                            this.loginTimeout();
                         } else {
                             Message.warning(res.data.MSG);
                         }
@@ -588,10 +536,6 @@ export default {
                 clearTimeout(timer);
             }, 1000);
             this.searchFun();
-        },
-        loginTimeout(){
-            Message.warning("登录超时,请重新登录");
-            this.$router.push("/login");
         },
         // 申请画像
         applyPhoto(row){
@@ -631,8 +575,6 @@ export default {
                         console.log('resultaRR---------', resultArr);
                         this.getIsOpenRes(resultArr);
                         // this.loading = false;
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
                     } else {
                         Message.warning(res.data.MSG);
                     }
@@ -675,9 +617,6 @@ export default {
             api.getApi(this.apiVar.QZhike+'/SelectByApID', info).then(res=>{
                 console.log(res.data);
                 if(res.data){
-                    if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
-                    }
                     let result = res.data;
                     // 过滤后已经申请的社区
                     for(let i = 0; i< arr.length; i++){
@@ -694,15 +633,15 @@ export default {
                     if(this.houselist.length){
                         this.showPhoto = true;
                     } else{
-                        Message.info('部分社区审核中');
+                        sessFun.messageFun('info', '部分社区审核中');
                     }
                 }else {
-                    Message.warning(res.data.MSG);
+                    sessFun.messageFun('warning', res.data.MSG);
                 }
             });
         },
         cancelApply() {
-            Message.info('取消画像申请');
+            sessFun.messageFun('info', '取消画像申请');
             this.showPhoto = !this.showPhoto;
         },
         confirmApply(data) {
@@ -744,50 +683,13 @@ export default {
                         }
                     }
                     this.houselist.push();
-                } else if (res.data.SysCode == 100302) {
-                    this.loginTimeout();
-                } else {
+                }else {
                     Message.warning(res.data.MSG);
                 }
             });
         },
-
-        //提示框
-        inputBox1() {
-            Message.warning("该功能尚未完善");
-            // MessageBox.prompt("请输入监控备注", "提示", {
-            //     confirmButtonText: "确定",
-            //     cancelButtonText: "取消",
-            //     inputType: "textarea",
-            //     inputPattern: /^.{1,100}$/,
-            //     inputErrorMessage: "监控备注超过100字,请缩减"
-            // })
-            //     .then(() => {
-            //         Message.success("监控备注输入成功");
-            //     })
-            //     .catch(() => {
-            //         Message.info("取消输入");
-            //     });
-        }
-        //状态
     }
 };
-
-$(function() {
-    /*window.onresize = function () {
-		if ($(window.width >= 1366)) {
-			$('.el-table-filter').css({
-			left: '1145'
-			})
-		}
-		};*/
-    var Status = $(".el-table__row")
-        .find("td")
-        .text();
-    if (Status === "已完成") {
-        $(".watch").attr("disabled", "disabled");
-    }
-});
 </script>
 
 <style scoped>
@@ -840,9 +742,13 @@ a {
     border-radius: 4px;
 }
 
-.input-with-select /deep/ .el-input__inner {
-    font-size: 14px;
-    vertical-align: middle;
+.flex_box{
+    display: flex;
+    flex-wrap: wrap;
+}
+.marginR{
+    margin-right: 6px;
+    margin-bottom: 16px;
 }
 
 /*日期控件*/
@@ -888,6 +794,13 @@ a {
 .el-dropdown-link {
     cursor: pointer;
     color: #409EFF;
+}
+
+.mediaList_wrap .mediaList_container .table_wrap{
+    margin: 0 auto 16px;
+}
+.el-button+.el-button{
+    margin-left: 0;
 }
 
 /deep/ .el-table td .cell{

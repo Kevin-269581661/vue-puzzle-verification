@@ -321,8 +321,6 @@ export default {
                         data.isEdit = true;
                     }
                     this.percent.isEdit = true;
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
                 }
             });
         },
@@ -436,8 +434,6 @@ export default {
                         }).catch(err =>{
                             console.log(err);
                         });
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
                     }else{
                         Message.warning(res.data.MSG);
                     }
@@ -600,10 +596,6 @@ export default {
                 info.execBPercent = info.execBPercentUpdate;
                 info.discountB = info.discountBUpdate;
             }
-        },
-        loginTimeout(){
-            Message.warning("登录超时,请重新登录");
-            this.$router.push("/login");
         },
     },
     mounted(){

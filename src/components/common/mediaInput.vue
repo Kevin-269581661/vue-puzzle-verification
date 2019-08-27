@@ -806,9 +806,9 @@
                     }
                 }
             }
-            // 判断是否包含有特殊字符 // “-”、“/”、“_”
+            // 判断是否包含有特殊字符 // “/”
             let validateSpecialString = (rule, value, callback) =>{
-                let reg = /[\/\-_]/
+                let reg = /[\/]/
                 if (reg.test(value)) {
                     callback(new Error('不可填写特殊符号!'));
                 } else {

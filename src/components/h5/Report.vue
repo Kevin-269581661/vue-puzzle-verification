@@ -324,7 +324,7 @@ export default {
                     text: '下刊',
                 },
                 {
-                    name: 'CP',
+                    name: 'HH',
                     text: '换画'
                 }
             ];
@@ -488,16 +488,16 @@ export default {
         // 获取换画数据
         getPainData(){
             let info = {
-                apId: '',
-                replaceRecordId: '',
+                apId: 2312,
+                replaceRecordId: 5,
             };
-            api.postApi(this.apiVar.replace+"/report/h5Detail", info).then(res =>{
+            api.getApi(this.apiVar.replace+"/report/h5Detail", info).then(res =>{
                 console.log(res.data);
-                let data = res.data;
+                let data = res.data.data;
                 // 换画抬头信息
-                this.report = this.getFangInfo(data.planInfo);
+                this.report = this.getFangInfo(data.adPlanInfo);
                 // 投放详情
-                let result = this.getResInfo(data.replaceDetails);
+                let result = this.getResInfo(data.resInfo);
                 this.putDetail = result;
                 this.currPutDetail = JSON.parse(JSON.stringify(this.putDetail));
                 this.filterCityData = filterFormat(result, "city");
@@ -554,10 +554,7 @@ export default {
                         // 发布情况
                         this.postDetail = this.getCityAdSpaceCount(data.cityAdSpaceCount);
                         this.loading = false;
-                    } else if (res.data.SysCode == 100302) {
-                        this.loading = false;
-                        this.loginTimeout();
-                    } else {
+                    }else {
                         this.loading = false;
                         Message.warning(res.data.MSG);
                     }
@@ -569,23 +566,23 @@ export default {
         },
         // 头部信息
         getFangInfo(data){
+            console.log(data, 'data---');
             let info = {
-                adcID: data.adcID,
-                apID: data.apID,
+                apID: data.apId,
                 apName: data.apName,
-                apQC: data.apQC,
-                apState: data.apState,
-                apTotal: data.apTotal,
-                apcTime: dateFormat.toDate(data.apcTime, '/'),
-                bTitle: data.bTitle,
-                cName: data.cName,
-                cuName: data.cuName,
-                pdEnd: data.pdEnd,
-                pdStar: data.pdStar,
-                rID: data.rID,
+                // apQC: data.apQC,
+                // apState: data.apState,
+                // apTotal: data.apTotal,
+                apcTime: dateFormat.toDate(data.apCreateTime, '/'),
+                bTitle: data.btitle,
+                cName: data.companyName,
+                // cuName: data.cuName,
+                // pdEnd: data.pdEnd,
+                // pdStar: data.pdStar,
+                // rID: data.rID,
                 rIDs: data.rIDs,
-                realName: data.realName,
-                totalNum: data.asSpaceSum,
+                // realName: data.realName,
+                asSpaceSum: data.asSpaceSum,
             };
             return info;
         },
@@ -596,14 +593,14 @@ export default {
                 let obj = {
                     IsLock: item.IsLock,
                     adSize: item.adSize,
-                    adSpaceCount: item.adSpaceCount,
+                    adSpaceCount: item.mediaCount,
                     adViewSize: item.adViewSize,
                     asID: item.asID,
                     asLab: item.asLab,
                     assetTag: item.assetTag,
                     cType: item.cType,
                     chDay: item.chDay,
-                    city: item.city,
+                    city: item.cityName,
                     fNum: item.fNum,
                     hNum: item.hNum,
                     hPrice: item.hPrice,
@@ -615,7 +612,7 @@ export default {
                     mTitle: item.mTitle,
                     mVehicle: item.mVehicle,
                     rID: item.rID,
-                    rName: item.rName,
+                    rName: item.districtName,
                     resAddress: item.resAddress,
                     resID: item.resID,
                     resName: item.resName,
@@ -629,6 +626,10 @@ export default {
         // 发布情况
         getCityAdSpaceCount(arr){
             let result = [];
+            let info = {
+                citys: [],
+                totalNum: 0 
+            };
             for(let data of arr){
                 let obj = {
                     city: data.cityName,
@@ -637,8 +638,12 @@ export default {
                     wrongNum: 0,
                     resolveNum:0,
                 }
+                info.citys.push(data.cityName);
+                info.totalNum += data.adSpaceCount;
                 result.push(obj);
             }
+            this.report.rIDs = info.citys.join(',');
+            this.report.asSpaceSum = info.totalNum;
             return result;
         },
 
@@ -663,9 +668,7 @@ export default {
                             Message.warning('暂无数据');
                         }
                         console.log(this.reportArr);
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
-                    } else {
+                    }else {
                         Message.warning(res.data.MSG);
                     }
                 })

@@ -1,6 +1,6 @@
 <!-- 换画tab -->
 <template>
-    <div class="pic_box">
+    <div class="pic_box" v-loading="pageInfo.loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
         <!-- 上下刊 -->
         <template v-if="type==1 || type == 2">
             <template>
@@ -32,7 +32,9 @@
             <div class="list_pic" v-if="painList.length">
                 <div class="pic_left">
                     <el-button icon="el-icon-arrow-left" plain class="compare" @click="toLeft()" :disabled="activePainIndex == 0"></el-button>
-                    <span :class="['pain_span', activePainIndex==index ? 'active':'']" v-for="(item, index) of painList" :key="item.id" @click="changePain(index)">{{ item.name }}</span>
+                    <div class="pic_content">
+                        <span :class="['pain_span', activePainIndex==index ? 'active':'']" v-for="(item, index) of painList" :key="item.id" @click="changePain(index)">{{ item.name }}</span>
+                    </div>
                     <el-button icon="el-icon-arrow-right" plain class="compare" @click="toRight()" :disabled="activePainIndex == painList.length-1"></el-button>
                 </div>
                 <div class="process">
@@ -58,13 +60,13 @@
                     </el-col>
                     <el-col>
                         <span>资源名称:</span>
-                        <el-select v-model="searchInfo.resName" placeholder="请选择资源名称" size="small">
+                        <el-select v-model="searchInfo.resName" placeholder="请选择资源名称" @change="search()" size="small">
                             <el-option v-for="item of searchInfo.resArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-col>
                     <el-col>
                         <span>监播状态:</span>
-                        <el-select v-model="searchInfo.status" placeholder="请选择监播状态" size="small">
+                        <el-select v-model="searchInfo.status" placeholder="请选择监播状态" @change="search()" size="small">
                             <el-option v-for="item of searchInfo.statusArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-col>
@@ -87,7 +89,7 @@
                             </el-tooltip>
                             <span v-else><i class="el-icon-date date_fa" type="text"></i>{{item.assetTag}}</span>
                             <span v-if="type ==1 || type ==2"><i class="el-icon-date date_fa" type="text"></i>{{item.timeRange}}</span>
-                            <span v-if="type==3"><i class="el-icon-date date_fa" type="text"></i>换画日期:{{ item.changePicTime }}</span>
+                            <span v-if="type==3"><i class="el-icon-date date_fa" type="text"></i>换画日期:{{ item.replaceDate }}</span>
                         </p>
                     </div>
                     <div class="detail_con">
@@ -96,7 +98,7 @@
                             @mouseenter="showPreImg = img.pID"
                             @mouseleave="showPreImg = null"
                             :key="imgIndex">
-                            <img class="upload_img_item" :src="img.url">
+                            <img class="upload_img_item" :src="img.thumbnailURL">
                             <label class="icon_success">
                                 <i class="el-icon-check"></i>
                             </label>
@@ -105,7 +107,7 @@
                                     <i class="el-icon-search" @click="previewImg(img.pURL)"></i>
                                     <i class="el-icon-star-off" v-if="!img.isCollection" @click="saveImgFun(item, imgIndex)"></i>
                                     <i v-if="img.isCollection" class="el-icon-star-on icon_save" @click="cancelImgFun(item, imgIndex)"></i>
-                                    <i class="el-icon-delete" @click="deleteImg(item)"></i>
+                                    <i class="el-icon-delete" @click="deleteImg(img)"></i>
                                 </p>
                             </div>
                         </div>
@@ -180,7 +182,7 @@
                 </el-table-column>
                 <el-table-column prop="resName" label="资源">
                 </el-table-column>
-                <el-table-column prop="mtitle" label="媒体">
+                <el-table-column prop="mTitle" label="媒体">
                 </el-table-column>
                 <el-table-column prop="asLab" label="面" width="60">
                 </el-table-column>
@@ -223,7 +225,7 @@
                 </div>
             </el-table>
             <p style="text-align:center;margin-top:20px;">
-                <el-button plain size="small">取消</el-button>
+                <el-button plain size="small" @click="cancel()">取消</el-button>
                 <el-button type="primary" size="small" @click="saveAll()">保存</el-button>
             </p>
         </el-dialog>
@@ -390,44 +392,45 @@ export default {
                 paginationShow: true,
                 currPage: 1,
                 totalNum: 0,
-                pageSize: 6
+                pageSize: 6,
+                loading: true,
             },
             // 图片列表
-            // imageArr: [],
-            imageArr:[
-                {
-                    resId: 1,
-                    resName: '东方雅苑',
-                    mTitle: '西门',
-                    asLab: 'B',
-                    assetTag: '005B201811GZ-X795',
-                    city: '广州市',
-                    rName: '天河区',
-                    changePicTime: '2019/09/09',
-                    photoList: [
-                        {
-                            url: '',
-                            pID: 1,
-                        }
-                    ],
-                },
-                {
-                    resId: 2,
-                    resName: '东方雅苑',
-                    mTitle: '西门',
-                    asLab: 'B',
-                    assetTag: '005B201811GZ-X795',
-                    city: '广州市',
-                    rName: '天河区',
-                    changePicTime: '2019/09/09',
-                    photoList: [
-                        {
-                            url: '',
-                            pID: 2,
-                        }
-                    ],
-                },
-            ],
+            imageArr: [],
+            // imageArr:[
+            //     {
+            //         resId: 1,
+            //         resName: '东方雅苑',
+            //         mTitle: '西门',
+            //         asLab: 'B',
+            //         assetTag: '005B201811GZ-X795',
+            //         city: '广州市',
+            //         rName: '天河区',
+            //         changePicTime: '2019/09/09',
+            //         photoList: [
+            //             {
+            //                 url: '',
+            //                 pID: 1,
+            //             }
+            //         ],
+            //     },
+            //     {
+            //         resId: 2,
+            //         resName: '东方雅苑',
+            //         mTitle: '西门',
+            //         asLab: 'B',
+            //         assetTag: '005B201811GZ-X795',
+            //         city: '广州市',
+            //         rName: '天河区',
+            //         changePicTime: '2019/09/09',
+            //         photoList: [
+            //             {
+            //                 url: '',
+            //                 pID: 2,
+            //             }
+            //         ],
+            //     },
+            // ],
             //显示预览图蒙版
             showPreImg: null,
             // 是否展示换画弹框
@@ -584,12 +587,12 @@ export default {
     },
     watch:{
         fromType(newVal, oldVal){
-            console.log(newVal, oldVal);
+            console.log(newVal, oldVal, 'fromtype---watch---');
             this.getPainList().then(res =>{
                 let len = this.painList.length;
                 console.log(this.painList, 'painlist----', len);
                 this.activePainIndex = len-1;
-                this.search();
+                // this.search();
                 this.editReport();
             });
         },
@@ -611,12 +614,14 @@ export default {
     methods: {
         // 改变页数
         sizeChange(pageVal) {
+            this.pageInfo.loading = true;            
             this.pageInfo.currPage = 1;
             this.pageInfo.pageSize = pageVal;
             this.getImgArr();
         },
         // 点击页数
         changePage(page) {
+            this.pageInfo.loading = true;            
             this.pageInfo.currPage = page;
             this.getImgArr();
         },
@@ -737,6 +742,7 @@ export default {
         // 上下刊报告
         searchFun(){
             this.pageInfo.paginationShow = false;
+            this.pageInfo.loading = true;            
             let info = {};
             if(this.type == 1){
                 info = this.searchFormat('SK');
@@ -821,9 +827,11 @@ export default {
                     }else {
                         sessFun.messageFun('warning', res.data.MSG);
                     }
+                    this.pageInfo.loading = false;
                 })
                 .catch(res => {
                     console.log(res);
+                    this.pageInfo.loading = false;                    
                 });
         },
         // 检查图片是否已收藏
@@ -855,7 +863,9 @@ export default {
             for(let key of reportList){
                 let imgArr = key.photoList;
                 for(let imgKey of imgArr){
-                    pIDList.push(imgKey.pID);
+                    if(imgKey.pID){
+                        pIDList.push(imgKey.pID);
+                    }
                 }
             }
             return pIDList;
@@ -893,10 +903,10 @@ export default {
                 console.log(res);
                 if(res.data.SysCode == 200200){
                     let dataInfo = res.data.data;
-                    let percent = dataInfo.totalCount? Number(((dataInfo.hasPhotoCount / dataInfo.totalCount)*100).toFixed(2)) : 0;
+                    let percent = dataInfo.totalSize? Number(((dataInfo.businessItem.adsWithReplacePics / dataInfo.totalSize)*100).toFixed(2)) : 0;
                     this.publishNumInfo = {
                         percent: percent,
-                        currNum: dataInfo.hasPhotoCount,
+                        currNum: dataInfo.businessItem.adsWithReplacePics,
                         totalNum: dataInfo.totalSize,
                     };
 
@@ -905,23 +915,32 @@ export default {
                         ...({totalNum: dataInfo.totalSize}),
                     };
                     for(let data of dataInfo.dataList){
-                        for(let item of data.photoList){
-                            item.name = item.pID+'.png',
-                            item.url = item.pURL;
-                            item.pID = item.pID;
-                            item.isCollection = false
+                        data.city = data.cityName;
+                        data.rName = data.districtName;
+                        data.lStar = data.beginDate;
+                        data.lEnd = data.endDate;
+                        if(data.adPlanPics){
+                            for(let item of data.adPlanPics){
+                                item.name = item.pID+'.png',
+                                item.url = item.picUrl;
+                                item.pID = item.pID;
+                                item.isCollection = false;
+                            }
+                        }else{
+                            data.adPlanPics = [];
                         }
-                        let time = dateFormat.toDate(data.lStar, "/") + "-" +dateFormat.toDate(data.lEnd, "/");
-                        data.timeRange = time;
+                        data.photoList = data.adPlanPics;
                     }
                     this.imageArr = dataInfo.dataList;
                     this.checkImgStatus();
-                    if(dataInfo.totalCount == 0){
+                    
+                    if(dataInfo.totalSize == 0){
                         sessFun.messageFun('warning', '暂无数据');
                     }
                 }else{
                     sessFun.messageFun('warning', res.data.MSG);
                 }
+                this.pageInfo.loading = false;                
             });
         },
         // 城市区域变化
@@ -943,7 +962,8 @@ export default {
         },
         // 搜索
         search(){
-            this.pageInfo.paginationShow = false;            
+            this.pageInfo.paginationShow = false; 
+            this.pageInfo.loading = true;           
             let info = this.searchPointFormat();
             this.getData(info);
             this.$nextTick(function () {
@@ -957,12 +977,12 @@ export default {
             let { currPage, pageSize } = this.pageInfo;
             let info = {
                 apId: sessionStorage.getItem('order_apid'),
-                replaceRecordId: this.painList[this.activePainIndex].id,
+                replaceRecordId: this.painList.length?this.painList[this.activePainIndex].id: '',
                 pageNum: currPage,
                 pageSize: pageSize,
                 ...( mediaType && { mType: mediaType }),
-                ...( city.length && { rId: city[1] }),
-                ...( resName && { resId: resName }),
+                ...( city.length && { districtId: city[1] }),
+                ...( resName && { resIds: [resName] }),
                 ...( status && { status })
             };
             return info;
@@ -1065,7 +1085,7 @@ export default {
                         // 点位数量
                         this.pointInfo = {
                             pointNum: dataInfo.totalSize,
-                            setedNum: dataInfo.replaceCountSize
+                            setedNum: dataInfo.businessItem?dataInfo.businessItem.adsWithReplacePics:'',
                         };
                         this.dialogPage.currInfoPage++;
                         this.selectioUpdate();
@@ -1088,9 +1108,10 @@ export default {
         },
         // 表格数据格式
         setTableData(item){
-            let timeRange = timeFormat.toDate(item.beginDate, '/') +'-'+ timeFormat.toDate(item.endDate, '/');
+            let timeRange = item.beginDate +'-'+ item.endDate;
             let obj = {
                 ...item,
+                id: item.replaceRecordDetailId,
                 timeRange: timeRange,
             };
             return obj;
@@ -1109,7 +1130,7 @@ export default {
                 // 取消选中
                 if(this.isHaveFun(this.shoplist, row)){
                     this.shoplist = this.shoplist.filter((item) =>{
-                        if(item.asID == row.asID && item.lStar == row.lStar && item.lEnd == row.lEnd){
+                        if(item.lID == row.lID){
                             return false;
                         }
                         return true;
@@ -1131,7 +1152,7 @@ export default {
                 for(let data of this.pointArr){
                     if(this.isHaveFun(this.shoplist, data)){
                         this.shoplist = this.shoplist.filter((item) =>{
-                            if(item.asID == data.asID && item.lStar == data.lStar && item.lEnd == data.lEnd){
+                            if(item.lID == data.lID){
                                 return false;
                             }
                             return true;
@@ -1144,7 +1165,7 @@ export default {
         // 判断一个对象是否已经在数组中
         isHaveFun(arr, obj){
             let res = arr.filter((item)=>{
-                if(item.asID == obj.asID && item.lStar == obj.lStar && item.lEnd == obj.lEnd){
+                if(item.lID == obj.lID){
                     return true;
                 }
                 return false;
@@ -1156,15 +1177,18 @@ export default {
         },
         // 是否勾选更新
 		selectioUpdate(){
+            console.log(this.shoplist, this.pointArr);
             for(let item of this.shoplist){
                 for(let data of this.pointArr){
-                    if(data.lid == item.lid){
+                    if(data.lID == item.lID){
                         data.remark = item.remark;
                         data.picUrl = item.picUrl;
+                        data.replaceDate = item.replaceDate;
                         this.$refs.multipleTable.toggleRowSelection(data, true);
                     }
                 }
             }
+            this.pointArr.push();
 		},
         // 获取地图中心点
         getMapArr(){
@@ -1194,7 +1218,9 @@ export default {
         // 换画点位搜索
         searchPoint() {
             console.log(this.dialogInfo);
+            this.pointArr = [];
             this.dialogPage = {
+                ...this.dialogPage,
                 loading_maInfo: false,
                 currInfoPage: 1,
                 totalInfoPage: 0,
@@ -1231,13 +1257,13 @@ export default {
         // 删除图片链接
         deleteOneImg(row){
             for(let data of this.pointArr){
-                if(data.lid == row.lid){
+                if(data.lID == row.lID){
                     data.picUrl = '';
                     break;
                 }
             }
             for(let data of this.shoplist){
-                if(data.lid == row.lid){
+                if(data.lID == row.lID){
                     data.picUrl = '';
                     break;
                 }
@@ -1286,10 +1312,12 @@ export default {
         confirmChange() {
             console.log(this.editInfo);
             let { date, url, remark } = this.editInfo;
-            this.editInfo.url = '';
             if(date){
                 this.isShowEdit = false;
-                this.editInfo.url = this.imgUrl[0].url;
+                if(this.imgUrl[0].url){
+                    this.editInfo.url = this.imgUrl[0].url;
+                }
+                console.log(this.editInfo, 'editinfo---');
                 this.updateData();
             }else{
                 sessFun.messageFun('warning', '请选择换画日期!');
@@ -1305,7 +1333,7 @@ export default {
                     item.picUrl = url;
                     item.remark = remark;
                 }
-                return true;
+                return item;
             });
             this.shoplist = result;
             this.selectioUpdate();
@@ -1314,6 +1342,7 @@ export default {
         cancel() {
             this.isShowPic = false;
             this.shoplist = [];
+            this.search();            
         },
         // 保存
         saveAll() {
@@ -1339,6 +1368,7 @@ export default {
                         }else{
                             sessFun.messageFun('warning', res.data.MSG);
                         }
+                        this.search();
                     });
                 }else{
                     sessFun.messageFun('warning', '没有需要保存的点');
@@ -1351,11 +1381,15 @@ export default {
         cancelPain(){
             if(this.shoplist.length){
                 let result = [];
+                this.isShowPic = false;
                 for(let data of this.pointArr){
                     if(data.picUrl || data.remark){
                         let obj = {
                             ...data,
                             status: 0,
+                            picUrl: '',
+                            remark: '',
+                            replaceDate: '',
                             replaceRecordId: this.painList[this.activePainIndex].id
                         };
                         result.push(obj);
@@ -1366,6 +1400,7 @@ export default {
                         console.log(res.data);
                         if(res.data.SysCode == 200200){
                             sessFun.messageFun('success', res.data.MSG);
+                            this.search();                            
                         }else{
                             sessFun.messageFun('warning', res.data.MSG);
                         }
@@ -1418,12 +1453,52 @@ export default {
             }else if(this.type == 2){
                 type ='XK';
             }else{
-                type = '';
+                type = 'HH';
             }
             return type;
         },
         // 上刊图片上传
         submitUpload(){
+            let type = this.getTypeToText();
+            if(!this.constractArr.length){
+                return;
+            }
+            // this.addload = this.$loading({
+            //     lock: true,
+            //     text: '保存数据中,请稍等...',
+            //     spinner: 'el-icon-loading',
+            //     background: 'rgba(0, 0, 0, 0.7)'
+            // });
+            // let arr = this.uploadImgArr;
+            let info = {
+                infos: this.uploadImgArr,
+                picList: this.constractArr,
+            };
+            let formData = new FormData();
+            for(let data of this.uploadImgArr){
+                formData.append('picList', data);
+            }
+            formData.append('infos', JSON.stringify(this.constractArr));
+            console.log(info, 'info--upload---', formData, JSON.stringify(this.constractArr));
+            api.postUpload_file(this.apiVar.replace+'/photo/multipartUpload', formData).then(res =>{
+                console.log(res);
+                if(res.data.SysCode == 200200){
+                    this.constractArr = [];
+                    this.uploadImgArr = [];
+                    let type = this.type;                            
+                    if(type == 1 || type ==2){
+                        // 上下刊报告列表
+                        this.searchFun();
+                    }else if(type == 3){
+                        // 换画报告列表
+                        this.search();
+                    }
+                }else{
+                    sessFun.messageFun('warning', res.data.MSG);
+                }
+            });
+        },
+        submitUpload_bat(){
             let type = this.getTypeToText();
             if(!this.constractArr.length){
                 return;
@@ -1607,12 +1682,14 @@ export default {
         uploadImg(params){
             console.log('parmas---', params);
             var fileObj = params.file;
-            this.constractArr.push(this.upLoadObj);
             this.uploadImgArr.push(fileObj);
+            this.constractArr.push(this.upLoadObj);
+            console.log(this.constractArr, this.uploadImgArr, 'params----arr');
         },
         // 点击上传图片按钮之时进行储存所需数据(asid, ptp等)
         saveId(row) {
-            console.log("row------", row);
+            console.log("row------", row, this.orderDetail);
+            let type = this.getTypeToText();
             let palt = this.orderDetail.apName+'-'+row.resName+"-"+row.mTitle+row.asLab;
             let ptp = sessionStorage.getItem("order_apid");
             let account = this.sessionData.username;
@@ -1636,16 +1713,17 @@ export default {
             };
             let obj = {
                 pAlt: palt,
-                pID: '',
-                pRemarks: JSON.stringify(prk),
-                pSrc: '',
-                pType: 'SK',
-                pURL: "",
-                pUTime: '',
                 ptID: row.mVehicle=='广告门' ? row.asID: row.mID,
                 ptP: ptp,
-                puID: 0,
-                realName: account,
+                pRemarks: JSON.stringify(prk),
+                lStart: row.lStar,
+                lEnd: row.lEnd,
+                resId: row.resID,
+                lId: row.lID ? row.lID : "",
+                type: row.mVehicle=='广告门' ?0:1,
+                pType: type,
+                replaceRecordId: row.replaceRecordId ? row.replaceRecordId :'',
+                replaceRecordDetailId: row.replaceRecordDetailId ? row.replaceRecordDetailId :'',
             };
             this.upLoadObj = obj;
         },
@@ -1696,7 +1774,14 @@ export default {
                         if (res.data.SysCode == 300200) {
                             sessFun.messageFun('success', res.data.MSG);
                             this.allPic = '';
-                            this.searchFun();
+                            let type = this.type;                            
+                            if(type == 1 || type ==2){
+                                // 上下刊报告列表
+                                this.searchFun();
+                            }else if(type == 3){
+                                // 换画报告列表
+                                this.search();
+                            }
                         }else {
                             sessFun.messageFun('warning', res.data.MSG);
                         }
@@ -1839,6 +1924,13 @@ export default {
 .pic_left{
     display: flex;
     justify-content: flex-start;
+    max-width: 75%;
+}
+.pic_content{
+    display: flex;
+    justify-content: flex-start;
+    overflow-x: scroll;
+    height: 50px;
 }
 .pain_span {
     display: inline-block;
@@ -1851,6 +1943,26 @@ export default {
     color: rgba(0, 0, 0, 0.25);
     margin-right: 8px;
     cursor: pointer;
+}
+/*!*滚动条*!*/
+.pic_content::-webkit-scrollbar {
+    /*滚动条整体样式*/
+    width: 8px; /*高宽分别对应横竖滚动条的尺寸*/
+    height: 8px;
+}
+
+.pic_content::-webkit-scrollbar-thumb {
+    /*滚动条里面小方块*/
+    border-radius: 0px;
+    -webkit-box-shadow: inset 0 0 0px rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.pic_content::-webkit-scrollbar-track {
+    /*滚动条里面轨道*/
+    -webkit-box-shadow: inset 0 0 0px rgba(0, 0, 0, 0);
+    border-radius: 0;
+    background: #fafafa;
 }
 .compare {
     margin-right: 8px;
@@ -1872,7 +1984,7 @@ export default {
 }
 /* 进度条 */
 .process {
-    min-width: 280px;
+    max-width: 25%;
 }
 .process_box {
     min-width: 150px;
@@ -1979,7 +2091,8 @@ export default {
     text-align: center;
 }
 
-/deep/.img_box .el-upload-list--picture-card .el-upload-list__item {
+/deep/.img_box .el-upload-list--picture-card .el-upload-list__item, 
+/deep/.upload_plus .el-upload-list--picture-card .el-upload-list__item{
     width: 30%;
     height: 105px;
     margin: 4.2% 1.6% 0 1.6%;

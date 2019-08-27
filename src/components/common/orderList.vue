@@ -83,7 +83,7 @@
                                     </span>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item :disabled="(scope.row.apState==0)||(scope.row.apState==5)||(role!='SM') " @click.native.prevent="finishOrder(scope.row)" class="finish">结束订单</el-dropdown-item>
-                                        <el-dropdown-item :disabled="(role!='SM')" @click.native.prevent="applyPhoto(scope.row)" class="finish">申请画像</el-dropdown-item>
+                                        <!-- <el-dropdown-item :disabled="(role!='SM')" @click.native.prevent="applyPhoto(scope.row)" class="finish">申请画像</el-dropdown-item> -->
                                         <el-dropdown-item :disabled="(scope.row.apState==0)||(scope.row.apState==5)||(role!='MD')" @click.native.prevent="changePoint(scope.row)" class="update">更换点位
                                         </el-dropdown-item>
                                     </el-dropdown-menu>

@@ -50,7 +50,7 @@
                 <el-row :gutter="32">
                     <el-col>
                         <span>媒体类型:</span>
-                        <el-select v-model="searchInfo.mediaType" placeholder="请选择媒体类型" size="small">
+                        <el-select v-model="searchInfo.mediaType" placeholder="请选择媒体类型" @change="search()" size="small">
                             <el-option v-for="item of searchInfo.mediaTypeArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-col>
@@ -980,10 +980,10 @@ export default {
                 replaceRecordId: this.painList.length?this.painList[this.activePainIndex].id: '',
                 pageNum: currPage,
                 pageSize: pageSize,
-                ...( mediaType && { mType: mediaType }),
+                ...( mediaType && { mType: mediaType==1?0:1 }),
                 ...( city.length && { districtId: city[1] }),
                 ...( resName && { resIds: [resName] }),
-                ...( status && { status })
+                ...( status && { reportStatus: status==1?1:0 })
             };
             return info;
         },
@@ -1007,6 +1007,13 @@ export default {
         },
         // 点击换画名称
         changePain(index){
+            this.pageInfo.currPage = 1;            
+            this.searchInfo = {
+                ...this.searchInfo,
+                city: [],
+                resName: "",
+                status: "",
+            };
             this.activePainIndex = index;
             // 去获取换画列表
             // 换画id
@@ -1192,7 +1199,23 @@ export default {
 		},
         // 获取地图中心点
         getMapArr(){
-            // this.dialogInfo.map = '';
+            let info = {
+                apId: this.orderDetail.apID
+            };
+            api.getApi(this.apiVar.replace+'/plan/mapCenterInfo', info).then(res =>{
+                console.log(res);
+                if(res.data.SysCode == 200200){
+                    this.dialogInfo.mapArr = res.data.data && res.data.data.map(item =>{
+                        return{
+                            ...item,
+                            label: item.mapCenterName,
+                            value: item.mapCenterId
+                        };
+                    });
+                }else{
+                    sessFun.messageFun('warning', res.data.MSG);
+                }
+            });
         },
         // 获取弹出框资源下拉列表
         getDialogInfoResArr(){
@@ -1463,23 +1486,17 @@ export default {
             if(!this.constractArr.length){
                 return;
             }
-            // this.addload = this.$loading({
-            //     lock: true,
-            //     text: '保存数据中,请稍等...',
-            //     spinner: 'el-icon-loading',
-            //     background: 'rgba(0, 0, 0, 0.7)'
-            // });
-            // let arr = this.uploadImgArr;
-            let info = {
-                infos: this.uploadImgArr,
-                picList: this.constractArr,
-            };
+            this.addload = this.$loading({
+                lock: true,
+                text: '保存数据中,请稍等...',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
             let formData = new FormData();
             for(let data of this.uploadImgArr){
                 formData.append('picList', data);
             }
             formData.append('infos', JSON.stringify(this.constractArr));
-            console.log(info, 'info--upload---', formData, JSON.stringify(this.constractArr));
             api.postUpload_file(this.apiVar.replace+'/photo/multipartUpload', formData).then(res =>{
                 console.log(res);
                 if(res.data.SysCode == 200200){
@@ -1496,6 +1513,7 @@ export default {
                 }else{
                     sessFun.messageFun('warning', res.data.MSG);
                 }
+                this.addload.close();
             });
         },
         submitUpload_bat(){
@@ -1622,7 +1640,7 @@ export default {
                 lId: item.lID,
                 pId: item.photoList[index].pID,
                 picUrl: item.photoList[index].pURL,
-                type: type=='SK' ? 0 : type=="XK" ? 1 : "",
+                type: type=='SK' ? 0 : type=="XK" ? 1 : 2,
             }
             if (!params.lId) {
                 sessFun.messageFun('warning', '图片信息异常无法保存！')
@@ -1802,28 +1820,32 @@ export default {
         },
         /**
          * 导出图片包、查看H5.更新报告
+         * downtype: 1为导出图片包, 2为导出pdf/ppt/pptx
          */
         // 导出图片包
         downloadImg(){
-            let type = this.getTypeToText();            
+            let type = this.type;
+            let submitType = '';
             let info = {
                 uid: this.sessionData.uID,
                 token: this.sessionData.token,
                 apId: this.orderDetail.apID,
-                type: type=='SK' ? 0 : 1,
+                type: '',
                 apName: this.orderDetail.apName,
-                downtype: 1
+                downtype: 1,
             };
+            if(type == 1){
+                info.type = 0;
+            }else if(type == 2){
+                info.type = 1;
+            }else{
+                info.type = 2;                
+                info.replaceRecordId = this.painList[this.activePainIndex].id;
+            }
             this.downLoading = true;
             const tempPage = window.open('', '_blank');
             api.getApi(this.apiVar.Advertisement+'/DownloadImgPackage', info).then(res =>{
                 if(res.data.SysCode == 200200){
-                    // let routeUrl = this.$router.resolve({
-                    //     path: "/progressDown",
-                    //     query: info,
-                    // });
-                    // window.open(routeUrl.href, '_blank');
-
                     let routeUrl = this.$router.resolve({
                         path: "/progressDown",
                         query: info,
@@ -1861,9 +1883,14 @@ export default {
         // 查看h5上下刊刊报告按钮
         showH5(){
             let type = this.getTypeToText();
-            let apid = sessionStorage.getItem('order_apid');
+            let id = sessionStorage.getItem('order_apid');
+
             let tempwindow = window.open();
-            api.getApi(this.apiVar.UCAPI+'/EncryptNo', {num: apid}).then(res =>{
+            if(type == "HH"){
+                // id =  this.painList[this.activePainIndex].id;
+                id = 24;
+            }
+            api.getApi(this.apiVar.UCAPI+'/EncryptNo', {num: id}).then(res =>{
                 console.log(res.data);
                 tempwindow.location = "/Report?"+type+"="+res.data.EncryptCode;
             }).catch(res =>{
@@ -2036,7 +2063,7 @@ export default {
 }
 .point_item {
     width: 370px;
-    height: 326px;
+    height: 298px;
     margin: 0 10px 16px;
     border: 1px solid rgba(233, 233, 233, 1);
     overflow: hidden;
@@ -2084,7 +2111,7 @@ export default {
     width: 30%;
     height: 105px;
     line-height: 105px;
-    margin: 4.2% 1.6% 0 1.6%;
+    margin: 2% 1.6% 0 1.6%;
     background: rgba(251, 251, 251, 1);
     border-radius: 4px;
     border: 1px dashed #dedede;
@@ -2095,14 +2122,14 @@ export default {
 /deep/.upload_plus .el-upload-list--picture-card .el-upload-list__item{
     width: 30%;
     height: 105px;
-    margin: 4.2% 1.6% 0 1.6%;
+    margin: 2% 1.6% 0 1.6%;
 }
 .img_box {
     /* width: 105px; */
     height: 105px;
 
     width: 30%;
-    margin: 4.2% 1.6% 0 1.6%;
+    margin: 2% 1.6% 0 1.6%;
     
     /* margin-bottom: 16px; */
     float: left;
@@ -2164,7 +2191,7 @@ export default {
     line-height: 105px;
 
     width: 30%;
-    margin: 4.2% 1.6% 0 1.6%;
+    margin: 2% 1.6% 0 1.6%;
     /* margin: 0;
     margin-bottom: 16px; */
 

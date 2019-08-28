@@ -201,6 +201,8 @@ import commaFormat from "../../commonFun/commaFormat.js";
 import filterFormat from "../../commonFun/filterTableData.js";
 // 时间格式化
 import dateFormat from "../../commonFun/timeFormat.js";
+import sessFun from '../../commonFun/sessFun.js';
+
 import noSearchResult from "../common/components/noSearchResult.vue";    
 
 import {
@@ -348,7 +350,7 @@ export default {
         // tab点击
         handleClick() {
             if (this.planPanel == "third") {
-                this.searchFun();
+                this.getDataFromType();
             }
         },
         // 获取pptx
@@ -415,13 +417,15 @@ export default {
             console.log("pageVal", pageVal);
             this.currUpPage = 1;
             this.pageUpSize = pageVal;
-            this.searchFun();
+            // this.searchFun();
+            this.getDataFromType();
         },
         // 分页功能
         changePage(page) {
             console.log('page----', page);
             this.currUpPage = page;
-            this.searchFun();
+            // this.searchFun();
+            this.getDataFromType();            
         },
         // 根据type来获取数据
         getDataFromType(){
@@ -448,14 +452,12 @@ export default {
         },
         // 换画搜索数据格式化
         searchPainFormat(){
-            let name = this.Info.name.toString().toLowerCase();
             let val = this.Info.val;
             let info = {
-                [name]: val,
-                pType: this.Info.name,
+                replaceRecordIdEncypt: val,
                 pageNum: this.currUpPage,
                 pageSize: this.pageUpSize,
-                mVehicle: this.mediaType,
+                mType: this.mediaType=='广告门'?0:1,
             };
             console.log('type---', info);
             return info;
@@ -465,19 +467,23 @@ export default {
             api.postApi_json(this.apiVar.replace +"/report/detailInfo", params).then(res =>{
                 console.log(res);
                 if(res.data.SysCode == 200200){
-                    let dataInfo = res.data;
-                        this.totalUpNum = dataInfo.totalCount;
-                        for(let data of dataInfo.dataList){
-                            for(let item of data.photoList){
-                                item.url = item.pURL;
-                            }
-                            let time = this.formatTime(data.lStar) + "-" +this.formatTime(data.lEnd);
-                            data.timeRange = time;
-                            data.upImgArr = data.photoList;
+                    let dataInfo = res.data.data;
+                    this.totalUpNum = dataInfo.totalSize;
+                    for(let data of dataInfo.dataList){
+                        data.city = data.cityName;
+                        data.rName = data.districtName;
+                        data.lStar = data.beginDate;
+                        data.lEnd = data.endDate;
+                        for(let item of data.adPlanPics){
+                            item.url = item.pURL;
                         }
-                        this.reportArr = dataInfo.dataList;
+                        let time = this.formatTime(data.lStar) + "-" +this.formatTime(data.lEnd);
+                        data.timeRange = time;
+                        data.upImgArr = data.adPlanPics;
+                    }
+                    this.reportArr = dataInfo.dataList;
 
-                    if(dataInfo.totalCount == 0){
+                    if(dataInfo.totalSize == 0){
                         sessFun.messageFun('warning', '暂无数据');
                     }
                 }else{
@@ -488,8 +494,7 @@ export default {
         // 获取换画数据
         getPainData(){
             let info = {
-                apId: 2312,
-                replaceRecordId: 5,
+                replaceRecordId: this.Info.val,
             };
             api.getApi(this.apiVar.replace+"/report/h5Detail", info).then(res =>{
                 console.log(res.data);
@@ -680,11 +685,37 @@ export default {
         showImg(row) {
             let name = this.Info.name.toString().toLowerCase();
             let val = this.Info.val;
-            let info = {
-                resId: row.resID,
-                pType: this.Info.name,
-                [name]: val
-            };
+            let info = {};
+            if(this.Info.name == 'HH'){
+                info = {
+                    replaceRecordId: val,
+                    resID: row.resID,
+                };
+                api.getApi(this.apiVar.replace+'/report/picByRes', info).then(res =>{
+                    console.log(res.data);
+                    if(res.data.SysCode == 200200){
+                        if(res.data.data.length){
+                            this.ImgBoxArr = res.data.data && res.data.data.map(item =>{
+                                return item.pURL;
+                            });
+                            this.isShowImgArr = true;
+                        }else{
+                            Message.warning("暂无数据！！！");
+                        }
+                    }else{
+                        Message.warning(res.data.MSG);
+                    }
+                });
+            }else{
+                info = {
+                    resId: row.resID,
+                    pType: this.Info.name,
+                    [name]: val
+                };
+                this.showImgApi(info);
+            }
+        },
+        showImgApi(info){
             api.postApi(this.apiVar.Advertisement+'/GetImgByResId', info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 200200){

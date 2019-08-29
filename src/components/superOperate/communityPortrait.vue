@@ -6,26 +6,46 @@
         <div class="portrait_main">
             <div class="portrait_basic_info">
                 <img src="../../assets/images/resLogo.svg" alt="" style="vertical-align: middle">
-                <el-select v-model="selectRes" placeholder="请选择" size="small" filterable clearable>
-                    <el-option
-                        v-for="item in resList"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                    </el-option>
-                </el-select>
+                <el-popover
+                    placement="bottom"
+                    title=""
+                    width="188"
+                    trigger="click">
+                    <div>
+                        <el-input
+                            placeholder="请输入内容"
+                            size="small"
+                            suffix-icon="el-icon-search"
+                            v-model="searchResName"
+                            @change="searchFun">
+                        </el-input>
+                        <ul class="resName_list">
+                            <li class="resName_li"
+                                v-for="(item,index) in resList"
+                                :class="item.resName === selectRes ? 'active_Li' : ''"
+                                :key="index"
+                                @click="changeResName(item)">
+                                {{item.resName}}
+                            </li>
+                        </ul>
+                    </div>
+                    <h2 slot="reference" class="community_name">
+                        {{selectRes}}
+                        <i class="el-icon-caret-bottom"></i>
+                    </h2>
+                </el-popover>
                 <div class="community_main_info">
                     <div class="community_info_row">
                         <h4 class="community_info_h4">位置信息</h4>
                         <el-row>
                             <el-col :span="6">
-                                <label class="community_info_label">城市：</label><span>{{resData.city}}</span>
+                                <label class="community_info_label">城市：</label><span>{{resData.city || '--'}}</span>
                             </el-col>
                             <el-col :span="6">
-                                <label class="community_info_label">区域：</label><span>{{resData.cityArea}}</span>
+                                <label class="community_info_label">区域：</label><span>{{resData.cityArea || '--'}}</span>
                             </el-col>
                             <el-col :span="6">
-                                <label class="community_info_label">商圈：</label><span>{{resData.tradingArea}}</span>
+                                <label class="community_info_label">商圈：</label><span>{{resData.tradingArea || '--'}}</span>
                             </el-col>
                             <el-col :span="6">
                                 <label class="community_info_label">详细地址：</label><span>{{resData.resAddress}}</span>
@@ -39,13 +59,13 @@
                                 <label class="community_info_label">资源类型：</label><span>{{resData.resType == 1 ? '社区' : '写字楼'}}</span>
                             </el-col>
                             <el-col :span="6">
-                                <label class="community_info_label">楼盘类型：</label><span>{{resData.houseType}}</span>
+                                <label class="community_info_label">楼盘类型：</label><span>{{resData.houseType || '--'}}</span>
                             </el-col>
                             <el-col :span="6">
-                                <label class="community_info_label">楼盘价格：</label><span>{{resData.floorPrice}}</span>
+                                <label class="community_info_label">楼盘价格：</label><span>¥{{resData.floorPrice || '--'}}</span>
                             </el-col>
                             <el-col :span="6">
-                                <label class="community_info_label">入住年份：</label><span>{{resData.joinTime}}</span>
+                                <label class="community_info_label">入住年份：</label><span>{{resData.joinTime || '--'}}</span>
                             </el-col>
                         </el-row>
                     </div>
@@ -53,16 +73,16 @@
                         <h4 class="community_info_h4">社区信息</h4>
                         <el-row>
                             <el-col :span="6">
-                                <label class="community_info_label">楼栋数量：</label><span>{{resData.buildingNum}}</span>
+                                <label class="community_info_label">楼栋数量：</label><span>{{resData.buildingNum || '--'}}</span>
                             </el-col>
                             <el-col :span="6">
-                                <label class="community_info_label">住户数量：</label><span>{{resData.HouseNum}}</span>
+                                <label class="community_info_label">住户数量：</label><span>{{resData.HouseNum || '--'}}</span>
                             </el-col>
                             <el-col :span="6">
-                                <label class="community_info_label">媒体数量：</label><span>{{resData.mediaNum}}</span>
+                                <label class="community_info_label">媒体数量：</label><span>{{resData.mediaNum || '--'}}</span>
                             </el-col>
                             <el-col :span="6">
-                                <label class="community_info_label">点位数量：</label><span>{{resData.adsNum}}</span>
+                                <label class="community_info_label">点位数量：</label><span>{{resData.adsNum || '--'}}</span>
                             </el-col>
                         </el-row>
                     </div>
@@ -296,47 +316,53 @@
 </template>
 
 <script>
-    import noSearchResult from "../../components/common/components/noSearchResult";
+    import api from '../../api/api';
+    import sessFun from '../../commonFun/sessFun';
     export default {
         name: "communityPortrait",
-        components:{
-            noSearchResult
-        },
-        data(){
-            return{
-                colorArr: ['#F1627A','#1890FF','#4DCB73','#FFBE00','#48CBFF','#FF6C42'],
+        data() {
+            return {
+                // 默认小区
+                portraitInfo: '',
+                colorArr: ['#F1627A', '#1890FF', '#4DCB73', '#FFBE00', '#48CBFF', '#FF6C42'],
                 // 该小区是否有社区画像数据
                 isHaveData: true,
-                resList:[
-                    {
-                        label:'中信西关海花苑',
-                        value: '中信西关海花苑'
-                    }
-                ],
+                sessionData: '',
+                resList: [],
                 selectRes: '中信西关海花苑',
+                activeResID: '',
+                // 搜索框内容
+                searchResName: '',
                 resData: {
-                    resName: '中信西关海花苑',
+                    resName: '',
                     resType: '1',
-                    city: '广州市',
-                    cityArea: '荔湾区',
-                    tradingArea: '江南西',
-                    houseType: '高端住宅',
-                    floorPrice: '20000',
-                    HouseNum: 188,
-                    buildingNum: 4,
-                    joinTime: '1997年',
-                    resAddress: '广州市荔湾区西湾路289号',
-                    mediaNum: 4,
-                    adsNum: 8
+                    city: '',
+                    cityArea: '',
+                    tradingArea: '',
+                    houseType: '',
+                    floorPrice: '',
+                    HouseNum: 0,
+                    buildingNum: 0,
+                    joinTime: '',
+                    resAddress: '',
+                    mediaNum: 0,
+                    adsNum: 0
                 },
                 // 性别环状图表
                 sexPieEcharts: '',
+                sexPieInfo: [],
                 // 婚姻状况
                 marriagePieEcharts: '',
+                marriagePieInfo: [],
                 // 子女预测
                 childrenForecastPieEcharts: '',
+                childrenForecastPieInfo: [],
                 // 年龄分布
                 ageDataBarEcharts: '',
+                AgeBarInfo:{
+                  data:[],
+                  title:[]
+                },
                 // 生肖top5
                 shengXiaoList:[
                     {
@@ -443,10 +469,13 @@
                 ],
                 // 有车概率
                 haveCarPieEcharts: '',
+                haveCarPieInfo: [],
                 // 有房概率
                 haveHousePieEcharts: '',
+                haveHousePieInfo:[],
                 // 购买力
                 purchasingPowerPieEcharts: '',
+                purchasingPowerPieInfo:[],
                 // 手机设备
                 mobilePhonePieEcharts: '',
                 // 手机品牌列表
@@ -487,37 +516,178 @@
             }
         },
         mounted() {
+            this.getSessionData();
+            this.portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo'))
+            this.selectRes = this.portraitInfo[0].resName
+            this.activeResID = this.portraitInfo[0].resId
+            // 获取小区详细信息
+            this.getResInfoByID();
+            // 获取小区的画像排行数据
+            this.getPortraitByResID();
             // 性别情况
-            this.initSexPie();
+            // this.initSexPie();
             // 婚姻状况
-            this.initMarriagePie();
+            // this.initMarriagePie();
             // 子女预测
-            this.initChildrenForecastPie();
+            // this.initChildrenForecastPie();
             // 年龄分布
-            this.initAgeDataBar();
+            // this.initAgeDataBar();
             // 有车概率
-            this.initHaveCarPie();
+            // this.initHaveCarPie();
             // 有房概率
-            this.initHaveHousePie();
+            // this.initHaveHousePie();
             // 购买力
-            this.initPurchasingPowerPie();
+            // this.initPurchasingPowerPie();
             // 手机设备
             this.initMobilePhonePie();
             // 图表统一监听
             this.echartsListener();
         },
         methods: {
+            // 获取用户信息
+            getSessionData() {
+                this.sessionData = sessFun.getSess()
+            },
             // 统一监听
-            echartsListener(){
+            echartsListener() {
                 window.addEventListener("resize", ()=> {
                     this.sexPieEcharts.resize();
+                    // 婚姻状况
                     this.marriagePieEcharts.resize();
+                    // 子女预测
                     this.childrenForecastPieEcharts.resize();
+                    // 年龄分布
+                    this.ageDataBarEcharts.resize();
                     this.haveCarPieEcharts.resize();
                     this.haveHousePieEcharts.resize();
                     // 购买力
                     this.purchasingPowerPieEcharts.resize();
+                    // 手机设备
+                    this.mobilePhonePieEcharts.resize();
                 });
+            },
+            // 根据名称模糊匹配小区
+            searchFun(val){
+                if (val) {
+                    let params = {
+                        uid: this.sessionData.uID,
+                        token: this.sessionData.token,
+                        asrId: this.portraitInfo[0].asrId,// this.sessionData.asrID,
+                        resName: val
+                    }
+                    api.getApi(this.apiVar.portrait + '/api/v1/resInfo/getResList',params).then(res=>{
+                        console.log('小区列表res',res)
+                        if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                            sessFun.loginTimeout()
+                        } else if (res.data.SysCode === 200200) {
+                            let resData = res.data.data
+                            let arr = []
+                            for(let key of resData) {
+                                arr.push({
+                                    resName: key.resName,
+                                    resID: key.resID
+                                })
+                            }
+                            this.resList = arr
+                        } else {
+                            sessFun.messageFun('warning',res.data.MSG)
+                        }
+                    })
+                } else {
+                    console.log('输入框为空',val)
+                }
+            },
+            // 选择资源
+            changeResName(item) {
+                console.log('item', item)
+                this.selectRes = item.resName
+                this.activeResID = item.resID
+                this.getResInfoByID()
+                this.getPortraitByResID()
+            },
+            // 获取小区详细信息
+            getResInfoByID() {
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    resId: this.activeResID
+                }
+                api.getApi(this.apiVar.portrait + '/api/v1/resInfo/getResInfoByResId',params).then(res=>{
+                    console.log('小区详情res',res)
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        sessFun.loginTimeout()
+                    } else if (res.data.SysCode === 200200) {
+                        let dataObj = res.data.data
+                        this.resData = {
+                            resID: dataObj.resID,
+                            resName: dataObj.resName,
+                            resType: dataObj.resType,
+                            city: dataObj.city,
+                            cityArea: dataObj.cityArea,
+                            tradingArea: dataObj.tradingArea,
+                            houseType: dataObj.ctype,
+                            floorPrice: dataObj.hprice / 100,
+                            HouseNum: dataObj.hnum,
+                            buildingNum: dataObj.fnum,
+                            joinTime: dataObj.chDay,
+                            resAddress: dataObj.resAddress,
+                            mediaNum: dataObj.mediaCount,
+                            adsNum: dataObj.asCount
+                        }
+                    } else {
+                        sessFun.messageFun('warning',res.data.MSG)
+                    }
+                })
+            },
+            // 获取小区的画像排行数据
+            getPortraitByResID(){
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    resId: this.activeResID
+                }
+                api.getApi(this.apiVar.portrait + '/api/v1/resInfo/getByComId',params).then(res=>{
+                    console.log('小区详情res',res)
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        sessFun.loginTimeout()
+                    } else if (res.data.SysCode === 200200) {
+                        let dataObj = res.data.data
+                        // 性别情况
+                        this.setSexPieData(dataObj.getGender)
+                        // 婚姻状况
+                        this.setMarriagePieData(dataObj.getMarriage)
+                        // 子女预测
+                        this.setChildrenForecastPieData(dataObj.getChildren)
+                        // 年龄分布
+                        this.setAgeBarData(dataObj.getAge)
+                        // 有车概率
+                        this.setHaveCarAndHousePieData(dataObj.getHaveCar,'car')
+                        // 有房概率
+                        this.setHaveCarAndHousePieData(dataObj.getHaveRoom,'house')
+                        // 购买力
+                        this.setPurchasingPowerPieData(dataObj.getBuy)
+                        this.isHaveData = true
+                    } else {
+                        sessFun.messageFun('warning',res.data.MSG)
+                        this.isHaveData = false
+                    }
+                })
+            },
+            // 设置性别情况数据
+            setSexPieData(data){
+                let arr = []
+                for (let key of data) {
+                    let tagValue = this.keepTwoDecimal(key.tagValue)
+                    if (key.tagIdSecondName === '女') {
+                        arr[0] = {value: tagValue, name: key.tagIdSecondName}
+                    } else if (key.tagIdSecondName === '男') {
+                        arr[1] = {value: tagValue, name: key.tagIdSecondName}
+                    } else if (key.tagIdSecondName === '未知') {
+                        arr[2] = {value: tagValue, name: key.tagIdSecondName}
+                    }
+                }
+                this.sexPieInfo = arr
+                this.initSexPie()
             },
             // 性别情况
             initSexPie() {
@@ -531,11 +701,8 @@
                                 '<span>' + '数据' + '</span>' +
                                 '</p>' + '<br/>' +
                                 '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' + params.value + '</p>' +
-                                '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC "></i>' +
-                                '占比' + '</span>' + params.percent + '%' +
-                                '</p>'
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' +
+                                params.percent + '%' + '</p>'
                         },
                         backgroundColor: '#FFFFFF',
                         textStyle: {
@@ -555,6 +722,9 @@
                     legend: {
                         bottom: 10,
                         left: 'center',
+                        icon:'circle',
+                        itemWidth: 9,
+                        itemHeight: 9,
                     },
                     series: [
                         {
@@ -587,14 +757,26 @@
                                     show: true
                                 }
                             },
-                            data:[
-                                {value:335, name:'女'},
-                                {value:310, name:'男'},
-                                {value:234, name:'未知'},
-                            ]
+                            data: this.sexPieInfo
                         }
                     ]
                 });
+            },
+            // 设置婚姻状况数据
+            setMarriagePieData(data){
+                let arr = []
+                for (let key of data) {
+                    let tagValue = this.keepTwoDecimal(key.tagValue)
+                    if (key.tagIdSecondName === '未婚') {
+                        arr[0] = {value: tagValue, name: key.tagIdSecondName}
+                    } else if (key.tagIdSecondName === '已婚') {
+                        arr[1] = {value: tagValue, name: key.tagIdSecondName}
+                    } else if (key.tagIdSecondName === '未知') {
+                        arr[2] = {value: tagValue, name: key.tagIdSecondName}
+                    }
+                }
+                this.marriagePieInfo = arr
+                this.initMarriagePie();
             },
             // 婚姻状况
             initMarriagePie() {
@@ -608,11 +790,8 @@
                                 '<span>' + '数据' + '</span>' +
                                 '</p>' + '<br/>' +
                                 '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' + params.value + '</p>' +
-                                '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC "></i>' +
-                                '占比' + '</span>' + params.percent + '%' +
-                                '</p>'
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' +
+                                params.percent + '%' + '</p>'
                         },
                         backgroundColor: '#FFFFFF',
                         textStyle: {
@@ -632,6 +811,9 @@
                     legend: {
                         bottom: 10,
                         left: 'center',
+                        icon:'circle',
+                        itemWidth: 9,
+                        itemHeight: 9,
                     },
                     series: [
                         {
@@ -664,14 +846,24 @@
                                     show: true
                                 }
                             },
-                            data:[
-                                {value:335, name:'未婚'},
-                                {value:310, name:'已婚'},
-                                {value:234, name:'未知'},
-                            ]
+                            data:this.marriagePieInfo
                         }
                     ]
                 });
+            },
+            // 设置子女预测数据
+            setChildrenForecastPieData(data){
+                let arr = []
+                for (let key of data) {
+                    let tagValue = this.keepTwoDecimal(key.tagValue)
+                    if (key.tagIdSecondName === '有') {
+                        arr[0] = {value: tagValue, name: key.tagIdSecondName}
+                    } else if (key.tagIdSecondName === '未知') {
+                        arr[1] = {value: tagValue, name: key.tagIdSecondName}
+                    }
+                }
+                this.childrenForecastPieInfo = arr
+                this.initChildrenForecastPie();
             },
             // 子女预测
             initChildrenForecastPie() {
@@ -685,11 +877,8 @@
                                 '<span>' + '数据' + '</span>' +
                                 '</p>' + '<br/>' +
                                 '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' + params.value + '</p>' +
-                                '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC "></i>' +
-                                '占比' + '</span>' + params.percent + '%' +
-                                '</p>'
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' +
+                                params.percent + '%' + '</p>'
                         },
                         backgroundColor: '#FFFFFF',
                         textStyle: {
@@ -709,6 +898,9 @@
                     legend: {
                         bottom: 10,
                         left: 'center',
+                        icon:'circle',
+                        itemWidth: 9,
+                        itemHeight: 9,
                     },
                     series: [
                         {
@@ -741,16 +933,55 @@
                                     show: true
                                 }
                             },
-                            data:[
-                                {value:135, name:'有'},
-                                {value:410, name:'未知'},
-                            ]
+                            data: this.childrenForecastPieInfo
                         }
                     ]
                 });
             },
+            // 设置年龄分布数据
+            setAgeBarData(data) {
+                let arrData = []
+                let arrTitle = []
+                for (let key of data) {
+                    let tagValue = this.keepTwoDecimal(key.tagValue)
+                    switch (key.tagIdSecondName) {
+                        case '15岁以下':
+                            arrData[0] = tagValue;
+                            arrTitle[0] = key.tagIdSecondName;
+                            break;
+                        case '16-25岁' :
+                            arrData[1] = tagValue;
+                            arrTitle[1] = key.tagIdSecondName;
+                            break;
+                        case '26—35岁':
+                            arrData[2] = tagValue;
+                            arrTitle[2] = key.tagIdSecondName;
+                            break;
+                        case '36—45岁' :
+                            arrData[3] = tagValue;
+                            arrTitle[3] = key.tagIdSecondName;
+                            break;
+                        case '46—55岁':
+                            arrData[4] = tagValue;
+                            arrTitle[4] = key.tagIdSecondName;
+                            break;
+                        case '56岁以上' :
+                            arrData[5] = tagValue;
+                            arrTitle[5] = key.tagIdSecondName;
+                            break;
+                        case '未知':
+                            arrData[6] = tagValue;
+                            arrTitle[6] = key.tagIdSecondName;
+                            break;
+                    }
+                }
+                this.AgeBarInfo.data = arrData
+                this.AgeBarInfo.title = arrTitle
+                console.log('this.AgeBarInfo',this.AgeBarInfo)
+                this.initAgeDataBar();
+            },
             // 年龄分布
-            initAgeDataBar(){
+            initAgeDataBar() {
                 if(this.ageDataBarEcharts){
                     this.ageDataBarEcharts.dispose()
                 }
@@ -772,7 +1003,7 @@
                             return '<p class="echarts_tooltip_title">' + '<span>' + '年龄分布' + '</span>' + '</p>' + '<br/>' +
                                 '<p class="echarts_tooltip_content">' +
                                 '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params[0].name +
-                                '</span>' + params[0].data + '</p>'
+                                '</span>' + params[0].data + '%' +'</p>'
                         },
                     },
                     grid: {
@@ -786,7 +1017,7 @@
                     xAxis: [
                         {
                             type: 'category',
-                            data: ['15岁以下','16-25岁','26-35岁','36-45岁','46-55岁','56岁以上','未知'],
+                            data: this.AgeBarInfo.title,//['15岁以下','16-25岁','26-35岁','36-45岁','46-55岁','56岁以上','未知'],
                             axisTick: {
                                 alignWithLabel: true
                             },
@@ -804,15 +1035,6 @@
                                     fontFamily: "DINPro-Regular",
                                     color: "#2C313C" //坐标轴刻度文字的颜色
                                 },
-                                formatter: function(val) {
-                                    let strs = val.split(''); //字符串数组
-                                    let str = ''
-                                    for(let i = 0, s; s = strs[i++];) { //遍历字符串数组
-                                        str += s;
-                                        if(!(i % 8)) str += '\n'; //按需要求余
-                                    }
-                                    return str
-                                }
                             },
                         }
                     ],
@@ -826,6 +1048,7 @@
                                 }
                             },
                             axisLabel: {
+                                formatter: '{value}%',
                                 //坐标轴刻度标签
                                 margin: 7, //刻度标签与轴线之间的距离
                                 textStyle: {
@@ -847,10 +1070,44 @@
                             name: '',
                             type: 'bar',
                             barWidth: '18%',
-                            data: [380,920,650,520,230,330,190]
+                            data: this.AgeBarInfo.data,//[380,920,650,520,230,330,190]
                         }
                     ]
                 });
+            },
+            // 设置有车概率数据 / 设置有房概率数据
+            setHaveCarAndHousePieData(data,string){
+                let arr = []
+                for (let key of data) {
+                    let tagValue = this.keepTwoDecimal(key.tagValue)
+                    switch (key.tagIdSecondName) {
+                        case '高':
+                            arr[0] = {value: tagValue, name: key.tagIdSecondName};
+                            break;
+                        case '中高' :
+                            arr[1] = {value: tagValue, name: key.tagIdSecondName};
+                            break;
+                        case '中等':
+                            arr[2] = {value: tagValue, name: key.tagIdSecondName};
+                            break;
+                        case '中低' :
+                            arr[3] = {value: tagValue, name: key.tagIdSecondName};
+                            break;
+                        case '低':
+                            arr[4] = {value: tagValue, name: key.tagIdSecondName};
+                            break;
+                        case '未知' :
+                            arr[5] = {value: tagValue, name: key.tagIdSecondName};
+                            break;
+                    }
+                }
+                if (string === 'car') {
+                    this.haveCarPieInfo = arr
+                    this.initHaveCarPie()
+                } else if (string === 'house') {
+                    this.haveHousePieInfo = arr
+                    this.initHaveHousePie()
+                }
             },
             // 有车概率
             initHaveCarPie() {
@@ -864,11 +1121,8 @@
                                 '<span>' + '数据' + '</span>' +
                                 '</p>' + '<br/>' +
                                 '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' + params.value + '</p>' +
-                                '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC "></i>' +
-                                '占比' + '</span>' + params.percent + '%' +
-                                '</p>'
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' +
+                                params.percent + '%' + '</p>'
                         },
                         backgroundColor: '#FFFFFF',
                         textStyle: {
@@ -889,8 +1143,8 @@
                         bottom: 10,
                         left: 'center',
                         icon:'circle',
-                        itemWidth: 8,
-                        itemHeight: 8,
+                        itemWidth: 9,
+                        itemHeight: 9,
                     },
                     series: [
                         {
@@ -923,14 +1177,7 @@
                                     show: true
                                 }
                             },
-                            data:[
-                                {value:95, name:'高'},
-                                {value:310, name:'中高'},
-                                {value:234, name:'中等'},
-                                {value:134, name:'中低'},
-                                {value:200, name:'低'},
-                                {value:34, name:'未知'},
-                            ]
+                            data: this.haveCarPieInfo
                         }
                     ]
                 });
@@ -947,11 +1194,8 @@
                                 '<span>' + '数据' + '</span>' +
                                 '</p>' + '<br/>' +
                                 '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' + params.value + '</p>' +
-                                '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC "></i>' +
-                                '占比' + '</span>' + params.percent + '%' +
-                                '</p>'
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' +
+                                params.percent + '%' + '</p>'
                         },
                         backgroundColor: '#FFFFFF',
                         textStyle: {
@@ -972,8 +1216,8 @@
                         bottom: 10,
                         left: 'center',
                         icon:'circle',
-                        itemWidth: 8,
-                        itemHeight: 8,
+                        itemWidth: 9,
+                        itemHeight: 9,
                     },
                     series: [
                         {
@@ -1006,17 +1250,33 @@
                                     show: true
                                 }
                             },
-                            data:[
-                                {value:95, name:'高'},
-                                {value:310, name:'中高'},
-                                {value:234, name:'中等'},
-                                {value:134, name:'中低'},
-                                {value:200, name:'低'},
-                                {value:34, name:'未知'},
-                            ]
+                            data: this.haveHousePieInfo
                         }
                     ]
                 });
+            },
+            // 设置购买力数据
+            setPurchasingPowerPieData(data){
+                let arr = []
+                for (let key of data) {
+                    let tagValue = this.keepTwoDecimal(key.tagValue)
+                    switch (key.tagIdSecondName) {
+                        case '高':
+                            arr[0] = {value: tagValue, name: key.tagIdSecondName};
+                            break;
+                        case '中':
+                            arr[1] = {value: tagValue, name: key.tagIdSecondName};
+                            break;
+                        case '低':
+                            arr[2] = {value: tagValue, name: key.tagIdSecondName};
+                            break;
+                        case '未知' :
+                            arr[3] = {value: tagValue, name: key.tagIdSecondName};
+                            break;
+                    }
+                }
+                this.purchasingPowerPieInfo = arr
+                this.initPurchasingPowerPie()
             },
             // 购买力
             initPurchasingPowerPie(){
@@ -1030,11 +1290,8 @@
                                 '<span>' + '数据' + '</span>' +
                                 '</p>' + '<br/>' +
                                 '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' + params.value + '</p>' +
-                                '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC "></i>' +
-                                '占比' + '</span>' + params.percent + '%' +
-                                '</p>'
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' +
+                                params.percent + '%' + '</p>'
                         },
                         backgroundColor: '#FFFFFF',
                         textStyle: {
@@ -1055,8 +1312,8 @@
                         bottom: 10,
                         left: 'center',
                         icon:'circle',
-                        itemWidth: 8,
-                        itemHeight: 8,
+                        itemWidth: 9,
+                        itemHeight: 9,
                     },
                     series: [
                         {
@@ -1089,12 +1346,7 @@
                                     length2: 6,
                                 }
                             },
-                            data:[
-                                {value:95, name:'高'},
-                                {value:234, name:'中等'},
-                                {value:200, name:'低'},
-                                {value:34, name:'未知'},
-                            ]
+                            data: this.purchasingPowerPieInfo
                         }
                     ]
                 });
@@ -1111,11 +1363,8 @@
                                 '<span>' + '数据' + '</span>' +
                                 '</p>' + '<br/>' +
                                 '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' + params.value + '</p>' +
-                                '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC "></i>' +
-                                '占比' + '</span>' + params.percent + '%' +
-                                '</p>'
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' +
+                                params.percent + '%' + '</p>'
                         },
                         backgroundColor: '#FFFFFF',
                         textStyle: {
@@ -1180,6 +1429,15 @@
                     ]
                 });
             },
+            // 保留两位小数
+            keepTwoDecimal(num){
+                if (!num && num !== 0) {
+                    return 0;
+                }
+                let result = parseFloat(num);
+                result = Math.round(num * 10000) / 100;
+                return result;
+            },
         },
     }
 </script>
@@ -1187,7 +1445,6 @@
 <style scoped>
     .portrait_main{
         margin: 0 64px;
-        position: relative;
     }
 
     /* 小区信息 */
@@ -1199,6 +1456,52 @@
         padding: 24px;
     }
 
+    .community_name{
+        min-width: 140px;
+        font-size: 16px;
+        font-weight: 600;
+        display: inline-block;
+        margin-left: 8px;
+        color:rgba(0,0,0,0.85);
+        border-radius: 3px;
+        border:1px solid rgba(194,194,194,1);
+        padding: 1px 24px 1px 3px;
+        cursor:pointer;
+        position: relative;
+    }
+
+    .community_name .el-icon-caret-bottom{
+        position: absolute;
+        right: 8px;
+        top:3px;
+    }
+
+    /deep/ .resName_list{
+        height: 158px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        border-top: 1px solid #ebeef5;
+        margin-top: 8px;
+        padding:  6px 0 0 0;
+    }
+
+    /deep/ .resName_list .resName_li{
+        height: 26px;
+        line-height: 26px;
+        cursor: pointer;
+        color:#666666;
+        font-size: 14px;
+    }
+
+    /deep/ .resName_list .active_Li{
+        color: #409eff;
+        font-weight: 600;
+    }
+
+    .resName_li:hover{
+        background: #f5f7fa;
+    }
+
     .community_info_h4{
         font-size:14px;
         font-weight:600;
@@ -1208,7 +1511,7 @@
     }
 
     .community_main_info{
-        padding: 16px 16px 0 36px;
+        padding: 16px 0 0 44px;
     }
 
     .community_info_row{
@@ -1346,5 +1649,6 @@
     .not_search{
         margin-top: 24px;
         color: rgba(0,0,0,0.45);
+        font-size: 14px;
     }
 </style>

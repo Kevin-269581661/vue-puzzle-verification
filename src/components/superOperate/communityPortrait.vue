@@ -524,20 +524,6 @@
             this.getResInfoByID();
             // 获取小区的画像排行数据
             this.getPortraitByResID();
-            // 性别情况
-            // this.initSexPie();
-            // 婚姻状况
-            // this.initMarriagePie();
-            // 子女预测
-            // this.initChildrenForecastPie();
-            // 年龄分布
-            // this.initAgeDataBar();
-            // 有车概率
-            // this.initHaveCarPie();
-            // 有房概率
-            // this.initHaveHousePie();
-            // 购买力
-            // this.initPurchasingPowerPie();
             // 手机设备
             this.initMobilePhonePie();
             // 图表统一监听
@@ -652,21 +638,25 @@
                         sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
-                        // 性别情况
-                        this.setSexPieData(dataObj.getGender)
-                        // 婚姻状况
-                        this.setMarriagePieData(dataObj.getMarriage)
-                        // 子女预测
-                        this.setChildrenForecastPieData(dataObj.getChildren)
-                        // 年龄分布
-                        this.setAgeBarData(dataObj.getAge)
-                        // 有车概率
-                        this.setHaveCarAndHousePieData(dataObj.getHaveCar,'car')
-                        // 有房概率
-                        this.setHaveCarAndHousePieData(dataObj.getHaveRoom,'house')
-                        // 购买力
-                        this.setPurchasingPowerPieData(dataObj.getBuy)
-                        this.isHaveData = true
+                        if(dataObj.getGender && dataObj.getMarriage && dataObj.getAge){
+                            // 性别情况
+                            this.setSexPieData(dataObj.getGender)
+                            // 婚姻状况
+                            this.setMarriagePieData(dataObj.getMarriage)
+                            // 子女预测
+                            this.setChildrenForecastPieData(dataObj.getChildren)
+                            // 年龄分布
+                            this.setAgeBarData(dataObj.getAge)
+                            // 有车概率
+                            this.setHaveCarAndHousePieData(dataObj.getHaveCar,'car')
+                            // 有房概率
+                            this.setHaveCarAndHousePieData(dataObj.getHaveRoom,'house')
+                            // 购买力
+                            this.setPurchasingPowerPieData(dataObj.getBuy)
+                            this.isHaveData = true
+                        } else {
+                            this.isHaveData = false
+                        }
                     } else {
                         sessFun.messageFun('warning',res.data.MSG)
                         this.isHaveData = false

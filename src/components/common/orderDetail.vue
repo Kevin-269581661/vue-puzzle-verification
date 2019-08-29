@@ -27,7 +27,7 @@
                             </span>
                         </el-dialog>
                         <div class="handleBtn">
-                            <el-button type="plain" @click="changePain()">换画</el-button>
+                            <el-button type="plain" @click="changePain()" v-if="role=='MD'">换画</el-button>
                             <el-button type="primary" :disabled="usableBtn" v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0" @click="changePoint">换点</el-button>
                         </div>
                     </div>
@@ -165,7 +165,7 @@
                             <change-pic :type="2" :order-detail="orderDetail"></change-pic>
                         </div>
                     </el-tab-pane>
-                    <el-tab-pane label="换画报告" name="sixth">
+                    <el-tab-pane label="换画报告" name="sixth" v-if="showPain">
                         <div class="changepic_box" v-if="planPanel=='sixth'">
                             <change-pic :type="3" :from-type="fromType" :order-detail="orderDetail"></change-pic>
                         </div>
@@ -342,7 +342,10 @@ export default {
             //显示预览图蒙版
             showPreImg: null,
             // 换画
+            showPain: false,
             fromType: false,
+            // 换画列表
+            painlist: [],
         };
     },
     created() {
@@ -355,6 +358,10 @@ export default {
         this.getInitData();
         // 选点排期
         this.getSetPoint();
+        if(this.role == 'MD'){
+            // 获取换画列表
+            this.getPainlist();
+        }
     },
     computed: {
         // 现投放面数
@@ -946,6 +953,21 @@ export default {
             // Message.info("已取消操作");
         },
         // 换画
+        // 获取换画列表
+        getPainlist(){
+            let info = {
+                apId: this.orderDetail.apID
+            };
+            api.getApi(this.apiVar.replace+'/report/list', info).then(res =>{
+                console.log(res);
+                if(res.data.SysCode == 200200){
+                    let len = res.data.data.length;
+                    this.showPain = true;                    
+                }else{
+                    sessFun.messageFun('warning', res.data.msg);
+                }
+            });
+        },
         changePain(){
             MessageBox.confirm(
                 "注：换画时间需在对应点位排期时间内",
@@ -961,32 +983,22 @@ export default {
             });
         },
         // 新增换画报告
-        addPainReport(){       
-            let info = {
-                apId: this.orderDetail.apID
+        addPainReport(){    
+            let len = this.painlist.length;
+            let painInfo = {
+                apId: this.orderDetail.apID,
+                replaceRecordName: `换画${len+1}`,
             };
-            api.getApi(this.apiVar.replace+'/report/list', info).then(res =>{
-                console.log(res);
+            api.postApi_json(this.apiVar.replace+'/report/add', painInfo).then(res =>{
                 if(res.data.SysCode == 200200){
-                    let len = res.data.data.length;
-                    let painInfo = {
-                        apId: this.orderDetail.apID,
-                        replaceRecordName: `换画${len+1}`,
-                    };
-                    api.postApi_json(this.apiVar.replace+'/report/add', painInfo).then(res =>{
-                        if(res.data.SysCode == 200200){
-                            this.planPanel = 'sixth';    
-                            setTimeout(()=>{
-                                this.fromType = !this.fromType;
-                            }, 0);                        
-                        }else{
-                            sessFun.messageFun('warning', res.data.msg);
-                        }
-                    });
+                    this.planPanel = 'sixth';    
+                    setTimeout(()=>{
+                        this.fromType = !this.fromType;
+                    }, 0);                        
                 }else{
                     sessFun.messageFun('warning', res.data.msg);
                 }
-            });
+            });   
         },
         // 操作提示统一方法
         messageFun(mesType,mes){

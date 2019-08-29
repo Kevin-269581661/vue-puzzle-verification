@@ -59,6 +59,7 @@
                                     <el-select v-model="searchInfo.publish" placeholder="请选择" class="plan-select" size="small">
                                         <el-option label="上刊" value="SK"></el-option>
                                         <el-option label="下刊" value="XK"></el-option>
+                                        <el-option label="换画" value="HH"></el-option>
                                     </el-select>
                                 </el-col>
                                 <el-col :span="6">
@@ -387,7 +388,7 @@
                     let info = {
                         uid: session.uID,
                         token: session.token,
-                        type: this.searchInfo.publish === "SK" ? 0 : this.searchInfo.publish === "XK" ? 1 : "",
+                        type: this.searchInfo.publish === "SK" ? 0 : this.searchInfo.publish === "XK" ? 1 : 2,
                         orderName: this.searchInfo.apName,
                         resourceName: this.searchInfo.resName,
                         asLabel: this.searchInfo.LabSelect,

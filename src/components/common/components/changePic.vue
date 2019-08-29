@@ -12,7 +12,7 @@
             </template>
 
             <div class="up-loader-header">
-                <el-cascader :options="publishSearchInfo.citys" v-model="publishSearchInfo.citySelect" @change="searchImgChange()">
+                <el-cascader :options="publishSearchInfo.citys" v-model="publishSearchInfo.citySelect" @change="searchImgChange()" filterable>
                 </el-cascader>
                 <el-select placeholder="请选择资源" filterable v-model="publishSearchInfo.allhouse" @change="searchImg()">
                     <el-option v-for="(item, index) of publishSearchInfo.allResource" :key="index" :label="item.resName" :value="item.value"></el-option>
@@ -160,8 +160,8 @@
                     <el-option v-for="(item, index) of dialogInfo.stateArr" :key="index" :label="item.label" :value="item.value"></el-option>
                 </el-select>
                 <span>地图中心点:</span>
-                <el-select v-model="dialogInfo.mapName" placeholder="请选择地图中心点" size="small">
-                    <el-option v-for="(item, index) of dialogInfo.mapArr" :key="index" :label="item.name" :value="item.name"></el-option>
+                <el-select v-model="dialogInfo.mapName" placeholder="请选择地图中心点" size="small" filterable>
+                    <el-option v-for="(item, index) of dialogInfo.mapArr" :key="index" :label="item.label" :value="item.value"></el-option>
                 </el-select>
                 <el-button plain @click="searchPoint()">搜索</el-button>
                 <el-button plain @click="resetPoint()">重置</el-button>
@@ -560,17 +560,17 @@ export default {
             },
             // 时间控件限制范围
             dateRange:{
-                beginDate: '2019/08/08',
-                endDate: '2019/08/20'
+                beginDate: '',
+                endDate: ''
             },
             pickerOptions:{
                 disabledDate: (time) => {
-                    return false;
-                    // let beginDateVal = new Date(this.dateRange.beginDate).getTime()+60*60*24*1000;
-                    // let endDateVal = new Date(this.dateRange.endDate).getTime()-60*60*24*1000;
-                    // if (beginDateVal || endDateVal) {
-                    //     return (time.getTime() < beginDateVal) || (time.getTime() > endDateVal);
-                    // }
+                    // return false;
+                    let beginDateVal = new Date(this.dateRange.beginDate).getTime()+60*60*24*1000;
+                    let endDateVal = new Date(this.dateRange.endDate).getTime()-60*60*24*1000;
+                    if (beginDateVal || endDateVal) {
+                        return (time.getTime() < beginDateVal) || (time.getTime() > endDateVal);
+                    }
                 }
             },
         };
@@ -592,6 +592,10 @@ export default {
                 let len = this.painList.length;
                 console.log(this.painList, 'painlist----', len);
                 this.activePainIndex = len-1;
+                this.dateRange = {
+                    beginDate: this.painList[index].startDate,
+                    endDate: this.painList[index].endDate
+                };
                 // this.search();
                 this.editReport();
             });
@@ -1007,6 +1011,10 @@ export default {
         },
         // 点击换画名称
         changePain(index){
+            this.dateRange = {
+                beginDate: this.painList[index].startDate,
+                endDate: this.painList[index].endDate
+            };
             this.pageInfo.currPage = 1;            
             this.searchInfo = {
                 ...this.searchInfo,
@@ -1064,7 +1072,7 @@ export default {
                 apId: sessionStorage.getItem('order_apid'),
                 replaceRecordId: this.painList[this.activePainIndex].id,
                 ...( resName.length && { resIds: resName }),
-                ...( mapName && { mapCenterId: mapName }),
+                ...( mapName && { mapCenterInfo: mapName }),
                 ...( picState>=0 && { replaceStatus: picState==2?'':picState })
             };
             return info;
@@ -1209,9 +1217,10 @@ export default {
                         return{
                             ...item,
                             label: item.mapCenterName,
-                            value: item.mapCenterId
+                            value: item.mapCenterName
                         };
                     });
+                    console.log(this.dialogInfo.mapArr);
                 }else{
                     sessFun.messageFun('warning', res.data.MSG);
                 }
@@ -1887,8 +1896,7 @@ export default {
 
             let tempwindow = window.open();
             if(type == "HH"){
-                // id =  this.painList[this.activePainIndex].id;
-                id = 24;
+                id =  this.painList[this.activePainIndex].id;
             }
             api.getApi(this.apiVar.UCAPI+'/EncryptNo', {num: id}).then(res =>{
                 console.log(res.data);

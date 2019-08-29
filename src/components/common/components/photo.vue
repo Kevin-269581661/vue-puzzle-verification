@@ -90,7 +90,7 @@
                     lId: lID,
                     pId: item.pID,
                     picUrl: item.pUrl,
-                    type: this.publish === 'SK' ? 0 : this.publish === 'XK' ? 1 : "",
+                    type: this.publish === 'SK' ? 0 : this.publish === 'XK' ? 1 : 2,
                 }
                 if (!params.lId) {
                     this.messageFun('warning', '图片信息异常无法保存！')

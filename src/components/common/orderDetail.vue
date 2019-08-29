@@ -956,12 +956,12 @@ export default {
         // 获取换画列表
         getPainlist(){
             let info = {
-                apId: this.orderDetail.apID
+                apId: sessionStorage.getItem("order_apid")
             };
             api.getApi(this.apiVar.replace+'/report/list', info).then(res =>{
                 console.log(res);
                 if(res.data.SysCode == 200200){
-                    let len = res.data.data.length;
+                    this.painlist = res.data.data;
                     this.showPain = true;                    
                 }else{
                     sessFun.messageFun('warning', res.data.msg);

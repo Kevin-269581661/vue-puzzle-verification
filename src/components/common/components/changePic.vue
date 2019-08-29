@@ -590,11 +590,10 @@ export default {
             console.log(newVal, oldVal, 'fromtype---watch---');
             this.getPainList().then(res =>{
                 let len = this.painList.length;
-                console.log(this.painList, 'painlist----', len);
                 this.activePainIndex = len-1;
                 this.dateRange = {
-                    beginDate: this.painList[index].startDate,
-                    endDate: this.painList[index].endDate
+                    beginDate: this.painList[this.activePainIndex].startDate,
+                    endDate: this.painList[this.activePainIndex].endDate
                 };
                 // this.search();
                 this.editReport();
@@ -1326,10 +1325,10 @@ export default {
             const isLt2M = file.size / 1024 / 1024 < 2;
 
             if (!isJPG) {
-                Message.error('只能上传jpg/png图片!');
+                sessFun.messageFun('error', '只能上传jpg/png图片!');
             }
             if (!isLt2M) {
-                Message.error('图片大小不能超过 2MB!');
+                sessFun.messageFun('error', '图片大小不能超过 2MB!');
             }
             return isJPG && isLt2M;
         },
@@ -1382,8 +1381,8 @@ export default {
             if(this.shoplist.length){
                 this.isShowPic = false;
                 let result = [];
-                for(let data of this.pointArr){
-                    if(data.picUrl || data.remark){
+                for(let data of this.shoplist){
+                    if(data.replaceDate){
                         let obj = {
                             ...data,
                             status: 1,
@@ -1414,8 +1413,8 @@ export default {
             if(this.shoplist.length){
                 let result = [];
                 this.isShowPic = false;
-                for(let data of this.pointArr){
-                    if(data.picUrl || data.remark){
+                for(let data of this.shoplist){
+                    if(data.replaceDate){
                         let obj = {
                             ...data,
                             status: 0,
@@ -1501,143 +1500,40 @@ export default {
                 spinner: 'el-icon-loading',
                 background: 'rgba(0, 0, 0, 0.7)'
             });
-            let formData = new FormData();
-            for(let data of this.uploadImgArr){
-                formData.append('picList', data);
-            }
-            formData.append('infos', JSON.stringify(this.constractArr));
-            api.postUpload_file(this.apiVar.replace+'/photo/multipartUpload', formData).then(res =>{
-                console.log(res);
-                if(res.data.SysCode == 200200){
-                    this.constractArr = [];
-                    this.uploadImgArr = [];
-                    let type = this.type;                            
-                    if(type == 1 || type ==2){
-                        // 上下刊报告列表
-                        this.searchFun();
-                    }else if(type == 3){
-                        // 换画报告列表
-                        this.search();
+
+            let imgArr = this.uploadImgArr;
+            let arr = this.constractArr;
+            for(let i = 0; i<arr.length+6; i=i+6){
+                let end = i+6>arr.length?arr.length:i+6;
+                let result = arr.slice(i, end);
+                if(result.length){
+                    let formData = new FormData();
+                    for(let data of imgArr.slice(i, end)){
+                        formData.append('picList', data);
                     }
-                }else{
-                    sessFun.messageFun('warning', res.data.MSG);
-                }
-                this.addload.close();
-            });
-        },
-        submitUpload_bat(){
-            let type = this.getTypeToText();
-            if(!this.constractArr.length){
-                return;
-            }
-            this.addload = this.$loading({
-                lock: true,
-                text: '保存数据中,请稍等...',
-                spinner: 'el-icon-loading',
-                background: 'rgba(0, 0, 0, 0.7)'
-            });
-            let arr = this.uploadImgArr;
-
-            this.UploadTime = parseInt( arr.length / 6 );
-            let a1 = arr.length % 6;
-            if(a1 > 0){
-                this.UploadTime++;
-            }
-            this.submitUpload_(type, 1)
-
-        },
-        submitUpload_(type, index){
-            if(!this.constractArr.length){
-                return;
-            }
-            let arr = this.uploadImgArr;
-
-            if(this.UploadTime >= index){
-                let timeArr = [];
-                let formData = new FormData();
-                for(let i = (index-1)*6, iLen = arr.length; i<=iLen; i++ ){
-                    if(timeArr.length < 6){
-                        if(i >= iLen){
-                            api.postUpload_file(this.doUpload, formData).then(res =>{
-                                console.log(res);
-                                if(!res.data.SysCode){
-                                    let result = res.data;
-                                    for(let data of result){
-                                        this.uploadPidArr.push(data);
-                                    }
-                                    index++;
-                                    this.submitUpload_(type, index);
-                                }else{
-                                    this.addload.close();
-                                    sessFun.messageFun('warning', res.data.MSG);
+                    formData.append('infos', JSON.stringify(result));    
+                    api.postUpload_file(this.apiVar.replace+'/photo/multipartUpload', formData).then(res =>{
+                        console.log(res);
+                        if(res.data.SysCode == 200200){
+                            if(end >= arr.length){
+                                this.constractArr = [];
+                                this.uploadImgArr = [];
+                                let type = this.type;                            
+                                if(type == 1 || type ==2){
+                                    // 上下刊报告列表
+                                    this.searchFun();
+                                }else if(type == 3){
+                                    // 换画报告列表
+                                    this.search();
                                 }
-                            })
-                            break;
+                                this.addload.close();                                
+                            }
                         }else{
-                            timeArr.push(i);
-                            formData.append('file[]', arr[i]);
+                            sessFun.messageFun('warning', res.data.MSG);
                         }
-                    }else{
-                        if(timeArr.length >= 6){
-                            api.postUpload_file(this.doUpload, formData).then(res =>{
-                                console.log(res);
-                                if(!res.data.SysCode){
-                                    let result = res.data;
-                                    for(let data of result){
-                                        this.uploadPidArr.push(data);
-                                    }
-                                    index++;
-                                    this.submitUpload_(type, index);
-                                }else{
-                                    this.addload.close();
-                                    sessFun.messageFun('warning', res.data.MSG);
-                                }
-                            })
-                            break;
-                        }
-                    }
-
+                    });                
                 }
-            }else{
-                console.log('++++this.uploadPidArr++++', this.uploadPidArr);
-                this.uploadConect(type, this.uploadPidArr);
             }
-        },
-        uploadConect(type, result){
-            let uid = this.sessionData.uID;
-            let token = this.sessionData.token;
-            let imgsTypes =  this.constractArr;
-            let pidarr = this.uploadPidArr;
-            for(let t = 0, tLen=pidarr.length; t<tLen; t++){
-                pidarr[t].pAlt = imgsTypes[t].pAlt
-                pidarr[t].pRemarks = imgsTypes[t].pRemarks;
-                pidarr[t].pType = type;
-                pidarr[t].ptID = imgsTypes[t].ptID;
-                pidarr[t].ptP = imgsTypes[t].ptP;
-                pidarr[t].puID = imgsTypes[t].puID;
-                pidarr[t].realName = imgsTypes[t].realName;
-            }
-
-            let imgs = {
-                imgs: pidarr
-            };
-            console.log('pidarr---', pidarr);
-            api.postApi_json(this.apiVar.Advertisement+'/SetImgList?uid='+uid+'&token='+token, imgs).then(res =>{
-                console.log(res.data);
-                this.addload.close();
-                if(res.data.SysCode == 300200){
-                    sessFun.messageFun('success', res.data.MSG);
-                    this.constractArr = [];
-                    this.uploadImgArr = [];
-                    this.uploadPidArr = [];
-                    this.UploadTime = 0;
-                    this.searchFun();
-                }else {
-                    sessFun.messageFun('warning', res.data.MSG);
-                }
-            }).catch(res =>{
-                this.addload.close();
-            });
         },
         // 收藏
         saveImgFun(item,index){

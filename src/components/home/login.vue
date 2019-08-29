@@ -167,6 +167,7 @@
                             // this.loading.close()
                             if (userMsg.uType === 'SM') {
                                 //sessionStorage.getItem("real_name") 获取session的值
+                                this.getIsShowQinlin(userMsg)
                                 this.$router.push('/superOperate')
                             } else if (userMsg.uType === 'MD') {
                                 this.$router.push('/media')
@@ -299,6 +300,7 @@
                         sessionStorage.setItem("session_data", JSON.stringify(isLogin));// isLogin.realName
                         this.codeLoading.close()
                         if (isLogin.uType === 'SM') {
+                            this.getIsShowQinlin(isLogin)
                             this.$router.push('/superOperate')
                         } else if (isLogin.uType === 'MD') {
                             this.$router.push('/media')
@@ -327,6 +329,25 @@
                         this.initWebsocket()
                     }
                     this.codeLoading.close()
+                })
+            },
+            // 登录成功确认
+            getIsShowQinlin(userData){
+                // alert(1)
+                let params = {
+                    uid: userData.uID,
+                    token: userData.token
+                }
+                api.getApi(this.apiVar.portrait + '/api/v1/ascrInfo/getAscrList', params).then(res => {
+                    console.log('用户权限城市和默认小区res', res)
+                    if (res.data.SysCode === 200200) {
+                        let portraitInfo = res.data.data
+                        sessionStorage.setItem("portraitInfo", JSON.stringify(portraitInfo));
+                    } else if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        this.$router.push('/login')
+                    } else {
+
+                    }
                 })
             },
             // 判断二维码图片的加载

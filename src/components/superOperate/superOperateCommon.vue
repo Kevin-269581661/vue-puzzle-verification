@@ -32,14 +32,14 @@
                 <el-menu-item index="/superOperate/publishPriceList">刊例价</el-menu-item>
             </el-submenu>
             <el-menu-item index="/superOperate/photoGallery">案例库</el-menu-item>
-            <el-menu-item index="/superOperate/ADqinlinzk" v-if="showQinlin">智邻数图</el-menu-item>
+            <!--<el-menu-item index="/superOperate/ADqinlinzk" v-if="showQinlin">智邻数图</el-menu-item>-->
             <el-submenu index="7">
                 <template slot="title">辅助资料</template>
                 <el-menu-item index="/superOperate/questionAndAnswer">操作说明</el-menu-item>
                 <el-menu-item index="/superOperate/compact">文件下载</el-menu-item>
             </el-submenu>
             <el-menu-item index="/superOperate/tvOrderList">电视广告</el-menu-item>
-            <el-menu-item index="/superOperate/communityPortrait">亲邻智邻</el-menu-item>
+            <el-menu-item index="/superOperate/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>
             <el-submenu index="9" class="user_center" popper-class="user_center_item">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">
@@ -78,6 +78,7 @@
 
 <script>
     import uTypeToText from "../../commonFun/uTypeToText.js";
+    import api from "../../api/api"
     export default {
         name: "superOpertaeCommon",
         data(){
@@ -98,6 +99,7 @@
         },
         mounted(){
             this.getIsShowCom();
+            // 是否显示社区画像
             this.getIsShowQinlin();
         },
         methods:{
@@ -123,13 +125,19 @@
             },
             // 是否显示亲邻
             getIsShowQinlin(){
-                let accountArr = [611,612,613,1,657,610,609,608,607,605,3,1151];
-                let account = this.sessionData.uID;
-                if(accountArr.includes(account)){
-                    sessionStorage.setItem('AD_apid', -1);
-                    sessionStorage.setItem('ctList_data', '100,31,38,1,6,8,11,14');
-                    sessionStorage.setItem('aiTime', '2018-09-20 11:23:25');
+                // let accountArr = [611,612,613,1,657,610,609,608,607,605,3,1151];
+                // let account = this.sessionData.uID;
+                // if(accountArr.includes(account)){
+                //     sessionStorage.setItem('AD_apid', -1);
+                //     sessionStorage.setItem('ctList_data', '100,31,38,1,6,8,11,14');
+                //     sessionStorage.setItem('aiTime', '2018-09-20 11:23:25');
+                //     this.showQinlin = true;
+                // }
+                let portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo'))
+                if (portraitInfo.length) {
                     this.showQinlin = true;
+                } else {
+                    this.showQinlin = false;
                 }
             },
             // 是否显示公司管理

@@ -66,11 +66,11 @@ router.beforeEach((to, from, next) => {
 	next();
 });
 
-let sessionStr = sessionStorage.getItem('session_data');
-let session = sessionStr ? JSON.parse(sessionStr) : '';
 //全局拦截器携带token
 axios.interceptors.request.use(
 	config => {
+		let sessionStr = sessionStorage.getItem('session_data');
+		let session = sessionStr ? JSON.parse(sessionStr) : '';
 		let uid = session ? session.uID: '';
 		let token = session ? session.token : '';
 		if (token) {  // 判断是否存在token，如果存在的话，则每个http header都加上token

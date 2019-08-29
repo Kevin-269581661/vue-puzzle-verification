@@ -201,6 +201,8 @@ import commaFormat from "../../commonFun/commaFormat.js";
 import filterFormat from "../../commonFun/filterTableData.js";
 // 时间格式化
 import dateFormat from "../../commonFun/timeFormat.js";
+import sessFun from '../../commonFun/sessFun.js';
+
 import noSearchResult from "../common/components/noSearchResult.vue";    
 
 import {
@@ -324,7 +326,7 @@ export default {
                     text: '下刊',
                 },
                 {
-                    name: 'CP',
+                    name: 'HH',
                     text: '换画'
                 }
             ];
@@ -348,7 +350,7 @@ export default {
         // tab点击
         handleClick() {
             if (this.planPanel == "third") {
-                this.searchFun();
+                this.getDataFromType();
             }
         },
         // 获取pptx
@@ -415,13 +417,15 @@ export default {
             console.log("pageVal", pageVal);
             this.currUpPage = 1;
             this.pageUpSize = pageVal;
-            this.searchFun();
+            // this.searchFun();
+            this.getDataFromType();
         },
         // 分页功能
         changePage(page) {
             console.log('page----', page);
             this.currUpPage = page;
-            this.searchFun();
+            // this.searchFun();
+            this.getDataFromType();            
         },
         // 根据type来获取数据
         getDataFromType(){
@@ -448,14 +452,12 @@ export default {
         },
         // 换画搜索数据格式化
         searchPainFormat(){
-            let name = this.Info.name.toString().toLowerCase();
             let val = this.Info.val;
             let info = {
-                [name]: val,
-                pType: this.Info.name,
+                replaceRecordIdEncypt: val,
                 pageNum: this.currUpPage,
                 pageSize: this.pageUpSize,
-                mVehicle: this.mediaType,
+                mType: this.mediaType=='广告门'?0:1,
             };
             console.log('type---', info);
             return info;
@@ -465,19 +467,23 @@ export default {
             api.postApi_json(this.apiVar.replace +"/report/detailInfo", params).then(res =>{
                 console.log(res);
                 if(res.data.SysCode == 200200){
-                    let dataInfo = res.data;
-                        this.totalUpNum = dataInfo.totalCount;
-                        for(let data of dataInfo.dataList){
-                            for(let item of data.photoList){
-                                item.url = item.pURL;
-                            }
-                            let time = this.formatTime(data.lStar) + "-" +this.formatTime(data.lEnd);
-                            data.timeRange = time;
-                            data.upImgArr = data.photoList;
+                    let dataInfo = res.data.data;
+                    this.totalUpNum = dataInfo.totalSize;
+                    for(let data of dataInfo.dataList){
+                        data.city = data.cityName;
+                        data.rName = data.districtName;
+                        data.lStar = data.beginDate;
+                        data.lEnd = data.endDate;
+                        for(let item of data.adPlanPics){
+                            item.url = item.pURL;
                         }
-                        this.reportArr = dataInfo.dataList;
+                        let time = this.formatTime(data.lStar) + "-" +this.formatTime(data.lEnd);
+                        data.timeRange = time;
+                        data.upImgArr = data.adPlanPics;
+                    }
+                    this.reportArr = dataInfo.dataList;
 
-                    if(dataInfo.totalCount == 0){
+                    if(dataInfo.totalSize == 0){
                         sessFun.messageFun('warning', '暂无数据');
                     }
                 }else{
@@ -488,16 +494,15 @@ export default {
         // 获取换画数据
         getPainData(){
             let info = {
-                apId: '',
-                replaceRecordId: '',
+                replaceRecordId: this.Info.val,
             };
-            api.postApi(this.apiVar.replace+"/report/h5Detail", info).then(res =>{
+            api.getApi(this.apiVar.replace+"/report/h5Detail", info).then(res =>{
                 console.log(res.data);
-                let data = res.data;
+                let data = res.data.data;
                 // 换画抬头信息
-                this.report = this.getFangInfo(data.planInfo);
+                this.report = this.getFangInfo(data.adPlanInfo);
                 // 投放详情
-                let result = this.getResInfo(data.replaceDetails);
+                let result = this.getResInfo(data.resInfo);
                 this.putDetail = result;
                 this.currPutDetail = JSON.parse(JSON.stringify(this.putDetail));
                 this.filterCityData = filterFormat(result, "city");
@@ -554,10 +559,7 @@ export default {
                         // 发布情况
                         this.postDetail = this.getCityAdSpaceCount(data.cityAdSpaceCount);
                         this.loading = false;
-                    } else if (res.data.SysCode == 100302) {
-                        this.loading = false;
-                        this.loginTimeout();
-                    } else {
+                    }else {
                         this.loading = false;
                         Message.warning(res.data.MSG);
                     }
@@ -569,23 +571,23 @@ export default {
         },
         // 头部信息
         getFangInfo(data){
+            console.log(data, 'data---');
             let info = {
-                adcID: data.adcID,
-                apID: data.apID,
+                apID: data.apId,
                 apName: data.apName,
-                apQC: data.apQC,
-                apState: data.apState,
-                apTotal: data.apTotal,
-                apcTime: dateFormat.toDate(data.apcTime, '/'),
-                bTitle: data.bTitle,
-                cName: data.cName,
-                cuName: data.cuName,
-                pdEnd: data.pdEnd,
-                pdStar: data.pdStar,
-                rID: data.rID,
+                // apQC: data.apQC,
+                // apState: data.apState,
+                // apTotal: data.apTotal,
+                apcTime: dateFormat.toDate(data.apCreateTime, '/'),
+                bTitle: data.btitle,
+                cName: data.companyName,
+                // cuName: data.cuName,
+                // pdEnd: data.pdEnd,
+                // pdStar: data.pdStar,
+                // rID: data.rID,
                 rIDs: data.rIDs,
-                realName: data.realName,
-                totalNum: data.asSpaceSum,
+                // realName: data.realName,
+                asSpaceSum: data.asSpaceSum,
             };
             return info;
         },
@@ -596,14 +598,14 @@ export default {
                 let obj = {
                     IsLock: item.IsLock,
                     adSize: item.adSize,
-                    adSpaceCount: item.adSpaceCount,
+                    adSpaceCount: item.mediaCount,
                     adViewSize: item.adViewSize,
                     asID: item.asID,
                     asLab: item.asLab,
                     assetTag: item.assetTag,
                     cType: item.cType,
                     chDay: item.chDay,
-                    city: item.city,
+                    city: item.cityName,
                     fNum: item.fNum,
                     hNum: item.hNum,
                     hPrice: item.hPrice,
@@ -615,7 +617,7 @@ export default {
                     mTitle: item.mTitle,
                     mVehicle: item.mVehicle,
                     rID: item.rID,
-                    rName: item.rName,
+                    rName: item.districtName,
                     resAddress: item.resAddress,
                     resID: item.resID,
                     resName: item.resName,
@@ -629,6 +631,10 @@ export default {
         // 发布情况
         getCityAdSpaceCount(arr){
             let result = [];
+            let info = {
+                citys: [],
+                totalNum: 0 
+            };
             for(let data of arr){
                 let obj = {
                     city: data.cityName,
@@ -637,8 +643,12 @@ export default {
                     wrongNum: 0,
                     resolveNum:0,
                 }
+                info.citys.push(data.cityName);
+                info.totalNum += data.adSpaceCount;
                 result.push(obj);
             }
+            this.report.rIDs = info.citys.join(',');
+            this.report.asSpaceSum = info.totalNum;
             return result;
         },
 
@@ -663,9 +673,7 @@ export default {
                             Message.warning('暂无数据');
                         }
                         console.log(this.reportArr);
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
-                    } else {
+                    }else {
                         Message.warning(res.data.MSG);
                     }
                 })
@@ -677,11 +685,37 @@ export default {
         showImg(row) {
             let name = this.Info.name.toString().toLowerCase();
             let val = this.Info.val;
-            let info = {
-                resId: row.resID,
-                pType: this.Info.name,
-                [name]: val
-            };
+            let info = {};
+            if(this.Info.name == 'HH'){
+                info = {
+                    replaceRecordId: val,
+                    resID: row.resID,
+                };
+                api.getApi(this.apiVar.replace+'/report/picByRes', info).then(res =>{
+                    console.log(res.data);
+                    if(res.data.SysCode == 200200){
+                        if(res.data.data.length){
+                            this.ImgBoxArr = res.data.data && res.data.data.map(item =>{
+                                return item.pURL;
+                            });
+                            this.isShowImgArr = true;
+                        }else{
+                            Message.warning("暂无数据！！！");
+                        }
+                    }else{
+                        Message.warning(res.data.MSG);
+                    }
+                });
+            }else{
+                info = {
+                    resId: row.resID,
+                    pType: this.Info.name,
+                    [name]: val
+                };
+                this.showImgApi(info);
+            }
+        },
+        showImgApi(info){
             api.postApi(this.apiVar.Advertisement+'/GetImgByResId', info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 200200){

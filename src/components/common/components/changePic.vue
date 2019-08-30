@@ -323,8 +323,6 @@ export default {
             uploadImgArr: [],
             // 关联属性数组
             constractArr:[],
-            // 上传图片后返回的数据数组
-            uploadPidArr: [],
             updateLoading: false,
             // 导出订单图片包
             downLoading: false,
@@ -336,20 +334,6 @@ export default {
                 totalNum: 0,
             },
             // 换画名称列表
-            // painList: [
-            //     {
-            //         id: 1,
-            //         name: '换画1'
-            //     },
-            //     {
-            //         id: 2,
-            //         name: '换画2',
-            //     },
-            //     {
-            //         id: 3,
-            //         name: '换画33'
-            //     }
-            // ],
             painList: [],
             // 换画当前点击
             activePainIndex: 0,
@@ -397,40 +381,6 @@ export default {
             },
             // 图片列表
             imageArr: [],
-            // imageArr:[
-            //     {
-            //         resId: 1,
-            //         resName: '东方雅苑',
-            //         mTitle: '西门',
-            //         asLab: 'B',
-            //         assetTag: '005B201811GZ-X795',
-            //         city: '广州市',
-            //         rName: '天河区',
-            //         changePicTime: '2019/09/09',
-            //         photoList: [
-            //             {
-            //                 url: '',
-            //                 pID: 1,
-            //             }
-            //         ],
-            //     },
-            //     {
-            //         resId: 2,
-            //         resName: '东方雅苑',
-            //         mTitle: '西门',
-            //         asLab: 'B',
-            //         assetTag: '005B201811GZ-X795',
-            //         city: '广州市',
-            //         rName: '天河区',
-            //         changePicTime: '2019/09/09',
-            //         photoList: [
-            //             {
-            //                 url: '',
-            //                 pID: 2,
-            //             }
-            //         ],
-            //     },
-            // ],
             //显示预览图蒙版
             showPreImg: null,
             // 是否展示换画弹框
@@ -475,72 +425,6 @@ export default {
                 setedNum: 0
             },
             // 换画弹出框点位列表
-            // pointArr: [
-            //     {
-            //         resId: 1,
-            //         resName: "中信西关海二期",
-            //         mTitle: "保安亭西...",
-            //         asLab: "B",
-            //         city: "广州市",
-            //         rName: "越秀区",
-            //         map: "",
-            //         lStar: '2019/09/09',
-            //         lEnd: '2019/09/10',
-            //         asID: 1,
-            //         timeRange: "2019/09/09-2019/09/10",
-            //         changePicTime: "2019/09/09",
-            //         remark: "画面不要有折痕...",
-            //         imgUrl: ""
-            //     },
-            //     {
-            //         resId: 2,
-            //         resName: "中信西关海二期",
-            //         mTitle: "保安亭西...",
-            //         asLab: "B",
-            //         city: "广州市",
-            //         rName: "越秀区",
-            //         map: "",
-            //         lStar: '2019/09/09',
-            //         lEnd: '2019/09/10',
-            //         asID: 2,
-            //         timeRange: "2019/09/09-2019/09/10",
-            //         changePicTime: "2019/09/09",
-            //         remark: "画面不要有折痕...",
-            //         imgUrl: ""
-            //     },
-            //     {
-            //         resId: 3,
-            //         resName: "中信西关海二期",
-            //         mTitle: "保安亭西...",
-            //         asLab: "B",
-            //         city: "广州市",
-            //         rName: "越秀区",
-            //         map: "",
-            //         lStar: '2019/09/09',
-            //         lEnd: '2019/09/10',
-            //         asID: 3,
-            //         timeRange: "2019/09/09-2019/09/10",
-            //         changePicTime: "2019/09/09",
-            //         remark: "画面不要有折痕...",
-            //         imgUrl: ""
-            //     },
-            //     {
-            //         resId: 4,
-            //         resName: "中信西关海二期",
-            //         mTitle: "保安亭西...",
-            //         asLab: "B",
-            //         city: "广州市",
-            //         rName: "越秀区",
-            //         map: "",
-            //         lStar: '2019/09/09',
-            //         lEnd: '2019/09/10',
-            //         asID: 4,
-            //         timeRange: "2019/09/09-2019/09/10",
-            //         changePicTime: "2019/09/09",
-            //         remark: "画面不要有折痕...",
-            //         imgUrl: ""
-            //     }
-            // ],
             pointArr: [],
             // 勾选的列表
             shoplist: [],
@@ -1345,7 +1229,7 @@ export default {
             let { date, url, remark } = this.editInfo;
             if(date){
                 this.isShowEdit = false;
-                if(this.imgUrl[0].url){
+                if(this.imgUrl[0]){
                     this.editInfo.url = this.imgUrl[0].url;
                 }
                 console.log(this.editInfo, 'editinfo---');
@@ -1682,36 +1566,28 @@ export default {
         handleRemove(file, fileList) {
             console.log('fdasl--ff', file, fileList);
             if(file.pID){
-                let type = file.pType;
-                let info = file;
-                file.pType = 'del';
-                let uid = this.sessionData.uID;
-                let token = this.sessionData.token;
-                let img = {
-                    imgs: [info]
+                let info = {
+                    photoId: file.pID,
+                    ptype: file.pType,
+                    replaceRecordId: file.pType == 'HH'?this.painList[this.activePainIndex].id:''
                 };
-                api.postApi_json(this.apiVar.Advertisement+'/SetImgList?uid='+uid+'&token='+token, img)
-                    .then(res => {
-                        console.log(res.data);
-                        // 实时更新进度条
-                        if (res.data.SysCode == 300200) {
-                            sessFun.messageFun('success', res.data.MSG);
-                            this.allPic = '';
-                            let type = this.type;                            
-                            if(type == 1 || type ==2){
-                                // 上下刊报告列表
-                                this.searchFun();
-                            }else if(type == 3){
-                                // 换画报告列表
-                                this.search();
-                            }
-                        }else {
-                            sessFun.messageFun('warning', res.data.MSG);
+                api.postApi(this.apiVar.replace+'/photo/delete', info).then(res =>{
+                    console.log(res.data);
+                    // 实时更新进度条
+                    if (res.data.SysCode == 200200) {
+                        sessFun.messageFun('success', res.data.MSG);
+                        let type = this.type;                            
+                        if(type == 1 || type ==2){
+                            // 上下刊报告列表
+                            this.searchFun();
+                        }else if(type == 3){
+                            // 换画报告列表
+                            this.search();
                         }
-                    })
-                    .catch(res => {
-                        console.log(res);
-                    });
+                    }else {
+                        sessFun.messageFun('warning', res.data.MSG);
+                    }
+                });
             }else{
                 let upLoad = this.uploadImgArr;
                 for(let i = 0, iLen = upLoad.length; i<iLen; i++ ){

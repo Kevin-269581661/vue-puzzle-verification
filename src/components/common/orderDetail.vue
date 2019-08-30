@@ -962,7 +962,9 @@ export default {
                 console.log(res);
                 if(res.data.SysCode == 200200){
                     this.painlist = res.data.data;
-                    this.showPain = true;                    
+                    if(this.painlist.length){
+                        this.showPain = true;                    
+                    }
                 }else{
                     sessFun.messageFun('warning', res.data.msg);
                 }

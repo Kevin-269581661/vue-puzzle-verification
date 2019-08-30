@@ -7,7 +7,7 @@
                         <h1>{{report.apName}}{{stateToText(Info.name)}}报告 
                             <span class="button_box">
                                 <el-button plain @click="getPTTx()" size="small" :loading="pptxLoading">导出PPTx</el-button>
-                                <el-button plain @click="getPTT()" size="small" :loading="pptLoading">导出PPT</el-button>
+                                <!-- <el-button plain @click="getPTT()" size="small" :loading="pptLoading">导出PPT</el-button> -->
                                 <el-button plain @click="getPDF()" size="small" :loading="pdfLoading">导出PDF</el-button>
                             </span>
                         </h1>
@@ -365,7 +365,7 @@ export default {
         getPDF(){
             this.getApiFun('/GetPdfReport', this.pdfLoading, 'pdf');
         },
-        // 接口Fun
+        // 接口Fun  0-ppt上刊，1-ppt下刊，2-pdf上刊，3-pdf下刊，4-pptx下刊，5-pptx下刊，6-pptx换画，7-pdf换画
         getApiFun(apiName, loading, type){
             let name = this.Info.name.toString().toLowerCase();
             let val = this.Info.val;
@@ -389,23 +389,65 @@ export default {
                         downtype: 2,
                         key: val,
                     };
-                    if(type == 'ppt'){
-                        fileInfo.type = name=='sk' ? 0 : 1;
-                    }
-                    if(type == 'pdf'){
-                        fileInfo.type = name=='sk' ? 2 : 3;
-                    }
-                    if(type == 'pptx'){
-                        fileInfo.type = name=='sk' ? 4 : 5;
-                    }
+                    fileInfo.type = this.stateToNum(type, name);
                     this.getFileProcessFun(tempPage, fileInfo);
                     loading = false;
                 }
             });
         },
+        // 0-ppt上刊，1-ppt下刊，2-pdf上刊，3-pdf下刊，4-pptx上刊，5-pptx下刊，6-pptx换画，7-pdf换画
+        stateToNum(type, name){
+            let arr = [
+                {
+                    type: 'ppt',
+                    name: 'sk',
+                    num: 0
+                },
+                {
+                    type: 'ppt',
+                    name: 'xk',
+                    num: 1
+                },
+                {
+                    type: 'pdf',
+                    name: 'sk',
+                    num: 2
+                },
+                {
+                    type: 'pdf',
+                    name: 'xk',
+                    num: 3
+                },
+                {
+                    type: 'pptx',
+                    name: 'sk',
+                    num: 4
+                },
+                {
+                    type: 'pptx',
+                    name: 'xk',
+                    num: 5
+                },
+                {
+                    type: 'pptx',
+                    name: 'hh',
+                    num: 6
+                },
+                {
+                    type: 'pdf',
+                    name: 'hh',
+                    num: 7
+                },
+            ];
+            for(let data of arr){
+                if(data.type == type && data.name == name){
+                    return data.num;
+                }
+            }
+        },
         // 获取pptx
         getFileProcessFun(tempPage, info){
-            console.log(tempPage, 'tempage---');
+            console.log(tempPage, 'tempage---', info);
             let routeUrl = this.$router.resolve({
                 path: "/progressDown",
                 query: info,

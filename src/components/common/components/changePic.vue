@@ -479,7 +479,6 @@ export default {
                     beginDate: this.painList[this.activePainIndex].startDate,
                     endDate: this.painList[this.activePainIndex].endDate
                 };
-                // this.search();
                 this.editReport();
             });
         },

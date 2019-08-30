@@ -166,7 +166,7 @@
                         </div>
                     </el-tab-pane>
                     <el-tab-pane label="换画报告" name="sixth" v-if="showPain">
-                        <div class="changepic_box" v-if="planPanel=='sixth'">
+                        <div class="changepic_box" v-show="planPanel=='sixth'">
                             <change-pic :type="3" :from-type="fromType" :order-detail="orderDetail"></change-pic>
                         </div>
                     </el-tab-pane>
@@ -993,10 +993,11 @@ export default {
             };
             api.postApi_json(this.apiVar.replace+'/report/add', painInfo).then(res =>{
                 if(res.data.SysCode == 200200){
+                    this.showPain = true;  
                     this.planPanel = 'sixth';    
                     setTimeout(()=>{
                         this.fromType = !this.fromType;
-                    }, 0);                        
+                    }, 10);                        
                 }else{
                     sessFun.messageFun('warning', res.data.msg);
                 }

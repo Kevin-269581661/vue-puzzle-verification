@@ -6,7 +6,7 @@
         <div class="portrait_main">
             <div class="portrait_basic_info">
                 <img src="../../assets/images/resLogo.svg" alt="" style="vertical-align: middle">
-                <el-select v-model="selectAsrId" size="mini" placeholder="请选择" style="width: 120px">
+                <el-select v-model="selectAsrId" size="mini" placeholder="请选择" style="width: 120px" @change="getPortraitByResID">
                     <el-option
                         v-for="item in companyList"
                         :key="item.value"
@@ -674,7 +674,7 @@
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    resId: this.activeResID
+                    resId: this.activeResID//40730//this.activeResID
                 }
                 api.getApi(this.apiVar.portrait + '/api/v1/resInfo/getByComId',params).then(res=>{
                     console.log('小区详情res',res)
@@ -683,33 +683,36 @@
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         if(dataObj.getGender && dataObj.getMarriage && dataObj.getAge){
-                            // 性别情况
-                            this.setSexPieData(dataObj.getGender)
-                            // 婚姻状况
-                            this.setMarriagePieData(dataObj.getMarriage)
-                            // 子女预测
-                            this.setChildrenForecastPieData(dataObj.getChildren)
-                            // 年龄分布
-                            this.setAgeBarData(dataObj.getAge)
-                            // 生肖Top5
-                            this.setProgressData(dataObj.getZodiac,'生肖');
-                            // 教育程度
-                            this.setProgressData(dataObj.getEducation,'教育程度');
-                            // 职业分布
-                            this.setProgressData(dataObj.getOccupation,'职业分布');
-                            // 毕业院校
-                            this.setProgressData(dataObj.getAcademy,'毕业院校');
-                            // 有车概率
-                            this.setHaveCarAndHousePieData(dataObj.getHaveCar,'car')
-                            // 有房概率
-                            this.setHaveCarAndHousePieData(dataObj.getHaveRoom,'house')
-                            // 购买力
-                            this.setPurchasingPowerPieData(dataObj.getBuy)
-                            // 手机操作系统
-                            this.setMobilePhonePieData(dataObj.getOperating)
-                            // 手机品牌列表
-                            this.setMobilePhoneList(dataObj.getBrand)
                             this.isHaveData = true
+                            let timer = setTimeout(()=>{
+                                // 性别情况
+                                this.setSexPieData(dataObj.getGender)
+                                // 婚姻状况
+                                this.setMarriagePieData(dataObj.getMarriage)
+                                // 子女预测
+                                this.setChildrenForecastPieData(dataObj.getChildren)
+                                // 年龄分布
+                                this.setAgeBarData(dataObj.getAge)
+                                // 生肖Top5
+                                this.setProgressData(dataObj.getZodiac,'生肖');
+                                // 教育程度
+                                this.setProgressData(dataObj.getEducation,'教育程度');
+                                // 职业分布
+                                this.setProgressData(dataObj.getOccupation,'职业分布');
+                                // 毕业院校
+                                this.setProgressData(dataObj.getAcademy,'毕业院校');
+                                // 有车概率
+                                this.setHaveCarAndHousePieData(dataObj.getHaveCar,'car')
+                                // 有房概率
+                                this.setHaveCarAndHousePieData(dataObj.getHaveRoom,'house')
+                                // 购买力
+                                this.setPurchasingPowerPieData(dataObj.getBuy)
+                                // 手机操作系统
+                                this.setMobilePhonePieData(dataObj.getOperating)
+                                // 手机品牌列表
+                                this.setMobilePhoneList(dataObj.getBrand)
+                                clearTimeout(timer)
+                            },10)
                         } else {
                             this.isHaveData = false
                         }
@@ -737,6 +740,9 @@
             },
             // 性别情况
             initSexPie() {
+                if(this.sexPieEcharts){
+                    this.sexPieEcharts.dispose()
+                }
                 this.sexPieEcharts = this.$echarts.init(this.$refs.sexConditionPie);
                 this.sexPieEcharts.setOption ({
                     tooltip: {
@@ -826,6 +832,9 @@
             },
             // 婚姻状况
             initMarriagePie() {
+                if(this.marriagePieEcharts){
+                    this.marriagePieEcharts.dispose()
+                }
                 this.marriagePieEcharts = this.$echarts.init(this.$refs.marriagePie);
                 this.marriagePieEcharts.setOption ({
                     tooltip: {
@@ -913,6 +922,9 @@
             },
             // 子女预测
             initChildrenForecastPie() {
+                if(this.childrenForecastPieEcharts){
+                    this.childrenForecastPieEcharts.dispose()
+                }
                 this.childrenForecastPieEcharts = this.$echarts.init(this.$refs.childrenForecastPie);
                 this.childrenForecastPieEcharts.setOption ({
                     tooltip: {
@@ -1125,7 +1137,7 @@
             setProgressData(data,string){
                 let arr = []
                 let i = 0
-                let max = this.keepTwoDecimal(key.tagValue)
+                let max = this.keepTwoDecimal(data[0].tagValue)
                 for(let key of data) {
                     if(i < 6) {
                         let tagValue = this.keepTwoDecimal(key.tagValue)
@@ -1137,6 +1149,7 @@
                     } else {
                         break;
                     }
+                    i++
                 }
                 if(string === '生肖') {
                     this.shengXiaoList = arr
@@ -1184,6 +1197,9 @@
             },
             // 有车概率
             initHaveCarPie() {
+                if(this.haveCarPieEcharts){
+                    this.haveCarPieEcharts.dispose()
+                }
                 this.haveCarPieEcharts = this.$echarts.init(this.$refs.haveCarPie);
                 this.haveCarPieEcharts.setOption ({
                     tooltip: {
@@ -1257,6 +1273,9 @@
             },
             // 有房概率
             initHaveHousePie(){
+                if(this.haveHousePieEcharts){
+                    this.haveHousePieEcharts.dispose()
+                }
                 this.haveHousePieEcharts = this.$echarts.init(this.$refs.haveHousePie);
                 this.haveHousePieEcharts.setOption ({
                     tooltip: {
@@ -1353,6 +1372,9 @@
             },
             // 购买力
             initPurchasingPowerPie(){
+                if(this.purchasingPowerPieEcharts){
+                    this.purchasingPowerPieEcharts.dispose()
+                }
                 this.purchasingPowerPieEcharts = this.$echarts.init(this.$refs.purchasingPowerPie);
                 this.purchasingPowerPieEcharts.setOption ({
                     tooltip: {
@@ -1439,6 +1461,9 @@
             },
             // 手机设备
             initMobilePhonePie(){
+                if(this.mobilePhonePieEcharts){
+                    this.mobilePhonePieEcharts.dispose()
+                }
                 this.mobilePhonePieEcharts = this.$echarts.init(this.$refs.mobilePhonePie);
                 this.mobilePhonePieEcharts.setOption ({
                     tooltip: {
@@ -1518,7 +1543,7 @@
             // 手机品牌列表
             setMobilePhoneList(data) {
                 let arr = []
-                let max = this.keepTwoDecimal(key.tagValue)
+                let max = this.keepTwoDecimal(data[0].tagValue)
                 for(let key of data) {
                     let tagValue = this.keepTwoDecimal(key.tagValue)
                     arr.push({
@@ -1689,10 +1714,13 @@
 
     .progress_li_name {
         width: 92px;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .progress_li_value{
-        width: 36px;
+        width: 52px;
     }
 
     .progress_li_num {

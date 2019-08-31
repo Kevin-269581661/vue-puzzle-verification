@@ -7,6 +7,8 @@
     import dateFormat from "../../../commonFun/timeFormat.js";
     import {Tooltip, Dialog} from 'element-ui';
     import api from "../../../api/api"
+    import timeFormat from "../../../commonFun/timeFormat";
+    import sessFun from "../../../commonFun/sessFun"
 
     export default {
         components: {
@@ -45,10 +47,23 @@
                 dialogVisible: false,
                 //显示预览图蒙版
                 showPreImg: null,
-                // photoApi: 'http://192.168.1.246/advertisement',
+                secondShowPreImg: false,
+                // 下拉是否隐藏
+                selectIsVisible: false,
                 galleryImgUrl: this.apiVar.qadnUrl + "/advertisement/DownloadImage?picUrl=" ,
                 collectImgUrl: this.apiVar.qadnUrl + "/advertisement/DownloadUserImage?id=" ,
                 isShowCollect: true,
+                // 标签水印
+                watermarkDialog: false,
+                // 当前选择的水印标签
+                activeMark: '',
+                activeImgInfo: {
+                    city: '北京市',
+                    time: '2019/08/31',
+                    resName: '嘉美风尚中心小区',
+                    week: '星期日',
+                    url: 'https://img.qinlinad.com/photoGallery/DEV/20190820/upload/82e5b00ad3214dde842d81a6afb9fa9f.jpg'
+                }
             }
         },
         watch:{
@@ -134,6 +149,79 @@
                     }
                 })
             },
+            // 鼠标移入
+            mouseenterFun(imgInfo,index){
+                this.showPreImg = index
+                this.secondShowPreImg = true
+                this.activeImgInfo = {
+                    city: imgInfo.pRemarks.city,
+                    time: imgInfo.pUTime,
+                    resName: imgInfo.resName || imgInfo.pRemarks.res,
+                    week: timeFormat.returnWeekByDate(imgInfo.pUTime),
+                    url: imgInfo.pUrl
+                }
+                console.log('activeImgInfo',this.activeImgInfo,imgInfo)
+            },
+            // 鼠标移出
+            mouseleaveFun() {
+                if(this.selectIsVisible) {
+                    this.secondShowPreImg = false
+                } else {
+                    this.showPreImg = null
+                }
+
+            },
+            // 下拉是否显示
+            visibleChange(val){
+                this.selectIsVisible = val
+                if (!val && !this.secondShowPreImg) {
+                    this.showPreImg = null
+                }
+            },
+            // 选着水印
+            selectMark(val){
+                console.log('val',val)
+                if(val === 'b') {
+                    this.watermarkDialog = true
+                    this.activeMark = 2
+                }
+            },
+            // 选择图片类型
+            selectImgMark(index){
+                this.activeMark = index
+                console.log('activeMark',this.activeMark)
+            },
+            // 下载水印图片 DownloadImageWatermark
+            downloadImgWatermark(){
+                if(this.activeMark) {
+                    let params = {
+                        uid: this.sessionData.uID,
+                        token: this.sessionData.token,
+                        type: this.activeMark         // 2:TOP_CENTER 6:BOTTOM_RIGHT 7:BOTTOM_LEFT
+                    }
+                    // api.getApi_file(this.apiVar.Advertisement + '/DownloadImageWatermark', params).then(res=>{
+                    api.getApi_file('http://192.168.1.247:8002/advertisement/DownloadImageWatermark', params).then(res=>{
+                        if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
+                            sessFun.loginTimeout()
+                        } else {
+                            let blob = new Blob([res.data], {type: 'application/ms-download;charset=utf-8'});
+                            let downloadElement = document.createElement('a');
+                            let href = window.URL.createObjectURL(blob);    //创建下载的链接
+                            downloadElement.href = href;
+                            downloadElement.download = res.headers['content-disposition'].split('=')[1]; //下载后文件名
+                            document.body.appendChild(downloadElement);
+                            downloadElement.click();                        //点击下载
+                            document.body.removeChild(downloadElement);     //下载完成移除元素
+                            window.URL.revokeObjectURL(href);               //释放掉blob对象
+                            sessFun.messageFun('success','下载成功')
+                            this.watermarkDialog = false
+                        }
+                    })
+                } else {
+                    sessFun.messageFun('warning','请点击选择水印类型')
+                }
+
+            },
             // 操作提示统一方法
             messageFun(mesType,mes){
                 this.$message({
@@ -165,10 +253,10 @@
                 <!--图片列表-->
                 <div class="find clearfix" v-if="showPic === 3">
                     <div class="photoCard" v-for="(img, index) of imgarr" :key="img.pID">
-                        <div class="imgBox" @mouseenter="showPreImg = index" @mouseleave="showPreImg = null">
+                        <div class="imgBox" @mouseenter="mouseenterFun(img,index)" @mouseleave="mouseleaveFun(index)">
                             <img :src="img.pUrl" alt="" class="smallImg">
                             <!--查看缩略图和下载-->
-                            <div class="mask-btn" v-if="showPreImg == index">
+                            <div class="mask-btn" v-if="true || showPreImg == index">
                                 <p class="mask_icon">
                                     <span v-if="isShowCollect">
                                         <i v-if="!img.isCollection" class="el-icon-star-off" @click="saveImgFun(img)" ></i>
@@ -177,8 +265,21 @@
                                     <i class="el-icon-search" @click="handlePictureCardPreview(img)"></i>
                                 </p>
                                 <p class="mask_a">
-                                    <a v-if="tabType === 'first'" :href= "galleryImgUrl + img.pUrl" >下载图片</a>
-                                    <a v-else :href= "collectImgUrl + img.id" >下载图片</a>
+                                    <el-dropdown @visible-change="visibleChange" @command="selectMark" placement="bottom-start">
+                                        <el-button type="primary" size="small">
+                                            下载图片<i class="el-icon-arrow-down el-icon--right"></i>
+                                        </el-button>
+                                        <el-dropdown-menu slot="dropdown">
+                                            <el-dropdown-item  command="a">
+                                                <a v-if="tabType === 'first'" class="dropdown_a"
+                                                   :href= "galleryImgUrl + img.pUrl">无水印</a>
+                                                <a v-else class="dropdown_a" :href= "collectImgUrl + img.id" >无水印</a>
+                                            </el-dropdown-item>
+                                            <el-dropdown-item  command="b">
+                                                标签水印
+                                            </el-dropdown-item>
+                                        </el-dropdown-menu>
+                                    </el-dropdown>
                                 </p>
                             </div>
                         </div>
@@ -214,6 +315,31 @@
         <!--缩略图对话框-->
         <el-dialog :visible.sync="dialogVisible" class="imgPreview">
             <img :src="dialogImageUrl" alt="">
+        </el-dialog>
+        <!--选择水印标签-->
+        <el-dialog
+            title="标签水印"
+            :visible.sync="watermarkDialog"
+            width="720px">
+            <el-row :gutter="16">
+                <el-col :span="8" v-for="(item,index) in [2,6,7]" :key="index" @click.native="selectImgMark(item)">
+                    <div class="img_box">
+                        <div class="img_box_mark"
+                             :class="index === 0 ? 'img_box_mark_0' : index === 1 ? 'img_box_mark_1' : 'img_box_mark_2'">
+                            <p class="">{{activeImgInfo.time + ' · ' + activeImgInfo.week}}</p>
+                            <p>{{activeImgInfo.city + ' · ' + activeImgInfo.resName}}</p>
+                        </div>
+                        <p class="active_Mark" v-show="activeMark === item">
+                            <i class="el-icon-circle-check"></i>
+                        </p>
+                        <img :src="activeImgInfo.url" alt="">
+                    </div>
+                </el-col>
+            </el-row>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="watermarkDialog = false">取 消</el-button>
+                <el-button type="primary" @click="downloadImgWatermark(item)">确 定</el-button>
+            </div>
         </el-dialog>
     </div>
 </template>
@@ -298,12 +424,16 @@
 
     .mask-btn i {
         color: #fff;
-        font-size: 26px;
+        font-size: 24px;
         cursor: pointer;
     }
 
     .mask-btn i.icon_save {
         color: #FFD517;
+    }
+
+    .mask-btn .mask_a i.el-icon--right{
+        font-size: 14px;
     }
 
     .mask_a {
@@ -313,20 +443,12 @@
         bottom: 16px;
     }
 
-    .mask-btn a {
-        display: block;
-        background: rgba(24, 144, 255, 1);
-        border-radius: 4px;
-        width: 100px;
-        height: 34px;
-        color: #fff;
-        line-height: 34px;
-        font-size: 14px;
-        margin: 0 auto;
+    /deep/ .dropdown_a{
+        color: rgb(96, 98, 102);
     }
 
-    .mask-btn a:hover {
-        opacity: 0.9;
+    /deep/ .dropdown_a:hover{
+        color: #66b1ff;
     }
 
     .photoCard .imgBox > img {
@@ -364,7 +486,6 @@
     .detailBox .icons {
         font-size: 10px;
         color: #999999;
-        /*margin-top: 12px;*/
         position: relative;
     }
 
@@ -446,20 +567,72 @@
             height: 450px;
         }
     }
-  /*  .imgPreview /deep/ .el-dialog {
-        max-width: 42%;
-    }
 
-    .imgPreview /deep/ .el-dialog__body {
-        max-height: 640px;
+    /* 水印 */
+    /deep/ .el-dialog__body{
+        padding: 8px 16px;
     }
-
-    .imgPreview /deep/ .el-dialog {
-        max-height: 750px;
+    .img_box{
+        height: 280px;
+        border: 1px solid #D9D9D9;
+        border-radius:4px;
+        position: relative;
+        cursor:pointer;
     }
-
-    .imgPreview /deep/ .el-dialog img {
+    .img_box img{
         width: 100%;
-        max-height: 660px;
-    }*/
+        height: 100%;
+    }
+
+    .img_box_mark{
+        position: absolute;
+        width: 100%;
+        height: 42px;
+        background:linear-gradient(180deg,rgba(0,0,0,0.8) 0%,rgba(0,0,0,0) 100%);
+        opacity:0.8;
+        color: #fff;
+        font-size: 12px;
+    }
+
+    .img_box_mark_0{
+        top: 0;
+        left: 0;
+        padding-top: 16px;
+        text-align: center;
+    }
+
+    .img_box_mark_1{
+        bottom: 0;
+        left: 0;
+        text-align: left;
+        text-indent: 10px;
+        padding: 8px 0;
+    }
+
+    .img_box_mark_2{
+        bottom: 0;
+        left: 0;
+        padding: 8px 0;
+        text-align: right;
+    }
+
+    .img_box_mark p{
+        line-height: 18px;
+    }
+
+    .img_box_mark.img_box_mark_2 p{
+        padding-right: 10px;
+    }
+
+    .active_Mark{
+        position: absolute;
+        top: 40%;
+        text-align: center;
+        width: 100%;
+    }
+
+    .active_Mark i{
+        font-size: 42px;
+        color: #4DCB73;
+    }
 </style>

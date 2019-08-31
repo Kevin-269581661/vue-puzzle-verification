@@ -6,6 +6,14 @@
         <div class="portrait_main">
             <div class="portrait_basic_info">
                 <img src="../../assets/images/resLogo.svg" alt="" style="vertical-align: middle">
+                <el-select v-model="selectAsrId" size="mini" placeholder="请选择" style="width: 120px">
+                    <el-option
+                        v-for="item in companyList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                    </el-option>
+                </el-select>
                 <el-popover
                     placement="bottom"
                     title=""
@@ -290,7 +298,7 @@
                                             <span class="progress_li_name">{{item.label}}</span>
                                             <span class="progress_li_value">{{item.value}}%</span>
                                             <div class="progress_li_num">
-                                                <el-progress :percentage="item.value" :show-text="false"></el-progress>
+                                                <el-progress :percentage="item.percent" :show-text="false"></el-progress>
                                             </div>
                                         </li>
                                     </ul>
@@ -328,6 +336,9 @@
                 // 该小区是否有社区画像数据
                 isHaveData: true,
                 sessionData: '',
+                // 默认选择的公司
+                selectAsrId: '',
+                companyList: [],
                 resList: [],
                 selectRes: '中信西关海花苑',
                 activeResID: '',
@@ -478,6 +489,7 @@
                 purchasingPowerPieInfo:[],
                 // 手机设备
                 mobilePhonePieEcharts: '',
+                mobilePhonePieInfo: '',
                 // 手机品牌列表
                 mobilePhoneList: [
                     {
@@ -520,12 +532,13 @@
             this.portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo'))
             this.selectRes = this.portraitInfo[0].resName
             this.activeResID = this.portraitInfo[0].resId
+            this.selectAsrId = this.portraitInfo[0].asrId
             // 获取小区详细信息
             this.getResInfoByID();
             // 获取小区的画像排行数据
             this.getPortraitByResID();
             // 手机设备
-            this.initMobilePhonePie();
+            // this.initMobilePhonePie();
             // 图表统一监听
             this.echartsListener();
         },
@@ -533,6 +546,37 @@
             // 获取用户信息
             getSessionData() {
                 this.sessionData = sessFun.getSess()
+                if(this.sessionData.asrID === '999') {
+                    this.getCompanyList()
+                }
+            },
+            // 平台商公司列表
+            getCompanyList() {
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token
+                }
+                api.getApi(this.apiVar.report + '/api/v2/listDirectList',params).then(res=>{
+                    console.log('获取直营公司列表',res)
+                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                        sessFun.loginTimeout()
+                    } else if (res.data.SysCode === 200200) {
+                        let resArr = res.data.data
+                        let arr = []
+                        for (let key of resArr) {
+                          arr.push({
+                              value: key.asrId,
+                              label: key.name,
+                          })
+                        }
+                        this.companyList = arr
+                        console.log('companyList',this.companyList)
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                }).catch(err=>{
+                    this.messageFun('warning', '直营公司list获取异常')
+                })
             },
             // 统一监听
             echartsListener() {
@@ -558,7 +602,7 @@
                     let params = {
                         uid: this.sessionData.uID,
                         token: this.sessionData.token,
-                        asrId: this.portraitInfo[0].asrId,// this.sessionData.asrID,
+                        asrId: this.selectAsrId,// this.sessionData.asrID,
                         resName: val
                     }
                     api.getApi(this.apiVar.portrait + '/api/v1/resInfo/getResList',params).then(res=>{
@@ -647,12 +691,24 @@
                             this.setChildrenForecastPieData(dataObj.getChildren)
                             // 年龄分布
                             this.setAgeBarData(dataObj.getAge)
+                            // 生肖Top5
+                            this.setProgressData(dataObj.getZodiac,'生肖');
+                            // 教育程度
+                            this.setProgressData(dataObj.getEducation,'教育程度');
+                            // 职业分布
+                            this.setProgressData(dataObj.getOccupation,'职业分布');
+                            // 毕业院校
+                            this.setProgressData(dataObj.getAcademy,'毕业院校');
                             // 有车概率
                             this.setHaveCarAndHousePieData(dataObj.getHaveCar,'car')
                             // 有房概率
                             this.setHaveCarAndHousePieData(dataObj.getHaveRoom,'house')
                             // 购买力
                             this.setPurchasingPowerPieData(dataObj.getBuy)
+                            // 手机操作系统
+                            this.setMobilePhonePieData(dataObj.getOperating)
+                            // 手机品牌列表
+                            this.setMobilePhoneList(dataObj.getBrand)
                             this.isHaveData = true
                         } else {
                             this.isHaveData = false
@@ -1065,6 +1121,33 @@
                     ]
                 });
             },
+            // 生肖Top5、教育程度、职业分布、毕业院校
+            setProgressData(data,string){
+                let arr = []
+                let i = 0
+                let max = this.keepTwoDecimal(key.tagValue)
+                for(let key of data) {
+                    if(i < 6) {
+                        let tagValue = this.keepTwoDecimal(key.tagValue)
+                        arr.push({
+                            value: tagValue,
+                            label: key.tagIdSecondName || '未知',
+                            percent: (tagValue / max) * 100,
+                        })
+                    } else {
+                        break;
+                    }
+                }
+                if(string === '生肖') {
+                    this.shengXiaoList = arr
+                }else if (string === '教育程度'){
+                    this.educationList = arr
+                }else if (string === '职业分布'){
+                    this.professionDistributeList = arr
+                }else if (string === '毕业院校'){
+                    this.schoolKindList = arr
+                }
+            },
             // 设置有车概率数据 / 设置有房概率数据
             setHaveCarAndHousePieData(data,string){
                 let arr = []
@@ -1341,6 +1424,19 @@
                     ]
                 });
             },
+            // 设置手机操作系统数据
+            setMobilePhonePieData(data){
+                let arr = []
+                for (let key of data) {
+                    let tagValue = this.keepTwoDecimal(key.tagValue)
+                    arr.push({
+                        value: tagValue,
+                        name: key.tagIdSecondName || '未知'
+                    })
+                }
+                this.mobilePhonePieInfo = arr
+                this.initMobilePhonePie()
+            },
             // 手机设备
             initMobilePhonePie(){
                 this.mobilePhonePieEcharts = this.$echarts.init(this.$refs.mobilePhonePie);
@@ -1419,13 +1515,27 @@
                     ]
                 });
             },
+            // 手机品牌列表
+            setMobilePhoneList(data) {
+                let arr = []
+                let max = this.keepTwoDecimal(key.tagValue)
+                for(let key of data) {
+                    let tagValue = this.keepTwoDecimal(key.tagValue)
+                    arr.push({
+                        value: tagValue,
+                        label: key.tagIdSecondName || '未知',
+                        percent: (tagValue / max) * 100,
+                    })
+                }
+                this.mobilePhoneList = arr
+            },
             // 保留两位小数
             keepTwoDecimal(num){
                 if (!num && num !== 0) {
                     return 0;
                 }
                 let result = parseFloat(num);
-                result = Math.round(num * 10000) / 100;
+                result = Math.round(result * 10000) / 100;
                 return result;
             },
         },
@@ -1446,18 +1556,26 @@
         padding: 24px;
     }
 
+    /deep/ .el-input__inner{
+        border-bottom-right-radius: unset;
+        border-top-right-radius: unset;
+        padding-left: 4px;
+    }
+
     .community_name{
         min-width: 140px;
+        height: 22px;
         font-size: 16px;
         font-weight: 600;
         display: inline-block;
-        margin-left: 8px;
         color:rgba(0,0,0,0.85);
-        border-radius: 3px;
-        border:1px solid rgba(194,194,194,1);
-        padding: 1px 24px 1px 3px;
+        /*border-radius: 3px;*/
+        border:1px solid #dcdfe6;
+        padding: 2px 24px 2px 3px;
         cursor:pointer;
         position: relative;
+        top: 1px;
+        left: -5px;
     }
 
     .community_name .el-icon-caret-bottom{

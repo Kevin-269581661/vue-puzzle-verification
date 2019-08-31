@@ -36,6 +36,8 @@ const apiVar = {
     publishPaintTask: '/engineer/publishPaintTask',
     // 换画报告
     replace: '/replace/v1',
+    // 社区画像
+    portrait: '/portrait',
     wuYouMap: wuYouMap,
     jsonLink: jsonLink,
     qadnUrl: process.env.API_ROOT?process.env.API_ROOT.substr(0, process.env.API_ROOT.length-1):''

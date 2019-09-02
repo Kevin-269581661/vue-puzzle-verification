@@ -1541,13 +1541,13 @@ export default {
         // 限制只能上传png,jpeg格式的照片
         beforeAvatarUpload(file) {
             const isIMAGE = file.type === "image/jpeg" || file.type === "image/png";
-            const isLt1M = file.size / 1024 / 1024 < 8;
+            const isLt1M = file.size / 1024 / 1024 < 5;
 
             if (!isIMAGE) {
                 sessFun.messageFun('error', "只能上传jpg/png图片!");
             }
             if (!isLt1M) {
-                sessFun.messageFun('error', "上传文件大小不能超过 8MB!");
+                sessFun.messageFun('error', "上传文件大小不能超过 5MB!");
             }
             return isIMAGE&&isLt1M;
         },
@@ -1567,7 +1567,7 @@ export default {
             if(file.pID){
                 let info = {
                     photoId: file.pID,
-                    ptype: file.pType,
+                    pType: file.pType,
                     replaceRecordId: file.pType == 'HH'?this.painList[this.activePainIndex].id:''
                 };
                 api.postApi(this.apiVar.replace+'/photo/delete', info).then(res =>{

@@ -6,7 +6,7 @@
         <div class="portrait_main">
             <div class="portrait_basic_info">
                 <img src="../../assets/images/resLogo.svg" alt="" style="vertical-align: middle">
-                <el-select v-model="selectAsrId" size="mini" placeholder="请选择" style="width: 120px" @change="getPortraitByResID">
+                <el-select v-model="selectAsrId" size="mini" placeholder="请选择" style="width: 120px" @change="selectAsrIdFun">
                     <el-option
                         v-for="item in companyList"
                         :key="item.value"
@@ -375,109 +375,13 @@
                   title:[]
                 },
                 // 生肖top5
-                shengXiaoList:[
-                    {
-                        label: '鸡',
-                        value: 28,
-                    },
-                    {
-                        label: '狗',
-                        value: 24,
-                    },
-                    {
-                        label: '马',
-                        value: 17,
-                    },
-                    {
-                        label: '羊',
-                        value: 12,
-                    },
-                    {
-                        label: '龙',
-                        value: 5,
-                    },
-                ],
+                shengXiaoList:[],
                 // 教育程度
-                educationList:[
-                    {
-                        label: '博士及以上',
-                        value: 10,
-                    },
-                    {
-                        label: '硕士',
-                        value: 13,
-                    },
-                    {
-                        label: '本科',
-                        value: 37,
-                    },
-                    {
-                        label: '专科',
-                        value: 20,
-                    },
-                    {
-                        label: '高中及以下',
-                        value: 5,
-                    },
-                    {
-                        label: '未知',
-                        value: 15,
-                    }
-                ],
+                educationList:[],
                 // 职业分布
-                professionDistributeList:[
-                    {
-                        label: '土豪',
-                        value: 10,
-                    },
-                    {
-                        label: '高级白领',
-                        value: 13,
-                    },
-                    {
-                        label: '小白领',
-                        value: 37,
-                    },
-                    {
-                        label: '蓝领',
-                        value: 20,
-                    },
-                    {
-                        label: '收入很少',
-                        value: 5,
-                    },
-                    {
-                        label: '未知',
-                        value: 15,
-                    }
-                ],
+                professionDistributeList:[],
                 // 毕业院校
-                schoolKindList:[
-                    {
-                        label: '工科',
-                        value: 30,
-                    },
-                    {
-                        label: '综合',
-                        value: 28,
-                    },
-                    {
-                        label: '师范',
-                        value: 16,
-                    },
-                    {
-                        label: '财经',
-                        value: 8,
-                    },
-                    {
-                        label: '广电',
-                        value: 5,
-                    },
-                    {
-                        label: '农林',
-                        value: 3,
-                    }
-                ],
+                schoolKindList:[],
                 // 有车概率
                 haveCarPieEcharts: '',
                 haveCarPieInfo: [],
@@ -491,40 +395,7 @@
                 mobilePhonePieEcharts: '',
                 mobilePhonePieInfo: '',
                 // 手机品牌列表
-                mobilePhoneList: [
-                    {
-                        label: 'HUAWEI',
-                        value: 30,
-                    },
-                    {
-                        label: 'OPPO',
-                        value: 22,
-                    },
-                    {
-                        label: 'IPHONE',
-                        value: 19,
-                    },
-                    {
-                        label: 'HONOR',
-                        value: 16,
-                    },
-                    {
-                        label: 'XIAOMI',
-                        value: 15,
-                    },
-                    {
-                        label: 'VIVO',
-                        value: 12,
-                    },
-                    {
-                        label: 'MEIZU',
-                        value: 5,
-                    },
-                    {
-                        label: '红米',
-                        value: 4,
-                    },
-                ],
+                mobilePhoneList: [],
             }
         },
         mounted() {
@@ -548,6 +419,13 @@
                 this.sessionData = sessFun.getSess()
                 if(this.sessionData.asrID === '999') {
                     this.getCompanyList()
+                } else {
+                    this.companyList = [
+                        {
+                            value: this.portraitInfo[0].asrId,
+                            label: this.portraitInfo[0].asrName
+                        }
+                    ]
                 }
             },
             // 平台商公司列表
@@ -577,6 +455,11 @@
                 }).catch(err=>{
                     this.messageFun('warning', '直营公司list获取异常')
                 })
+            },
+            // 选择公司
+            selectAsrIdFun(){
+                this.searchResName = ''
+                this.resList = []
             },
             // 统一监听
             echartsListener() {

@@ -1605,7 +1605,6 @@ export default {
         // 导出图片包
         downloadImg(){
             let type = this.type;
-            let submitType = '';
             let info = {
                 uid: this.sessionData.uID,
                 token: this.sessionData.token,
@@ -1646,6 +1645,9 @@ export default {
                 apId: this.orderDetail.apID,
                 type: type,
             };
+            if(type == 'HH'){
+                info.replaceRecordId = this.painList[this.activePainIndex].id;
+            }
             this.updateLoading = true;
             api.postApi(this.apiVar.Advertisement+"/UpdateSXReport", info).then(res =>{
                 console.log(res.data);

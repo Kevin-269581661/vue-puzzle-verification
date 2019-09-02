@@ -599,7 +599,7 @@ export default {
     font-weight: bold;
 }
 .table_wrap {
-    margin: 8px 32px;
+    margin: 0px 32px;
 }
 
 /deep/ .el-table th > .cell {

@@ -40,7 +40,7 @@
                 <el-tabs v-model="planPanel" @tab-click="handleClick()">
                     <el-tab-pane label="选点排期" name="first">
                         <div class="first-wrap box-wrap">
-                            <h4 v-if="showTitle">
+                            <h4 v-if="showTitle" style="margin-bottom:16px;">
                                 更换点位
                                <span>单位:面&nbsp;&nbsp; 首次投放:{{nowPointNum}}&nbsp;&nbsp; 中止投放:{{stopPointNum}} &nbsp;&nbsp;&nbsp; 新增面数:{{addNewPointNum}} &nbsp;&nbsp;&nbsp; 累计投放:{{setpointArr.length}} </span>
                             </h4>
@@ -1045,7 +1045,7 @@ export default {
     }
 
     .price_quo {
-        margin: 18px 32px;
+        margin: 0px 32px;
     }
 
     /deep/ .el-tabs__nav-scroll {
@@ -1188,7 +1188,7 @@ export default {
     }
     /* 换画 */
     .changepic_box{
-        margin: 16px 32px 32px;
+        margin: 0px 32px 32px;
     }
     /*按钮*/
     .content_bottom_btn {

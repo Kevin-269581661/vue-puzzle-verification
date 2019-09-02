@@ -125,19 +125,30 @@
             },
             // 是否显示亲邻
             getIsShowQinlin(){
-                // let accountArr = [611,612,613,1,657,610,609,608,607,605,3,1151];
-                // let account = this.sessionData.uID;
-                // if(accountArr.includes(account)){
-                //     sessionStorage.setItem('AD_apid', -1);
-                //     sessionStorage.setItem('ctList_data', '100,31,38,1,6,8,11,14');
-                //     sessionStorage.setItem('aiTime', '2018-09-20 11:23:25');
-                //     this.showQinlin = true;
-                // }
                 let portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo'))
-                if (portraitInfo.length) {
+                if (portraitInfo && portraitInfo.length) {
                     this.showQinlin = true;
                 } else {
-                    this.showQinlin = false;
+                    let params = {
+                        uid: this.sessionData.uID,
+                        token: this.sessionData.token
+                    }
+                    api.getApi(this.apiVar.portrait + '/api/v1/ascrInfo/getAscrList', params).then(res => {
+                        console.log('用户权限城市和默认小区res', res)
+                        if (res.data.SysCode === 200200) {
+                            let portraitInfo = res.data.data
+                            sessionStorage.setItem("portraitInfo", JSON.stringify(portraitInfo));
+                            if (portraitInfo.length) {
+                                this.showQinlin = true;
+                            } else {
+                                this.showQinlin = false;
+                            }
+                        } else if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                            this.$router.push('/login')
+                        } else {
+                            this.showQinlin = false;
+                        }
+                    })
                 }
             },
             // 是否显示公司管理

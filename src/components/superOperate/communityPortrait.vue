@@ -160,7 +160,7 @@
                                             <span class="progress_li_name">{{item.label}}</span>
                                             <span class="progress_li_value">{{item.value}}%</span>
                                             <div class="progress_li_num">
-                                                <el-progress :percentage="item.value" :show-text="false"></el-progress>
+                                                <el-progress :percentage="item.percent" :show-text="false"></el-progress>
                                             </div>
                                         </li>
                                     </ul>
@@ -187,7 +187,7 @@
                                             <span class="progress_li_name">{{item.label}}</span>
                                             <span class="progress_li_value">{{item.value}}%</span>
                                             <div class="progress_li_num">
-                                                <el-progress :percentage="item.value" :show-text="false"></el-progress>
+                                                <el-progress :percentage="item.percent" :show-text="false"></el-progress>
                                             </div>
                                         </li>
                                     </ul>
@@ -209,7 +209,7 @@
                                             <span class="progress_li_name">{{item.label}}</span>
                                             <span class="progress_li_value">{{item.value}}%</span>
                                             <div class="progress_li_num">
-                                                <el-progress :percentage="item.value" :show-text="false"></el-progress>
+                                                <el-progress :percentage="item.percent" :show-text="false"></el-progress>
                                             </div>
                                         </li>
                                     </ul>
@@ -231,7 +231,7 @@
                                             <span class="progress_li_name">{{item.label}}</span>
                                             <span class="progress_li_value">{{item.value}}%</span>
                                             <div class="progress_li_num">
-                                                <el-progress :percentage="item.value" :show-text="false"></el-progress>
+                                                <el-progress :percentage="item.percent" :show-text="false"></el-progress>
                                             </div>
                                         </li>
                                     </ul>

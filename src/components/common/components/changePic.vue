@@ -180,7 +180,7 @@
             <el-table :data="pointArr" border height="450" ref="multipleTable" v-loading="dialogPage.pointLoading" v-loadmore="pointLoadMore" @select="handleSelect" @select-all="handleSelectAll" class="table_mater">
                 <el-table-column type="selection" width="41px" scope="scope">
                 </el-table-column>
-                <el-table-column prop="resName" label="资源">
+                <el-table-column prop="resName" label="资源" show-overflow-tooltip>
                 </el-table-column>
                 <el-table-column prop="mTitle" label="媒体">
                 </el-table-column>

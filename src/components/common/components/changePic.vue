@@ -206,7 +206,7 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="remark" label="备注">
+                <el-table-column prop="remark" label="备注" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <span>
                             {{ scope.row.remark || '--'}}
@@ -1154,6 +1154,7 @@ export default {
                 ...info
             };
             this.dialogPage = {
+                ...this.dialogPage,
                 loading_maInfo: false,
                 currInfoPage: 1,
                 totalInfoPage: 0,
@@ -1161,7 +1162,7 @@ export default {
             };
             this.pointArr = [];
             this.searchInfoFun();
-            console.log(this.dialogInfo);
+            console.log(this.dialogInfo, this.dialogPage);
         },
         // 查看图片
         previewImg(url) {
@@ -1294,36 +1295,48 @@ export default {
         // 取消换画
         cancelPain(){
             if(this.shoplist.length){
-                let result = [];
-                this.isShowPic = false;
-                for(let data of this.shoplist){
-                    if(data.replaceDate){
-                        let obj = {
-                            ...data,
-                            status: 0,
-                            picUrl: '',
-                            remark: '',
-                            replaceDate: '',
-                            replaceRecordId: this.painList[this.activePainIndex].id
-                        };
-                        result.push(obj);
-                    }
-                }
-                if(result.length){
-                    api.postApi_json(this.apiVar.replace+ '/report/saveDetailInfo', result).then(res =>{
-                        console.log(res.data);
-                        if(res.data.SysCode == 200200){
-                            sessFun.messageFun('success', res.data.MSG);
-                            this.search();                            
-                        }else{
-                            sessFun.messageFun('warning', res.data.MSG);
-                        }
-                    });
-                }else{
-                    sessFun.messageFun('warning', '没有需要保存的点');
-                }
+                this.$confirm('确定取消所有换画吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.removePain();
+                }).catch(() => {
+                    sessFun.messageFun('info', '已取消操作');
+                });
             }else{
                 sessFun.messageFun('warning', '请先勾选选点');
+            }
+        },
+        // 移除换画
+        removePain(){
+            let result = [];
+            this.isShowPic = false;
+            for(let data of this.shoplist){
+                if(data.replaceDate){
+                    let obj = {
+                        ...data,
+                        status: 0,
+                        picUrl: '',
+                        remark: '',
+                        replaceDate: '',
+                        replaceRecordId: this.painList[this.activePainIndex].id
+                    };
+                    result.push(obj);
+                }
+            }
+            if(result.length){
+                api.postApi_json(this.apiVar.replace+ '/report/saveDetailInfo', result).then(res =>{
+                    console.log(res.data);
+                    if(res.data.SysCode == 200200){
+                        sessFun.messageFun('success', res.data.MSG);
+                        this.search();                            
+                    }else{
+                        sessFun.messageFun('warning', res.data.MSG);
+                    }
+                });
+            }else{
+                sessFun.messageFun('warning', '没有需要保存的点');
             }
         },
         // 给上下刊添加图片的收藏状态

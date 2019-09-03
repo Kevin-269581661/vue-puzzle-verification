@@ -180,7 +180,7 @@
             <el-table :data="pointArr" border height="450" ref="multipleTable" v-loading="dialogPage.pointLoading" v-loadmore="pointLoadMore" @select="handleSelect" @select-all="handleSelectAll" class="table_mater">
                 <el-table-column type="selection" width="41px" scope="scope">
                 </el-table-column>
-                <el-table-column prop="resName" label="资源">
+                <el-table-column prop="resName" label="资源" show-overflow-tooltip>
                 </el-table-column>
                 <el-table-column prop="mTitle" label="媒体">
                 </el-table-column>
@@ -206,7 +206,7 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="remark" label="备注">
+                <el-table-column prop="remark" label="备注" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <span>
                             {{ scope.row.remark || '--'}}
@@ -479,6 +479,7 @@ export default {
                     beginDate: this.painList[this.activePainIndex].startDate,
                     endDate: this.painList[this.activePainIndex].endDate
                 };
+                this.search();
                 this.editReport();
             });
         },
@@ -821,7 +822,7 @@ export default {
                     this.checkImgStatus();
                     
                     if(dataInfo.totalSize == 0){
-                        sessFun.messageFun('warning', '暂无数据');
+                        // sessFun.messageFun('warning', '暂无数据');
                     }
                 }else{
                     sessFun.messageFun('warning', res.data.MSG);
@@ -1074,18 +1075,21 @@ export default {
         },
         // 是否勾选更新
 		selectioUpdate(){
-            console.log(this.shoplist, this.pointArr);
-            for(let item of this.shoplist){
-                for(let data of this.pointArr){
-                    if(data.lID == item.lID){
-                        data.remark = item.remark;
-                        data.picUrl = item.picUrl;
-                        data.replaceDate = item.replaceDate;
-                        this.$refs.multipleTable.toggleRowSelection(data, true);
+            console.log(this.shoplist, this.pointArr, 'arr---point--');
+            let timer = setTimeout(() => {
+                for(let item of this.shoplist){
+                    for(let data of this.pointArr){
+                        if(data.lID == item.lID){
+                            console.log(item.lID);
+                            data.remark = item.remark;
+                            data.picUrl = item.picUrl;
+                            data.replaceDate = item.replaceDate;
+                            this.$refs.multipleTable.toggleRowSelection(data, true);
+                        }
                     }
                 }
-            }
-            this.pointArr.push();
+				clearTimeout(timer);
+			}, 0);
 		},
         // 获取地图中心点
         getMapArr(){
@@ -1154,6 +1158,7 @@ export default {
                 ...info
             };
             this.dialogPage = {
+                ...this.dialogPage,
                 loading_maInfo: false,
                 currInfoPage: 1,
                 totalInfoPage: 0,
@@ -1161,7 +1166,7 @@ export default {
             };
             this.pointArr = [];
             this.searchInfoFun();
-            console.log(this.dialogInfo);
+            console.log(this.dialogInfo, this.dialogPage);
         },
         // 查看图片
         previewImg(url) {
@@ -1294,36 +1299,48 @@ export default {
         // 取消换画
         cancelPain(){
             if(this.shoplist.length){
-                let result = [];
-                this.isShowPic = false;
-                for(let data of this.shoplist){
-                    if(data.replaceDate){
-                        let obj = {
-                            ...data,
-                            status: 0,
-                            picUrl: '',
-                            remark: '',
-                            replaceDate: '',
-                            replaceRecordId: this.painList[this.activePainIndex].id
-                        };
-                        result.push(obj);
-                    }
-                }
-                if(result.length){
-                    api.postApi_json(this.apiVar.replace+ '/report/saveDetailInfo', result).then(res =>{
-                        console.log(res.data);
-                        if(res.data.SysCode == 200200){
-                            sessFun.messageFun('success', res.data.MSG);
-                            this.search();                            
-                        }else{
-                            sessFun.messageFun('warning', res.data.MSG);
-                        }
-                    });
-                }else{
-                    sessFun.messageFun('warning', '没有需要保存的点');
-                }
+                this.$confirm('确定取消所有换画吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.removePain();
+                }).catch(() => {
+                    sessFun.messageFun('info', '已取消操作');
+                });
             }else{
                 sessFun.messageFun('warning', '请先勾选选点');
+            }
+        },
+        // 移除换画
+        removePain(){
+            let result = [];
+            this.isShowPic = false;
+            for(let data of this.shoplist){
+                if(data.replaceDate){
+                    let obj = {
+                        ...data,
+                        status: 0,
+                        picUrl: '',
+                        remark: '',
+                        replaceDate: '',
+                        replaceRecordId: this.painList[this.activePainIndex].id
+                    };
+                    result.push(obj);
+                }
+            }
+            if(result.length){
+                api.postApi_json(this.apiVar.replace+ '/report/saveDetailInfo', result).then(res =>{
+                    console.log(res.data);
+                    if(res.data.SysCode == 200200){
+                        sessFun.messageFun('success', res.data.MSG);
+                        this.search();                            
+                    }else{
+                        sessFun.messageFun('warning', res.data.MSG);
+                    }
+                });
+            }else{
+                sessFun.messageFun('warning', '没有需要保存的点');
             }
         },
         // 给上下刊添加图片的收藏状态

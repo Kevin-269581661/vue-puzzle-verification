@@ -516,8 +516,12 @@ export default {
                         data.rName = data.districtName;
                         data.lStar = data.beginDate;
                         data.lEnd = data.endDate;
-                        for(let item of data.adPlanPics){
-                            item.url = item.pURL;
+                        if(data.adPlanPics){
+                            for(let item of data.adPlanPics){
+                                item.url = item.pURL;
+                            }
+                        }else{
+                            data.adPlanPics = [];
                         }
                         let time = this.formatTime(data.lStar) + "-" +this.formatTime(data.lEnd);
                         data.timeRange = time;
@@ -742,7 +746,7 @@ export default {
                             });
                             this.isShowImgArr = true;
                         }else{
-                            Message.warning("暂无数据！！！");
+                            Message.warning("暂无数据！");
                         }
                     }else{
                         Message.warning(res.data.MSG);

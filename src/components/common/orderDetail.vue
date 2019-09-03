@@ -981,27 +981,39 @@ export default {
                     type: "warning"
                 }
             ).then(() => {
+                this.getPainlist();
                 this.addPainReport();
             });
         },
         // 新增换画报告
-        addPainReport(){    
-            let len = this.painlist.length;
-            let painInfo = {
-                apId: this.orderDetail.apID,
-                replaceRecordName: `换画${len+1}`,
+        addPainReport(){
+            let info = {
+                apId: sessionStorage.getItem("order_apid")
             };
-            api.postApi_json(this.apiVar.replace+'/report/add', painInfo).then(res =>{
+            api.getApi(this.apiVar.replace+'/report/list', info).then(res =>{
+                console.log(res);
                 if(res.data.SysCode == 200200){
-                    this.showPain = true;  
-                    this.planPanel = 'sixth';    
-                    setTimeout(()=>{
-                        this.fromType = !this.fromType;
-                    }, 10);                        
+                    this.painlist = res.data.data;
+                    let len = this.painlist.length;
+                    let painInfo = {
+                        apId: this.orderDetail.apID,
+                        replaceRecordName: `换画${len+1}`,
+                    };
+                    api.postApi_json(this.apiVar.replace+'/report/add', painInfo).then(res =>{
+                        if(res.data.SysCode == 200200){
+                            this.showPain = true;  
+                            this.planPanel = 'sixth';    
+                            setTimeout(()=>{
+                                this.fromType = !this.fromType;
+                            }, 10);                        
+                        }else{
+                            sessFun.messageFun('warning', res.data.msg);
+                        }
+                    });   
                 }else{
                     sessFun.messageFun('warning', res.data.msg);
                 }
-            });   
+            });
         },
         // 操作提示统一方法
         messageFun(mesType,mes){

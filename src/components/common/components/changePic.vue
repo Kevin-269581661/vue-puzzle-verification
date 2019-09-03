@@ -479,6 +479,7 @@ export default {
                     beginDate: this.painList[this.activePainIndex].startDate,
                     endDate: this.painList[this.activePainIndex].endDate
                 };
+                this.search();
                 this.editReport();
             });
         },
@@ -821,7 +822,7 @@ export default {
                     this.checkImgStatus();
                     
                     if(dataInfo.totalSize == 0){
-                        sessFun.messageFun('warning', '暂无数据');
+                        // sessFun.messageFun('warning', '暂无数据');
                     }
                 }else{
                     sessFun.messageFun('warning', res.data.MSG);
@@ -1074,18 +1075,21 @@ export default {
         },
         // 是否勾选更新
 		selectioUpdate(){
-            console.log(this.shoplist, this.pointArr);
-            for(let item of this.shoplist){
-                for(let data of this.pointArr){
-                    if(data.lID == item.lID){
-                        data.remark = item.remark;
-                        data.picUrl = item.picUrl;
-                        data.replaceDate = item.replaceDate;
-                        this.$refs.multipleTable.toggleRowSelection(data, true);
+            console.log(this.shoplist, this.pointArr, 'arr---point--');
+            let timer = setTimeout(() => {
+                for(let item of this.shoplist){
+                    for(let data of this.pointArr){
+                        if(data.lID == item.lID){
+                            console.log(item.lID);
+                            data.remark = item.remark;
+                            data.picUrl = item.picUrl;
+                            data.replaceDate = item.replaceDate;
+                            this.$refs.multipleTable.toggleRowSelection(data, true);
+                        }
                     }
                 }
-            }
-            this.pointArr.push();
+				clearTimeout(timer);
+			}, 0);
 		},
         // 获取地图中心点
         getMapArr(){

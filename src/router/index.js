@@ -44,6 +44,7 @@ const companyList = () => import('../components/common/companyList.vue')
 const compact = () => import('../components/common/compact.vue')
 const paintedPath = () => import('../components/common/paintedPath.vue')
 const adsDialPlate = () => import('../components/common/adsDialPlate.vue')
+const qinlinMap = () => import('../components/common/components/qinlinMap')
 
 // 下载进度页面
 const progressDown = () => import('../components/common/progressDown.vue')
@@ -155,6 +156,8 @@ export default new Router({
                 {path: '/superOperate/companyList', component: companyList},
                 {path: '/superOperate/compact', component: compact},
                 {path: '/superOperate/communityPortrait',component: communityPortrait},
+                // 亲邻地图
+                {path: '/superOperate/qinlinMap',component: qinlinMap},
             ]
         },
         //普通运营

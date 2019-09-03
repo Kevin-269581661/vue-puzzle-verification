@@ -25,7 +25,7 @@
                     </li>
                 </ul>
                 <ul class="search_ul" v-show="activeSearchKind === 2">
-                    <li class="search_li" v-for="(item,index) in selectOnlineList" :key="index">
+                    <li class="search_li" v-for="(item,index) in searchOnlineList" :key="index">
                         <div class="search_res_info">
                             <p>{{item.title}} </p>
                             <p>{{item.address}}</p>
@@ -42,13 +42,25 @@
                 <span class="select_num">已选择{{selectResList.length}}条</span>
                 <span class="select_del_all" @click="deleteAll()">全部删除</span>
             </div>
-            <ul class="select_ul">
+            <ul class="select_ul" v-show="activeSearchKind === 1">
                 <li class="select_li" v-for="(item,index) in selectResList" :key="index">
                     <p class="select_li_resName">{{item.resName}}</p>
                     <i class="el-icon-delete" @click="deleteRes(item)"></i>
                 </li>
-                <li></li>
             </ul>
+            <div v-show="activeSearchKind === 2">
+                <ul class="select_ul">
+                    <li class="select_li" v-for="(item,index) in selectOnlineList" :key="index">
+                        <p class="select_li_resName">{{item.title}}</p>
+                        <i class="el-icon-delete" @click="deleteRes(item)"></i>
+                    </li>
+                </ul>
+                <div style="padding: 0 8px">
+                    <el-input size="small" v-model="searchRadius" style="width: 178px" placeholder="km"></el-input>
+                    <el-button type="primary" @click="searchAround">周边搜索</el-button>
+                </div>
+            </div>
+
         </div>
     </div>
 </template>
@@ -63,13 +75,16 @@
                 markerIcon: require('../../../assets/images/markerIcon.png'),
                 selectName: '',
                 // 搜索类型
-                activeSearchKind: 1,
+                activeSearchKind: 2,
                 // 搜索的资源列表
                 resList: [],
+                searchOnlineList:[],
                 // 选择的亲邻社区列表
                 selectResList: [],
                 // 在线搜索结果
                 selectOnlineList: [],
+                // 周边搜索的半径
+                searchRadius: ''
             }
         },
         mounted(){
@@ -99,7 +114,7 @@
                 let i = 0
                 for(let key of adsInfo){
                     key.isSelect = false
-                    if(i < 1000) {
+                    // if(i < 100) {
                         let lngLat = key.lng.split(';')
                         let point = new BMap.Point(lngLat[0], lngLat[1]); //
                         let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(20,33));
@@ -114,9 +129,9 @@
                         marker.addEventListener("click",()=>{
                             this.showInfo(key,point)
                         });
-                    } else {
-                        break
-                    }
+                    // } else {
+                    //     break
+                    // }
                     i++
                 }
             },
@@ -157,13 +172,16 @@
                         autoViewport: false,
                         selectFirstResult: false
                     },
+                    pageCapacity: 100,
                     onSearchComplete: (results)=>{
                         // 判断状态是否正确
-                        if (local.getStatus() == 0){
-                            console.log('在线搜索results',results.getPoi(0));
+                        if (local.getStatus() == BMAP_STATUS_SUCCESS){
+                            console.log('在线搜索results',results,results.getNumPois(),results.getPoi(0));
                             let arr = []
-                            for (var i = 0; i < results.getCurrentNumPois(); i ++){
+                            // let totalPages = results.getNumPages();
+                            for (let i = 0; i < results.getCurrentNumPois(); i++){
                                 arr.push({
+                                    id: results.getPoi(i).uid,
                                     title: results.getPoi(i).title,
                                     address: results.getPoi(i).address,
                                     city: results.getPoi(i).city,
@@ -171,13 +189,10 @@
                                     point: results.getPoi(i).point,
                                 });
                             }
-                            this.selectOnlineList = arr
+                            this.searchOnlineList = arr
+                            console.log('searchOnlineList',this.searchOnlineList)
                         }
                     },
-                    onMarkersSet: function(pois) {      // 给创建的标注添加点击事件
-                        console.log('onMarkersSet', pois)
-                    },
-                    pageCapacity: 100
                 };
                 let local = new BMap.LocalSearch(this.resMap, options);
                 local.search(this.selectName);
@@ -187,16 +202,34 @@
                 console.log('item',item)
                 if(item.isSelect) {
                     // 取消选定
-                    this.deleteRes(item)
+                    if (this.activeSearchKind === 1) {
+                        this.deleteRes(item)
+                    } else if(this.activeSearchKind === 2){
+                        item.isSelect = false
+                        for (let i = 0; i < this.selectOnlineList.length; i++) {
+                            if (this.selectOnlineList[i].id === item.id) {
+                                this.selectOnlineList.splice(i, 1)
+                                break
+                            }
+                        }
+                        this.deleteCircle(item.id)
+                    }
                 } else {
                     // 选定
-                    let lngLat = item.lng.split(';')
-                    let point = new BMap.Point(lngLat[0],lngLat[1])
-                    // 圈起标识
-                    this.createCircle(item.resID,point)
-                    item.isSelect = true
-                    // 添加到选中列表
-                    this.pushSelectList(item)
+                    if(this.activeSearchKind === 1) {
+                        let lngLat = item.lng.split(';')
+                        let point = new BMap.Point(lngLat[0],lngLat[1])
+                        // 圈起标识
+                        this.createCircle(item.resID,point)
+                        item.isSelect = true
+                        // 添加到选中列表
+                        this.pushSelectList(item)
+                    } else if(this.activeSearchKind === 2) {
+                        // 圈起标识
+                        this.createCircle(item.id,item.point)
+                        item.isSelect = true
+                        this.selectOnlineList.push(item)
+                    }
                 }
             },
             // 添加到选中列表
@@ -214,8 +247,8 @@
                 label.setStyle({
                     color : "rgba(0,0,0,0)",
                     fontSize : "12px",
-                    height : "42px",
-                    width: "42px",
+                    height : "48px",
+                    width: "48px",
                     background: 'rgba(0,0,0,0)',
                     border: "3px solid #1890FF",
                     borderRadius: "50%"
@@ -226,6 +259,7 @@
             // 删除覆盖物
             deleteCircle(id) {
                 let allOverlay = this.resMap.getOverlays();
+                console.log('allOverlay',allOverlay)
                 for (let i = 0; i < allOverlay.length; i++) {
                     if (allOverlay[i].content == id) {
                         this.resMap.removeOverlay(allOverlay[i]);
@@ -252,6 +286,50 @@
                     this.deleteCircle(key.resID)
                 }
                 this.selectResList = []
+            },
+            // 周边搜索
+            searchAround(){
+                this.resList = []
+                let radius = this.searchRadius * 1000
+                for(let key of this.selectOnlineList) {
+                    let circle = new BMap.Circle(key.point,radius,{fillColor:"blue", strokeWeight: 1 ,fillOpacity: 0.3, strokeOpacity: 0.3});
+                    this.resMap.addOverlay(circle);
+                    this.showResInCircle(key.point,radius)
+                }
+                this.resList.length ?  this.activeSearchKind = 1 : this.activeSearchKind = 2
+            },
+            // 显示圆半径内的小区 akey.isVisible
+            showResInCircle(point,radius) {
+                let date1=new Date();
+                let allOverlay = this.resMap.getOverlays();
+                for(let key of adsInfo) {
+                    for (let akey of allOverlay) {
+                        if( akey.isVisible() &&
+                            akey.toString() == "[object Marker]" &&
+                            akey.getLabel() &&
+                            akey.getLabel().content === key.resName) {
+                            let lngLat = key.lng.split(';')
+                            let point2 = new BMap.Point(lngLat[0],lngLat[1])
+                            let distance = this.resMap.getDistance(point,point2)
+                            if(distance > radius){
+                                akey.hide()
+                            } else {
+                                let flag = this.resList.some((item,index)=>{
+                                    if(key.resID === item.resID) {
+                                        return true
+                                    }
+                                })
+                                if (!flag) {
+                                    this.resList.push(key)
+                                }
+                            }
+                            break
+                        }
+                    }
+                }
+                let date2 = new Date();
+                let haomiao = date2.getTime() - date1.getTime();
+                console.log('用时',haomiao/(1000*60))
             },
         },
     }
@@ -354,6 +432,7 @@
         border-radius: 3px;
         font-size: 14px;
         color: #333;
+        z-index: 99;
     }
 
     .bottom_right_header{
@@ -371,6 +450,12 @@
         width: 72px;
         text-align: center;
         cursor: pointer;
+    }
+
+    .select_ul{
+        height: 140px;
+        overflow-y: auto;
+
     }
 
     .select_li{

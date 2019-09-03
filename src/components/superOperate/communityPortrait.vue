@@ -281,7 +281,7 @@
                         <div slot="header" class="clearfix">
                             <span class="box_card_title">手机设备</span>
                         </div>
-                        <div class="box_main">
+                        <div class="box_main" >
                             <el-row>
                                 <el-col :span="11">
                                     <div ref="mobilePhonePie" style="width: 100%;height: 352px"></div>
@@ -292,19 +292,24 @@
                                         <span class="progress_li_name">手机品牌</span>
                                         <span class="progress_li_num">占比</span>
                                     </p>
-                                    <ul class="little_height_ul mobile_phone_ul">
+                                    <ul class="little_height_ul mobile_phone_ul" v-show="mobilePhoneList.length">
                                         <li class="progress_li" v-for="(item,index) in mobilePhoneList" :key="index+1">
                                             <span class="progress_li_rate">{{index + 1}}</span>
                                             <span class="progress_li_name">{{item.label}}</span>
                                             <span class="progress_li_value">{{item.value}}%</span>
                                             <div class="progress_li_num">
-                                                <el-progress :percentage="item.percent" :show-text="false"></el-progress>
+                                                <el-progress :percentage="item.percent"
+                                                             :show-text="false"></el-progress>
                                             </div>
                                         </li>
                                     </ul>
+                                    <div v-show="!mobilePhoneList.length">
+                                        <noSearchResult style="text-align: center;margin-top: 24px"></noSearchResult>
+                                    </div>
                                 </el-col>
                             </el-row>
                         </div>
+
                     </el-card>
                 </div>
             </div>
@@ -326,8 +331,12 @@
 <script>
     import api from '../../api/api';
     import sessFun from '../../commonFun/sessFun';
+    import noSearchResult from '../common/components/noSearchResult'
     export default {
         name: "communityPortrait",
+        components:{
+            noSearchResult
+        },
         data() {
             return {
                 // 默认小区
@@ -565,7 +574,7 @@
                         sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
-                        if(dataObj.getGender && dataObj.getMarriage && dataObj.getAge){
+                        if(dataObj.getGender || dataObj.getMarriage || dataObj.getAge || dataObj.getChildren){
                             this.isHaveData = true
                             let timer = setTimeout(()=>{
                                 // 性别情况
@@ -610,12 +619,12 @@
                 let arr = []
                 for (let key of data) {
                     let tagValue = this.keepTwoDecimal(key.tagValue)
-                    if (key.tagIdSecondName === '女') {
+                    if (key.tagIdSecondName.includes('女')) {
                         arr[0] = {value: tagValue, name: key.tagIdSecondName}
-                    } else if (key.tagIdSecondName === '男') {
+                    } else if (key.tagIdSecondName.includes('男')) {
                         arr[1] = {value: tagValue, name: key.tagIdSecondName}
-                    } else if (key.tagIdSecondName === '未知') {
-                        arr[2] = {value: tagValue, name: key.tagIdSecondName}
+                    } else if (key.tagIdSecondName.includes('未知') || !key.tagIdSecondName) {
+                        arr[2] = {value: tagValue, name: key.tagIdSecondName || '未知'}
                     }
                 }
                 this.sexPieInfo = arr
@@ -702,12 +711,12 @@
                 let arr = []
                 for (let key of data) {
                     let tagValue = this.keepTwoDecimal(key.tagValue)
-                    if (key.tagIdSecondName === '未婚') {
+                    if (key.tagIdSecondName.includes('未婚')) {
                         arr[0] = {value: tagValue, name: key.tagIdSecondName}
-                    } else if (key.tagIdSecondName === '已婚') {
+                    } else if (key.tagIdSecondName.includes('已婚')) {
                         arr[1] = {value: tagValue, name: key.tagIdSecondName}
-                    } else if (key.tagIdSecondName === '未知') {
-                        arr[2] = {value: tagValue, name: key.tagIdSecondName}
+                    } else if (key.tagIdSecondName.includes('未知') || !key.tagIdSecondName) {
+                        arr[2] = {value: tagValue, name: key.tagIdSecondName || '未知'}
                     }
                 }
                 this.marriagePieInfo = arr
@@ -794,10 +803,10 @@
                 let arr = []
                 for (let key of data) {
                     let tagValue = this.keepTwoDecimal(key.tagValue)
-                    if (key.tagIdSecondName === '有') {
+                    if (key.tagIdSecondName.includes('有')) {
                         arr[0] = {value: tagValue, name: key.tagIdSecondName}
-                    } else if (key.tagIdSecondName === '未知') {
-                        arr[1] = {value: tagValue, name: key.tagIdSecondName}
+                    } else if (key.tagIdSecondName.includes('未知') || !key.tagIdSecondName) {
+                        arr[1] = {value: tagValue, name: key.tagIdSecondName || '未知'}
                     }
                 }
                 this.childrenForecastPieInfo = arr
@@ -1019,28 +1028,30 @@
             // 生肖Top5、教育程度、职业分布、毕业院校
             setProgressData(data,string){
                 let arr = []
-                let i = 0
-                let max = this.keepTwoDecimal(data[0].tagValue)
-                for(let key of data) {
-                    if(i < 6) {
-                        let tagValue = this.keepTwoDecimal(key.tagValue)
-                        arr.push({
-                            value: tagValue,
-                            label: key.tagIdSecondName || '未知',
-                            percent: (tagValue / max) * 100,
-                        })
-                    } else {
-                        break;
+                if (data) {
+                    let i = 0
+                    let max = this.keepTwoDecimal(data[0].tagValue)
+                    for (let key of data) {
+                        if (i < 6) {
+                            let tagValue = this.keepTwoDecimal(key.tagValue)
+                            arr.push({
+                                value: tagValue,
+                                label: key.tagIdSecondName || '未知',
+                                percent: (tagValue / max) * 100,
+                            })
+                        } else {
+                            break;
+                        }
+                        i++
                     }
-                    i++
                 }
-                if(string === '生肖') {
+                if (string === '生肖') {
                     this.shengXiaoList = arr
-                }else if (string === '教育程度'){
+                } else if (string === '教育程度') {
                     this.educationList = arr
-                }else if (string === '职业分布'){
+                } else if (string === '职业分布') {
                     this.professionDistributeList = arr
-                }else if (string === '毕业院校'){
+                } else if (string === '毕业院校') {
                     this.schoolKindList = arr
                 }
             },
@@ -1332,12 +1343,14 @@
             // 设置手机操作系统数据
             setMobilePhonePieData(data){
                 let arr = []
-                for (let key of data) {
-                    let tagValue = this.keepTwoDecimal(key.tagValue)
-                    arr.push({
-                        value: tagValue,
-                        name: key.tagIdSecondName || '未知'
-                    })
+                if (data) {
+                    for (let key of data) {
+                        let tagValue = this.keepTwoDecimal(key.tagValue)
+                        arr.push({
+                            value: tagValue,
+                            name: key.tagIdSecondName || '未知'
+                        })
+                    }
                 }
                 this.mobilePhonePieInfo = arr
                 this.initMobilePhonePie()
@@ -1426,14 +1439,16 @@
             // 手机品牌列表
             setMobilePhoneList(data) {
                 let arr = []
-                let max = this.keepTwoDecimal(data[0].tagValue)
-                for(let key of data) {
-                    let tagValue = this.keepTwoDecimal(key.tagValue)
-                    arr.push({
-                        value: tagValue,
-                        label: key.tagIdSecondName || '未知',
-                        percent: (tagValue / max) * 100,
-                    })
+                if (data) {
+                    let max = this.keepTwoDecimal(data[0].tagValue)
+                    for(let key of data) {
+                        let tagValue = this.keepTwoDecimal(key.tagValue)
+                        arr.push({
+                            value: tagValue,
+                            label: key.tagIdSecondName || '未知',
+                            percent: (tagValue / max) * 100,
+                        })
+                    }
                 }
                 this.mobilePhoneList = arr
             },

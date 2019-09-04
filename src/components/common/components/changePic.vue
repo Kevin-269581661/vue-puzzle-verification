@@ -1267,7 +1267,6 @@ export default {
         saveAll() {
             console.log(this.pointArr);
             if(this.shoplist.length){
-                this.isShowPic = false;
                 let result = [];
                 for(let data of this.shoplist){
                     if(data.replaceDate){
@@ -1283,6 +1282,7 @@ export default {
                     api.postApi_json(this.apiVar.replace+ '/report/saveDetailInfo', result).then(res =>{
                         console.log(res.data);
                         if(res.data.SysCode == 200200){
+                            this.isShowPic = false;                            
                             sessFun.messageFun('success', res.data.MSG);
                         }else{
                             sessFun.messageFun('warning', res.data.MSG);
@@ -1315,7 +1315,6 @@ export default {
         // 移除换画
         removePain(){
             let result = [];
-            this.isShowPic = false;
             for(let data of this.shoplist){
                 if(data.replaceDate){
                     let obj = {
@@ -1333,6 +1332,7 @@ export default {
                 api.postApi_json(this.apiVar.replace+ '/report/saveDetailInfo', result).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 200200){
+                        this.isShowPic = false;                        
                         sessFun.messageFun('success', res.data.MSG);
                         this.search();                            
                     }else{
@@ -1621,6 +1621,10 @@ export default {
          */
         // 导出图片包
         downloadImg(){
+            if(!this.publishNumInfo.currNum){
+                sessFun.messageFun('warning', '暂无图片记录');
+                return;
+            }
             let type = this.type;
             let info = {
                 uid: this.sessionData.uID,

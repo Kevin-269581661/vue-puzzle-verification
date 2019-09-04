@@ -112,7 +112,7 @@
                                     </el-table-column>
                                     <el-table-column prop="hNum" label="小区户数" min-width="7.3%" align="right">
                                         <template slot-scope="scope">
-                                            <span>{{priceToFormat(scope.row.hNum)}}</span>
+                                            <span>{{(scope.row.hNum)?priceToFormat(scope.row.hNum):0}}</span>
                                         </template>
                                     </el-table-column>
                                     <el-table-column label="楼盘价格" min-width="7.3%" align="right">

@@ -12,10 +12,10 @@
                         @click="activeSearchKind = 1">亲邻社区</span>
                     <span class="search_kind" :class="activeSearchKind === 2 ? 'active_search_kind' : ''"
                           @click="activeSearchKind = 2">在线结果</span>
-                    <span class="search_result_all">全选</span>
+                    <span class="search_result_all" @click="selectAllFun">全选</span>
                 </div>
                 <ul class="search_ul" v-show="activeSearchKind === 1">
-                    <li class="search_li" v-for="(item,index) in resList" :key="index">
+                    <li class="search_li" v-for="(item,index) in searchResList" :key="index">
                         <div class="search_res_info">
                             <p>资源ID:{{item.resID}} </p>
                             <p>资源名称:{{item.resName}}</p>
@@ -39,15 +39,21 @@
         <!--底部右侧选中-->
         <div class="bottom_right_active">
             <div class="bottom_right_header">
-                <span class="select_num">已选择{{selectResList.length}}条</span>
+                <span class="select_num">已选择<span style="color:red">{{selectResList.length}}</span>条</span>
                 <span class="select_del_all" @click="deleteAll()">全部删除</span>
             </div>
-            <ul class="select_ul" v-show="activeSearchKind === 1">
-                <li class="select_li" v-for="(item,index) in selectResList" :key="index">
-                    <p class="select_li_resName">{{item.resName}}</p>
-                    <i class="el-icon-delete" @click="deleteRes(item)"></i>
-                </li>
-            </ul>
+            <div v-show="activeSearchKind === 1">
+                <ul class="select_ul">
+                    <li class="select_li" v-for="(item,index) in selectResList" :key="index">
+                        <p class="select_li_resName">{{item.resName}}</p>
+                        <i class="el-icon-delete" @click="deleteRes(item)"></i>
+                    </li>
+                </ul>
+                <div style="padding: 0 8px">
+                    <el-button type="primary" size="small" @click="exportExcel">导 出</el-button>
+                    <el-button type="primary" size="small" @click="pushMapRes">选 定</el-button>
+                </div>
+            </div>
             <div v-show="activeSearchKind === 2">
                 <ul class="select_ul">
                     <li class="select_li" v-for="(item,index) in selectOnlineList" :key="index">
@@ -57,10 +63,24 @@
                 </ul>
                 <div style="padding: 0 8px">
                     <el-input size="small" v-model="searchRadius" style="width: 178px" placeholder="km"></el-input>
-                    <el-button type="primary" @click="searchAround">周边搜索</el-button>
+                    <el-button type="primary" size="small" @click="searchAround">周边搜索</el-button>
                 </div>
             </div>
-
+        </div>
+        <!--标注info框-->
+        <div ref="res_info_window" v-show="isShowInfo">
+            <p style='font:14px arial,sans-serif;margin:0;line-height:1.5;'>
+                资源ID:{{ showResInfo.resID}}
+            </p>
+            <p style='font:14px arial,sans-serif;margin:0;line-height:1.5;'>
+                资源名称:{{ showResInfo.resName}}
+            </p>
+            <div class="info_footer">
+                <span class="show_adDoor">广告门</span>
+                <span class="add_Btn" :class="showResInfo.isSelect ? 'is_select_btn' : ''" @click="addResFun(item)">
+                    {{showResInfo.isSelect ? '取消待选' : '加入待选'}}
+                </span>
+            </div>
         </div>
     </div>
 </template>
@@ -75,16 +95,19 @@
                 markerIcon: require('../../../assets/images/markerIcon.png'),
                 selectName: '',
                 // 搜索类型
-                activeSearchKind: 2,
+                activeSearchKind: 1,
                 // 搜索的资源列表
-                resList: [],
+                searchResList: [],
                 searchOnlineList:[],
                 // 选择的亲邻社区列表
                 selectResList: [],
                 // 在线搜索结果
                 selectOnlineList: [],
                 // 周边搜索的半径
-                searchRadius: ''
+                searchRadius: '',
+                // 被点击的资源标注信息
+                showResInfo:{},
+                isShowInfo: false,
             }
         },
         mounted(){
@@ -114,10 +137,12 @@
                 let i = 0
                 for(let key of adsInfo){
                     key.isSelect = false
-                    // if(i < 100) {
+                    if(i < 1000) {
                         let lngLat = key.lng.split(';')
                         let point = new BMap.Point(lngLat[0], lngLat[1]); //
-                        let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(20,33));
+                        let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(20,33),{
+                            anchor: new BMap.Size(10, 33)
+                        });
                         let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
                         let label = new BMap.Label(key.resName,{offset:new BMap.Size(20,5)});
                         label.setStyle({
@@ -129,27 +154,30 @@
                         marker.addEventListener("click",()=>{
                             this.showInfo(key,point)
                         });
-                    // } else {
-                    //     break
-                    // }
+                        // console.log('getOffset',marker.getOffset())
+                    } else {
+                        break
+                    }
                     i++
                 }
             },
             // 显示详情
             showInfo(info,point){
-                let content =
-                    "<div>"+
-                        "<p style='font:14px arial,sans-serif;margin:0;line-height:1.5;'>资源ID:"+ info.resID +"</p>"+
-                        "<p style='font:14px arial,sans-serif;margin:0;line-height:1.5;'>资源名称:"+ info.resName +"</p>"+
-                    "</div>";
+                let content = this.$refs.res_info_window
                 let opts = {
                     width: 250,             // 信息窗口宽度
-                    height: 0,              // 信息窗口高度
+                    height: 88,              // 信息窗口高度
                     title: "",              // 信息窗口标题
                     enableMessage: false    //设置允许信息窗发送短息
                 }
+                this.showResInfo = info
                 let infoWindow = new BMap.InfoWindow(content,opts);  // 创建信息窗口对象
-                this.resMap.openInfoWindow(infoWindow,point); //开启信息窗口
+                this.resMap.openInfoWindow(infoWindow,point);        //开启信息窗口
+                this.isShowInfo = true
+            },
+            // 详情里选定按钮
+            addResFun(item) {
+                this.checkBoxFun(this.showResInfo)
             },
             /* 左侧搜索 */
             // 搜索
@@ -160,42 +188,96 @@
                         return item
                     }
                 })
-                this.resList = arr
+                this.searchResList = arr
+                arr.length ? this.activeSearchKind = 1 : this.activeSearchKind = 2
                 // 在线搜索
                 this.onlineSearchFun()
             },
             // 在线搜索
             onlineSearchFun(){
+                let resultArray = []
                 let options = {
-                    renderOptions:{
-                        map: this.resMap,
-                        autoViewport: false,
-                        selectFirstResult: false
-                    },
-                    pageCapacity: 100,
                     onSearchComplete: (results)=>{
                         // 判断状态是否正确
                         if (local.getStatus() == BMAP_STATUS_SUCCESS){
-                            console.log('在线搜索results',results,results.getNumPois(),results.getPoi(0));
-                            let arr = []
-                            // let totalPages = results.getNumPages();
-                            for (let i = 0; i < results.getCurrentNumPois(); i++){
-                                arr.push({
+                            // console.log('在线搜索results',results,results.getNumPois(),results.getPoi(0));
+                            // let arr = []
+                            // for (let i = 0; i < results.getCurrentNumPois(); i++){
+                            //     arr.push({
+                            //         id: results.getPoi(i).uid,
+                            //         title: results.getPoi(i).title,
+                            //         address: results.getPoi(i).address,
+                            //         city: results.getPoi(i).city,
+                            //         province: results.getPoi(i).province,
+                            //         point: results.getPoi(i).point,
+                            //     });
+                            // }
+                            // this.searchOnlineList = arr
+                            // console.log('searchOnlineList',this.searchOnlineList)
+                            let totalResults = results.getNumPois();
+                            let totalPages = results.getNumPages();
+                            let currPage = results.getPageIndex();// 获取当前是第几页数据
+                            for (let i = 0; i < results.getCurrentNumPois(); i++) {
+                                //在当前页面下获取页面中的内容
+                                resultArray.push({
                                     id: results.getPoi(i).uid,
                                     title: results.getPoi(i).title,
                                     address: results.getPoi(i).address,
                                     city: results.getPoi(i).city,
                                     province: results.getPoi(i).province,
                                     point: results.getPoi(i).point,
-                                });
+                                })
                             }
-                            this.searchOnlineList = arr
-                            console.log('searchOnlineList',this.searchOnlineList)
+                            if (currPage < totalPages - 1) {
+                                // 遍历到最后一页之后不再进行下一页搜索，此时，已经获取到全部的搜索结果
+                                local.gotoPage(results.getPageIndex() + 1);
+                            } else {
+                                this.searchOnlineList = resultArray
+                                this.onlineResultsMarker()
+                                console.log("全部结果有：",resultArray,"------原本搜索结果有：",totalResults);
+                            }
                         }
                     },
+                    pageCapacity : 50
                 };
                 let local = new BMap.LocalSearch(this.resMap, options);
+                // local.setPageCapacity(100);
                 local.search(this.selectName);
+            },
+            // 在线结果打点
+            onlineResultsMarker(){
+                for(let key of this.searchOnlineList){
+                    let marker = new BMap.Marker(key.point);  // 创建标注
+                    marker.setTop(true);
+                    this.resMap.addOverlay(marker);            // 将标注添加到地图中
+                    marker.addEventListener("click",()=>{
+                        let content =
+                            "<div>"+
+                            "<p style='font:14px arial,sans-serif;margin:0;line-height:1.5;'>"
+                            + key.title +"</p>"+
+                            "<p style='font:14px arial,sans-serif;margin:0;line-height:1.5;'>" +
+                            "地址:"+ key.address +"</p>"+
+                            "</div>";
+                        let opts = {
+                            width: 0,             // 信息窗口宽度
+                            height: 0,              // 信息窗口高度
+                            title: "",              // 信息窗口标题
+                            enableMessage: false    //设置允许信息窗发送短息
+                        }
+                        let infoWindow = new BMap.InfoWindow(content,opts);  // 创建信息窗口对象
+                        this.resMap.openInfoWindow(infoWindow,key.point); //开启信息窗口
+                    });
+                }
+            },
+            // 全选
+            selectAllFun(){
+                for(let key of this.searchResList) {
+                    if(!key.isSelect) {
+                        key.isSelect = true
+                        this.selectResList.push(key)
+                    }
+                }
+                console.log('全选',this.selectResList)
             },
             // 勾选/取消
             checkBoxFun(item) {
@@ -241,7 +323,7 @@
                 console.log('id,point',id,point)
                 let opts = {
                     position : point,    // 指定文本标注所在的地理位置
-                    offset   : new BMap.Size(-24, -22)    //设置文本偏移量
+                    offset   : new BMap.Size(-24, -48)    //设置文本偏移量
                 }
                 let label = new BMap.Label(id, opts);  // 创建文本标注对象
                 label.setStyle({
@@ -289,16 +371,16 @@
             },
             // 周边搜索
             searchAround(){
-                this.resList = []
+                this.searchResList = []
                 let radius = this.searchRadius * 1000
                 for(let key of this.selectOnlineList) {
                     let circle = new BMap.Circle(key.point,radius,{fillColor:"blue", strokeWeight: 1 ,fillOpacity: 0.3, strokeOpacity: 0.3});
                     this.resMap.addOverlay(circle);
                     this.showResInCircle(key.point,radius)
                 }
-                this.resList.length ?  this.activeSearchKind = 1 : this.activeSearchKind = 2
+                this.searchResList.length ?  this.activeSearchKind = 1 : this.activeSearchKind = 2
             },
-            // 显示圆半径内的小区 akey.isVisible
+            // 显示圆半径内的小区
             showResInCircle(point,radius) {
                 let date1=new Date();
                 let allOverlay = this.resMap.getOverlays();
@@ -314,13 +396,13 @@
                             if(distance > radius){
                                 akey.hide()
                             } else {
-                                let flag = this.resList.some((item,index)=>{
+                                let flag = this.searchResList.some((item,index)=>{
                                     if(key.resID === item.resID) {
                                         return true
                                     }
                                 })
                                 if (!flag) {
-                                    this.resList.push(key)
+                                    this.searchResList.push(key)
                                 }
                             }
                             break
@@ -330,6 +412,14 @@
                 let date2 = new Date();
                 let haomiao = date2.getTime() - date1.getTime();
                 console.log('用时',haomiao/(1000*60))
+            },
+            // 导出exc
+            exportExcel(){
+
+            },
+            // 选定提交点位
+            pushMapRes(){
+
             },
         },
     }
@@ -474,6 +564,38 @@
         font-size: 16px;
         text-align: center;
         cursor: pointer;
+    }
+
+    /* 详情弹出框 */
+    .info_footer{
+        text-align: right;
+        padding: 8px;
+    }
+    .info_footer span{
+        display: inline-block;
+        height: 24px;
+        line-height: 24px;
+        border-radius: 3px;
+        color: #fff;
+        padding: 0 8px;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .show_adDoor{
+        background: #5c5f7a;
+    }
+
+    .show_adDoor:hover{
+        background: #333
+    }
+
+    .add_Btn{
+        background: #0095ff;
+    }
+
+    .add_Btn:hover{
+        background: #0078A8;;
     }
 
 

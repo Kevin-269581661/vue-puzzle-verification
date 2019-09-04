@@ -551,8 +551,8 @@
                             resID: dataObj.resID,
                             resName: dataObj.resName,
                             resType: dataObj.resType,
-                            city: dataObj.city,
-                            cityArea: dataObj.cityArea,
+                            city: dataObj.rname,
+                            cityArea: dataObj.pname,
                             tradingArea: dataObj.tradingArea,
                             houseType: dataObj.ctype,
                             floorPrice: dataObj.hprice / 100,
@@ -811,12 +811,14 @@
             // 设置子女预测数据
             setChildrenForecastPieData(data){
                 let arr = []
-                for (let key of data) {
-                    let tagValue = this.keepTwoDecimal(key.tagValue)
-                    if (key.tagIdSecondName.includes('有')) {
-                        arr[0] = {value: tagValue, name: key.tagIdSecondName}
-                    } else if (key.tagIdSecondName.includes('未知') || !key.tagIdSecondName) {
-                        arr[1] = {value: tagValue, name: key.tagIdSecondName || '未知'}
+                if (data) {
+                    for (let key of data) {
+                        let tagValue = this.keepTwoDecimal(key.tagValue)
+                        if (key.tagIdSecondName.includes('有')) {
+                            arr[0] = {value: tagValue, name: key.tagIdSecondName}
+                        } else if (key.tagIdSecondName.includes('未知') || !key.tagIdSecondName) {
+                            arr[1] = {value: tagValue, name: key.tagIdSecondName || '未知'}
+                        }
                     }
                 }
                 this.childrenForecastPieInfo = arr
@@ -1040,27 +1042,29 @@
             // 设置有车概率数据 / 设置有房概率数据
             setHaveCarAndHousePieData(data,string){
                 let arr = []
-                for (let key of data) {
-                    let tagValue = this.keepTwoDecimal(key.tagValue)
-                    switch (key.tagIdSecondName) {
-                        case '高':
-                            arr[0] = {value: tagValue, name: key.tagIdSecondName};
-                            break;
-                        case '中高' :
-                            arr[1] = {value: tagValue, name: key.tagIdSecondName};
-                            break;
-                        case '中等':
-                            arr[2] = {value: tagValue, name: key.tagIdSecondName};
-                            break;
-                        case '中低' :
-                            arr[3] = {value: tagValue, name: key.tagIdSecondName};
-                            break;
-                        case '低':
-                            arr[4] = {value: tagValue, name: key.tagIdSecondName};
-                            break;
-                        case '未知' :
-                            arr[5] = {value: tagValue, name: key.tagIdSecondName};
-                            break;
+                if(data) {
+                    for (let key of data) {
+                        let tagValue = this.keepTwoDecimal(key.tagValue)
+                        switch (key.tagIdSecondName) {
+                            case '高':
+                                arr[0] = {value: tagValue, name: key.tagIdSecondName};
+                                break;
+                            case '中高' :
+                                arr[1] = {value: tagValue, name: key.tagIdSecondName};
+                                break;
+                            case '中等':
+                                arr[2] = {value: tagValue, name: key.tagIdSecondName};
+                                break;
+                            case '中低' :
+                                arr[3] = {value: tagValue, name: key.tagIdSecondName};
+                                break;
+                            case '低':
+                                arr[4] = {value: tagValue, name: key.tagIdSecondName};
+                                break;
+                            case '未知' :
+                                arr[5] = {value: tagValue, name: key.tagIdSecondName};
+                                break;
+                        }
                     }
                 }
                 if (string === 'car') {

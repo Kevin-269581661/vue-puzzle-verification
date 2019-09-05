@@ -190,11 +190,9 @@
                 </el-table-column>
                 <el-table-column prop="districtName" label="区域" width="90">
                 </el-table-column>
-                <el-table-column prop="mapCenterInfo" label="地图中心点" show-overflow-tooltip>
+                <el-table-column prop="mapCenterInfo" label="地图中心点" align="center" width="100" show-overflow-tooltip>
                     <template slot-scope="scope">
-                        <span>
-                            {{ scope.row.mapCenterInfo || '--'}}
-                        </span>
+                        <span>{{ scope.row.mapCenterInfo || '--'}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column prop="timeRange" label="排期" min-width="120">
@@ -2119,3 +2117,11 @@ export default {
     }
 }
 </style>
+<style>
+.el-tooltip__popper.is-dark{
+    width: 200px;
+    word-break: break-all;
+    word-wrap: break-word
+}
+</style>
+

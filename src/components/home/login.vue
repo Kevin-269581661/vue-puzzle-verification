@@ -166,7 +166,6 @@
                             sessionStorage.setItem("session_data", JSON.stringify(userMsg));//userMsg.realName
                             // this.loading.close()
                             if (userMsg.uType === 'SM') {
-                                //sessionStorage.getItem("real_name") 获取session的值
                                 this.$router.push('/superOperate')
                             } else if (userMsg.uType === 'MD') {
                                 this.$router.push('/media')

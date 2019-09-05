@@ -10,24 +10,24 @@
                 <h2>公司列表</h2>
             </div>
             <div class="mediaList_container">
-                <el-row class="mediaList_handel">
-                    <el-col :span="6">
+                <el-row :gutter="32">
+                    <el-col class="name_row">
                         <span>公司名称:</span>
                         <el-input v-model="searchInfo.keyword" placeholder="请输入" size="small"></el-input>
                     </el-col>
-                    <el-col :span="6">
+                    <el-col>
                         <span>公司类型:</span>
                         <el-select v-model="searchInfo.type" placeholder="请选择" size="small">
                             <el-option v-for="item of typeArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-col>
-                    <el-col :span="6">
+                    <el-col>
                         <span>状态:</span>
                         <el-select v-model="searchInfo.state" placeholder="请选择" size="small">
                             <el-option v-for="item of stateArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-col>
-                    <el-col :span="6">
+                    <el-col>
                         <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">查询</el-button>
                         <el-button plain @click="reset()">重置</el-button>
                         <el-button plain @click="newCom()" v-if="showNewBtn">新建</el-button>
@@ -220,22 +220,18 @@
             getData(params){
                 api.getApi(this.apiVar.UCAPI+'/AscrList', params).then(res =>{
                     console.log(res.data);
-                    if(res.data.SysCode == 100302){
-                        this.loginTimeout();
-                    }else{
-                        if(!res.data.SysCode){
-                            console.log(res.data);
-                            let dataInfo = res.data;
-                            this.totalNum = dataInfo.count;
-                            let dataArr = dataInfo.data;
-                            this.companyList = this.funcData(dataArr);
-                            this.loading = false;
-                            if(dataInfo.totalpage == 0){
-                                Message.warning('暂无数据');
-                            }
-                        }else{
-                            Message.warning(res.data.MSG);
+                    if(!res.data.SysCode){
+                        console.log(res.data);
+                        let dataInfo = res.data;
+                        this.totalNum = dataInfo.count;
+                        let dataArr = dataInfo.data;
+                        this.companyList = this.funcData(dataArr);
+                        this.loading = false;
+                        if(dataInfo.totalpage == 0){
+                            Message.warning('暂无数据');
                         }
+                    }else{
+                        Message.warning(res.data.MSG);
                     }
                 });
             },
@@ -338,8 +334,6 @@
                                     Message.success(res.data.MSG);
                                     this.isShowNew = false;
                                     this.reset();
-                                }else if(res.data.SysCode == 100302){
-                                    this.loginTimeout();
                                 }else{
                                     Message.warning(res.data.MSG);
                                 }
@@ -368,8 +362,6 @@
                                         break;
                                     }
                                 }
-                            }else if(res.data.SysCode == 100302){
-                                this.loginTimeout();
                             }else{
                                 Message.warning(res.data.MSG);
                             }
@@ -439,8 +431,6 @@
                             if (res.data.SysCode == 100200) {
                                 Message.success("操作成功");
                                 row.state = row.state==1 ? 0 : 1;
-                            } else if (res.data.SysCode == 100302) {
-                                this.loginTimeout();
                             } else {
                                 Message.warning(res.data.MSG);
                             }
@@ -464,10 +454,6 @@
                     asrID: row.asrID,
                 };
             },
-            loginTimeout() {
-                Message.warning("登录超时,请重新登录");
-                this.$router.push("/login");
-            },
         },
         mounted(){
             this.getRole();
@@ -476,11 +462,23 @@
     };
 </script>
 <style scoped>
-    /deep/.mediaList_container .el-input{
-        max-width: 180px;
-    }
     a{
         color: #108ee9;
+    }
+    /deep/.el-row span{
+        font-size: 14px;
+    }
+    /deep/.el-col-24{
+        width: auto;
+    }
+    /deep/.el-col-24:not(:last-child){
+        min-width: 25%;
+    }
+    /deep/.el-row .el-select{
+        width: calc(98% - 60px);
+    }
+    /deep/.name_row .el-input{
+        width: calc(98% - 60px);        
     }
 </style>
 

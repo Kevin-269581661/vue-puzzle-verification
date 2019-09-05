@@ -8,7 +8,7 @@
                     <a href="#">订单详情</a>
                 </p>
             </div>
-            <!--资源信息mediaMana_content_top-->
+            <!--资源信息-->
             <div class="mediaList_wrap">
                 <div class="content_top_wrap" v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                     <div class="plan-title">
@@ -27,16 +27,8 @@
                             </span>
                         </el-dialog>
                         <div class="handleBtn">
-                            <!-- <el-button plain @click="changeRemark = true" :disabled="usableBtn">监播备注</el-button> -->
+                            <el-button type="plain" @click="changePain()" v-if="role=='MD'">换画</el-button>
                             <el-button type="primary" :disabled="usableBtn" v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0" @click="changePoint">换点</el-button>
-                            <!--监播备注对话框-->
-                            <el-dialog title="监播备注" :visible.sync="changeRemark" width="30%">
-                                <el-input type="textarea" v-model="remark" :rows="2"></el-input>
-                                <span slot="footer" class="dialog-footer">
-                                    <el-button plain @click="cancelChangeRemark">取 消</el-button>
-                                    <el-button type="primary" @click="confirmChangeRemark">确 定</el-button>
-                                </span>
-                            </el-dialog>
                         </div>
                     </div>
                     <div>
@@ -48,9 +40,7 @@
                 <el-tabs v-model="planPanel" @tab-click="handleClick()">
                     <el-tab-pane label="选点排期" name="first">
                         <div class="first-wrap box-wrap">
-                            <!-- <h4 v-if="!showTitle">选点排期
-                            </h4> -->
-                            <h4 v-if="showTitle">
+                            <h4 v-if="showTitle" style="margin-bottom:16px;">
                                 更换点位
                                <span>单位:面&nbsp;&nbsp; 首次投放:{{nowPointNum}}&nbsp;&nbsp; 中止投放:{{stopPointNum}} &nbsp;&nbsp;&nbsp; 新增面数:{{addNewPointNum}} &nbsp;&nbsp;&nbsp; 累计投放:{{setpointArr.length}} </span>
                             </h4>
@@ -122,7 +112,7 @@
                                     </el-table-column>
                                     <el-table-column prop="hNum" label="小区户数" min-width="7.3%" align="right">
                                         <template slot-scope="scope">
-                                            <span>{{priceToFormat(scope.row.hNum)}}</span>
+                                            <span>{{(scope.row.hNum)?priceToFormat(scope.row.hNum):0}}</span>
                                         </template>
                                     </el-table-column>
                                     <el-table-column label="楼盘价格" min-width="7.3%" align="right">
@@ -163,241 +153,21 @@
                         <ap-quotation @detailInfo="setInfo" :quotationData="quotation" :copydata="copyAsidArr" :isorder="true" :shopingList="[]" class="price_quo"></ap-quotation>
                     </el-tab-pane>
                     <el-tab-pane label="物料信息" name="third" :disabled="usableBtn">
-                        <p class="search-row">
-                            <el-button type="primary" size="small" @click="uploadMater()">添加上画信息</el-button>
-                            <!-- <el-button type="primary" size="small" @click="uploadMater()">添加上画备注</el-button> -->
-                        </p>
-                        <material :material="materialInfo" :daomater="daoInfo" :loading="maLoading"></material>
+                        <material :material="materialInfo" :daomater="daoInfo" :loading="maLoading" v-if="planPanel=='third'"></material>
                     </el-tab-pane>
                     <el-tab-pane label="上刊报告" name="forth" :disabled="usableBtn||role =='OP'">
-                        <div class="forth-wrap box-wrap">
-                            <div class="panel" v-loading="UpReportLoading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
-                                <div class="up-report">
-                                    <template>
-                                        <el-radio-group v-model="mediaUpType" size="medium" @change="changeUpMedia()" class="radio_style">
-                                            <el-radio-button label="广告门"></el-radio-button>
-                                            <el-radio-button label="道闸"></el-radio-button>
-                                        </el-radio-group>
-                                        <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
-                                    </template>
-
-                                    <div class="up-loader-header">
-                                        <el-cascader :options="citys" v-model="citySelect" @change="searchImgChange()">
-                                        </el-cascader>
-                                        <el-select placeholder="请选择资源" filterable v-model="allhouse" @change="searchImg()">
-                                            <el-option v-for="(item, index) of allResource" :key="index" :label="item.resName" :value="item.text"></el-option>
-                                        </el-select>
-                                        <el-select placeholder="请选择监播图" v-model="allPic" @change="searchImg()">
-                                            <!-- <el-option label="全部监播图" value="1"></el-option> -->
-                                            <el-option label="已上传" value="2"></el-option>
-                                            <el-option label="未上传" value="3"></el-option>
-                                        </el-select>
-                                        <!--进度条-->
-                                        <div class="progress">
-                                            <el-progress :percentage="upImgPercent" :text-inside="true"></el-progress>
-                                            <span>{{ currUpNum }} / {{totalUpNum}}</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="imgs-box">
-                                        <div class="up-loader-Imgpanel" v-for="(updata,index) in pageUpReportArr" :key="index">
-
-                                            <el-card class="box-card" shadow="never">
-                                                <div slot="header" class="clearfix img-car">
-                                                    <el-tooltip class="item" effect="dark" :content='updata.city+"-"+updata.rName+"-"+updata.resName+"-"+updata.mTitle+"-"+updata.asLab' placement="bottom" v-if='(updata.city+"-"+updata.rName+"-"+updata.resName+"-"+updata.mTitle+"-"+updata.asLab).length>23'>
-                                                        <span>{{wordlimit(updata.city+"-"+updata.rName+"-"+updata.resName+"-"+updata.mTitle+"-"+updata.asLab, 23)}}</span>
-                                                    </el-tooltip>
-                                                    <span v-else>{{updata.city+"-"+updata.rName+"-"+updata.resName+"-"+updata.mTitle+"-"+updata.asLab}}</span>
-                                                    <p class="car_header">
-                                                        <el-tooltip class="item" effect="dark" :content="updata.assetTag" placement="bottom" v-if="updata.assetTag&&updata.assetTag.length>10">
-                                                            <span style="margin-right:10px;"><i class="el-icon-date date_fa" type="text"></i>{{wordlimit(updata.assetTag, 10)}}</span>
-                                                        </el-tooltip>
-                                                        <span v-else style="margin-right:10px;"><i class="el-icon-date date_fa" type="text"></i>{{updata.assetTag}}</span>
-                                                        <span><i class="el-icon-date date_fa" type="text"></i>{{updata.timeRange}}</span>
-                                                    </p>
-                                                </div>
-                                                <div class="upload-img">
-                                                    <div  class="img_box" v-for="(item,index) in updata.upImgArr"
-                                                          @mouseenter="showPreImg = item.pID"
-                                                          @mouseleave="showPreImg = null">
-                                                        <img class="upload_img_item" :src="item.url">
-                                                        <label class="icon_success">
-                                                            <i class="el-icon-check"></i>
-                                                        </label>
-                                                        <div class="icon_box" v-if="showPreImg === item.pID">
-                                                            <p class="img_box_icon">
-                                                                <i class="el-icon-search" @click="handlePictureCardPreview(item)"></i>
-                                                                <i v-if="!item.isCollection" class="el-icon-star-off" @click="saveImgFun(updata,index,'SK')"></i>
-                                                                <i v-if="item.isCollection" class="el-icon-star-on icon_save" @click="cancelImgFun(updata,index,'SK')"></i>
-                                                                <i class="el-icon-delete" @click="deleteImg(item)"></i>
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <el-upload class="upload_plus"
-                                                        :key="index+'-'+currUpPage+'-1'"
-                                                        @click.native="saveId(updata)"
-                                                        :class="{disabled:uploadDisabled(updata.upImgArr)}"
-                                                        :action="doUpload"
-                                                        :http-request="uploadImg"
-                                                        :limit="6"
-                                                        list-type="picture-card"
-                                                        :show-file-list="true"
-                                                        :file-list="updata.upImgArr"
-                                                        :before-upload="beforeAvatarUpload"
-                                                        :before-remove="beforeImgRemove"
-                                                        :on-preview="handlePictureCardPreview"
-                                                        :on-remove="handleRemove"
-                                                        :on-exceed="handleExceed" multiple>
-                                                        <i class="el-icon-plus"></i>
-                                                    </el-upload>
-                                                </div>
-                                            </el-card>
-                                        </div>
-                                    </div>
-                                    <div class="pager">
-                                        <el-pagination
-                                            v-if="paginationShow"
-                                            background
-                                            :current-page.sync="currUpPage"
-                                            :page-sizes="[6, 12]"
-                                            :page-size="pageUpSize"
-                                            layout="sizes, prev, pager, next, jumper"
-                                            :total="totalUpPageNum"
-                                            @size-change="sizeChange"
-                                            @current-change='changePage'>
-                                        </el-pagination>
-                                    </div>
-                                    <div class="up-report-bottom">
-                                        <!-- <div class="up-report-bottom-checkbox"> -->
-                                            <!--<el-checkbox v-model="sendReportchecked">生成报告同时发送至客户邮箱：444094173@qq.com-->
-                                            <!--<el-button type="text">修改</el-button>-->
-                                            <!--</el-checkbox>-->
-                                        <!-- </div> -->
-                                        <div class="up-report-bottom-btns">
-                                            <el-button plain @click="downloadImg('SK')" :loading="downLoading">导出图片</el-button>
-                                            <el-button type="primary" @click="submitUpload('SK')">保存</el-button>
-                                            <el-button plain @click="showH5('SK')">查看H5</el-button>
-                                            <el-button plain @click="updateReport('SK')" :loading="updateLoading">更新报告</el-button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="changepic_box" v-if="planPanel=='forth'">                        
+                            <change-pic :type="1" :order-detail="orderDetail"></change-pic>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane label="下刊报告" name="fifth" :disabled="usableBtn||role =='OP'">
-                        <div class="forth-wrap box-wrap">
-                            <!-- <h4>下刊报告</h4> -->
-                            <div class="panel" v-loading="DownReportLoading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
-                                <div class="up-report">
-                                    <template>
-                                        <el-radio-group v-model="mediaDownType" size="medium" @change="changeDownMedia()" class="radio_style">
-                                            <el-radio-button label="广告门"></el-radio-button>
-                                            <el-radio-button label="道闸"></el-radio-button>
-                                        </el-radio-group>
-                                        <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
-                                    </template>
-
-                                    <div class="up-loader-header">
-                                        <el-cascader :options="citys" v-model="citySelect" @change="searchImgChange()">
-                                        </el-cascader>
-                                        <el-select placeholder="请选择资源" filterable v-model="allhouse" @change="searchImg()">
-                                            <el-option v-for="(item, index) of allResource" :key="index" :label="item.resName" :value="item.value"></el-option>
-                                        </el-select>
-                                        <el-select placeholder="请选择监播图" v-model="allPic" @change="searchImg()">
-                                            <!-- <el-option label="全部监播图" value="1"></el-option> -->
-                                            <el-option label="已上传" value="2"></el-option>
-                                            <el-option label="未上传" value="3"></el-option>
-                                        </el-select>
-                                        <!--进度条-->
-                                        <div class="progress">
-                                            <el-progress :percentage="downImgPercent" :text-inside="true"></el-progress>
-                                            <span>{{ currDownNum }} / {{ totalDownNum }}</span>
-                                        </div>
-                                    </div>
-
-
-                                    <div class="imgs-box">
-                                        <div class="up-loader-Imgpanel" v-for="(downData,index) in pageDownReportArr" :key="index">
-
-                                            <el-card class="box-card" shadow="never">
-                                                <div slot="header" class="clearfix img-car">
-                                                    <el-tooltip class="item" effect="dark" :content='downData.city+"-"+downData.rName+"-"+downData.resName+"-"+downData.mTitle+"-"+downData.asLab' placement="bottom" v-if='(downData.city+"-"+downData.rName+"-"+downData.resName+"-"+downData.mTitle+"-"+downData.asLab).length>23'>
-                                                        <span>{{wordlimit(downData.city+"-"+downData.rName+"-"+downData.resName+"-"+downData.mTitle+"-"+downData.asLab, 23)}}</span>
-                                                    </el-tooltip>
-                                                    <span v-else>{{downData.city+"-"+downData.rName+"-"+downData.resName+"-"+downData.mTitle+"-"+downData.asLab}}</span>
-                                                    <p class="car_header">
-                                                        <el-tooltip class="item" effect="dark" :content="downData.assetTag" placement="bottom" v-if="downData.assetTag && downData.assetTag.length>10">
-                                                            <span style="margin-right:10px;"><i class="el-icon-date date_fa" type="text"></i>{{wordlimit(downData.assetTag, 10)}}</span>
-                                                        </el-tooltip>
-                                                        <span v-else style="margin-right:10px;"><i class="el-icon-date date_fa" type="text"></i>{{downData.assetTag}}</span>
-                                                        <span><i class="el-icon-date date_fa" type="text"></i>{{downData.timeRange}}</span>
-                                                    </p>
-                                                </div>
-                                                <div class="upload-img">
-                                                    <div  class="img_box" v-for="(item,index) in downData.downImgArr"
-                                                          @mouseenter="showPreImg = item.pID"
-                                                          @mouseleave="showPreImg = null">
-                                                        <img class="upload_img_item" :src="item.url">
-                                                        <label class="icon_success">
-                                                            <i class="el-icon-check"></i>
-                                                        </label>
-                                                        <div class="icon_box" v-if="showPreImg === item.pID">
-                                                            <p class="img_box_icon">
-                                                                <i class="el-icon-search" @click="handlePictureCardPreview(item)"></i>
-                                                                <i v-if="!item.isCollection" class="el-icon-star-off" @click="saveImgFun(downData,index,'XK')"></i>
-                                                                <i v-if="item.isCollection" class="el-icon-star-on icon_save" @click="cancelImgFun(downData,index,'XK')"></i>
-                                                                <i class="el-icon-delete" @click="deleteImg(item)"></i>
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <el-upload class="upload_plus"
-                                                        @click.native="saveId(downData)"
-                                                        :class="{disabled:uploadDisabled(downData.downImgArr)}"
-                                                        :key="index+'-'+currUpPage+'-1'"
-                                                        :action="doUpload"
-                                                        :http-request="uploadImg"
-                                                        list-type="picture-card"
-                                                        :file-list="downData.downImgArr"
-                                                        :limit="6"
-                                                        :before-upload="beforeAvatarUpload"
-                                                        :before-remove="beforeImgRemove"
-                                                        :on-preview="handlePictureCardPreview"
-                                                        :on-remove="handleRemove"
-                                                        :on-exceed="handleExceed" multiple>
-                                                        <i class="el-icon-plus"></i>
-                                                    </el-upload>
-                                                </div>
-                                            </el-card>
-
-                                        </div>
-                                    </div>
-                                    <div class="pager">
-                                        <el-pagination v-if="paginationShow"
-                                                       background
-                                                       :current-page.sync="currDownPage"
-                                                       :page-sizes="[6, 12]"
-                                                       :page-size="pageDownSize"
-                                                       layout="sizes, prev, pager, next, jumper"
-                                                       :total="totalDownPageNum"
-                                                       @size-change="sizeChange"
-                                                       @current-change='changePage'>
-                                        </el-pagination>
-                                    </div>
-                                    <div class="up-report-bottom">
-                                        <div class="up-report-bottom-checkbox">
-                                            <!--<el-checkbox v-model="sendReportchecked">生成报告同时发送至客户邮箱：444094173@qq.com-->
-                                            <!--<el-button type="text">修改</el-button>-->
-                                            <!--</el-checkbox>-->
-                                        </div>
-                                        <div class="up-report-bottom-btns">
-                                            <el-button plain @click="downloadImg('XK')" :loading="downLoading">导出图片</el-button>
-                                            <el-button type="primary" @click="submitUpload('XK')">保存</el-button>
-                                            <el-button plain @click="showH5('XK')">查看H5</el-button>
-                                            <el-button plain @click="updateReport('XK')" :loading="updateLoading">更新报告</el-button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="changepic_box" v-if="planPanel=='fifth'">
+                            <change-pic :type="2" :order-detail="orderDetail"></change-pic>
+                        </div>
+                    </el-tab-pane>
+                    <el-tab-pane label="换画报告" name="sixth" v-if="showPain">
+                        <div class="changepic_box" v-show="planPanel=='sixth'">
+                            <change-pic :type="3" :from-type="fromType" :order-detail="orderDetail"></change-pic>
                         </div>
                     </el-tab-pane>
                 </el-tabs>
@@ -433,88 +203,6 @@
                         <el-button type="primary" @click="conFirmStopAds">确 定</el-button>
                     </span>
                 </el-dialog>
-
-                <!-- 上传上画素材、备注弹框 -->
-                <el-dialog
-                    title="画面备注信息"
-                    :visible.sync="showPhotoRemark">
-                    <p class="inline_dialog">
-                        <el-input v-model="resNameSec" placeholder="请输入资源名称"></el-input>
-                        <el-select v-model="mapName" placeholder="请选择地图中心点">
-                            <el-option v-for="(item, index) of mapArr" :key="index" :label="item.name" :value="item.name"></el-option>
-                        </el-select>
-                        <el-button size="small" type="primary" @click="searchInfo()" :disabled="!isSearch">搜索</el-button>
-                        <el-button plain size="small" @click="resetInfo()" :disabled="!isReset">重置</el-button>
-                    </p>
-                    <p style="margin-top:15px;">
-                        <!-- <el-button size="small">添加画像</el-button> -->
-                        <el-upload
-                            :action="doUpload"
-                            :show-file-list='false'
-                            :on-success="materImgSuccess"
-                            :before-upload="materImgBeforeUpload"
-                            :disabled="!shopList.length"
-                            style="display:inline-block;"
-                        >
-                            <el-button plain size="small">添加画像</el-button>
-                        </el-upload>
-                        <el-button plain size="small" @click="openRemark()">添加备注</el-button>
-                    </p>
-                    <p style="margin-top:15px;">
-                        <div class="car-title">
-                            <i class="el-icon-info" style="color: #1890FF;"></i>
-                            <h4>添加点位备注数量<span>{{remarkNum}}</span>个
-                                <!-- <span @click="clearAll()" style="cursor: pointer">&nbsp; &nbsp;清空</span> -->
-                            </h4>
-                        </div>
-                    </p>
-                    <el-table :data="materInfoArr" border height="450" ref="multipleTable" v-loading="materloading" v-loadmore="materLoadMore" @select="handleSelect" @select-all="handleSelectAll" class="table_mater">
-                        <el-table-column type="selection" width="41px" scope="scope" >
-                        </el-table-column>
-                        </el-table-column>
-                        <el-table-column prop="resName" label="资源名称">
-                        </el-table-column>
-                        <el-table-column prop="mTitle" label="媒体名称">
-                        </el-table-column>
-                        <el-table-column prop="asLab" label="面" width="60">
-                        </el-table-column>
-                        <el-table-column prop="city" label="城市" width="90">
-                        </el-table-column>
-                        <el-table-column prop="rName" label="区域" width="90">
-                        </el-table-column>
-                        <el-table-column prop="map" label="地图中心点">
-                        </el-table-column>
-                        <el-table-column prop="timeRange" label="排期" min-width="120" :filters="filtersData" :filter-method="filterTimeRange">
-                        </el-table-column>
-                        <el-table-column prop="remark" label="上画备注">
-                        </el-table-column>
-                        <el-table-column prop="imgUrl" label="操作" width="80">
-                            <template slot-scope="scope">
-                                <el-button size="small" icon="el-icon-picture" :style="{'color':scope.row.imgUrl?'#108DE7':''}" @click="previewImg(scope.row)" :disabled="!scope.row.imgUrl"></el-button>
-                                <el-button size="small" icon="el-icon-delete" :style="{'color':scope.row.imgUrl?'#108DE7':''}" @click="deleteOneImg(scope.row, scope.$index)" :disabled="!scope.row.imgUrl"></el-button>
-                            </template>
-                        </el-table-column>
-
-                        <div slot="empty">
-                            <no-search-result></no-search-result>
-                        </div>
-                    </el-table>
-                    <p style="text-align:center;margin-top:20px;">
-                        <el-button type="primary" size="small" @click="saveAll()">保存</el-button>
-                    </p>
-                </el-dialog>
-
-                <!-- 添加备注弹出框 -->
-                <el-dialog
-                    title="添加备注"
-                    width="40%"
-                    :visible.sync="showRemark">
-                    <el-input type="textarea" :rows="2" placeholder="请输入备注信息" v-model="remarkInfo" :maxlength="100"> </el-input>
-                    <span slot="footer" class="dialog-footer">
-                        <el-button plain @click="showRemark = false" size="small">取消</el-button>
-                        <el-button type="primary" @click="saveRemark()" size="small">确 定</el-button>
-                    </span>
-                </el-dialog>
             </div>
             <!-- 返回框 -->
             <div class="content_bottom_btn">
@@ -525,6 +213,7 @@
 </template>
 
 <script>
+import { Message, MessageBox } from 'element-ui';
 import { api } from "../../api/api.js";
 // 价格格式化
 import commaFormat from "../../commonFun/commaFormat.js";
@@ -532,37 +221,14 @@ import commaFormat from "../../commonFun/commaFormat.js";
 import filterFormat from "../../commonFun/filterTableData.js";
 // 时间格式化
 import dateFormat from "../../commonFun/timeFormat.js";
+import sessFun from '../../commonFun/sessFun.js';
 // 报价单
 import apQuotation from './components/apQuotation.vue'
 import material from "./components/materialInfo.vue";
 import detail from "./components/detailInfo.vue";
 import addAds from "./components/addAds"
 import noSearchResult from "./components/noSearchResult.vue";
-
-import {
-    Table,
-    TableColumn,
-    Tabs,
-    TabPane,
-    Button,
-    Upload,
-    Card,
-    Dialog,
-    Checkbox,
-    Select,
-    Option,
-    Input,
-    Cascader,
-    Progress,
-    Pagination,
-    Popover,
-    Form,
-    FormItem,
-    MessageBox,
-    Message
-} from "element-ui";
-import timeFormat from '../../commonFun/timeFormat.js';
-import sessFun from '../../commonFun/sessFun.js';
+import changePic from "./components/changePic.vue";
 
 export default {
     name: "orderDetail",
@@ -571,71 +237,19 @@ export default {
         material,
         detail,
         addAds,
+        changePic,
         noSearchResult,
-        elTable: Table,
-        elTableColumn: TableColumn,
-        elTabs: Tabs,
-        elTabPane: TabPane,
-        elButton: Button,
-        elUpload: Upload,
-        elCard: Card,
-        elDialog: Dialog,
-        elCheckbox: Checkbox,
-        elSelect: Select,
-        elOption: Option,
-        elInput: Input,
-        elCascader: Cascader,
-        elProgress: Progress,
-        elPagination: Pagination,
-        elPopover: Popover,
-        elForm: Form,
-        elFormItem: FormItem,
     },
     data() {
         return {
-            updateLoading: false,
-            // 上传图片
-            formData: new FormData(),
-            addload:'',
-            // 所有的图片组合
-            uploadImgArr: [],
-            // 关联属性数组
-            constractArr:[],
-            // 上传图片后返回的数据数组
-            uploadPidArr: [],
-            mediaDownType: '广告门',
-            mediaUpType: '广告门',
-            // 媒体类型为广告门的资源
-            mediaAdData: [],
-            // 媒体类型为道闸的资源
-            mediaDaoData: [],
-            // 媒体类型为广告门的城市区域
-            AdCitys: [],
-            // 媒体类型为道闸的城市区域
-            DaoCitys: [],
-            mediaDaoData: [],
             // session信息
             sessionData: {},
             isDown: false,
             //加载中
             loading: true,
             maLoading: true,
-            UpReportLoading: true,
-            DownReportLoading: true,
             // 判断
             role: "",
-            paginationShow: true,
-            // 当前页
-            currUpPage: 1,
-            currDownPage: 1,
-            currUpNum: 0,
-            totalUpNum: 0,
-            pageUpSize: 6,
-            pageDownSize: 6,
-            currDownNum: 0,
-            totalDownNum: 0,
-            totalUpPageNum: 0,
-            totalDownPageNum: 0,
             // 订单详情头部
             orderDetail: {
                 AdDoor:{},
@@ -670,51 +284,6 @@ export default {
             materialInfo:[],
             // 道闸物料信息
             daoInfo:[],
-            // 是否显示上传素材弹框
-            showPhotoRemark: false,
-            // 是否显示上画备注弹框
-            showRemark: false,
-            // 备注信息内容
-            remarkInfo: '',
-            // 备注数量
-            // remarkNum: 0,
-            // 物料资源名称搜索
-            resNameSec: '',
-            // 地图中心点选择
-            mapName: '',
-            // 地图中心点数组:
-            mapArr: [],
-            // loading
-            materloading: true,
-            // 物料信息弹出框的选点信息
-            materInfoArr:[],
-            currInfoPage: 1,
-            maInfoSize: 10,
-            totalInfoPage: 0,
-            loading_maInfo: false,
-            // 勾选的数据
-            shopList:[],
-            isSearch: true,
-            isReset: true,
-            // 上刊报告Arr
-            pageUpReportArr: [],
-            upImgPercent: 0,
-            // 下刊报告Arr
-            pageDownReportArr: [],
-            downImgPercent: 0,
-            // 上传图片地址
-            doUpload: "/advertisement/UpLoad",
-            // doUpload: "https://beta.qinlinad.com/advertisement/UpLoad",
-            upLoadObj:{},
-            //上刊报告市区级联
-            citys: [],
-            citySelect: [],
-            //上刊报告社区和监播图
-            allResource: [],
-            allhouse: "",
-            allPic: "",
-            // 下刊图片
-            downImg: [],
             // 默认合同编号(如果订单详情没有合同编号)
             apQC: "",
             // 图片显示放大按钮控件
@@ -759,9 +328,6 @@ export default {
             //上传照片
             dialogImageUrl: "",
             dialogVisible: false,
-            //监播备注
-            remark: "",
-            changeRemark: false,
             //选点排期标题
             showTitle: false,
             //选点排期按钮
@@ -775,6 +341,11 @@ export default {
             downLoading: false,
             //显示预览图蒙版
             showPreImg: null,
+            // 换画
+            showPain: false,
+            fromType: false,
+            // 换画列表
+            painlist: [],
         };
     },
     created() {
@@ -787,19 +358,9 @@ export default {
         this.getInitData();
         // 选点排期
         this.getSetPoint();
-    },
-    directives: {
-        loadmore: {
-            bind: function (el, binding) {
-                const selectWrap = el.querySelector('.el-table__body-wrapper')
-                selectWrap.addEventListener('scroll', function () {
-                    const scrollDistance = this.scrollHeight - this.scrollTop - this.clientHeight;
-                    // console.log('滚动的距离',scrollDistance)
-                    if (scrollDistance <= 100) {
-                        binding.value()
-                    }
-                })
-            }
+        if(this.role == 'MD'){
+            // 获取换画列表
+            this.getPainlist();
         }
     },
     computed: {
@@ -838,18 +399,6 @@ export default {
                     }
                 }
                 return addNum;
-            }
-        },
-        // 已经备注的数量
-        remarkNum(){
-            if (this.materInfoArr.length) {
-                let num = 0;
-                for (let data of this.materInfoArr) {
-                    if (data.remark) {
-                        num++;
-                    }
-                }
-                return num;
             }
         },
     },
@@ -914,34 +463,6 @@ export default {
             this.sessionData = sessFun.getSess();
             this.role = this.sessionData.uType;
         },
-        // 页数大小改变
-        sizeChange(pageVal) {
-            console.log("pageVal", pageVal);
-            if(this.planPanel == 'forth'){
-                this.currUpPage = 1;
-                this.UpReportLoading = true;
-                this.pageUpSize = pageVal;
-                this.searchFun();
-            }else if(this.planPanel == 'fifth'){
-                this.currDownPage = 1;
-                this.DownReportLoading = true;
-                this.pageDownSize = pageVal;
-                this.searchFun();
-            }
-        },
-        // 分页功能
-        changePage(page) {
-            console.log('page----', page);
-            if(this.planPanel == 'forth'){
-                this.UpReportLoading = true;
-                this.currUpPage = page;
-                this.searchFun();
-            }else if(this.planPanel == 'fifth'){
-                this.DownReportLoading = true;
-                this.currDownPage = page;
-                this.searchFun();
-            }
-        },
         // tab点击
         handleClick() {
             this.allPic = '';
@@ -949,354 +470,6 @@ export default {
             this.citySelect = [];
             if (this.planPanel == "first") {
                 this.getSetPoint();
-            }
-            if (this.planPanel == "forth") {
-                // this.getUpImgInfo();
-                this.searchFun();
-            }
-            if (this.planPanel == "fifth") {
-                // this.getDownImgInfo();
-                this.searchFun();
-            }
-        },
-        // 获取地图中心点
-        getMapCenter(){
-            let params = {
-                uid: this.sessionData.uID,
-                token: this.sessionData.token,
-                apID: sessionStorage.getItem('order_apid'),
-                queryType: 0,
-            };
-            api.getApi(this.apiVar.Advertisement+'/GetAdMaterial', params).then(res =>{
-                console.log('res.data-----', res.data);
-                if(!res.data.SysCode && res.data.length){
-                    for(let data of res.data){
-                        let obj = {
-                            name: data
-                        };
-                        this.mapArr.push(obj);
-                    }
-                }
-            });
-        },
-        // 物料信息上传上画弹出框
-        uploadMater(){
-            this.showPhotoRemark = true;
-            this.shopList = [];
-            this.currInfoPage = 1;
-            this.materInfoArr = [];
-            this.mapArr = [];
-            let info = this.searchDataFormat();
-            this.getMaterInfo(info);
-            this.getMapCenter();
-        },
-        // 物料弹出框滚动加载
-        materLoadMore(){
-            if(this.loading_maInfo){
-                this.loading_maInfo = false;
-                if(this.currInfoPage <= this.totalInfoPage){
-                    this.searchInfoFun();
-                }
-            }
-        },
-        searchInfoFun(){
-            let info = this.searchDataFormat();
-            this.getMaterInfo(info);
-        },
-        getMaterInfo(params){
-            api.postApi(this.apiVar.Advertisement+'/GetAdMaterial', params).then(res =>{
-                console.log(res.data);
-                if(res.data.total >= 0){
-                    let dataInfo = res.data;
-                    // 物料信息弹出框的选点信息
-                    this.totalInfoPage = dataInfo.totalPage;
-                    let dataArr = dataInfo.list;
-                    this.materInfoArr = this.materInfoArr.concat(this.formatData(dataArr));
-                    this.loading_maInfo = true;
-                    this.currInfoPage++;
-                    this.SelectioUpdate();
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
-                }else{
-                    Message.warning(res.data.MSG);
-                }
-                this.materloading = false;
-            }).catch(err =>{
-                this.materloading = false;
-            });
-        },
-        // 搜索数据格式化
-        searchDataFormat(){
-            let res = this.resNameSec;
-            let map = this.mapName;
-            let info = {
-                uid: this.sessionData.uID,
-                token: this.sessionData.token,
-                pageNo: this.currInfoPage,
-                pageSize: this.maInfoSize,
-                apID: sessionStorage.getItem('order_apid')
-            };
-            if(res){
-                info.resName = res;
-            }
-            if(map){
-                info.mapCenterName = map;
-            }
-            return info;
-        },
-        // 物料信息弹出框搜索
-        searchInfo(){
-            console.log(this.resNameSec, this.mapName, this.materInfoArr);
-            if(this.resNameSec || this.mapName){
-                this.isSearch = false;
-                let timer = setTimeout(()=>{
-                    this.isSearch = true;
-                    clearTimeout(timer);
-                }, 1000);
-                this.materInfoArr = [];
-                this.loading_maInfo = false;
-                this.materloading = true;
-                this.currInfoPage = 1;
-                this.searchInfoFun();
-            }else{
-                Message.warning('请输入搜索条件');
-            }
-        },
-        formatData(arr){
-            let result = [];
-            for(let data of arr){
-                let obj = this.setTableData(data);
-                result.push(obj);
-            }
-            return result;
-        },
-        // 表格数据格式
-        setTableData(item){
-            let timeRange = timeFormat.toDate(item.lStar, '/') +'-'+ timeFormat.toDate(item.lEnd, '/');
-            let timeRange1 = timeFormat.toDate(item.lStar, '/') +'-'+ timeFormat.toDate(item.lSetTime, '/');
-            let obj = {
-                resName: item.resName,
-                mTitle: item.mTitle,
-                asLab: item.asLab,
-                city: item.city,
-                rName: item.rName,
-                map: item.mapCenterName,
-                timeRange: item.lState==2? timeRange1 : timeRange,
-                remark: item.remark?item.remark:'',
-                imgUrl: item.picUrl?item.picUrl:'',
-                uploadUser: item.uploadUser?item.uploadUser:'',
-                resID: item.resID,
-                lID: item.lID,
-                lStar: item.lStar,
-                lEnd: item.lEnd,
-                asID: item.asID,
-                isSelect: false,
-            };
-            return obj;
-        },
-        // 物料信息弹出框重置
-        resetInfo(){
-            this.mapName = '';
-            this.resNameSec = '';
-            this.materInfoArr = [];
-            this.loading_maInfo = false;
-            this.materloading = true;
-            this.currInfoPage = 1;
-            this.isReset = false;
-            let timer = setTimeout(()=>{
-                this.isReset = true;
-                clearTimeout(timer);
-            }, 1000);
-            this.searchInfoFun();
-        },
-        // 打开备注框
-        openRemark(){
-            if(!this.shopList.length){
-                Message.warning('请先勾选需要备注的选点');
-                return;
-            }
-            this.remarkInfo = '';
-            this.showRemark = true;
-        },
-        // 上传图片之前的格式大小判断
-        materImgBeforeUpload(file){
-            const isJPG = file.type === "image/jpeg" || file.type === "image/png";;
-            const isLt2M = file.size / 1024 / 1024 < 2;
-
-            if (!isJPG) {
-                Message.error('只能上传jpg/png图片!');
-            }
-            if (!isLt2M) {
-                Message.error('图片大小不能超过 2MB!');
-            }
-            return isJPG && isLt2M;
-        },
-        // 上传图片成功后、
-        materImgSuccess(res, file){
-            console.log('res----file----', res, file, this.shopList);
-            // this.copyAsidArr  imgUrl
-            // this.materInfoArr   imgUrl
-            // this.shopList
-            for(let data of this.shopList){
-                data.imgUrl = res[0].pURL;
-            }
-            for(let data of this.materInfoArr){
-                for(let item of this.shopList){
-                    if(data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd){
-                        data.imgUrl = item.imgUrl;
-                        data.uploadUser = this.sessionData.uID;
-                        break;
-                    }
-                }
-            }
-
-        },
-        // 清空
-        // clearAll(){},
-        // 勾选一条
-        handleSelect(selection, row){
-            console.log('selection___________', selection, row);
-			row.isSelect = !row.isSelect;
-			console.log('row.isSelect-------', row.isSelect);
-			if(row.isSelect){
-				let bool = true;
-				for(let data of this.shopList){
-					if(data.asID == row.asID  && data.lStar == row.lStar && data.lEnd == row.lEnd ){
-						bool = false;
-						break;
-					}
-				}
-				if(bool){
-					this.shopList.push(row);
-				}
-
-			}else{
-
-				for(let i = 0; i< this.shopList.length; i++){
-					if(this.shopList[i].asID == row.asID && this.shopList[i].lStar == row.lStar && this.shopList[i].lEnd == row.lEnd ){
-						this.shopList.splice(i, 1);
-					}
-				}
-			}
-			console.log('this.shopList-----', this.shopList);
-        },
-        // 全选
-        handleSelectAll(selection){
-            console.log('selection___fdas____', selection);
-			if(selection.length){
-				for(let data of this.materInfoArr){
-					data.isSelect = true;
-					let bool = true;
-					for(let item of this.shopList){
-						if(data.asID == item.asID  && data.lStar == item.lStar && data.lEnd == item.lEnd ){
-							console.log('重复了');
-							bool = false;
-							break;
-						}
-					}
-					if(bool){
-						this.shopList.push(data);
-					}
-				}
-				console.log('this.shopListSelectTrue',this.shopList);
-			}else{
-				for(let data of this.materInfoArr){
-					data.isSelect = false;
-					for(let i = 0; i< this.shopList.length; i++){
-						if(this.shopList[i].asID == data.asID && this.shopList[i].lStar == data.lStar && this.shopList[i].lEnd == data.lEnd ){
-							this.shopList.splice(i, 1);
-							break;
-						}
-					}
-				}
-				console.log('取消全选之后的数据', this.shopList);
-			}
-        },
-        // 是否勾选更新
-		SelectioUpdate(){
-			let timer = setTimeout(() => {
-                for(let item of this.shopList){
-                    for(let data of this.materInfoArr){
-                        if(item.asID == data.asID && item.lStar == data.lStar && item.lEnd == data.lEnd){
-                            data.isSelect = true;
-                            data.remark = item.remark;
-                            data.imgUrl = item.imgUrl;
-                            this.$refs.multipleTable.toggleRowSelection(data, true);
-                        }
-                    }
-                }
-				clearTimeout(timer);
-			}, 0);
-		},
-        // 保存备注
-        saveRemark(){
-            this.showRemark = false;
-            console.log('this.remarkInfo---', this.remarkInfo, this.shopList);
-            for(let data of this.shopList){
-                data.remark = this.remarkInfo;
-            }
-            for(let data of this.materInfoArr){
-                for(let item of this.shopList){
-                    if(data.asID == item.asID && data.lStar == item.lStar && data.lEnd  == item.lEnd){
-                        data.remark = item.remark;
-                        break;
-                    }
-                }
-            }
-            console.log(this.materInfoArr, this.shopList);
-        },
-        // 查看图片
-        previewImg(row){
-            this.dialogImageUrl = row.imgUrl;
-            this.dialogVisible = true;
-        },
-        // 删除图片链接
-        deleteOneImg(row, index){
-            for(let data of this.materInfoArr){
-                if(data.asID == row.asID && data.lStar == row.lStar && data.lEnd == row.lEnd){
-                    data.imgUrl = '';
-                    // Message.success('删除成功');
-                    break;
-                }
-            }
-        },
-        // 保存所有信息
-        saveAll(){
-            console.log('this.materInfoArr---', this.materInfoArr);
-            if(this.shopList.length){
-                let result = [];
-                for(let data of this.materInfoArr){
-                    if(data.imgUrl || data.remark){
-                        let obj = {
-                            "lID": data.lID,
-                            "picUrl": data.imgUrl,
-                            "remark": data.remark,
-                            "uploadUser": data.uploadUser? data.uploadUser : this.sessionData.uID
-                        };
-                        result.push(obj);
-                    }
-                }
-                if(result.length){
-                    let info = {
-                        uid: this.sessionData.uID,
-                        token: this.sessionData.token,
-                        adMaterails: JSON.stringify(result),
-                    };
-                    api.postApi(this.apiVar.Advertisement+ '/AddAdMaterial', info).then(res =>{
-                        console.log(res.data);
-                        if(res.data.SysCode == 200200){
-                            Message.success(res.data.MSG);
-                        }else if(res.data.SysCode == 100302){
-                            this.loginTimeout();
-                        }else{
-                            Message.warning(res.data.MSG);
-                        }
-                    });
-                }else{
-                    Message.warning('没有需要保存的点');
-                }
-            }else{
-                Message.warning('请先勾选选点');
             }
         },
         //返回列表
@@ -1364,9 +537,7 @@ export default {
                         // this.orderDetail = info;
                         console.log('orderDetail',this.orderDetail)
                         this.apQC = this.orderDetail.apQC ? this.orderDetail.apQC : this.getContractNo(this.orderDetail.rID);
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
-                    } else {
+                    }else {
                         Message.warning(res.data.MSG);
                     }
                 })
@@ -1396,10 +567,6 @@ export default {
                     if (!res.data.SysCode) {
                         let initData = res.data;
                         let result = initData.adSpaceInfo;
-                        let mediaAd = [];
-                        let mediaDao = [];
-                        let cityAd = [];
-                        let cityDao = [];
                         // this.addNewAdsNum = res.data.isNewCount
                         for (let data of result) {
                             let time = this.formatTime(data.lStar) + "-" +this.formatTime(data.lEnd);
@@ -1409,15 +576,6 @@ export default {
                                 finishTimeRange = this.formatTime(data.lStar)+"-"+this.formatTime(data.lSetTime);
                             }
                             data.finishTimeRange = finishTimeRange;
-                            if(data.mVehicle == '广告门'){
-                                mediaAd.push(data);
-                                cityAd.push(data);
-                            }
-                            if(data.mVehicle == '道闸'){
-                                mediaDao.push(data);
-                                cityDao.push(data);
-                            }
-
                         }
                         // 选点排期
                         this.copyAsidArr = JSON.parse(JSON.stringify(result));
@@ -1429,25 +587,6 @@ export default {
                         console.log('城市filter',this.filterCityData)
                         this.filtersArea = filterFormat(result, "rName");
                         this.filtersData = filterFormat(result, "timeRange");
-                        // 上下刊包括头部搜索数据源
-                        this.mediaAdData = filterFormat(mediaAd, 'resID', "resName");
-                        this.mediaDaoData = filterFormat(mediaDao, 'resID', "resName");
-                        // this.allResource = filterFormat(result, 'resID', "resName");
-
-                        // 区域二级联动
-                        this.AdCitys = this.getCitys(cityAd);
-                        this.AdCitys.unshift({
-                            value: "全部",
-                            label: "全部"
-                        });
-                        this.DaoCitys = this.getCitys(mediaDao);
-                        this.DaoCitys.unshift({
-                            value: "全部",
-                            label: "全部"
-                        });
-                        this.allResource = this.mediaAdData;
-                        this.citys = this.AdCitys;
-                        console.log('resource--', this.allResource);
 
                         // 广告门物料信息
                         let mInfo = initData.gateMaterialInfo;
@@ -1485,9 +624,7 @@ export default {
 
                         this.loading = false;
                         this.maLoading = false;
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
-                    } else {
+                    }else {
                         Message.warning(res.data.MSG);
                     }
                 })
@@ -1496,250 +633,6 @@ export default {
                     this.maLoading = false;
                     console.log(res);
                 });
-        },
-        // 被终止了的选点根据条件不显示上下刊报告
-        filterInitData(arr){
-            let result = [];
-            for(let data of arr){
-                let finish = dateFormat.toDate(data.lSetTime, '');
-                let start = dateFormat.toDate(data.lStar, '');
-                if(data.lState ==2 &&  finish < start){
-
-                }else{
-                    result.push(data);
-                }
-            }
-            return result;
-        },
-        // 搜索数据格式化
-        searchFormat(type){
-            let session = this.sessionData;
-            let info = {
-                uid: session.uID,
-                token: session.token,
-                apId: sessionStorage.getItem('order_apid'),
-                pType: type,
-                pageNum: (type =='SK') ? this.currUpPage : this.currDownPage,
-                pageSize: (type =='SK') ? this.pageUpSize : this.pageDownSize,
-                mVehicle: (type =='SK') ? this.mediaUpType : this.mediaDownType,
-            };
-            let citySelect = this.citySelect;
-            let allhouse = this.allhouse;
-            let allPic = this.allPic;
-
-            if(allPic){
-                if(allPic == '2'){
-                    info.hasUpload = "true";
-                }
-                if(allPic == '3'){
-                    info.hasUpload = "false";
-                }
-            }
-            if(citySelect.length){
-                if(citySelect[0] == '全部'){
-                    // this.searchFun();
-                }else{
-                    info.city = citySelect[0];
-                    info.district = citySelect[1];
-                }
-            }
-            if(allhouse){
-                info.resid = allhouse;
-            }
-            console.log('type---', info);
-            return info;
-        },
-        searchFun(){
-            if(this.planPanel == 'forth'){
-                let upinfo = this.searchFormat('SK');
-                this.getUpImgInfo(upinfo);
-            }else if(this.planPanel == "fifth"){
-                let downinfo = this.searchFormat('XK');
-                this.getDownImgInfo(downinfo);
-            }
-        },
-        // 获取上刊图片数据
-        getUpImgInfo(params) {
-            api.postApi(this.apiVar.Advertisement+"/GetImg", params)
-                .then(res => {
-                    if (!res.data.SysCode) {
-                        console.log(res.data);
-                        let dataInfo = res.data;
-                        this.totalUpNum = dataInfo.totalCount;
-                        this.totalUpPageNum = dataInfo.searchCount;
-                        this.currUpNum = dataInfo.hasPhotoCount;
-                        // this.upImgPercent = this.totalUpNum? Math.ceil((this.currUpNum / this.totalUpNum)*100):0;
-                        this.upImgPercent = this.totalUpNum? Number(((this.currUpNum / this.totalUpNum)*100).toFixed(2)):0;
-                        for(let data of dataInfo.dataList){
-                            for(let item of data.photoList){
-                                item.name = item.pID+'.png',
-                                item.url = item.pURL;
-                                item.pID = item.pID;
-                                item.isCollection = false
-                            }
-                            let time = this.formatTime(data.lStar) + "-" +this.formatTime(data.lEnd);
-                            data.timeRange = time;
-                            data.upImgArr = data.photoList;
-                        }
-                        this.pageUpReportArr = dataInfo.dataList;
-                        this.checkImgStatus('SK')
-                        console.log('this.pageUpReportArr',this.pageUpReportArr)
-                        this.UpReportLoading = false;
-                        if(dataInfo.totalCount == 0){
-                            Message.warning('暂无数据');
-                        }
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
-                    } else {
-                        Message.warning(res.data.MSG);
-                    }
-                })
-                .catch(res => {
-                    this.UpReportLoading = false;
-                    console.log(res);
-                });
-        },
-
-        // 获取下刊图片数据
-        getDownImgInfo(params) {
-            api.postApi(this.apiVar.Advertisement+"/GetImg", params)
-                .then(res => {
-                    if (!res.data.SysCode) {
-                        console.log(res.data);
-                        let dataInfo = res.data;
-                        this.totalDownNum = dataInfo.totalCount;
-                        this.totalDownPageNum = dataInfo.searchCount;
-                        this.currDownNum = dataInfo.hasPhotoCount;
-                        // this.downImgPercent = this.totalDownNum? Math.ceil((this.currDownNum / this.totalDownNum)*100):0;
-                        this.downImgPercent = this.totalDownNum?Number(((this.currDownNum / this.totalDownNum)*100).toFixed(2)):0;
-                        for(let data of dataInfo.dataList){
-                            for(let item of data.photoList){
-                                item.name = item.pID+'.png',
-                                item.url = item.pURL;
-                                item.pID = item.pID;
-                                item.isCollection = false;
-                            }
-                            let time = this.formatTime(data.lStar) + "-" +this.formatTime(data.lEnd);
-                            data.timeRange = time;
-                            data.downImgArr = data.photoList;
-                        }
-                        this.pageDownReportArr = dataInfo.dataList;
-                        this.checkImgStatus('XK')
-                        this.DownReportLoading = false;
-                        if(dataInfo.totalCount == 0){
-                            Message.warning('暂无数据');
-                        }
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
-                    } else {
-                        Message.warning(res.data.MSG);
-                    }
-                })
-                .catch(res => {
-                    this.DownReportLoading = false;
-                    console.log(res);
-                });
-        },
-        // 检查图片是否已收藏
-        checkImgStatus(type){
-            //advertisement/GetUserStatusByPid
-            let pIDList = this.returnPIDList(type)
-            if(!pIDList.length){
-                return
-            }
-            let params = {
-                uid: this.sessionData.uID,
-                token: this.sessionData.token,
-                pids: pIDList.join(','),
-            }
-            console.log('params',params)
-            api.getApi(this.apiVar.Advertisement + '/GetUserStatusByPid',params).then(res=>{
-                console.log('检测图片收藏状态res',res)
-                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                    this.loginTimeout()
-                } else if (res.data.SysCode === 200200) {
-                    this.setImgStatus(res.data.data,type)
-                } else {
-                    this.messageFun('warning', res.data.MSG)
-                }
-            })
-        },
-        // 返回PIDList
-        returnPIDList(type){
-            let reportList = []
-            if(type === 'SK'){
-                reportList = this.pageUpReportArr
-            }else if (type === 'XK'){
-                reportList = this.pageDownReportArr
-            }
-            console.log(type,'reportList',reportList)
-            let pIDList = []
-            for(let key of reportList){
-                let imgArr = type === 'SK' ? key.upImgArr : key.downImgArr
-                for(let imgKey of imgArr){
-                    pIDList.push(imgKey.pID)
-                }
-            }
-            return pIDList
-        },
-        // 给上下刊添加图片的收藏状态
-        setImgStatus(data,type){
-            console.log('给上下刊添加图片的收藏状态',data)
-            let reportList = []
-            if(type === 'SK'){
-                reportList = this.pageUpReportArr
-            }else if (type === 'XK'){
-
-            }
-            console.log(type,'添加图片的收藏状态',reportList)
-            for (let key of reportList) {
-                let imgArr = type === 'SK' ? key.upImgArr : key.downImgArr
-                for (let imgKey of imgArr) {
-                    for (let pKey of data) {
-                        if (pKey.pid == imgKey.pID) {
-                            imgKey.isCollection = pKey.isCollection
-                            break
-                        }
-                    }
-                }
-            }
-            console.log('reportList',reportList,this.pageUpReportArr)
-        },
-        // 区域二级联动
-        getCitys(arr) {
-            let cityArr = [];
-            for (let data of arr) {
-                let obj = {
-                    value: data.city,
-                    label: data.city,
-                    children: []
-                };
-                if (
-                    JSON.stringify(cityArr).indexOf(JSON.stringify(obj)) === -1
-                ) {
-                    cityArr.push(obj);
-                }
-            }
-            for (let item of cityArr) {
-                for (let data of arr) {
-                    let areaObj = {
-                        value: data.rName,
-                        label: data.rName
-                    };
-                    if (data.city == item.value) {
-                        // 去重
-                        if (
-                            JSON.stringify(item.children).indexOf(
-                                JSON.stringify(areaObj)
-                            ) === -1
-                        ) {
-                            item.children.push(areaObj);
-                        }
-                    }
-                }
-            }
-            console.log("cityArr---------------fda", cityArr);
-            return cityArr;
         },
         // 时间格式规范 年月日
         formatTime(val) {
@@ -1773,48 +666,6 @@ export default {
                 this.currentSetpoint = this.setpointArr;
             }
         },
-        changeUpMedia(){
-            if(this.mediaUpType == '广告门'){
-                this.allResource = this.mediaAdData;
-                this.citys = this.AdCitys;
-                this.allResource.concat();
-                this.citys.concat();
-            }
-            if(this.mediaUpType == '道闸'){
-                this.allResource = this.mediaDaoData
-                this.citys = this.DaoCitys;
-                this.allResource.concat();
-                this.citys.concat();
-            }
-            this.currUpPage = 1;
-            this.currDownPage = 1;
-            this.citySelect = [];
-            this.allhouse = '';
-            this.allPic = '';
-
-            this.searchFun();
-            console.log('citys----dfsa', this.citys);
-        },
-        changeDownMedia(){
-            if(this.mediaDownType == '广告门'){
-                this.allResource = this.mediaAdData;
-                this.citys = this.AdCitys;
-                this.allResource.concat();
-                this.citys.concat();
-            }
-            if(this.mediaDownType == '道闸'){
-                this.allResource = this.mediaDaoData
-                this.citys = this.DaoCitys;
-                this.allResource.concat();
-                this.citys.concat();
-            }
-            this.currUpPage = 1;
-            this.currDownPage = 1;
-            this.citySelect = [];
-            this.allhouse = '';
-            this.allPic = '';
-            this.searchFun();
-        },
         // 搜索
         search() {
             // 账号，姓名
@@ -1836,31 +687,6 @@ export default {
             }
             this.currentSetpoint = this.setpointArr;
         },
-        searchImgChange(){
-            let citySelect = this.citySelect;
-            if(citySelect[0] == "全部"){
-                this.allPic = '';
-                this.allhouse ='';
-            }
-            this.searchImg();
-        },
-        // 上下刊搜索图片
-        searchImg() {
-            this.currUpPage = 1;
-            this.currDownPage = 1;
-            let citySelect = this.citySelect;
-            let allhouse = this.allhouse;
-            let allPic = this.allPic;
-
-            if(citySelect || allhouse || cityWord || (status>=0)){
-                this.currentOrder = [];
-                this.loading_point = false;
-                this.currPage = 1;
-                this.searchFun();
-            }else{
-                this.$message.warning('请输入搜索条件');
-            }
-        },
         // 城市筛选
         filterCity(value, row) {
             return row.city === value;
@@ -1872,361 +698,6 @@ export default {
         // 排期筛选
         filterTimeRange(value, row) {
             return row.timeRange === value;
-        },
-        // 字段截取
-        wordlimit(word, num) {
-            if(document.body.clientWidth<=1366){
-                if (word && (word.length > num)) {
-                    return word = word.substr(0, num) + '...';
-                }
-                return word;
-            }else{
-                return word;
-            }
-        },
-        // 隐藏上传组件
-        uploadDisabled(imgList){
-            // console.log(imgList);
-            return imgList.length>5;
-        },
-        // 上刊图片上传
-        submitUpload(type){
-            if(!this.constractArr.length){
-                return;
-            }
-            this.addload = this.$loading({
-                lock: true,
-                text: '保存数据中,请稍等...',
-                spinner: 'el-icon-loading',
-                background: 'rgba(0, 0, 0, 0.7)'
-            });
-            let arr = this.uploadImgArr;
-
-            this.UploadTime = parseInt( arr.length / 6 );
-            let a1 = arr.length % 6;
-            if(a1 > 0){
-                this.UploadTime++;
-            }
-            this.submitUpload_(type, 1)
-
-        },
-        submitUpload_(type, index){
-            if(!this.constractArr.length){
-                return;
-            }
-            let arr = this.uploadImgArr;
-
-            if(this.UploadTime >= index){
-                let timeArr = [];
-                let formData = new FormData();
-                for(let i = (index-1)*6, iLen = arr.length; i<=iLen; i++ ){
-                    if(timeArr.length < 6){
-                        if(i >= iLen){
-                            api.postUpload_file(this.doUpload, formData).then(res =>{
-                                console.log(res);
-                                if(!res.data.SysCode){
-                                    let result = res.data;
-                                    for(let data of result){
-                                        this.uploadPidArr.push(data);
-                                    }
-                                    index++;
-                                    this.submitUpload_(type, index);
-                                }else{
-                                    this.addload.close();
-                                    Message.warning(res.data.MSG);
-                                }
-                            })
-                            break;
-                        }else{
-                            timeArr.push(i);
-                            formData.append('file[]', arr[i]);
-                        }
-                    }else{
-                        if(timeArr.length >= 6){
-                            api.postUpload_file(this.doUpload, formData).then(res =>{
-                                console.log(res);
-                                if(!res.data.SysCode){
-                                    let result = res.data;
-                                    for(let data of result){
-                                        this.uploadPidArr.push(data);
-                                    }
-                                    index++;
-                                    this.submitUpload_(type, index);
-                                }else{
-                                    this.addload.close();
-                                    Message.warning(res.data.MSG);
-                                }
-                            })
-                            break;
-                        }
-                    }
-
-                }
-            }else{
-                console.log('++++this.uploadPidArr++++', this.uploadPidArr);
-                this.uploadConect(type, this.uploadPidArr);
-            }
-        },
-        uploadConect(type, result){
-            let uid = this.sessionData.uID;
-            let token = this.sessionData.token;
-            let imgsTypes =  this.constractArr;
-            let pidarr = this.uploadPidArr;
-            for(let t = 0, tLen=pidarr.length; t<tLen; t++){
-                pidarr[t].pAlt = imgsTypes[t].pAlt
-                pidarr[t].pRemarks = imgsTypes[t].pRemarks;
-                pidarr[t].pType = type;
-                pidarr[t].ptID = imgsTypes[t].ptID;
-                pidarr[t].ptP = imgsTypes[t].ptP;
-                pidarr[t].puID = imgsTypes[t].puID;
-                pidarr[t].realName = imgsTypes[t].realName;
-            }
-
-            let imgs = {
-                imgs: pidarr
-            };
-            console.log('pidarr---', pidarr);
-            api.postApi_json(this.apiVar.Advertisement+'/SetImgList?uid='+uid+'&token='+token, imgs).then(res =>{
-                console.log(res.data);
-                this.addload.close();
-                if(res.data.SysCode == 300200){
-                    Message.success(res.data.MSG);
-                    this.constractArr = [];
-                    this.uploadImgArr = [];
-                    this.uploadPidArr = [];
-                    this.UploadTime = 0;
-                    this.searchFun();
-                } else if (res.data.SysCode == 100302) {
-                    this.loginTimeout();
-                } else {
-                    Message.warning(res.data.MSG);
-                }
-            }).catch(res =>{
-                this.addload.close();
-            });
-        },
-        // 收藏
-        saveImgFun(item,index,type){
-            console.log('保存图片', item,index)
-            let params = {
-                uid: this.sessionData.uID,
-                token: this.sessionData.token,
-                lId: item.lID,
-                pId: type === 'SK' ? item.upImgArr[index].pID : item.downImgArr[index].pID,
-                picUrl: type === 'SK' ? item.upImgArr[index].url : item.downImgArr[index].url,
-                type: this.planPanel === 'forth' ? 0 : this.planPanel === 'fifth' ? 1 : "",
-            }
-            if (!params.lId) {
-                this.messageFun('warning', '图片信息异常无法保存！')
-                return
-            }
-            if (params.type === "") {
-                delete params.type
-            }
-            console.log('params', params)
-            api.postApi(this.apiVar.Advertisement + '/imageCollection/add', params).then(res => {
-                console.log('图片收藏res', res)
-                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                    this.loginTimeout()
-                } else if (res.data.SysCode === 200200) {
-                    if(type === 'SK'){
-                        item.upImgArr[index].isCollection = true
-                    }else if(type === 'XK'){
-                        item.downImgArr[index].isCollection = true
-                    }
-                    this.messageFun('success', '收藏成功')
-                } else {
-                    this.messageFun('warning', res.data.MSG)
-                }
-            })
-        },
-        // 取消收藏
-        cancelImgFun(item,index,type){
-            console.log('取消收藏',item,index)
-            let params = {
-                uid: this.sessionData.uID,
-                token: this.sessionData.token,
-                pId: type === 'SK' ? item.upImgArr[index].pID : item.downImgArr[index].pID,
-            }
-            api.postApi(this.apiVar.Advertisement + '/imageCollection/remove', params).then(res => {
-                console.log('取消收藏res', res)
-                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                    this.loginTimeout()
-                } else if (res.data.SysCode === 200200) {
-                    if(type === 'SK'){
-                        item.upImgArr[index].isCollection = false
-                    }else if(type === 'XK'){
-                        item.downImgArr[index].isCollection = false
-                    }
-                    this.messageFun('success', '取消成功')
-                } else {
-                    this.messageFun('warning', res.data.MSG)
-                }
-            })
-        },
-        // 删除已上传的图片
-        deleteImg(item){
-            console.log('删除item',item)
-            if(item.pID){
-                this.$confirm('确定移除这张图片吗?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    this.handleRemove(item)
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消删除'
-                    });
-                });
-            }
-        },
-        uploadImg(params){
-            console.log('parmas---', params);
-            var fileObj = params.file;
-            this.constractArr.push(this.upLoadObj);
-            this.uploadImgArr.push(fileObj);
-        },
-        // 点击上传图片按钮之时进行储存所需数据(asid, ptp等)
-        saveId(row) {
-            console.log("row------", row);
-            let palt = this.orderDetail.apName+'-'+row.resName+"-"+row.mTitle+row.asLab;
-            let ptp = sessionStorage.getItem("order_apid");
-            let account = this.sessionData.username;
-            let username = this.sessionData.realName;
-            let prk = {
-                plan: this.orderDetail.apName ? this.orderDetail.apName : "",
-                res: row.resName ? row.resName : "",
-                media: row.mTitle ? row.mTitle : "",
-                city: row.city ? row.city : "",
-                area: row.rName ? row.rName : "",
-                asLab: row.asLab ? row.asLab : "",
-                lstart: row.lStar ? row.lStar : "",
-                lend: row.lEnd ? row.lEnd : "",
-                assettag: row.assetTag ? row.assetTag : "",
-                brand: this.orderDetail.bTitle ? this.orderDetail.bTitle : "",
-                account: account ? account : "",
-                username: username ? username : "",
-                resid: row.resID ? row.resID : "",
-                address: row.resAddress ? row.resAddress : "",
-                lid: row.lID ? row.lID : ""
-            };
-            let obj = {
-                pAlt: palt,
-                pID: '',
-                pRemarks: JSON.stringify(prk),
-                pSrc: '',
-                pType: 'SK',
-                pURL: "",
-                pUTime: '',
-                ptID: row.mVehicle=='广告门' ? row.asID: row.mID,
-                ptP: ptp,
-                puID: 0,
-                realName: account,
-            };
-            this.upLoadObj = obj;
-        },
-        beforeImgRemove(file, fileList){
-            if(file.pID){
-                return this.$confirm(`确定移除这张图片吗？`);
-            }
-        },
-        // 限制只能上传png,jpeg格式的照片
-        beforeAvatarUpload(file) {
-            const isIMAGE = file.type === "image/jpeg" || file.type === "image/png";
-            const isLt1M = file.size / 1024 / 1024 < 8;
-
-            if (!isIMAGE) {
-                Message.error("只能上传jpg/png图片!");
-            }
-            if (!isLt1M) {
-                Message.error("上传文件大小不能超过 8MB!");
-            }
-            return isIMAGE&&isLt1M;
-        },
-        // 超过图片上传个数
-        handleExceed(files, fileList) {
-            console.log(files, fileList);
-            Message.warning(`当前限制选择 6 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
-        },
-        //删除照片
-        handleRemove(file, fileList) {
-            console.log('fdasl--ff', file, fileList);
-            if(file.pID){
-                let type = file.pType;
-                let info = file;
-                file.pType = 'del';
-                let uid = this.sessionData.uID;
-                let token = this.sessionData.token;
-                let img = {
-                    imgs: [info]
-                };
-                api.postApi_json(this.apiVar.Advertisement+'/SetImgList?uid='+uid+'&token='+token, img)
-                    .then(res => {
-                        console.log(res.data);
-                        // 实时更新进度条
-                        if (res.data.SysCode == 300200) {
-                            Message.success(res.data.MSG);
-                            this.allPic = '';
-                            this.searchFun();
-                        } else if (res.data.SysCode == 100302) {
-                            this.loginTimeout();
-                        } else {
-                            Message.warning(res.data.MSG);
-                        }
-                    })
-                    .catch(res => {
-                        console.log(res);
-                    });
-            }else{
-                let upLoad = this.uploadImgArr;
-                for(let i = 0, iLen = upLoad.length; i<iLen; i++ ){
-                    if(file.uid == upLoad[i].uid){
-                        upLoad.splice(i, 1);
-                        this.constractArr.splice(i, 1);
-                        break;
-                    }
-                }
-            }
-        },
-        // 查看预览图片
-        handlePictureCardPreview(file) {
-            this.dialogImageUrl = file.url;
-            this.dialogVisible = true;
-        },
-        // 更新报告
-        updateReport(type){
-            let info = {
-                apId: this.orderDetail.apID,
-                type: type,
-            };
-            this.updateLoading = true;
-            api.postApi(this.apiVar.Advertisement+"/UpdateSXReport", info).then(res =>{
-                console.log(res.data);
-                if(res.data.SysCode == 200200){
-                    Message.success(res.data.MSG);
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
-                }else{
-                    Message.warning(res.data.MSG);
-                }
-                this.updateLoading = false;
-            }).catch(err =>{
-                console.log(err);
-                this.updateLoading = false;
-            });
-        },
-        // 查看h5上下刊刊报告按钮
-        showH5(type){
-            let apid = sessionStorage.getItem('order_apid');
-            let tempwindow = window.open();
-            api.getApi(this.apiVar.UCAPI+'/EncryptNo', {num: apid}).then(res =>{
-                console.log(res.data);
-                tempwindow.location = "/Report?"+type+"="+res.data.EncryptCode;
-            }).catch(res =>{
-                console.log(res);
-            });
         },
         // 取消修改合同编号
         cancelChangeID() {
@@ -2258,8 +729,6 @@ export default {
                     if (res.data.SysCode == 300200) {
                         this.$set(this.orderDetail, "apQC", qc);
                         Message.success(res.data.MSG);
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
                     } else {
                         Message.warning(res.data.MSG);
                     }
@@ -2269,10 +738,7 @@ export default {
                 });
             this.changeCID = false;
         },
-        loginTimeout() {
-            Message.warning("登录超时,请重新登录")
-            this.$router.push("/login");
-        },
+        // 终止点位
         conFirmStopAds(){
             let info = {
                 uid: this.sessionData.uID,
@@ -2303,8 +769,6 @@ export default {
                             this.$set(this.nowRow, 'finishTimeRange', time);
                             this.isFinish = false;
                             Message.success("终止成功");
-                        } else if (res.data.SysCode == 100302) {
-                            this.loginTimeout();
                         } else {
                             Message.warning(res.data.MSG);
                         }
@@ -2365,8 +829,6 @@ export default {
                                 Message.warning('系统异常,请稍后重试');
                             }
 
-                        } else if (res.data.SysCode == 100302) {
-                            this.loginTimeout();
                         } else {
                             Message.warning(res.data.MSG);
                         }
@@ -2379,15 +841,6 @@ export default {
                     Message.info("已取消操作");
                 });
 
-        },
-
-        cancelChangeRemark() {
-            this.changeRemark = false;
-            Message.info("取消修改监播备注");
-        },
-        confirmChangeRemark() {
-            this.changeRemark = false;
-            Message.success("修改监播备注成功");
         },
         //点击换点
         changePoint() {
@@ -2475,11 +928,8 @@ export default {
             api.postApi_json(this.apiVar.Advertisement + '/SetPDAS?uid='+ userData.uID + '&token=' + userData.token,
                 JSON.stringify(postData)).then(res => {
                 console.log('添加选点返回信息', res)
-                addload.close()
-                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                    // addload.close()
-                    this.loginTimeout()
-                } else if (res.data.SysCode === 300500) {
+                addload.close();
+                if (res.data.SysCode === 300500) {
                     Message.warning(res.data.MSG)
                 }else {
                     if (res.data === '' || res.data === null) {
@@ -2502,50 +952,67 @@ export default {
             this.dialogAddPoint = false;
             // Message.info("已取消操作");
         },
-        // 时间戳转换成日期格式 2018-06-18 10:33:24
-        timestampToTime(timestamp) {
-            let date = new Date(timestamp);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
-            let Y = date.getFullYear() + '-';
-            let M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
-            let D = date.getDate() + ' ';
-            let h = date.getHours() + ':';
-            let m = date.getMinutes() + ':';
-            let s = date.getSeconds();
-            return Y + M + D + h + m + s;
-        },
-        // 导出图片包
-        downloadImg(type){
+        // 换画
+        // 获取换画列表
+        getPainlist(){
             let info = {
-                uid: this.sessionData.uID,
-                token: this.sessionData.token,
-                apId: this.orderDetail.apID,
-                type: type=='SK' ? 0 : 1,
-                apName: this.orderDetail.apName,
-                downtype: 1
+                apId: sessionStorage.getItem("order_apid")
             };
-            this.downLoading = true;
-            const tempPage = window.open('', '_blank');
-            api.getApi(this.apiVar.Advertisement+'/DownloadImgPackage', info).then(res =>{
+            api.getApi(this.apiVar.replace+'/report/list', info).then(res =>{
+                console.log(res);
                 if(res.data.SysCode == 200200){
-                    // let routeUrl = this.$router.resolve({
-                    //     path: "/progressDown",
-                    //     query: info,
-                    // });
-                    // window.open(routeUrl.href, '_blank');
-
-                    let routeUrl = this.$router.resolve({
-                        path: "/progressDown",
-                        query: info,
-                    });
-                    tempPage.location = routeUrl.href;
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
+                    this.painlist = res.data.data;
+                    if(this.painlist.length){
+                        this.showPain = true;                    
+                    }
                 }else{
-                    Message.warning(res.data.MSG);
+                    sessFun.messageFun('warning', res.data.msg);
                 }
-                this.downLoading = false;
-            }).catch(err =>{
-                this.downLoading = false;
+            });
+        },
+        changePain(){
+            MessageBox.confirm(
+                "注：换画时间需在对应点位排期时间内",
+                "是否创建新的换画报告\n",
+                {
+                    dangerouslyUseHTMLString: true,
+                    confirmButtonText: "确定",
+                    cancelButtonText: "取消",
+                    type: "warning"
+                }
+            ).then(() => {
+                this.getPainlist();
+                this.addPainReport();
+            });
+        },
+        // 新增换画报告
+        addPainReport(){
+            let info = {
+                apId: sessionStorage.getItem("order_apid")
+            };
+            api.getApi(this.apiVar.replace+'/report/list', info).then(res =>{
+                console.log(res);
+                if(res.data.SysCode == 200200){
+                    this.painlist = res.data.data;
+                    let len = this.painlist.length;
+                    let painInfo = {
+                        apId: this.orderDetail.apID,
+                        replaceRecordName: `换画${len+1}`,
+                    };
+                    api.postApi_json(this.apiVar.replace+'/report/add', painInfo).then(res =>{
+                        if(res.data.SysCode == 200200){
+                            this.showPain = true;  
+                            this.planPanel = 'sixth';    
+                            setTimeout(()=>{
+                                this.fromType = !this.fromType;
+                            }, 10);                        
+                        }else{
+                            sessFun.messageFun('warning', res.data.msg);
+                        }
+                    });   
+                }else{
+                    sessFun.messageFun('warning', res.data.msg);
+                }
             });
         },
         // 操作提示统一方法
@@ -2590,15 +1057,11 @@ export default {
     }
 
     .price_quo {
-        margin: 0 32px;
+        margin: 0px 32px;
     }
 
     /deep/ .el-tabs__nav-scroll {
         padding-left: 28px;
-    }
-
-    .baojiadan /deep/ .el-tabs__nav-scroll {
-        padding-left: 0;
     }
 
     .box-wrap > h4 {
@@ -2666,64 +1129,6 @@ export default {
         box-shadow: none;
     }
 
-    /deep/ .el-tabs--border-card > .el-tabs__content {
-        padding: 0 !important;
-    }
-
-    /deep/ .el-tabs__content {
-        width: 100%;
-    }
-
-    .panel {
-        margin: 0 32px;
-    }
-
-    .step3 {
-        padding: 0 105px;
-    }
-
-    .price {
-        width: 100%;
-        height: 300px;
-    }
-
-    .price-left {
-        box-sizing: border-box;
-        padding-right: 66px;
-        width: 49%;
-        float: left;
-        border-right: 1px dashed #d8d8d8;
-    }
-
-    .price-right {
-        width: 49%;
-        float: right;
-        padding-left: 66px;
-        box-sizing: border-box;
-    }
-
-    .price ul li {
-        font-size: 14px;
-        color: #666666;
-        border-bottom: 1px solid #d8d8d8;
-        height: 50px;
-        line-height: 50px;
-        margin-left: 19px;
-        margin-right: 28px;
-    }
-
-    .price ul li:last-child {
-        text-align: right;
-        border-bottom: none;
-        font-size: 18px;
-        color: #333333;
-        font-weight: bold;
-    }
-
-    .price ul li span {
-        float: right;
-    }
-
     /*详情头部*/
     .content_top_wrap {
         padding: 24px 32px;
@@ -2782,213 +1187,21 @@ export default {
         width: 100%;
     }
 
-    .plan-detail {
-        font-size: 14px;
-        color: #333333;
-        padding-left: 41px;
-    }
-
-    .plan-detail-left {
-        float: left;
-        width: 78%;
-    }
-
-    .plan-detail-left ul {
-        width: 100%;
-        float: left;
-        display: flex;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        text-align: left;
-    }
-
-    .plan-detail-left ul li {
-        float: left;
-        width: 280px;
-        margin-bottom: 12px;
-        display: flex;
-    }
-
-    .plan-detail-left ul li em {
-        font-size: 14px;
-        color: #666666;
-    }
-
-    .plan-detail-right {
-        width: 20%;
-        float: right;
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .plan-detail-right dl {
-        float: left;
-        text-align: right;
-    }
-
-    .plan-detail-right dt {
-        font-size: 14px;
-        color: rgba(0, 0, 0, 0.45);
-    }
-
-    .plan-detail-right dd {
-        margin-top: 4px;
-        display: inline-block;
-        font-size: 20px;
-        font-weight: bold;
-        color: rgba(0, 0, 0, 0.85);
-    }
-
     /*物料信息*/
     /deep/ .el-table_2_column_16 .cell {
         text-align: right;
         padding-right: 20px;
     }
-    .third-wrap{
-        margin-bottom: 32px;
-    }
-    /*上刊报告*/
-    .imgs-box {
-        margin: 0 auto;
-    }
-
-    .up-loader-header {
-        position: relative;
-    }
-
-    .progress {
-        float: right;
-    }
-
-    /deep/ .up-loader-header .el-input__inner {
-        height: 32px;
-        width: 180px;
-    }
-
-    .moreimgs {
-        width: 100%;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-around;
-    }
-
-    .progress span {
-        position: relative;
-        top: 8px;
-        left: 0;
-        font-size: 14px;
-        color: #666666;
-    }
-
-    /deep/ .el-progress-bar__outer {
-        height: 16px !important;
-    }
-
-    /deep/ .el-progress-bar {
-        width: 100%;
-    }
-
-    /deep/ .el-progress {
-        position: absolute;
-        line-height: 1;
-        width: 43%;
-        right: 65px;
-        top: 10px;
-    }
-
-    .img-car {
-        font-size: 14px;
-        color: #666666;
-        background: rgba(247, 247, 247, 1);
-    }
-
-    .car_header {
-        border-top: 1px solid #dedede;
-    }
-
-    .car_header span {
-        color: rgba(153, 153, 153, 1);
-        line-height: 17px;
-    }
-
-    .date_fa {
-        margin-right: 5px;
-    }
-
-    .up-loader-Imgpanel {
-        margin-top: 11px;
-        display: inline-block;
-        margin-right: 2.6%;
-        border: 1px solid #ebeef5;
-        width: 22%;
-        max-width: 383px;
-        min-width: 350px;
-    }
-
-    /*上传图片*/
-    /deep/ .el-card__header {
-        font-size: 14px;
-        height: 66px;
-        color: #666666;
-        background: rgba(247, 247, 247, 1);
-        padding: 11px 12px;
-    }
-
-    /deep/ .el-card__body {
-        padding: 0;
-        height: 260px;
-        overflow: hidden;
-    }
-
-    .upload-img span {
-        position: absolute;
-        top: 30px;
-        left: 30px;
-        font-size: 14px;
-        color: #666666;
-    }
-
-    /deep/ .el-upload--picture-card {
-        width: 30%;
-        height: 105px;
-        line-height: 105px;
-        margin: 4.2% 1.6% 0 1.6%;
-        background: rgba(251, 251, 251, 1);
-        border-radius: 4px;
-        border: 1px dashed #dedede;
-        text-align: center;
-    }
-
-    /deep/ .el-upload-list--picture-card .el-upload-list__item {
-        width: 30%;
-        height: 105px;
-        margin: 4.2% 1.6% 0 1.6%;
-    }
-
-    /deep/ .up-loader-Imgpanel .el-card {
-        border: none;
-    }
-
     /*页码*/
     .pager {
         height: 32px;
         margin-top: 30px;
         text-align: right;
     }
-
-    /deep/ .forth-wrap .el-radio-group {
-        margin-bottom: 10px;
+    /* 换画 */
+    .changepic_box{
+        margin: 0px 32px 32px;
     }
-
-    .up-report-bottom {
-        text-align: center;
-        margin: 20px;
-    }
-
-    .up-report-bottom-checkbox {
-        margin-bottom: 10px;
-    }
-
     /*按钮*/
     .content_bottom_btn {
         width: 100%;
@@ -3017,26 +1230,6 @@ export default {
     }
 
     /*选择点位*/
-    /deep/ .type-select .el-input,
-    /deep/ .type-select .el-input__inner {
-        width: 95px;
-        position: relative;
-        top: 0;
-        left: -5px;
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
-        padding-right: 0;
-        padding-left: 10px;
-        height: 32px;
-    }
-
-    /deep/ .date-select.el-input__inner {
-        width: 237px;
-        position: relative;
-        left: 1px;
-        height: 32px;
-    }
-
     /deep/ .el-date-editor .el-range__icon {
         position: relative;
         top: -2px;
@@ -3071,18 +1264,12 @@ export default {
     }
 
     /*日期控件*/
-    .block {
-        display: inline-block;
-        margin-left: 2px;
-        position: relative;
-    }
-
     /deep/ .el-range-separator {
         position: relative;
         top: -2px;
     }
 
-    /deep/ .el-input__inner {
+    /deep/ .search-row .el-input__inner {
         width: 260px;
         height: 32px;
         line-height: 32px;
@@ -3136,27 +1323,6 @@ export default {
     }
 
     /* 物料信息弹出框 */
-    .car-title {
-        background: #E6F7FF;
-        border: 1px solid #BAE7FF;
-        border-radius: 4px;
-        margin-bottom: 10px;
-        padding: 5px;
-    }
-
-    .car-title h4 {
-        font-size: 14px;
-        display: inline-block;
-    }
-
-    .car-title span {
-        font-size: 14px;
-        font-weight: normal;
-        margin: 0 6px;
-        cursor: pointer;
-        color: #1890ff;
-    }
-
     /deep/ .el-pagination .el-select .el-input .el-input__inner {
         width: 100px;
     }
@@ -3172,105 +1338,19 @@ export default {
         /*margin: 0;*/
     }
 
-    /deep/ .mediaList_wrap .baojiadan .el-tabs__header {
-        border-bottom: none;
-        height: 38px;
-        line-height: 38px;
-        background-color: #f5f7fa;
-        border-bottom: 1px solid #e4e7ed;
-        margin: 0;
-    }
-
     /*1920*/
     @media all and (min-width: 1900px) {
         .plan-title .handleBtn {
             position: absolute;
             top: 30px;
         }
-
-        .plan-detail-right {
-            width: 15%;
-        }
-
-        .plan-detail-left ul li {
-            float: left;
-            width: 400px;
-            margin-bottom: 12px;
-        }
-    }
-
-    /deep/ .disabled .el-upload--picture-card {
-        /*display: none;*/
-    }
-
-    .radio_style {
-        vertical-align: top;
     }
     /deep/ .el-upload-list__item.is-success{
         display: none;
     }
-    /**/
-    .img_box {
-        width: 30%;
-        height: 105px;
-        margin: 4.2% 1.6% 0 1.6%;
-        float: left;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .upload_img_item {
-        width: 100%;
-        height: 100%;
-    }
-    .icon_success{
-        display: block;
-        position: absolute;
-        right: -15px;
-        top: -6px;
-        width: 40px;
-        height: 24px;
-        background: #13ce66;
-        text-align: center;
-        -webkit-transform: rotate(45deg);
-        transform: rotate(45deg);
-        -webkit-box-shadow: 0 0 1pc 1px rgba(0,0,0,.2);
-        box-shadow: 0 0 1pc 1px rgba(0,0,0,.2)
-    }
-    .icon_success i{
-        color: #fff;
-        font-size: 12px;
-        margin-top: 11px;
-        transform: rotate(-45deg);
-    }
-    .icon_box{
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        top:0;
-        left: 0;
-        background: rgba(0,0,0,.5);
-        cursor:pointer;
-    }
-    .img_box_icon {
-        width: 100%;
-        margin-top:40%;
-        text-align: center;
-    }
-    .img_box_icon i{
-        color: #fff;
-        font-size: 22px;
-    }
-    .img_box_icon i.icon_save {
-        color: #FFD517;
-    }
-
+    
     /deep/ .disabled .el-upload--picture-card {
         display: none;
-    }
-
-    .radio_style {
-        vertical-align: top;
     }
 
     /deep/ .el-table__expanded-cell[class*=cell] .el-form {
@@ -3291,5 +1371,9 @@ export default {
     }
     /deep/ .table_wrap .el-table__body-wrapper{
         min-height: auto;
+    }
+
+    .box-wrap, #pane-second{
+        margin-bottom: 32px;
     }
 </style>

@@ -311,8 +311,6 @@
                                 result.push(obj);
                             }
                             this.companyArr = result;
-                        }else if(res.data.SysCode == 100302){
-                            this.loginTimeout();
                         }else{
                             Message.warning(res.data.MSG);
                         }
@@ -391,8 +389,6 @@
                                     }else{
                                         Message.warning('该公司下没有此销售');
                                     }
-                                }else if(res.data.SysCode == 100302){
-                                    this.loginTimeout();
                                 }else{
                                     Message.warning(res.data.MSG);
                                 }
@@ -472,8 +468,6 @@
                             }).then(res => {
                                 this.resetForm();
                             });
-                        } else if(res.data.SysCode == 100302){
-                            this.loginTimeout();
                         } else {
                             Message.warning(res.data.MSG);
                         }
@@ -490,9 +484,7 @@
                     .then(res => {
                         console.log(res);
                         let data = res.data;
-                        if (data.SysCode === 100302 || data.MSG === '登陆超时') {
-                            this.loginTimeout();
-                        } else if(data.SysCode === 100300 || data.MSG === '注册失败，可能是账户名称已被占用'){
+                        if(data.SysCode === 100300 || data.MSG === '注册失败，可能是账户名称已被占用'){
                             this.$message({
                                 message: '注册失败，可能是账户名称已被占用',
                                 type: 'warning'
@@ -567,8 +559,6 @@
                                 console.log('editInfo-----', editInfo);
                                 this.accountForm = editInfo;
                                 this.roleSelect(editInfo.role);
-                            }else if(res.data.SysCode == 100302){
-                                this.loginTimeout();
                             }else{
                                 Message.warning(res.data.MSG);
                             }
@@ -610,8 +600,6 @@
                             value: '0'
                         });
                         this.roleCityArr = result;
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
                     }else{
                         Message.warning(res.data.MSG);
                     }
@@ -622,10 +610,6 @@
                 if(val.includes('0')){
                     this.accountForm.roleCity = ['0'];
                 }
-            },
-            loginTimeout() {
-                Message.warning("登录超时,请重新登录");
-                this.$router.push("/login");
             },
         }
     };

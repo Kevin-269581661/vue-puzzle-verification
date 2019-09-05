@@ -281,8 +281,7 @@ export default {
             for (let i=0; i<request_times; i++) { // 循环请求次数，构造请求的Promise对象并插入funcs数组
                 let func=new Promise((resolve, reject)=>{ //定义Promise并处理请求逻辑
                     let data=[];
-                    this.$http.get(
-                        // 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes/'+this.downLoadInfo.city[i]+'.json'
+                    api.getApi(
                         this.apiVar.jsonLink+this.downLoadInfo.city[i]+'.json'
                     ).then((response)=>{
                         console.log('response----', response.data);

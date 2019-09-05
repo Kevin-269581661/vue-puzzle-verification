@@ -301,9 +301,7 @@ export default {
                         console.log('this.plandetail---', this.planDetail);
                         // 选点排期
                         this.getSetPoint();
-                    } else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
-                    }else{
+                    } else{
                         Message.warning(res.data.MSG);
                     }
                 })
@@ -401,8 +399,6 @@ export default {
                         this.$nextTick(function () {
                             this.isShow = true;
                         });
-                    } else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
                     } else {
                         Message.warning(res.data.MSG);
                     }
@@ -470,10 +466,6 @@ export default {
         getRole() {
             this.sessionData = sessFun.getSess();
             this.role = this.sessionData.uType;
-        },
-        loginTimeout(){
-            Message.warning("登录超时,请重新登录");
-            this.$router.push("/login");
         },
         filterCity(value, row) {
             return row.city === value;

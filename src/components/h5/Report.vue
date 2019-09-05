@@ -4,23 +4,23 @@
             <div class="mediaMana_content_top">
                 <div class="content_top_wrap">
                     <div class="title">
-                        <h1>{{upReport.apName}}{{(Info.name =='SK')?'上刊':'下刊'}}报告 
+                        <h1>{{report.apName}}{{stateToText(Info.name)}}报告 
                             <span class="button_box">
                                 <el-button plain @click="getPTTx()" size="small" :loading="pptxLoading">导出PPTx</el-button>
-                                <el-button plain @click="getPTT()" size="small" :loading="pptLoading">导出PPT</el-button>
+                                <!-- <el-button plain @click="getPTT()" size="small" :loading="pptLoading">导出PPT</el-button> -->
                                 <el-button plain @click="getPDF()" size="small" :loading="pdfLoading">导出PDF</el-button>
                             </span>
                         </h1>
-                        <h3>{{upReport.bTitle}} &nbsp;&nbsp;{{formatTime(upReport.apcTime)}}</h3>
+                        <h3>{{report.bTitle}} &nbsp;&nbsp;{{formatTime(report.apcTime)}}</h3>
                     </div>
                     <div class="detail">
                         <p>
                             <em>公司名称：</em>
-                            <i>{{upReport.cName}}</i>
+                            <i>{{report.cName}}</i>
                             <em>投放城市：</em>
-                            <i>{{upReport.rIDs}}</i>
-                            <em>投放面数：</em>
-                            <i>{{upReport.totalNum}}</i>
+                            <i>{{report.rIDs}}</i>
+                            <em>{{(Info.name=='SK'||Info.name=='XK')?'投放面数：': '换画面数：'}}</em>
+                            <i>{{report.asSpaceSum}}</i>
                         </p>
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                                     </el-table-column>
                                     <el-table-column prop="hNum" label="户数" min-width="5.6%" align="right">
                                     </el-table-column>
-                                    <el-table-column label="媒体数量" prop="mediaNum" min-width="6.1%" align="right">
+                                    <el-table-column label="媒体数量" prop="adSpaceCount" min-width="6.1%" align="right">
                                     </el-table-column>
                                     <el-table-column label="操作" min-width="6.1%">
                                         <template slot-scope="scope">
@@ -95,7 +95,7 @@
                     </el-tab-pane>
                     <el-tab-pane label="监播图片" name="third">
                         <div class="sec-wrap box-wrap">
-                            <el-radio-group v-model="mediaType" size="medium" @change="changeUpMedia()">
+                            <el-radio-group v-model="mediaType" size="medium" @change="changeMedia()">
                                 <el-radio-button label="广告门"></el-radio-button>
                                 <el-radio-button label="道闸"></el-radio-button>
                             </el-radio-group>
@@ -104,7 +104,7 @@
                                 </el-pagination>
                             </div>
                             <div class="typeOfRec">
-                                <div v-for="(up, upIndex) of upReportArr" :key="up.asID+'-'+upIndex" @mouseenter="showPreImg = upIndex" @mouseleave="showPreImg = null" class="pic_box">
+                                <div v-for="(up, upIndex) of reportArr" :key="up.asID+'-'+upIndex" @mouseenter="showPreImg = upIndex" @mouseleave="showPreImg = null" class="pic_box">
                                     <el-card shadow="hover" >
                                         <div slot="header" class="clearfix">
                                             <!-- <span>{{up.city+"-"+up.rName+"-"+up.resName+"-"+up.mTitle+"-"+up.asLab}}</span> -->
@@ -201,6 +201,8 @@ import commaFormat from "../../commonFun/commaFormat.js";
 import filterFormat from "../../commonFun/filterTableData.js";
 // 时间格式化
 import dateFormat from "../../commonFun/timeFormat.js";
+import sessFun from '../../commonFun/sessFun.js';
+
 import noSearchResult from "../common/components/noSearchResult.vue";    
 
 import {
@@ -267,7 +269,7 @@ export default {
             totalUpNum: 0,
             //显示预览图蒙版
             showPreImg: null,
-            upReport: {},
+            report: {},
             //投放详情
             putDetail: [],
             currPutDetail: [],
@@ -290,10 +292,7 @@ export default {
             // 媒体类型
             mediaType: '广告门',
             // 监播图片
-            upReportArr: [],
-            currUpReportArr: [],
-            imgInfo: [],
-            currImgInfo: [],
+            reportArr: [],
             // 查看监播
             isShowImgArr: false,
             // 监播图片组合
@@ -312,14 +311,46 @@ export default {
     },
     created() {
         this.getRouter();
-        this.getData();
-        // this.searchFun();
+        this.getReportInfo();
     },
     methods: {
+        // 状态变中文
+        stateToText(type){
+            let arr = [
+                {
+                    name: 'SK',
+                    text: '上刊',
+                },
+                {
+                    name: 'XK',
+                    text: '下刊',
+                },
+                {
+                    name: 'HH',
+                    text: '换画'
+                }
+            ];
+            for(let data of arr){
+                if(data.name == type){
+                    return data.text;
+                }
+            }
+        },
+        // 获取图片列表
+        getReportInfo(){
+            let type = this.Info.name;
+            if(type == 'SK' || type =="XK"){
+                // 上下刊报告
+                this.getData();
+            }else{
+                // 获取换画
+                this.getPainData();
+            }
+        },
         // tab点击
         handleClick() {
             if (this.planPanel == "third") {
-                this.searchFun();
+                this.getDataFromType();
             }
         },
         // 获取pptx
@@ -334,7 +365,7 @@ export default {
         getPDF(){
             this.getApiFun('/GetPdfReport', this.pdfLoading, 'pdf');
         },
-        // 接口Fun
+        // 接口Fun  0-ppt上刊，1-ppt下刊，2-pdf上刊，3-pdf下刊，4-pptx下刊，5-pptx下刊，6-pptx换画，7-pdf换画
         getApiFun(apiName, loading, type){
             let name = this.Info.name.toString().toLowerCase();
             let val = this.Info.val;
@@ -358,23 +389,65 @@ export default {
                         downtype: 2,
                         key: val,
                     };
-                    if(type == 'ppt'){
-                        fileInfo.type = name=='sk' ? 0 : 1;
-                    }
-                    if(type == 'pdf'){
-                        fileInfo.type = name=='sk' ? 2 : 3;
-                    }
-                    if(type == 'pptx'){
-                        fileInfo.type = name=='sk' ? 4 : 5;
-                    }
+                    fileInfo.type = this.stateToNum(type, name);
                     this.getFileProcessFun(tempPage, fileInfo);
                     loading = false;
                 }
             });
         },
+        // 0-ppt上刊，1-ppt下刊，2-pdf上刊，3-pdf下刊，4-pptx上刊，5-pptx下刊，6-pptx换画，7-pdf换画
+        stateToNum(type, name){
+            let arr = [
+                {
+                    type: 'ppt',
+                    name: 'sk',
+                    num: 0
+                },
+                {
+                    type: 'ppt',
+                    name: 'xk',
+                    num: 1
+                },
+                {
+                    type: 'pdf',
+                    name: 'sk',
+                    num: 2
+                },
+                {
+                    type: 'pdf',
+                    name: 'xk',
+                    num: 3
+                },
+                {
+                    type: 'pptx',
+                    name: 'sk',
+                    num: 4
+                },
+                {
+                    type: 'pptx',
+                    name: 'xk',
+                    num: 5
+                },
+                {
+                    type: 'pptx',
+                    name: 'hh',
+                    num: 6
+                },
+                {
+                    type: 'pdf',
+                    name: 'hh',
+                    num: 7
+                },
+            ];
+            for(let data of arr){
+                if(data.type == type && data.name == name){
+                    return data.num;
+                }
+            }
+        },
         // 获取pptx
         getFileProcessFun(tempPage, info){
-            console.log(tempPage, 'tempage---');
+            console.log(tempPage, 'tempage---', info);
             let routeUrl = this.$router.resolve({
                 path: "/progressDown",
                 query: info,
@@ -386,21 +459,104 @@ export default {
             console.log("pageVal", pageVal);
             this.currUpPage = 1;
             this.pageUpSize = pageVal;
-            this.searchFun();
+            // this.searchFun();
+            this.getDataFromType();
         },
         // 分页功能
         changePage(page) {
             console.log('page----', page);
             this.currUpPage = page;
-            this.searchFun();
+            // this.searchFun();
+            this.getDataFromType();            
         },
+        // 根据type来获取数据
+        getDataFromType(){
+            let type = this.Info.name;
+            if(type == 'SK' || type =="XK"){
+                this.searchFun();
+            }else{
+                this.searchPain();
+            }
+        },
+        // 获取上下刊
         searchFun(){
             let info = this.searchFormat();
             this.getImgData(info);
         },
-        changeUpMedia(){
+        // 获取换画
+        searchPain(){
+            let info = this.searchPainFormat();
+            this.getPainImg(info);
+        },
+        changeMedia(){
             this.currUpPage = 1;
-            this.searchFun();
+            this.getDataFromType();
+        },
+        // 换画搜索数据格式化
+        searchPainFormat(){
+            let val = this.Info.val;
+            let info = {
+                replaceRecordIdEncypt: val,
+                pageNum: this.currUpPage,
+                pageSize: this.pageUpSize,
+                mType: this.mediaType=='广告门'?0:1,
+            };
+            console.log('type---', info);
+            return info;
+        },
+        // 获取换画图片数据
+        getPainImg(params){
+            api.postApi_json(this.apiVar.replace +"/report/detailInfo", params).then(res =>{
+                console.log(res);
+                if(res.data.SysCode == 200200){
+                    let dataInfo = res.data.data;
+                    this.totalUpNum = dataInfo.totalSize;
+                    for(let data of dataInfo.dataList){
+                        data.city = data.cityName;
+                        data.rName = data.districtName;
+                        data.lStar = data.beginDate;
+                        data.lEnd = data.endDate;
+                        if(data.adPlanPics){
+                            for(let item of data.adPlanPics){
+                                item.url = item.pURL;
+                            }
+                        }else{
+                            data.adPlanPics = [];
+                        }
+                        let time = this.formatTime(data.lStar) + "-" +this.formatTime(data.lEnd);
+                        data.timeRange = time;
+                        data.upImgArr = data.adPlanPics;
+                    }
+                    this.reportArr = dataInfo.dataList;
+
+                    if(dataInfo.totalSize == 0){
+                        sessFun.messageFun('warning', '暂无数据');
+                    }
+                }else{
+                    sessFun.messageFun('warning', res.data.MSG);
+                }
+            });
+        },
+        // 获取换画数据
+        getPainData(){
+            let info = {
+                replaceRecordId: this.Info.val,
+            };
+            api.getApi(this.apiVar.replace+"/report/h5Detail", info).then(res =>{
+                console.log(res.data);
+                let data = res.data.data;
+                // 换画抬头信息
+                this.report = this.getFangInfo(data.adPlanInfo);
+                // 投放详情
+                let result = this.getResInfo(data.resInfo);
+                this.putDetail = result;
+                this.currPutDetail = JSON.parse(JSON.stringify(this.putDetail));
+                this.filterCityData = filterFormat(result, "city");
+                this.filtersArea = filterFormat(result, "rName");
+                // 发布情况
+                this.postDetail = this.getCityAdSpaceCount(data.cityAdSpaceCount);
+                this.loading = false;
+            });
         },
         // 搜索数据格式化
         searchFormat(){
@@ -438,9 +594,10 @@ export default {
                         let data = res.data;
 
                         // 上下刊抬头信息
-                        this.upReport = this.getFangInfo(data.adPlanInfo);
+                        // this.report = this.getFangInfo(data.adPlanInfo);
+                        this.report = data.adPlanInfo;
                         // 投放详情
-                        let result = this.getResInfo(data.resInfo)
+                        let result = data.resInfo;
                         this.putDetail = result;
                         this.currPutDetail = JSON.parse(JSON.stringify(this.putDetail));
                         this.filterCityData = filterFormat(result, "city");
@@ -448,10 +605,7 @@ export default {
                         // 发布情况
                         this.postDetail = this.getCityAdSpaceCount(data.cityAdSpaceCount);
                         this.loading = false;
-                    } else if (res.data.SysCode == 100302) {
-                        this.loading = false;
-                        this.loginTimeout();
-                    } else {
+                    }else {
                         this.loading = false;
                         Message.warning(res.data.MSG);
                     }
@@ -462,24 +616,24 @@ export default {
                 });
         },
         // 头部信息
-        getFangInfo(upInfo){
+        getFangInfo(data){
+            console.log(data, 'data---');
             let info = {
-                adcID: upInfo.adcID,
-                apID: upInfo.apID,
-                apName: upInfo.apName,
-                apQC: upInfo.apQC,
-                apState: upInfo.apState,
-                apTotal: upInfo.apTotal,
-                apcTime: dateFormat.toDate(upInfo.apcTime, '/'),
-                bTitle: upInfo.bTitle,
-                cName: upInfo.cName,
-                cuName: upInfo.cuName,
-                pdEnd: upInfo.pdEnd,
-                pdStar: upInfo.pdStar,
-                rID: upInfo.rID,
-                rIDs: upInfo.rIDs,
-                realName: upInfo.realName,
-                totalNum: upInfo.asSpaceSum,
+                apID: data.apId,
+                apName: data.apName,
+                // apQC: data.apQC,
+                // apState: data.apState,
+                // apTotal: data.apTotal,
+                apcTime: dateFormat.toDate(data.apCreateTime, '/'),
+                bTitle: data.btitle,
+                cName: data.companyName,
+                // cuName: data.cuName,
+                // pdEnd: data.pdEnd,
+                // pdStar: data.pdStar,
+                // rID: data.rID,
+                rIDs: data.rIDs,
+                // realName: data.realName,
+                asSpaceSum: data.asSpaceSum,
             };
             return info;
         },
@@ -490,14 +644,14 @@ export default {
                 let obj = {
                     IsLock: item.IsLock,
                     adSize: item.adSize,
-                    mediaNum: item.adSpaceCount,
+                    adSpaceCount: item.mediaCount,
                     adViewSize: item.adViewSize,
                     asID: item.asID,
                     asLab: item.asLab,
                     assetTag: item.assetTag,
                     cType: item.cType,
                     chDay: item.chDay,
-                    city: item.city,
+                    city: item.cityName,
                     fNum: item.fNum,
                     hNum: item.hNum,
                     hPrice: item.hPrice,
@@ -509,7 +663,7 @@ export default {
                     mTitle: item.mTitle,
                     mVehicle: item.mVehicle,
                     rID: item.rID,
-                    rName: item.rName,
+                    rName: item.districtName,
                     resAddress: item.resAddress,
                     resID: item.resID,
                     resName: item.resName,
@@ -523,6 +677,10 @@ export default {
         // 发布情况
         getCityAdSpaceCount(arr){
             let result = [];
+            let info = {
+                citys: [],
+                totalNum: 0 
+            };
             for(let data of arr){
                 let obj = {
                     city: data.cityName,
@@ -531,8 +689,12 @@ export default {
                     wrongNum: 0,
                     resolveNum:0,
                 }
+                info.citys.push(data.cityName);
+                info.totalNum += data.adSpaceCount;
                 result.push(obj);
             }
+            this.report.rIDs = info.citys.join(',');
+            this.report.asSpaceSum = info.totalNum;
             return result;
         },
 
@@ -552,14 +714,12 @@ export default {
                             data.timeRange = time;
                             data.upImgArr = data.photoList;
                         }
-                        this.upReportArr = dataInfo.dataList;
+                        this.reportArr = dataInfo.dataList;
                         if(dataInfo.totalCount == 0){
                             Message.warning('暂无数据');
                         }
-                        console.log(this.upReportArr);
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
-                    } else {
+                        console.log(this.reportArr);
+                    }else {
                         Message.warning(res.data.MSG);
                     }
                 })
@@ -571,11 +731,37 @@ export default {
         showImg(row) {
             let name = this.Info.name.toString().toLowerCase();
             let val = this.Info.val;
-            let info = {
-                resId: row.resID,
-                pType: this.Info.name,
-                [name]: val
-            };
+            let info = {};
+            if(this.Info.name == 'HH'){
+                info = {
+                    replaceRecordId: val,
+                    resID: row.resID,
+                };
+                api.getApi(this.apiVar.replace+'/report/picByRes', info).then(res =>{
+                    console.log(res.data);
+                    if(res.data.SysCode == 200200){
+                        if(res.data.data.length){
+                            this.ImgBoxArr = res.data.data && res.data.data.map(item =>{
+                                return item.pURL;
+                            });
+                            this.isShowImgArr = true;
+                        }else{
+                            Message.warning("暂无数据！");
+                        }
+                    }else{
+                        Message.warning(res.data.MSG);
+                    }
+                });
+            }else{
+                info = {
+                    resId: row.resID,
+                    pType: this.Info.name,
+                    [name]: val
+                };
+                this.showImgApi(info);
+            }
+        },
+        showImgApi(info){
             api.postApi(this.apiVar.Advertisement+'/GetImgByResId', info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 200200){
@@ -721,7 +907,7 @@ export default {
 }
 
 .plan-panel {
-    padding: 24px;
+    padding: 12px 24px;
     margin: 16px 64px;
     background: #fff;
 }

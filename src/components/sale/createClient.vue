@@ -615,11 +615,11 @@ export default {
                     this.loginTimeout()
                 } else if (res.data.SysCode === 200200) {
                     for (let key of res.data.data) {
-                        let industryNames = this.getIndustryNamebyId([key.parentInstdustryId,key.instdustryId])
+                        let industryNames = this.getIndustryNamebyId([key.parentIndustryId,key.industryId])
                         this.cBrandTags.push({
                             id: this.addcBrandIndex,
                             brandName: key.bTitle,
-                            industryList: [key.parentInstdustryId,key.instdustryId],
+                            industryList: [key.parentIndustryId,key.industryId],
                             industryNames: industryNames.join('/'),
                             cID: key.cID,
                             bID: key.bID,

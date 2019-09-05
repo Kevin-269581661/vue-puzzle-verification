@@ -146,48 +146,44 @@ export default {
             };
             api.getApi(this.apiVar.Advertisement+'/GetCustomerInfo', info).then(res =>{
                 console.log(res.data);
-                if(res.data.SysCode == 100302){
-                    this.loginTimeout();
-                }else{
-                    if(!res.data.SysCode){
-                        let info = res.data;
-                        let BInfo = {
-                            cID: info.cID,
-                            rID: info.crID,
-                            cName: info.cName,
-                            cAddress: info.cAddress,
-                            cBrand: info.cBrand,
-                            rName: info.rName,
-                            cRemark: info.cRemark,
-                            iID: info.iID,
-                            iName: ""
-                        };
-                        let uInfo = {
-                            uID: info.uID,
-                            uWho: info.uWho,
-                            rID: info.rID,
-                            realName: info.realName,
-                            email: info.email,
-                            phone: info.phone,
-                            position: info.position,
-                            telephone: info.telephone,  
-                            rName: "",
-                            division: info.division,
-                            puName: info.puName,
-                            sName: info.sName,
-                            joinTime: info.joinTime
-                        };
-                        if (info.rID) {
-                            uInfo.rName = areaToText.toTextCity(uInfo.rID);
-                        }
-                        let arr = JSON.parse(sessionStorage.getItem("industry"));
-                        // 行业中文
-                        let text = industryToText.getText(BInfo.iID, arr);
-                        // 公司信息所在行业
-                        BInfo.iName = text;
-                        this.companyInfo = BInfo;
-                        this.userInfo = uInfo;
+                if(!res.data.SysCode){
+                    let info = res.data;
+                    let BInfo = {
+                        cID: info.cID,
+                        rID: info.crID,
+                        cName: info.cName,
+                        cAddress: info.cAddress,
+                        cBrand: info.cBrand,
+                        rName: info.rName,
+                        cRemark: info.cRemark,
+                        iID: info.iID,
+                        iName: ""
+                    };
+                    let uInfo = {
+                        uID: info.uID,
+                        uWho: info.uWho,
+                        rID: info.rID,
+                        realName: info.realName,
+                        email: info.email,
+                        phone: info.phone,
+                        position: info.position,
+                        telephone: info.telephone,  
+                        rName: "",
+                        division: info.division,
+                        puName: info.puName,
+                        sName: info.sName,
+                        joinTime: info.joinTime
+                    };
+                    if (info.rID) {
+                        uInfo.rName = areaToText.toTextCity(uInfo.rID);
                     }
+                    let arr = JSON.parse(sessionStorage.getItem("industry"));
+                    // 行业中文
+                    let text = industryToText.getText(BInfo.iID, arr);
+                    // 公司信息所在行业
+                    BInfo.iName = text;
+                    this.companyInfo = BInfo;
+                    this.userInfo = uInfo;
                 }
             });
         },
@@ -198,10 +194,6 @@ export default {
                 JSON.stringify(this.companyInfo)
             );
             this.$router.push("./editClient");
-        },
-        loginTimeout(){
-            Message.warning("登录超时,请重新登录");
-            this.$router.push("/login");
         },
     }
 };

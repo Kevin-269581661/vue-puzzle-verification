@@ -59,6 +59,7 @@
                                     <el-select v-model="searchInfo.publish" placeholder="请选择" class="plan-select" size="small">
                                         <el-option label="上刊" value="SK"></el-option>
                                         <el-option label="下刊" value="XK"></el-option>
+                                        <el-option label="换画" value="HH"></el-option>
                                     </el-select>
                                 </el-col>
                                 <el-col :span="6">
@@ -289,7 +290,7 @@
                     this.searchInfo = JSON.parse(JSON.stringify(this.gallerySelectInfo))
                     if (this.pageUpImgArr.length <= 0) {
                         let params = this.searchFormat();
-                        this.getUpImgInfo(params)
+                        this.getImgList(params)
                     } else {
                         this.showPic = 3;
                     }
@@ -319,7 +320,7 @@
                     this.pageUpImgArr = [];
                     this.resetData(this.gallerySelectInfo)
                     let collectParams = this.searchFormat();
-                    this.getUpImgInfo(collectParams)
+                    this.getImgList(collectParams)
                 } else if (this.activeName == 'second') {
                     this.collectImgArr = [];
                     this.resetData(this.collectSelectInfo)
@@ -345,7 +346,7 @@
                     this.galleryPageData.pageNum = 1
                     let upinfo = this.searchFormat();
                     this.pageUpImgArr = []
-                    this.getUpImgInfo(upinfo);
+                    this.getImgList(upinfo);
                 } else if (this.activeName == "second") {
                     this.collectPageData.pageNum = 1
                     let collectParams = this.searchFormat();
@@ -387,7 +388,7 @@
                     let info = {
                         uid: session.uID,
                         token: session.token,
-                        type: this.searchInfo.publish === "SK" ? 0 : this.searchInfo.publish === "XK" ? 1 : "",
+                        type: this.searchInfo.publish === "SK" ? 0 : this.searchInfo.publish === "XK" ? 1 : 2,
                         orderName: this.searchInfo.apName,
                         resourceName: this.searchInfo.resName,
                         asLabel: this.searchInfo.LabSelect,
@@ -408,6 +409,7 @@
                     return info;
                 }
             },
+            // 获取上/下刊图片数据
             getImgList(params){
                 this.firstBodyLoading = true
                 for (let i in params) {
@@ -463,56 +465,6 @@
                     this.isSearch = true;
                 })
             },
-            // 获取上/下刊图片数据
-            getUpImgInfo(params) {
-                this.getImgList(params)
-                // this.firstBodyLoading = true
-                // for (let i in params) {
-                //     console.log(params[i])
-                //     if (!params[i]) {
-                //         delete params[i]
-                //     }
-                // }
-                // // params.selectType = 'res'
-                // api.getApi(this.apiVar.Advertisement + "/GetImgList", params)
-                //     .then(res => {
-                //         console.log('GetImgList',res)
-                //         if (!res.data.SysCode) {
-                //             console.log(res.data);
-                //             let dataInfo = res.data;
-                //             this.galleryPageData.totalpageNum = dataInfo.total;
-                //             if (dataInfo.total) {
-                //                 for (let data of dataInfo.list) {
-                //                     if ((typeof data.pRemarks) == 'string') {
-                //                         data.pRemarks = JSON.parse(data.pRemarks);
-                //                     }
-                //                 }
-                //                 this.pageUpImgArr = dataInfo.list;
-                //                 console.log('pageup----', this.pageUpImgArr);
-                //                 if (this.pageUpImgArr.length) {
-                //                     this.showPic = 3;
-                //                 } else {
-                //                     this.showPic = 1;
-                //                     Message.warning('暂无数据');
-                //                 }
-                //             } else {
-                //                 this.showPic = 1;
-                //                 Message.warning('暂无数据');
-                //             }
-                //         } else if (res.data.SysCode == 100302) {
-                //             this.loginTimeout();
-                //         } else {
-                //             this.pageUpImgArr = [];
-                //             this.showPic = 1;
-                //             Message.warning(res.data.MSG);
-                //         }
-                //         this.firstBodyLoading = false
-                //         this.isSearch = true;
-                //     }).catch(res => {
-                //         console.log(res);
-                //         this.isSearch = true;
-                //     });
-            },
             // 获取收藏夹图片列表
             getCollectImgList(params) {
                 console.log('获取收藏夹图片列表params', params)
@@ -527,10 +479,8 @@
                     delete params.asLabel
                 }
                 api.getApi(this.apiVar.Advertisement + '/imageCollection/list', params).then(res => {
-                    console.log('收藏夹图片列表res', res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
-                    } else if (res.data.SysCode === 200200) {
+                    console.log('收藏夹图片列表res', res);
+                    if (res.data.SysCode === 200200) {
                         let resData = res.data.data
                         let imgList = []
                         for (let key of resData) {
@@ -603,7 +553,7 @@
                 if (this.activeName === 'first') {
                     this.galleryPageData.pageNum = page
                     let upinfo = this.searchFormat();
-                    this.getUpImgInfo(upinfo);
+                    this.getImgList(upinfo);
                 } else if (this.activeName === 'second') {
                     this.collectPageData.pageNum = page
                     let collectParams = this.searchFormat();
@@ -692,10 +642,6 @@
                     type: mesType,
                     showClose: true,
                 })
-            },
-            loginTimeout() {
-                Message.warning("登录超时,请重新登录");
-                this.$router.push("/login");
             },
 
             //筛选

@@ -2119,7 +2119,7 @@ export default {
 </style>
 <style>
 .el-tooltip__popper.is-dark{
-    width: 200px;
+    max-width: 250px;
     word-break: break-all;
     word-wrap: break-word
 }

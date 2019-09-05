@@ -182,7 +182,7 @@
                 </el-table-column>
                 <el-table-column prop="resName" label="资源" show-overflow-tooltip>
                 </el-table-column>
-                <el-table-column prop="mTitle" label="媒体">
+                <el-table-column prop="mTitle" label="媒体" show-overflow-tooltip>
                 </el-table-column>
                 <el-table-column prop="asLab" label="面" width="60">
                 </el-table-column>
@@ -190,7 +190,7 @@
                 </el-table-column>
                 <el-table-column prop="districtName" label="区域" width="90">
                 </el-table-column>
-                <el-table-column prop="mapCenterInfo" label="地图中心点">
+                <el-table-column prop="mapCenterInfo" label="地图中心点" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <span>
                             {{ scope.row.mapCenterInfo || '--'}}

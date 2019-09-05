@@ -67,6 +67,21 @@
                 </div>
             </div>
         </div>
+        <!--右侧广告门详情-->
+        <div class="media_info" v-show="isShowMediaInfo">
+            <h3 class="media_info_h3">
+                <span class="h3_title">{{showResInfo.resName}}</span>
+                <i class="el-icon-close" @click="isShowMediaInfo = false"></i>
+            </h3>
+            广告门详情
+        </div>
+        <!--右侧鼠标绘制控件 mapIcon.svg-->
+        <ul class="mouse_control">
+            <li class="mouse_control_li"></li>
+            <li class="mouse_control_li" @click="initMouseDrawing('circle')"></li>
+            <li class="mouse_control_li" @click="initMouseDrawing('polygon')"></li>
+            <li class="mouse_control_li"></li>
+        </ul>
         <!--标注info框-->
         <div ref="res_info_window" v-show="isShowInfo">
             <p style='font:14px arial,sans-serif;margin:0;line-height:1.5;'>
@@ -76,8 +91,8 @@
                 资源名称:{{ showResInfo.resName}}
             </p>
             <div class="info_footer">
-                <span class="show_adDoor">广告门</span>
-                <span class="add_Btn" :class="showResInfo.isSelect ? 'is_select_btn' : ''" @click="addResFun(item)">
+                <span class="show_adDoor" @click="showResMediaInfo(showResInfo)">广告门</span>
+                <span class="add_Btn" :class="showResInfo.isSelect ? 'is_select_btn' : ''" @click="addResFun(showResInfo)">
                     {{showResInfo.isSelect ? '取消待选' : '加入待选'}}
                 </span>
             </div>
@@ -107,7 +122,14 @@
                 searchRadius: '',
                 // 被点击的资源标注信息
                 showResInfo:{},
+                // 是否显示小区详情
                 isShowInfo: false,
+                // 媒体详情
+                isShowMediaInfo: false,
+                // 鼠标绘制工具
+                drawingManager:'',
+                // 多边形坐标
+                polygonPoint: []
             }
         },
         mounted(){
@@ -131,13 +153,18 @@
                 this.resMap.enableScrollWheelZoom(true);
                 //
                 this.creatMarker()
+                // 监听点击地图
+                this.resMap.addEventListener("click", () => {
+                    console.log('---')
+                    this.isShowMediaInfo = false
+                });
             },
             // 创建标注
             creatMarker(){
                 let i = 0
                 for(let key of adsInfo){
                     key.isSelect = false
-                    if(i < 1000) {
+                    if(i < 300) {
                         let lngLat = key.lng.split(';')
                         let point = new BMap.Point(lngLat[0], lngLat[1]); //
                         let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(20,33),{
@@ -178,6 +205,124 @@
             // 详情里选定按钮
             addResFun(item) {
                 this.checkBoxFun(this.showResInfo)
+            },
+            // 显示小区里的媒体
+            showResMediaInfo() {
+                this.isShowMediaInfo = true
+            },
+            /* 右侧鼠标绘制 */
+            // 初始化鼠标绘制
+            initMouseDrawing(temp){
+                if(!this.drawingManager){
+                    // 鼠标绘制控件
+                    let styleOptions = {
+                        strokeColor:"blue",         //边线颜色。
+                        fillColor:"blue",           //填充颜色。当参数为空时，圆形将没有填充效果。
+                        strokeWeight: 1,            //边线的宽度，以像素为单位。
+                        strokeOpacity: 0.3,         //边线透明度，取值范围0 - 1。
+                        fillOpacity: 0.3,           //填充的透明度，取值范围0 - 1。
+                        strokeStyle: 'solid',       //边线的样式，solid或dashed。
+                    }
+                    //实例化鼠标绘制工具
+                    this.drawingManager = new BMapLib.DrawingManager(this.resMap, {
+                        isOpen: false, //是否开启绘制模式
+                        enableDrawingTool: false, //是否显示工具栏
+                        drawingToolOptions: {
+                            anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
+                            offset: new BMap.Size(5, 5), //偏离值
+                            drawingModes : [
+                                // BMAP_DRAWING_MARKER,        // 画点
+                                BMAP_DRAWING_CIRCLE,        // 画圆
+                                // BMAP_DRAWING_POLYLINE,      // 画线
+                                BMAP_DRAWING_POLYGON,       // 画多边形
+                                BMAP_DRAWING_RECTANGLE      // 画矩形
+                            ]
+                        },
+                        circleOptions: styleOptions,    // 圆的样式
+                        polylineOptions: styleOptions,  // 线的样式
+                        polygonOptions: styleOptions,   // 多边形的样式
+                        rectangleOptions: styleOptions  // 矩形的样式
+                    });
+                    let that = this
+                    this.drawingManager.addEventListener("overlaycomplete", function(e) {
+                        console.log(e.drawingMode);
+                        console.log(e.overlay);
+                        console.log(e.calculate);
+                        console.log(e.label);
+                        that.drawingManager.close()
+                        if(e.drawingMode === 'circle') {
+                            let radius = Math.sqrt(e.calculate / 3.1415926)
+                            console.log('圆半径',radius,'圆心',e.overlay.point)
+                            that.showResInCircle(e.overlay.point,radius)
+                        } else if(e.drawingMode === 'polygon'){
+
+                        }
+                    });
+                    // this.drawingManager.addEventListener("circlecomplete", function(e, overlay) {
+                    //     console.log('画圆完成',overlay,overlay.point,'-----');
+                    // });
+                    //添加鼠标绘制工具监听事件，用于获取绘制结果
+                    this.drawingManager.addEventListener('overlaycomplete', (e, overlay)=>{
+                        console.log('画多边形',overlay,e.overlay.getPath());
+                        this.polygonPoint = e.overlay.getPath()
+                        this.showResInPolygon()
+                    });
+                    this.drawingMouse(temp)
+                } else {
+                    this.drawingMouse(temp)
+                }
+            },
+            drawingMouse(temp) {
+                if(temp === 'circle') {
+                    this.drawingManager.open()
+                    this.drawingManager.enableCalculate()
+                    this.drawingManager.setDrawingMode(BMAP_DRAWING_CIRCLE);
+                } else if(temp === 'polygon'){
+                    this.drawingManager.open()
+                    this.drawingManager.setDrawingMode(BMAP_DRAWING_POLYGON);
+                } else {
+
+                }
+            },
+            isInsidePolygon(pt, poly) {
+                for (var c = false, i = -1, l = poly.length, j = l - 1; ++i < l; j = i)
+                    ((poly[i].lat <= pt.lat && pt.lat < poly[j].lat) || (poly[j].lat <= pt.lat && pt.lat < poly[i].lat)) &&
+                    (pt.lng < (poly[j].lng - poly[i].lng) * (pt.lat - poly[i].lat) / (poly[j].lat - poly[i].lat) + poly[i].lng) &&
+                    (c = !c);
+                return c;
+            },
+            // 显示多边形内的点位
+            showResInPolygon() {
+                let date1 = new Date();
+                let allOverlay = this.resMap.getOverlays();
+                for(let key of adsInfo) {
+                    for (let akey of allOverlay) {
+                        if( akey.isVisible() &&
+                            akey.toString() == "[object Marker]" &&
+                            akey.getLabel() &&
+                            akey.getLabel().content === key.resName) {
+                            let lngLat = key.lng.split(';')
+                            let point = new BMap.Point(lngLat[0],lngLat[1])
+                            let isShow = this.isInsidePolygon(point,this.polygonPoint)
+                            if(!isShow){
+                                akey.hide()
+                            } else {
+                                let flag = this.searchResList.some((item,index)=>{
+                                    if(key.resID === item.resID) {
+                                        return true
+                                    }
+                                })
+                                if (!flag) {
+                                    this.searchResList.push(key)
+                                }
+                            }
+                            break
+                        }
+                    }
+                }
+                let date2 = new Date();
+                let haomiao = date2.getTime() - date1.getTime();
+                console.log('用时',haomiao/(1000*60))
             },
             /* 左侧搜索 */
             // 搜索
@@ -373,16 +518,21 @@
             searchAround(){
                 this.searchResList = []
                 let radius = this.searchRadius * 1000
-                for(let key of this.selectOnlineList) {
-                    let circle = new BMap.Circle(key.point,radius,{fillColor:"blue", strokeWeight: 1 ,fillOpacity: 0.3, strokeOpacity: 0.3});
+                for (let key of this.selectOnlineList) {
+                    let circle = new BMap.Circle(key.point, radius, {
+                        fillColor: "blue",
+                        strokeWeight: 1,
+                        fillOpacity: 0.3,
+                        strokeOpacity: 0.3
+                    });
                     this.resMap.addOverlay(circle);
-                    this.showResInCircle(key.point,radius)
+                    this.showResInCircle(key.point, radius)
                 }
                 this.searchResList.length ?  this.activeSearchKind = 1 : this.activeSearchKind = 2
             },
             // 显示圆半径内的小区
             showResInCircle(point,radius) {
-                let date1=new Date();
+                let date1 = new Date();
                 let allOverlay = this.resMap.getOverlays();
                 for(let key of adsInfo) {
                     for (let akey of allOverlay) {
@@ -590,14 +740,88 @@
         background: #333
     }
 
-    .add_Btn{
+    .add_Btn {
         background: #0095ff;
     }
 
-    .add_Btn:hover{
+    .add_Btn:hover {
         background: #0078A8;;
     }
 
+    .is_select_btn,.is_select_btn:hover{
+        background: #4DCB73;
+    }
+
+    /* 右侧广告门详情 */
+    .media_info {
+        position: fixed;
+        top: 60px;
+        bottom: 0;
+        right: 0;
+        z-index: 100;
+        width: 320px;
+        background: #fff;
+    }
+
+    .media_info_h3 {
+        display: flex;
+        height: 42px;
+        line-height: 42px;
+        font-size: 16px;
+        color: #333;
+        padding: 0 8px;
+        border-bottom: 1px solid #D9D9D9;
+    }
+
+    .h3_title {
+        flex: 1;
+    }
+
+    .media_info_h3 .el-icon-close {
+        width: 32px;
+        line-height: 42px;
+        text-align: center;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    /*右侧鼠标绘制控件*/
+    .mouse_control {
+        position: fixed;
+        top: 92px;
+        right: 32px;
+        background: #ffffff;
+        border-radius: 3px;
+        z-index: 99;
+    }
+
+    .mouse_control_li {
+        height: 28px;
+        width: 30px;
+        border-bottom: 1px solid #D9D9D9;
+        cursor: pointer;
+    }
+
+    .mouse_control_li:nth-child(1) {
+        background: url("../../../assets/images/mapIcon.svg");
+        background-position: -405px 3px;
+    }
+
+    .mouse_control_li:nth-child(2) {
+        background: url("../../../assets/images/mapIcon.svg");
+        background-position: 354px 1px;
+    }
+
+    .mouse_control_li:nth-child(3) {
+        background: url("../../../assets/images/mapIcon.svg");
+        background-position: 381px 1px;
+    }
+
+    .mouse_control_li:nth-last-child(1){
+        border-bottom:none;
+        background: url("../../../assets/images/mapIcon.svg");
+        background-position: 137px 1px;
+    }
 
     ::-webkit-scrollbar {
         width: 6px;

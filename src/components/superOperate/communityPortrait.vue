@@ -304,13 +304,13 @@
                                 <el-col :span="13">
                                     <p class="progress_li progress_li_title">
                                         <span class="progress_li_rate">排名</span>
-                                        <span class="progress_li_name">手机品牌</span>
+                                        <span class="progress_li_name phone_li_name">手机品牌</span>
                                         <span class="progress_li_num">占比</span>
                                     </p>
                                     <ul class="little_height_ul mobile_phone_ul" v-show="mobilePhoneList.length">
                                         <li class="progress_li" v-for="(item,index) in mobilePhoneList" :key="index+1">
                                             <span class="progress_li_rate">{{index + 1}}</span>
-                                            <span class="progress_li_name">{{item.label}}</span>
+                                            <span class="progress_li_name phone_li_name">{{item.label}}</span>
                                             <span class="progress_li_value">{{item.value}}%</span>
                                             <div class="progress_li_num">
                                                 <el-progress :percentage="item.percent"
@@ -1609,14 +1609,18 @@
     }
 
     .progress_li_name {
-        width: 92px;
+        width: 90px;
         overflow-x: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
+    .progress_li_name.phone_li_name{
+        width: 120px;
+    }
+
     .progress_li_value{
-        width: 52px;
+        width: 62px;
     }
 
     .progress_li_num {

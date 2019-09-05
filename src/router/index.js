@@ -154,7 +154,7 @@ export default new Router({
                 {path: '/superOperate/maintainList', component: maintainList},
                 {path: '/superOperate/companyList', component: companyList},
                 {path: '/superOperate/compact', component: compact},
-                {path: '/superOperate/communityPortrait',component: communityPortrait},
+                // {path: '/superOperate/communityPortrait',component: communityPortrait},
             ]
         },
         //普通运营

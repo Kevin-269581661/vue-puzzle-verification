@@ -157,7 +157,7 @@
                         <el-col :span="8">
                             <el-card class="box-card">
                                 <div slot="header" class="clearfix">
-                                    <span class="box_card_title">生肖Top5</span>
+                                    <span class="box_card_title">生肖Top6</span>
                                 </div>
                                 <div class="box_main">
                                     <p class="progress_li progress_li_title">
@@ -587,7 +587,10 @@
                             (dataObj.getAge && dataObj.getAge.length) ||
                             (dataObj.getChildren &&  dataObj.getChildren.length)||
                             (dataObj.getZodiac &&  dataObj.getZodiac.length) ||
-                            (dataObj.getAcademy &&  dataObj.getAcademy.length)){
+                            (dataObj.getAcademy &&  dataObj.getAcademy.length) ||
+                            (dataObj.getHaveRoom &&  dataObj.getHaveRoom.length) ||
+                            (dataObj.getBuy &&  dataObj.getBuy.length) ||
+                            (dataObj.getBrand &&  dataObj.getBrand.length)){
                             this.isHaveData = true
                             let timer = setTimeout(()=>{
                                 // 性别情况

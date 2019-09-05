@@ -253,9 +253,27 @@
                 <!--图片列表-->
                 <div class="find clearfix" v-if="showPic === 3">
                     <div class="photoCard" v-for="(img, index) of imgarr" :key="img.pID">
-                        <div class="imgBox" @mouseenter="mouseenterFun(img,index)" @mouseleave="mouseleaveFun(index)">
+                        <div class="imgBox" @mouseenter="showPreImg = index" @mouseleave="showPreImg = null">
                             <img :src="img.pUrl" alt="" class="smallImg">
                             <!--查看缩略图和下载-->
+                            <div class="mask-btn" v-if="true"><!--showPreImg == index-->
+                                <p class="mask_icon">
+                                    <span v-if="isShowCollect">
+                                        <i v-if="!img.isCollection" class="el-icon-star-off" @click="saveImgFun(img)" ></i>
+                                        <i v-else="img.isCollection" class="el-icon-star-on icon_save" @click="cancelImgFun(img)" ></i>
+                                    </span>
+                                    <i class="el-icon-search" @click="handlePictureCardPreview(img)"></i>
+                                </p>
+                                <p class="mask_a">
+                                    <a v-if="tabType === 'first'" :href= "galleryImgUrl + img.pUrl" >下载图片</a>
+                                    <a v-else :href= "collectImgUrl + img.id" >下载图片</a>
+                                </p>
+                            </div>
+                        </div>
+                        <!--图片水印-->
+                        <!--<div class="imgBox" @mouseenter="mouseenterFun(img,index)" @mouseleave="mouseleaveFun(index)">
+                            <img :src="img.pUrl" alt="" class="smallImg">
+                            &lt;!&ndash;查看缩略图和下载&ndash;&gt;
                             <div class="mask-btn" v-if="true || showPreImg == index">
                                 <p class="mask_icon">
                                     <span v-if="isShowCollect">
@@ -267,7 +285,7 @@
                                 <p class="mask_a">
                                     <el-dropdown @visible-change="visibleChange" @command="selectMark" placement="bottom-start">
                                         <el-button type="primary" size="small">
-                                            下载图片<i class="el-icon-arrow-down el-icon--right"></i>
+                                            下载图片<i class="el-icon-arrow-down el-icon&#45;&#45;right"></i>
                                         </el-button>
                                         <el-dropdown-menu slot="dropdown">
                                             <el-dropdown-item  command="a">
@@ -282,7 +300,7 @@
                                     </el-dropdown>
                                 </p>
                             </div>
-                        </div>
+                        </div>-->
                         <div class="detailBox">
                             <p>{{img.pRemarks.plan}}</p>
                             <!-- <span>华南碧桂园二期-东门</span> -->
@@ -441,6 +459,19 @@
         text-align: center;
         position: absolute;
         bottom: 16px;
+    }
+
+    .mask_a a{
+        width: 64px;
+        padding: 6px 8px;
+        border-radius: 4px;
+        color: #fff;
+        background: #409eff;
+        font-size: 14px;
+    }
+
+    .mask_a a:hover{
+        background: #66b1ff;
     }
 
     /deep/ .dropdown_a{

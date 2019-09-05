@@ -582,7 +582,12 @@
                         sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
-                        if(dataObj.getGender || dataObj.getMarriage || dataObj.getAge || dataObj.getChildren){
+                        if((dataObj.getGender && dataObj.getGender.length) ||
+                            (dataObj.getMarriage && dataObj.getMarriage.length) ||
+                            (dataObj.getAge && dataObj.getAge.length) ||
+                            (dataObj.getChildren &&  dataObj.getChildren.length)||
+                            (dataObj.getZodiac &&  dataObj.getZodiac.length) ||
+                            (dataObj.getAcademy &&  dataObj.getAcademy.length)){
                             this.isHaveData = true
                             let timer = setTimeout(()=>{
                                 // 性别情况
@@ -811,7 +816,7 @@
             // 设置子女预测数据
             setChildrenForecastPieData(data){
                 let arr = []
-                if (data) {
+                if (data && data.length) {
                     for (let key of data) {
                         let tagValue = this.keepTwoDecimal(key.tagValue)
                         if (key.tagIdSecondName.includes('有')) {
@@ -1012,7 +1017,7 @@
             // 生肖Top5、教育程度、职业分布、毕业院校
             setProgressData(data,string){
                 let arr = []
-                if (data) {
+                if (data && data.length) {
                     let i = 0
                     let max = this.keepTwoDecimal(data[0].tagValue)
                     for (let key of data) {
@@ -1229,22 +1234,29 @@
             },
             // 设置购买力数据
             setPurchasingPowerPieData(data){
-                let arr = []
-                for (let key of data) {
-                    let tagValue = this.keepTwoDecimal(key.tagValue)
-                    switch (key.tagIdSecondName) {
-                        case '高':
-                            arr[0] = {value: tagValue, name: key.tagIdSecondName};
-                            break;
-                        case '中':
-                            arr[1] = {value: tagValue, name: key.tagIdSecondName};
-                            break;
-                        case '低':
-                            arr[2] = {value: tagValue, name: key.tagIdSecondName};
-                            break;
-                        case '未知' :
-                            arr[3] = {value: tagValue, name: key.tagIdSecondName};
-                            break;
+                let arr = [
+                    {value: 0, name: ''},
+                    {value: 0, name: ''},
+                    {value: 0, name: ''},
+                    {value: 0, name: ''}
+                ]
+                if (data && data.length) {
+                    for (let key of data) {
+                        let tagValue = this.keepTwoDecimal(key.tagValue)
+                        switch (key.tagIdSecondName) {
+                            case '高':
+                                arr[0] = {value: tagValue, name: key.tagIdSecondName};
+                                break;
+                            case '中':
+                                arr[1] = {value: tagValue, name: key.tagIdSecondName};
+                                break;
+                            case '低':
+                                arr[2] = {value: tagValue, name: key.tagIdSecondName};
+                                break;
+                            case '未知' :
+                                arr[3] = {value: tagValue, name: key.tagIdSecondName};
+                                break;
+                        }
                     }
                 }
                 this.purchasingPowerPieInfo = arr
@@ -1329,7 +1341,7 @@
             // 设置手机操作系统数据
             setMobilePhonePieData(data){
                 let arr = []
-                if (data) {
+                if (data && data.length) {
                     for (let key of data) {
                         let tagValue = this.keepTwoDecimal(key.tagValue)
                         arr.push({
@@ -1413,11 +1425,7 @@
                                     show: true
                                 }
                             },
-                            data:[
-                                {value:95, name:'iphone'},
-                                {value:234, name:'Android'},
-                                {value:34, name:'未知'},
-                            ]
+                            data: this.mobilePhonePieInfo
                         }
                     ]
                 });
@@ -1425,7 +1433,7 @@
             // 手机品牌列表
             setMobilePhoneList(data) {
                 let arr = []
-                if (data) {
+                if (data && data.length) {
                     let max = this.keepTwoDecimal(data[0].tagValue)
                     for(let key of data) {
                         let tagValue = this.keepTwoDecimal(key.tagValue)

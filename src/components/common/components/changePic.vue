@@ -1541,7 +1541,7 @@ export default {
                 lEnd: row.lEnd,
                 resId: row.resID,
                 // lId: row.lID ? row.lID : "",
-                lId: (row.lID && row.mVehicle=='广告门')?row.lID:(row.lID?row.lID.split(',')[0]:''),
+                lId: row.mVehicle=='广告门'?row.lID:(row.lID?row.lID.toString().split(',')[0]:''),
                 type: row.mVehicle=='广告门' ?0:1,
                 pType: type,
                 replaceRecordId: row.replaceRecordId ? row.replaceRecordId :'',

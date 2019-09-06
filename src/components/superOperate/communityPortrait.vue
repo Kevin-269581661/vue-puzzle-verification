@@ -682,7 +682,7 @@
                         containLabel: true
                     },
                     legend: {
-                        bottom: 10,
+                        bottom: 20,
                         left: 'center',
                         icon:'circle',
                         itemWidth: 9,
@@ -692,7 +692,7 @@
                         {
                             name:'性别情况',
                             type:'pie',
-                            radius: ['50%', '70%'],
+                            radius: ['45%', '65%'],
                             center: ['50%', '45%'],
                             avoidLabelOverlap: false,
                             color: this.colorArr,
@@ -774,7 +774,7 @@
                         containLabel: true
                     },
                     legend: {
-                        bottom: 10,
+                        bottom: 20,
                         left: 'center',
                         icon:'circle',
                         itemWidth: 9,
@@ -784,7 +784,7 @@
                         {
                             name:'婚姻状况',
                             type:'pie',
-                            radius: ['50%', '70%'],
+                            radius: ['45%', '65%'],
                             center: ['50%', '45%'],
                             avoidLabelOverlap: false,
                             color: this.colorArr,
@@ -866,7 +866,7 @@
                         containLabel: true
                     },
                     legend: {
-                        bottom: 10,
+                        bottom: 20,
                         left: 'center',
                         icon:'circle',
                         itemWidth: 9,
@@ -876,7 +876,7 @@
                         {
                             name:'子女预测',
                             type:'pie',
-                            radius: ['50%', '70%'],
+                            radius: ['45%', '65%'],
                             center: ['50%', '45%'],
                             avoidLabelOverlap: false,
                             color: ['#1890FF','#4DCB73'],
@@ -1117,7 +1117,7 @@
                         containLabel: true
                     },
                     legend: {
-                        bottom: 10,
+                        bottom: 20,
                         left: 'center',
                         icon:'circle',
                         itemWidth: 9,
@@ -1127,7 +1127,7 @@
                         {
                             name:'有车概率',
                             type:'pie',
-                            radius: ['50%', '70%'],
+                            radius: ['45%', '65%'],
                             center: ['50%', '45%'],
                             avoidLabelOverlap: false,
                             color: this.colorArr,
@@ -1193,7 +1193,7 @@
                         containLabel: true
                     },
                     legend: {
-                        bottom: 10,
+                        bottom: 20,
                         left: 'center',
                         icon:'circle',
                         itemWidth: 9,
@@ -1203,7 +1203,7 @@
                         {
                             name:'有房概率',
                             type:'pie',
-                            radius: ['50%', '70%'],
+                            radius: ['45%', '65%'],
                             center: ['50%', '45%'],
                             avoidLabelOverlap: false,
                             color: this.colorArr,
@@ -1225,9 +1225,10 @@
                             },
                             labelLine: {
                                 normal: {
-                                    length: 10,
-                                    length2: 6,
-                                    show: true
+                                    length: 8,
+                                    length2: 5,
+                                    show: true,
+                                    smooth: true
                                 }
                             },
                             data: this.haveHousePieInfo
@@ -1299,7 +1300,7 @@
                         containLabel: true
                     },
                     legend: {
-                        bottom: 10,
+                        bottom: 20,
                         left: 'center',
                         icon:'circle',
                         itemWidth: 9,
@@ -1309,7 +1310,7 @@
                         {
                             name:'购买力',
                             type:'pie',
-                            radius: ['50%', '70%'],
+                            radius: ['45%', '65%'],
                             center: ['50%', '45%'],
                             avoidLabelOverlap: true,
                             color: this.colorArr,
@@ -1401,7 +1402,7 @@
                         {
                             name:'手机设备',
                             type:'pie',
-                            radius: ['50%', '70%'],
+                            radius: ['45%', '65%'],
                             center: ['43%', '45%'],
                             avoidLabelOverlap: true,
                             color: this.colorArr,
@@ -1697,5 +1698,20 @@
         margin-top: 24px;
         color: rgba(0,0,0,0.45);
         font-size: 14px;
+    }
+
+    /deep/ .el-card.is-always-shadow,
+    /deep/ .el-card.is-hover-shadow:focus,
+    /deep/ .el-card.is-hover-shadow:hover{
+        box-shadow:none;
+    }
+
+    /deep/ .el-card{
+        border-radius: unset;
+        border: 1px solid rgba(230,231,233,1);
+    }
+
+    /deep/ .el-card__header{
+        border-bottom: 1px solid rgba(230,231,233,1);
     }
 </style>

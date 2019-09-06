@@ -151,20 +151,20 @@
                 this.resMap.setCurrentCity("广州市");
                 //开启鼠标滚轮缩放
                 this.resMap.enableScrollWheelZoom(true);
-                //
-                this.creatMarker()
                 // 监听点击地图
                 this.resMap.addEventListener("click", () => {
                     console.log('---')
                     this.isShowMediaInfo = false
                 });
+                //
+                this.creatMarker()
             },
             // 创建标注
             creatMarker(){
                 let i = 0
                 for(let key of adsInfo){
                     key.isSelect = false
-                    if(i < 300) {
+                    // if(i < 300) {
                         let lngLat = key.lng.split(';')
                         let point = new BMap.Point(lngLat[0], lngLat[1]); //
                         let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(20,33),{
@@ -182,9 +182,9 @@
                             this.showInfo(key,point)
                         });
                         // console.log('getOffset',marker.getOffset())
-                    } else {
-                        break
-                    }
+                    // } else {
+                    //     break
+                    // }
                     i++
                 }
             },
@@ -213,12 +213,13 @@
             /* 右侧鼠标绘制 */
             // 初始化鼠标绘制
             initMouseDrawing(temp){
+                this.deleteDrawingOverlay()
                 if(!this.drawingManager){
                     // 鼠标绘制控件
                     let styleOptions = {
                         strokeColor:"blue",         //边线颜色。
                         fillColor:"blue",           //填充颜色。当参数为空时，圆形将没有填充效果。
-                        strokeWeight: 1,            //边线的宽度，以像素为单位。
+                        strokeWeight: 3,            //边线的宽度，以像素为单位。
                         strokeOpacity: 0.3,         //边线透明度，取值范围0 - 1。
                         fillOpacity: 0.3,           //填充的透明度，取值范围0 - 1。
                         strokeStyle: 'solid',       //边线的样式，solid或dashed。
@@ -244,6 +245,7 @@
                         rectangleOptions: styleOptions  // 矩形的样式
                     });
                     let that = this
+                    //添加鼠标绘制工具监听事件，用于获取绘制结果
                     this.drawingManager.addEventListener("overlaycomplete", function(e) {
                         console.log(e.drawingMode);
                         console.log(e.overlay);
@@ -255,23 +257,17 @@
                             console.log('圆半径',radius,'圆心',e.overlay.point)
                             that.showResInCircle(e.overlay.point,radius)
                         } else if(e.drawingMode === 'polygon'){
-
+                            console.log('画多边形',overlay,e.overlay.getPath());
+                            that.polygonPoint = e.overlay.getPath()
+                            that.showResInPolygon()
                         }
-                    });
-                    // this.drawingManager.addEventListener("circlecomplete", function(e, overlay) {
-                    //     console.log('画圆完成',overlay,overlay.point,'-----');
-                    // });
-                    //添加鼠标绘制工具监听事件，用于获取绘制结果
-                    this.drawingManager.addEventListener('overlaycomplete', (e, overlay)=>{
-                        console.log('画多边形',overlay,e.overlay.getPath());
-                        this.polygonPoint = e.overlay.getPath()
-                        this.showResInPolygon()
                     });
                     this.drawingMouse(temp)
                 } else {
                     this.drawingMouse(temp)
                 }
             },
+            // 打开绘制类型
             drawingMouse(temp) {
                 if(temp === 'circle') {
                     this.drawingManager.open()
@@ -284,6 +280,7 @@
 
                 }
             },
+            // 匹配多边形内的点位
             isInsidePolygon(pt, poly) {
                 for (var c = false, i = -1, l = poly.length, j = l - 1; ++i < l; j = i)
                     ((poly[i].lat <= pt.lat && pt.lat < poly[j].lat) || (poly[j].lat <= pt.lat && pt.lat < poly[i].lat)) &&
@@ -323,6 +320,21 @@
                 let date2 = new Date();
                 let haomiao = date2.getTime() - date1.getTime();
                 console.log('用时',haomiao/(1000*60))
+            },
+            // 清除上一次的绘制
+            deleteDrawingOverlay() {
+                let allOverlay = this.resMap.getOverlays();
+                for (let akey of allOverlay) {
+                    if (akey.toString() == "[object Circle]" || akey.toString() == "[object Polygon]") {
+                        this.resMap.removeOverlay(akey);
+                        // break;
+                    } else if(!akey.isVisible()){
+                        akey.show()
+                    } else {
+
+                    }
+                }
+                this.searchResList = []
             },
             /* 左侧搜索 */
             // 搜索

@@ -5,8 +5,14 @@
                 <div class="line_tail"></div>
                 <div class="line_head"></div>
                 <div class="line_content">
-                    <p class="time">{{item.time}}</p>
-                    <span :class="[getcolor(), 'content']" v-if="item.text">{{item.text}}</span>
+                    <p class="time">{{item.time}}
+                        <span :class="[getcolor(item.type),'tag']">{{item.type}}</span>
+                        <span v-if="item.type!='拆除'" class="handleBtn">处理</span>
+                    </p>
+                    <div class= "content" v-if="item.text">
+                        <p>{{item.text}}</p>
+                        <p v-if="item.type=='巡点'"><i class="el-icon-location-outline"></i>{{item.address}}</p>
+                    </div>
                 </div>
             </li>
         </ul>
@@ -27,14 +33,13 @@ export default {
         }
     },
     methods:{
-        getcolor(){
-            let num = Math.floor(Math.random()*3+1);
-            if(num == 1){
+        getcolor(type){
+            if(type == '巡点'){
                 return 'blue';
-            }else if(num == 2){
+            }else if(type == '待维修'){
                 return 'yellow';
-            }else{
-                return 'green';
+            }else {
+                return 'red';
             }
         },
     },
@@ -46,7 +51,23 @@ export default {
     .timeline{
         list-style: none;
         margin: 0;
-        padding: 0;
+        padding: 15px;
+        height: 390px;
+        overflow-x: hidden;
+        overflow-y: scroll;
+        border-radius:4px;
+        border:1px solid rgba(217,217,217,1);
+    }
+    .timeline::-webkit-scrollbar {
+        width: 6px;
+        background: #fafafa;
+    }
+
+    .timeline::-webkit-scrollbar-thumb {
+        /*滚动条里面小方块*/
+        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        background: #c1c1c1;
+        border-radius: 4px;
     }
     .timeline_item{
         margin: 0!important;
@@ -56,20 +77,21 @@ export default {
     }
     .line_tail{
         height: 100%;
-        border-left: 1px solid #e8eaec;
+        border-left: 1px solid #1890FF;
         position: absolute;
-        left: 6px;
-        top: 0;
+        left: 4px;
+        top: 3px;
+
     }
     .line_head{
-        width: 13px;
-        height: 13px;
+        width: 7px;
+        height: 7px;
         background-color: #fff;
         border-radius: 50%;
-        border: 1px solid transparent;
+        border: 1px solid  #1890FF;
         position: absolute;
-        border-color: #2d8cf0;
-        color: #2d8cf0;
+        color: #1890FF;
+        top: 3px;
     }
     .line_content{
         padding: 1px 1px 10px 24px;
@@ -77,31 +99,56 @@ export default {
         position: relative;
         top: -3px;
     }
+    .line_content .tag{
+        font-size: 10px;
+        padding: 0 2px;
+        border-radius: 2px;
+    }
     .time{
         font-size: 14px;
-        color: #999999;
+        font-weight:500;
+        color:rgba(0,0,0,0.85);
         margin: 0;
+        position: relative;
     }
+
     .content{
         padding: 2px 6px;
         font-size: 14px;
         width: auto;
-        color: #fff;
+        color:rgba(0,0,0,0.65);
         border-radius: 0px 30px 30px 40px;
         display: inline-block;
         max-height: 130px;
         height: auto;
+        margin-bottom: 2px;
+    }
+    .content p:last-child{
+        font-size: 12px;
     }
     .timeline_item:last-child .line_tail{
         display: none;
     }
     .blue{
-        background: #38B9FA;
+        border: 1px solid #3C95FF;
+        color: #3C95FF;
+        background: #cbe0fd;
     }
     .yellow{
-        background: #FFA943;
+        border: 1px solid #FF7F3C;
+        color: #FF7F3C;
+        background: #f2dbd6;
     }
-    .green{
-        background: #61EC8E;
+    .red{
+        border: 1px solid #FF7070;
+        color: #FF7070;
+        background: #ffe2e2;
+    }
+    .handleBtn{
+        color: #1890FF;
+        position: absolute;
+        right: 0;
+        top: 0;
+        cursor: pointer;
     }
 </style>

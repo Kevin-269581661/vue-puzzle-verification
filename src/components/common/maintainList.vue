@@ -25,7 +25,7 @@
                     </el-col>
                     <el-col :span="6">
                         <span>维护类型:</span>
-                        <el-select v-model="searchInfo.type" placeholder="请选择维护类型"  filterable>
+                        <el-select v-model="searchInfo.type" placeholder="请选择维护类型" filterable>
                             <el-option v-for="item of typeArr" :key="item.value" :label="item.label"
                                        :value="item.value"></el-option>
                         </el-select>
@@ -119,18 +119,13 @@
                         element-loading-spinner="el-icon-loading"
                         border
                         :data="currentPlan"
-                        style="width: 100%"
-                        @filter-change="filterChange"
-                        :default-sort="{prop: 'resName', order: 'descending'}">
+                        style="width: 100%">
                         <el-table-column
                             label="维护类型"
                             min-width="10.2%"
                             :show-overflow-tooltip="true">
                             <template slot-scope="scope">
-								<span @click="mediaDetail(scope.row)"
-                                      style="color: #108ee9;cursor: pointer">
-									{{scope.row.resName}}
-								</span>
+                                <span>{{scope.row.mtType}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -149,21 +144,21 @@
                             </template>
                         </el-table-column>
                         <el-table-column
-                            prop="rName"
+                            prop="area"
                             label="区域"
                             min-width="7%"
                             :show-overflow-tooltip="true">
                             <template slot-scope="scope">
-                                <span>{{scope.row.rName || '--' }}</span>
+                                <span>{{scope.row.area || '--' }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
-                            prop="tradingArea"
+                            prop="mediaName"
                             label="媒体名称"
                             min-width="8%"
                             :show-overflow-tooltip="true">
                             <template slot-scope="scope">
-                                <span>{{scope.row.tradingArea || '--' }}</span>
+                                <span>{{scope.row.mediaName || '--' }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -176,7 +171,7 @@
                             </template>
                         </el-table-column>
                         <el-table-column
-                            prop="pNum"
+                            prop="issueRecord"
                             label="问题记录"
                             min-width="6.1%"
                             class="tar"
@@ -188,17 +183,7 @@
                             label="状态"
                             min-width="8%">
                             <template slot-scope="scope">
-                                <span
-                                    v-if="scope.row.mState === '正常' && scope.row.mVehicle === '广告门' && scope.row.pNum > 1">
-                                    <el-tooltip class="item" effect="dark" placement="left-start">
-                                        <div slot="content">
-                                            A面:{{scope.row.asState.A == '1' ? '正常' : '禁用'}}  B面:{{scope.row.asState.B == '1' ? '正常' : '禁用'}}
-                                        </div>
-                                        <point-state :state-text="scope.row.mState"
-                                                     :color="stateToText(scope.row.mState).color"></point-state>
-                                    </el-tooltip>
-                                </span>
-                                <point-state v-else :state-text="scope.row.mState"
+                                <point-state :state-text="scope.row.mState"
                                              :color="stateToText(scope.row.mState).color"></point-state>
                             </template>
                         </el-table-column>
@@ -213,18 +198,14 @@
                                         操作<i class="el-icon-arrow-down el-icon--right"></i>
                                     </span>
                                     <el-dropdown-menu slot="dropdown">
-                                        <el-dropdown-item
-                                            @click.native.prevent="confirmBox('待安装',scope.$index, scope.row)"
-                                            :disabled="scope.row.mState === '待安装'">待安装
+                                        <el-dropdown-item @click.native.prevent="showPhoto(scope.row)"
+                                                          v-if="scope.row.mtType=='巡点'">照片
                                         </el-dropdown-item>
-                                        <el-dropdown-item
-                                            @click.native.prevent="confirmBox('正常',scope.$index, scope.row)">正常
+                                        <el-dropdown-item @click.native.prevent="toHandle(scope.row)"
+                                                          v-if="scope.row.mtType=='巡点'">处理
                                         </el-dropdown-item>
-                                        <el-dropdown-item
-                                            @click.native.prevent="confirmBox('待维修',scope.$index, scope.row)"
-                                            :disabled="scope.row.mState === '待维修'">待维修
+                                        <el-dropdown-item @click.native.prevent="showHistory(scope.row)">历史记录
                                         </el-dropdown-item>
-
                                     </el-dropdown-menu>
                                 </el-dropdown>
                             </template>
@@ -269,17 +250,42 @@
 
         <!-- 处理弹出框 -->
         <el-dialog
-            title="问题处理"
+            :title="handleModalTitle"
             :visible.sync="isShowHandle"
             width="30%">
-            <div class="loglist_box">
-                <log-list :list="logList"></log-list>
+            <div class="block">
+                <span>处理日期：</span>
+                <el-date-picker
+                    v-model="maintainForm.date"
+                    type="date"
+                    placeholder="请选择出现时间">
+                </el-date-picker>
             </div>
-            <p>原备注：</p>
-            <el-input v-model="remark" placeholder="请输入内容" type="textarea"></el-input>
+            <div class="remark">
+                <span>{{handleModalTitle=='维修处理'?"处理说明":"媒体备注"}}：</span>
+                <el-input type="textarea" v-model="maintainForm.reamrk" :autosize="{ minRows: 2, maxRows: 4}" placeholder="请填处理说明"></el-input>
+            </div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="isShowHandle = false">取 消</el-button>
                 <el-button type="primary" @click="handleRemark()">确 定</el-button>
+            </span>
+        </el-dialog>
+        <!--历史记录弹出框-->
+        <el-dialog
+            class="logList-wrap"
+            title="历史记录"
+            :visible.sync="isShowHistory"
+            width="30%">
+            <div class="loglist_box">
+                <div class="title">
+                    <p>{{logList.rtName}}</p>
+                    <p>{{logList.mTitle}}({{logList.assetTag}})</p>
+                </div>
+
+                <log-list :list="logList.list"></log-list>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="isShowHistory = false">关 闭</el-button>
             </span>
         </el-dialog>
     </div>
@@ -366,10 +372,20 @@
                 engineerArr: [],
                 // 表格数据
                 currentPlan: [{
-                    date: '2016-05-03',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1518 弄'
+                    mState: '已处理',
+                    mtType: '巡点',
+                    rtName: '资源',
+                    city: '城市',
+                    area: '区域',
+                    mediaName: '媒体名称',
+                    assetTag: '资产编号',
+                    issueRecord: '问题记录',
                 }],
+                //处理对话框
+                maintainForm:{
+                    date:'',
+                    reamrk:'',
+                },
                 // 是否滚动加载
                 loading_point: true,
                 isSearch: true,
@@ -385,6 +401,9 @@
                 },
                 // 处理弹出框
                 isShowHandle: false,
+                handleModalTitle: '',
+                //历史记录弹出框
+                isShowHistory: false,
                 remark: '',
                 // 图片弹出框
                 isShowImg: false,
@@ -398,7 +417,34 @@
                     }
                 ],
                 // 问题列表
-                logList: [],
+                logList: {
+                    rtName: '中心西关海',
+                    mTitle: '西南门',
+                    assetTag: '005B201903GZ-X919',
+                    list: [
+                        {
+                            id: 1,
+                            time: '2019/08/30 20:32:56',
+                            text: '这是一条很长很长的巡点记录，这是一条很长很长的巡点记录，这是一条很长很长的巡点记录。',
+                            address: '广州市越秀区广州大道中307号福利新天地中心',
+                            type: '巡点',
+                        },
+                        {
+                            id: 2,
+                            time: '2019/08/30 20:32:56',
+                            text: '这是一条很长很长的巡点记录',
+                            address: '广州市越秀区广州大道中307号福利新天地中心',
+                            type: '待维修',
+                        },
+                        {
+                            id: 3,
+                            time: '2019/08/30 20:32:56',
+                            text: '这是一条很长很长的巡点记录',
+                            address: '广州市越秀区广州大道中307号福利新天地中心',
+                            type: '拆除',
+                        }
+                    ]
+                },
                 logsId: [],
                 multipleSelection: '',//选中的表格数据
             };
@@ -442,26 +488,7 @@
                 console.log(val)
                 this.multipleSelection = val;
             },
-            filterChange(filters) {
-                console.log('filters', filters)
-                for (let key in filters) {
-                    if (key === 'rtName') {
-                        if (filters[key].length) {
-                            this.resType = filters[key][0]
-                        } else {
-                            this.resType = ''
-                        }
-                    } else if (key === 'mState') {
-                        if (filters[key].length) {
-                            this.mState = filters[key][0]
-                        } else {
-                            this.mState = ''
-                        }
-                    }
-                }
-                this.pageData.pageNum = 1
-                this.getData()
-            },
+
             // 公司数据
             getCompany() {
                 let sess = this.sessionData;
@@ -532,6 +559,11 @@
                 this.imgUrls = item.urls;
                 this.isShowImg = true;
             },
+            //历史记录
+            showHistory(item) {
+                console.log(item)
+                this.isShowHistory = true
+            },
             // 处理
             toHandle(item) {
                 console.log(item);
@@ -543,28 +575,30 @@
                         mID: item.mID
                     }
                 };
-                api.postApi_new(this.apiVar.Media, info).then(res => {
-                    console.log(res.data);
-                    if (res.data.SysCode == 200200) {
-                        this.remark = item.remark || '暂无备注';
-                        let result = [];
-                        let logsId = [];
-                        for (let data of res.data.data) {
-                            let logInfo = {
-                                id: data.id,
-                                text: data.feedback,
-                                time: data.patrolTime,
-                            };
-                            logsId.push(data.id);
-                            result.push(logInfo);
-                        }
-                        this.logList = result;
-                        this.logsId = logsId;
-                        this.isShowHandle = true;
-                    }
-                }).catch(err => {
-                    console.log(err);
-                });
+                this.isShowHandle = true;
+                this.handleModalTitle = item.mtType == '巡点' ? '巡点处理' : '维修处理'
+                // api.postApi_new(this.apiVar.Media, info).then(res => {
+                //     console.log(res.data);
+                //     if (res.data.SysCode == 200200) {
+                //         this.remark = item.remark || '暂无备注';
+                //         let result = [];
+                //         let logsId = [];
+                //         for (let data of res.data.data) {
+                //             let logInfo = {
+                //                 id: data.id,
+                //                 text: data.feedback,
+                //                 time: data.patrolTime,
+                //             };
+                //             logsId.push(data.id);
+                //             result.push(logInfo);
+                //         }
+                //         this.logList = result;
+                //         this.logsId = logsId;
+                //         this.isShowHandle = true;
+                //     }
+                // }).catch(err => {
+                //     console.log(err);
+                // });
             },
             // 确认备注
             handleRemark() {
@@ -684,7 +718,7 @@
                 }
             },
             // 分页
-            changePage(val){
+            changePage(val) {
                 // console.log('当前页',val)
                 this.pageData.pageNum = val
                 this.getData()
@@ -780,41 +814,6 @@
         font-size: 14px;
     }
 
-    /deep/ .el-date-editor .el-range__icon {
-        position: relative;
-        top: -3px;
-        margin-right: 2px;
-    }
-
-    /deep/ .el-range-separator {
-        position: relative;
-        top: -3px;
-    }
-
-    /deep/ .el-input__inner {
-        max-width: 200px;
-        height: 32px;
-    }
-
-    /deep/ .el-date-editor {
-        max-width: 300px;
-        width: 300px;
-    }
-
-    /deep/ .el-date-editor i,
-    /deep/ .el-date-editor input,
-    /deep/ .el-date-editor span {
-        float: left;
-        position: relative;
-    }
-
-    .el-input {
-        width: 240px;
-        border-radius: 4px;
-    }
-
-
-
     .table_dt dl dt {
         font-size: 14px;
     }
@@ -829,6 +828,7 @@
     /deep/ .mediaList_container .el-input__inner {
         width: 202px;
         max-width: 202px;
+        height: 32px;
     }
 
     /deep/ .table_dt .el-table__row .cell span {
@@ -867,27 +867,68 @@
         background: #979797;
     }
 
-    .loglist_box {
-        height: 220px;
-        overflow-x: hidden;
-        overflow-y: scroll;
-    }
-
-    .loglist_box::-webkit-scrollbar {
-        width: 6px;
-        background: #fafafa;
-    }
-
-    .loglist_box::-webkit-scrollbar-thumb {
-        /*滚动条里面小方块*/
-        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-        background: #c1c1c1;
+    .loglist_box .title {
+        background: rgba(0, 0, 0, 0.05);
         border-radius: 4px;
+        padding: 8px 12px;
+        font-size: 16px;
+        color: rgba(0, 0, 0, 0.85);
+        margin-bottom: 16px;
+    }
+    .loglist_box .title p:last-child{
+        font-size: 14px;
+        margin-top: 2px;
+    }
+    /deep/ .logList-wrap .el-dialog__body {
+        padding: 6px 20px 30px;
+    }
+
+    /deep/ .logList-wrap .el-dialog__title {
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.85);
+        font-size: 16px;
     }
 
     .point_style {
         overflow-x: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+    }
+
+    /deep/ .el-dropdown-link {
+        cursor: pointer;
+        color: #108ee9;
+    }
+    .block,.remark{
+        display: flex;
+        align-items: center;
+    }
+    .remark{
+        margin-top: 16px;
+    }
+    /deep/ .block  .el-date-editor.el-input__inner,/deep/ .block .el-input--prefix .el-input__inner{
+        height: 32px;
+        width: 300px;
+    }
+    /deep/ .block .el-input__prefix, .el-input__suffix{
+        top: -3px;
+    }
+    /deep/ .remark .el-textarea__inner{
+        width: 300px;
+        height: 74px;
+        resize: none;
+    }
+    /deep/ .el-date-editor.el-input, .el-date-editor.el-input__inner{
+        min-width: 300px;
+    }
+    /deep/.remark .el-textarea{
+        width: 300px;
+    }
+    /deep/.ad_mediaDetail_wrap .el-date-editor .el-range__icon{
+        position: relative;
+        top: -3px;
+    }
+    /deep/.ad_mediaDetail_wrap .el-date-editor .el-range-separator{
+        line-height: 25px;
     }
 </style>

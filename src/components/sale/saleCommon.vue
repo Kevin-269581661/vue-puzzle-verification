@@ -29,6 +29,7 @@
                 <el-menu-item index="/sale/compact">文件下载</el-menu-item>
             </el-submenu>
             <el-menu-item index="/sale/tvOrderList">电视广告</el-menu-item>
+            <el-menu-item index="/sale/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>
             <el-submenu index="9" class="user_center" popper-class="user_center_item">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">
@@ -78,12 +79,15 @@
                 avator: require('../../assets/images/index/headimg.png'),
                 // 是否为全国权限
                 isNation: false,
+                showQinlin: false,
             }
         },
         created(){
             this.getUserName()
         },
         mounted(){
+            this.getIsShowQinlin();
+            // 是否显示社区画像
             this.getIsShowQinlin();
         },
         methods:{
@@ -108,18 +112,30 @@
             },
             // 是否显示亲邻
             getIsShowQinlin(){
-                // let accountArr = [611,612,613,1,657,610,609,608,607,605,3,1151];
-                // let accountArr = [110100,310100,440100,440300,500100,510100,0];
-                let companyList = ['999','1','2','3','4','5','6','7']
-                let account = this.sessionData.asrID;
-                for(let data of companyList){
-                    if(data == account){
-                        sessionStorage.setItem('AD_apid', -1);
-                        sessionStorage.setItem('ctList_data', '100,31,38,1,6,8,11,14');
-                        sessionStorage.setItem('aiTime', '2018-09-20 11:23:25');
-                        this.showQinlin = true;
-                        return;
+                let portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo'))
+                if (portraitInfo && portraitInfo.length) {
+                    this.showQinlin = true;
+                } else {
+                    let params = {
+                        uid: this.sessionData.uID,
+                        token: this.sessionData.token
                     }
+                    api.getApi(this.apiVar.portrait + '/api/v1/ascrInfo/getAscrList', params).then(res => {
+                        console.log('用户权限城市和默认小区res', res)
+                        if (res.data.SysCode === 200200) {
+                            let portraitInfo = res.data.data
+                            sessionStorage.setItem("portraitInfo", JSON.stringify(portraitInfo));
+                            if (portraitInfo.length) {
+                                this.showQinlin = true;
+                            } else {
+                                this.showQinlin = false;
+                            }
+                        } else if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                            this.$router.push('/login')
+                        } else {
+                            this.showQinlin = false;
+                        }
+                    })
                 }
             },
             // 路由切换

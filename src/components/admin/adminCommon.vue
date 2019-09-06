@@ -18,7 +18,8 @@
             <el-menu-item index="/admin">账号管理</el-menu-item>
             <el-menu-item index="/admin/companyList">公司管理</el-menu-item>
             <el-menu-item index="/admin/mediaList">媒体管理</el-menu-item>
-            <el-menu-item index="/admin/SMqinlinzk">亲邻智邻</el-menu-item>
+            <!--<el-menu-item index="/admin/SMqinlinzk">亲邻智邻</el-menu-item>-->
+            <el-menu-item index="/admin/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>
             <el-submenu index="6" class="user_center" popper-class="user_center_item">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">
@@ -67,15 +68,46 @@
                 // 媒介账号信息
                 sessionData: "",
                 avator: require('../../assets/images/index/headimg.png'),
+                //
+                showQinlin: false,
             }
         },
         created(){
             this.getUserName()
         },
         mounted(){
-
+            // 是否显示社区画像
+            this.getIsShowQinlin();
         },
         methods:{
+            // 是否显示亲邻
+            getIsShowQinlin(){
+                let portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo'))
+                if (portraitInfo && portraitInfo.length) {
+                    this.showQinlin = true;
+                } else {
+                    let params = {
+                        uid: this.sessionData.uID,
+                        token: this.sessionData.token
+                    }
+                    api.getApi(this.apiVar.portrait + '/api/v1/ascrInfo/getAscrList', params).then(res => {
+                        console.log('用户权限城市和默认小区res', res)
+                        if (res.data.SysCode === 200200) {
+                            let portraitInfo = res.data.data
+                            sessionStorage.setItem("portraitInfo", JSON.stringify(portraitInfo));
+                            if (portraitInfo.length) {
+                                this.showQinlin = true;
+                            } else {
+                                this.showQinlin = false;
+                            }
+                        } else if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                            this.$router.push('/login')
+                        } else {
+                            this.showQinlin = false;
+                        }
+                    })
+                }
+            },
             // 获取用户名称和角色
             getUserName() {
                 this.sessionData = sessFun.getSess();

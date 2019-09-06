@@ -177,6 +177,7 @@ export default new Router({
                 {path: '/operate/changePwd', component: changePwd},
                 {path: '/operate/questionAndAnswer', component: questionAndAnswer},
                 {path: '/operate/compact', component: compact},
+                {path: '/operate/communityPortrait',component: communityPortrait},
             ]
         },
         //媒介
@@ -210,6 +211,7 @@ export default new Router({
                 {path: '/media/adsDialPlate', component: adsDialPlate},
                 {path: '/media/projectList', component: projectList},
                 {path: '/media/projectDetail', component: projectDetail},
+                {path: '/media/communityPortrait',component: communityPortrait},
             ]
         },
         //销售
@@ -239,6 +241,7 @@ export default new Router({
                 {path: '/sale/mapMessage', component: mapMessage},
                 {path: '/sale/myInfo', component: myInfo},
                 {path: '/sale/compact', component: compact},
+                {path: '/sale/communityPortrait',component: communityPortrait},
             ]
         },
         //广告主
@@ -265,6 +268,7 @@ export default new Router({
                 {path: '/adOwner/hotSource', component: hotSource},
                 {path: '/adOwner/compact', component: compact},
                 {path: '/adOwner/myInfo', component: myInfo},
+                {path: '/adOwner/communityPortrait',component: communityPortrait},
             ]
         },
         //404

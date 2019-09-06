@@ -162,15 +162,24 @@
 							]"
                             :filter-multiple="false">
                             <template  slot-scope="scope">
-                                <span v-if="scope.row.mState === '正常' && scope.row.mVehicle === '广告门' && scope.row.pNum > 1">
+                                <span v-if="scope.row.mState == 1 && scope.row.mVehicle === '广告门' && scope.row.pNum > 1" >
                                     <el-tooltip class="item" effect="dark" placement="left-start">
                                         <div slot="content">
                                             A面:{{scope.row.asState.A == '1' ? '正常' : '禁用'}}  B面:{{scope.row.asState.B == '1' ? '正常' : '禁用'}}
                                         </div>
-                                        <point-state :state-text="scope.row.mState" :color="stateToText(scope.row.mState).color"></point-state>
+                                         <point-state :state-text="stateToText(scope.row.mState).text" :color="stateToText(scope.row.mState).color"></point-state>
                                     </el-tooltip>
                                 </span>
-                                <point-state v-else :state-text="scope.row.mState" :color="stateToText(scope.row.mState).color"></point-state>
+                                <point-state v-else :state-text="stateToText(scope.row.mState).text" :color="stateToText(scope.row.mState).color"></point-state>
+                                <!--<span v-if="scope.row.mState === '正常' && scope.row.mVehicle === '广告门' && scope.row.pNum > 1">-->
+                                    <!--<el-tooltip class="item" effect="dark" placement="left-start">-->
+                                        <!--<div slot="content">-->
+                                            <!--A面:{{scope.row.asState.A == '1' ? '正常' : '禁用'}}  B面:{{scope.row.asState.B == '1' ? '正常' : '禁用'}}-->
+                                        <!--</div>-->
+                                        <!--<point-state :state-text="scope.row.mState" :color="stateToText(scope.row.mState).color"></point-state>-->
+                                    <!--</el-tooltip>-->
+                                <!--</span>-->
+                                <!--<point-state v-else :state-text="scope.row.mState" :color="stateToText(scope.row.mState).color"></point-state>-->
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -185,26 +194,38 @@
                                         操作<i class="el-icon-arrow-down el-icon--right"></i>
                                     </span>
                                     <el-dropdown-menu slot="dropdown">
-                                        <el-dropdown-item
-                                            @click.native.prevent="confirmBox('待安装',scope.$index, scope.row)"
-                                            :disabled="scope.row.mState === '待安装'">待安装
+                                        <el-dropdown-item command="0"
+                                            @click.native.prevent="confirmBox('0',scope.$index, scope.row)"
+                                            :disabled="scope.row.mState == '0'">禁用</el-dropdown-item>
+                                        <el-dropdown-item command="1"
+                                            @click.native.prevent="confirmBox('1',scope.$index, scope.row)">
+                                            正常
                                         </el-dropdown-item>
-                                        <el-dropdown-item
-                                            @click.native.prevent="confirmBox('正常',scope.$index, scope.row)">正常
-                                        </el-dropdown-item>
-                                        <el-dropdown-item
-                                            @click.native.prevent="confirmBox('待维修',scope.$index, scope.row)"
-                                            :disabled="scope.row.mState === '待维修'">待维修
-                                        </el-dropdown-item>
-                                        <el-dropdown-item
-                                            @click.native.prevent="confirmBox('禁用',scope.$index, scope.row)"
-                                            :disabled="scope.row.mState === '禁用'">禁用
-                                        </el-dropdown-item>
+                                        <el-dropdown-item command="2"
+                                            @click.native.prevent="confirmBox('2',scope.$index, scope.row)"
+                                            :disabled="scope.row.mState === '2'">待安装</el-dropdown-item>
+                                        <el-dropdown-item command="3"
+                                            @click.native.prevent="confirmBox('3',scope.$index, scope.row)"
+                                            :disabled="scope.row.mState === '3'">待维修</el-dropdown-item>
+                                        <!--<el-dropdown-item-->
+                                            <!--@click.native.prevent="confirmBox('待安装',scope.$index, scope.row)"-->
+                                            <!--:disabled="scope.row.mState === '待安装'">待安装-->
+                                        <!--</el-dropdown-item>-->
+                                        <!--<el-dropdown-item-->
+                                            <!--@click.native.prevent="confirmBox('正常',scope.$index, scope.row)">正常-->
+                                        <!--</el-dropdown-item>-->
+                                        <!--<el-dropdown-item-->
+                                            <!--@click.native.prevent="confirmBox('待维修',scope.$index, scope.row)"-->
+                                            <!--:disabled="scope.row.mState === '待维修'">待维修-->
+                                        <!--</el-dropdown-item>-->
+                                        <!--<el-dropdown-item-->
+                                            <!--@click.native.prevent="confirmBox('禁用',scope.$index, scope.row)"-->
+                                            <!--:disabled="scope.row.mState === '禁用'">禁用-->
+                                        <!--</el-dropdown-item>-->
                                     </el-dropdown-menu>
                                 </el-dropdown>
                             </template>
                         </el-table-column>
-
                         <div slot="empty">
                             <no-search-result></no-search-result>
                         </div>
@@ -516,23 +537,27 @@
                 let arr = [
                     {
                         text: '正常',
+                        value: 1,
                         color: 'rgba(82,196,26,1)',
                     },
                     {
                         text: '待安装',
+                        value: 2,
                         color: 'rgba(196,203,211,1)',
                     },
                     {
                         text: '待维修',
+                        value: 3,
                         color: 'rgba(250,173,20,1)',
                     },
                     {
                         text: '禁用',
+                        value: 0,
                         color: 'rgba(245,34,45,1)',
                     },
                 ];
                 for(let data of arr){
-                    if(data.text === state){
+                    if(data.value == state){
                         return data;
                     }
                 }
@@ -646,11 +671,15 @@
                     if ( res.data.SysCode == 200200) {
                         if (RMList) {
                             let mediaList = []
-                            for (let i = 0; i < RMList.length; i++) {
-                                RMList[i].mState = this.return_mState(RMList[i].mState)
-                                mediaList.push(RMList[i])
+                            // for (let i = 0; i < RMList.length; i++) {
+                            //     RMList[i].mState = this.return_mState(RMList[i].mState)
+                            //     mediaList.push(RMList[i])
+                            // }
+                            for(let key of RMList) {
+                                mediaList.push(key)
                             }
                             this.currentPlan = mediaList
+                            console.log('currentPlan',this.currentPlan)
                             //正在加载
                             this.loading = false;
                         } else {
@@ -748,7 +777,19 @@
                 }
             },
             //确认框
-            confirmBox(str, index, rows) {
+            confirmBox(selectState,rows,index) {
+                console.log('选择的状态', selectState)
+                console.log('行内容', rows)
+                if (rows.mState == selectState ) {
+                    Message({
+                        type: 'warning',
+                        message: '当前状态已是' + this.return_mState(selectState)
+                    });
+                } else {
+
+                }
+            },
+            confirmBox_(str, index, rows) {
                 let Status = str//e.target.innerText;
                 console.log('状态', Status)
                 console.log('行内容', rows)//mState

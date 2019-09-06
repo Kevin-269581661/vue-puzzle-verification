@@ -1557,13 +1557,13 @@ export default {
         // 限制只能上传png,jpeg格式的照片
         beforeAvatarUpload(file) {
             const isIMAGE = file.type === "image/jpeg" || file.type === "image/png";
-            const isLt1M = file.size / 1024 / 1024 < 5;
+            const isLt1M = file.size / 1024 / 1024 < 10;
 
             if (!isIMAGE) {
                 sessFun.messageFun('error', "只能上传jpg/png图片!");
             }
             if (!isLt1M) {
-                sessFun.messageFun('error', "上传文件大小不能超过 5MB!");
+                sessFun.messageFun('error', "上传文件大小不能超过 10MB!");
             }
             return isIMAGE&&isLt1M;
         },

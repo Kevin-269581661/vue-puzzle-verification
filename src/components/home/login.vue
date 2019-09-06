@@ -104,7 +104,7 @@
             }
         },
         mounted: function () {
-            //  this.canvanFun()
+            sessionStorage.removeItem("portraitInfo");
             //页面加载调用获取cookie值
             this.username = utils.getCookie('username');
             this.password = utils.getCookie('password');

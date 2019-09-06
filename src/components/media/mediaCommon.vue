@@ -72,6 +72,7 @@
 
 <script>
     import uTypeToText from "../../commonFun/uTypeToText.js";
+    import api from "../../api/api"
     export default {
         name: "mediaCommon",
         data(){

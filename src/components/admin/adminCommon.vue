@@ -57,7 +57,8 @@
 
 <script>
     import uTypeToText from "../../commonFun/uTypeToText.js";
-    import sessFun from '../../commonFun/sessFun.js'
+    import sessFun from '../../commonFun/sessFun.js';
+    import api from "../../api/api"
     export default {
         name: "adminCommon",
         data(){

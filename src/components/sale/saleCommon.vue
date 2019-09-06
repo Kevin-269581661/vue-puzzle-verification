@@ -67,6 +67,7 @@
 
 <script>
     import uTypeToText from "../../commonFun/uTypeToText.js";
+    import api from "../../api/api"
     export default {
         name: "saleCommon",
         data(){
@@ -86,7 +87,6 @@
             this.getUserName()
         },
         mounted(){
-            this.getIsShowQinlin();
             // 是否显示社区画像
             this.getIsShowQinlin();
         },

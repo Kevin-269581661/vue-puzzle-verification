@@ -227,9 +227,10 @@
             // 扫码登录，初始化websocket
             initWebsocket() {
                 if ("WebSocket" in window) {
-                    let wsuri = "wss://www.qinlinad.com/UCAPI/ScanLogin?type=PC"
-                    // let wsuri = "wss://test-qadn.qinlindmp.com/UCAPI/ScanLogin?type=PC"
-                    this.websock = new WebSocket(wsuri);// 这里面的this都指向vue
+                    // let wsUrl = "wss://www.qinlinad.com/UCAPI/ScanLogin?type=PC"
+                    // let wsUrl = "wss://test-qadn.qinlindmp.com/UCAPI/ScanLogin?type=PC"
+                    let wsUrl = this.apiVar.wsUrl
+                    this.websock = new WebSocket(wsUrl);// 这里面的this都指向vue
                     this.websock.onopen = this.websocketOpen
                     this.websock.onmessage = this.websocketOnMessage
                     this.websock.onclose = this.websocketClose
@@ -248,7 +249,7 @@
                 if (wsData.step === 1) {
                     this.step = 1
                     console.log('获取二维码')
-                    this.codeImg = 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/QRCodeImg/QRCode90001.jpg' // wsData.qrurl
+                    this.codeImg = wsData.qrurl // 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/QRCodeImg/QRCode90001.jpg' // wsData.qrurl
                     // this.imgLoading = false
                     this.codeImgLoading()
                 } else if (wsData.step === 2) {

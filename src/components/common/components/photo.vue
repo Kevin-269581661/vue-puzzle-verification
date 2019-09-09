@@ -193,22 +193,27 @@
             },
             // 下载水印图片 DownloadImageWatermark
             downloadImgWatermark(){
+                console.log('activeImgInfo',this.activeImgInfo)
                 if(this.activeMark) {
                     let params = {
                         uid: this.sessionData.uID,
                         token: this.sessionData.token,
-                        type: this.activeMark         // 2:TOP_CENTER 6:BOTTOM_RIGHT 7:BOTTOM_LEFT
+                        position: this.activeMark,         // 2:TOP_CENTER 6:BOTTOM_RIGHT 7:BOTTOM_LEFT
+                        watermark: this.activeImgInfo.time + ' · ' + this.activeImgInfo.week + ',' + this.activeImgInfo.city + ' · ' + this.activeImgInfo.resName ,
+                        picUrl: this.activeImgInfo.url
                     }
-                    // api.getApi_file(this.apiVar.Advertisement + '/DownloadImageWatermark', params).then(res=>{
-                    api.getApi_file('http://192.168.1.247:8002/advertisement/DownloadImageWatermark', params).then(res=>{
+                    let urlArr = this.activeImgInfo.url.split('/')
+                    api.getApi_file(this.apiVar.Advertisement + '/DownloadImageWatermark', params).then(res=>{
+                    // api.getApi_file('http://192.168.1.247:8002/advertisement/DownloadImageWatermark', params).then(res=>{
                         if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                             sessFun.loginTimeout()
                         } else {
+                            console.log('res',res)
                             let blob = new Blob([res.data], {type: 'application/ms-download;charset=utf-8'});
                             let downloadElement = document.createElement('a');
                             let href = window.URL.createObjectURL(blob);    //创建下载的链接
                             downloadElement.href = href;
-                            downloadElement.download = res.headers['content-disposition'].split('=')[1]; //下载后文件名
+                            downloadElement.download = urlArr[urlArr.length-1]//res.headers['Content-Disposition'].split('=')[1]; //下载后文件名
                             document.body.appendChild(downloadElement);
                             downloadElement.click();                        //点击下载
                             document.body.removeChild(downloadElement);     //下载完成移除元素
@@ -322,7 +327,7 @@
             :visible.sync="watermarkDialog"
             width="720px">
             <el-row :gutter="16">
-                <el-col :span="8" v-for="(item,index) in [2,6,7]" :key="index" @click.native="selectImgMark(item)">
+                <el-col :span="8" v-for="(item,index) in [2,7,6]" :key="index" @click.native="selectImgMark(item)">
                     <div class="img_box">
                         <div class="img_box_mark"
                              :class="index === 0 ? 'img_box_mark_0' : index === 1 ? 'img_box_mark_1' : 'img_box_mark_2'">
@@ -338,7 +343,7 @@
             </el-row>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="watermarkDialog = false">取 消</el-button>
-                <el-button type="primary" @click="downloadImgWatermark(item)">确 定</el-button>
+                <el-button type="primary" @click="downloadImgWatermark()">确 定</el-button>
             </div>
         </el-dialog>
     </div>

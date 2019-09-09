@@ -213,6 +213,8 @@ export default new Router({
                 {path: '/media/adsDialPlate', component: adsDialPlate},
                 {path: '/media/projectList', component: projectList},
                 {path: '/media/projectDetail', component: projectDetail},
+                // 亲邻地图
+                {path: '/media/qinlinMap',component: qinlinMap},
             ]
         },
         //销售
@@ -242,6 +244,8 @@ export default new Router({
                 {path: '/sale/mapMessage', component: mapMessage},
                 {path: '/sale/myInfo', component: myInfo},
                 {path: '/sale/compact', component: compact},
+                // 亲邻地图
+                {path: '/sale/qinlinMap',component: qinlinMap},
             ]
         },
         //广告主

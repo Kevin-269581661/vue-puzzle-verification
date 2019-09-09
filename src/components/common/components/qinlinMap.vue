@@ -4,7 +4,7 @@
         <div id="qinlinMap" ref="qinlinMap" style=""></div>
         <!--左侧搜索-->
         <div class="left_search_box">
-            <el-input v-model="selectName" placeholder="请输入关键字" size="small" style="width: 270px"></el-input>
+            <el-input v-model="selectName" placeholder="请输入关键字" size="small" style="width: 260px"></el-input>
             <el-button icon="el-icon-search" circle class="search_btn" @click="searchFun"></el-button>
             <div class="left_search_content">
                 <div class="search_result_btn">
@@ -187,6 +187,7 @@
                     // }
                     i++
                 }
+                // this.initMouseDrawing()
             },
             // 显示详情
             showInfo(info,point){
@@ -255,7 +256,7 @@
                         if(e.drawingMode === 'circle') {
                             let radius = Math.sqrt(e.calculate / 3.1415926)
                             console.log('圆半径',radius,'圆心',e.overlay.point)
-                            that.showResInCircle(e.overlay.point,radius)
+                            that.showResInCircle(e.overlay.point,radius,e.overlay)
                         } else if(e.drawingMode === 'polygon'){
                             console.log('画多边形',overlay,e.overlay.getPath());
                             that.polygonPoint = e.overlay.getPath()
@@ -538,12 +539,12 @@
                         strokeOpacity: 0.3
                     });
                     this.resMap.addOverlay(circle);
-                    this.showResInCircle(key.point, radius)
+                    this.showResInCircle(key.point, radius,circle)
                 }
                 this.searchResList.length ?  this.activeSearchKind = 1 : this.activeSearchKind = 2
             },
             // 显示圆半径内的小区
-            showResInCircle(point,radius) {
+            showResInCircle(point,radius,circle) {
                 let date1 = new Date();
                 let allOverlay = this.resMap.getOverlays();
                 for(let key of adsInfo) {
@@ -554,20 +555,34 @@
                             akey.getLabel().content === key.resName) {
                             let lngLat = key.lng.split(';')
                             let point2 = new BMap.Point(lngLat[0],lngLat[1])
-                            let distance = this.resMap.getDistance(point,point2)
-                            if(distance > radius){
-                                akey.hide()
-                            } else {
-                                let flag = this.searchResList.some((item,index)=>{
-                                    if(key.resID === item.resID) {
+                            // BMapLib.GeoUtils.isPointInCircle(point, circle)
+                            let isShow = BMapLib.GeoUtils.isPointInCircle(point2, circle)
+                            if (isShow) {
+                                let flag = this.searchResList.some((item, index) => {
+                                    if (key.resID === item.resID) {
                                         return true
                                     }
                                 })
                                 if (!flag) {
                                     this.searchResList.push(key)
                                 }
+                            } else {
+                                akey.hide()
                             }
-                            break
+                            // let distance = this.resMap.getDistance(point,point2)
+                            // if(distance > radius){
+                            //     akey.hide()
+                            // } else {
+                            //     let flag = this.searchResList.some((item,index)=>{
+                            //         if(key.resID === item.resID) {
+                            //             return true
+                            //         }
+                            //     })
+                            //     if (!flag) {
+                            //         this.searchResList.push(key)
+                            //     }
+                            // }
+                            // break
                         }
                     }
                 }
@@ -603,10 +618,15 @@
         left: 32px;
         width: 308px;
     }
+
     .search_btn{
         min-width: 32px;
         height: 32px;
         line-height: 32px;
+        padding: 0;
+    }
+
+    /deep/ .el-button.is-circle{
         padding: 0;
     }
 

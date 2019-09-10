@@ -187,7 +187,7 @@
                 select: "3",
                 bussiness: [],
                 // tab默认选择第一项
-                activeName: "first",
+                activeName: "three",
                 beforActive: 'first',
                 //是否搜索到图片
                 showPic: 3,

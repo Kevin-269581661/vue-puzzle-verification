@@ -289,7 +289,7 @@
                             </div>
                         </div>
                         <div class="detailBox">
-                            <p>{{img.pRemarks.plan}}</p>
+                            <p>{{img.pRemarks.plan || '--'}}</p>
                             <!-- <span>华南碧桂园二期-东门</span> -->
                             <span>{{img.pRemarks.res}}-{{img.pRemarks.media}}</span>
                             <div class="icons">
@@ -479,6 +479,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        height: 20px;
     }
 
     .detailBox > span {

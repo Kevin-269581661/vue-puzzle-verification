@@ -207,6 +207,9 @@
                                         <el-dropdown-item command="3"
                                             @click.native.prevent="confirmBox('3',scope.$index, scope.row)"
                                             :disabled="scope.row.mState === '3'">待维修</el-dropdown-item>
+                                        <el-dropdown-item command="4"
+                                                          @click.native.prevent="confirmBox('4',scope.$index, scope.row)"
+                                                          :disabled="scope.row.mState === '4'">删除</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </el-dropdown>
                             </template>
@@ -229,21 +232,6 @@
                     </el-pagination>
                 </div>
             </div>
-            <!--媒体状态修改模态框-->
-<!--            <el-dialog :visible.sync="mStatusDialogVisible" :close-on-click-modal="false" custom-class="mStatueDialog">-->
-<!--                <div>-->
-<!--                    <el-checkbox v-model="doorState.mState"  @change="mStateDisabled">{{normalToDisabled ? '整个广告门禁用' : '整个广告门正常'}}</el-checkbox>-->
-<!--                    <h4>{{normalToDisabled ? '单面禁用' : '单面正常'}}</h4>-->
-<!--                    <el-radio-group v-model="doorState.adState" @change="adStateDisabled">-->
-<!--                        <el-radio label="A">A面</el-radio>-->
-<!--                        <el-radio label="B">B面</el-radio>-->
-<!--                    </el-radio-group>-->
-<!--                </div>-->
-<!--                <span slot="footer" class="dialog-footer">-->
-<!--                    <el-button size="mini" @click="mStatusDialogVisible = false">取 消</el-button>-->
-<!--                    <el-button size="mini" type="primary" style="margin-left: 35px" @click="submitDoorState">确 定</el-button>-->
-<!--                </span>-->
-<!--            </el-dialog>-->
             <!--媒体禁用、启用-->
             <el-dialog
                 :title="isDisabled ? '禁用媒体' : '启用媒体'"
@@ -677,10 +665,6 @@
                     if ( res.data.SysCode == 200200) {
                         if (RMList) {
                             let mediaList = []
-                            // for (let i = 0; i < RMList.length; i++) {
-                            //     RMList[i].mState = this.return_mState(RMList[i].mState)
-                            //     mediaList.push(RMList[i])
-                            // }
                             for(let key of RMList) {
                                 mediaList.push(key)
                             }
@@ -811,6 +795,8 @@
                 let stateName = this.return_mState(selectState)
                 // 初始化
                 this.mediaState.AState = false
+                this.mediaState.BState = false
+                this.mediaState.allState = false
                 if (rows.mState == selectState) {
                     sessFun.messageFun('waring','当前状态已是' + stateName)
                 } else if (selectState == '0' && rows.mState == '1') {
@@ -825,7 +811,7 @@
                         this.mediaState.AState = false
                         this.mediaState.ADisable = false
                     }
-
+                    // B面
                     if(rows.asState.B == '0') {
                         this.mediaState.BState = true
                         this.mediaState.BDisable = true
@@ -838,12 +824,40 @@
                     this.isDisabled = false
                     this.mStateDialogVisible = true
                     // 判断是否已正常
-                    rows.asState.A == '1' ? this.mediaState.AState = true : this.mediaState.AState = false
-                    rows.asState.B == '1' ? this.mediaState.BState = true : this.mediaState.BState = false
+                    // rows.asState.A == '1' ? this.mediaState.AState = true : this.mediaState.AState = false
+                    // rows.asState.B == '1' ? this.mediaState.BState = true : this.mediaState.BState = false
+                } else if(selectState == '4'){
+                  // 删除
+                    this.deleteMedia()
                 } else {
                     this.setRowMediaStatus(stateName,selectState)
                 }
             },
+            // 删除媒体
+            deleteMedia() {
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    "service":"DelMediaAction",
+                    "data":{
+                        "mId": this.rowData.mID,
+                        "resId": this.rowData.resID
+                    }
+                }
+                console.log('删除params', params)
+                api.postApi_new(this.apiVar.Media, params).then(res => {
+                    console.log('res', res)
+                    if (res.data.SysCode === 200200 || res.data.MSG === '操作成功') {
+                        sessFun.messageFun('success','删除成功！')
+                        this.getData()
+                    } else if (res.data.SysCode === 200302 || res.data.MSG === '广告位已被占用') {
+                        sessFun.messageFun('warning',res.data.MSG)
+                    } else {
+                        sessFun.messageFun('warning',res.data.MSG)
+                    }
+                })
+            },
+            // 二次确认按钮
             setRowMediaStatus(stateName,selectState,letter) {
                 console.log('stateName',stateName,'selectState',selectState)
                 let info = ''
@@ -869,12 +883,12 @@
             setStatusApi(state,letter){
                 let uid = this.sessionData.uID
                 let mid = this.rowData.mID
-                // let submitLoading =  this.$loading({
-                //     lock: true,
-                //     text: '修改中...',
-                //     spinner: 'el-icon-loading',
-                //     background: 'rgba(0, 0, 0, 0.7)'
-                // });
+                let submitLoading =  this.$loading({
+                    lock: true,
+                    text: '修改中...',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                });
                 //确定
                 let params = {
                     "uid": uid,
@@ -895,239 +909,32 @@
                     console.log('修改状态：', res)
                     if (res.data.SysCode === 200200 || res.data.MSG === '操作成功') {
                         sessFun.messageFun('success','成功更改状态')
-                        this.rowData.mState = state
-                        // for (let key in this.currentPlan[this.rowIndex].asState) {
-                        //     this.currentPlan[this.rowIndex].asState[key] = state
-                        // }
-                        // this.currentPlan[this.rowIndex].mState = state;
-                        // this.mStateDialogVisible = false
+                        if(letter === 'one') {
+                            if(this.isDisabled) {
+                                // 单面正常转禁用
+                                this.rowData.asState[params.data.asLabs] = state
+                            } else {
+                                // 单面禁用转正常
+                                this.rowData.asState[params.data.asLabs] = state
+                                this.rowData.mState = state
+                            }
+                        } else {
+                            this.rowData.asState.A = state
+                            this.rowData.asState.B = state
+                            this.rowData.mState = state
+                        }
+                        this.mStateDialogVisible = false
                         console.log('当前行', this.currentPlan[this.rowIndex])
                     } else if (res.data.SysCode === 200302 || res.data.MSG === '广告位已被占用') {
                         sessFun.messageFun('warning',res.data.MSG)
-                    } else if (res.data.SysCode == 100302){
+                    } else if (res.data.SysCode == 100302) {
                         sessFun.loginTimeout()
                     } else {
                         sessFun.messageFun('warning','状态更改失败')
                     }
-                    // submitLoading.close()
+                    submitLoading.close()
                 })
             },
-            // // 整面禁用/正常
-            // mStateDisabled(val){
-            //     console.log('整面禁用val',val,'doorState.adState',this.doorState.adState)
-            //     if(val){
-            //         this.doorState.adState = ''
-            //     }
-            // },
-            // // 单面禁用/正常
-            // adStateDisabled(val){
-            //     console.log('单面禁用val',val)
-            //     this.doorState.mState = false
-            // },
-            // // 确认提交禁用/正常
-            // submitDoorState(){
-            //     let status = ''
-            //     if (this.doorState.mState || this.doorState.adState) {
-            //         if (this.normalToDisabled) {
-            //             status = '禁用'
-            //         } else {
-            //             status = '正常'
-            //         }
-            //         if (this.doorState.mState) {
-            //             this.setMediaStatus(status)
-            //         } else {
-            //             this.setMediaStatus(status, 'submitDS')
-            //         }
-            //     } else {
-            //         Message({
-            //             type: 'warning',
-            //             message: '请选择类型'
-            //         });
-            //     }
-            // },
-            // confirmBox_(str, index, rows) {
-            //     let Status = str//e.target.innerText;
-            //     console.log('状态', Status)
-            //     console.log('行内容', rows)//mState
-            //     if (rows.mState == Status ) {
-            //         if (rows.mState === '正常' && rows.mVehicle === '广告门' && rows.pNum > 1) {
-            //             if (rows.asState.A !== rows.asState.B) {
-            //                 let asLetter = ''
-            //                 if (rows.asState.A === '0') {
-            //                     asLetter = rows.mTitle + '的A面为禁用，是否更改为正常?'
-            //                     this.doorState.adState = 'A'
-            //                 } else if (rows.asState.B === '0') {
-            //                     asLetter = rows.mTitle + '的B面为禁用，是否更改为正常?'
-            //                     this.doorState.adState = 'B'
-            //                 }
-            //                 MessageBox.confirm(asLetter, '提示', {
-            //                     confirmButtonText: '确定',
-            //                     cancelButtonText: '取消',
-            //                     dangerouslyUseHTMLString: true,
-            //                     type: 'warning'
-            //                 }).then(() => {
-            //                     this.rowData = rows
-            //                     this.rowIndex = index
-            //                     // this.doorState.adState = asLetter
-            //                     this.setMediaStatus(Status, '', '1')
-            //                 }).catch(() => {
-            //                     Message({
-            //                         type: 'info',
-            //                         message: '已取消操作'
-            //                     })
-            //                 })
-            //             } else {
-            //                 Message({
-            //                     type: 'warning',
-            //                     message: '当前状态AB面都是' + Status
-            //                 });
-            //             }
-            //         } else {
-            //             Message({
-            //                 type: 'warning',
-            //                 message: '当前状态已是' + Status
-            //             });
-            //         }
-            //     } else {
-            //         this.rowData = rows
-            //         this.rowIndex = index
-            //         if (rows.mVehicle === '广告门' && Status === '禁用' && rows.mState === '正常' && rows.pNum > 1) {  // 正常转禁用
-            //             this.normalToDisabled = true
-            //             if (rows.asState.A == '0') {
-            //                 this.doorState.adState = 'A'
-            //             } else if (rows.asState.B == '0') {
-            //                 this.doorState.adState = 'B'
-            //             } else {
-            //                 this.doorState.adState = ''
-            //             }
-            //             this.doorState.mState = false
-            //             this.mStatusDialogVisible = true
-            //         } else if (rows.mVehicle === '广告门' && Status === '正常' && rows.mState === '禁用' && rows.pNum > 1) {    // 禁用转正常
-            //             this.normalToDisabled = false
-            //             this.doorState.mState = false
-            //             this.doorState.adState = ''
-            //             this.mStatusDialogVisible = true
-            //         } else {
-            //             this.setMediaStatus(Status)
-            //         }
-            //     }
-            // },
-            // // 设置媒体状态
-            // setMediaStatus(Status,letter,num){
-            //     let mstate = ''
-            //     let asState = ''
-            //     console.log('this.rowData.asState.B',this.rowData.asState.B,' this.doorState', this.doorState.adState)
-            //     if (letter === 'submitDS' && this.normalToDisabled) {
-            //         if((this.rowData.asState.A == '0' && this.doorState.adState === 'B') ||
-            //             (this.rowData.asState.B == '0' && this.doorState.adState === 'A')){
-            //             console.log('两面都是同一状态')
-            //             asState = this.return_mStateNum(Status)
-            //             mstate = asState
-            //         }else{
-            //             mstate = this.return_mStateNum(this.rowData.mState)
-            //             asState = this.return_mStateNum(Status)
-            //         }
-            //     } else if (letter === 'submitDS') {
-            //         mstate = this.return_mStateNum(Status)
-            //         asState = mstate
-            //     } else {
-            //         mstate = this.return_mStateNum(Status)
-            //     }
-            //     console.log('--------mstate',mstate)
-            //     if(num === '1'){
-            //         asState = mstate
-            //         this.setMediaStatusApi(Status,letter,mstate,asState,num)
-            //     }else{
-            //         let info = ''
-            //         if (letter === 'submitDS') {
-            //             info = '你确定更改媒体' + this.doorState.adState + '面的状态为<b>' + Status + '</b>吗?'
-            //         } else {
-            //             info = '你确定更改媒体状态为<b>' + Status + '</b>吗?'
-            //         }
-            //         MessageBox.confirm(info, '提示', {
-            //             confirmButtonText: '确定',
-            //             cancelButtonText: '取消',
-            //             dangerouslyUseHTMLString: true,
-            //             type: 'warning'
-            //         }).then(() => {
-            //             console.log('11111111111',mstate)
-            //             this.setMediaStatusApi(Status,letter,mstate,asState)
-            //         }).catch(() => {
-            //             Message({
-            //                 type: 'info',
-            //                 message: '已取消操作'
-            //             })
-            //         })
-            //     }
-            // },
-            // setMediaStatusApi(Status,letter,mstate,asState,number){
-            //     console.log('+++++++++++mstate',mstate)
-            //     let uid = this.sessionData.uID
-            //     let mid = this.rowData.mID
-            //     let submitLoading =  this.$loading({
-            //         lock: true,
-            //         text: '修改中...',
-            //         spinner: 'el-icon-loading',
-            //         background: 'rgba(0, 0, 0, 0.7)'
-            //     });
-            //     //确定
-            //     let params = {
-            //         "uid": uid,
-            //         "token":  this.sessionData.token,
-            //         "service":"CtrlMedia",
-            //         "data": {
-            //             "uid": uid,
-            //             "mid": mid,
-            //             "mstate": mstate
-            //         }
-            //     }
-            //     if(letter === 'submitDS' || number === '1'){
-            //         params.data.asLabs = this.doorState.adState
-            //         params.data.asState = asState
-            //     }
-            //     console.log('params',JSON.stringify(params))
-            //     api.postApi_new(this.apiVar.Media, params).then(res => {
-            //         console.log('修改状态：', res)
-            //         if (res.data.SysCode === 200200 || res.data.MSG === '操作成功') {
-            //             Message({
-            //                 type: 'success',
-            //                 message: '成功更改状态'
-            //             })
-            //             this.mStatusDialogVisible = false
-            //             if (letter === 'submitDS') {    // 是否为单面禁用/正常
-            //                 this.currentPlan[this.rowIndex].asState[this.doorState.adState] = asState
-            //                 if (this.currentPlan[this.rowIndex].asState.A === this.currentPlan[this.rowIndex].asState.B) {
-            //                     this.currentPlan[this.rowIndex].mState = Status;
-            //                 } else if(!this.normalToDisabled){      // 禁用转正常-都要更改行媒体状态
-            //                     this.currentPlan[this.rowIndex].mState = Status;
-            //                 } else{
-            //                     console.log('行状态不用修改',this.currentPlan[this.rowIndex].mState)
-            //                 }
-            //             } else {
-            //                 for(let key in this.currentPlan[this.rowIndex].asState){
-            //                     this.currentPlan[this.rowIndex].asState[key] = mstate
-            //                 }
-            //                 this.currentPlan[this.rowIndex].mState = Status;
-            //             }
-            //             console.log('当前行', this.currentPlan[this.rowIndex])
-            //             this.currentPlan = this.currentPlan;
-            //         } else if (res.data.SysCode === 200302 || res.data.MSG === '广告位已被占用') {
-            //             Message({
-            //                 type: 'warning',
-            //                 message: res.data.MSG
-            //             })
-            //         } else if (res.data.SysCode == 100302){
-            //             this.loginTimeout()
-            //         } else {
-            //             Message({
-            //                 type: 'warning',
-            //                 message: '状态更改失败'
-            //             })
-            //         }
-            //         submitLoading.close()
-            //     })
-            // },
-            // mState : 0禁用 1正常 2待安装 3待维修
             return_mState(mState){
                 if (mState == '1') {
                     return '正常'

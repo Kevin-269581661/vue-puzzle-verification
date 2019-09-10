@@ -13,19 +13,25 @@
                 <el-row>
                     <el-col :span="6">
                         <span>资源名称:</span>
-                        <el-input v-model="searchInfo.keyword" placeholder="请输入资源名称"></el-input>
+                        <el-input v-model="searchInfo.resName" placeholder="请输入资源名称"></el-input>
                     </el-col>
                     <el-col :span="6">
                         <span>资产编号:</span>
-                        <el-input v-model="searchInfo.keyword" placeholder="请输入资产编号"></el-input>
+                        <el-input v-model="searchInfo.assetTag" placeholder="请输入资产编号"></el-input>
                     </el-col>
                     <el-col :span="6">
                         <span>所在区域:</span>
-                        <el-input v-model="searchInfo.keyword" placeholder="请输入所在区域"></el-input>
+                        <el-cascader
+                            placeholder="请选择所在区域"
+                            v-model="searchInfo.districtId"
+                            :options="areaArr"
+                            :clearable="true"
+                            :props="{ expandTrigger: 'hover' , checkStrictly: true}"
+                            @change="handleChange"></el-cascader>
                     </el-col>
                     <el-col :span="6">
                         <span>维护类型:</span>
-                        <el-select v-model="searchInfo.type" placeholder="请选择维护类型" filterable>
+                        <el-select v-model="searchInfo.type" placeholder="请选择维护类型">
                             <el-option v-for="item of typeArr" :key="item.value" :label="item.label"
                                        :value="item.value"></el-option>
                         </el-select>
@@ -35,14 +41,14 @@
                 <el-row>
                     <el-col :span="6">
                         <span>维护状态:</span>
-                        <el-select v-model="searchInfo.state" placeholder="请选择维护状态">
+                        <el-select v-model="searchInfo.status" placeholder="请选择维护状态">
                             <el-option v-for="item of stateArr" :key="item.value" :label="item.label"
                                        :value="item.value"></el-option>
                         </el-select>
                     </el-col>
                     <el-col :span="6">
-                        <span style="padding-left: 13px">提交者:</span>
-                        <el-select v-model="searchInfo.engineer" placeholder="请选择提交者" filterable>
+                        <span style="text-align: right;padding-right: 6px;box-sizing: border-box">提交者:</span>
+                        <el-select v-model="searchInfo.userId" placeholder="请选择提交者" filterable>
                             <el-option v-for="item of engineerArr" :key="item.value" :label="item.label"
                                        :value="item.value"></el-option>
                         </el-select>
@@ -67,52 +73,6 @@
             </div>
             <div class="table_wrap">
                 <div class="table_dt">
-                    <!-- <el-row v-for="(item, index) of currentPlan" :key="item.id" style="border-bottom:1px solid #ebeef5; padding-bottom: 12px;">
-                         <el-col :span="6">
-                             <dl>
-                                 <dt>{{item.resName+'·'+item.mediaName+'·'+item.assetTag}}</dt>
-                                 <dd>{{item.city+item.area}}</dd>
-                             </dl>
-                         </el-col>
-                         <el-col :span="4">
-                             <dl>
-                                 <dd>巡点时间</dd>
-                                 <dd>{{item.checkTime}}</dd>
-                             </dl>
-                         </el-col>
-                         <el-col :span="4">
-                             <dl>
-                                 <dd>上传地点</dd>
-                                 <el-tooltip class="item" effect="dark" :content="item.uploadWhere" placement="bottom" v-if="item.uploadWhere && item.uploadWhere.length>15">
-                                     <dd class="point_style">{{item.uploadWhere}}</dd>
-                                 </el-tooltip>
-                                 <dd v-else class="point_style">{{item.uploadWhere}}</dd>
-                             </dl>
-                         </el-col>
-                         <el-col :span="2">
-                             <dl>
-                                 <dd>工程人员</dd>
-                                 <dd>{{item.user}}</dd>
-                             </dl>
-                         </el-col>
-                         <el-col :span="4">
-                             <dl>
-                                 <dd>反馈问题</dd>
-                                 <el-tooltip class="item" effect="dark" :content="item.question" placement="bottom" v-if="item.question&&item.question.length>15">
-                                     <dd class="point_style">{{item.question}}</dd>
-                                 </el-tooltip>
-                                 <dd v-else class="point_style">{{item.question}}</dd>
-                             </dl>
-                         </el-col>
-                         <el-col :span="2" style="line-height:2;">
-                             <span :class="item.state==2?'green span_style':'red span_style'">{{item.state==1?'未处理':'已处理'}}</span>
-                         </el-col>
-                         <el-col :span="2" style="line-height:2;">
-                             <span @click="showPhoto(item, index)" class="span_a">照片</span>
-                             <span style="color:#D8D8D8;" v-if="item.state==1">|</span>
-                             <span @click="toHandle(item)" class="span_a" v-if="item.state==1">处理</span>
-                         </el-col>
-                     </el-row> -->
                     <el-table
                         v-loading="loading"
                         element-loading-text="拼命加载中..."
@@ -122,25 +82,25 @@
                         style="width: 100%">
                         <el-table-column
                             label="维护类型"
-                            min-width="10.2%"
+                            min-width="7%"
                             :show-overflow-tooltip="true">
                             <template slot-scope="scope">
                                 <span>{{scope.row.mtType}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
-                            column-key="rtName"
-                            prop="rtName"
+                            column-key="resName"
+                            prop="resName"
                             label="资源"
-                            min-width="8%">
+                            min-width="10%">
                         </el-table-column>
                         <el-table-column
-                            prop="city"
+                            prop="cityName"
                             label="城市"
                             min-width="7%"
                             :show-overflow-tooltip="true">
                             <template slot-scope="scope">
-                                <span>{{scope.row.city || '--' }}</span>
+                                <span>{{scope.row.cityName || '--' }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -155,7 +115,7 @@
                         <el-table-column
                             prop="mediaName"
                             label="媒体名称"
-                            min-width="8%"
+                            min-width="7%"
                             :show-overflow-tooltip="true">
                             <template slot-scope="scope">
                                 <span>{{scope.row.mediaName || '--' }}</span>
@@ -173,15 +133,23 @@
                         <el-table-column
                             prop="issueRecord"
                             label="问题记录"
-                            min-width="6.1%"
+                            min-width="12%"
                             class="tar"
                         >
+                            <template slot-scope="scope">
+                                <el-tooltip class="item" effect="dark" placement="top-start">
+                                    <div slot="content">
+                                        {{scope.row.issueRecord || '--'}}
+                                    </div>
+                                    <span>{{scope.row.issueRecord}}</span>
+                                </el-tooltip>
+                            </template>
                         </el-table-column>
                         <el-table-column
                             column-key="mState"
                             prop="mState"
                             label="状态"
-                            min-width="8%">
+                            min-width="7%">
                             <template slot-scope="scope">
                                 <point-state :state-text="scope.row.mState"
                                              :color="stateToText(scope.row.mState).color"></point-state>
@@ -216,16 +184,16 @@
                         </div>
                     </el-table>
                 </div>
-                <div class="ad_pagination" v-if="pageData.totalSize">
+                <div class="ad_pagination" v-if="totalSize">
                     <el-pagination
                         background
                         layout="total, sizes, prev, pager, next, jumper"
                         @current-change="changePage"
                         @size-change="sizeChange"
                         :page-sizes="[10, 20, 50]"
-                        :current-page.sync="pageData.pageNum"
-                        :page-size="pageData.pageSize"
-                        :total="pageData.totalSize">
+                        :current-page.sync="currPage"
+                        :page-size="pageSize"
+                        :total="totalSize">
                     </el-pagination>
                 </div>
             </div>
@@ -263,7 +231,8 @@
             </div>
             <div class="remark">
                 <span>{{handleModalTitle=='维修处理'?"处理说明":"媒体备注"}}：</span>
-                <el-input type="textarea" v-model="maintainForm.reamrk" :autosize="{ minRows: 2, maxRows: 4}" placeholder="请填处理说明"></el-input>
+                <el-input type="textarea" v-model="maintainForm.reamrk" :autosize="{ minRows: 2, maxRows: 4}"
+                          placeholder="请填处理说明"></el-input>
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="isShowHandle = false">取 消</el-button>
@@ -278,7 +247,7 @@
             width="30%">
             <div class="loglist_box">
                 <div class="title">
-                    <p>{{logList.rtName}}</p>
+                    <p>{{logList.resName}}</p>
                     <p>{{logList.mTitle}}({{logList.assetTag}})</p>
                 </div>
 
@@ -297,6 +266,7 @@
     import dateFormat from "../../commonFun/timeFormat.js";
     import sessFun from "../../commonFun/sessFun.js";
     import pointState from './components/pointState.vue';
+    import noSearchResult from "./components/noSearchResult.vue";
     import {
         Row,
         Input,
@@ -307,11 +277,8 @@
         Select,
         Option,
         Message,
-        Dropdown,
-        DropdownMenu,
-        DropdownItem,
     } from "element-ui";
-    // 日志组件
+    // 日志组件totalPage
     import logList from './components/logList.vue'
     import timeFormat from '../../commonFun/timeFormat.js';
 
@@ -319,6 +286,7 @@
         name: "customList",
         components: {
             logList,
+            noSearchResult,
             pointState,
             elRow: Row,
             elInput: Input,
@@ -333,16 +301,14 @@
             return {
                 // 公司列表
                 companyArr: [],
-                pageData: {
-                    pageNum: 1,
-                    pageSize: 10,
-                    totalSize: 50,
-                },
+                currPage: 1,
+                pageSize: 10,
+                totalSize: 0,
                 // 登录信息
                 sessionData: {},
                 //加载中
                 loading: false,
-                // 状态
+                // 状态 （-1-已删除，1-未处理,2-已处理）,
                 stateArr: [
                     {
                         label: '已处理',
@@ -353,7 +319,7 @@
                         value: 1
                     }
                 ],
-                // 类型
+                // 类型 1-巡点、2-待维修、3-拆除,
                 typeArr: [
                     {
                         label: '巡点',
@@ -374,17 +340,19 @@
                 currentPlan: [{
                     mState: '已处理',
                     mtType: '巡点',
-                    rtName: '资源',
-                    city: '城市',
+                    resName: '资源',
+                    cityName: '城市',
                     area: '区域',
                     mediaName: '媒体名称',
                     assetTag: '资产编号',
                     issueRecord: '问题记录',
                 }],
+                //所在区域
+                areaArr: [],
                 //处理对话框
-                maintainForm:{
-                    date:'',
-                    reamrk:'',
+                maintainForm: {
+                    date: '',
+                    reamrk: '',
                 },
                 // 是否滚动加载
                 loading_point: true,
@@ -392,12 +360,13 @@
                 isReset: true,
                 // 搜索信息
                 searchInfo: {
-                    city: '',
-                    area: [],
-                    keyword: '',
-                    state: '',
+                    resName: '',
+                    assetTag: '',
+                    type: '',
+                    districtId: [],
+                    status: '',
                     date: '',
-                    engineer: '',
+                    userId: '',
                 },
                 // 处理弹出框
                 isShowHandle: false,
@@ -418,7 +387,7 @@
                 ],
                 // 问题列表
                 logList: {
-                    rtName: '中心西关海',
+                    resName: '中心西关海',
                     mTitle: '西南门',
                     assetTag: '005B201903GZ-X919',
                     list: [
@@ -451,10 +420,15 @@
         },
         mounted: function () {
             this.getRole();
-            this.getCompany();
+            this.getCity();
+            this.getComUser();
             this.searchFun();
         },
         methods: {
+            //选择区域
+            handleChange(value) {
+                console.log(value);
+            },
             // 状态转换
             stateToText(state) {
                 let arr = [
@@ -489,12 +463,10 @@
                 this.multipleSelection = val;
             },
 
-            // 公司数据
-            getCompany() {
-                let sess = this.sessionData;
+            // 权限城市数据
+            getCity() {
                 let info = {
-                    "data": {},
-                    "service": "GetPermissionAscrInfo",
+                    "service": "GetCompanyCitiesAction",
                     "token": this.sessionData.token,
                     "uid": this.sessionData.uID
                 };
@@ -504,12 +476,22 @@
                         let result = [];
                         for (let data of res.data.data) {
                             let obj = {
-                                label: data.asName,
-                                value: data.asrID,
+                                label: data.cityName,
+                                value: data.cityId,
+                                children: []
                             };
+                            if (data.districtList) {
+                                for (let data2 of data.districtList) {
+                                    let obj2 = {
+                                        label: data2.districtName,
+                                        value: data2.districtId,
+                                    }
+                                    obj.children.push(obj2)
+                                }
+                            }
                             result.push(obj);
                         }
-                        this.companyArr = result;
+                        this.areaArr = result;
                     } else {
                         Message.warning(res.data.MSG);
                     }
@@ -517,24 +499,14 @@
                     console.log(err);
                 });
             },
-            // // 获取工程人员
-            // getPeople() {
-            //     let {company} = this.searchInfo;
-            //     if (company) {
-            //         this.getComUser(company);
-            //     }
-            // },
-            // 获取公司工程人员
-            getComUser(asrID) {
+
+            // 获取公司人员
+            getComUser() {
                 let info = {
-                    "service": "GetEPByAsrID",
                     "token": this.sessionData.token,
                     "uid": this.sessionData.uID,
-                    "data": {
-                        "asrID": asrID
-                    },
                 };
-                api.postApi_new(this.apiVar.Media, info).then(res => {
+                api.getApi(this.apiVar.UCAPI + '/GetSameCompanyUser', info).then(res => {
                     console.log(res);
                     if (res.data.SysCode == 200200) {
                         let result = [];
@@ -563,6 +535,34 @@
             showHistory(item) {
                 console.log(item)
                 this.isShowHistory = true
+                let info = {
+                    "data": {
+                        mID: item.mID,
+                        pageNum: this.currPage,
+                        pageSize: 50,
+                    },
+                    "service": "UpdateMediaMaintenanceAction",
+                    "token": this.sessionData.token,
+                    "uid": this.sessionData.uID
+                };
+                api.postApi_new(this.apiVar.Media, info).then(res => {
+                    console.log(res.data);
+                    if (res.data.SysCode == 200200) {
+                        let result = [];
+                        for (let data of res.data.data) {
+                            let obj = {
+                                label: data.asName,
+                                value: data.asrID,
+                            };
+                            result.push(obj);
+                        }
+                        this.companyArr = result;
+                    } else {
+                        Message.warning(res.data.MSG);
+                    }
+                }).catch(err => {
+                    console.log(err);
+                });
             },
             // 处理
             toHandle(item) {
@@ -645,30 +645,32 @@
                 let info = {
                     uid: session.uID,
                     token: session.token,
-                    service: 'GetPatrolPointList',
+                    service: 'GetMediaMaintenanceListAction',
                     data: {}
                 };
-                let {company, keyword, state, date, engineer} = this.searchInfo;
+                let {resName, assetTag, type, districtId, status, date, userId} = this.searchInfo;
                 let data = {
                     pageNum: this.currPage,
                     pageSize: this.pageSize,
                 };
                 data = {
                     ...data,
-                    ...(company && {asrID: company}),
-                    ...(keyword && {resName: keyword}),
-                    ...(state && {status: state}),
-                    ...(date && {bt: timeFormat.toDate(date[0], '-'), et: timeFormat.toDate(date[1], '-')}),
-                    ...(engineer && {epID: engineer}),
+                    ...(districtId && {districtId: districtId[0]}),
+                    ...(type && {type: type}),
+                    ...(assetTag && {assetTag: assetTag}),
+                    ...(resName && {resName: resName}),
+                    ...(status && {status: status}),
+                    ...(date && {startTime: timeFormat.toDate(date[0], '-'), endTime: timeFormat.toDate(date[1], '-')}),
+                    ...(userId && {userId: userId}),
                 };
                 info.data = data;
                 return info;
             },
             searchFun() {
-                if (this.searchInfo.company) {
-                    let info = this.searchFormat();
-                    this.getData(info);
-                }
+                // if (this.searchInfo.company) {
+                let info = this.searchFormat();
+                this.getData(info);
+                // }
             },
             // 滚动加载获取数据(无搜索数据)
             getData(params) {
@@ -676,17 +678,17 @@
                     console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         let dataInfo = res.data.data;
-                        this.totalPage = dataInfo.totalPage;
+                        this.totalSize = dataInfo.total;
                         let dataArr = dataInfo.list;
-                        this.totalNum = dataInfo.total;
                         this.currentPlan = this.funcData(dataArr);
-                        if (dataInfo.totalPage == 0) {
+                        if (dataInfo.total == 0) {
                             Message.warning('暂无数据');
                         }
                     } else {
-                        this.totalNum = 0;
+                        this.totalSize = 0
                         Message.warning(res.data.MSG);
                     }
+                    this.loading = false;
                 });
             },
             // 数据处理
@@ -701,27 +703,24 @@
             },
             // 搜索(优化)
             search() {
-                let {company, keyword, state, date, engineer} = this.searchInfo;
+                let that = this
+                let {resName, assetTag, type, districtId, status, date, userId} = this.searchInfo;
                 this.isSearch = false;
-                let timer = setTimeout(() => {
-                    this.isSearch = true;
-                    clearTimeout(timer);
+                setTimeout(() => {
+                    that.isSearch = true;
+
                 }, 1000);
-                if (company) {
-                    this.currentPlan = [];
-                    this.loading = true;
-                    this.loading_point = false;
-                    this.currPage = 1;
-                    this.searchFun()
-                } else {
-                    this.$message.warning('请先选择公司');
-                }
+                that.currentPlan = [];
+                that.loading = true;
+                that.loading_point = false;
+                that.currPage = 1;
+                that.searchFun()
             },
             // 分页
             changePage(val) {
                 // console.log('当前页',val)
-                this.pageData.pageNum = val
-                this.getData()
+                this.currPage = val
+                this.searchFun();
             },
             // 每页条数切换
             sizeChange(val) {
@@ -731,23 +730,38 @@
             },
             // 设置表格数据
             setTableData(item) {
+                /*
+                *  mState: '已处理',
+                    mtType: '巡点',
+                    resName: '资源',
+                    cityName: '城市',
+                    area: '区域',
+                    mediaName: '媒体名称',
+                    assetTag: '资产编号',
+                    issueRecord: '问题记录',
+                * */
                 let obj = {
                     id: item.id,
                     mID: item.mID,
+                    mState: item.status == 1 ? '未处理' : '已处理',
                     resName: item.resName,
                     assetTag: item.assetTag,
                     mediaName: item.mTitle,
-                    city: item.prName,
-                    area: item.rName,
-                    rid: item.prID,
+                    cityName: item.cityName,
+                    area: item.districtName,
                     checkTime: item.patrolTime,
-                    uploadWhere: item.patrolPointPics.length ? item.patrolPointPics[0].uploadAddress : '',
-                    user: item.realName,
-                    question: item.feedback,
-                    state: item.status,
-                    remark: item.mRemark,
+                    issueRecord: item.feedback?item.feedback:'--',
+                    status: item.status,
+                    remark: item.remark,
                     urls: []
                 };
+                if (item.type == 1) {
+                    obj.mtType = '巡点'
+                } else if (item.type == 2) {
+                    obj.mtType = '待维修'
+                } else if (item.type == 3) {
+                    obj.mtType = '删除'
+                }
                 if (item.patrolPointPics && item.patrolPointPics.length) {
                     let arr = [];
                     for (let data of item.patrolPointPics) {
@@ -773,11 +787,13 @@
             // 重置
             reset() {
                 this.searchInfo = {
-                    area: [],
-                    keyword: '',
-                    state: '',
+                    resName: '',
+                    assetTag: '',
+                    type: '',
+                    districtId: [],
+                    status: '',
                     date: '',
-                    engineer: ''
+                    userId: '',
                 };
                 this.currPage = 1;
                 console.log(this.searchInfo);
@@ -787,6 +803,7 @@
                     this.isReset = true;
                     clearTimeout(timer);
                 }, 1000);
+                this.searchFun();
             },
             // 新建按钮
             newClient() {
@@ -808,10 +825,24 @@
 
     /deep/ .mediaList_container .el-row {
         margin-bottom: 15px;
+        display: flex;
     }
 
-    /deep/ .mediaList_container .el-row span {
+    /deep/ .mediaList_container .el-col > span {
         font-size: 14px;
+        min-width: 65px;
+        color: rgba(0,0,0,0.85);
+    }
+    /deep/ .mediaList_container .el-input__icon.el-icon-arrow-down.is-reverse{
+        line-height: 34px;
+    }
+
+    /deep/ .mediaList_container .el-col .el-cascader {
+        width: 100%;
+    }
+
+    /deep/ .el-select {
+        width: 100%;
     }
 
     .table_dt dl dt {
@@ -823,16 +854,21 @@
         color: rgba(0, 0, 0, 0.45);
     }
 
-    /deep/ .mediaList_container .el-select,
-    /deep/ .mediaList_container .el-input,
-    /deep/ .mediaList_container .el-input__inner {
-        width: 202px;
-        max-width: 202px;
+    /deep/ .table_dt .el-table__row .cell span {
+        overflow: hidden;
+    }
+
+    /deep/ .mediaList_container .el-input, /deep/ .mediaList_container .el-input__inner {
         height: 32px;
     }
 
-    /deep/ .table_dt .el-table__row .cell span {
-        overflow: hidden;
+    /deep/ .mediaList_container .el-col-6 {
+        display: flex;
+        align-items: center;
+        margin-right: 24px;
+    }
+    /deep/ .mediaList_container .el-date-editor .el-range-separator, /deep/ .mediaList_container .el-date-editor .el-range__icon{
+        line-height: 26px;
     }
 
     .red {
@@ -875,10 +911,12 @@
         color: rgba(0, 0, 0, 0.85);
         margin-bottom: 16px;
     }
-    .loglist_box .title p:last-child{
+
+    .loglist_box .title p:last-child {
         font-size: 14px;
         margin-top: 2px;
     }
+
     /deep/ .logList-wrap .el-dialog__body {
         padding: 6px 20px 30px;
     }
@@ -899,36 +937,46 @@
         cursor: pointer;
         color: #108ee9;
     }
-    .block,.remark{
+
+    .block, .remark {
         display: flex;
         align-items: center;
     }
-    .remark{
+
+    .remark {
         margin-top: 16px;
     }
-    /deep/ .block  .el-date-editor.el-input__inner,/deep/ .block .el-input--prefix .el-input__inner{
+
+    /deep/ .block .el-date-editor.el-input__inner, /deep/ .block .el-input--prefix .el-input__inner {
         height: 32px;
         width: 300px;
     }
-    /deep/ .block .el-input__prefix, .el-input__suffix{
+
+    /deep/ .block .el-input__prefix, .el-input__suffix {
         top: -3px;
     }
-    /deep/ .remark .el-textarea__inner{
+
+    /deep/ .remark .el-textarea__inner {
         width: 300px;
         height: 74px;
         resize: none;
     }
-    /deep/ .el-date-editor.el-input, .el-date-editor.el-input__inner{
-        min-width: 300px;
+
+    /deep/ .el-date-editor.el-input, .el-date-editor.el-input__inner {
+        width: 100%;
+        height: 32px;
     }
-    /deep/.remark .el-textarea{
+
+    /deep/ .remark .el-textarea {
         width: 300px;
     }
-    /deep/.ad_mediaDetail_wrap .el-date-editor .el-range__icon{
+
+    /deep/ .ad_mediaDetail_wrap .el-date-editor .el-range__icon {
         position: relative;
         top: -3px;
     }
-    /deep/.ad_mediaDetail_wrap .el-date-editor .el-range-separator{
+
+    /deep/ .ad_mediaDetail_wrap .el-date-editor .el-range-separator {
         line-height: 25px;
     }
 </style>

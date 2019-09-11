@@ -1401,6 +1401,7 @@ export default {
 
             let imgArr = this.uploadImgArr;
             let arr = this.constractArr;
+            let funs = [];
             for(let i = 0; i<arr.length+6; i=i+6){
                 let end = i+6>arr.length?arr.length:i+6;
                 let result = arr.slice(i, end);
@@ -1410,28 +1411,40 @@ export default {
                         formData.append('picList', data);
                     }
                     formData.append('infos', JSON.stringify(result));    
-                    api.postUpload_file(this.apiVar.replace+'/photo/multipartUpload', formData).then(res =>{
-                        console.log(res);
-                        if(res.data.SysCode == 200200){
-                            if(end >= arr.length){
-                                this.constractArr = [];
-                                this.uploadImgArr = [];
-                                let type = this.type;                            
-                                if(type == 1 || type ==2){
-                                    // 上下刊报告列表
-                                    this.searchFun();
-                                }else if(type == 3){
-                                    // 换画报告列表
-                                    this.search();
-                                }
-                                this.addload.close();                                
-                            }
-                        }else{
-                            sessFun.messageFun('warning', res.data.MSG);
-                        }
-                    });                
+                    let pro = this.uploadFun(formData); 
+                    funs.push(pro);
                 }
             }
+            Promise.all(funs).then((values)=>{
+                console.log(values);
+                this.constractArr = [];
+                this.uploadImgArr = [];
+                let type = this.type;                            
+                if(type == 1 || type ==2){
+                    // 上下刊报告列表
+                    this.searchFun();
+                }else if(type == 3){
+                    // 换画报告列表
+                    this.search();
+                }
+                this.addload.close();                                
+            }).catch((err)=> {
+                console.log(err);
+            });
+        },
+        uploadFun(formData, end, arr){
+            let promise = new Promise((resolve, reject)=>{
+                api.postUpload_file(this.apiVar.replace+'/photo/multipartUpload', formData).then(res =>{
+                    console.log(res);
+                    if(res.data.SysCode == 200200){
+                        resolve(true);
+                    }else{
+                        sessFun.messageFun('warning', res.data.MSG);
+                        reject(false);
+                    }
+                });  
+            });
+            return promise;
         },
         // 收藏
         saveImgFun(item,index){

@@ -58,11 +58,11 @@
                 // 当前选择的水印标签
                 activeMark: '',
                 activeImgInfo: {
-                    city: '北京市',
-                    time: '2019/08/31',
-                    resName: '嘉美风尚中心小区',
-                    week: '星期日',
-                    url: 'https://img.qinlinad.com/photoGallery/DEV/20190820/upload/82e5b00ad3214dde842d81a6afb9fa9f.jpg'
+                    city: '',
+                    time: '',
+                    resName: '',
+                    week: '',
+                    url: ''
                 }
             }
         },
@@ -191,7 +191,7 @@
                 this.activeMark = index
                 console.log('activeMark',this.activeMark)
             },
-            // 下载水印图片 DownloadImageWatermark
+            // 下载水印图片
             downloadImgWatermark(){
                 console.log('activeImgInfo',this.activeImgInfo)
                 if(this.activeMark) {
@@ -259,7 +259,7 @@
                 <div class="find clearfix" v-if="showPic === 3">
                     <div class="photoCard" v-for="(img, index) of imgarr" :key="img.pID">
                         <div class="imgBox" @mouseenter="mouseenterFun(img,index)" @mouseleave="mouseleaveFun(index)">
-                            <img :src="img.pUrl" alt="" class="smallImg">
+                            <img :src="img.pUrl" alt="暂无图片"  class="smallImg">
                             <!--查看缩略图和下载-->
                             <div class="mask-btn" v-if="true || showPreImg == index">
                                 <p class="mask_icon">
@@ -337,7 +337,7 @@
                         <p class="active_Mark" v-show="activeMark === item">
                             <i class="el-icon-circle-check"></i>
                         </p>
-                        <img :src="activeImgInfo.url" alt="">
+                        <img :src="activeImgInfo.url" alt="暂无图片" />
                     </div>
                 </el-col>
             </el-row>

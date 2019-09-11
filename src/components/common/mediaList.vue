@@ -195,20 +195,20 @@
                                     </span>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item command="0"
-                                            @click.native.prevent="confirmBox('0',scope.$index, scope.row)"
+                                            @click.native.prevent="changeState('0',scope.$index, scope.row)"
                                             :disabled="scope.row.mState == '0'">禁用</el-dropdown-item>
                                         <el-dropdown-item command="1"
-                                            @click.native.prevent="confirmBox('1',scope.$index, scope.row)">
+                                            @click.native.prevent="changeState('1',scope.$index, scope.row)">
                                             正常
                                         </el-dropdown-item>
                                         <el-dropdown-item command="2"
-                                            @click.native.prevent="confirmBox('2',scope.$index, scope.row)"
+                                            @click.native.prevent="changeState('2',scope.$index, scope.row)"
                                             :disabled="scope.row.mState === '2'">待安装</el-dropdown-item>
                                         <el-dropdown-item command="3"
-                                            @click.native.prevent="confirmBox('3',scope.$index, scope.row)"
+                                            @click.native.prevent="changeState('3',scope.$index, scope.row)"
                                             :disabled="scope.row.mState === '3'">待维修</el-dropdown-item>
                                         <el-dropdown-item command="4"
-                                                          @click.native.prevent="confirmBox('4',scope.$index, scope.row)"
+                                                          @click.native.prevent="changeState('4',scope.$index, scope.row)"
                                                           :disabled="scope.row.mState === '4'">删除</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </el-dropdown>
@@ -501,7 +501,7 @@
                     ADisable: false,
                     BDisable: false,
                 },
-                // 启用还是禁用
+                // 标识启用（true）还是禁用(false)
                 isDisabled: false,
             }
         },
@@ -786,7 +786,7 @@
                 }
             },
             // 下拉选择状态
-            confirmBox(selectState, index, rows) {
+            changeState(selectState, index, rows) {
                 console.log('选择的状态', selectState)
                 console.log('行内容', rows)
                 this.rowIndex = index
@@ -823,9 +823,6 @@
                     // 禁用转正常
                     this.isDisabled = false
                     this.mStateDialogVisible = true
-                    // 判断是否已正常
-                    // rows.asState.A == '1' ? this.mediaState.AState = true : this.mediaState.AState = false
-                    // rows.asState.B == '1' ? this.mediaState.BState = true : this.mediaState.BState = false
                 } else if(selectState == '4'){
                   // 删除
                     this.deleteMedia()
@@ -835,26 +832,48 @@
             },
             // 删除媒体
             deleteMedia() {
-                let params = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token,
-                    "service":"DelMediaAction",
-                    "data":{
-                        "mId": this.rowData.mID,
-                        "resId": this.rowData.resID
+                this.$confirm('媒体被删除后将不可恢复!', '确定要删除该媒体吗', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    customClass: 'delete_media_confirm'
+                }).then(() => {
+                    let submitLoading = this.$loading({
+                        lock: true,
+                        text: '删除中...',
+                        spinner: 'el-icon-loading',
+                        background: 'rgba(0, 0, 0, 0.7)'
+                    });
+                    let params = {
+                        uid: this.sessionData.uID,
+                        token: this.sessionData.token,
+                        "service":"DelMediaAction",
+                        "data":{
+                            "mId": this.rowData.mID,
+                            "resId": this.rowData.resID
+                        }
                     }
-                }
-                console.log('删除params', params)
-                api.postApi_new(this.apiVar.Media, params).then(res => {
-                    console.log('res', res)
-                    if (res.data.SysCode === 200200 || res.data.MSG === '操作成功') {
-                        sessFun.messageFun('success','删除成功！')
-                        this.getData()
-                    } else if (res.data.SysCode === 200302 || res.data.MSG === '广告位已被占用') {
-                        sessFun.messageFun('warning',res.data.MSG)
-                    } else {
-                        sessFun.messageFun('warning',res.data.MSG)
-                    }
+                    console.log('删除params', params)
+                    api.postApi_new(this.apiVar.Media, params).then(res => {
+                        console.log('res', res)
+                        if (res.data.SysCode === 200200 || res.data.MSG === '操作成功') {
+                            sessFun.messageFun('success','删除成功！')
+                            this.getData()
+                        } else if (res.data.SysCode === 200302 || res.data.MSG === '广告位已被占用') {
+                            sessFun.messageFun('warning',res.data.MSG)
+                        } else {
+                            sessFun.messageFun('warning',res.data.MSG)
+                        }
+                        submitLoading.close()
+                    }).catch(err=>{
+                        sessFun.messageFun('warning','删除异常！')
+                        submitLoading.close()
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消'
+                    })
                 })
             },
             // 二次确认按钮
@@ -901,6 +920,7 @@
                     }
                 }
                 if(letter === 'one') {
+                    params.data.mstate = this.isDisabled ? '1' : '0'     // 单面禁用媒体状态还是正常（1）
                     params.data.asLabs = this.mediaState.AState ? 'A' : 'B'
                     params.data.asState = this.isDisabled ? '0' : '1'
                 }
@@ -930,7 +950,7 @@
                     } else if (res.data.SysCode == 100302) {
                         sessFun.loginTimeout()
                     } else {
-                        sessFun.messageFun('warning','状态更改失败')
+                        sessFun.messageFun('warning',res.data.MSG)
                     }
                     submitLoading.close()
                 })
@@ -1374,5 +1394,15 @@
     .push_map_box_p /deep/ .el-icon-close{
         cursor: pointer;
         margin-left: 24px;
+    }
+</style>
+
+<style>
+    .delete_media_confirm .el-message-box__header{
+        /*padding-left: 48px;*/
+    }
+    .delete_media_confirm .el-message-box__title{
+        font-size: 16px;
+        font-weight: 600;
     }
 </style>

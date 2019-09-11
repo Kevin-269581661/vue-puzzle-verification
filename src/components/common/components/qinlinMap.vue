@@ -187,7 +187,6 @@
                     // }
                     i++
                 }
-                // this.initMouseDrawing()
             },
             // 显示详情
             showInfo(info,point){
@@ -399,32 +398,37 @@
                     pageCapacity : 50
                 };
                 let local = new BMap.LocalSearch(this.resMap, options);
-                // local.setPageCapacity(100);
                 local.search(this.selectName);
             },
             // 在线结果打点
-            onlineResultsMarker(){
-                for(let key of this.searchOnlineList){
-                    let marker = new BMap.Marker(key.point);  // 创建标注
-                    marker.setTop(true);
-                    this.resMap.addOverlay(marker);            // 将标注添加到地图中
-                    marker.addEventListener("click",()=>{
-                        let content =
-                            "<div>"+
-                            "<p style='font:14px arial,sans-serif;margin:0;line-height:1.5;'>"
-                            + key.title +"</p>"+
-                            "<p style='font:14px arial,sans-serif;margin:0;line-height:1.5;'>" +
-                            "地址:"+ key.address +"</p>"+
-                            "</div>";
-                        let opts = {
-                            width: 0,             // 信息窗口宽度
-                            height: 0,              // 信息窗口高度
-                            title: "",              // 信息窗口标题
-                            enableMessage: false    //设置允许信息窗发送短息
-                        }
-                        let infoWindow = new BMap.InfoWindow(content,opts);  // 创建信息窗口对象
-                        this.resMap.openInfoWindow(infoWindow,key.point); //开启信息窗口
-                    });
+            onlineResultsMarker() {
+                let i = 0
+                for (let key of this.searchOnlineList) {
+                    if (i < 100) {
+                        let marker = new BMap.Marker(key.point);  // 创建标注
+                        marker.setTop(true);
+                        this.resMap.addOverlay(marker);            // 将标注添加到地图中
+                        marker.addEventListener("click", () => {
+                            let content =
+                                "<div>" +
+                                "<p style='font:14px arial,sans-serif;margin:0;line-height:1.5;'>"
+                                + key.title + "</p>" +
+                                "<p style='font:14px arial,sans-serif;margin:0;line-height:1.5;'>" +
+                                "地址:" + key.address + "</p>" +
+                                "</div>";
+                            let opts = {
+                                width: 0,             // 信息窗口宽度
+                                height: 0,              // 信息窗口高度
+                                title: "",              // 信息窗口标题
+                                enableMessage: false    //设置允许信息窗发送短息
+                            }
+                            let infoWindow = new BMap.InfoWindow(content, opts);  // 创建信息窗口对象
+                            this.resMap.openInfoWindow(infoWindow, key.point); //开启信息窗口
+                        });
+                    } else {
+                        break
+                    }
+                    i++
                 }
             },
             // 全选

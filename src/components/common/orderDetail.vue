@@ -156,7 +156,7 @@
                         <material :material="materialInfo" :daomater="daoInfo" :loading="maLoading" v-if="planPanel=='third'"></material>
                     </el-tab-pane>
                     <el-tab-pane label="上刊报告" name="forth" :disabled="usableBtn||role =='OP'">
-                        <div class="changepic_box" v-if="planPanel=='forth'">                        
+                        <div class="changepic_box" v-if="planPanel=='forth'">
                             <change-pic :type="1" :order-detail="orderDetail"></change-pic>
                         </div>
                     </el-tab-pane>
@@ -425,7 +425,7 @@ export default {
                     tradingArea: data.tradingArea,
                     cType: data.cType,
                     hPrice: data.hPrice/100,
-                    hNum: data.hNum,
+                    hNum: data.hNum == '0' ? '&' : data.hNum,
                     fNum: data.fNum,
                     chDay: data.chDay,
                     adSize: data.mVehicle == "广告门" ? data.adSize: data.picSize,
@@ -963,7 +963,7 @@ export default {
                 if(res.data.SysCode == 200200){
                     this.painlist = res.data.data;
                     if(this.painlist.length){
-                        this.showPain = true;                    
+                        this.showPain = true;
                     }
                 }else{
                     sessFun.messageFun('warning', res.data.msg);
@@ -985,7 +985,7 @@ export default {
             });
         },
         // 新增换画报告
-        addPainReport(){    
+        addPainReport(){
             let len = this.painlist.length;
             let painInfo = {
                 apId: this.orderDetail.apID,
@@ -993,15 +993,15 @@ export default {
             };
             api.postApi_json(this.apiVar.replace+'/report/add', painInfo).then(res =>{
                 if(res.data.SysCode == 200200){
-                    this.showPain = true;  
-                    this.planPanel = 'sixth';    
+                    this.showPain = true;
+                    this.planPanel = 'sixth';
                     setTimeout(()=>{
                         this.fromType = !this.fromType;
-                    }, 10);                        
+                    }, 10);
                 }else{
                     sessFun.messageFun('warning', res.data.msg);
                 }
-            });   
+            });
         },
         // 操作提示统一方法
         messageFun(mesType,mes){
@@ -1336,7 +1336,7 @@ export default {
     /deep/ .el-upload-list__item.is-success{
         display: none;
     }
-    
+
     /deep/ .disabled .el-upload--picture-card {
         display: none;
     }

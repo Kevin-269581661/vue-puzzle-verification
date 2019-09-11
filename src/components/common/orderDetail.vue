@@ -112,7 +112,7 @@
                                     </el-table-column>
                                     <el-table-column prop="hNum" label="小区户数" min-width="7.3%" align="right">
                                         <template slot-scope="scope">
-                                            <span>{{priceToFormat(scope.row.hNum)}}</span>
+                                            <span>{{(scope.row.hNum)?priceToFormat(scope.row.hNum):0}}</span>
                                         </template>
                                     </el-table-column>
                                     <el-table-column label="楼盘价格" min-width="7.3%" align="right">
@@ -153,7 +153,7 @@
                         <ap-quotation @detailInfo="setInfo" :quotationData="quotation" :copydata="copyAsidArr" :isorder="true" :shopingList="[]" class="price_quo"></ap-quotation>
                     </el-tab-pane>
                     <el-tab-pane label="物料信息" name="third" :disabled="usableBtn">
-                        <material :material="materialInfo" :daomater="daoInfo" :loading="maLoading" v-if="planPanel=='third'"></material>
+                        <material :material="materialInfo" :daomater="daoInfo" :loading="maLoading" :isOrder="true" v-if="planPanel=='third'"></material>
                     </el-tab-pane>
                     <el-tab-pane label="上刊报告" name="forth" :disabled="usableBtn||role =='OP'">
                         <div class="changepic_box" v-if="planPanel=='forth'">
@@ -981,23 +981,35 @@ export default {
                     type: "warning"
                 }
             ).then(() => {
+                this.getPainlist();
                 this.addPainReport();
             });
         },
         // 新增换画报告
         addPainReport(){
-            let len = this.painlist.length;
-            let painInfo = {
-                apId: this.orderDetail.apID,
-                replaceRecordName: `换画${len+1}`,
+            let info = {
+                apId: sessionStorage.getItem("order_apid")
             };
-            api.postApi_json(this.apiVar.replace+'/report/add', painInfo).then(res =>{
+            api.getApi(this.apiVar.replace+'/report/list', info).then(res =>{
+                console.log(res);
                 if(res.data.SysCode == 200200){
-                    this.showPain = true;
-                    this.planPanel = 'sixth';
-                    setTimeout(()=>{
-                        this.fromType = !this.fromType;
-                    }, 10);
+                    this.painlist = res.data.data;
+                    let len = this.painlist.length;
+                    let painInfo = {
+                        apId: this.orderDetail.apID,
+                        replaceRecordName: `换画${len+1}`,
+                    };
+                    api.postApi_json(this.apiVar.replace+'/report/add', painInfo).then(res =>{
+                        if(res.data.SysCode == 200200){
+                            this.showPain = true;
+                            this.planPanel = 'sixth';
+                            setTimeout(()=>{
+                                this.fromType = !this.fromType;
+                            }, 10);
+                        }else{
+                            sessFun.messageFun('warning', res.data.msg);
+                        }
+                    });
                 }else{
                     sessFun.messageFun('warning', res.data.msg);
                 }

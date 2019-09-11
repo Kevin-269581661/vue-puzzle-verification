@@ -215,6 +215,7 @@ export default new Router({
                 {path: '/media/projectDetail', component: projectDetail},
                 // 亲邻地图
                 {path: '/media/qinlinMap',component: qinlinMap},
+                {path: '/media/communityPortrait',component: communityPortrait},
             ]
         },
         //销售
@@ -244,6 +245,7 @@ export default new Router({
                 {path: '/sale/mapMessage', component: mapMessage},
                 {path: '/sale/myInfo', component: myInfo},
                 {path: '/sale/compact', component: compact},
+                {path: '/sale/communityPortrait',component: communityPortrait},
                 // 亲邻地图
                 {path: '/sale/qinlinMap',component: qinlinMap},
             ]
@@ -272,6 +274,7 @@ export default new Router({
                 {path: '/adOwner/hotSource', component: hotSource},
                 {path: '/adOwner/compact', component: compact},
                 {path: '/adOwner/myInfo', component: myInfo},
+                {path: '/adOwner/communityPortrait',component: communityPortrait},
             ]
         },
         //404

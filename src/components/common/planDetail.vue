@@ -104,7 +104,7 @@
                         <ap-quotation @detailInfo="setInfo" :quotationData="quotation" :copydata="copyAsidArr" :shopingList="[]" class="price_quo"></ap-quotation>
                     </el-tab-pane>
                     <el-tab-pane label="物料信息" name="third">
-                        <material :material="materialInfo" :daomater="daoInfo" :loading="maLoading"></material>
+                        <material :material="materialInfo" :daomater="daoInfo" :loading="maLoading" :isOrder="false"></material>
                     </el-tab-pane>
                 </el-tabs>
             </div>

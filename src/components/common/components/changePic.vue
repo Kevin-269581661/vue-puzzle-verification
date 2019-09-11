@@ -1417,8 +1417,19 @@ export default {
             // }
             for(let i = 0; i<arr.length; i++){
                 let formData = new FormData();
-                formData.append('picList', imgArr[i]);
-                formData.append('infos', JSON.stringify([arr[i]]));    
+                formData.append('pic', imgArr[i]);   
+                formData.append('pAlt', arr[i].pAlt);    
+                formData.append('pType', arr[i].pType);    
+                formData.append('ptID', arr[i].ptID);    
+                formData.append('ptP', arr[i].ptP);    
+                formData.append('pRemarks', arr[i].pRemarks);    
+                formData.append('lStart', arr[i].lStart);    
+                formData.append('lEnd', arr[i].lEnd);    
+                formData.append('resId', arr[i].resId);    
+                formData.append('lId', arr[i].lId);    
+                formData.append('type', arr[i].type);    
+                formData.append('replaceRecordId', arr[i].replaceRecordId);    
+                formData.append('replaceRecordDetailId', arr[i].replaceRecordDetailId);    
                 let pro = this.uploadFun(formData); 
                 funs.push(pro);
             }
@@ -1441,7 +1452,8 @@ export default {
         },
         uploadFun(formData, end, arr){
             let promise = new Promise((resolve, reject)=>{
-                api.postUpload_file(this.apiVar.replace+'/photo/multipartUpload', formData).then(res =>{
+                // api.postUpload_file(this.apiVar.replace+'/photo/multipartUpload', formData).then(res =>{
+                api.postUpload_file(this.apiVar.replace+'/photo/upload', formData).then(res =>{
                     console.log(res);
                     if(res.data.SysCode == 200200){
                         resolve(true);
@@ -1557,8 +1569,8 @@ export default {
                 ptID: row.mVehicle=='广告门' ? row.asID: row.mID,
                 ptP: ptp,
                 pRemarks: JSON.stringify(prk),
-                lStart: row.lStar,
-                lEnd: row.lEnd,
+                lStart: timeFormat.toDate(row.lStar, '/'),
+                lEnd: timeFormat.toDate(row.lEnd, '/'),
                 resId: row.resID,
                 // lId: row.lID ? row.lID : "",
                 lId: row.mVehicle=='广告门'?row.lID:(row.lID?row.lID.toString().split(',')[0]:''),

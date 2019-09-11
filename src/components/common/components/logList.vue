@@ -1,13 +1,13 @@
 <template>
     <div>
         <ul class="timeline">
-            <li v-for="item of list" :key="item.id" class="timeline_item">
+            <li v-for="(item,index) in list" :key="index" class="timeline_item">
                 <div class="line_tail"></div>
                 <div class="line_head"></div>
                 <div class="line_content">
                     <p class="time">{{item.time}}
                         <span :class="[getcolor(item.type),'tag']">{{item.type}}</span>
-                        <span v-if="item.type!='拆除'" class="handleBtn">处理</span>
+                        <span v-if="item.type!='拆除'" class="handleBtn" @click="toHandle(item)">处理</span>
                     </p>
                     <div class= "content" v-if="item.text">
                         <p>{{item.text}}</p>
@@ -41,6 +41,9 @@ export default {
             }else {
                 return 'red';
             }
+        },
+        toHandle(item){
+          this.$emit('toHandle',item)
         },
     },
 }
@@ -125,6 +128,7 @@ export default {
     }
     .content p:last-child{
         font-size: 12px;
+        margin-top: 5px;
     }
     .timeline_item:last-child .line_tail{
         display: none;

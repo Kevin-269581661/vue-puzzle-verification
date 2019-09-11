@@ -26,12 +26,12 @@
                             v-model="searchInfo.districtId"
                             :options="areaArr"
                             :clearable="true"
-                            :props="{ expandTrigger: 'hover' , checkStrictly: true}"
+                            change-on-select
                             @change="handleChange"></el-cascader>
                     </el-col>
                     <el-col :span="6">
                         <span>维护类型:</span>
-                        <el-select v-model="searchInfo.type" placeholder="请选择维护类型">
+                        <el-select v-model="searchInfo.type" placeholder="请选择维护类型" clearable >
                             <el-option v-for="item of typeArr" :key="item.value" :label="item.label"
                                        :value="item.value"></el-option>
                         </el-select>
@@ -41,14 +41,14 @@
                 <el-row>
                     <el-col :span="6">
                         <span>维护状态:</span>
-                        <el-select v-model="searchInfo.status" placeholder="请选择维护状态">
+                        <el-select v-model="searchInfo.status" placeholder="请选择维护状态" clearable >
                             <el-option v-for="item of stateArr" :key="item.value" :label="item.label"
                                        :value="item.value"></el-option>
                         </el-select>
                     </el-col>
                     <el-col :span="6">
                         <span style="text-align: right;padding-right: 6px;box-sizing: border-box">提交者:</span>
-                        <el-select v-model="searchInfo.userId" placeholder="请选择提交者" filterable>
+                        <el-select v-model="searchInfo.userId" placeholder="请选择提交者" filterable clearable >
                             <el-option v-for="item of engineerArr" :key="item.value" :label="item.label"
                                        :value="item.value"></el-option>
                         </el-select>
@@ -178,7 +178,6 @@
                                 </el-dropdown>
                             </template>
                         </el-table-column>
-
                         <div slot="empty">
                             <no-search-result></no-search-result>
                         </div>
@@ -222,7 +221,7 @@
             :visible.sync="isShowHandle"
             width="30%">
             <div class="block">
-                <span>处理日期：</span>
+                <span style="width: 86px">处理日期：</span>
                 <el-date-picker
                     v-model="maintainForm.date"
                     type="date"
@@ -248,10 +247,10 @@
             <div class="loglist_box">
                 <div class="title">
                     <p>{{logList.resName}}</p>
-                    <p>{{logList.mTitle}}({{logList.assetTag}})</p>
+                    <p>{{logList.mTitle}}（{{logList.assetTag}}）</p>
                 </div>
 
-                <log-list :list="logList.list"></log-list>
+                <log-list :list="logList.list" @toHandle="toHandle"></log-list>
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="isShowHistory = false">关 闭</el-button>
@@ -398,20 +397,6 @@
                             address: '广州市越秀区广州大道中307号福利新天地中心',
                             type: '巡点',
                         },
-                        {
-                            id: 2,
-                            time: '2019/08/30 20:32:56',
-                            text: '这是一条很长很长的巡点记录',
-                            address: '广州市越秀区广州大道中307号福利新天地中心',
-                            type: '待维修',
-                        },
-                        {
-                            id: 3,
-                            time: '2019/08/30 20:32:56',
-                            text: '这是一条很长很长的巡点记录',
-                            address: '广州市越秀区广州大道中307号福利新天地中心',
-                            type: '拆除',
-                        }
                     ]
                 },
                 logsId: [],
@@ -471,7 +456,7 @@
                     "uid": this.sessionData.uID
                 };
                 api.postApi_new(this.apiVar.Media, info).then(res => {
-                    console.log(res.data);
+                    // console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         let result = [];
                         for (let data of res.data.data) {
@@ -541,22 +526,39 @@
                         pageNum: this.currPage,
                         pageSize: 50,
                     },
-                    "service": "UpdateMediaMaintenanceAction",
+                    "service": "GetMediaMaintenanceHistoryListAction",
                     "token": this.sessionData.token,
                     "uid": this.sessionData.uID
                 };
                 api.postApi_new(this.apiVar.Media, info).then(res => {
-                    console.log(res.data);
+                    console.log('历史记录', res.data);
                     if (res.data.SysCode == 200200) {
-                        let result = [];
-                        for (let data of res.data.data) {
-                            let obj = {
-                                label: data.asName,
-                                value: data.asrID,
+                        let obj = {
+                            resName: item.resName,
+                            mTitle: item.mTitle,
+                            assetTag: item.assetTag,
+                            list: []
+                        };
+                        for (let data of res.data.data.list) {
+                            let a = {
+                                time: data.patrolTime,
+                                text: data.feedback,
+                                address: data.resAddress,
+                                recordId: data.recordId,
+                                mID: data.mID,
                             };
-                            result.push(obj);
+                            if (data.type == 1) {
+                                a.type = '巡点'
+                            } else if (data.type == 2) {
+                                a.type = '待维修'
+                            } else if (data.type == 3) {
+                                a.type = '删除'
+                            }
+
+                            obj.list.push(a);
                         }
-                        this.companyArr = result;
+                        this.logList = obj;
+                        console.log(this.logList);
                     } else {
                         Message.warning(res.data.MSG);
                     }
@@ -567,6 +569,7 @@
             // 处理
             toHandle(item) {
                 console.log(item);
+                this.isShowHistory = false;
                 let info = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
@@ -575,63 +578,40 @@
                         mID: item.mID
                     }
                 };
+                this.maintainForm = {
+                    date: '',
+                    reamrk: '',
+                    recordId: item.recordId
+                }
                 this.isShowHandle = true;
                 this.handleModalTitle = item.mtType == '巡点' ? '巡点处理' : '维修处理'
-                // api.postApi_new(this.apiVar.Media, info).then(res => {
-                //     console.log(res.data);
-                //     if (res.data.SysCode == 200200) {
-                //         this.remark = item.remark || '暂无备注';
-                //         let result = [];
-                //         let logsId = [];
-                //         for (let data of res.data.data) {
-                //             let logInfo = {
-                //                 id: data.id,
-                //                 text: data.feedback,
-                //                 time: data.patrolTime,
-                //             };
-                //             logsId.push(data.id);
-                //             result.push(logInfo);
-                //         }
-                //         this.logList = result;
-                //         this.logsId = logsId;
-                //         this.isShowHandle = true;
-                //     }
-                // }).catch(err => {
-                //     console.log(err);
-                // });
+
             },
-            // 确认备注
+            // 确认处理
             handleRemark() {
-                this.$confirm("确定后将更新媒体备注", "是否继续？", {
-                    confirmButtonText: "确定",
-                    cancelButtonText: "取消",
-                    type: "warning"
-                }).then(res => {
-                    console.log(res);
-                    let info = {
-                        uid: this.sessionData.uID,
-                        token: this.sessionData.token,
-                        service: "SaveFeedbackResult",
-                        data: {
-                            pids: this.logsId.join(','),
-                            result: this.remark,
-                        }
-                    };
-                    api.postApi_new(this.apiVar.Media, info).then(res => {
-                        console.log(res.data);
-                        if (res.data.SysCode == 200200) {
-                            Message.success(res.data.MSG);
-                            this.searchFun();
-                            this.isShowHandle = false;
-                        } else {
-                            Message.warning(res.data.MSG);
-                        }
-                    }).catch(err => {
-                        console.log(err);
-                    });
-                }).catch(res => {
-                    console.log(res);
-                })
+                let info = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    service: "UpdateMediaMaintenanceAction",
+                    data: {
+                        "updateTime": timeFormat.toDate(this.maintainForm.date, '-'),
+                        "feedback": this.maintainForm.reamrk,
+                        "recordId": this.maintainForm.recordId,
+                    }
+                };
+                api.postApi_new(this.apiVar.Media, info).then(res => {
+                    console.log('处理',res.data);
+                    if (res.data.SysCode == 200200) {
+                        Message.success(res.data.MSG);
+                        this.searchFun();
+
+                        this.isShowHandle = false;
+                    } else {
+                        Message.warning(res.data.MSG);
+                    }
+                }).catch(err => {
+                    console.log(err);
+                });
             },
             // 判断角色是否有新建按钮(销售有)
             getRole() {
@@ -655,7 +635,8 @@
                 };
                 data = {
                     ...data,
-                    ...(districtId && {districtId: districtId[0]}),
+                    ...(districtId && {cityId: districtId[0]}),
+                    ...(districtId.length>1 && {districtId: districtId[1]}),
                     ...(type && {type: type}),
                     ...(assetTag && {assetTag: assetTag}),
                     ...(resName && {resName: resName}),
@@ -750,10 +731,12 @@
                     cityName: item.cityName,
                     area: item.districtName,
                     checkTime: item.patrolTime,
-                    issueRecord: item.feedback?item.feedback:'--',
+                    issueRecord: item.feedback ? item.feedback : '--',
                     status: item.status,
                     remark: item.remark,
-                    urls: []
+                    urls: [],
+                    mTitle: item.mTitle,
+                    recordId: item.recordId
                 };
                 if (item.type == 1) {
                     obj.mtType = '巡点'
@@ -831,9 +814,10 @@
     /deep/ .mediaList_container .el-col > span {
         font-size: 14px;
         min-width: 65px;
-        color: rgba(0,0,0,0.85);
+        color: rgba(0, 0, 0, 0.85);
     }
-    /deep/ .mediaList_container .el-input__icon.el-icon-arrow-down.is-reverse{
+
+    /deep/ .mediaList_container .el-input__icon.el-icon-arrow-down.is-reverse {
         line-height: 34px;
     }
 
@@ -844,7 +828,9 @@
     /deep/ .el-select {
         width: 100%;
     }
-
+    /deep/.el-col .el-date-editor .el-range__close-icon{
+        line-height: 27px;
+    }
     .table_dt dl dt {
         font-size: 14px;
     }
@@ -867,7 +853,8 @@
         align-items: center;
         margin-right: 24px;
     }
-    /deep/ .mediaList_container .el-date-editor .el-range-separator, /deep/ .mediaList_container .el-date-editor .el-range__icon{
+
+    /deep/ .mediaList_container .el-date-editor .el-range-separator, /deep/ .mediaList_container .el-date-editor .el-range__icon {
         line-height: 26px;
     }
 
@@ -949,15 +936,14 @@
 
     /deep/ .block .el-date-editor.el-input__inner, /deep/ .block .el-input--prefix .el-input__inner {
         height: 32px;
-        width: 300px;
     }
 
-    /deep/ .block .el-input__prefix, .el-input__suffix {
-        top: -3px;
+    /deep/ .block  .el-input__icon {
+        line-height: 32px;
     }
 
     /deep/ .remark .el-textarea__inner {
-        width: 300px;
+        width: 321px;
         height: 74px;
         resize: none;
     }
@@ -965,6 +951,7 @@
     /deep/ .el-date-editor.el-input, .el-date-editor.el-input__inner {
         width: 100%;
         height: 32px;
+        padding-right: 0;
     }
 
     /deep/ .remark .el-textarea {

@@ -259,9 +259,9 @@
                 <div class="find clearfix" v-if="showPic === 3">
                     <div class="photoCard" v-for="(img, index) of imgarr" :key="img.pID">
                         <div class="imgBox" @mouseenter="mouseenterFun(img,index)" @mouseleave="mouseleaveFun(index)">
-                            <img :src="img.pUrl" alt="暂无图片"  class="smallImg">
+                            <img :src="img.pUrl" alt=""  class="smallImg">
                             <!--查看缩略图和下载-->
-                            <div class="mask-btn" v-if="true || showPreImg == index">
+                            <div class="mask-btn" v-if="showPreImg == index">
                                 <p class="mask_icon">
                                     <span v-if="isShowCollect">
                                         <i v-if="!img.isCollection" class="el-icon-star-off" @click="saveImgFun(img)" ></i>
@@ -337,7 +337,7 @@
                         <p class="active_Mark" v-show="activeMark === item">
                             <i class="el-icon-circle-check"></i>
                         </p>
-                        <img :src="activeImgInfo.url" alt="暂无图片" />
+                        <img :src="activeImgInfo.url" alt="" />
                     </div>
                 </el-col>
             </el-row>

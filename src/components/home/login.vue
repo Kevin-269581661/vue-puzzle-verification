@@ -249,7 +249,7 @@
                 if (wsData.step === 1) {
                     this.step = 1
                     console.log('获取二维码')
-                    this.codeImg = 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/QRCodeImg/QRCode90001.jpg' // wsData.qrurl
+                    this.codeImg = wsData.qrurl //
                     // this.imgLoading = false
                     this.codeImgLoading()
                 } else if (wsData.step === 2) {

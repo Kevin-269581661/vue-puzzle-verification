@@ -1402,18 +1402,25 @@ export default {
             let imgArr = this.uploadImgArr;
             let arr = this.constractArr;
             let funs = [];
-            for(let i = 0; i<arr.length+6; i=i+6){
-                let end = i+6>arr.length?arr.length:i+6;
-                let result = arr.slice(i, end);
-                if(result.length){
-                    let formData = new FormData();
-                    for(let data of imgArr.slice(i, end)){
-                        formData.append('picList', data);
-                    }
-                    formData.append('infos', JSON.stringify(result));    
-                    let pro = this.uploadFun(formData); 
-                    funs.push(pro);
-                }
+            // for(let i = 0; i<arr.length+3; i=i+3){
+            //     let end = i+3>arr.length?arr.length:i+3;
+            //     let result = arr.slice(i, end);
+            //     if(result.length){
+            //         let formData = new FormData();
+            //         for(let data of imgArr.slice(i, end)){
+            //             formData.append('picList', data);
+            //         }
+            //         formData.append('infos', JSON.stringify(result));    
+            //         let pro = this.uploadFun(formData); 
+            //         funs.push(pro);
+            //     }
+            // }
+            for(let i = 0; i<arr.length; i++){
+                let formData = new FormData();
+                formData.append('picList', imgArr[i]);
+                formData.append('infos', JSON.stringify([arr[i]]));    
+                let pro = this.uploadFun(formData); 
+                funs.push(pro);
             }
             Promise.all(funs).then((values)=>{
                 console.log(values);

@@ -368,9 +368,9 @@ export default {
                 map: item.mapCenterName,
                 timeRange: item.lState==2? timeRange1 : timeRange,
                 changePicTime: '',
-                remark: item.remark?item.remark:'',
-                imgUrl: item.picUrl?item.picUrl:'',
-                uploadUser: item.uploadUser?item.uploadUser:'',
+                remark: item.remark || '',
+                imgUrl: item.picUrl || '',
+                uploadUser: item.uploadUser || '',
                 isSelect: false,
             };
             return obj;

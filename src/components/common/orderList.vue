@@ -389,14 +389,14 @@ export default {
             let obj = {
                 adcID: item.adcID,
                 apID: item.apID,
-                apName: item.apName ? item.apName : '',
-                apQC: item.apQC ? item.apQC : '',
-                apState: item.apState ? item.apState : '',
-                apTotal: item.apTotal ? item.apTotal : '',
-                appTime: item.appTime ? item.appTime : '',
-                bTitle: item.bTitle ? item.bTitle : '--',
-                cName: item.cName ? item.cName : '',
-                realName: item.realName ? item.realName : '',
+                apName: item.apName || '',
+                apQC: item.apQC || '',
+                apState: item.apState || '',
+                apTotal: item.apTotal || '',
+                appTime: item.appTime || '',
+                bTitle: item.bTitle || '--',
+                cName: item.cName || '',
+                realName: item.realName || '',
                 companyList: [],
             };
             for(let data of item.companyList){

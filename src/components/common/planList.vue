@@ -1008,13 +1008,13 @@ export default {
             let obj = {
                 adcID: item.adcID,
                 apID: item.apID,
-                apName: item.apName ? item.apName : '',
-                apState: item.apState ? item.apState : '',
-                apTotal: item.apTotal ? item.apTotal : '',
-                apcTime: item.apcTime ? item.apcTime : '',
-                bTitle: item.bTitle ? item.bTitle : '--',
-                cName: item.cName ? item.cName : '',
-                realName: item.realName ? item.realName : '',
+                apName: item.apName || '',
+                apState: item.apState || '',
+                apTotal: item.apTotal || '',
+                apcTime: item.apcTime || '',
+                bTitle: item.bTitle || '--',
+                cName: item.cName || '',
+                realName: item.realName || '',
                 cityArea: [],
             };
             item.details.sort((a, b)=>{

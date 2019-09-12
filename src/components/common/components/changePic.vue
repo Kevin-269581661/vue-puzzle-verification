@@ -182,7 +182,7 @@
                 </el-table-column>
                 <el-table-column prop="resName" label="资源" show-overflow-tooltip>
                 </el-table-column>
-                <el-table-column prop="mTitle" label="媒体">
+                <el-table-column prop="mTitle" label="媒体" show-overflow-tooltip>
                 </el-table-column>
                 <el-table-column prop="asLab" label="面" width="60">
                 </el-table-column>
@@ -190,11 +190,9 @@
                 </el-table-column>
                 <el-table-column prop="districtName" label="区域" width="90">
                 </el-table-column>
-                <el-table-column prop="mapCenterInfo" label="地图中心点">
+                <el-table-column prop="mapCenterInfo" label="地图中心点" align="center" width="100" show-overflow-tooltip>
                     <template slot-scope="scope">
-                        <span>
-                            {{ scope.row.mapCenterInfo || '--'}}
-                        </span>
+                        <span>{{ scope.row.mapCenterInfo || '--'}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column prop="timeRange" label="排期" min-width="120">
@@ -1403,37 +1401,57 @@ export default {
 
             let imgArr = this.uploadImgArr;
             let arr = this.constractArr;
-            for(let i = 0; i<arr.length+6; i=i+6){
-                let end = i+6>arr.length?arr.length:i+6;
-                let result = arr.slice(i, end);
-                if(result.length){
-                    let formData = new FormData();
-                    for(let data of imgArr.slice(i, end)){
-                        formData.append('picList', data);
-                    }
-                    formData.append('infos', JSON.stringify(result));    
-                    api.postUpload_file(this.apiVar.replace+'/photo/multipartUpload', formData).then(res =>{
-                        console.log(res);
-                        if(res.data.SysCode == 200200){
-                            if(end >= arr.length){
-                                this.constractArr = [];
-                                this.uploadImgArr = [];
-                                let type = this.type;                            
-                                if(type == 1 || type ==2){
-                                    // 上下刊报告列表
-                                    this.searchFun();
-                                }else if(type == 3){
-                                    // 换画报告列表
-                                    this.search();
-                                }
-                                this.addload.close();                                
-                            }
-                        }else{
-                            sessFun.messageFun('warning', res.data.MSG);
-                        }
-                    });                
-                }
+            let funs = [];
+            // for(let i = 0; i<arr.length+3; i=i+3){
+            //     let end = i+3>arr.length?arr.length:i+3;
+            //     let result = arr.slice(i, end);
+            //     if(result.length){
+            //         let formData = new FormData();
+            //         for(let data of imgArr.slice(i, end)){
+            //             formData.append('picList', data);
+            //         }
+            //         formData.append('infos', JSON.stringify(result));    
+            //         let pro = this.uploadFun(formData); 
+            //         funs.push(pro);
+            //     }
+            // }
+            for(let i = 0; i<arr.length; i++){
+                let formData = new FormData();
+                formData.append('picList', imgArr[i]);
+                formData.append('infos', JSON.stringify([arr[i]]));    
+                let pro = this.uploadFun(formData); 
+                funs.push(pro);
             }
+            Promise.all(funs).then((values)=>{
+                console.log(values);
+                this.constractArr = [];
+                this.uploadImgArr = [];
+                let type = this.type;                            
+                if(type == 1 || type ==2){
+                    // 上下刊报告列表
+                    this.searchFun();
+                }else if(type == 3){
+                    // 换画报告列表
+                    this.search();
+                }
+                this.addload.close();                                
+            }).catch((err)=> {
+                console.log(err);
+            });
+        },
+        uploadFun(formData, end, arr){
+            let promise = new Promise((resolve, reject)=>{
+                api.postUpload_file(this.apiVar.replace+'/photo/multipartUpload', formData).then(res =>{
+                    console.log(res);
+                    if(res.data.SysCode == 200200){
+                        resolve(true);
+                    }else{
+                        sessFun.messageFun('warning', res.data.MSG);
+                        reject(false);
+                    }
+                });  
+            });
+            return promise;
         },
         // 收藏
         saveImgFun(item,index){
@@ -1542,7 +1560,8 @@ export default {
                 lStart: row.lStar,
                 lEnd: row.lEnd,
                 resId: row.resID,
-                lId: row.lID ? row.lID : "",
+                // lId: row.lID ? row.lID : "",
+                lId: row.mVehicle=='广告门'?row.lID:(row.lID?row.lID.toString().split(',')[0]:''),
                 type: row.mVehicle=='广告门' ?0:1,
                 pType: type,
                 replaceRecordId: row.replaceRecordId ? row.replaceRecordId :'',
@@ -1558,13 +1577,13 @@ export default {
         // 限制只能上传png,jpeg格式的照片
         beforeAvatarUpload(file) {
             const isIMAGE = file.type === "image/jpeg" || file.type === "image/png";
-            const isLt1M = file.size / 1024 / 1024 < 5;
+            const isLt1M = file.size / 1024 / 1024 < 10;
 
             if (!isIMAGE) {
                 sessFun.messageFun('error', "只能上传jpg/png图片!");
             }
             if (!isLt1M) {
-                sessFun.messageFun('error', "上传文件大小不能超过 5MB!");
+                sessFun.messageFun('error', "上传文件大小不能超过 10MB!");
             }
             return isIMAGE&&isLt1M;
         },
@@ -2119,3 +2138,11 @@ export default {
     }
 }
 </style>
+<style>
+.el-tooltip__popper.is-dark{
+    max-width: 250px;
+    word-break: break-all;
+    word-wrap: break-word
+}
+</style>
+

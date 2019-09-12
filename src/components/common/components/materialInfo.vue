@@ -2,7 +2,7 @@
     <div class="third-wrap box-wrap">
         <div class="table_wrap">
             <p class="search-row">
-                <el-button type="primary" size="small" @click="uploadMater()">添加上画信息</el-button>
+                <el-button type="primary" size="small" @click="uploadMater()" v-show="isOrder">添加上画信息</el-button>
             </p>
             <el-radio-group v-model="mediaType" size="medium">
                 <el-radio-button label="广告门"></el-radio-button>
@@ -157,6 +157,10 @@ export default {
         loading: {
             type: Boolean,
             default: true
+        },
+        isOrder: {
+            type:Boolean,
+            default: false
         }
     },
     computed:{
@@ -225,8 +229,8 @@ export default {
         console.log('material-----', this.material);
         console.log('material-----', this.daomater);
         this.sessionData = sessFun.getSess();
-        this.materialInfo = this.material;        
-        this.daomaterInfo = this.daomater;        
+        this.materialInfo = this.material;
+        this.daomaterInfo = this.daomater;
     },
     methods:{
         // 排期筛选
@@ -364,9 +368,9 @@ export default {
                 map: item.mapCenterName,
                 timeRange: item.lState==2? timeRange1 : timeRange,
                 changePicTime: '',
-                remark: item.remark?item.remark:'',
-                imgUrl: item.picUrl?item.picUrl:'',
-                uploadUser: item.uploadUser?item.uploadUser:'',
+                remark: item.remark || '',
+                imgUrl: item.picUrl || '',
+                uploadUser: item.uploadUser || '',
                 isSelect: false,
             };
             return obj;

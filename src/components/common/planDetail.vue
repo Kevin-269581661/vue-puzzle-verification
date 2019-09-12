@@ -104,7 +104,7 @@
                         <ap-quotation @detailInfo="setInfo" :quotationData="quotation" :copydata="copyAsidArr" :shopingList="[]" class="price_quo"></ap-quotation>
                     </el-tab-pane>
                     <el-tab-pane label="物料信息" name="third">
-                        <material :material="materialInfo" :daomater="daoInfo" :loading="maLoading"></material>
+                        <material :material="materialInfo" :daomater="daoInfo" :loading="maLoading" :isOrder="false"></material>
                     </el-tab-pane>
                 </el-tabs>
             </div>
@@ -210,7 +210,7 @@ export default {
                     resName: data.resName,
                     city: data.city,
                     rName: data.rName,
-                    mVehicle: data.mVehicle,                    
+                    mVehicle: data.mVehicle,
                     mTitle: data.mTitle,
                     asLab: data.asLab,
                     timeRange: data.timeRange,
@@ -219,7 +219,7 @@ export default {
                     tradingArea: data.tradingArea,
                     cType: data.cType,
                     hPrice: data.hPrice/100,
-                    hNum: data.hNum,
+                    hNum: data.hNum == '0' ? '&' : data.hNum,
                     fNum: data.fNum,
                     chDay: data.chDay,
                     adSize: data.mVehicle == "广告门" ? data.adSize: data.picSize,
@@ -229,7 +229,7 @@ export default {
                     resAddress: data.resAddress,
                 };
                 resultArr.push(obj);
-            } 
+            }
             require.ensure([], () => {
                 const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
                 const tHeader = ['资源名称', '市', '区域', '媒介载体', '媒体名称', '资产编号', '投放面', '投放日期', '终止日期', '商圈', '楼盘类型/写字楼类型', '楼盘价格', '住户数量/办公室数量', '楼栋数量', '入住年份/建成年份', '广告尺寸/画面尺寸', '可视画面/灯箱尺寸', '广告限制', '媒体备注', '详细地址'];

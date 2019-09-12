@@ -157,7 +157,7 @@
                         <el-col :span="8">
                             <el-card class="box-card">
                                 <div slot="header" class="clearfix">
-                                    <span class="box_card_title">生肖Top5</span>
+                                    <span class="box_card_title">生肖Top6</span>
                                 </div>
                                 <div class="box_main">
                                     <p class="progress_li progress_li_title">
@@ -304,13 +304,13 @@
                                 <el-col :span="13">
                                     <p class="progress_li progress_li_title">
                                         <span class="progress_li_rate">排名</span>
-                                        <span class="progress_li_name">手机品牌</span>
+                                        <span class="progress_li_name phone_li_name">手机品牌</span>
                                         <span class="progress_li_num">占比</span>
                                     </p>
                                     <ul class="little_height_ul mobile_phone_ul" v-show="mobilePhoneList.length">
                                         <li class="progress_li" v-for="(item,index) in mobilePhoneList" :key="index+1">
                                             <span class="progress_li_rate">{{index + 1}}</span>
-                                            <span class="progress_li_name">{{item.label}}</span>
+                                            <span class="progress_li_name phone_li_name">{{item.label}}</span>
                                             <span class="progress_li_value">{{item.value}}%</span>
                                             <div class="progress_li_num">
                                                 <el-progress :percentage="item.percent"
@@ -582,7 +582,15 @@
                         sessFun.loginTimeout()
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
-                        if(dataObj.getGender || dataObj.getMarriage || dataObj.getAge || dataObj.getChildren){
+                        if((dataObj.getGender && dataObj.getGender.length) ||
+                            (dataObj.getMarriage && dataObj.getMarriage.length) ||
+                            (dataObj.getAge && dataObj.getAge.length) ||
+                            (dataObj.getChildren &&  dataObj.getChildren.length)||
+                            (dataObj.getZodiac &&  dataObj.getZodiac.length) ||
+                            (dataObj.getAcademy &&  dataObj.getAcademy.length) ||
+                            (dataObj.getHaveRoom &&  dataObj.getHaveRoom.length) ||
+                            (dataObj.getBuy &&  dataObj.getBuy.length) ||
+                            (dataObj.getBrand &&  dataObj.getBrand.length)){
                             this.isHaveData = true
                             let timer = setTimeout(()=>{
                                 // 性别情况
@@ -674,7 +682,7 @@
                         containLabel: true
                     },
                     legend: {
-                        bottom: 10,
+                        bottom: 20,
                         left: 'center',
                         icon:'circle',
                         itemWidth: 9,
@@ -684,7 +692,7 @@
                         {
                             name:'性别情况',
                             type:'pie',
-                            radius: ['50%', '70%'],
+                            radius: ['45%', '65%'],
                             center: ['50%', '45%'],
                             avoidLabelOverlap: false,
                             color: this.colorArr,
@@ -766,7 +774,7 @@
                         containLabel: true
                     },
                     legend: {
-                        bottom: 10,
+                        bottom: 20,
                         left: 'center',
                         icon:'circle',
                         itemWidth: 9,
@@ -776,7 +784,7 @@
                         {
                             name:'婚姻状况',
                             type:'pie',
-                            radius: ['50%', '70%'],
+                            radius: ['45%', '65%'],
                             center: ['50%', '45%'],
                             avoidLabelOverlap: false,
                             color: this.colorArr,
@@ -811,7 +819,7 @@
             // 设置子女预测数据
             setChildrenForecastPieData(data){
                 let arr = []
-                if (data) {
+                if (data && data.length) {
                     for (let key of data) {
                         let tagValue = this.keepTwoDecimal(key.tagValue)
                         if (key.tagIdSecondName.includes('有')) {
@@ -858,7 +866,7 @@
                         containLabel: true
                     },
                     legend: {
-                        bottom: 10,
+                        bottom: 20,
                         left: 'center',
                         icon:'circle',
                         itemWidth: 9,
@@ -868,7 +876,7 @@
                         {
                             name:'子女预测',
                             type:'pie',
-                            radius: ['50%', '70%'],
+                            radius: ['45%', '65%'],
                             center: ['50%', '45%'],
                             avoidLabelOverlap: false,
                             color: ['#1890FF','#4DCB73'],
@@ -1012,7 +1020,7 @@
             // 生肖Top5、教育程度、职业分布、毕业院校
             setProgressData(data,string){
                 let arr = []
-                if (data) {
+                if (data && data.length) {
                     let i = 0
                     let max = this.keepTwoDecimal(data[0].tagValue)
                     for (let key of data) {
@@ -1109,7 +1117,7 @@
                         containLabel: true
                     },
                     legend: {
-                        bottom: 10,
+                        bottom: 20,
                         left: 'center',
                         icon:'circle',
                         itemWidth: 9,
@@ -1119,7 +1127,7 @@
                         {
                             name:'有车概率',
                             type:'pie',
-                            radius: ['50%', '70%'],
+                            radius: ['45%', '65%'],
                             center: ['50%', '45%'],
                             avoidLabelOverlap: false,
                             color: this.colorArr,
@@ -1185,7 +1193,7 @@
                         containLabel: true
                     },
                     legend: {
-                        bottom: 10,
+                        bottom: 20,
                         left: 'center',
                         icon:'circle',
                         itemWidth: 9,
@@ -1195,7 +1203,7 @@
                         {
                             name:'有房概率',
                             type:'pie',
-                            radius: ['50%', '70%'],
+                            radius: ['45%', '65%'],
                             center: ['50%', '45%'],
                             avoidLabelOverlap: false,
                             color: this.colorArr,
@@ -1217,9 +1225,10 @@
                             },
                             labelLine: {
                                 normal: {
-                                    length: 10,
-                                    length2: 6,
-                                    show: true
+                                    length: 8,
+                                    length2: 5,
+                                    show: true,
+                                    smooth: true
                                 }
                             },
                             data: this.haveHousePieInfo
@@ -1229,22 +1238,29 @@
             },
             // 设置购买力数据
             setPurchasingPowerPieData(data){
-                let arr = []
-                for (let key of data) {
-                    let tagValue = this.keepTwoDecimal(key.tagValue)
-                    switch (key.tagIdSecondName) {
-                        case '高':
-                            arr[0] = {value: tagValue, name: key.tagIdSecondName};
-                            break;
-                        case '中':
-                            arr[1] = {value: tagValue, name: key.tagIdSecondName};
-                            break;
-                        case '低':
-                            arr[2] = {value: tagValue, name: key.tagIdSecondName};
-                            break;
-                        case '未知' :
-                            arr[3] = {value: tagValue, name: key.tagIdSecondName};
-                            break;
+                let arr = [
+                    {value: 0, name: ''},
+                    {value: 0, name: ''},
+                    {value: 0, name: ''},
+                    {value: 0, name: ''}
+                ]
+                if (data && data.length) {
+                    for (let key of data) {
+                        let tagValue = this.keepTwoDecimal(key.tagValue)
+                        switch (key.tagIdSecondName) {
+                            case '高':
+                                arr[0] = {value: tagValue, name: key.tagIdSecondName};
+                                break;
+                            case '中':
+                                arr[1] = {value: tagValue, name: key.tagIdSecondName};
+                                break;
+                            case '低':
+                                arr[2] = {value: tagValue, name: key.tagIdSecondName};
+                                break;
+                            case '未知' :
+                                arr[3] = {value: tagValue, name: key.tagIdSecondName};
+                                break;
+                        }
                     }
                 }
                 this.purchasingPowerPieInfo = arr
@@ -1284,7 +1300,7 @@
                         containLabel: true
                     },
                     legend: {
-                        bottom: 10,
+                        bottom: 20,
                         left: 'center',
                         icon:'circle',
                         itemWidth: 9,
@@ -1294,7 +1310,7 @@
                         {
                             name:'购买力',
                             type:'pie',
-                            radius: ['50%', '70%'],
+                            radius: ['45%', '65%'],
                             center: ['50%', '45%'],
                             avoidLabelOverlap: true,
                             color: this.colorArr,
@@ -1329,7 +1345,7 @@
             // 设置手机操作系统数据
             setMobilePhonePieData(data){
                 let arr = []
-                if (data) {
+                if (data && data.length) {
                     for (let key of data) {
                         let tagValue = this.keepTwoDecimal(key.tagValue)
                         arr.push({
@@ -1386,7 +1402,7 @@
                         {
                             name:'手机设备',
                             type:'pie',
-                            radius: ['50%', '70%'],
+                            radius: ['45%', '65%'],
                             center: ['43%', '45%'],
                             avoidLabelOverlap: true,
                             color: this.colorArr,
@@ -1413,11 +1429,7 @@
                                     show: true
                                 }
                             },
-                            data:[
-                                {value:95, name:'iphone'},
-                                {value:234, name:'Android'},
-                                {value:34, name:'未知'},
-                            ]
+                            data: this.mobilePhonePieInfo
                         }
                     ]
                 });
@@ -1425,7 +1437,7 @@
             // 手机品牌列表
             setMobilePhoneList(data) {
                 let arr = []
-                if (data) {
+                if (data && data.length) {
                     let max = this.keepTwoDecimal(data[0].tagValue)
                     for(let key of data) {
                         let tagValue = this.keepTwoDecimal(key.tagValue)
@@ -1609,14 +1621,18 @@
     }
 
     .progress_li_name {
-        width: 92px;
+        width: 90px;
         overflow-x: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
+    .progress_li_name.phone_li_name{
+        width: 120px;
+    }
+
     .progress_li_value{
-        width: 52px;
+        width: 62px;
     }
 
     .progress_li_num {
@@ -1682,5 +1698,20 @@
         margin-top: 24px;
         color: rgba(0,0,0,0.45);
         font-size: 14px;
+    }
+
+    /deep/ .el-card.is-always-shadow,
+    /deep/ .el-card.is-hover-shadow:focus,
+    /deep/ .el-card.is-hover-shadow:hover{
+        box-shadow:none;
+    }
+
+    /deep/ .el-card{
+        border-radius: unset;
+        border: 1px solid rgba(230,231,233,1);
+    }
+
+    /deep/ .el-card__header{
+        border-bottom: 1px solid rgba(230,231,233,1);
     }
 </style>

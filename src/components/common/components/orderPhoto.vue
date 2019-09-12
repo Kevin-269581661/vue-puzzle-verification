@@ -37,19 +37,25 @@
                      @mouseenter="showPreImg = index"
                      @mouseleave="showPreImg = null">
                     <img :src="item.url" :alt="item.title">
-                    <p class="card_select" :class="isShowBtn ? '' : 'industry_read'">
+                    <div class="mask_bottom">
+                        <p class="mask_title">{{item.name || '--'}}</p>
+                        <p class="mask_title">由 {{item.userName}} 于 {{item.createTime}} 上传</p>
+                        <p class="mask_title">行业: {{item.topIndustryName || '--'}} / {{item.industryName || '--'}} </p>
+                    </div>
+              <!--      <p class="card_select" :class="isShowBtn ? '' : 'industry_read'">
                         <el-cascader :options="bussiness" size="small" class="plan-select" v-model="item.industry"
                                      :disabled="!isShowBtn"
                                      change-on-select
                                      @change="imgIndustryChange(item)"
                                      filterable>
                         </el-cascader>
-                    </p>
+                    </p>-->
                     <!--查看缩略图和下载-->
-                    <div class="mask-btn" v-if="showPreImg == index">
-                        <p class="mask_title">由 {{item.userName}} 于 {{item.createTime}} 上传</p>
+                    <div class="mask-btn" v-if="showPreImg == index"><!--showPreImg == index-->
                         <p class="mask_icon">
                             <i class="el-icon-search" @click="handlePictureCardPreview(item)"></i>
+                            <i class="el-icon-edit-outline" @click="editImgInfo(item)"></i>
+                            <i class="el-icon-delete" @click="deletImg(item)" v-show="sessionData.uID == item.userId"></i>
                         </p>
                         <p class="mask_a">
                             <a :href= "imgUrl + item.id" >下载图片</a>
@@ -108,12 +114,41 @@
                 <el-button type="primary" @click="uploadIndustryImg">确 定</el-button>
             </span>
         </el-dialog>
+        <!--图片编辑-->
+        <el-dialog
+            title="编辑图片信息"
+            :visible.sync="editPhotoDialogVisible"
+            :close-on-click-modal="false"
+            custom-class="edit_photo_dialog"
+            width="398px">
+            <ul class="edit_photo_ul">
+                <li>
+                    <span>图片名称：</span>
+                    <el-input v-model="editPhotoInfo.name" size="small" placeholder="请输入内容" style="width: 267px"></el-input>
+                </li>
+                <li>
+                    <span>所属行业：</span>
+                    <el-cascader :options="bussiness" size="small" class="plan-select" v-model="editPhotoInfo.industry"
+                                 change-on-select
+                                 @change="UploadIndustryChange"
+                                 filterable>
+                    </el-cascader>
+                </li>
+            </ul>
+            <div slot="footer" class="dialog-footer">
+                <el-button size="mini" @click="editPhotoDialogVisible = false">取 消</el-button>
+                <el-button size="mini" type="primary" style="margin-left: 35px" @click="editImgFun">
+                    确 定
+                </el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
     import {Image} from 'element-ui';
     import industryToText from "../../../commonFun/industryToText.js";
+    import sessFun from "../../../commonFun/sessFun"
     import api from "../../../api/api"
     export default {
         name: "orderPhoto",
@@ -152,13 +187,19 @@
                 // 上传图片关联的行业
                 industryImg:[],
                 imgUrl: this.apiVar.qadnUrl + "/advertisement/DownloadCompanyImage?id=" ,
+                // 编辑图片
+                editPhotoDialogVisible: false,
+                editPhotoInfo: {
+                    name:'',
+                    industry: [],
+                    id:''
+                }
             }
         },
         mounted(){
             this.getSessionData()
             this.getIndustry()
             this.getIndustryImgList()
-            // this.deletImg()
         },
         methods:{
             getSessionData(){
@@ -214,9 +255,11 @@
                             createTime: key.createTime,
                             url: key.picUrl,
                             userName: key.userName,
-                            // topIndustryId: key.topIndustryId,
-                            // industryId: key.industryId,
-                            industry: [key.topIndustryId,key.industryId]
+                            industry: [key.topIndustryId,key.industryId],
+                            industryName: key.industryName,
+                            topIndustryName: key.topIndustryName,
+                            userId: key.userId,
+                            name: key.name
                         })
                     }
                     this.imgList = tempList
@@ -311,26 +354,65 @@
                     }
                 })
             },
-            // 图片删除
-            deletImg(){
-                // let params = {
-                //     uid:this.sessionData.uID,
-                //     token:this.sessionData.token,
-                //     id: 4
-                // }
-                // api.postApi(this.apiVar.Advertisement + '/image/remove',params).then(res=>{
-                //     console.log('删除图片res',res)
-                // })
+            // 编辑图片
+            editImgInfo(item) {
+                this.editPhotoInfo = JSON.parse(JSON.stringify(item))
+                this.editPhotoDialogVisible = true
             },
-            // 图片上的行业选择
-            imgIndustryChange(val){
-                console.log('图片的底部的行业选择',val)
-                if(val.industry.length >= 2){
+            // 图片删除
+            deletImg(item){
+                console.log('item',item)
+                this.$confirm('确定要删除该图片吗, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let submitLoading = this.$loading({
+                        lock: true,
+                        text: '删除中...',
+                        spinner: 'el-icon-loading',
+                        background: 'rgba(0, 0, 0, 0.7)'
+                    });
                     let params = {
                         uid: this.sessionData.uID,
                         token: this.sessionData.token,
-                        id: val.id,
-                        industryId: val.industry[1]
+                        id: item.id
+                    }
+                    api.postApi(this.apiVar.Advertisement + '/image/remove', params).then(res => {
+                        console.log('删除图片res', res)
+                        if (res.data.SysCode === 200200) {
+                            // 最后一页（大于1页）且是最后一张图片
+                            if (this.imgList.length <= 1 && this.pageData.pageNum > 1) {
+                                this.pageData.pageNum -= 1
+                            }
+                            this.getIndustryImgList()
+                            sessFun.messageFun('success', '删除成功')
+                        } else {
+                            sessFun.messageFun('warning', res.data.MSG)
+                        }
+                        submitLoading.close()
+                    }).catch(err => {
+                        sessFun.messageFun('warning', '删除异常！')
+                        submitLoading.close()
+                    })
+                }).catch(() => {
+                    sessFun.messageFun('info','已取消删除')
+                })
+            },
+            // 图片信息编辑
+            editImgFun() {
+                console.log('图片信息编辑',this.editPhotoInfo)
+                if(!this.editPhotoInfo.name) {
+                    sessFun.messageFun('warning', '请输入图片名称！')
+                } else if (this.editPhotoInfo.industry.length < 2 || !this.editPhotoInfo.industry[0] || !this.editPhotoInfo.industry[1]) {
+                    sessFun.messageFun('warning', '请选择行业！')
+                } else {
+                    let params = {
+                        uid: this.sessionData.uID,
+                        token: this.sessionData.token,
+                        id: this.editPhotoInfo.id,
+                        industryId: this.editPhotoInfo.industry[1],
+                        name: this.editPhotoInfo.name
                     }
                     api.postApi(this.apiVar.Advertisement + '/image/updateIndustry',params).then(res=>{
                         console.log('修改图片关联行业res',res)
@@ -338,36 +420,45 @@
                             this.loginTimeout()
                         } else if (res.data.SysCode === 200200) {
                             this.messageFun('success', '修改成功')
+                            this.editPhotoDialogVisible = false
+                            let industryNames = this.getIndustryNamebyId(this.editPhotoInfo.industry)
+                            console.log('industryNames',industryNames)
+                            for(let key of this.imgList) {
+                                if(key.id === this.editPhotoInfo.id) {
+                                    key.name = this.editPhotoInfo.name
+                                    key.industry = this.editPhotoInfo.industry
+                                    key.industryName = industryNames[0]
+                                    key.topIndustryName = industryNames[1]
+                                }
+                            }
                         } else {
                             this.messageFun('warning', res.data.MSG)
                         }
                     })
                 }
             },
+            // 根据id获取行业的名称
+            getIndustryNamebyId(idList) {
+                let industryNames = []
+                for (let key of this.bussiness) {
+                    if (key.iID == idList[0]) {
+                        industryNames.push(key.label)
+                        for (let cKey of key.children) {
+                            if (cKey.iID == idList[1]) {
+                                industryNames.push(cKey.label)
+                                break
+                            }
+                        }
+                        break
+                    }
+                }
+                return industryNames
+            },
             // 查看图片
             handlePictureCardPreview(item) {
                 console.log('imgInfo--------', item);
                 this.dialogImageUrl = item.url;
                 this.dialogVisible = true;
-            },
-            // 下载图片
-            downloadImg(item){
-                console.log('下载图片item',item)
-                let params = {
-                    // uid: this.sessionData.uID,
-                    // token: this.sessionData.token,
-                    // pId: item.pID,
-                    picUrl: item.url
-                }
-                //DownloadImage?picUrl=
-                api.getApi_file(this.apiVar.Advertisement + '/DownloadImage',params).then(res=>{
-                    console.log('下载图片',res)
-                    if (res.data.SysCode === 200200) {
-                        this.messageFun('success', '下载成功')
-                    } else {
-                        this.messageFun('warning', res.data.MSG)
-                    }
-                })
             },
             // 分页
             changePage(val){
@@ -436,7 +527,7 @@
     }
 
     .photo_list{
-        min-height: 712px;
+        min-height: 622px;
     }
 
     .photo_list.no_data{
@@ -447,12 +538,12 @@
     .photo_card{
         width: 19%;
         height:0;
-        padding-bottom: 28%;
+        padding-bottom: 25%;
         position: relative;
-        margin: 0 .9% 24px 0;
+        margin: 0 .9% 16px 0;
         float: left;
         text-align: center;
-        cursor: pointer;
+        /*cursor: pointer;*/
         border: 1px solid rgba(0,0,0,0.1);
         border-radius: 2px;
     }
@@ -466,7 +557,7 @@
         top: 0;
         left: 0;
         width: 100%;
-        height: 88%;
+        height: 100%;
     }
 
     /*图片的行业下拉选择*/
@@ -497,13 +588,14 @@
     .industry_read /deep/ .el-input__suffix{
         display: none;
     }
+
     .industry_read /deep/ .el-cascader__label span{
         color: #c0c4cc;
     }
 
     .photo_card .mask-btn {
         width: 100%;
-        height: 88%;
+        height: 100%;
         position: absolute;
         top: 0;
         left: 0;
@@ -511,31 +603,50 @@
         text-align: left;
         margin: 0 auto;
         color: #fff;
-        /*padding: 14px 8px;*/
     }
+
     /*图片蒙层*/
+    .mask_bottom{
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        text-align: left;
+        padding: 8px 0 4px;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5));
+        background: -ms-linear-gradient(to bottom, rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5));
+        background: -o-linear-gradient(to bottom, rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5));
+        background: -moz-linear-gradient(to bottom, rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5));
+        background: -webkit-linear-gradient(to bottom, rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5));
+    }
+
     .mask_title{
         font-size:12px;
-        padding: 14px 8px;
+        padding: 2px 8px;
         font-family:PingFangSC-Regular;
         font-weight:400;
         color:rgba(255,255,255,1);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
+
     .mask_icon{
         text-align: center;
         padding: 30% 0 0;
     }
-    .mask-btn .el-icon-search {
+
+    .mask_icon i{
         color: #fff;
         font-size: 26px;
         cursor: pointer;
     }
+
     .mask_a{
         width: 100%;
         text-align: center;
-        position: absolute;
-        bottom: 16px;
+        margin-top: 40px;
     }
+
     .mask-btn a {
         display: block;
         background: rgba(24,144,255,1);
@@ -547,13 +658,16 @@
         font-size: 14px;
         margin: 0 auto;
     }
+
     .mask-btn a:hover{
         opacity: 0.9;
     }
+
     /*分页*/
     .ad_pagination{
-        margin: 16px 0;
+        margin: 0 0 16px 0;
     }
+
     /*大图*/
     .imgPreview /deep/ .el-dialog{
         width: 35%;
@@ -601,10 +715,12 @@
         height: 104px;
         text-align: center;
     }
+
     /deep/ .el-upload-list--picture-card .el-upload-list__item-thumbnail{
         width: auto;
         height: 100%;
     }
+
     /*弹出框*/
     /deep/ .el-dialog__header{
         padding: 24px 24px 16px;
@@ -618,7 +734,13 @@
         width: 104px !important;
         height: 104px !important;
     }
+
     .upload_img /deep/ .el-progress__text{
         width: 104px !important;
+    }
+
+    /*编辑弹出框*/
+    .edit_photo_ul li:nth-child(1){
+        margin-bottom: 12px;
     }
 </style>

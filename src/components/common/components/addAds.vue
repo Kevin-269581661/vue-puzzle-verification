@@ -2,22 +2,20 @@
     <div class="step2 addAds">
         <div>
             <div class="search-nav">
-                <div class="search-wrap">
-                    <span>
-                          <el-select v-model="selectValue" placeholder="请选择" class="type-select" @change="initData">
-                              <el-option v-for="item in typeSelect" :key="item.value" :label="item.value"
-                                         :value="item.value"></el-option>
-                          </el-select>
-                          <el-input v-model="searchInput" placeholder="请输入要搜索的内容" class="searchInput" @change="initData"></el-input>
-                    </span>
-                    <span>
-                         <el-date-picker v-model="dateInput" type="daterange" start-placeholder="开始日期"  value-format="yyyy/MM/dd"
-                                         format="yyyy/MM/dd" style="width: 260px" end-placeholder="结束日期" class="date-select">
-                         </el-date-picker>
-                    </span>
-                    <span>
-                        <el-button type="primary" icon="el-icon-search" class="searchBtn" @click="searchFun">搜索</el-button>
-                    </span>
+                <div class="flex_box search_row">
+                    <!-- <el-select v-model="selectValue" placeholder="请选择" @change="initData" size="small">
+                        <el-option v-for="item in typeSelect" :key="item.value" :label="item.value" :value="item.value"></el-option>
+                    </el-select>
+                    <el-input v-model="searchInput" placeholder="请输入要搜索的内容" @change="initData" size="small" class="searchInput"></el-input> -->
+                    <el-input placeholder="请输入要搜索的内容" v-model="searchInput" class="input-with-select" @change="initData" size="small">
+                        <el-select slot="prepend" v-model="selectValue" placeholder="请选择" @change="initData" size="small">
+                            <!-- <el-option label="资源名称" value="1"></el-option> -->
+                            <el-option v-for="item in typeSelect" :key="item.value" :label="item.value" :value="item.value"></el-option>
+                        </el-select>
+                    </el-input>
+                    <el-date-picker v-model="dateInput" type="daterange" start-placeholder="开始日期"  value-format="yyyy/MM/dd" format="yyyy/MM/dd" style="width: 260px" size="small" end-placeholder="结束日期" >
+                    </el-date-picker>
+                    <el-button type="primary" icon="el-icon-search" @click="searchFun" size="small">搜索</el-button>
                 </div>
             </div>
             <!--类型区域选择面板-->
@@ -1502,18 +1500,34 @@
     .searchInput {
         width: 224px !important;
         position: relative;
-        left: -7px;
+        left: -1px;
         top: 0;
-        height: 34px;
+        height: 32px;
         border-left: none !important;
         border-bottom-left-radius: 0;
         border-top-left-radius: 0;
     }
-    .search-wrap {
+    .flex_box /deep/ .el-input-group{
+        width: 36%;
+    }
+    .input-with-select /deep/ .el-input__inner {
+        font-size: 14px;
+        vertical-align: middle;
+        margin-right: 4px;
+    }
+    /* .search-wrap {
         position: relative;
         height: 34px;
-    }
+    } */
 
+    .flex_box{
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+    }
+    /* /deep/.search_row .el-input__inner {
+        width: 240px;
+    } */
     /*面板*/
     .dw-panel {
         border: 1px solid #D8D8D8;
@@ -1585,7 +1599,7 @@
     }
     .otherBtn.el-button{
         width: 76px;
-        height: 30px;
+        height: 32px;
         padding: 0;
         border-radius: 0;
         color:rgba(0,0,0,0.35);
@@ -1763,10 +1777,10 @@
         left: -3px;
     }
 
-    /deep/ .search-wrap > span {
+    /* /deep/ .search-wrap > span {
         float: left;
         margin-left: 2px;
-    }
+    } */
 
 
     /*日期控件*/

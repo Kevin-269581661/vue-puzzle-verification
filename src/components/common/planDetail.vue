@@ -219,7 +219,7 @@ export default {
                     tradingArea: data.tradingArea,
                     cType: data.cType,
                     hPrice: data.hPrice/100,
-                    hNum: data.hNum,
+                    hNum: data.hNum == '0' ? '&' : data.hNum,
                     fNum: data.fNum,
                     chDay: data.chDay,
                     adSize: data.mVehicle == "广告门" ? data.adSize: data.picSize,

@@ -58,14 +58,17 @@
                         </el-table-column>
                         <el-table-column prop="uState" label="状态" min-width="8.9%">
                             <template slot-scope="scope">
-                                <point-state :state-text="stateToText(scope.row.uState).text" :color="stateToText(scope.row.uState).color"></point-state>                                
+                                <point-state :state-text="stateToText(scope.row.uState).text" :color="stateToText(scope.row.uState).color"></point-state>
                             </template>
                         </el-table-column>
 
-                        <el-table-column label="操作" min-width="7.1%">
+                        <el-table-column label="操作" width="100">
                             <template slot-scope="scope">
-                                <span v-if="scope.row.uState ==1" style="color: #108EE9;cursor: pointer;" @click="isForbidden(scope.row)">禁用</span>
-                                <span v-if="scope.row.uState ==0" style="color: #108EE9;cursor: pointer;" @click="isForbidden(scope.row)">开通</span>
+                                <div>
+                                    <span v-if="scope.row.uState ==1" style="color: #108EE9;cursor: pointer;" @click="isForbidden(scope.row)">禁用</span>
+                                    <span v-if="scope.row.uState ==0" style="color: #108EE9;cursor: pointer;" @click="isForbidden(scope.row)">开通</span>
+                                    <span v-if="isShowResetBtn" style="color: #108EE9;cursor: pointer;margin-left: 8px" @click="reSetPassword(scope.row)">重置</span>
+                                </div>
                             </template>
                         </el-table-column>
 
@@ -113,7 +116,7 @@
     // 角色转换为中文
     import uTypeToText from "../../commonFun/uTypeToText.js";
     import noSearchResult from "./components/noSearchResult.vue";
-    import pointState from './components/pointState.vue';    
+    import pointState from './components/pointState.vue';
 
     export default {
         name: "customList",
@@ -167,6 +170,8 @@
                     // {text: '广告主', value: 'AD'},
                     {text: '工程人员', value: 'EP'}
                 ],
+                // 重置密码按钮
+                isShowResetBtn: false
             };
         },
         created() {
@@ -222,6 +227,11 @@
                 console.log(role);
                 if (role != "SA" && role != "SM") {
                     this.showNewBtn = false;
+                }
+                if (role === "SA") {
+                    this.isShowResetBtn = true
+                } else {
+                    this.isShowResetBtn = false
                 }
             },
             searchFun(){
@@ -286,20 +296,20 @@
             // 设置表格数据
             setTableData(item){
                 let obj = {
-                    uID: item.uID ? item.uID : '',
-                    sName: item.sName ? item.sName : '',
-                    realName: item.realName ? item.realName:'--',
-                    company: item.asName ? item.asName : '--', 
-                    asrID: item.asrID ? item.asrID : '', 
-                    uType: item.uType ? item.uType : '',
-                    puName: item.puName ? item.puName : '--',
-                    joinTime: item.joinTime ? item.joinTime : '',
-                    uState: item.uState ? item.uState : '',
-                    position: item.position ? item.position : '',
-                    phone: item.phone ? item.phone : '',
-                    division: item.division ? item.division : '',
-                    puID: item.puID ? item.puID : '',
-                    rID: item.rID ? item.rID : '',
+                    uID: item.uID || '',
+                    sName: item.sName || '--',
+                    realName: item.realName || '--',
+                    company: item.asName || '--',
+                    asrID: item.asrID || '',
+                    uType: item.uType || '',
+                    puName: item.puName || '--',
+                    joinTime: item.joinTime || '',
+                    uState: item.uState || '',
+                    position: item.position || '',
+                    phone:item.phone || '',
+                    division: item.division || '',
+                    puID: item.puID || '',
+                    rID: item.rID || '',
                 };
                 return obj;
             },
@@ -338,7 +348,7 @@
             },
             // 搜索优化
             search(){
-                let { keyword, role, state, company } = this.searchInfo;                
+                let { keyword, role, state, company } = this.searchInfo;
                 // this.isSearch = false;
                 // let timer = setTimeout(()=>{
                 //     this.isSearch = true;
@@ -412,6 +422,30 @@
                     .catch(() => {
                         Message.info("已取消操作");
                     });
+            },
+            // 重置密码
+            reSetPassword(item){
+                console.log('item',item)
+                this.$confirm('确定要重置改账号到密码吗, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let params = {
+                        resetUserId: item.uID,
+                    }
+                    api.postApi(this.apiVar.UCAPI + '/ReSetPassword',params).then(res=>{
+                        if(res.data.SysCode === 200200){
+                            sessFun.messageFun('success','重置成功，密码为：手机号+账号名') // 手机号+账号名
+                        } else {
+                            sessFun.messageFun('warning',res.data.MSG)
+                        }
+                    }).catch(err=>{
+                        sessFun.messageFun('warning','重置异常')
+                    })
+                }).catch(() => {
+                    sessFun.messageFun('info','已取消删除')
+                })
             },
             ToEdit(row) {
                 console.log(row);

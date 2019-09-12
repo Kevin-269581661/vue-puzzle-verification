@@ -44,6 +44,7 @@ const companyList = () => import('../components/common/companyList.vue')
 const compact = () => import('../components/common/compact.vue')
 const paintedPath = () => import('../components/common/paintedPath.vue')
 const adsDialPlate = () => import('../components/common/adsDialPlate.vue')
+const qinlinMap = () => import('../components/common/components/qinlinMap')
 
 // 下载进度页面
 const progressDown = () => import('../components/common/progressDown.vue')
@@ -119,7 +120,6 @@ export default new Router({
                 {path: '/admin/mediaDetail', component: mediaDetail},
                 {path: '/admin/companyList', component: companyList},
                 {path: '/admin/myInfo', component: myInfo},
-                {path: '/admin/communityPortrait',component: communityPortrait},
             ]
         },
         //超级运营
@@ -156,6 +156,8 @@ export default new Router({
                 {path: '/superOperate/companyList', component: companyList},
                 {path: '/superOperate/compact', component: compact},
                 {path: '/superOperate/communityPortrait',component: communityPortrait},
+                // 亲邻地图
+                {path: '/superOperate/qinlinMap',component: qinlinMap},
             ]
         },
         //普通运营
@@ -178,7 +180,6 @@ export default new Router({
                 {path: '/operate/changePwd', component: changePwd},
                 {path: '/operate/questionAndAnswer', component: questionAndAnswer},
                 {path: '/operate/compact', component: compact},
-                {path: '/operate/communityPortrait',component: communityPortrait},
             ]
         },
         //媒介
@@ -212,6 +213,8 @@ export default new Router({
                 {path: '/media/adsDialPlate', component: adsDialPlate},
                 {path: '/media/projectList', component: projectList},
                 {path: '/media/projectDetail', component: projectDetail},
+                // 亲邻地图
+                {path: '/media/qinlinMap',component: qinlinMap},
                 {path: '/media/communityPortrait',component: communityPortrait},
             ]
         },
@@ -243,6 +246,8 @@ export default new Router({
                 {path: '/sale/myInfo', component: myInfo},
                 {path: '/sale/compact', component: compact},
                 {path: '/sale/communityPortrait',component: communityPortrait},
+                // 亲邻地图
+                {path: '/sale/qinlinMap',component: qinlinMap},
             ]
         },
         //广告主

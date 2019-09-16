@@ -817,7 +817,8 @@
                     this.mStateDialogVisible = true
                 } else if(selectState == '4'){
                   // 删除
-                    this.deleteMedia()
+                    this.judgeResHaveMediaNum()
+                    // this.deleteMedia()
                 } else {
                     this.setRowMediaStatus(stateName,selectState)
                 }
@@ -840,9 +841,47 @@
                     this.mediaState.BDisable = false
                 }
             },
+            // 判断当前删除的媒体所在小区是否只有一个媒体
+            judgeResHaveMediaNum(){
+                let judgeLoading = this.$loading({
+                    lock: true,
+                    text: '',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                });
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    "service":"CountMediaByResinfoIdAction",
+                    "data":{
+                        "resId": this.rowData.resID
+                    }
+                }
+                api.postApi_new(this.apiVar.Media,params).then(res=>{
+                    if (res.data.SysCode === 200200 || res.data.MSG === '操作成功') {
+                        let isOneMore = false
+                        if(res.data.data && res.data.data == 1) {
+                            isOneMore = true
+                        } else {
+                            isOneMore = false
+                        }
+                        // 删除
+                        this.deleteMedia(isOneMore)
+                    } else {
+                        sessFun.messageFun('warning',res.data.MSG)
+                    }
+                    judgeLoading.close()
+                }).catch(err=>{
+                    judgeLoading.close()
+                })
+            },
             // 删除媒体
-            deleteMedia() {
-                this.$confirm('媒体被删除后将不可恢复!', '确定要删除该媒体吗', {
+            deleteMedia(flag) {
+                let text = '媒体被删除后将不可恢复!'
+                if (flag) {
+                    text = '媒体和资源连同被删除，不可恢复!'
+                }
+                this.$confirm(text, '确定要删除该媒体吗?', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning',
@@ -869,8 +908,6 @@
                         if (res.data.SysCode === 200200 || res.data.MSG === '操作成功') {
                             sessFun.messageFun('success','删除成功！')
                             this.getData()
-                        } else if (res.data.SysCode === 200302 || res.data.MSG === '广告位已被占用') {
-                            sessFun.messageFun('warning',res.data.MSG)
                         } else {
                             sessFun.messageFun('warning',res.data.MSG)
                         }

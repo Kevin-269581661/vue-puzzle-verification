@@ -169,7 +169,7 @@
                                 </el-col>
                                 <el-col :span="6">
                                     <el-form-item label="楼栋数量" prop="buildingNum">
-                                        <el-input-number v-model="recForm.buildingNum" controls-position="right" :min="1" :max="9999999"></el-input-number>
+                                        <el-input-number v-model="recForm.buildingNum" controls-position="right" :min="0" :max="9999"></el-input-number>
                                     </el-form-item>
                                 </el-col>
                             </el-row>

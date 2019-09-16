@@ -42,19 +42,11 @@
                         <p class="mask_title">由 {{item.userName}} 于 {{item.createTime}} 上传</p>
                         <p class="mask_title">行业: {{item.topIndustryName || '--'}} / {{item.industryName || '--'}} </p>
                     </div>
-              <!--      <p class="card_select" :class="isShowBtn ? '' : 'industry_read'">
-                        <el-cascader :options="bussiness" size="small" class="plan-select" v-model="item.industry"
-                                     :disabled="!isShowBtn"
-                                     change-on-select
-                                     @change="imgIndustryChange(item)"
-                                     filterable>
-                        </el-cascader>
-                    </p>-->
                     <!--查看缩略图和下载-->
-                    <div class="mask-btn" v-if="showPreImg == index"><!--showPreImg == index-->
+                    <div class="mask-btn" v-if="showPreImg == index">
                         <p class="mask_icon">
                             <i class="el-icon-search" @click="handlePictureCardPreview(item)"></i>
-                            <i class="el-icon-edit-outline" @click="editImgInfo(item)"></i>
+                            <i class="el-icon-edit-outline" @click="editImgInfo(item)" v-show="sessionData.uID == item.userId"></i>
                             <i class="el-icon-delete" @click="deletImg(item)" v-show="sessionData.uID == item.userId"></i>
                         </p>
                         <p class="mask_a">

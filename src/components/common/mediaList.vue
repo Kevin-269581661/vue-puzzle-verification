@@ -794,31 +794,23 @@
                 this.selectState = selectState
                 let stateName = this.return_mState(selectState)
                 // 初始化
-                this.mediaState.AState = false
-                this.mediaState.BState = false
-                this.mediaState.allState = false
+                for (let i in this.mediaState) {
+                    this.mediaState[i] = false
+                }
                 if (rows.mState == selectState) {
-                    sessFun.messageFun('waring','当前状态已是' + stateName)
+                    if(rows.mState == 1 && (rows.asState.A == '0' || !rows.asState.B == '0')) {
+                        this.mStateDialogVisible = true
+                        this.judgeAsState(rows)
+                    } else {
+                        sessFun.messageFun('waring','当前状态已是' + stateName)
+                    }
+
                 } else if (selectState == '0' && rows.mState == '1') {
                     // 正常转禁用
                     this.isDisabled = true
                     this.mStateDialogVisible = true
                     // 判断是否为已禁用
-                    if(rows.asState.A == '0') {
-                        this.mediaState.AState = true
-                        this.mediaState.ADisable = true
-                    } else {
-                        this.mediaState.AState = false
-                        this.mediaState.ADisable = false
-                    }
-                    // B面
-                    if(rows.asState.B == '0') {
-                        this.mediaState.BState = true
-                        this.mediaState.BDisable = true
-                    } else {
-                        this.mediaState.BState = false
-                        this.mediaState.BDisable = false
-                    }
+                    this.judgeAsState(rows)
                 } else if (selectState == '1' && rows.mState == '0') {
                     // 禁用转正常
                     this.isDisabled = false
@@ -828,6 +820,24 @@
                     this.deleteMedia()
                 } else {
                     this.setRowMediaStatus(stateName,selectState)
+                }
+            },
+            // 判断单面禁用状态
+            judgeAsState(row) {
+                if(row.asState.A == '0') {
+                    this.mediaState.AState = true
+                    this.mediaState.ADisable = true
+                } else {
+                    this.mediaState.AState = false
+                    this.mediaState.ADisable = false
+                }
+                // B面
+                if(row.asState.B == '0') {
+                    this.mediaState.BState = true
+                    this.mediaState.BDisable = true
+                } else {
+                    this.mediaState.BState = false
+                    this.mediaState.BDisable = false
                 }
             },
             // 删除媒体

@@ -203,11 +203,11 @@
             title="巡点照片"
             :visible.sync="isShowImg"
             width="60%">
-            <div style="display:flex">
+            <div style="display:flex;justify-content: center">
                 <p v-for="(item, index) of imgUrls" :key="index" style="margin:0px 10px;text-align: center;">
                     <img :src="item.url" alt="" style="width:360px;height:480px;">
                     <span style="width: 100%;display: inline-block;text-align: center;">
-                        <span class="img_span_style">{{item.type==1?'手机拍摄':'相册上传'}}</span>
+                        <span class="img_span_style">{{item.uploadType=='album'?'相册上传':'手机拍摄'}}</span>
                     </span>
                 </p>
             </div>
@@ -375,15 +375,7 @@
                 remark: '',
                 // 图片弹出框
                 isShowImg: false,
-                imgUrls: [
-                    {
-                        url: '',
-                        type: 1,
-                    }, {
-                        url: '',
-                        type: 2,
-                    }
-                ],
+                imgUrls: '',
                 // 问题列表
                 logList: {
                     resName: '中心西关海',
@@ -513,7 +505,8 @@
             // 展示图片
             showPhoto(item) {
                 console.log(item);
-                this.imgUrls = item.urls;
+                this.imgUrls = JSON.parse(item.picUrl);
+                // this.imgUrls = item.picUrl;
                 this.isShowImg = true;
             },
             //历史记录
@@ -734,9 +727,9 @@
                     issueRecord: item.feedback ? item.feedback : '--',
                     status: item.status,
                     remark: item.remark,
-                    urls: [],
                     mTitle: item.mTitle,
-                    recordId: item.recordId
+                    recordId: item.recordId,
+                    picUrl:item.picUrl
                 };
                 if (item.type == 1) {
                     obj.mtType = '巡点'

@@ -114,7 +114,7 @@
                                 </div>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane v-if="isShowAllTab" label="行业图片" name="three">
+                        <el-tab-pane v-if="isShowOrderPhoto" label="行业图片" name="three">
                             <order-photo></order-photo>
                         </el-tab-pane>
                     </el-tabs>
@@ -173,8 +173,10 @@
                 secondBodyLoading: true,
                 // 是否搜索
                 isSearch: false,
-                // 是否显示收藏夹和行业图片
+                // 是否显示收藏夹
                 isShowAllTab: false,
+                // 是否显示行业图片
+                isShowOrderPhoto: false,
                 // 登录信息
                 sessionData: {},
                 // 当前页
@@ -263,6 +265,11 @@
                     this.isShowAllTab = false
                 } else {
                     this.isShowAllTab = true
+                }
+                if (this.sessionData.uType === 'MD') {
+                    this.isShowOrderPhoto = true
+                } else {
+                    this.isShowOrderPhoto = false
                 }
             },
             // 获取城市

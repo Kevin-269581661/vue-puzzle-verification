@@ -1865,32 +1865,6 @@
                         }
                     }
                 }
-                // for (let key of this.arrMedia) {
-                //     if (key.mediaForm.assetId === value) {
-                //         if (resData.mId !== key.mediaForm.mid) {
-                //             key.isAssetIdError = true
-                //             key.assetIdCommentData.mediaName = resData.mediaName
-                //             key.assetIdCommentData.resName = resData.resName
-                //             key.assetIdCommentData.updateTime = resData.createTime
-                //             adDoor = true
-                //         } else {
-                //             key.isAssetIdError = false
-                //         }
-                //     }
-                // }
-                // for (let key of this.roadGateMedia) {
-                //     if (key.roadGateForm.assetId === value) {
-                //         if (resData.mId !== key.roadGateForm.mid) {
-                //             key.isAssetIdError = true
-                //             key.assetIdCommentData.mediaName = resData.mediaName
-                //             key.assetIdCommentData.resName = resData.resName
-                //             key.assetIdCommentData.updateTime = resData.createTime
-                //             roadGate = true
-                //         } else {
-                //             key.isAssetIdError = false
-                //         }
-                //     }
-                // }
                 if (adDoor || roadGate) {
                     return true
                 } else {

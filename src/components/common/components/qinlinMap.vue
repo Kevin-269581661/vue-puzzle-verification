@@ -4,9 +4,24 @@
         <div id="qinlinMap" ref="qinlinMap" style=""></div>
         <!--顶部过滤条件-->
         <div class="top_filter_box">
-            <el-select v-model="selectArea" size="small" placeholder="请选择" style="width: 128px">
+            <el-select v-model="selectArea" size="small" placeholder="请选择" style="width: 128px"
+                       clearable
+                       @change="filterArea">
                 <el-option
                     v-for="item in areaList"
+                    :key="item.rID"
+                    :label="item.rName"
+                    :value="item.rID">
+                </el-option>
+            </el-select>
+            <el-select placeholder="广告限制" size="small" style="width: 128px"
+                       multiple
+                       collapse-tags
+                       v-model="selectLimits"
+                       @remove-tag="filterResFun"
+                       @change="filterADLimit">
+                <el-option
+                    v-for="item in ADLimit"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value">
@@ -77,7 +92,7 @@
                     -
                     <input type="text" class="filter_input"
                            v-model="peopleFlow[1]">
-                    <el-button @click="emptyFun('PF')" class="input_wrap_btn">清 除 </el-button>
+                    <el-button @click="emptyFun('peopleFlow')" class="input_wrap_btn">清 除 </el-button>
                     <el-button type="primary" class="input_wrap_btn"
                                @click="filterPeopleFlow()" >确 定
                     </el-button>
@@ -187,12 +202,16 @@
 </template>
 
 <script>
-    // import adsInfo from "../../../commonFun/json/ads"
-    import adsInfo from "../../../commonFun/json/guangzhouAds"
+    // import resData from "../../../commonFun/json/ads"
+    import resData from "../../../commonFun/json/guangzhouAds"
+    import areaPackage from "../../../commonFun/areaPackage_new";
+    import sessFun from "../../../commonFun/sessFun";
+    import api from "../../../api/api"
     export default {
         name: "qinlinMap",
         data(){
             return{
+                sessionData: sessFun.getSess(),
                 resMap: '',
                 markerIcon: require('../../../assets/images/markerIcon.png'),
                 // 当前显示到小区数据
@@ -219,7 +238,8 @@
                 drawingManager:'',
                 // 多边形坐标
                 polygonPoint: [],
-                // 顶部参数
+                /* 顶部参数 */
+                // 区域下拉
                 areaList: [
                     {
                         value: '440106',
@@ -238,6 +258,11 @@
                     cFlow: false,
                     pSNum: false
                 },
+                // 广告限制
+                selectLimits:[],
+                ADLimit: [
+                    {value: '地产', label: '地产'},
+                ],
                 // 住户数量
                 houseNum: ['', ''],
                 // 楼栋价格
@@ -249,13 +274,46 @@
             }
         },
         mounted(){
-            this.resInfo = JSON.parse(JSON.stringify(adsInfo))
+            this.resInfo = JSON.parse(JSON.stringify(resData))
             let timer = setTimeout(()=>{
                 this.initMap()
                 clearTimeout(timer)
             },500)
+            this.getAreaList();
+            // 获取广告限制列表
+            this.getADLimit();
         },
         methods: {
+            getAreaList() {
+                this.areaList = areaPackage.findArea('440100')
+            },
+            // 获取广告限制列表
+            getADLimit() {
+                let params = {
+                    "uid": this.sessionData.uID,
+                    "token": this.sessionData.token,
+                    "service": "GetNotPush",
+                    "data": {}
+                }
+                api.postApi_new(this.apiVar.Media, params).then(res => {
+                    console.log('广告限制列表', res)
+                    if (res.data.SysCode === 200200) {
+                        let limits = res.data.data
+                        let limitArr = []
+                        for (let key of limits) {
+                            limitArr.push({
+                                value: key.nTitle,
+                                label: key.nTitle
+                            })
+                        }
+                        this.ADLimit = limitArr
+                    } else if (res.data.SysCode == 100302) {
+                        sessFun.loginTimeout()
+                    } else {
+                        sessFun.messageFun('warning', '广告限制获取异常！')
+                    }
+                })
+            },
             // 初始化地图
             initMap() {
                 console.log('初始化地图',this.resInfo[0].lng)
@@ -282,8 +340,6 @@
                 for(let key of this.resInfo){
                     key.isSelect = false
                     if(i < 300) {
-                    //     let lngLat = key.lng.split(';')
-                    //     let point = new BMap.Point(lngLat[0], lngLat[1]);
                         let point = new BMap.Point(key.lng, key.lat);
                         let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(20,33),{
                             anchor: new BMap.Size(10, 33)
@@ -299,7 +355,6 @@
                         marker.addEventListener("click",()=>{
                             this.showInfo(key,point)
                         });
-                        // console.log('getOffset',marker.getOffset())
                     } else {
                         break
                     }
@@ -582,7 +637,7 @@
                     if(this.activeSearchKind === 1) {
                         // let lngLat = item.lng.split(';')
                         // let point = new BMap.Point(lngLat[0],lngLat[1])
-                        let point = new BMap.Point(key.lng, key.lat);
+                        let point = new BMap.Point(item.lng, item.lat);
                         // 圈起标识
                         this.createCircle(item.resID,point)
                         item.isSelect = true
@@ -723,17 +778,37 @@
             pushMapRes(){
 
             },
-
             /**
              * 顶部 filter
             * */
             filterResFun() {
+                console.log('区域---', this.selectArea)
                 console.log('住户数---', this.houseNum)
                 console.log('楼盘价格---', this.buildPrice)
                 console.log('入住年份---', this.liveYear)
                 console.log('人流量---', this.liveYear)
-                console.log('adsInfo', adsInfo)
-                return adsInfo.filter(item => {
+                console.log('广告限制---', this.selectLimits)
+                console.log('resData', resData)
+                let limits = this.selectLimits.join(',')
+                this.resInfo = resData.filter(item => {
+                    // 区域
+                    let isArea = true
+                    if (!!this.selectArea) {     // 判空
+                        if (this.selectArea == item.rID) {
+                            isArea = true
+                        } else {
+                            isArea = false
+                        }
+                    }
+                    // 广告限制
+                    let islimit = true
+                    if (!!limits) {     // 判空
+                        if (!item.notPush || (!limits.includes(item.notPush) && !item.notPush.includes(limits))) {
+                            islimit = true
+                        } else {
+                            islimit = false
+                        }
+                    }
                     // 楼栋数量
                     let isHouse = true
                     if (!!this.houseNum[0] && !!this.houseNum[1]) {     // 判空
@@ -744,9 +819,9 @@
                         }
                     }
                     // 楼盘价格
-                    let price = item.hPrice / 100
                     let isPrice = true
                     if (!!this.buildPrice[0] && !!this.buildPrice[1]) {
+                        let price = item.hPrice / 100
                         if (this.buildPrice[0] <= price && price <= this.buildPrice[1]) {
                             isPrice = true
                         } else {
@@ -771,8 +846,26 @@
                             isPeopleFlow = false
                         }
                     }
-                    return isHouse && isPrice && isYear && isPeopleFlow
+                    return isArea && islimit && isHouse && isPrice && isYear && isPeopleFlow
                 })
+                // 清除覆盖物再重新打点
+                this.resMap.clearOverlays()
+                this.creatMarker()
+                // 左侧过滤结果
+                this.searchResList = JSON.parse(JSON.stringify(this.resInfo))
+                console.log('resInfo',this.resInfo)
+            },
+            // 区域
+            filterArea() {
+                console.log('',this.selectArea)// selectArea
+                this.filterResFun()
+            },
+            // 广告限制
+            filterADLimit(limit) {
+                console.log('广告限制limit', limit) //
+                if (limit.length > 0) {
+                    this.filterResFun()
+                }
             },
             // 住户数量过滤
             filterHouseNum() {
@@ -783,10 +876,7 @@
                     for(let i in this.houseNum){
                         this.houseNum[i] = Number(this.houseNum[i])
                     }
-                    this.resInfo = this.filterResFun()
-                    this.resMap.clearOverlays()
-                    this.creatMarker()
-                    console.log('resInfo',this.resInfo)
+                    this.filterResFun()
                 }
             },
             // 楼盘价格过滤
@@ -798,10 +888,7 @@
                         Number(this.buildPrice[i])
                     }
                     this.filterData.bPrice = true
-                    this.resInfo = this.filterResFun()
-                    this.resMap.clearOverlays()
-                    this.creatMarker()
-                    console.log('resInfo',this.resInfo)
+                    this.filterResFun()
                 }
             },
             // 年份过滤
@@ -810,10 +897,7 @@
                     sessFun.messageFun('warning','数据区间填写有误')
                 } else {
                     this.filterData.lYear = true
-                    this.resInfo = this.filterResFun()
-                    this.resMap.clearOverlays()
-                    this.creatMarker()
-                    console.log('resInfo',this.resInfo)
+                    this.filterResFun()
                 }
             },
             //人流量过滤
@@ -822,28 +906,25 @@
                     sessFun.messageFun('warning','数据区间填写有误')
                 } else {
                     this.filterData.pFlow = true
-                    this.resInfo = this.filterResFun()
-                    this.resMap.clearOverlays()
-                    this.creatMarker()
-                    console.log('resInfo',this.resInfo)
+                    this.filterResFun()
                 }
             },
             emptyFun(letter) {       // 清空
-                // if (letter === 'H') {
-                //     this.houseNum = ['', '']
-                // } else if (letter === 'B') {
-                //     this.buildNum = ['', '']
-                // } else if (letter === 'P') {
-                //     this.buildPrice = ['', '']
-                // } else if (letter === 'Y') {
-                //     this.liveYear = ['', '']
-                // } else if (letter === 'PSN') {
-                //     this.carFlow = ['', '']
-                // } else if (letter === 'CF') {
-                //     this.parkSpaceNum = ['', '']
-                // } else if (letter === 'PF') {
-                //     this.peopleFlow = ['', '']
-                // }
+                if (letter === 'house') {
+                    this.houseNum = ['', '']
+                } else if (letter === 'B') {
+                    this.buildNum = ['', '']
+                } else if (letter === 'Price') {
+                    this.buildPrice = ['', '']
+                } else if (letter === 'liveYear') {
+                    this.liveYear = ['', '']
+                } else if (letter === 'PSN') {
+                    this.carFlow = ['', '']
+                } else if (letter === 'CF') {
+                    this.parkSpaceNum = ['', '']
+                } else if (letter === 'peopleFlow') {
+                    this.peopleFlow = ['', '']
+                }
             },
         },
     }

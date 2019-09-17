@@ -207,7 +207,7 @@ export default {
                 },
                 {
                     name: '当月成交金额',
-                    data: '￥388,337'
+                    data: 388
                 },
             ],
 			priceList: [0, 25, 50, 75, 100],

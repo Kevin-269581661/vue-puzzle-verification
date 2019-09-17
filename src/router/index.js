@@ -44,7 +44,7 @@ const companyList = () => import('../components/common/companyList.vue')
 const compact = () => import('../components/common/compact.vue')
 const paintedPath = () => import('../components/common/paintedPath.vue')
 const adsDialPlate = () => import('../components/common/adsDialPlate.vue')
-const qinlinMap = () => import('../components/common/components/qinlinMap')
+// const qinlinMap = () => import('../components/common/components/qinlinMap')
 
 // 下载进度页面
 const progressDown = () => import('../components/common/progressDown.vue')
@@ -157,7 +157,7 @@ export default new Router({
                 {path: '/superOperate/compact', component: compact},
                 {path: '/superOperate/communityPortrait',component: communityPortrait},
                 // 亲邻地图
-                {path: '/superOperate/qinlinMap',component: qinlinMap},
+                // {path: '/superOperate/qinlinMap',component: qinlinMap},
             ]
         },
         //普通运营
@@ -214,7 +214,7 @@ export default new Router({
                 {path: '/media/projectList', component: projectList},
                 {path: '/media/projectDetail', component: projectDetail},
                 // 亲邻地图
-                {path: '/media/qinlinMap',component: qinlinMap},
+                // {path: '/media/qinlinMap',component: qinlinMap},
                 {path: '/media/communityPortrait',component: communityPortrait},
             ]
         },
@@ -247,7 +247,7 @@ export default new Router({
                 {path: '/sale/compact', component: compact},
                 {path: '/sale/communityPortrait',component: communityPortrait},
                 // 亲邻地图
-                {path: '/sale/qinlinMap',component: qinlinMap},
+                // {path: '/sale/qinlinMap',component: qinlinMap},
             ]
         },
         //广告主

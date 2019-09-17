@@ -2,6 +2,92 @@
     <div>
         <!--地图标签-->
         <div id="qinlinMap" ref="qinlinMap" style=""></div>
+        <!--顶部过滤条件-->
+        <div class="top_filter_box">
+            <el-select v-model="selectArea" size="small" placeholder="请选择" style="width: 128px">
+                <el-option
+                    v-for="item in areaList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                </el-option>
+            </el-select>
+            <el-popover
+                placement="bottom-start"
+                width="155"
+                trigger="click"
+                popper-class="other-dd-popper">
+                <div class="input_wrap">
+                    <input type="text" class="filter_input" v-model="houseNum[0]">
+                    -
+                    <input type="text" class="filter_input" v-model="houseNum[1]">
+                    <el-button @click="emptyFun('house')" class="input_wrap_btn">清 除 </el-button>
+                    <el-button type="primary" class="input_wrap_btn" @click="filterHouseNum()" >
+                        确 定
+                    </el-button>
+                </div>
+                <el-button plain slot="reference" class="otherBtn">
+                    {{filterData.hNum ? (houseNum[0] + '户-' + houseNum[1]) + '户' : '住户数量'}}
+                </el-button>
+            </el-popover>
+            <el-popover
+                placement="bottom-start"
+                width="155"
+                trigger="click"
+                popper-class="other-dd-popper">
+                <div class="input_wrap">
+                    <input type="text" class="filter_input" v-model="buildPrice[0]">
+                    -
+                    <input type="text" class="filter_input" v-model="buildPrice[1]">
+                    <el-button @click="emptyFun('Price')" class="input_wrap_btn">清 除 </el-button>
+                    <el-button type="primary" class="input_wrap_btn" @click="filterBuildPrice()" >
+                        确 定
+                    </el-button>
+                </div>
+                <el-button plain slot="reference" class="otherBtn">
+                    {{filterData.bNum ? ('¥' + buildPrice[0] + '-¥' + buildPrice[1]) : '楼盘价格'}}
+                </el-button>
+            </el-popover>
+            <el-popover
+                placement="bottom-start"
+                width="155"
+                trigger="click"
+                popper-class="other-dd-popper">
+                <div class="input_wrap">
+                    <input type="text" class="filter_input" v-model="liveYear[0]">
+                    -
+                    <input type="text" class="filter_input" v-model="liveYear[1]">
+                    <el-button @click="emptyFun('liveYear')" class="input_wrap_btn">清 除 </el-button>
+                    <el-button type="primary" class="input_wrap_btn" @click="filterLiveYear()" >
+                        确 定
+                    </el-button>
+                </div>
+                <el-button plain slot="reference" class="otherBtn">
+                    入住年份
+                </el-button>
+            </el-popover>
+            <el-popover
+                placement="bottom-start"
+                width="155"
+                trigger="click"
+                popper-class="other-dd-popper">
+                <div class="input_wrap">
+                    <input type="text" class="filter_input"
+                           v-model="peopleFlow[0]">
+                    -
+                    <input type="text" class="filter_input"
+                           v-model="peopleFlow[1]">
+                    <el-button @click="emptyFun('PF')" class="input_wrap_btn">清 除 </el-button>
+                    <el-button type="primary" class="input_wrap_btn"
+                               @click="filterPeopleFlow()" >确 定
+                    </el-button>
+                </div>
+                <el-button slot="reference" class="otherBtn">
+                    人流量
+                </el-button>
+            </el-popover>
+            <el-button size="small">清空条件</el-button>
+        </div>
         <!--左侧搜索-->
         <div class="left_search_box">
             <el-input v-model="selectName" placeholder="请输入关键字" size="small" style="width: 260px"></el-input>
@@ -101,13 +187,16 @@
 </template>
 
 <script>
-    import adsInfo from "../../../commonFun/json/ads"
+    // import adsInfo from "../../../commonFun/json/ads"
+    import adsInfo from "../../../commonFun/json/guangzhouAds"
     export default {
         name: "qinlinMap",
         data(){
             return{
                 resMap: '',
                 markerIcon: require('../../../assets/images/markerIcon.png'),
+                // 当前显示到小区数据
+                resInfo:[],
                 selectName: '',
                 // 搜索类型
                 activeSearchKind: 1,
@@ -129,10 +218,38 @@
                 // 鼠标绘制工具
                 drawingManager:'',
                 // 多边形坐标
-                polygonPoint: []
+                polygonPoint: [],
+                // 顶部参数
+                areaList: [
+                    {
+                        value: '440106',
+                        label: '天河区',
+                    },
+                ],
+                // 选择到区域
+                selectArea: '',
+                // 记录判断含有哪些表头的过滤条件
+                filterData: {
+                    hNum:false,
+                    bNum:false,
+                    bPrice:false,
+                    lYear: false,
+                    pFlow: false,
+                    cFlow: false,
+                    pSNum: false
+                },
+                // 住户数量
+                houseNum: ['', ''],
+                // 楼栋价格
+                buildPrice:['',''],
+                // 入住年份
+                liveYear: ['',''],
+                // 搜索人流量
+                peopleFlow: ['',''],
             }
         },
         mounted(){
+            this.resInfo = JSON.parse(JSON.stringify(adsInfo))
             let timer = setTimeout(()=>{
                 this.initMap()
                 clearTimeout(timer)
@@ -141,7 +258,7 @@
         methods: {
             // 初始化地图
             initMap() {
-                console.log('初始化地图',adsInfo[0].lng)
+                console.log('初始化地图',this.resInfo[0].lng)
                 // 创建Map实例
                 this.resMap = new BMap.Map("qinlinMap");
                 console.log('resMap',this.resMap)
@@ -162,11 +279,12 @@
             // 创建标注
             creatMarker(){
                 let i = 0
-                for(let key of adsInfo){
+                for(let key of this.resInfo){
                     key.isSelect = false
-                    // if(i < 300) {
-                        let lngLat = key.lng.split(';')
-                        let point = new BMap.Point(lngLat[0], lngLat[1]); //
+                    if(i < 300) {
+                    //     let lngLat = key.lng.split(';')
+                    //     let point = new BMap.Point(lngLat[0], lngLat[1]);
+                        let point = new BMap.Point(key.lng, key.lat);
                         let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(20,33),{
                             anchor: new BMap.Size(10, 33)
                         });
@@ -182,9 +300,9 @@
                             this.showInfo(key,point)
                         });
                         // console.log('getOffset',marker.getOffset())
-                    // } else {
-                    //     break
-                    // }
+                    } else {
+                        break
+                    }
                     i++
                 }
             },
@@ -292,14 +410,15 @@
             showResInPolygon() {
                 let date1 = new Date();
                 let allOverlay = this.resMap.getOverlays();
-                for(let key of adsInfo) {
+                for(let key of this.resInfo) {
                     for (let akey of allOverlay) {
                         if( akey.isVisible() &&
                             akey.toString() == "[object Marker]" &&
                             akey.getLabel() &&
                             akey.getLabel().content === key.resName) {
-                            let lngLat = key.lng.split(';')
-                            let point = new BMap.Point(lngLat[0],lngLat[1])
+                            // let lngLat = key.lng.split(';')
+                            // let point = new BMap.Point(lngLat[0],lngLat[1])
+                            let point = new BMap.Point(key.lng, key.lat);
                             let isShow = this.isInsidePolygon(point,this.polygonPoint)
                             if(!isShow){
                                 akey.hide()
@@ -340,7 +459,7 @@
             // 搜索
             searchFun() {
                 // 亲邻社区搜索
-                let arr = adsInfo.filter((item,index) => {
+                let arr = this.resInfo.filter((item,index) => {
                     if (item.resName.includes(this.selectName)) {
                         return item
                     }
@@ -461,8 +580,9 @@
                 } else {
                     // 选定
                     if(this.activeSearchKind === 1) {
-                        let lngLat = item.lng.split(';')
-                        let point = new BMap.Point(lngLat[0],lngLat[1])
+                        // let lngLat = item.lng.split(';')
+                        // let point = new BMap.Point(lngLat[0],lngLat[1])
+                        let point = new BMap.Point(key.lng, key.lat);
                         // 圈起标识
                         this.createCircle(item.resID,point)
                         item.isSelect = true
@@ -551,14 +671,15 @@
             showResInCircle(point,radius,circle) {
                 let date1 = new Date();
                 let allOverlay = this.resMap.getOverlays();
-                for(let key of adsInfo) {
+                for(let key of this.resInfo) {
                     for (let akey of allOverlay) {
                         if( akey.isVisible() &&
                             akey.toString() == "[object Marker]" &&
                             akey.getLabel() &&
                             akey.getLabel().content === key.resName) {
-                            let lngLat = key.lng.split(';')
-                            let point2 = new BMap.Point(lngLat[0],lngLat[1])
+                            // let lngLat = key.lng.split(';')
+                            // let point2 = new BMap.Point(lngLat[0],lngLat[1])
+                            let point2 = new BMap.Point(key.lng, key.lat);
                             // BMapLib.GeoUtils.isPointInCircle(point, circle)
                             let isShow = BMapLib.GeoUtils.isPointInCircle(point2, circle)
                             if (isShow) {
@@ -602,6 +723,128 @@
             pushMapRes(){
 
             },
+
+            /**
+             * 顶部 filter
+            * */
+            filterResFun() {
+                console.log('住户数---', this.houseNum)
+                console.log('楼盘价格---', this.buildPrice)
+                console.log('入住年份---', this.liveYear)
+                console.log('人流量---', this.liveYear)
+                console.log('adsInfo', adsInfo)
+                return adsInfo.filter(item => {
+                    // 楼栋数量
+                    let isHouse = true
+                    if (!!this.houseNum[0] && !!this.houseNum[1]) {     // 判空
+                        if (this.houseNum[0] <= item.hNum && item.hNum <= this.houseNum[1]) {
+                            isHouse = true
+                        } else {
+                            isHouse = false
+                        }
+                    }
+                    // 楼盘价格
+                    let price = item.hPrice / 100
+                    let isPrice = true
+                    if (!!this.buildPrice[0] && !!this.buildPrice[1]) {
+                        if (this.buildPrice[0] <= price && price <= this.buildPrice[1]) {
+                            isPrice = true
+                        } else {
+                            isPrice = false
+                        }
+                    }
+                    // 入住年份
+                    let isYear = true
+                    if (!!this.liveYear[0] && !!this.liveYear[1]) {
+                        if (this.liveYear[0] <= item.chDay && item.chDay <= this.liveYear[1]) {
+                            isYear = true
+                        } else {
+                            isYear = false
+                        }
+                    }
+                    // 人流量
+                    let isPeopleFlow = true
+                    if (!!this.peopleFlow[0] && !!this.peopleFlow[1]) {
+                        if (this.peopleFlow[0] <= item.peopleFlow && item.peopleFlow <= this.peopleFlow[1]) {
+                            isPeopleFlow = true
+                        } else {
+                            isPeopleFlow = false
+                        }
+                    }
+                    return isHouse && isPrice && isYear && isPeopleFlow
+                })
+            },
+            // 住户数量过滤
+            filterHouseNum() {
+                if (this.houseNum[0] == '' || this.houseNum[1] == '') {
+                    sessFun.messageFun('warning','数据区间填写有误')
+                } else {
+                    this.filterData.hNum = true
+                    for(let i in this.houseNum){
+                        this.houseNum[i] = Number(this.houseNum[i])
+                    }
+                    this.resInfo = this.filterResFun()
+                    this.resMap.clearOverlays()
+                    this.creatMarker()
+                    console.log('resInfo',this.resInfo)
+                }
+            },
+            // 楼盘价格过滤
+            filterBuildPrice(){
+                if (this.buildPrice[0] == '' || this.buildPrice[1] == '') {
+                    sessFun.messageFun('warning','数据区间填写有误')
+                } else {
+                    for(let i in this.buildPrice){
+                        Number(this.buildPrice[i])
+                    }
+                    this.filterData.bPrice = true
+                    this.resInfo = this.filterResFun()
+                    this.resMap.clearOverlays()
+                    this.creatMarker()
+                    console.log('resInfo',this.resInfo)
+                }
+            },
+            // 年份过滤
+            filterLiveYear() {
+                if (this.liveYear[0] == '' || this.liveYear[1] == '') {
+                    sessFun.messageFun('warning','数据区间填写有误')
+                } else {
+                    this.filterData.lYear = true
+                    this.resInfo = this.filterResFun()
+                    this.resMap.clearOverlays()
+                    this.creatMarker()
+                    console.log('resInfo',this.resInfo)
+                }
+            },
+            //人流量过滤
+            filterPeopleFlow() {
+                if (this.peopleFlow[0] == '' || this.peopleFlow[1] == '') {
+                    sessFun.messageFun('warning','数据区间填写有误')
+                } else {
+                    this.filterData.pFlow = true
+                    this.resInfo = this.filterResFun()
+                    this.resMap.clearOverlays()
+                    this.creatMarker()
+                    console.log('resInfo',this.resInfo)
+                }
+            },
+            emptyFun(letter) {       // 清空
+                // if (letter === 'H') {
+                //     this.houseNum = ['', '']
+                // } else if (letter === 'B') {
+                //     this.buildNum = ['', '']
+                // } else if (letter === 'P') {
+                //     this.buildPrice = ['', '']
+                // } else if (letter === 'Y') {
+                //     this.liveYear = ['', '']
+                // } else if (letter === 'PSN') {
+                //     this.carFlow = ['', '']
+                // } else if (letter === 'CF') {
+                //     this.parkSpaceNum = ['', '']
+                // } else if (letter === 'PF') {
+                //     this.peopleFlow = ['', '']
+                // }
+            },
         },
     }
 </script>
@@ -615,6 +858,54 @@
         width: 100%;
         z-index: 1;
     }
+    /*顶部*/
+    .top_filter_box{
+        position: fixed;
+        top:80px;
+        right: 120px;
+        height: 42px;
+    }
+
+    .top_filter_box /deep/ .el-button{
+        line-height: 30px;
+    }
+
+    .input_wrap .filter_input{
+        width:66px;
+        height:26px;
+        background:rgba(255,255,255,1);
+        border-radius:4px;
+        border:1px solid rgba(194,194,194,1);
+    }
+
+    .el-button.input_wrap_btn{
+        width: 68px;
+        min-width: 54px;
+        height: 22px;
+        margin-top: 6px;
+        padding: 0;
+        font-size: 12px;
+        text-align: center;
+        line-height: 22px;
+        border-radius: 0;
+    }
+
+    .el-button.input_wrap_btn + .el-button{
+        margin-left: 14px;
+    }
+
+    /deep/ .otherBtn.el-button{
+        border-radius: 0;
+        color:rgba(0,0,0,0.35);
+        min-width: 110px;
+        width: 110px;
+    }
+
+    /deep/ .otherBtn.el-button:hover{
+        border-color: #1890FF;
+        color: #1890FF;
+    }
+
     /* 左侧 */
     .left_search_box{
         position: fixed;

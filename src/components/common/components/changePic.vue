@@ -60,7 +60,7 @@
                     </el-col>
                     <el-col>
                         <span>资源名称:</span>
-                        <el-select v-model="searchInfo.resName" placeholder="请选择资源名称" @change="search()" size="small">
+                        <el-select v-model="searchInfo.resName" placeholder="请选择资源名称" @change="search()" size="small" filterable>
                             <el-option v-for="item of searchInfo.resArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-col>

@@ -520,6 +520,10 @@ export default {
             }else if(type == 3){
                 // 获取换画名称列表
                 this.getPainList().then(res =>{
+                    this.dateRange = {
+                        beginDate: this.painList[this.activePainIndex].startDate,
+                        endDate: this.painList[this.activePainIndex].endDate
+                    };
                     // 换画报告列表
                     this.search();
                 });

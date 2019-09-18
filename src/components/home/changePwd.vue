@@ -124,10 +124,7 @@ export default {
                                         this.$router.push('/login');
                                     }
                                 });
-                            } else if(result.SysCode == 100302){
-                                Message.warning('登录超时,请重新登录');
-                                this.$router.push('/login');
-                            }else{
+                            } else{
                                 Message.warning(result.MSG);
                             }
                         })

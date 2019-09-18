@@ -611,59 +611,55 @@
                 }
                 api.getApi(this.apiVar.Count + '/GetPdIncomeCount',params).then(res=>{
                     // console.log('直营公司收入排名',res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()
-                    } else {
-                        if(res.data !== '' && res.data !== null && res.data !== undefined && res.data.length > 0){
-                            let dataArr = res.data
-                            dataArr.sort(this.compareSort('total'))
-                            let first = ''
-                            let second = ''
-                            let three = ''
-                            if (this.isPlatform) {
-                                for (let i = 0; i < dataArr.length; i++) {
-                                    if (this.sessionData.asrID == dataArr[i].asrID) { // this.sessionData.asrID
-                                        if (i === 0) {
-                                            first = 1
-                                            second = 0
-                                            three = 2
-                                        } else if (i === dataArr.length - 1) {
-                                            first = dataArr.length - 3
-                                            second = dataArr.length - 1
-                                            three = dataArr.length - 2
-                                        } else {
-                                            first = i - 1
-                                            second = i
-                                            three = i + 1
-                                        }
-                                        break
+                    if(res.data !== '' && res.data !== null && res.data !== undefined && res.data.length > 0){
+                        let dataArr = res.data
+                        dataArr.sort(this.compareSort('total'))
+                        let first = ''
+                        let second = ''
+                        let three = ''
+                        if (this.isPlatform) {
+                            for (let i = 0; i < dataArr.length; i++) {
+                                if (this.sessionData.asrID == dataArr[i].asrID) { // this.sessionData.asrID
+                                    if (i === 0) {
+                                        first = 1
+                                        second = 0
+                                        three = 2
+                                    } else if (i === dataArr.length - 1) {
+                                        first = dataArr.length - 3
+                                        second = dataArr.length - 1
+                                        three = dataArr.length - 2
+                                    } else {
+                                        first = i - 1
+                                        second = i
+                                        three = i + 1
                                     }
+                                    break
                                 }
-                            } else {
-                                first = 1
-                                second = 0
-                                three = 2
                             }
-                            // console.log('first',first,'second',second,'three',three)
-                            // 第一个
-                            let cityFirst = this.returnCityData(dataArr[first].asrID)
-                            this.showCityRankingImg[0].city = cityFirst.city
-                            this.showCityRankingImg[0].ranking = first + 1
-                            this.showCityRankingImg[0].url = cityFirst.url
-                            // 第二个
-                            let citySecond = this.returnCityData(dataArr[second].asrID)
-                            this.showCityRankingImg[1].city = citySecond.city
-                            this.showCityRankingImg[1].ranking = second + 1
-                            this.showCityRankingImg[1].url = citySecond.url
-                            // 第三个
-                            let cityThree = this.returnCityData(dataArr[three].asrID)
-                            this.showCityRankingImg[2].city = cityThree.city
-                            this.showCityRankingImg[2].ranking = three + 1
-                            this.showCityRankingImg[2].url = cityThree.url
-                            this.animateFun()
                         } else {
-                            this.messageFun('warning','城市月季排行暂无数据')
+                            first = 1
+                            second = 0
+                            three = 2
                         }
+                        // console.log('first',first,'second',second,'three',three)
+                        // 第一个
+                        let cityFirst = this.returnCityData(dataArr[first].asrID)
+                        this.showCityRankingImg[0].city = cityFirst.city
+                        this.showCityRankingImg[0].ranking = first + 1
+                        this.showCityRankingImg[0].url = cityFirst.url
+                        // 第二个
+                        let citySecond = this.returnCityData(dataArr[second].asrID)
+                        this.showCityRankingImg[1].city = citySecond.city
+                        this.showCityRankingImg[1].ranking = second + 1
+                        this.showCityRankingImg[1].url = citySecond.url
+                        // 第三个
+                        let cityThree = this.returnCityData(dataArr[three].asrID)
+                        this.showCityRankingImg[2].city = cityThree.city
+                        this.showCityRankingImg[2].ranking = three + 1
+                        this.showCityRankingImg[2].url = cityThree.url
+                        this.animateFun()
+                    } else {
+                        this.messageFun('warning','城市月季排行暂无数据')
                     }
                 })
             },
@@ -683,17 +679,12 @@
                 }
                 api.getApi(this.apiVar.Count + '/GetSMOverview',params).then(res=>{
                     console.log('超级运营顶部内容详情',res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()       // 登录超时
-                    }else{
-                        if(res.data !== '' && res.data !== null && res.data !== undefined){
-                            this.dataArr[0].data = res.data.companyCount
-                            this.dataArr[1].data = res.data.apCount
-                            this.dataArr[2].data = Math.floor(res.data.pdTotal / 100)
-                        } else {
-                            this.messageFun('warning','暂无数据')
-                        }
-
+                    if(res.data !== '' && res.data !== null && res.data !== undefined){
+                        this.dataArr[0].data = res.data.companyCount
+                        this.dataArr[1].data = res.data.apCount
+                        this.dataArr[2].data = Math.floor(res.data.pdTotal / 100)
+                    } else {
+                        this.messageFun('warning','暂无数据')
                     }
                 })
             },
@@ -793,37 +784,33 @@
                 // console.log('成交金额接口参数',params,isCompare)
                 api.getApi(this.apiVar.Count + '/GetOrderIncomeByMonth',params).then(res=>{
                     // console.log('成交金额接口',res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()
-                    } else {
-                        if(res.data !== '' && res.data !== null && res.data !== undefined){
-                            let dataArr = res.data
-                            let priceData = []
-                            let cityName = []
-                            let compareDataByDate = []
-                            for(let key of dataArr){
-                                // 是否来自对比
-                                if (isCompare) {
-                                    compareDataByDate.push(Math.floor(key.orderIncomeInfo[0].increment / 10000) * 100)
-                                } else {
-                                    cityName.push(key.asName.substring(0,key.asName.length-6))
-                                    priceData.push(Math.floor(key.orderIncomeInfo[0].increment / 10000) * 100)
-                                }
-                            }
-                            if (isCompare){
-                                this.turnoverDataShow.compareDataByDate = compareDataByDate
+                    if(res.data !== '' && res.data !== null && res.data !== undefined){
+                        let dataArr = res.data
+                        let priceData = []
+                        let cityName = []
+                        let compareDataByDate = []
+                        for(let key of dataArr){
+                            // 是否来自对比
+                            if (isCompare) {
+                                compareDataByDate.push(Math.floor(key.orderIncomeInfo[0].increment / 10000) * 100)
                             } else {
-                                this.turnoverDataShow.cityName = cityName
-                                this.turnoverDataShow.priceData = priceData
-                                this.setOrderCountData(endTime, false)
+                                cityName.push(key.asName.substring(0,key.asName.length-6))
+                                priceData.push(Math.floor(key.orderIncomeInfo[0].increment / 10000) * 100)
                             }
-                            // console.log('this.turnoverDataShow',this.turnoverDataShow)
-                            // 销售金额柱状图
-                            this.setTurnoverBar()
-                            this.priceBoxLoading = false
-                        } else {
-                            this.messageFun('warning','暂无数据')
                         }
+                        if (isCompare){
+                            this.turnoverDataShow.compareDataByDate = compareDataByDate
+                        } else {
+                            this.turnoverDataShow.cityName = cityName
+                            this.turnoverDataShow.priceData = priceData
+                            this.setOrderCountData(endTime, false)
+                        }
+                        // console.log('this.turnoverDataShow',this.turnoverDataShow)
+                        // 销售金额柱状图
+                        this.setTurnoverBar()
+                        this.priceBoxLoading = false
+                    } else {
+                        this.messageFun('warning','暂无数据')
                     }
                 })
             },
@@ -841,33 +828,29 @@
                 // console.log('获取订单数量总量接口参数',params)
                 api.getApi(this.apiVar.Count + '/GetOrderCountByMonth',params).then(res=>{
                     console.log('订单总数接口',res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()
-                    } else {
-                        if(res.data !== '' && res.data !== null && res.data !== undefined){
-                            let dataArr = res.data
-                            let priceData = []
-                            let cityName = []
-                            let compareDataByDate = []
-                            for (let key of dataArr) {
-                                if (isCompare) {
-                                    compareDataByDate.push(key.orderInfo[0].increment)
-                                } else {
-                                    cityName.push(key.asName.substring(0,key.asName.length-6))
-                                    priceData.push(key.orderInfo[0].increment)
-                                }
-                            }
+                    if(res.data !== '' && res.data !== null && res.data !== undefined){
+                        let dataArr = res.data
+                        let priceData = []
+                        let cityName = []
+                        let compareDataByDate = []
+                        for (let key of dataArr) {
                             if (isCompare) {
-                                this.orderDataShow.compareDataByDate = compareDataByDate
+                                compareDataByDate.push(key.orderInfo[0].increment)
                             } else {
-                                this.orderDataShow.cityName = cityName
-                                this.orderDataShow.priceData = priceData
+                                cityName.push(key.asName.substring(0,key.asName.length-6))
+                                priceData.push(key.orderInfo[0].increment)
                             }
-                            // 订单数柱状图
-                            this.setOrderBar()
-                        } else {
-                            this.messageFun('warning','暂无数据')
                         }
+                        if (isCompare) {
+                            this.orderDataShow.compareDataByDate = compareDataByDate
+                        } else {
+                            this.orderDataShow.cityName = cityName
+                            this.orderDataShow.priceData = priceData
+                        }
+                        // 订单数柱状图
+                        this.setOrderBar()
+                    } else {
+                        this.messageFun('warning','暂无数据')
                     }
                 })
             },
@@ -1131,64 +1114,60 @@
                 // console.log('获取业绩排行参数',params)
                 api.getApi(this.apiVar.Count + '/GetAchievementRankList', params).then(res => {
                     console.log('业绩排行接口', res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()
-                    } else {
-                        if(res.data !== '' && res.data !== null && res.data !== undefined){
-                            let dataArr = res.data
-                            let tempArr = []
-                            let tableList = []
-                            let i = 0
-                            let maxPrice = 0
-                            for(let key of dataArr){
-                                if(key.target > maxPrice){
-                                    maxPrice = key.target
-                                }
-                                tableList.push({
-                                    ranking: i+1,
-                                    name: key.realName,
-                                    salesAmount: Math.floor(key.pdTotal / 100),
-                                    targetAmount: Math.floor(key.target / 100) || 0,
-                                    progressBar: key.target ? Number(((key.pdTotal / key.target) * 100).toFixed(2)) : 0,
-                                    inputValue: '',
-                                    setBtn: false,
+                    if(res.data !== '' && res.data !== null && res.data !== undefined){
+                        let dataArr = res.data
+                        let tempArr = []
+                        let tableList = []
+                        let i = 0
+                        let maxPrice = 0
+                        for(let key of dataArr){
+                            if(key.target > maxPrice){
+                                maxPrice = key.target
+                            }
+                            tableList.push({
+                                ranking: i+1,
+                                name: key.realName,
+                                salesAmount: Math.floor(key.pdTotal / 100),
+                                targetAmount: Math.floor(key.target / 100) || 0,
+                                progressBar: key.target ? Number(((key.pdTotal / key.target) * 100).toFixed(2)) : 0,
+                                inputValue: '',
+                                setBtn: false,
+                                uID: key.uID,
+                            })
+                            if(i < 8){
+                                tempArr.push({
+                                    headPic: key.headPic || require('../../assets/images/index/headimg.png'),
+                                    pdTotal: Math.floor(key.pdTotal / 100),
+                                    realName: key.realName,
+                                    target: Math.floor(key.target / 100),
                                     uID: key.uID,
                                 })
-                                if(i < 8){
-                                    tempArr.push({
-                                        headPic: key.headPic || require('../../assets/images/index/headimg.png'),
-                                        pdTotal: Math.floor(key.pdTotal / 100),
-                                        realName: key.realName,
-                                        target: Math.floor(key.target / 100),
-                                        uID: key.uID,
-                                    })
-                                }
-                                i++
                             }
-                            if(maxPrice > 0){
-                                this.maxPrice = maxPrice
-                            }
-                            this.setRunwayPrice(this.maxPrice)
-                            for(let i = tempArr.length; i < 8;i++){
-                                tempArr.push({
-                                    headPic:'',
-                                    pdTotal:'',
-                                    realName: '',
-                                    target: 0,
-                                    uID: '',
-                                })
-                            }
-                            this.runwayImg = tempArr
-                            // console.log('业绩排行接口tempArr',tempArr)
-                            let timer = setTimeout(()=>{
-                                this.locationOnRunway()
-                                clearTimeout(timer)
-                            },100)
-                            this.tableData = tableList
-                            this.runwayLoading = false
-                        } else {
-                            this.messageFun('warning','暂无数据')
+                            i++
                         }
+                        if(maxPrice > 0){
+                            this.maxPrice = maxPrice
+                        }
+                        this.setRunwayPrice(this.maxPrice)
+                        for(let i = tempArr.length; i < 8;i++){
+                            tempArr.push({
+                                headPic:'',
+                                pdTotal:'',
+                                realName: '',
+                                target: 0,
+                                uID: '',
+                            })
+                        }
+                        this.runwayImg = tempArr
+                        // console.log('业绩排行接口tempArr',tempArr)
+                        let timer = setTimeout(()=>{
+                            this.locationOnRunway()
+                            clearTimeout(timer)
+                        },100)
+                        this.tableData = tableList
+                        this.runwayLoading = false
+                    } else {
+                        this.messageFun('warning','暂无数据')
                     }
                 })
             },
@@ -1243,9 +1222,7 @@
                 // console.log('设置销售目标参数',params)
                 api.postApi(this.apiVar.Count + '/SaveOrUpdateUserTarget', params).then(res=>{
                     console.log('设置销售目标',res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()
-                    }else if(res.data.SysCode === 200200 || res.data.MSG === "操作成功"){
+                    if(res.data.SysCode === 200200 || res.data.MSG === "操作成功"){
                         this.messageFun('success',res.data.MSG)
                         row.setBtn = false
                         row.targetAmount = params.target / 100
@@ -1408,14 +1385,6 @@
                     type: mesType,
                     showClose: true,
                 })
-            },
-            // 登录超时
-            loginTimeout() {
-                this.$message({
-                    message: '登录超时或权限异常,请重新登录',
-                    type: 'warning'
-                })
-                this.$router.push('/login')
             },
         }
     };

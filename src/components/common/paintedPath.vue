@@ -379,8 +379,6 @@
                     if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
                         this.pageData.totalSize = res.data.data.totalSize
                         this.setTableData(res.data.data.data)
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout()
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }
@@ -441,8 +439,6 @@
                             result.push(obj);
                         }
                         this.cityList = result;
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
                     }else{
                         Message.warning(res.data.MSG);
                     }
@@ -471,8 +467,6 @@
                             })
                         }
                         this.areaList = areaArr;
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
                     } else {
                         this.messageFun('warning', res.data.MSG);
                     }
@@ -515,8 +509,6 @@
                         console.log('this.resList',this.resList)
                         this.resLoading = false
                         this.detailResLoading = false
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
                     } else {
                         this.messageFun('warning', res.data.MSG);
                     }
@@ -539,8 +531,6 @@
                         this.setDetailData(res.data.data);
                         this.pathDetaiLoading = false;
                         this.isEdit = false;
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
                     } else {
                         this.messageFun('warning', res.data.MSG);
                     }
@@ -616,8 +606,6 @@
                                 this.detailDeletRow('2', row.resourceId)
                                 this.messageFun('success', '删除成功')
                                 this.getTableList();
-                            } else if (res.data.SysCode == 100302) {
-                                this.loginTimeout()
                             } else {
                                 this.messageFun('warning', res.data.MSG)
                             }
@@ -668,8 +656,6 @@
                                 row.regionId = resData.rID
                                 // 记录成功选择的小区id
                                 this.beforeResourceId = row.resourceId
-                            } else if (res.data.SysCode == 100302) {
-                                this.loginTimeout()
                             } else {
                                 this.messageFun('warning', res.data.MSG)
                             }
@@ -751,8 +737,6 @@
                                 this.messageFun('success', '保存成功')
                                 this.getTableList()
                                 this.detailDialogVisible = false
-                            } else if (res.data.SysCode == 100302) {
-                                this.loginTimeout()
                             } else {
                                 this.messageFun('warning', res.data.MSG)
                             }
@@ -819,8 +803,6 @@
                         this.createDialogVisible = false
                         this.getTableList()
                         this.setFormData()
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout()
                     } else if(res.data.SysCode == 200500){
                         this.repetLineName = true
                         this.$refs.createData.validateField('pathLine')  // 手动触发校验
@@ -845,14 +827,6 @@
                     type: mesType,
                     showClose: true,
                 })
-            },
-            // 登录超时
-            loginTimeout() {
-                this.$message({
-                    message: '登录超时或权限异常,请重新登录',
-                    type: 'warning'
-                })
-                this.$router.push('/login')
             },
         },
     }

@@ -322,10 +322,6 @@
                 }
                 api.getApi(this.apiVar.QZhike + '/GetTFre', info).then(res => {
                     console.log('GetTFre返回--', res.data);
-                    if (res.data.SysCode == 100302) {
-                        this.$message.warning('登录超时,请重新登录');
-                        this.$router.push('/login');
-                    }
                     for (let i in res.data) {
                         if (res.data[i].tFre) {
                             let tFres = res.data[i].tFre.split(',');

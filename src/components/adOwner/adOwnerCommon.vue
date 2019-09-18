@@ -131,8 +131,6 @@
                             } else {
                                 this.showQinlin = false;
                             }
-                        } else if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                            this.$router.push('/login')
                         } else {
                             this.showQinlin = false;
                         }
@@ -206,8 +204,6 @@
                             console.log('lastData--', result);
                             this.messLen = unRead.length;
                             this.orderArr = result;
-                        } else if (res.data.SysCode == 100302) {
-                            sessFun.loginTimeout();
                         } else {
                             sessFun.messageFun('warning',res.data.MSG)
                         }

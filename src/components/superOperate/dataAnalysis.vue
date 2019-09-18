@@ -132,9 +132,7 @@
                 }
                 api.getApi(this.apiVar.report + '/api/v2/listDirectList',params).then(res=>{
                     console.log('获取直营公司列表',res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        sessFun.loginTimeout()
-                    } else if (res.data.SysCode === 200200) {
+                    if (res.data.SysCode === 200200) {
                         let resData = res.data.data
                         let arr = [{value: '0', label: '全 国'}]
                         let directName = []

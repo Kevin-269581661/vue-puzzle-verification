@@ -157,14 +157,14 @@
                             </template>
                         </el-table-column>
                         <el-table-column
-                            prop="patrolTime"
+                            prop="updateTime"
                             label="处理日期"
                             min-width="150"
                             class="tar"
                             :show-overflow-tooltip="true"
                         >
                             <template slot-scope="scope">
-                                <span>{{scope.row.patrolTime|| '--'}}</span>
+                                <span>{{scope.row.updateTime|| '--'}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -568,7 +568,7 @@
                         };
                         for (let data of res.data.data.list) {
                             let a = {
-                                time: data.patrolTime,
+                                time: data.updateTime,
                                 text: data.feedback,
                                 address: data.resAddress,
                                 recordId: data.recordId,
@@ -758,7 +758,7 @@
                     cityName: item.cityName,
                     area: item.districtName,
                     issueRecord: item.feedback ? item.feedback : '--',
-                    patrolTime:item.patrolTime?item.patrolTime:'---',
+                    updateTime:item.updateTime?item.updateTime:'---',
                     createTime:item.createTime?item.createTime:'---',
                     createUserName:item.createUserName?item.createUserName:'---',
                     status: item.status,

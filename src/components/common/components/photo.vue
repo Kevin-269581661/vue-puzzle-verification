@@ -117,9 +117,7 @@
                 console.log('params', params)
                 api.postApi(this.apiVar.Advertisement + '/imageCollection/add', params).then(res => {
                     console.log('图片收藏res', res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
-                    } else if (res.data.SysCode === 200200) {
+                    if (res.data.SysCode === 200200) {
                         item.isCollection = true
                         this.$emit('doSomeThing', true)
                         this.messageFun('success', '收藏成功')
@@ -138,9 +136,7 @@
                 }
                 api.postApi(this.apiVar.Advertisement + '/imageCollection/remove', params).then(res => {
                     console.log('取消收藏res', res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
-                    } else if (res.data.SysCode === 200200) {
+                    if (res.data.SysCode === 200200) {
                         item.isCollection = false
                         this.$emit('doSomeThing', true)
                         this.messageFun('success', '取消成功')
@@ -205,22 +201,18 @@
                     let urlArr = this.activeImgInfo.url.split('/')
                     api.getApi_file(this.apiVar.Advertisement + '/DownloadImageWatermark', params).then(res=>{
                     // api.getApi_file('http://192.168.1.247:8002/advertisement/DownloadImageWatermark', params).then(res=>{
-                        if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                            sessFun.loginTimeout()
-                        } else {
-                            console.log('res',res)
-                            let blob = new Blob([res.data], {type: 'application/ms-download;charset=utf-8'});
-                            let downloadElement = document.createElement('a');
-                            let href = window.URL.createObjectURL(blob);    //创建下载的链接
-                            downloadElement.href = href;
-                            downloadElement.download = urlArr[urlArr.length-1]//res.headers['Content-Disposition'].split('=')[1]; //下载后文件名
-                            document.body.appendChild(downloadElement);
-                            downloadElement.click();                        //点击下载
-                            document.body.removeChild(downloadElement);     //下载完成移除元素
-                            window.URL.revokeObjectURL(href);               //释放掉blob对象
-                            sessFun.messageFun('success','下载成功')
-                            this.watermarkDialog = false
-                        }
+                        console.log('res',res)
+                        let blob = new Blob([res.data], {type: 'application/ms-download;charset=utf-8'});
+                        let downloadElement = document.createElement('a');
+                        let href = window.URL.createObjectURL(blob);    //创建下载的链接
+                        downloadElement.href = href;
+                        downloadElement.download = urlArr[urlArr.length-1]//res.headers['Content-Disposition'].split('=')[1]; //下载后文件名
+                        document.body.appendChild(downloadElement);
+                        downloadElement.click();                        //点击下载
+                        document.body.removeChild(downloadElement);     //下载完成移除元素
+                        window.URL.revokeObjectURL(href);               //释放掉blob对象
+                        sessFun.messageFun('success','下载成功')
+                        this.watermarkDialog = false
                     })
                 } else {
                     sessFun.messageFun('warning','请点击选择水印类型')
@@ -238,10 +230,6 @@
             // 时间格式规范
             formatTime(val) {
                 return dateFormat.toDate(val, "/");
-            },
-            loginTimeout(){
-                Message.warning("登录超时,请重新登录");
-                this.$router.push("/login");
             },
         },
     }

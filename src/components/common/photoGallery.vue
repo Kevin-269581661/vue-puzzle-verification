@@ -427,9 +427,7 @@
                 }
                 api.getApi(this.apiVar.Advertisement + "/GetImgListV2", params).then(res=>{
                     console.log('案例库res',res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
-                    } else if (res.data.SysCode === 200200) {
+                    if (res.data.SysCode === 200200) {
                         let resData = res.data.data
                         let imgList = []
                         for (let key of resData) {

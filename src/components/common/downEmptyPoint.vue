@@ -344,15 +344,11 @@ export default {
                         }
                         this.resLoading = false;
                     }else{
-                        if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                            this.loginTimeout()       // 登录超时
-                        } else {
-                            this.$message({
-                                message: '权限异常,请重新登录',
-                                type: 'warning'
-                            })
-                            this.$router.push('/login')
-                        }
+                        this.$message({
+                            message: '权限异常,请重新登录',
+                            type: 'warning'
+                        })
+                        this.$router.push('/login')
                     }
                 });
             }

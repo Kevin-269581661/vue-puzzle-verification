@@ -102,11 +102,7 @@ export default {
                             data.typeUpdate = "";
                             data.detailUpdate = "";
                         }
-                    } else if(res.data.SysCode == 100302){
-                        // Message.warning(res.data.MSG);
-                        Message.warning('登录超时,请重新登录');
-                        this.$router.push('/login');
-                    }else{
+                    } else{
                         Message.warning(res.data.MSG);
                     }
                     this.loading = false;
@@ -158,10 +154,7 @@ export default {
                         if (res.data.SysCode == 200200) {
                             this.ADlist.splice(index, 1);
                             Message.success(res.data.MSG);
-                        } else if(res.data.SysCode == 100302){
-                            Message.warning('登录超时,请重新登录');
-                            this.$router.push('/login');
-                        }else {
+                        } else {
                             Message.warning(res.data.MSG);
                         }
                     });
@@ -231,10 +224,7 @@ export default {
                             this.$set(rows, 'showInput', !rows.showInput);
                             this.$set(rows, 'changeBtn', !rows.changeBtn);
                             this.ADlist.push();
-                        } else if(res.data.SysCode == 100302){
-                            Message.warning('登录超时,请重新登录');
-                            this.$router.push('/login');
-                        }else {
+                        } else {
                             // Message.warning(res.data.MSG);
                             Message.warning("广告限制不能重复");
                         }
@@ -279,10 +269,7 @@ export default {
                             this.$set(rows, "showInput", !rows.showInput);
                             this.$set(rows, "changeBtn", !rows.changeBtn);
                             this.ADlist.push();
-                        } else if(res.data.SysCode == 100302){
-                            Message.warning('登录超时,请重新登录');
-                            this.$router.push('/login');
-                        }else {
+                        } else {
                             Message.warning(res.data.MSG);
                         }
                     })

@@ -223,9 +223,7 @@
                 }
                 api.getApi(this.apiVar.Advertisement + '/image/listCompanyImage', params).then(res => {
                     console.log('图片列表res', res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
-                    } else if (res.data.SysCode === 200200) {
+                    if (res.data.SysCode === 200200) {
                         this.setImgList(res.data.data)
                         this.pageData.totalSize = res.data.total
                     } else {
@@ -335,9 +333,7 @@
                 console.log('params',params)
                 api.postApi(this.apiVar.Advertisement + '/image/save',params).then(res=>{
                     console.log('上传图片res',res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
-                    } else if (res.data.SysCode === 200200) {
+                    if (res.data.SysCode === 200200) {
                         this.getIndustryImgList()
                         this.uploadImg = []
                         this.industryImg = []
@@ -409,9 +405,7 @@
                     }
                     api.postApi(this.apiVar.Advertisement + '/image/updateIndustry',params).then(res=>{
                         console.log('修改图片关联行业res',res)
-                        if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                            this.loginTimeout()
-                        } else if (res.data.SysCode === 200200) {
+                        if (res.data.SysCode === 200200) {
                             this.messageFun('success', '修改成功')
                             this.editPhotoDialogVisible = false
                             let industryNames = this.getIndustryNamebyId(this.editPhotoInfo.industry)

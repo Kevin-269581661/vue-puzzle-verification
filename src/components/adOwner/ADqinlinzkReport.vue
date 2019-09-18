@@ -203,9 +203,6 @@ export default {
 			api.getApi(this.apiVar.QZhike+'/SelectAllOrder', info).then(res=>{
 				console.log(res.data);
 				if(res.data){
-					if (res.data.SysCode == 100302) {
-						this.loginTimeout();
-					}
 					if(res.data.length == 0){
 						this.$router.push('./ADqinlinzk');
 					}
@@ -266,10 +263,6 @@ export default {
 			sessionStorage.setItem('aiTime', item.aiTime);
 			this.$router.push('./ADqinlinzk');
 		},
-		loginTimeout() {
-            Message.warning("登录超时,请重新登录");
-            this.$router.push("/login");
-        },
         //开通社区画像
     }
 };

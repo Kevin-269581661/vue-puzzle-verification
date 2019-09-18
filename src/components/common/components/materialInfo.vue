@@ -295,8 +295,6 @@ export default {
                     this.currInfoPage++;
                     this.SelectioUpdate();
                     this.filtersData = filterFormat(dataArr, "timeRange");
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
                 }else{
                     Message.warning(res.data.MSG);
                 }
@@ -567,8 +565,6 @@ export default {
                         console.log(res.data);
                         if(res.data.SysCode == 200200){
                             Message.success(res.data.MSG);
-                        }else if(res.data.SysCode == 100302){
-                            this.loginTimeout();
                         }else{
                             Message.warning(res.data.MSG);
                         }

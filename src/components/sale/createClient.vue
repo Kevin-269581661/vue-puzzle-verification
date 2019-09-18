@@ -474,9 +474,7 @@ export default {
                         }else{
                             this.isSame = false;
                         }
-                    } else if(res.data.SysCode ==100302){
-                        this.loginTimeout();
-                    }else {
+                    } else {
                         Message.warning(res.data.MSG);
                     }
                 });
@@ -531,9 +529,7 @@ export default {
                         }else{
                             this.companyArr = [{label: query, value: query}];
                         }
-                    } else if(res.data.SysCode ==100302){
-                        this.loginTimeout();
-                    }else {
+                    } else {
                         Message.warning(res.data.MSG);
                     }
                 });
@@ -611,9 +607,7 @@ export default {
                         return item
                     }
                 })
-                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                    this.loginTimeout()
-                } else if (res.data.SysCode === 200200) {
+                if (res.data.SysCode === 200200) {
                     for (let key of res.data.data) {
                         let industryNames = this.getIndustryNamebyId([key.parentIndustryId,key.industryId])
                         this.cBrandTags.push({
@@ -923,8 +917,6 @@ export default {
                         let puid = this.sessionData.uID;
                         let cid = res.data.cID;
                         this.regUser(puid, cid, 'new');
-                    }else if(userMsg.SysCode == 100302){
-                        this.loginTimeout();
                     }else{
                         // Message.warning(userMsg.MSG);
                         Message.warning('可能存在相同公司，请进行筛选公司之后再创建');
@@ -988,8 +980,6 @@ export default {
                             str = '成功创建客户,没有权限修改公司信息,是否跳转到列表页面';
                         }
                         this.changRoute(str);
-                    }else if(userMsg.SysCode == 100302){
-                        this.loginTimeout();
                     }else{
                         Message.warning(userMsg.MSG);
                     }
@@ -1028,10 +1018,6 @@ export default {
         // 取消返回
         goBack() {
             this.$router.push("./clientList");
-        },
-        loginTimeout(){
-            Message.warning("登录超时,请重新登录");
-            this.$router.push("/login");
         },
     }
 };

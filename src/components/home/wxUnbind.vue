@@ -52,8 +52,6 @@
                             this.wxBindData.BD = false
                             this.wxBindData.EP = false
                         }
-                    } else if (res.data.SysCode == 100302) {
-                        sessFun.loginTimeout();
                     } else {
                         sessFun.messageFun('warning', res.data.MSG)
                     }
@@ -76,8 +74,6 @@
                         } else if (val == '1') {
                             this.wxBindData.BD = false
                         }
-                    } else if (res.data.SysCode == 100302) {
-                        sessFun.loginTimeout();
                     } else {
                         sessFun.messageFun('warning', res.data.MSG)
                     }

@@ -310,10 +310,6 @@
                 api.getApi(this.apiVar.QZhike + '/GetPene', info).then(res => {
                     console.log('GetPene---', res.data);
                     if (res.data) {
-                        if (res.data.SysCode == 100302) {
-                            this.$message.warning('登录超时,请重新登录');
-                            this.$router.push('/login');
-                        }
                         if(res.data[0].pData){
                             let pData = JSON.parse(res.data[0].pData);
                             for (let i = 0;i< pData.length; i++) {
@@ -355,10 +351,6 @@
                         this.area = areaArr;
                         console.log(this.province.length, this.citys.length, this.area.length);
                         console.log(this.province, this.citys, this.area);
-                        if (res.data.SysCode == 100302) {
-                            this.$message.warning("登录超时,请重新登录");
-                            this.$router.push("/login");
-                        }
                     }
 
                 })

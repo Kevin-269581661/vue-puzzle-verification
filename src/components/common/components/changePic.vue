@@ -1360,14 +1360,10 @@ export default {
         },
         // 字段截取
         wordlimit(word, num) {
-            if(document.body.clientWidth<=1366){
-                if (word && (word.length > num)) {
-                    return word = word.substr(0, num) + '...';
-                }
-                return word;
-            }else{
-                return word;
+            if (word && (word.length > num)) {
+                return word = word.substr(0, num) + '...';
             }
+            return word;
         },
         // 隐藏上传组件
         uploadDisabled(imgList){

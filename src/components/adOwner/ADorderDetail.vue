@@ -529,9 +529,6 @@ export default {
             api.getApi(this.apiVar.UCAPI + '/GetImg', imgInfo).then(res =>{
                 console.log(res.data);
                 if(res.data){
-                    if(res.data.SysCode == 100302){
-                        this.loginTimeout();
-                    }
                     if(res.data.length){
                         console.log('res.data[0].pURL', res.data[0].pURL);
                         this.resInfo.img = res.data[0].pURL;
@@ -552,9 +549,6 @@ export default {
                 api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('社区信息---', res.data);
                     if(res.data){
-                        if(res.data.SysCode == 100302){
-                            this.loginTimeout();
-                        }
                         if(res.data.SysCode == 200200){
                             let info = res.data.data;
                             if (info === null || info === '') {
@@ -690,8 +684,6 @@ export default {
                                 pdOtherFee: this.priceFormat(info.barrier.adOtherFee/100),
                             },
                         };
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
                     } else {
                         Message.warning(res.data.MSG);
                     }
@@ -745,8 +737,6 @@ export default {
                         let resultArr = this.filterRes(result);
                         this.getIsOpenRes(resultArr);
                         this.loading = false;
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
                     } else {
                         Message.warning(res.data.MSG);
                     }
@@ -784,9 +774,6 @@ export default {
             api.getApi(this.apiVar.QZhike+'/SelectByApID', info).then(res => {
                 console.log(res.data);
                 if(res.data){
-                    if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
-                    }
                     let result = res.data;
 
                     for(let data of arr){
@@ -823,42 +810,6 @@ export default {
                 }else {
                     Message.warning(res.data.MSG);
                 }
-
-                // if(res.data){
-                //     console.log(111111111111);
-                //     if(res.data.length){
-                //         let result = res.data;
-                //         // this.resInfo = res.data;
-                //         for(let data of arr){
-                //             for(let res of result){
-                //                 if(data.resID == res.resID){
-                //                     // data.aiState = res.aiState;
-                //                     this.$set(data, 'aiState', res.aiState);
-                //                     break;
-                //                 }
-                //             }
-                //         }
-                //         this.houselist = arr;
-                //         this.currHouse = this.houselist;
-
-                //         for(let i = 0; i< arr.length; i++){
-                //             for(let j = 0; j< result.length; j++){
-                //                 if(arr[i].resID == result[j].resID){
-                //                     arr.splice(i, 1);
-                //                     i--;
-                //                     break;
-                //                 }
-                //             }
-                //         }
-
-                //     }else if (res.data.SysCode == 100302) {
-                //         this.loginTimeout();
-                //     }
-                //     this.houselist = arr;
-                //     this.currHouse = this.houselist;
-                // } else {
-                //     Message.warning(res.data.MSG);
-                // }
             });
         },
         // 计算人流量(累加)
@@ -932,8 +883,6 @@ export default {
                     }
                     this.houselist.push();
                     this.currHouse.push();
-                } else if (res.data.SysCode == 100302) {
-                    this.loginTimeout();
                 } else {
                     Message.warning(res.data.MSG);
                 }
@@ -1006,11 +955,6 @@ export default {
         // 排期筛选
         filterTimeRange(value, row) {
             return row.timeRange === value;
-        },
-
-        loginTimeout() {
-            Message.warning("登录超时,请重新登录");
-            this.$router.push("/login");
         },
     },
     watch:{

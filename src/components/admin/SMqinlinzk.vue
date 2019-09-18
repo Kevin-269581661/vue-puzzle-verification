@@ -433,10 +433,6 @@
                 api.getApi(that.apiVar.QZhike + '/SetPorList', info).then(res => {
                         console.log('SetPorList画像审核列表返回---', res.data);
                         // let obj = {};
-                        if (res.data.SysCode == 100302) {
-                            that.$message.warning('登录超时,请重新登录');
-                            that.$router.push('/login');
-                        }
 
                         let arr = res.data.concat();
                         // let t = [];
@@ -528,23 +524,15 @@
                 api.getApi(this.apiVar.QZhike + '/SelectApIdOrder', info).then(res => {
                     console.log('SelectApIdOrder返回---', res.data);
                     let resList = [];
-                    if (res.data.SysCode) {
-                        if (res.data.SysCode == 100302) {
-                            this.$message.warning('登录超时,请重新登录');
-                            this.$router.push('/login');
-                        }
-                    } else {
-
-                        for (let data of res.data) {
-                            let resObj = {};
-                            resObj.resCity = data.resCity?data.resCity:'';
-                            resObj.resCounty = data.resCounty?data.resCounty:'';
-                            resObj.resName = data.resName?data.resName:'';
-                            resObj.gSDay = data.gSDay?data.gSDay:'';
-                            resObj.gEDay = data.gEDay?data.gEDay:'';
-                            resObj.apid = data.apID?data.apID:'';
-                            resList.push(resObj)
-                        }
+                    for (let data of res.data) {
+                        let resObj = {};
+                        resObj.resCity = data.resCity?data.resCity:'';
+                        resObj.resCounty = data.resCounty?data.resCounty:'';
+                        resObj.resName = data.resName?data.resName:'';
+                        resObj.gSDay = data.gSDay?data.gSDay:'';
+                        resObj.gEDay = data.gEDay?data.gEDay:'';
+                        resObj.apid = data.apID?data.apID:'';
+                        resList.push(resObj)
                     }
 
                     this.houseList = resList;
@@ -600,10 +588,7 @@
                 console.log('审核info---', info);
                 api.getApi(this.apiVar.QZhike + '/UpdateState', info).then(res => {
                     console.log("审核UpdateState返回---", res.data);
-                    if (res.data.SysCode == 100302) {
-                        this.$message.warning('登录超时,请重新登录');
-                        this.$router.push('/login');
-                    } else if (res.data.SysCode == 700200) {
+                    if (res.data.SysCode == 700200) {
                         //通过
                         this.$message.success(res.data.MSG);
                         this.getPorList()

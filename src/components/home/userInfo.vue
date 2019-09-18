@@ -134,8 +134,6 @@ export default {
                     let result = res.data.data;
                     let userinfo = this.setData(result);
                     this.userInfo.data = userinfo;
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
                 }else{
                     Message.warning(res.data.MSG);
                 }
@@ -157,8 +155,6 @@ export default {
                     this.sessionData.headPic = userinfo.url;
                     sessionStorage.setItem('session_data', JSON.stringify(this.sessionData));
                     this.$router.go(0);
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
                 }else{
                     Message.warning(res.data.MSG);
                 }
@@ -197,10 +193,6 @@ export default {
         handlePreview(file) {
             console.log(file);
         },
-        loginTimeout() {
-			Message.warning("登录超时,请重新登录");
-			this.$router.push("/login");
-		},
     }
 };
 </script>

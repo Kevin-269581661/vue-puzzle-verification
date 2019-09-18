@@ -550,8 +550,8 @@
                 let info = {
                     "data": {
                         mID: item.mID,
-                        pageNum: this.currPage,
-                        pageSize: 50,
+                        pageNum: 1,
+                        pageSize: 80,
                     },
                     "service": "GetMediaMaintenanceHistoryListAction",
                     "token": this.sessionData.token,

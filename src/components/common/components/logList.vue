@@ -9,8 +9,8 @@
                         <span :class="[getcolor(item.type),'tag']">{{item.type}}</span>
                         <span v-if="item.type!='拆除'" class="handleBtn" @click="toHandle(item)">处理</span>
                     </p>
-                    <div class= "content" v-if="item.text">
-                        <p>{{item.text}}</p>
+                    <div class= "content" >
+                        <p v-if="item.text">{{item.text}}</p>
                         <p v-if="item.type=='巡点'"><i class="el-icon-location-outline"></i>{{item.address}}</p>
                     </div>
                 </div>

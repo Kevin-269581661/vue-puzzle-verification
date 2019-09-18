@@ -82,7 +82,7 @@
                         style="width: 100%">
                         <el-table-column
                             label="维护类型"
-                            width="100"
+                            min-width="100"
                             :show-overflow-tooltip="true">
                             <template slot-scope="scope">
                                 <span>{{scope.row.mtType}}</span>
@@ -93,7 +93,7 @@
                             prop="resName"
                             label="资源"
                             :show-overflow-tooltip="true"
-                            width="160">
+                            min-width="160">
                             <template slot-scope="scope">
                                 <span> {{scope.row.resName || '--'}}</span>
                             </template>
@@ -101,7 +101,7 @@
                         <el-table-column
                             prop="cityName"
                             label="城市"
-                            width="100"
+                            min-width="100"
                             :show-overflow-tooltip="true">
                             <template slot-scope="scope">
                                 <span>{{scope.row.cityName || '--' }}</span>
@@ -110,7 +110,7 @@
                         <el-table-column
                             prop="area"
                             label="区域"
-                            width="100"
+                            min-width="100"
                             :show-overflow-tooltip="true">
                             <template slot-scope="scope">
                                 <span>{{scope.row.area || '--' }}</span>
@@ -119,7 +119,7 @@
                         <el-table-column
                             prop="mediaName"
                             label="媒体名称"
-                            width="120"
+                            min-width="120"
                             :show-overflow-tooltip="true">
                             <template slot-scope="scope">
                                 <span>{{scope.row.mediaName || '--' }}</span>
@@ -128,7 +128,7 @@
                         <el-table-column
                             prop="assetTag"
                             label="资产编号"
-                            width="150"
+                            min-width="150"
                             :show-overflow-tooltip="true">
                             <template slot-scope="scope">
                                 {{ scope.row.assetTag || '--' }}
@@ -137,7 +137,7 @@
                         <el-table-column
                             prop="issueRecord"
                             label="问题记录"
-                            width="170"
+                            min-width="170"
                             class="tar"
                             :show-overflow-tooltip="true"
                         >
@@ -148,7 +148,7 @@
                         <el-table-column
                             prop="createTime"
                             label="提交日期"
-                            width="150"
+                            min-width="150"
                             class="tar"
                             :show-overflow-tooltip="true"
                         >
@@ -159,7 +159,7 @@
                         <el-table-column
                             prop="patrolTime"
                             label="处理日期"
-                            width="150"
+                            min-width="150"
                             class="tar"
                             :show-overflow-tooltip="true"
                         >
@@ -170,7 +170,7 @@
                         <el-table-column
                             prop="createUserName"
                             label="提交者"
-                            width="100"
+                            min-width="100"
                             class="tar"
                         >
                             <template slot-scope="scope">

@@ -58,11 +58,11 @@
                 // 当前选择的水印标签
                 activeMark: '',
                 activeImgInfo: {
-                    city: '北京市',
-                    time: '2019/08/31',
-                    resName: '嘉美风尚中心小区',
-                    week: '星期日',
-                    url: 'https://img.qinlinad.com/photoGallery/DEV/20190820/upload/82e5b00ad3214dde842d81a6afb9fa9f.jpg'
+                    city: '',
+                    time: '',
+                    resName: '',
+                    week: '',
+                    url: ''
                 }
             }
         },
@@ -117,9 +117,7 @@
                 console.log('params', params)
                 api.postApi(this.apiVar.Advertisement + '/imageCollection/add', params).then(res => {
                     console.log('图片收藏res', res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
-                    } else if (res.data.SysCode === 200200) {
+                    if (res.data.SysCode === 200200) {
                         item.isCollection = true
                         this.$emit('doSomeThing', true)
                         this.messageFun('success', '收藏成功')
@@ -138,9 +136,7 @@
                 }
                 api.postApi(this.apiVar.Advertisement + '/imageCollection/remove', params).then(res => {
                     console.log('取消收藏res', res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
-                    } else if (res.data.SysCode === 200200) {
+                    if (res.data.SysCode === 200200) {
                         item.isCollection = false
                         this.$emit('doSomeThing', true)
                         this.messageFun('success', '取消成功')
@@ -191,31 +187,32 @@
                 this.activeMark = index
                 console.log('activeMark',this.activeMark)
             },
-            // 下载水印图片 DownloadImageWatermark
+            // 下载水印图片
             downloadImgWatermark(){
+                console.log('activeImgInfo',this.activeImgInfo)
                 if(this.activeMark) {
                     let params = {
                         uid: this.sessionData.uID,
                         token: this.sessionData.token,
-                        type: this.activeMark         // 2:TOP_CENTER 6:BOTTOM_RIGHT 7:BOTTOM_LEFT
+                        position: this.activeMark,         // 2:TOP_CENTER 6:BOTTOM_RIGHT 7:BOTTOM_LEFT
+                        watermark: this.activeImgInfo.time + ' · ' + this.activeImgInfo.week + ',' + this.activeImgInfo.city + ' · ' + this.activeImgInfo.resName ,
+                        picUrl: this.activeImgInfo.url
                     }
-                    // api.getApi_file(this.apiVar.Advertisement + '/DownloadImageWatermark', params).then(res=>{
-                    api.getApi_file('http://192.168.1.247:8002/advertisement/DownloadImageWatermark', params).then(res=>{
-                        if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                            sessFun.loginTimeout()
-                        } else {
-                            let blob = new Blob([res.data], {type: 'application/ms-download;charset=utf-8'});
-                            let downloadElement = document.createElement('a');
-                            let href = window.URL.createObjectURL(blob);    //创建下载的链接
-                            downloadElement.href = href;
-                            downloadElement.download = res.headers['content-disposition'].split('=')[1]; //下载后文件名
-                            document.body.appendChild(downloadElement);
-                            downloadElement.click();                        //点击下载
-                            document.body.removeChild(downloadElement);     //下载完成移除元素
-                            window.URL.revokeObjectURL(href);               //释放掉blob对象
-                            sessFun.messageFun('success','下载成功')
-                            this.watermarkDialog = false
-                        }
+                    let urlArr = this.activeImgInfo.url.split('/')
+                    api.getApi_file(this.apiVar.Advertisement + '/DownloadImageWatermark', params).then(res=>{
+                    // api.getApi_file('http://192.168.1.247:8002/advertisement/DownloadImageWatermark', params).then(res=>{
+                        console.log('res',res)
+                        let blob = new Blob([res.data], {type: 'application/ms-download;charset=utf-8'});
+                        let downloadElement = document.createElement('a');
+                        let href = window.URL.createObjectURL(blob);    //创建下载的链接
+                        downloadElement.href = href;
+                        downloadElement.download = urlArr[urlArr.length-1]//res.headers['Content-Disposition'].split('=')[1]; //下载后文件名
+                        document.body.appendChild(downloadElement);
+                        downloadElement.click();                        //点击下载
+                        document.body.removeChild(downloadElement);     //下载完成移除元素
+                        window.URL.revokeObjectURL(href);               //释放掉blob对象
+                        sessFun.messageFun('success','下载成功')
+                        this.watermarkDialog = false
                     })
                 } else {
                     sessFun.messageFun('warning','请点击选择水印类型')
@@ -233,10 +230,6 @@
             // 时间格式规范
             formatTime(val) {
                 return dateFormat.toDate(val, "/");
-            },
-            loginTimeout(){
-                Message.warning("登录超时,请重新登录");
-                this.$router.push("/login");
             },
         },
     }
@@ -256,7 +249,7 @@
                         <div class="imgBox" @mouseenter="showPreImg = index" @mouseleave="showPreImg = null">
                             <img :src="img.pUrl" alt="" class="smallImg">
                             <!--查看缩略图和下载-->
-                            <div class="mask-btn" v-if="true"><!--showPreImg == index-->
+                            <div class="mask-btn" v-if="showPreImg == index">
                                 <p class="mask_icon">
                                     <span v-if="isShowCollect">
                                         <i v-if="!img.isCollection" class="el-icon-star-off" @click="saveImgFun(img)" ></i>
@@ -270,11 +263,10 @@
                                 </p>
                             </div>
                         </div>
-                        <!--图片水印-->
-                        <!--<div class="imgBox" @mouseenter="mouseenterFun(img,index)" @mouseleave="mouseleaveFun(index)">
-                            <img :src="img.pUrl" alt="" class="smallImg">
+                  <!--      <div class="imgBox" @mouseenter="mouseenterFun(img,index)" @mouseleave="mouseleaveFun(index)">
+                            <img :src="img.pUrl" alt=""  class="smallImg">
                             &lt;!&ndash;查看缩略图和下载&ndash;&gt;
-                            <div class="mask-btn" v-if="true || showPreImg == index">
+                            <div class="mask-btn" v-if="showPreImg == index">
                                 <p class="mask_icon">
                                     <span v-if="isShowCollect">
                                         <i v-if="!img.isCollection" class="el-icon-star-off" @click="saveImgFun(img)" ></i>
@@ -302,7 +294,7 @@
                             </div>
                         </div>-->
                         <div class="detailBox">
-                            <p>{{img.pRemarks.plan}}</p>
+                            <p>{{img.pRemarks.plan || '--'}}</p>
                             <!-- <span>华南碧桂园二期-东门</span> -->
                             <span>{{img.pRemarks.res}}-{{img.pRemarks.media}}</span>
                             <div class="icons">
@@ -340,7 +332,7 @@
             :visible.sync="watermarkDialog"
             width="720px">
             <el-row :gutter="16">
-                <el-col :span="8" v-for="(item,index) in [2,6,7]" :key="index" @click.native="selectImgMark(item)">
+                <el-col :span="8" v-for="(item,index) in [2,7,6]" :key="index" @click.native="selectImgMark(item)">
                     <div class="img_box">
                         <div class="img_box_mark"
                              :class="index === 0 ? 'img_box_mark_0' : index === 1 ? 'img_box_mark_1' : 'img_box_mark_2'">
@@ -350,13 +342,13 @@
                         <p class="active_Mark" v-show="activeMark === item">
                             <i class="el-icon-circle-check"></i>
                         </p>
-                        <img :src="activeImgInfo.url" alt="">
+                        <img :src="activeImgInfo.url" alt="" />
                     </div>
                 </el-col>
             </el-row>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="watermarkDialog = false">取 消</el-button>
-                <el-button type="primary" @click="downloadImgWatermark(item)">确 定</el-button>
+                <el-button type="primary" @click="downloadImgWatermark()">确 定</el-button>
             </div>
         </el-dialog>
     </div>

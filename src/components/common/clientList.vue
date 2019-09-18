@@ -279,22 +279,22 @@ export default {
         // 设置表格数据
         setTableData(item){
             let obj = {
-                cBrand: item.cBrand ? item.cBrand : '--',
-                cID: item.cID ? item.cID:'',
-                cName: item.cName ? item.cName : '--',
-                crID: item.crID ? item.crID : '',
-                iID: item.iID ? item.iID : '',
-                joinTime: item.joinTime ? item.joinTime : '',
-                phone: item.phone ? item.phone : '',
-                position: item.position ? item.position : '--',
-                puName: item.puName ? item.puName : '--',
-                rID: item.rID ? item.rID : '',
-                rName: item.rName ? item.rName : '--',
-                realName: item.realName ? item.realName : '',
-                sName: item.sName ? item.sName : '',
-                uID: item.uID ? item.uID : '',
-                cAddress: item.cAddress ? item.cAddress : '',
-                cRemark: item.cRemark ? item.cRemark : ''
+                cBrand: item.cBrand || '--',
+                cID: item.cID || '',
+                cName: item.cName || '--',
+                crID: item.crID || '',
+                iID: item.iID || '',
+                joinTime: item.joinTime || '',
+                phone: item.phone || '',
+                position: item.position || '--',
+                puName: item.puName || '--',
+                rID: item.rID || '',
+                rName: item.rName || '--',
+                realName: item.realName || '',
+                sName: item.sName || '',
+                uID: item.uID || '',
+                cAddress: item.cAddress || '',
+                cRemark: item.cRemark || ''
             };
             return obj;
         },

@@ -294,8 +294,6 @@
                         this.communityChooes[0].communitys = result;
                         this.community = result[0].resID;
                         this.getTabInitData();
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout();
                     } else if(res.data.SysCode == 700400){
                         console.log(res.data.MSG)
                     }

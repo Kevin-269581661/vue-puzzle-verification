@@ -358,7 +358,7 @@ export default {
         this.getInitData();
         // 选点排期
         this.getSetPoint();
-        if(this.role == 'MD'){
+        if(this.role == 'MD' || this.role == 'BD'){
             // 获取换画列表
             this.getPainlist();
         }
@@ -425,7 +425,7 @@ export default {
                     tradingArea: data.tradingArea,
                     cType: data.cType,
                     hPrice: data.hPrice/100,
-                    hNum: data.hNum,
+                    hNum: data.hNum == '0' ? '&' : data.hNum,
                     fNum: data.fNum,
                     chDay: data.chDay,
                     adSize: data.mVehicle == "广告门" ? data.adSize: data.picSize,

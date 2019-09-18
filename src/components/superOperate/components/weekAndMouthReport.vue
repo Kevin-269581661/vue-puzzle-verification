@@ -269,9 +269,7 @@
                 console.log('数据总览params',params)
                 api.getApi(this.apiVar.report + '/api/v2/getWeekOverview', params).then(res => {
                     console.log('数据总览接口res', res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        sessFun.loginTimeout()
-                    } else if (res.data.SysCode === 200200) {
+                    if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         if (dataObj) {
                             this.weekOverviewData = res.data.data
@@ -440,9 +438,7 @@
                 console.log('本周在线统计params',params)
                 api.getApi(this.apiVar.report + '/api/v2/listOnlineCustomCountInfo', params).then(res => {
                     console.log('本周在线统计res', res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        sessFun.loginTimeout()
-                    } else if (res.data.SysCode === 200200) {
+                    if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         this.WeekOnLineCount = {
                             orderCount: dataObj.orderCount,
@@ -467,9 +463,7 @@
                 console.log('本周在线客户列表params',params)
                 api.getApi(this.apiVar.report + '/api/v2/getOnlineCustom', params).then(res => {
                     console.log('本周在线客户res', res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        sessFun.loginTimeout()
-                    } else if (res.data.SysCode === 200200) {
+                    if (res.data.SysCode === 200200) {
                         this.setOnlineCustomData(res.data.data)
                     } else {
                         sessFun.messageFun('warning', res.data.MSG)

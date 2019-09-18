@@ -151,8 +151,6 @@ export default {
                         result.push(obj);
                     }
                     this.cityList = result;
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
                 }else{
                     Message.warning(res.data.MSG);
                 }
@@ -189,8 +187,6 @@ export default {
                     }else{
                         this.messageFun('warning','此城市没有点位')
                     }
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
                 }else{
                     this.messageFun('warning',res.data.MSG)
                 }
@@ -419,8 +415,6 @@ export default {
                     }else{
                         this.messageFun('warning','此城市在此时间段内没有点位')
                     }
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
                 }else{
                     this.messageFun('warning', res.data.MSG)
                 }
@@ -484,10 +478,6 @@ export default {
             let aDate = timeFormat.toDate(a.starDate, '');
             let bDate = timeFormat.toDate(b.starDate, '');
             return aDate - bDate;
-        },
-        loginTimeout(){
-            Message.warning("登录超时,请重新登录");
-            this.$router.push("/login");
         },
         // 操作提示统一方法
         messageFun(mesType,mes){

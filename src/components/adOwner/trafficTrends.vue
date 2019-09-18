@@ -176,9 +176,6 @@ export default {
             }
             api.getApi(this.apiVar.QZhike+'/GetToTalCountInfo', info).then(res=>{
                 console.log(res);
-                if(res.data.SysCode == 100302){
-                    this.loginTimeout();
-                }
                 if(res.data.length){
                     let arr = res.data[0].totalCount.split(',');
                     let result = this.funcInit(arr);

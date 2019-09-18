@@ -295,8 +295,6 @@ export default {
                     this.currInfoPage++;
                     this.SelectioUpdate();
                     this.filtersData = filterFormat(dataArr, "timeRange");
-                }else if(res.data.SysCode == 100302){
-                    this.loginTimeout();
                 }else{
                     Message.warning(res.data.MSG);
                 }
@@ -368,9 +366,9 @@ export default {
                 map: item.mapCenterName,
                 timeRange: item.lState==2? timeRange1 : timeRange,
                 changePicTime: '',
-                remark: item.remark?item.remark:'',
-                imgUrl: item.picUrl?item.picUrl:'',
-                uploadUser: item.uploadUser?item.uploadUser:'',
+                remark: item.remark || '',
+                imgUrl: item.picUrl || '',
+                uploadUser: item.uploadUser || '',
                 isSelect: false,
             };
             return obj;
@@ -567,8 +565,6 @@ export default {
                         console.log(res.data);
                         if(res.data.SysCode == 200200){
                             Message.success(res.data.MSG);
-                        }else if(res.data.SysCode == 100302){
-                            this.loginTimeout();
                         }else{
                             Message.warning(res.data.MSG);
                         }

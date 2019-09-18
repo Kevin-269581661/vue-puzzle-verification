@@ -268,11 +268,11 @@
             // 设置表格数据
             setTableData(item){
                 let obj = {
-                    asrID: item.asrID ? item.asrID : '',
-                    name: item.asName ? item.asName : '',
+                    asrID: item.asrID || '',
+                    name: item.asName || '',
                     state: item.ascState>=0 ? item.ascState : '',
                     type: item.ascType>=0 ? item.ascType : '',
-                    createTime: item.createTime ? item.createTime : '',
+                    createTime: item.createTime || '',
                 };
                 return obj;
             },

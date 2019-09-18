@@ -169,7 +169,7 @@
                                 </el-col>
                                 <el-col :span="6">
                                     <el-form-item label="楼栋数量" prop="buildingNum">
-                                        <el-input-number v-model="recForm.buildingNum" controls-position="right" :min="1" :max="9999999"></el-input-number>
+                                        <el-input-number v-model="recForm.buildingNum" controls-position="right" :min="0" :max="9999"></el-input-number>
                                     </el-form-item>
                                 </el-col>
                             </el-row>
@@ -1192,7 +1192,7 @@
                     }
                 ],
                 liveTime: '',                   // 资源时间
-                doUpload: this.apiVar.qadnUrl + '/advertisement/UpLoad',     //https://beta.qinlinad.com,
+                doUpload: this.apiVar.qadnUrl + '/advertisement/UpLoad',
                 resImg: {                       // 上传图片附带参数
                     uid: JSON.parse(sessionStorage.getItem('session_data')).uID,
                     pid: '',                // 图片id
@@ -1208,9 +1208,7 @@
                 mediaIndex: 0,                  // 当选择广告限制是记录下媒体的下标
                 Editloading: true,              // 提交时的loading
                 throwCity: '',                  // 用户权限不为全国时，根据uWho确定可选城市
-                uWho_throwCity: '',             // 用户权限不为全国时
                 cityOther: true,                // 默认显示全国省份城市
-                beforeResPID: '',               // 编辑资源前资源图片的pid
                 resImgDialog: false,            // 资源图片，大图
                 resImgUrl: '',                  // 上传成功后的url地址，用于显示大图
                 resData: {resID:''},            // 创建资源成功，保存返回来的数据
@@ -1460,7 +1458,6 @@
                     if (this.getStatus() == BMAP_STATUS_SUCCESS) {
                         let point = new BMap.Point(r.point.lng, r.point.lat);                 //定位位置
                         that.resMap.centerAndZoom(point, 16);                                 // 初始化地图
-                        console.log('******************************')
                     } else {
                         that.resMap.centerAndZoom(new BMap.Point(113.369838,22.949325), 16);  // 初始化地图
                         that.resMap.setCurrentCity("广州")                                     // 设置地图显示的城市 此项是必须设置的
@@ -1475,7 +1472,7 @@
             },
             // 地图获取经纬度
             searchFun(){
-                console.log(this.searchResName,'1百度地图搜索',this.recForm.resname)
+                console.log(this.searchResName,'百度地图搜索',this.recForm.resname)
                 let lnglat = ''
                 let that = this
                 let options = {
@@ -1500,31 +1497,31 @@
                         }
                     },
                     onMarkersSet: function(pois) {      // 给创建的标注添加点击事件
-                        console.log('onMarkersSet', pois)
+                        // console.log('onMarkersSet', pois)
                         that.markerArr = pois
                         for (let key of pois) {
                             key.marker.addEventListener('click', that.showInfo);
                         }
                     }
                 };
-                console.log('3options',options)
+                // console.log('3options',options)
                 let local = new BMap.LocalSearch(this.resMap,options)
                 local.search(this.resAddres.city + this.searchResName)
-                console.log('4')
+                // console.log('4')
             },
             //获取点击标注的坐标
             showInfo(e) {
-                for(let mkey of this.markerArr){
-                    if(mkey.marker == e.target){
-                        this.searchResData.address =mkey.address
+                for (let mkey of this.markerArr) {
+                    if (mkey.marker == e.target) {
+                        this.searchResData.address = mkey.address
                         this.searchResData.title = mkey.title
                         // console.log('点击到相同的标注',mkey) // searchInfowindow target address title
-                    }else{
+                    } else {
                         // console.log('不相同的标注',mkey)
                     }
                 }
-                let addr = {lng:e.point.lng,lat:e.point.lat} // lng经度；lat纬度
-                let point = new BMap.Point(addr.lng,addr.lat)
+                let addr = {lng: e.point.lng, lat: e.point.lat} // lng经度；lat纬度
+                let point = new BMap.Point(addr.lng, addr.lat)
                 this.getResDataInfoByPoint(point)
                 // console.log('点击事件e',e,addr)
             },
@@ -1564,7 +1561,7 @@
             },
             // 当广告限制的选择框获取焦点的时候，记录下当前媒体的下标
             adLimitFocus(key) {
-                console.log('当前key值为', key)
+                // console.log('当前key值为', key)
                 this.mediaIndex = key
             },
             //新增媒体面板
@@ -1865,32 +1862,6 @@
                         }
                     }
                 }
-                // for (let key of this.arrMedia) {
-                //     if (key.mediaForm.assetId === value) {
-                //         if (resData.mId !== key.mediaForm.mid) {
-                //             key.isAssetIdError = true
-                //             key.assetIdCommentData.mediaName = resData.mediaName
-                //             key.assetIdCommentData.resName = resData.resName
-                //             key.assetIdCommentData.updateTime = resData.createTime
-                //             adDoor = true
-                //         } else {
-                //             key.isAssetIdError = false
-                //         }
-                //     }
-                // }
-                // for (let key of this.roadGateMedia) {
-                //     if (key.roadGateForm.assetId === value) {
-                //         if (resData.mId !== key.roadGateForm.mid) {
-                //             key.isAssetIdError = true
-                //             key.assetIdCommentData.mediaName = resData.mediaName
-                //             key.assetIdCommentData.resName = resData.resName
-                //             key.assetIdCommentData.updateTime = resData.createTime
-                //             roadGate = true
-                //         } else {
-                //             key.isAssetIdError = false
-                //         }
-                //     }
-                // }
                 if (adDoor || roadGate) {
                     return true
                 } else {

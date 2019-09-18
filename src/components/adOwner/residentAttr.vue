@@ -473,9 +473,6 @@ export default {
 
             api.getApi(this.apiVar.QZhike+'/GetTPPT', info).then(res =>{
                 console.log(res.data);
-                if(res.data.SysCode == 100302){
-                    this.loginTimeout();
-                }
                 if(res.data.length){
                     let arr = res.data;
                     let ininInfo = [];

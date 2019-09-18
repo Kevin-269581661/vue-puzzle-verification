@@ -400,79 +400,75 @@ export default {
             };
             api.getApi(this.apiVar.Advertisement+'/GetCustomerInfo', info).then(res =>{
                 console.log(res.data);
-                if (res.data.SysCode == 100302) {
-                    this.loginTimeout();
-                } else {
-                    if(!res.data.SysCode){
-                        let info = res.data;
-                        let BInfo = {
-                            cityArr: [],
-                            // 选中之后的行业组合
-                            industryIdArr: [],
-                            cID: info.cID ? info.cID : '',
-                            rID: info.crID ? info.crID : '',
-                            cName: info.cName ? info.cName :'',
-                            cAddress: info.cAddress ? info.cAddress : '',
-                            cBrand: info.cBrand ? info.cBrand: '',
-                            rName: info.rName ? info.rName: '',
-                            cRemark: info.cRemark ? info.cRemark : '',
-                            iID: info.iID ? info.iID : '',
-                            iName: ""
-                        };
-                        let uInfo = {
-                            // 选中之后的区域组合
-                            cityArr: [],
-                            uID: info.uID,
-                            uWho: info.uWho ? info.uWho: '',
-                            rID: info.rID ? info.rID : '',
-                            realName: info.realName ? info.realName : '',
-                            email: info.email ? info.email : '',
-                            phone: info.phone ? info.phone : '',
-                            position: info.position ? info.position: '',
-                            telephone: info.telephone ? info.telephone : '',
-                            rName: "",
-                            division: info.division ? info.division : '',
-                            puName: info.puName ? info.puName : '',
-                            sName: info.sName ? info.sName : '',
-                            utype: "AD",
-                            puid: info.puID ? info.puID :''
-                        };
-                        this.oldCompany_id = BInfo.cID;
-                        // 用户信息
-                        this.clientForm = uInfo;
-                        this.clientForm.phone = Number(uInfo.phone);
-                        let parStr = this.clientForm.rID?this.clientForm.rID.toString().substring(0, 2) + "0000" : '';
-                        let rid = this.clientForm.rID?this.clientForm.rID.toString().substring(0, 4) + "00" : '';
-                        let result = [parStr, rid];
-                        // this.handleItemChange(result);
-                        this.clientForm.cityArr = result;
-                        this.oldClientForm = Object.assign({}, this.clientForm);
-                        // 公司信息
-                        this.companyForm = BInfo;
-                        // 获取公司原有的品牌信息
-                        this.getCBrandBycID(this.companyForm.cID)
+                if(!res.data.SysCode){
+                    let info = res.data;
+                    let BInfo = {
+                        cityArr: [],
+                        // 选中之后的行业组合
+                        industryIdArr: [],
+                        cID: info.cID ? info.cID : '',
+                        rID: info.crID ? info.crID : '',
+                        cName: info.cName ? info.cName :'',
+                        cAddress: info.cAddress ? info.cAddress : '',
+                        cBrand: info.cBrand ? info.cBrand: '',
+                        rName: info.rName ? info.rName: '',
+                        cRemark: info.cRemark ? info.cRemark : '',
+                        iID: info.iID ? info.iID : '',
+                        iName: ""
+                    };
+                    let uInfo = {
+                        // 选中之后的区域组合
+                        cityArr: [],
+                        uID: info.uID,
+                        uWho: info.uWho ? info.uWho: '',
+                        rID: info.rID ? info.rID : '',
+                        realName: info.realName ? info.realName : '',
+                        email: info.email ? info.email : '',
+                        phone: info.phone ? info.phone : '',
+                        position: info.position ? info.position: '',
+                        telephone: info.telephone ? info.telephone : '',
+                        rName: "",
+                        division: info.division ? info.division : '',
+                        puName: info.puName ? info.puName : '',
+                        sName: info.sName ? info.sName : '',
+                        utype: "AD",
+                        puid: info.puID ? info.puID :''
+                    };
+                    this.oldCompany_id = BInfo.cID;
+                    // 用户信息
+                    this.clientForm = uInfo;
+                    this.clientForm.phone = Number(uInfo.phone);
+                    let parStr = this.clientForm.rID?this.clientForm.rID.toString().substring(0, 2) + "0000" : '';
+                    let rid = this.clientForm.rID?this.clientForm.rID.toString().substring(0, 4) + "00" : '';
+                    let result = [parStr, rid];
+                    // this.handleItemChange(result);
+                    this.clientForm.cityArr = result;
+                    this.oldClientForm = Object.assign({}, this.clientForm);
+                    // 公司信息
+                    this.companyForm = BInfo;
+                    // 获取公司原有的品牌信息
+                    this.getCBrandBycID(this.companyForm.cID)
 
-                        // 如果有行业id则cascader显示出对应的行业
-                        let arr = JSON.parse(sessionStorage.getItem("industry"));
-                        let piID = industryToText.getpiID(this.companyForm.iID, arr);
-                        if (piID) {
-                            let industryResult = [piID, this.companyForm.iID];
-                            this.companyForm.industryIdArr = industryResult;
-                        } else {
-                            // 找不到父亲行业id
-                            this.companyForm.industryIdArr = []
-                        }
-
-                        // 如果有市区id则cascader显示出对应的市区
-                        let cParStr = this.companyForm.rID.toString().substring(0, 2) + "0000";
-                        let cRid = this.companyForm.rID.toString().substring(0, 4) + "00";
-                        let cResult = [cParStr, cRid];
-                        // this.handleItemChange(cResult);
-                        this.companyForm.cityArr = cResult;
-                        this.oldcompanyInfo = this.companyForm;
-                    }else{
-                        sessFun.messageFun('warning',res.data.MSG)
+                    // 如果有行业id则cascader显示出对应的行业
+                    let arr = JSON.parse(sessionStorage.getItem("industry"));
+                    let piID = industryToText.getpiID(this.companyForm.iID, arr);
+                    if (piID) {
+                        let industryResult = [piID, this.companyForm.iID];
+                        this.companyForm.industryIdArr = industryResult;
+                    } else {
+                        // 找不到父亲行业id
+                        this.companyForm.industryIdArr = []
                     }
+
+                    // 如果有市区id则cascader显示出对应的市区
+                    let cParStr = this.companyForm.rID.toString().substring(0, 2) + "0000";
+                    let cRid = this.companyForm.rID.toString().substring(0, 4) + "00";
+                    let cResult = [cParStr, cRid];
+                    // this.handleItemChange(cResult);
+                    this.companyForm.cityArr = cResult;
+                    this.oldcompanyInfo = this.companyForm;
+                }else{
+                    sessFun.messageFun('warning',res.data.MSG)
                 }
             });
         },
@@ -492,9 +488,7 @@ export default {
                         return item
                     }
                 })
-                if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                    sessFun.loginTimeout()
-                } else if (res.data.SysCode === 200200) {
+                if (res.data.SysCode === 200200) {
                     for (let key of res.data.data) {
                         let industryNames = this.getIndustryNamebyId([key.parentIndustryId,key.industryId])
                         this.cBrandTags.push({
@@ -773,8 +767,6 @@ export default {
                             }else{
                                 this.changRoute('没有权限修改公司信息,是否跳转到列表页面');
                             }
-                        }else if(mes.SysCode == 100302){
-                            this.loginTimeout();
                         }else{
                             Message.warning(mes.MSG);
                         }
@@ -845,8 +837,6 @@ export default {
                             this.$router.push("./clientDetail");
                             //    this.changRoute('成功修改客户信息,是否跳转到列表页面');
                         }
-                    } else if (userMsg.SysCode == 100302) {
-                        sessFun.loginTimeout();
                     } else {
                         Message.warning(userMsg.MSG);
                     }
@@ -858,10 +848,6 @@ export default {
         // 取消返回
         goBack() {
             this.$router.push("./clientList");
-        },
-        loginTimeout(){
-            Message.warning("登录超时,请重新登录");
-            this.$router.push("/login");
         },
     }
 };

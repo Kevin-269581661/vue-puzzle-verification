@@ -394,8 +394,6 @@ export default {
 					this.dataArr[3].data = resInfo.asCount;
 
 					this.userInfo.endTime = timeFormat.toDate(resInfo.time, '/');
-				}else if(res.data.SysCode == 100302){
-					this.loginTimeout();
 				}else{
 					Message.warning(res.data.MSG);
 				}
@@ -418,8 +416,6 @@ export default {
 						mediaCount: resinfo.mediaCount,
 						asCount: resinfo.asCount,
 					};
-				}else if(res.data.SysCode == 100302){
-					this.loginTimeout();
 				}else{
 					Message.warning(res.data.MSG);
 				}
@@ -471,8 +467,6 @@ export default {
 					}
 					this.companyHonor = this.comimgInfo.concat(this.imginfo);
 					console.log(this.companyHonor, 'companyHonor');
-				}else if(res.data.SysCode == 100302){
-					this.loginTimeout();
 				}else{
 					Message.warning(res.data.MSG);
 				}
@@ -586,8 +580,6 @@ export default {
 					if(this.getNumIsNull(orderData) || this.getNumIsNull(pointData)){
 						this.getLinePer();
 					}
-				}else if(res.data.SysCode == 100302){
-					this.loginTimeout();
 				}else{
 					Message.warning(res.data.MSG);
 				}
@@ -747,10 +739,6 @@ export default {
 			window.addEventListener("resize", function (e) {
 				perLine.resize();
 			});
-		},
-		loginTimeout() {
-			Message.warning("登录超时,请重新登录");
-			this.$router.push("/login");
 		},
 	},
 	mounted(){

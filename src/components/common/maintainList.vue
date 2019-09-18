@@ -219,9 +219,9 @@
         <el-dialog
             :title="handleModalTitle"
             :visible.sync="isShowHandle"
-            width="30%">
+            width="470px">
             <div class="block">
-                <span style="width: 86px">处理日期：</span>
+                <span>处理日期：</span>
                 <el-date-picker
                     v-model="maintainForm.date"
                     type="date"
@@ -929,6 +929,10 @@
 
     /deep/ .block .el-date-editor.el-input__inner, /deep/ .block .el-input--prefix .el-input__inner {
         height: 32px;
+        width: 350px;
+    }
+    /deep/ .block .el-date-editor.el-input, .el-date-editor.el-input__inner{
+        width: 350px;
     }
 
     /deep/ .block  .el-input__icon {
@@ -936,7 +940,7 @@
     }
 
     /deep/ .remark .el-textarea__inner {
-        width: 321px;
+        width: 350px;
         height: 74px;
         resize: none;
     }
@@ -948,7 +952,7 @@
     }
 
     /deep/ .remark .el-textarea {
-        width: 300px;
+        width: 350px;
     }
 
     /deep/ .ad_mediaDetail_wrap .el-date-editor .el-range__icon {

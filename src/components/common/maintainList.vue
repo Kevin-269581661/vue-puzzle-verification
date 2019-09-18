@@ -568,7 +568,7 @@
                         };
                         for (let data of res.data.data.list) {
                             let a = {
-                                time: data.updateTime,
+                                time: data.createTime,
                                 text: data.feedback,
                                 address: data.resAddress,
                                 recordId: data.recordId,

@@ -318,6 +318,7 @@
             uploadIndustryImg(){
                 if(this.industryImg.length <= 1){
                     this.messageFun('warning','请选择行业!')
+                    return
                 }
                 if(this.uploadUrl.length <= 0){
                     this.messageFun('warning','请上传图片!')

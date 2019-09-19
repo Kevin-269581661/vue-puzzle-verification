@@ -179,8 +179,8 @@
         <!--右侧鼠标绘制控件 mapIcon.svg-->
         <ul class="mouse_control">
             <li class="mouse_control_li"></li>
-            <li class="mouse_control_li" @click="initMouseDrawing('circle')"></li>
-            <li class="mouse_control_li" @click="initMouseDrawing('polygon')"></li>
+            <li class="mouse_control_li" @click="drawingMouse('circle')"></li>
+            <li class="mouse_control_li" @click="drawingMouse('polygon')"></li>
             <li class="mouse_control_li"></li>
         </ul>
         <!--标注info框-->
@@ -333,13 +333,17 @@
                 });
                 //
                 this.creatMarker()
+                // 初始化鼠标绘制
+                this.initMouseDrawing()
+                // 城市边界
+                this.displayBoundary()
             },
             // 创建标注
             creatMarker(){
                 let i = 0
                 for(let key of this.resInfo){
                     key.isSelect = false
-                    if(i < 300) {
+                    if(i < 500) {
                         let point = new BMap.Point(key.lng, key.lat);
                         let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(20,33),{
                             anchor: new BMap.Size(10, 33)
@@ -360,6 +364,32 @@
                     }
                     i++
                 }
+            },
+            // 城市边界
+            displayBoundary() {
+                let json;
+                for(let key of this.areaList) {
+                    json = {color : "#F1627A",name : key.rName}
+                    this.getBoundary(json);
+                }
+            },
+            // 边界覆盖物
+            getBoundary(json) {
+                let _Boundary = new BMap.Boundary();
+                // let that = this
+                _Boundary.get(json.name, (rs)=> {               // 获取行政区域
+                    let count = rs.boundaries.length;           // 行政区域的点有多少个
+                    for (let i = 0; i < count; i++) {
+                        let ply = new BMap.Polygon(rs.boundaries[0], {
+                            strokeWeight: 2,
+                            strokeOpacity: 1,
+                            strokeColor: json.color,
+                            fillColor: json.color,      // 控制覆盖物的颜色
+                            fillOpacity: 0.000001       // 控制覆盖物的透明度
+                        }); //建立多边形覆盖物
+                        this.resMap.addOverlay(ply);    // 添加覆盖物
+                    }
+                });
             },
             // 显示详情
             showInfo(info,point){
@@ -385,8 +415,7 @@
             },
             /* 右侧鼠标绘制 */
             // 初始化鼠标绘制
-            initMouseDrawing(temp){
-                this.deleteDrawingOverlay()
+            initMouseDrawing(){
                 if(!this.drawingManager){
                     // 鼠标绘制控件
                     let styleOptions = {
@@ -426,22 +455,22 @@
                         console.log(e.label);
                         that.drawingManager.close()
                         if(e.drawingMode === 'circle') {
-                            let radius = Math.sqrt(e.calculate / 3.1415926)
-                            console.log('圆半径',radius,'圆心',e.overlay.point)
-                            that.showResInCircle(e.overlay.point,radius,e.overlay)
-                        } else if(e.drawingMode === 'polygon'){
+                            // let radius = Math.sqrt(e.calculate / 3.1415926)
+                            // console.log('圆半径',radius,'圆心',e.overlay.point)
+                            // that.showResInCircle(e.overlay.point,radius)
+                            that.showResInPolygon('circle',e.overlay)
+                        } else if(e.drawingMode === 'polygon') {
                             console.log('画多边形',overlay,e.overlay.getPath());
                             that.polygonPoint = e.overlay.getPath()
-                            that.showResInPolygon()
+                            that.showResInPolygon('polygon',e.overlay)
                         }
                     });
-                    this.drawingMouse(temp)
-                } else {
-                    this.drawingMouse(temp)
                 }
             },
             // 打开绘制类型
             drawingMouse(temp) {
+                this.deleteDrawingOverlay()
+                // this.initMouseDrawing()
                 if(temp === 'circle') {
                     this.drawingManager.open()
                     this.drawingManager.enableCalculate()
@@ -462,7 +491,7 @@
                 return c;
             },
             // 显示多边形内的点位
-            showResInPolygon() {
+            showResInPolygon(temp,overlay) {
                 let date1 = new Date();
                 let allOverlay = this.resMap.getOverlays();
                 for(let key of this.resInfo) {
@@ -471,10 +500,15 @@
                             akey.toString() == "[object Marker]" &&
                             akey.getLabel() &&
                             akey.getLabel().content === key.resName) {
-                            // let lngLat = key.lng.split(';')
-                            // let point = new BMap.Point(lngLat[0],lngLat[1])
+                            //
                             let point = new BMap.Point(key.lng, key.lat);
-                            let isShow = this.isInsidePolygon(point,this.polygonPoint)
+                            let isShow = ''
+                            if(temp === 'circle') {
+                                isShow = BMapLib.GeoUtils.isPointInCircle(point,overlay)
+                            } else if (temp === 'polygon') {
+                                // isShow = this.isInsidePolygon(point,this.polygonPoint)
+                                isShow = BMapLib.GeoUtils.isPointInPolygon(point,overlay)
+                            }
                             if(!isShow){
                                 akey.hide()
                             } else {
@@ -590,14 +624,15 @@
                                 "<p style='font:14px arial,sans-serif;margin:0;line-height:1.5;'>" +
                                 "地址:" + key.address + "</p>" +
                                 "</div>";
+                            // 信息窗口
                             let opts = {
-                                width: 0,             // 信息窗口宽度
-                                height: 0,              // 信息窗口高度
-                                title: "",              // 信息窗口标题
+                                width: 0,
+                                height: 0,
+                                title: "",
                                 enableMessage: false    //设置允许信息窗发送短息
                             }
-                            let infoWindow = new BMap.InfoWindow(content, opts);  // 创建信息窗口对象
-                            this.resMap.openInfoWindow(infoWindow, key.point); //开启信息窗口
+                            let infoWindow = new BMap.InfoWindow(content, opts);    // 创建信息窗口对象
+                            this.resMap.openInfoWindow(infoWindow, key.point);      //开启信息窗口
                         });
                     } else {
                         break
@@ -718,12 +753,12 @@
                         strokeOpacity: 0.3
                     });
                     this.resMap.addOverlay(circle);
-                    this.showResInCircle(key.point, radius,circle)
+                    this.showResInCircle(key.point, radius)
                 }
                 this.searchResList.length ?  this.activeSearchKind = 1 : this.activeSearchKind = 2
             },
             // 显示圆半径内的小区
-            showResInCircle(point,radius,circle) {
+            showResInCircle(point,radius) {
                 let date1 = new Date();
                 let allOverlay = this.resMap.getOverlays();
                 for(let key of this.resInfo) {
@@ -732,37 +767,21 @@
                             akey.toString() == "[object Marker]" &&
                             akey.getLabel() &&
                             akey.getLabel().content === key.resName) {
-                            // let lngLat = key.lng.split(';')
-                            // let point2 = new BMap.Point(lngLat[0],lngLat[1])
                             let point2 = new BMap.Point(key.lng, key.lat);
-                            // BMapLib.GeoUtils.isPointInCircle(point, circle)
-                            let isShow = BMapLib.GeoUtils.isPointInCircle(point2, circle)
-                            if (isShow) {
-                                let flag = this.searchResList.some((item, index) => {
-                                    if (key.resID === item.resID) {
+                            let distance = this.resMap.getDistance(point,point2)
+                            if(distance > radius){
+                                akey.hide()
+                            } else {
+                                let flag = this.searchResList.some((item,index)=>{
+                                    if(key.resID === item.resID) {
                                         return true
                                     }
                                 })
                                 if (!flag) {
                                     this.searchResList.push(key)
                                 }
-                            } else {
-                                akey.hide()
                             }
-                            // let distance = this.resMap.getDistance(point,point2)
-                            // if(distance > radius){
-                            //     akey.hide()
-                            // } else {
-                            //     let flag = this.searchResList.some((item,index)=>{
-                            //         if(key.resID === item.resID) {
-                            //             return true
-                            //         }
-                            //     })
-                            //     if (!flag) {
-                            //         this.searchResList.push(key)
-                            //     }
-                            // }
-                            // break
+                            break
                         }
                     }
                 }
@@ -782,6 +801,7 @@
              * 顶部 filter
             * */
             filterResFun() {
+                this.searchOnlineList = []
                 console.log('区域---', this.selectArea)
                 console.log('住户数---', this.houseNum)
                 console.log('楼盘价格---', this.buildPrice)

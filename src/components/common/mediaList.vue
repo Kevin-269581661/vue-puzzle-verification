@@ -798,25 +798,43 @@
                     this.mediaState[i] = false
                 }
                 if (rows.mState == selectState) {
-                    if(rows.mState == 1 && (rows.asState.A == '0' || !rows.asState.B == '0')) {
+                    if(rows.mVehicle === '广告门' && rows.pNum > 1 && rows.mState == 1 &&
+                        (rows.asState.A == '0' || !rows.asState.B == '0')) {
+                        // 正常转正常
+                        this.isDisabled = false
+                        if(rows.asState.A == '0') {
+                            this.mediaState.AState = false
+                            this.mediaState.ADisable = false
+                        } else {
+                            this.mediaState.AState = true
+                            this.mediaState.ADisable = true
+                        }
+                        // B面
+                        if(rows.asState.B == '0') {
+                            this.mediaState.BState = false
+                            this.mediaState.BDisable = false
+                        } else {
+                            this.mediaState.BState = true
+                            this.mediaState.BDisable = true
+                        }
                         this.mStateDialogVisible = true
-                        this.judgeAsState(rows)
+                        // this.judgeAsState(rows)
                     } else {
                         sessFun.messageFun('waring','当前状态已是' + stateName)
                     }
 
-                } else if (selectState == '0' && rows.mState == '1') {
+                } else if (rows.mVehicle === '广告门' && rows.pNum > 1 && selectState == '0' && rows.mState == '1') {
                     // 正常转禁用
                     this.isDisabled = true
                     this.mStateDialogVisible = true
                     // 判断是否为已禁用
                     this.judgeAsState(rows)
-                } else if (selectState == '1' && rows.mState == '0') {
+                } else if (rows.mVehicle === '广告门' && rows.pNum > 1 && selectState == '1' && rows.mState == '0') {
                     // 禁用转正常
                     this.isDisabled = false
                     this.mStateDialogVisible = true
                 } else if(selectState == '4'){
-                  // 删除
+                    // 删除
                     this.judgeResHaveMediaNum()
                     // this.deleteMedia()
                 } else {

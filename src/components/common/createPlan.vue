@@ -2989,7 +2989,7 @@
                         adObj.box.B = true
                     }
                     // 点位状态
-                    if (key.adlInfo !== null && key.adlInfo !== undefined && key.adlInfo.length > 0) {
+                    if (!!key.adlInfo && key.adlInfo.length > 0) {
                         let arr = []
                         for (let akey of key.adlInfo) {
                             if (akey.asState) {
@@ -4117,8 +4117,6 @@
             },
             // 统计购物车媒体数、面数
             computeMedia_AD(letter) {
-                // let shopList = this.shopingList
-                // console.log('购物车统计面数媒体数shopList', shopList)
                 let shopList = [];
                 let currTab = this.activeName;
                 console.log('typeShopList----', this.typeShopList);
@@ -4324,10 +4322,10 @@
                 this.eventList = arr;
             },
             // 事件选择
-            changeEvent(val){
+            changeEvent(val) {
                 console.log('val', val);
-                if(this.shopShowList.length){
-                    switch (val){
+                if (this.shopShowList.length) {
+                    switch (val) {
                         case 1:
                             this.clearADLock();
                             break;
@@ -4350,9 +4348,9 @@
                             this.removeAllType('B');
                             break;
                     }
-                }else{
+                } else {
                     let active = this.activeName;
-                    sessFun.messageFun('warning', `没有${active=='1'?'广告门':'道闸'}数据`);
+                    sessFun.messageFun('warning', `没有${active == '1' ? '广告门' : '道闸'}数据`);
                 }
             },
             // 清空被占的点位
@@ -4611,12 +4609,6 @@
                     console.log('this.ActiveConnectADList',this.ActiveConnectADList)
                     this.connectAdDialogVisible = true
                 }
-                // console.log('购物车行被点击row',row,column)
-                // if(row.connData.connectResName !== '' || row.connData.commentWorkRes !=='' || row.connData.connectMedia !==''){
-                //     this.ActiveConnectADList = row.connData
-                //     console.log('this.ActiveConnectADList',this.ActiveConnectADList)
-                //     this.connectAdDialogVisible = true
-                // }
             },
             // 添加到购物车
             AddShopingInfo(info, letter) {

@@ -1,11 +1,13 @@
 'use strict'
 // 测试环境
 let wuYouMap = 'https://wsopbodv.dituwuyou.com/qinlin/embed?mid=_J6aWeV128gkhVn54AfWIw&token=SvcvtTqpktwPUb8dbu_jx0602nj_4tF-is8&mapid=';
+let shareWUYouMap = 'https://wsopbodv.dituwuyou.com/qinlin/embed?mid=_J6aWeV128gkhVn54AfWIw&token=SvcvtTqpktwPUb8dbu_jx0602nj_4tF-is8&myid=';
 let jsonLink = 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes-test/';
 let wsUrl = "wss://test-qadn.qinlindmp.com/UCAPI/ScanLogin?type=PC"
 if(process.env.NODE_ENV == 'production' || process.env.NODE_ENV =='graying'){
     // 正式环境
     wuYouMap = 'https://www.dituwuyou.com/qinlin/embed?mid=FPcrNHyq3xXFZDbqlTyHKA&token=fp3nxsKCYZzOSnU0KosEq0GA1o1qcKh5XLA&mapid=';
+    shareWUYouMap = 'https://www.dituwuyou.com/qinlin/embed?mid=FPcrNHyq3xXFZDbqlTyHKA&token=fp3nxsKCYZzOSnU0KosEq0GA1o1qcKh5XLA&myid=';
     jsonLink = 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes/';
     wsUrl = "wss://www.qinlinad.com/UCAPI/ScanLogin?type=PC";
 }
@@ -41,6 +43,7 @@ const apiVar = {
     // 社区画像
     portrait: '/portrait',
     wuYouMap: wuYouMap,
+    shareWUYouMap: shareWUYouMap,
     jsonLink: jsonLink,
     wsUrl: wsUrl,
     qadnUrl: process.env.API_ROOT?process.env.API_ROOT.substr(0, process.env.API_ROOT.length-1):''

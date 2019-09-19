@@ -889,35 +889,25 @@ export default {
                 spinner: 'el-icon-loading',
                 background: 'rgba(0, 0, 0, 0.7)'
             });
-            let shopingArr = this.addAdsArr
-            let pdidArr = this.pdidList
-            console.log('pdidarr---', pdidArr);
-            console.log('shopingArr',shopingArr)
+            console.log('pdidarr---', this.addAdsArr);
+            console.log('shopingArr',this.pdidList)
             let userData = this.sessionData;
             let arr = []
-            for (let i = 0; i < shopingArr.length; i++) {
-                for (let n = 0; n < pdidArr.length; n++) {
-                    if (shopingArr[i].city == pdidArr[n].city && shopingArr[i].asrID == pdidArr[n].asrID) {
-                        if(pdidArr[n].pdType == 0 && shopingArr[i].mVehicle === '广告门'){
-                            arr.push({
-                                asID: Number(shopingArr[i].asID),
-                                pdID: pdidArr[n].pdID,
-                                pbStar:(shopingArr[i].schedules.split('-')[0]).split('/').join('-'),    // 开始投放时间
-                                pbEnd: (shopingArr[i].schedules.split('-')[1]).split('/').join('-'),       // 开始投放时间
-                                uID: this.sessionData.uID,
-                            })
+            for (let key of this.addAdsArr) {
+                for (let pKey of this.pdidList) {
+                    if (key.city == pKey.city && key.asrID == pKey.asrID) {
+                        let adsInfo = {
+                            asID: Number(key.asID),
+                            pdID: pKey.pdID,
+                            pbStar: (key.schedules.split('-')[0]).split('/').join('-'),    // 开始投放时间
+                            pbEnd: (key.schedules.split('-')[1]).split('/').join('-'),       // 开始投放时间
+                            uID: this.sessionData.uID,
+                        }
+                        if (pKey.pdType == 0 && key.mVehicle === '广告门') {
+                            arr.push(adsInfo)
                             break
-                        }else if(pdidArr[n].pdType == 1 && shopingArr[i].mVehicle === '道闸'){
-                            for(let key of shopingArr[i].asID){
-                                arr.push({
-                                    asID: Number(key),
-                                    pdID: pdidArr[n].pdID,
-                                    pbStar: shopingArr[i].schedules.split('-')[0],
-                                    pbEnd: shopingArr[i].schedules.split('-')[1],
-                                    uID: this.sessionData.uID,
-                                    // pbSetTime: pbSetTime,
-                                })
-                            }
+                        } else if (pKey.pdType == 1 && key.mVehicle === '道闸') {
+                            arr.push(adsInfo)
                             break
                         }
                     }

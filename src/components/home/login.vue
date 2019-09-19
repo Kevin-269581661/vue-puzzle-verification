@@ -61,7 +61,7 @@
             <img src="../../assets/images/loginBg.png" alt="">
         </div>
         <div class="footer">
-            <p>copyright &copy; 2017 Qinlin technology. All rights reserved. 粤ICP备15007183号</p>
+            <p>copyright &copy; 2017 Qinlin technology. All rights reserved. <a href="https://www.beian.miit.gov.cn">粤ICP备15007183号</a></p>
         </div>
     </div>
 </template>
@@ -561,5 +561,9 @@
         color: rgba(0, 0, 0, 0.45);
     }
 
+    .footer a{
+        color: rgba(0, 0, 0, 0.45);
+        text-decoration: underline;
+    }
 
 </style>

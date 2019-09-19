@@ -28,3 +28,11 @@
   top: 2px;
   background: #8A8A8A;
 }
+
+.gongXinBu{
+    text-decoration: underline;
+}
+
+.gongXinBu:hover{
+    color: #409eff;
+}

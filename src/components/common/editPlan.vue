@@ -1352,6 +1352,8 @@
                 rejectAdPlan: [],                  // 排斥方案选项
                 activeAdPlan: '',                 // 当前选择的方案
                 routePath: '',
+                // 方案是否创建中，防多次点击创建-节流
+                creating: false
             };
         },
         mounted() {
@@ -3116,21 +3118,29 @@
                         sessFun.messageFun('warning','请选择点位')
                     }
                 } else if (this.active === 2) {
-                    this.isCityPrice = false
-                    this.vaildCityQuotation()
-                    if (!this.isCityPrice) {
-                        if (letter === 'workInSync') {
-                            this.workInSync = true
-                        }
-                        this.ADloading = this.$loading({
-                            lock: true,
-                            text: '加急创建中...',
-                            spinner: 'el-icon-loading',
-                            background: 'rgba(0, 0, 0, 0.7)'
-                        })
-                        this.UpdateAdPlanFun() // 创建方案
-                    } else {
-                        sessFun.messageFun('warning', '单城市总价格大于系统支持的最大价格（2000万）')
+                    // 防多次点击创建
+                    if (!this.creating) {
+                        this.creating = true
+                        let timer = setTimeout(() => {
+                            this.creating = false
+                            this.isCityPrice = false
+                            this.vaildCityQuotation()
+                            if (!this.isCityPrice) {
+                                if (letter === 'workInSync') {
+                                    this.workInSync = true
+                                }
+                                this.ADloading = this.$loading({
+                                    lock: true,
+                                    text: '加急创建中...',
+                                    spinner: 'el-icon-loading',
+                                    background: 'rgba(0, 0, 0, 0.7)'
+                                })
+                                this.UpdateAdPlanFun() // 创建方案
+                            } else {
+                                sessFun.messageFun('warning', '单城市总价格大于系统支持的最大价格（2000万）')
+                            }
+                            clearTimeout(timer)
+                        }, 500)
                     }
                 }
                 if (this.active > 3) {

@@ -844,7 +844,7 @@
             <el-button plain v-if="active === 0" type="default" @click="exportEmpty()">导空点</el-button>
 
             <el-button @click="next" v-if="active == 0 || active == 1" type="primary">下一步</el-button>
-            <el-button @click="next" v-if="active == 2" type="primary" :disabled="createBtn">创建方案 </el-button>
+            <el-button @click="next" v-if="active == 2" type="primary">创建方案 </el-button>
 
             <!-- <p v-if="active === 0" style="color: #666;font-size: 14px;margin-top:10px;">备注：导空点功能目前导出的为最近一年的空点</p> -->
 
@@ -1457,7 +1457,8 @@
                 activeAdPlan: '',                 // 当前选择的方案
                 routePath: '',
                 isSelect: false,                  // 判断是否已经选择过点位
-                createBtn: false,                 // 创建的方案的按钮禁用-防止多次点击
+                // 方案是否创建中，防多次点击创建-节流
+                creating: false,
             };
         },
         mounted() {
@@ -1614,9 +1615,9 @@
             },
             // 下一步
             next() {
-                console.log('planForm', this.planForm)
                 if (this.active === 0) {
-                    console.log('this.dynamicTags', this.dynamicTags)
+                    console.log('planForm--', this.planForm)
+                    // console.log('this.dynamicTags--', this.dynamicTags)
                     this.submitForm('planForm')
                 } else if (this.active === 1) {
                     if (this.shopingList.length !== 0) {
@@ -1628,30 +1629,53 @@
                         sessFun.messageFun('warning','请选择点位')
                     }
                 } else if (this.active === 2) {
-                    this.createBtn = true
-                    let timer = setTimeout(()=>{
-                        this.createBtn = false
-                        clearTimeout(timer)
-                    },500)
+                     // console.log('1')
+                    // this.throttle(this.createFun,500)()
                     this.isCityPrice = false
                     this.vaildCityQuotation()
-                    // console.log('this.isCityPrice',this.isCityPrice)
-                    if (!this.isCityPrice) {
-                        this.ADloading = this.$loading({
-                            lock: true,
-                            text: '加急创建中...',
-                            spinner: 'el-icon-loading',
-                            background: 'rgba(0, 0, 0, 0.7)'
-                        });
-                        this.creatAdPlan()    // 创建方案 当前价格大于系统支持的最大价格
-                    } else {
-                        sessFun.messageFun('warning','单城市总价格大于系统支持的最大价格（2000万）')
+                    // // 防多次点击创建
+                    if (!this.creating) {
+                        this.creating = true
+                        let timer = setTimeout(() => {
+                            this.creating = false
+                            if (!this.isCityPrice) {
+                                this.ADloading = this.$loading({
+                                    lock: true,
+                                    text: '加急创建中...',
+                                    spinner: 'el-icon-loading',
+                                    background: 'rgba(0, 0, 0, 0.7)'
+                                });
+                                this.creatAdPlan()    // 创建方案 当前价格大于系统支持的最大价格
+                            } else {
+                                sessFun.messageFun('warning','单城市总价格大于系统支持的最大价格（2000万）')
+                            }
+                            clearTimeout(timer)
+                        }, 500)
                     }
-
                 }
                 if (this.active > 3) {
                     this.active = 0;
                 }
+            },
+            // 创建方法
+            createFun(){
+                console.log('4444')
+            },
+            // 函数节流
+            throttle(func, wait){
+                console.log('22')
+                let timer;
+                return () => {
+                    if (timer) {
+                        console.log('return---')
+                        return;
+                    }
+                    timer = setTimeout(() => {
+                        console.log('333')
+                        func();
+                        timer = null;
+                    }, wait);
+                };
             },
             // 上一步
             prev() {

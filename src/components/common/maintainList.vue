@@ -82,7 +82,7 @@
                         style="width: 100%">
                         <el-table-column
                             label="维护类型"
-                            min-width="7%"
+                            min-width="100"
                             :show-overflow-tooltip="true">
                             <template slot-scope="scope">
                                 <span>{{scope.row.mtType}}</span>
@@ -92,12 +92,16 @@
                             column-key="resName"
                             prop="resName"
                             label="资源"
-                            min-width="10%">
+                            :show-overflow-tooltip="true"
+                            min-width="160">
+                            <template slot-scope="scope">
+                                <span> {{scope.row.resName || '--'}}</span>
+                            </template>
                         </el-table-column>
                         <el-table-column
                             prop="cityName"
                             label="城市"
-                            min-width="7%"
+                            min-width="100"
                             :show-overflow-tooltip="true">
                             <template slot-scope="scope">
                                 <span>{{scope.row.cityName || '--' }}</span>
@@ -106,7 +110,7 @@
                         <el-table-column
                             prop="area"
                             label="区域"
-                            min-width="7%"
+                            min-width="100"
                             :show-overflow-tooltip="true">
                             <template slot-scope="scope">
                                 <span>{{scope.row.area || '--' }}</span>
@@ -115,7 +119,7 @@
                         <el-table-column
                             prop="mediaName"
                             label="媒体名称"
-                            min-width="7%"
+                            min-width="120"
                             :show-overflow-tooltip="true">
                             <template slot-scope="scope">
                                 <span>{{scope.row.mediaName || '--' }}</span>
@@ -124,7 +128,7 @@
                         <el-table-column
                             prop="assetTag"
                             label="资产编号"
-                            min-width="12%"
+                            min-width="150"
                             :show-overflow-tooltip="true">
                             <template slot-scope="scope">
                                 {{ scope.row.assetTag || '--' }}
@@ -133,23 +137,52 @@
                         <el-table-column
                             prop="issueRecord"
                             label="问题记录"
-                            min-width="12%"
+                            min-width="170"
+                            class="tar"
+                            :show-overflow-tooltip="true"
+                        >
+                            <template slot-scope="scope">
+                                <span>{{scope.row.issueRecord||'--'}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                            prop="createTime"
+                            label="提交日期"
+                            min-width="150"
+                            class="tar"
+                            :show-overflow-tooltip="true"
+                        >
+                            <template slot-scope="scope">
+                                <span>{{scope.row.createTime || '--'}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                            prop="updateTime"
+                            label="处理日期"
+                            min-width="150"
+                            class="tar"
+                            :show-overflow-tooltip="true"
+                        >
+                            <template slot-scope="scope">
+                                <span>{{scope.row.updateTime|| '--'}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                            prop="createUserName"
+                            label="提交者"
+                            min-width="100"
                             class="tar"
                         >
                             <template slot-scope="scope">
-                                <el-tooltip class="item" effect="dark" placement="top-start">
-                                    <div slot="content">
-                                        {{scope.row.issueRecord || '--'}}
-                                    </div>
-                                    <span>{{scope.row.issueRecord}}</span>
-                                </el-tooltip>
+                                <span>{{scope.row.createUserName}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
                             column-key="mState"
                             prop="mState"
                             label="状态"
-                            min-width="7%">
+                            fixed="right"
+                            width="100">
                             <template slot-scope="scope">
                                 <point-state :state-text="scope.row.mState"
                                              :color="stateToText(scope.row.mState).color"></point-state>
@@ -158,6 +191,7 @@
                         <el-table-column
                             label="操作"
                             width="100"
+                            fixed="right"
                         >
                             <template slot-scope="scope">
                                 <el-dropdown size="small" trigger="click" placement="bottom-start"
@@ -516,8 +550,8 @@
                 let info = {
                     "data": {
                         mID: item.mID,
-                        pageNum: this.currPage,
-                        pageSize: 50,
+                        pageNum: 1,
+                        pageSize: 80,
                     },
                     "service": "GetMediaMaintenanceHistoryListAction",
                     "token": this.sessionData.token,
@@ -534,7 +568,7 @@
                         };
                         for (let data of res.data.data.list) {
                             let a = {
-                                time: data.patrolTime,
+                                time: data.createTime,
                                 text: data.feedback,
                                 address: data.resAddress,
                                 recordId: data.recordId,
@@ -723,8 +757,10 @@
                     mediaName: item.mTitle,
                     cityName: item.cityName,
                     area: item.districtName,
-                    checkTime: item.patrolTime,
                     issueRecord: item.feedback ? item.feedback : '--',
+                    updateTime:item.updateTime?item.updateTime:'---',
+                    createTime:item.createTime?item.createTime:'---',
+                    createUserName:item.createUserName?item.createUserName:'---',
                     status: item.status,
                     remark: item.remark,
                     mTitle: item.mTitle,
@@ -962,5 +998,22 @@
 
     /deep/ .ad_mediaDetail_wrap .el-date-editor .el-range-separator {
         line-height: 25px;
+    }
+    /*滚动条*/
+    /deep/ .el-table__body-wrapper {
+
+        overflow-y: hidden;
+        overflow-x: scroll;
+    }
+
+    /deep/ .el-table__body-wrapper::-webkit-scrollbar {
+        height: 8px;
+        background: #FAFAFA;
+    }
+
+    /deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        background: #C1C1C1;
+        border-radius: 4px;
     }
 </style>

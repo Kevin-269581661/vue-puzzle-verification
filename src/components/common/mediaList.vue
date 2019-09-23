@@ -171,15 +171,6 @@
                                     </el-tooltip>
                                 </span>
                                 <point-state v-else :state-text="stateToText(scope.row.mState).text" :color="stateToText(scope.row.mState).color"></point-state>
-                                <!--<span v-if="scope.row.mState === '正常' && scope.row.mVehicle === '广告门' && scope.row.pNum > 1">-->
-                                    <!--<el-tooltip class="item" effect="dark" placement="left-start">-->
-                                        <!--<div slot="content">-->
-                                            <!--A面:{{scope.row.asState.A == '1' ? '正常' : '禁用'}}  B面:{{scope.row.asState.B == '1' ? '正常' : '禁用'}}-->
-                                        <!--</div>-->
-                                        <!--<point-state :state-text="scope.row.mState" :color="stateToText(scope.row.mState).color"></point-state>-->
-                                    <!--</el-tooltip>-->
-                                <!--</span>-->
-                                <!--<point-state v-else :state-text="scope.row.mState" :color="stateToText(scope.row.mState).color"></point-state>-->
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -210,6 +201,9 @@
                                         <el-dropdown-item command="4"
                                                           @click.native.prevent="changeState('4',scope.$index, scope.row)"
                                                           :disabled="scope.row.mState === '4'">删除</el-dropdown-item>
+                                        <el-dropdown-item command="4"
+                                                          @click.native.prevent="changeState('5',scope.$index, scope.row)"
+                                                          :disabled="scope.row.mState === '5'">拆除</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </el-dropdown>
                             </template>
@@ -251,6 +245,64 @@
                     <el-button size="mini" @click="mStateDialogVisible = false">取 消</el-button>
                     <el-button size="mini" type="primary" style="margin-left: 35px" @click="submitMediaState">确 定</el-button>
                 </span>
+            </el-dialog>
+            <!--媒体拆除-->
+            <el-dialog
+                :visible.sync="dismantleVisible"
+                :close-on-click-modal="false"
+                width="480px"
+                custom-class="mStatueDialog">
+                <h3 slot="title" class="dismantle_title">
+                    <i class="el-icon-question"></i>
+                    媒体拆除
+                </h3>
+                <div>
+                    <p style="line-height: 28px">被拆除的媒体将不可重新被启用</p>
+                    <el-input type="textarea" v-model.trim="dismantleInfo" placeholder="请填写拆除记录，选填"></el-input>
+                    <p class="push_map_box_p" v-show="isShowTag">
+                        <i class="el-icon-warning" style="color:#FAAD14"></i>
+                        在【维护管理】页面，可查阅每个拆除的媒体记录
+                        <i class="el-icon-close" @click="hideTag()"></i>
+                    </p>
+                </div>
+                <div slot="footer" class="dialog-footer">
+                    <el-button size="mini" @click="dismantleVisible = false">取 消</el-button>
+                    <el-button size="mini" type="primary" style="margin-left: 35px" @click="dismantleVisible = false">确 定</el-button>
+                </div>
+            </el-dialog>
+            <!--媒体待维修-->
+            <el-dialog
+                :visible.sync="repairVisible"
+                :close-on-click-modal="false"
+                title="维修媒体"
+                width="448px"
+                custom-class="mStatueDialog">
+                <ul class="edit_media_ul">
+                    <li>
+                        <span>出现时间：</span>
+                        <el-date-picker
+                            v-model="waitRepair.time"
+                            type="date"
+                            value-format="yyyy/MM/dd"
+                            format="yyyy/MM/dd"
+                            placeholder="选择日期"
+                            size="small">
+                        </el-date-picker>
+                    </li>
+                    <li>
+                        <span>问题记录：</span>
+                        <el-input type="textarea" v-model.trim="waitRepair.msg" placeholder="请填写问题记录，选填"></el-input>
+                    </li>
+                </ul>
+                <p class="push_map_box_p" v-show="isShowTag">
+                    <i class="el-icon-warning" style="color:#FAAD14"></i>
+                    在【维护管理】页面，可查阅每个待维修的媒体记录
+                    <i class="el-icon-close" @click="hideTag()"></i>
+                </p>
+                <div slot="footer" class="dialog-footer">
+                    <el-button size="mini" @click="repairVisible = false">取 消</el-button>
+                    <el-button size="mini" type="primary" style="margin-left: 35px" @click="repairVisible = false">确 定</el-button>
+                </div>
             </el-dialog>
             <!--媒体导入模态框-->
             <el-dialog
@@ -503,22 +555,25 @@
                 },
                 // 标识启用（true）还是禁用(false)
                 isDisabled: false,
+                // 拆除
+                dismantleVisible: false,
+                // 拆除信息
+                dismantleInfo:'',
+                // 待维修弹出框
+                repairVisible: false,
+                // 待维修信息
+                waitRepair: {
+                    time:'',
+                    msg: ''
+                }
             }
         },
         mounted: function () {
             // 判断角色确定是否有操作这一列
             this.sessionData = sessFun.getSess();
             this.role = this.sessionData.uType
-            if (this.sessionData.uType === 'MD') {
-                this.showNewBtn = true
-            } else {
-                this.showNewBtn = false
-            }
-            if (this.sessionData.uType === 'SA') {
-                this.showImportBtn = true
-            } else {
-                this.showImportBtn = false
-            }
+            this.sessionData.uType === 'MD' ? this.showNewBtn = true : this.showNewBtn = false
+            this.sessionData.uType === 'SA' ? this.showImportBtn = true : this.showImportBtn = false
             this.getData();
             let endTime = timeFormat.returnDayCount(0,'/');
             let startTime = timeFormat.returnDayCount(-180,'/');
@@ -586,8 +641,6 @@
                         console.log('确认推送接口', res)
                         if (res.data.SysCode === 200200) {
                             sessFun.messageFun('success', '推送成功')
-                        } else if (res.data.SysCode === 100302) {
-                            sessFun.loginTimeout()
                         } else {
                             sessFun.messageFun('warning', '推送失败')
                         }
@@ -678,9 +731,7 @@
                                 duration: 1500
                             });
                         }
-                    } else if (res.data.SysCode == 100302){
-                        this.loginTimeout()
-                    }else {
+                    } else {
                         Message({
                             type: 'warning',
                             message: res.data.MSG
@@ -782,7 +833,7 @@
                         this.setRowMediaStatus(stateName, this.selectState, 'one')
                     }
                 } else {
-                    sessFun.messageFun('waring', '请选择类型!')
+                    sessFun.messageFun('waring', '请选择媒体面!')
                 }
             },
             // 下拉选择状态
@@ -818,11 +869,9 @@
                             this.mediaState.BDisable = true
                         }
                         this.mStateDialogVisible = true
-                        // this.judgeAsState(rows)
                     } else {
                         sessFun.messageFun('waring','当前状态已是' + stateName)
                     }
-
                 } else if (rows.mVehicle === '广告门' && rows.pNum > 1 && selectState == '0' && rows.mState == '1') {
                     // 正常转禁用
                     this.isDisabled = true
@@ -833,10 +882,17 @@
                     // 禁用转正常
                     this.isDisabled = false
                     this.mStateDialogVisible = true
-                } else if(selectState == '4'){
+                } else if (selectState === '3') {
+                    // 待维修
+                    this.isShowTag = true
+                    this.repairVisible = true
+                } else if(selectState === '4') {
                     // 删除
                     this.judgeResHaveMediaNum()
-                    // this.deleteMedia()
+                } else if (selectState === '5') {
+                    // 拆除
+                    this.isShowTag = true
+                    this.dismantleVisible = true
                 } else {
                     this.setRowMediaStatus(stateName,selectState)
                 }
@@ -1012,8 +1068,6 @@
                         console.log('当前行', this.currentPlan[this.rowIndex])
                     } else if (res.data.SysCode === 200302 || res.data.MSG === '广告位已被占用') {
                         sessFun.messageFun('warning',res.data.MSG)
-                    } else if (res.data.SysCode == 100302) {
-                        sessFun.loginTimeout()
                     } else {
                         sessFun.messageFun('warning',res.data.MSG)
                     }
@@ -1106,8 +1160,6 @@
                             }
                             this.companyList = tempList.concat()
                             this.importSelectLoading = false
-                        } else if (res.data.SysCode == 100302) {
-                            this.loginTimeout()
                         } else {
                             this.$message.warning(res.data.MSG);
                         }
@@ -1172,8 +1224,6 @@
                             this.ImportDialogVisible = false
                             this.fileData = []
                             this.importAsrID = ''
-                        } else if (res.data.SysCode == 100302) {
-                            this.loginTimeout()
                         } else {
                             this.$message.warning(res.data.MSG)
                         }
@@ -1188,7 +1238,7 @@
             // 导入失败的媒体
             setErrorMediaTable(errorList){
                 let resultarr = []
-                for (let data of errorList) { // mvehicle
+                for (let data of errorList) {
                     resultarr.push({
                         errorMsg: data.msg,
                         resID: data.resInfo.resID,
@@ -1228,14 +1278,6 @@
             },
             formatJson(filterVal, jsonData) {
                 return jsonData.map(v => filterVal.map(j => v[j]))
-            },
-            // 登录超时
-            loginTimeout() {
-                this.$message({
-                    message: '登录超时或权限异常,请重新登录',
-                    type: 'warning'
-                })
-                this.$router.push('/login')
             },
         }
     }
@@ -1361,32 +1403,60 @@
     /deep/ .mStatueDialog{
         width: 285px;
     }
+
     /deep/ .mStatueDialog h4{
         margin: 12px 0;
     }
+
     /deep/ .mStatueDialog .el-dialog__body{
         padding: 0 20px 10px;
     }
-    /deep/ .el-checkbox__inner{
-        /*border-radius: 50%;*/
+
+    /*拆除*/
+    .dismantle_title{
+        font-size: 16px;
+        color: #333;
+        font-weight: 600;
     }
+
+    .dismantle_title .el-icon-question{
+        font-size: 21px;
+        color: #FAAD14;
+    }
+
+    /*待维修*/
+    .edit_media_ul li{
+        margin-bottom: 16px;
+    }
+
+    .edit_media_ul /deep/ .el-date-editor.el-input,
+    .edit_media_ul /deep/ .el-date-editor.el-input__inner{
+        width: calc(100% - 78px);
+    }
+
+    .edit_media_ul /deep/ .el-textarea{
+        width: 81%;
+        vertical-align:top;
+    }
+
     /*导入媒体*/
     .upload_file{
         display: inline-block;
         /*display: none;*/
     }
-    .upload_file .el_upload_btn{
-        /*display: none;*/
-    }
+
     .import_ul li{
         margin-bottom: 16px;
     }
+
     .import_ul /deep/ .el-select{
         width: 100%;
     }
+
     .import_ul /deep/ .el-button{
         width: 126px;
     }
+
     .import_ul .aButton{
         width: 124px;
         height: 29px;
@@ -1399,6 +1469,7 @@
         border-radius: 4px;
         border: 1px solid #dcdfe6;
     }
+
     .aButton:hover{
         border: 1px solid #409EFF;
         color: #409EFF;
@@ -1454,18 +1525,19 @@
         line-height: 32px;
         padding:  0 16px;
         margin-top: 16px;
+        position: relative;
     }
 
     .push_map_box_p /deep/ .el-icon-close{
         cursor: pointer;
         margin-left: 24px;
+        position: absolute;
+        top: 9px;
+        right: 8px;
     }
 </style>
 
 <style>
-    .delete_media_confirm .el-message-box__header{
-        /*padding-left: 48px;*/
-    }
     .delete_media_confirm .el-message-box__title{
         font-size: 16px;
         font-weight: 600;

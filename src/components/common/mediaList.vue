@@ -799,7 +799,7 @@
                 }
                 if (rows.mState == selectState) {
                     if(rows.mVehicle === '广告门' && rows.pNum > 1 && rows.mState == 1 &&
-                        (rows.asState.A == '0' || !rows.asState.B == '0')) {
+                        (rows.asState.A == '0' || rows.asState.B == '0')) {
                         // 正常转正常
                         this.isDisabled = false
                         if(rows.asState.A == '0') {
@@ -820,7 +820,7 @@
                         this.mStateDialogVisible = true
                         // this.judgeAsState(rows)
                     } else {
-                        sessFun.messageFun('waring','当前状态已是' + stateName)
+                        sessFun.messageFun('warning','当前状态已是' + stateName)
                     }
 
                 } else if (rows.mVehicle === '广告门' && rows.pNum > 1 && selectState == '0' && rows.mState == '1') {
@@ -985,7 +985,7 @@
                     }
                 }
                 if(letter === 'one') {
-                    params.data.mstate = this.isDisabled ? '1' : '0'     // 单面禁用媒体状态还是正常（1）
+                    params.data.mstate = state == '1' || this.isDisabled ? '1' : '0'     // 单面禁用媒体状态还是正常（1）
                     params.data.asLabs = this.mediaState.AState ? 'A' : 'B'
                     params.data.asState = this.isDisabled ? '0' : '1'
                 }

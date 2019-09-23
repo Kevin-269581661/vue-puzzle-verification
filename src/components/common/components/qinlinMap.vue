@@ -339,31 +339,57 @@
                 this.displayBoundary()
             },
             // 创建标注
-            creatMarker(){
-                let i = 0
-                for(let key of this.resInfo){
-                    key.isSelect = false
-                    if(i < 500) {
-                        let point = new BMap.Point(key.lng, key.lat);
-                        let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(20,33),{
-                            anchor: new BMap.Size(10, 33)
-                        });
-                        let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
-                        let label = new BMap.Label(key.resName,{offset:new BMap.Size(20,5)});
-                        label.setStyle({
-                            borderRadius: "3px"
-                        });
-                        marker.setLabel(label);
-                        marker.setTop(true);
-                        this.resMap.addOverlay(marker);              // 将标注添加到地图中*/
-                        marker.addEventListener("click",()=>{
-                            this.showInfo(key,point)
-                        });
-                    } else {
-                        break
-                    }
-                    i++
+            creatMarker() {
+                let markers = [];
+                for (let key of this.resInfo) {
+                    let point = new BMap.Point(key.lng, key.lat);
+                    let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(20, 33), {
+                        anchor: new BMap.Size(10, 33)
+                    });
+                    let marker = new BMap.Marker(point, {icon: myIcon});  // 创建标注
+                    let label = new BMap.Label(key.resName, {offset: new BMap.Size(20, 5)});
+                    label.setStyle({
+                        borderRadius: "3px"
+                    });
+                    marker.setLabel(label);
+                    marker.setTop(true);
+                    marker.addEventListener("click",()=>{
+                        this.showInfo(key,point)
+                    });
+                    markers.push(marker);
                 }
+                //最简单的用法，生成一个marker数组，然后调用markerClusterer类即可。
+                let markerClusterer = new BMapLib.MarkerClusterer(this.resMap, {markers:markers})
+                console.log('markerClusterer',markerClusterer, markerClusterer.getMarkers())
+                // let i = 0
+                // for(let key of this.resInfo){
+                //     key.isSelect = false
+                //     if(i < 500) {
+                //         let point = new BMap.Point(key.lng, key.lat);
+                //         let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(20,33),{
+                //             anchor: new BMap.Size(10, 33)
+                //         });
+                //         let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
+                //         let label = new BMap.Label(key.resName,{offset:new BMap.Size(20,5)});
+                //         label.setStyle({
+                //             borderRadius: "3px"
+                //         });
+                //         marker.setLabel(label);
+                //         marker.setTop(true);
+                //         this.resMap.addOverlay(marker);              // 将标注添加到地图中*/
+                //         marker.addEventListener("click",()=>{
+                //             this.showInfo(key,point)
+                //         });
+                //     } else {
+                //         break
+                //     }
+                //     i++
+                // }
+            },
+            addClickHandler(content,marker){
+                marker.addEventListener("click",()=>{
+                    this.showInfo(key,point)
+                });
             },
             // 城市边界
             displayBoundary() {

@@ -769,7 +769,7 @@ export default {
                         this.ImgBoxArr = res.data.data;
                         this.isShowImgArr = true;
                     }else{
-                        Message.warning("暂无数据！！！");
+                        Message.warning("暂无数据");
                     }
                 }else{
                     Message.warning(res.data.MSG);

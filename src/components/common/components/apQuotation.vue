@@ -1410,7 +1410,8 @@
                                             premiumPrice = QKey.priceMsg[QPKey].reaPrice * (CKey.mediaClassifiedPremium.onlyAPremium / 100)
                                         }
                                     }
-                                    QKey.priceMsg[QPKey].advertyPrice = Number((Number(QKey.priceMsg[QPKey].reaPrice) + premiumPrice).toFixed(2))     // 显示的广告费
+                                    // 显示的广告费
+                                    QKey.priceMsg[QPKey].advertyPrice = Number(QKey.priceMsg[QPKey].reaPrice ? (Number(QKey.priceMsg[QPKey].reaPrice) + premiumPrice).toFixed(2) : premiumPrice.toFixed(2))
                                     QKey.priceMsg[QPKey].discount = 100                             // 广告费折扣百分比
                                     // 制作费计算
                                     QKey.priceMsg[QPKey].ADNumber = CKey.adDoorNum - commentNum     // 广告画数量
@@ -1459,6 +1460,7 @@
             },
             // 判断当前天数是否小于等于31、15
             judgeDayNum(schedul,mNum,adPrice){
+                adPrice = adPrice || 0
                 if (schedul <= 15) {
                     return mNum * (adPrice / 2)
                 }else if (schedul > 15 && schedul <= 31) {
@@ -1481,7 +1483,6 @@
                         this.cityPriceData.mediaClassifiedPremium.onlyAPremium)
                     this.ADchanger.totalGMDate = this.ADchanger.AGMDate + this.ADchanger.BGMDate + this.ADchanger.CGMDate
                 }else{
-                    console.log('123123')
                     let APrice = this.priceInfo.ADPrice / 7
                     let GMDatePrice = this.ADchanger.totalGMDate * APrice
                     this.ADchanger.reaPrice = (this.priceInfo.reaPrice - GMDatePrice).toFixed(2)

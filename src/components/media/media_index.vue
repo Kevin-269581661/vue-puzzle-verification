@@ -610,7 +610,6 @@ export default {
 					borderColor: '#dddddd',
 					borderWidth: 1,
 					formatter: function(params){
-					    console.log('params',params)
                         let title = '';
                         let arr = [];
                         for (let i = 0; i < params.length; i++) {

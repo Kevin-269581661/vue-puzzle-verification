@@ -480,19 +480,19 @@
             createFun() {
                 let account = this.setSubmitData();
                 console.log('提交的账号信息', account);
-                api.postApi(this.apiVar.UCAPI+"/RegUser", account)
+                api.postApi(this.apiVar.UCAPI + "/RegUser", account)
                     .then(res => {
                         console.log(res);
                         let data = res.data;
-                        if(data.SysCode === 100300 || data.MSG === '注册失败，可能是账户名称已被占用'){
+                        if (data.SysCode === 100300 || data.MSG === '注册失败，可能是账户名称已被占用') {
                             this.$message({
                                 message: '注册失败，可能是账户名称已被占用',
                                 type: 'warning'
                             })
-                        }else {
-                            if(data.SysCode == 200200){
+                        } else {
+                            if (data.SysCode == 200200) {
                                 MessageBox.alert(
-                                    data.MSG + "<br>",
+                                    `创建成功，初始密码为<strong style="font-weight: 600">手机号+账号</strong>，建议首次登录后修改密码！`,
                                     "注册用户",
                                     {
                                         showClose: false,
@@ -502,21 +502,20 @@
                                 ).then(res => {
                                     this.resetForm()
                                 });
-                            }else{
+                            } else {
                                 Message.warning(data.MSG);
                             }
                         }
-                    })
-                    .catch(err => {
-                        console.log(err);
-                    });
+                    }).catch(err => {
+                    console.log(err);
+                });
             },
             //重置表单
             resetForm() {
                 if (this.isEdit) {
-                    if(this.sessionData.uType == 'SA'){
+                    if (this.sessionData.uType == 'SA') {
                         this.$router.push('./admin');
-                    }else{
+                    } else {
                         this.$router.push("./accountList");
                     }
                 } else {

@@ -3251,32 +3251,6 @@
                                 detailKey.abList.push(adsData)
                                 break
                             }
-                            // if (key.mVehicle === '广告门' && detailKey.pdType === 0) {
-                            //     let adsData = {
-                            //         asID: key.asID,
-                            //         pdID: detailKey.pdID,
-                            //         pbStar: key.schedules.split('-')[0],
-                            //         pbEnd: key.schedules.split('-')[1],
-                            //         uID: this.sessionData.uID,
-                            //         pbSetTime: pbSetTime,
-                            //         mapCenterName: key.mapCenter
-                            //     }
-                            //     detailKey.abList.push(adsData)
-                            //     break
-                            // } else if (key.mVehicle === '道闸' && detailKey.pdType === 1) {
-                            //     for (let akey of key.asID) {
-                            //         detailKey.abList.push({
-                            //             asID: akey,
-                            //             pdID: detailKey.pdID,
-                            //             pbStar: key.schedules.split('-')[0],
-                            //             pbEnd: key.schedules.split('-')[1],
-                            //             uID: this.sessionData.uID,
-                            //             pbSetTime: pbSetTime,
-                            //             mapCenterName: key.mapCenter
-                            //         })
-                            //     }
-                            //     break
-                            // }
                         }
                     }
                 }

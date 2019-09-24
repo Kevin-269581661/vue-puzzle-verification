@@ -2065,47 +2065,54 @@
                     let mediaFrom = this.arrMedia
                     for (let i = adIndex; i < mediaFrom.length; i++) {
                         let key = mediaFrom[i].mediaForm
-                        arr.push({
-                            resID: resID,
-                            uID: this.recForm.uid,
-                            mTitle: key.mediaName,
-                            pNum: key.usableNum,
-                            actualNum: key.usableNum,
-                            adSize: key.adSizeW + "*" + key.adSizeH,
-                            adViewSize: key.visualW + "*" + key.visualH,
-                            notPush: key.adLimit.join('、'),
-                            assetTag: key.assetId,
-                            mType: key.doorType,
-                            mImg: key.mImg || '',
-                            mVehicle: key.mediaType,
-                            mRemark: key.mediaRemark, // key.mediaRemark === '' ? '暂无备注' : key.mediaRemark,
-                            mState: (key.mstate).split('')[0],
-                        })
+                        if(key.mediaName && key.mediaType && key.adSizeW && key.adSizeH) {
+                            arr.push({
+                                resID: resID,
+                                uID: this.recForm.uid,
+                                mTitle: key.mediaName,
+                                pNum: key.usableNum,
+                                actualNum: key.usableNum,
+                                adSize: key.adSizeW + "*" + key.adSizeH,
+                                adViewSize: key.visualW + "*" + key.visualH,
+                                notPush: key.adLimit.join('、'),
+                                assetTag: key.assetId,
+                                mType: key.doorType,
+                                mImg: key.mImg || '',
+                                mVehicle: key.mediaType,
+                                mRemark: key.mediaRemark, // key.mediaRemark === '' ? '暂无备注' : key.mediaRemark,
+                                mState: (key.mstate).split('')[0],
+                            })
+                        } else {
+                            continue
+                        }
                     }
                 }
                 if(this.rt_boolean.flag){
-
                     let mediaFrom = this.roadGateMedia
                     for (let i = rtIndex; i < mediaFrom.length; i++){
                         let key = mediaFrom[i].roadGateForm
-                        arr.push({
-                            resID: resID,
-                            uID: this.recForm.uid,
-                            mTitle: key.mediaName,
-                            pNum: 1,
-                            actualNum: key.usableNum,
-                            adSize: '',
-                            adViewSize: '',
-                            notPush: key.adLimit.join('、'),
-                            assetTag: key.assetId,
-                            mType: '',
-                            mImg: key.mImg || '',
-                            mVehicle: key.mediaType,
-                            mRemark: key.mediaRemark,   // key.mediaRemark === '' ? '暂无备注' : key.mediaRemark,
-                            mState: (key.mstate).split('')[0],
-                            picSize: key.visualW + "*" + key.visualH,
-                            lightBoxSize:  key.LBSizeW + "*" + key.LBSizeH,
-                        })
+                        if (key.mediaName && key.LBSizeW && key.LBSizeH) {
+                            arr.push({
+                                resID: resID,
+                                uID: this.recForm.uid,
+                                mTitle: key.mediaName,
+                                pNum: 1,
+                                actualNum: key.usableNum,
+                                adSize: '',
+                                adViewSize: '',
+                                notPush: key.adLimit.join('、'),
+                                assetTag: key.assetId,
+                                mType: '',
+                                mImg: key.mImg || '',
+                                mVehicle: key.mediaType,
+                                mRemark: key.mediaRemark,   // key.mediaRemark === '' ? '暂无备注' : key.mediaRemark,
+                                mState: (key.mstate).split('')[0],
+                                picSize: key.visualW + "*" + key.visualH,
+                                lightBoxSize: key.LBSizeW + "*" + key.LBSizeH,
+                            })
+                        } else {
+                            continue
+                        }
                     }
                 }
                 let params = {
@@ -2137,6 +2144,7 @@
                                     this.$router.push('./mediaList');
                                 })
                             } else {
+                                sessFun.messageFun('success', '媒体创建成功')
                                 this.$router.push('./mediaDetail');
                             }
                         } else {
@@ -2919,7 +2927,7 @@
                                         clearTimeout(timer)
                                     },500)
                                     this.Editloading.close()
-                                    sessFun.messageFun('success','广告门保存成功')
+                                    sessFun.messageFun('success','媒体保存成功')
                                     this.$router.push('./mediaDetail');
                                 }
                             }else{
@@ -2983,7 +2991,7 @@
                                         clearTimeout(timer)
                                     }, 500)
                                     this.Editloading.close()
-                                    sessFun.messageFun('success', '道闸保存成功')
+                                    sessFun.messageFun('success', '媒体保存成功')
                                     this.$router.push('./mediaDetail');
                                 }
                             } else {

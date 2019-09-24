@@ -159,6 +159,7 @@
                                 { text: '正常', value: '1' },
                                 { text: '待安装', value: '2' },
                                 { text: '待维修', value: '3' },
+                                { text: '已拆除', value: '4' },
 							]"
                             :filter-multiple="false">
                             <template  slot-scope="scope">
@@ -187,23 +188,24 @@
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item command="0"
                                             @click.native.prevent="changeState('0',scope.$index, scope.row)"
-                                            :disabled="scope.row.mState == '0'">禁用</el-dropdown-item>
+                                            :disabled="scope.row.mState == '0' || scope.row.mState === 4">禁用</el-dropdown-item>
                                         <el-dropdown-item command="1"
-                                            @click.native.prevent="changeState('1',scope.$index, scope.row)">
+                                            @click.native.prevent="changeState('1',scope.$index, scope.row)"
+                                            :disabled="scope.row.mState === 4">
                                             正常
                                         </el-dropdown-item>
                                         <el-dropdown-item command="2"
                                             @click.native.prevent="changeState('2',scope.$index, scope.row)"
-                                            :disabled="scope.row.mState === '2'">待安装</el-dropdown-item>
+                                            :disabled="scope.row.mState === '2' || scope.row.mState === 4">待安装</el-dropdown-item>
                                         <el-dropdown-item command="3"
                                             @click.native.prevent="changeState('3',scope.$index, scope.row)"
-                                            :disabled="scope.row.mState === '3'">待维修</el-dropdown-item>
-                                        <el-dropdown-item command="4"
-                                                          @click.native.prevent="changeState('4',scope.$index, scope.row)"
-                                                          :disabled="scope.row.mState === '4'">删除</el-dropdown-item>
-                                        <el-dropdown-item command="4"
+                                            :disabled="scope.row.mState === '3' || scope.row.mState === 4">待维修</el-dropdown-item>
+                                        <el-dropdown-item command="5"
                                                           @click.native.prevent="changeState('5',scope.$index, scope.row)"
-                                                          :disabled="scope.row.mState === '5'">拆除</el-dropdown-item>
+                                                          :disabled="scope.row.mState === '5'">删除</el-dropdown-item>
+<!--                                        <el-dropdown-item command="4"-->
+<!--                                                          @click.native.prevent="changeState('4',scope.$index, scope.row)"-->
+<!--                                                          :disabled="scope.row.mState === 4">拆除</el-dropdown-item>-->
                                     </el-dropdown-menu>
                                 </el-dropdown>
                             </template>
@@ -267,7 +269,7 @@
                 </div>
                 <div slot="footer" class="dialog-footer">
                     <el-button size="mini" @click="dismantleVisible = false">取 消</el-button>
-                    <el-button size="mini" type="primary" style="margin-left: 35px" @click="dismantleVisible = false">确 定</el-button>
+                    <el-button size="mini" type="primary" style="margin-left: 35px" @click="dismantleMedia">确 定</el-button>
                 </div>
             </el-dialog>
             <!--媒体待维修-->
@@ -301,7 +303,7 @@
                 </p>
                 <div slot="footer" class="dialog-footer">
                     <el-button size="mini" @click="repairVisible = false">取 消</el-button>
-                    <el-button size="mini" type="primary" style="margin-left: 35px" @click="repairVisible = false">确 定</el-button>
+                    <el-button size="mini" type="primary" style="margin-left: 35px" @click="repairMedia">确 定</el-button>
                 </div>
             </el-dialog>
             <!--媒体导入模态框-->
@@ -604,6 +606,11 @@
                         value: 0,
                         color: 'rgba(245,34,45,1)',
                     },
+                    {
+                        text: '已拆除',
+                        value: 4,
+                        color: 'rgba(24,144,255,1)',
+                    }
                 ];
                 for(let data of arr){
                     if(data.value == state){
@@ -850,7 +857,7 @@
                 }
                 if (rows.mState == selectState) {
                     if(rows.mVehicle === '广告门' && rows.pNum > 1 && rows.mState == 1 &&
-                        (rows.asState.A == '0' || !rows.asState.B == '0')) {
+                        (rows.asState.A == '0' || rows.asState.B == '0')) {
                         // 正常转正常
                         this.isDisabled = false
                         if(rows.asState.A == '0') {
@@ -870,7 +877,7 @@
                         }
                         this.mStateDialogVisible = true
                     } else {
-                        sessFun.messageFun('waring','当前状态已是' + stateName)
+                        sessFun.messageFun('warning','当前状态已是' + stateName)
                     }
                 } else if (rows.mVehicle === '广告门' && rows.pNum > 1 && selectState == '0' && rows.mState == '1') {
                     // 正常转禁用
@@ -882,17 +889,20 @@
                     // 禁用转正常
                     this.isDisabled = false
                     this.mStateDialogVisible = true
-                } else if (selectState === '3') {
-                    // 待维修
-                    this.isShowTag = true
-                    this.repairVisible = true
-                } else if(selectState === '4') {
-                    // 删除
-                    this.judgeResHaveMediaNum()
-                } else if (selectState === '5') {
+                }
+                // else if (selectState === '3') {
+                //     // 待维修
+                //     this.isShowTag = true
+                //     this.repairVisible = true
+                // }
+                else if(selectState === '4') {
                     // 拆除
+                    this.dismantleInfo = ''
                     this.isShowTag = true
                     this.dismantleVisible = true
+                } else if (selectState === '5') {
+                    // 删除
+                    this.judgeResHaveMediaNum()
                 } else {
                     this.setRowMediaStatus(stateName,selectState)
                 }
@@ -1019,8 +1029,9 @@
                     sessFun.messageFun('info','已取消操作')
                 })
             },
-            // 设置媒体状态接口
-            setStatusApi(state,letter){
+            // 设置媒体状态接口，state:下拉时选择的状态;letter:是否是单面禁用或正常
+            setStatusApi(state,letter) {
+                // console.log('state',state,'letter',letter)
                 let uid = this.sessionData.uID
                 let mid = this.rowData.mID
                 let submitLoading =  this.$loading({
@@ -1041,11 +1052,12 @@
                     }
                 }
                 if(letter === 'one') {
-                    params.data.mstate = this.isDisabled ? '1' : '0'     // 单面禁用媒体状态还是正常（1）
+                    // 所选状态为正常、单面禁用->正常、单面正常->禁用，媒体状态都为正常（1）
+                    params.data.mstate = state == '1' || this.isDisabled ? '1' : '0'
                     params.data.asLabs = this.mediaState.AState ? 'A' : 'B'
                     params.data.asState = this.isDisabled ? '0' : '1'
                 }
-                console.log('params',params)
+                console.log('params',params,this.isDisabled)
                 api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('修改状态：', res)
                     if (res.data.SysCode === 200200 || res.data.MSG === '操作成功') {
@@ -1074,6 +1086,67 @@
                     submitLoading.close()
                 })
             },
+            // 拆除媒体
+            dismantleMedia() {
+                if (!this.dismantleInfo) {
+                    sessFun.messageFun('warning', '请填写拆除备注信息!')
+                    return
+                }
+                let params = {
+                    "uid": this.sessionData.uID,
+                    "token": this.sessionData.token,
+                    "service": "AddDismantleRecord",
+                    "data": {
+                        "mID": this.rowData.mID,
+                        "remark": this.dismantleInfo,
+                        "resName": this.rowData.resName,
+                        "rId": this.rowData.rID
+                    }
+                }
+                console.log('拆除媒体params',params)
+                api.postApi_new(this.apiVar.Media, params).then(res=>{
+                    if (res.data.SysCode === 200200) {
+                        this.dismantleVisible = false
+                        sessFun.messageFun('success', '拆除成功!')
+                        this.rowData.mState = '4'
+                        this.rowData.asState.A = '4'
+                        this.rowData.asState.B = '4'
+                    } else {
+                        sessFun.messageFun('warning', res.data.MSG)
+                    }
+                })
+            },
+            // 待维修
+            repairMedia() {
+                if (!this.waitRepair.time) {
+                    sessFun.messageFun('warning', '请选择时间!')
+                    return
+                }
+                if (!this.waitRepair.msg) {
+                    sessFun.messageFun('warning', '请填写维修备注!')
+                    return
+                }
+                let params = {
+                    "uid": this.sessionData.uID,
+                    "token": this.sessionData.token,
+                    "service": "AddMaintain",
+                    "data": {
+                        "mID": this.rowData.mID,
+                        "remark": this.waitRepair.msg,
+                        "maintainTime": this.waitRepair.time,
+                        "resName": this.rowData.resName,
+                        "rId": this.rowData.rID
+                    }
+                }
+                console.log('待维修params',params)
+                api.postApi_new(this.apiVar.Media, params).then(res=>{
+                    if (res.data.SysCode === 200200) {
+                        sessFun.messageFun('success', '成功更改状态')
+                    } else {
+                        sessFun.messageFun('warning', res.data.MSG)
+                    }
+                })
+            },
             return_mState(mState){
                 if (mState == '1') {
                     return '正常'
@@ -1083,7 +1156,9 @@
                     return '待安装'
                 } else if (mState == '3') {
                     return '待维修'
-                }else{
+                } else if (mState == '4') {
+                    return '已拆除'
+                } else{
                     return ''
                 }
             },
@@ -1096,6 +1171,8 @@
                     return '2';
                 } else if (mState == '待维修') {
                     return '3';
+                } else if (mState == '已拆除') {
+                    return '4';
                 } else {
                     return '';
                 }

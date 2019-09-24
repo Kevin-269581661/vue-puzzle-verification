@@ -4,7 +4,7 @@
             <div class="mediaMana_content_top">
                 <div class="content_top_wrap">
                     <div class="title">
-                        <h1>{{report.apName}}{{stateToText(Info.name)}}报告 
+                        <h1>{{report.apName}}{{stateToText(Info.name)}}报告
                             <span class="button_box">
                                 <el-button plain @click="getPTTx()" size="small" :loading="pptxLoading">导出PPTx</el-button>
                                 <!-- <el-button plain @click="getPTT()" size="small" :loading="pptLoading">导出PPT</el-button> -->
@@ -108,10 +108,10 @@
                                     <el-card shadow="hover" >
                                         <div slot="header" class="clearfix">
                                             <!-- <span>{{up.city+"-"+up.rName+"-"+up.resName+"-"+up.mTitle+"-"+up.asLab}}</span> -->
-                                            <el-tooltip class="item" effect="dark" :content='up.city+"-"+up.rName+"-"+up.resName+"-"+up.mTitle+"-"+up.asLab' placement="bottom" v-if='(up.city+"-"+up.rName+"-"+up.resName+"-"+up.mTitle+"-"+up.asLab).length>20'>
-                                                <span style="margin-right:10px;">{{wordlimit(up.city+"-"+up.rName+"-"+up.resName+"-"+up.mTitle+"-"+up.asLab, 20)}}</span>
+                                            <el-tooltip class="item" effect="dark" :content='up.city+"-"+up.rName+"-"+up.resName+"-"+up.mTitle+"-"+up.asLab' placement="bottom" v-if='(up.city+"-"+up.rName+"-"+up.resName+"-"+up.mTitle+"-"+up.asLab).length>24'>
+                                                <div class="header_title">{{wordlimit(up.city+"-"+up.rName+"-"+up.resName+"-"+up.mTitle+"-"+up.asLab, 24)}}</div>
                                             </el-tooltip>
-                                            <span v-else style="margin-right:10px;">{{up.city+"-"+up.rName+"-"+up.resName+"-"+up.mTitle+"-"+up.asLab}}</span>
+                                            <span v-else class="header_title">{{up.city+"-"+up.rName+"-"+up.resName+"-"+up.mTitle+"-"+up.asLab}}</span>
 
                                             <el-tooltip placement="top" width="200" trigger="hover" effect="dark" >
                                                 <div slot="content">
@@ -122,7 +122,7 @@
                                                         <span>{{formatTime(up.lStar)+'-'+formatTime(up.lEnd)}}</span>
                                                     </p>
                                                 </div>
-                                                <i class="el-icon-date" style="float: right; padding: 3px 0" type="text"></i>
+                                                <i class="el-icon-date" style="float: right;width: 4%; padding: 3px 0" type="text"></i>
                                             </el-tooltip>
                                         </div>
                                         <el-carousel :autoplay="false" trigger="click">
@@ -154,7 +154,7 @@
                                     </el-table-column>
                                     <el-table-column prop="resolveNum" label="问题解决数" min-width="19.8%" align="right">
                                     </el-table-column>
-                                    
+
                                     <div slot="empty">
                                         <no-search-result></no-search-result>
                                     </div>
@@ -203,7 +203,7 @@ import filterFormat from "../../commonFun/filterTableData.js";
 import dateFormat from "../../commonFun/timeFormat.js";
 import sessFun from '../../commonFun/sessFun.js';
 
-import noSearchResult from "../common/components/noSearchResult.vue";    
+import noSearchResult from "../common/components/noSearchResult.vue";
 
 import {
     Dialog,
@@ -372,8 +372,8 @@ export default {
             let info = {
                 [name]: val
             };
-            const tempPage = window.open('', '_blank');      
-            loading = true;                  
+            const tempPage = window.open('', '_blank');
+            loading = true;
             api.getApi(this.apiVar.Advertisement+apiName, info).then(res =>{
                 if(res.data.code == 300200){
                     let downloadElement = document.createElement('a');
@@ -383,7 +383,7 @@ export default {
                     downloadElement.click(); //点击下载
                     document.body.removeChild(downloadElement); //下载完成移除元素
                     tempPage.close();
-                    loading = false;                    
+                    loading = false;
                 }else{
                     let fileInfo = {
                         downtype: 2,
@@ -467,7 +467,7 @@ export default {
             console.log('page----', page);
             this.currUpPage = page;
             // this.searchFun();
-            this.getDataFromType();            
+            this.getDataFromType();
         },
         // 根据type来获取数据
         getDataFromType(){
@@ -679,7 +679,7 @@ export default {
             let result = [];
             let info = {
                 citys: [],
-                totalNum: 0 
+                totalNum: 0
             };
             for(let data of arr){
                 let obj = {
@@ -1228,6 +1228,14 @@ export default {
 /deep/ .el-form-item__content{
     line-height: 46px;
 }
+
+    .header_title{
+        width: 95%;
+        float: left;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 </style>
 
 

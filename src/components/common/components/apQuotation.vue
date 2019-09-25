@@ -647,14 +647,16 @@
                     }
                     // console.log(data.pdAdFee,realPrice)
                     console.log('discount',discount)
-                    let ADMakeDiscount = Math.floor(data.pdAdMake/100 /(100 * data.pdNum) * 10000) / 100;
+                    let ADMakeDiscount = data.pdNum ? Math.floor(data.pdAdMake/100 /(100 * data.pdNum) * 10000) / 100 : 100;
+                    // let ADMakeDiscount = 0 ? Math.floor(data.pdAdMake/100 /(100 * 0) * 10000) / 100 : 100;
                     data.discount = isNaN(discount)? 0: (discount).toFixed(2); // 广告费折扣百分比
+                    console.log('ADMakeDiscount',ADMakeDiscount)
                     data.makeDiscount = isNaN(ADMakeDiscount)? 0: (ADMakeDiscount).toFixed(2); // 制作费折扣百分比
                     data.ADPrice = data.adPrice ? this.priceFormat(data.adPrice) : 0
                     return data;
                 }else if(type == 1){    // 道闸
                     data.adPrice = cityPriceInfo.barrierPrice / 100; // 刊例价(面/月)
-                    let ADMakeDiscount = Math.ceil(data.pdAdMake/300 /(100 * data.pdNum) *10000) / 100;
+                    let ADMakeDiscount = data.pdNum ? Math.ceil(data.pdAdMake/300 /(100 * data.pdNum) *10000) / 100 : 100;
                     data.makeDiscount = isNaN(ADMakeDiscount)? 0: (ADMakeDiscount).toFixed(2); // 制作费折扣百分比
                     data.ADPrice = data.adPrice ? this.priceFormat(data.adPrice) : 0;
                     return data;

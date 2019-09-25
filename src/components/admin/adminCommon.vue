@@ -20,7 +20,7 @@
             <el-menu-item index="/admin/mediaList">媒体管理</el-menu-item>
             <!--<el-menu-item index="/admin/SMqinlinzk">亲邻智邻</el-menu-item>-->
             <el-menu-item index="/admin/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>
-            <el-submenu index="6" class="user_center" popper-class="user_center_item">
+            <el-submenu index="6" class="user_center" popper-class="user_center_item" show-timeout="80">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">
                     {{userName}}

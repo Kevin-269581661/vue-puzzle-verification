@@ -2576,12 +2576,13 @@
                 this.$refs['planForm'].clearValidate()
                 if (val) {
                     for (let key of this.salerList) {
-                        if (key.value) {
+                        if (key.value == val) {
                             this.planForm.realNamesName = key.label
                             break
                         }
                     }
                     this.BDData.uid = val
+                    // console.log('----',this.planForm.realNamesName)
                     this.getCityList()
                     this.Get_cName()
                 } else {

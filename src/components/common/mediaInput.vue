@@ -820,13 +820,7 @@
                 isUpload: true,
                 assetIdBolean: false,
                 activeMedia: 'first',
-                mstateOption: [
-                    {label: '禁用', value: '0'},
-                    {label: '正常', value: '1'},
-                    {label: '待安装', value: '2'},
-                    {label: '待维修', value: '3'}
-                ],
-                dialogImageUrl: '',//缩略图
+                dialogImageUrl: '',     //缩略图
                 dialogVisible: false,
                 titleArr: ['媒体一', '媒体二', '媒体三', '媒体四', '媒体五', '媒体六', '媒体七', '媒体八', '媒体九', '媒体十',
                     '媒体十一', '媒体十二', '媒体十三', '媒体十四', '媒体十五', '媒体十六', '媒体十七', '媒体十八', '媒体十九', '媒体二十',
@@ -839,7 +833,6 @@
                 arrMedia: [
                     {
                         text: '媒体一',
-                        // isMediaNameError: false,    // 判断同小区下媒体名称是否重复
                         isAssetIdError: false,      // 资源编号重名信息
                         assetIdCommentData: {       // 资源编号重名信息
                             resName:'',
@@ -1964,7 +1957,7 @@
                 }
             },
             //添加资源媒体
-            createRec() {
+            createRes() {
                 console.log(this.arrMedia)
                 this.recForm.uid = this.sessionData.uID
                 this.recForm.latlng = this.recForm.lat + ';' + this.recForm.lng
@@ -2079,7 +2072,7 @@
                                 mType: key.doorType,
                                 mImg: key.mImg || '',
                                 mVehicle: key.mediaType,
-                                mRemark: key.mediaRemark, // key.mediaRemark === '' ? '暂无备注' : key.mediaRemark,
+                                mRemark: key.mediaRemark,
                                 mState: (key.mstate).split('')[0],
                             })
                         } else {
@@ -2105,7 +2098,7 @@
                                 mType: '',
                                 mImg: key.mImg || '',
                                 mVehicle: key.mediaType,
-                                mRemark: key.mediaRemark,   // key.mediaRemark === '' ? '暂无备注' : key.mediaRemark,
+                                mRemark: key.mediaRemark,
                                 mState: (key.mstate).split('')[0],
                                 picSize: key.visualW + "*" + key.visualH,
                                 lightBoxSize: key.LBSizeW + "*" + key.LBSizeH,
@@ -2462,7 +2455,7 @@
                             spinner: 'el-icon-loading',
                             background: 'rgba(0, 0, 0, 0.7)'
                         })
-                        this.createRec()
+                        this.createRes()
                     }
                 } else {
                     this.$refs['mediaForm'][0].validate((valid) => {

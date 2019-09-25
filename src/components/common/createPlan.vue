@@ -2575,6 +2575,12 @@
                 this.throwCity = []
                 this.$refs['planForm'].clearValidate()
                 if (val) {
+                    for (let key of this.salerList) {
+                        if (key.value) {
+                            this.planForm.realNamesName = key.label
+                            break
+                        }
+                    }
                     this.BDData.uid = val
                     this.getCityList()
                     this.Get_cName()
@@ -5152,10 +5158,7 @@
                         // cacheAdPlan.setData(planInfo)
                     }
                 })
-                // 同步缓存一份到localStorage
-                // if(this.routePath.includes('unfinishedPlan')){
                 cacheAdPlan.setData(planInfo)
-                // }
             },
             // 设置方案信息
             setPlanInfo(){
@@ -5167,9 +5170,17 @@
                     this.throwCity = returnData.planData.throwCity
                     this.shopingList = returnData.planData.adsList
                     this.companyBrand = returnData.planData.companyBrand
-                    if(this.sessionData.uType === 'MD'){
+                    if (this.sessionData.uType === 'MD') {
                         this.getCityList()
                         this.Get_cName()
+                        // 媒介需构建销售下拉选项-第一步
+                        let arr = [
+                            {
+                                label: this.planForm.realNamesName,
+                                value: this.BDData.uid,
+                            }
+                        ]
+                        this.salerList = arr
                     }
                     this.active = 1
                     console.log('设置方案信息returnData', returnData)

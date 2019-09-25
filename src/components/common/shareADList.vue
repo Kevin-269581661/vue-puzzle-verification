@@ -857,15 +857,16 @@
                 console.log('提交列表to无忧地图',params)
                 api.postApi_new(this.apiVar.Map + '/PushListData',params).then(res=>{
                     console.log('提交列表模式临时数据到无忧地图',res)
-                    if (urlPath.indexOf('www') !== -1) {
-                        // 生产环境
-                        this.iframeSrc = 'https://www.dituwuyou.com/qinlin/embed?mid=FPcrNHyq3xXFZDbqlTyHKA&token=fp3nxsKCYZzOSnU0KosEq0GA1o1qcKh5XLA&myid='
-                            + this.apid + '&city=' + this.activeRadio.rName
-                    } else {
-                        // 开发环境
-                        this.iframeSrc = 'https://wsopbodv.dituwuyou.com/qinlin/embed?mid=_J6aWeV128gkhVn54AfWIw&token=SvcvtTqpktwPUb8dbu_jx0602nj_4tF-is8&myid='
-                            + this.apid + '&city=' + this.activeRadio.rName
-                    }
+                    this.iframeSrc = this.apiVar.shareWUYouMap + this.apid + '&city=' + this.activeRadio.rName
+                    // if (urlPath.indexOf('www') !== -1) {
+                    //     生产环境
+                    //     this.iframeSrc = 'https://www.dituwuyou.com/qinlin/embed?mid=FPcrNHyq3xXFZDbqlTyHKA&token=fp3nxsKCYZzOSnU0KosEq0GA1o1qcKh5XLA&myid='
+                    //         + this.apid + '&city=' + this.activeRadio.rName
+                    // } else {
+                    //     // 开发环境
+                    //     this.iframeSrc = 'https://wsopbodv.dituwuyou.com/qinlin/embed?mid=_J6aWeV128gkhVn54AfWIw&token=SvcvtTqpktwPUb8dbu_jx0602nj_4tF-is8&myid='
+                    //         + this.apid + '&city=' + this.activeRadio.rName
+                    // }
                 })
             },
             // 无忧同步到列表

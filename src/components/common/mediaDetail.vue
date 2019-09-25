@@ -226,8 +226,8 @@
                                         label="状态"
                                         min-width="7%">
                                         <template slot-scope="scope">
-                                            {{scope.row.mState == 1 ? '正常' : scope.row.mState == 2 ? '待安装' :
-                                            scope.row.mState == 0 ? '禁用' : '待维修'}}
+                                            {{scope.row.mState == 0 ? '禁用' : scope.row.mState == 1 ? '正常' :
+                                            scope.row.mState == 2 ? '待安装' : scope.row.mState == 3 ? '待维修' : '已拆除'}}
                                         </template>
                                     </el-table-column>
                                     <el-table-column
@@ -297,8 +297,8 @@
                                         min-width="113"
                                     >
                                         <template slot-scope="scope">
-                                            {{scope.row.mState == 1 ? '正常' : scope.row.mState == 2 ? '待安装' :
-                                            scope.row.mState == 0 ? '禁用' : '待维修'}}
+                                            {{scope.row.mState == 0 ? '禁用' : scope.row.mState == 1 ? '正常' :
+                                            scope.row.mState == 2 ? '待安装' : scope.row.mState == 3 ? '待维修' : '已拆除'}}
                                         </template>
                                     </el-table-column>
                                     <el-table-column

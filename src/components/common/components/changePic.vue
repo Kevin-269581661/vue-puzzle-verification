@@ -1566,7 +1566,7 @@ export default {
             };
             let obj = {
                 pAlt: palt,
-                ptID: row.mVehicle=='广告门' ? row.asID: row.mID,
+                ptID: row.asID,
                 ptP: ptp,
                 pRemarks: JSON.stringify(prk),
                 lStart: timeFormat.toDate(row.lStar, '/'),

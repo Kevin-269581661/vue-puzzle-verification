@@ -97,7 +97,7 @@
                                 <el-checkbox v-model="scope.row.checkBox.ABC" label="ABC面" @change="changeABC(scope.row)">
                                 </el-checkbox>
                             </div>
-                        </template>                        
+                        </template>
                     </el-table-column>
                     <el-table-column label="资源名称" min-width="140" prop="resName" >
                     </el-table-column>
@@ -209,25 +209,25 @@ export default {
         this.getSessionData();
         console.log('createdd-----1');
         if(this.importData.successList){
-            this.initData();       
+            this.initData();
             console.log('createdd-----2');
         }
     },
     watch:{
         importData(){
-            console.log('createdd-----3');            
+            console.log('createdd-----3');
             if(this.importData.successList){
-                this.initData();       
-                console.log('createdd-----4');                
-            } 
+                this.initData();
+                console.log('createdd-----4');
+            }
         },
     },
     methods:{
         getSessionData(){
-            this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))            
+            this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
         },
         initData(){
-            console.log(this.importData, 'this.importData----da-'); 
+            console.log(this.importData, 'this.importData----da-');
             // this.successList = [];
             // this.errorList = [];
             this.shopList = [];
@@ -238,7 +238,7 @@ export default {
             this.successRes = copyData.successSize;
             this.errorRes = copyData.errorSize;
             this.isAll = false;
-            console.log(this.importData, 'this.importData-----'); 
+            console.log(this.importData, 'this.importData-----');
         },
         // 勾选表格数据格式
         setTableData(arr){
@@ -302,7 +302,7 @@ export default {
                 if (key.asLabs.indexOf('B') === -1) {
                     adObj.box.B = true;
                 }
-                if (key.adlInfo !== null && key.adlInfo !== undefined && key.adlInfo.length > 0) {
+                if (!!key.adlInfo && key.adlInfo.length > 0) {
                     let arr = [];
                     for (let akey of key.adlInfo) {
                         if(akey.asState){
@@ -332,7 +332,7 @@ export default {
             let check = row
             if (check.checkBox.A) {
                 this.AddShopingInfo(row, 'A');// 添加到购物车
-            } else {                         
+            } else {
                 this.deleteShopRow(check, 'A');
             }
         },
@@ -340,7 +340,7 @@ export default {
             let check = row;
             if (check.checkBox.B === true) {
                 this.AddShopingInfo(row, 'B') // 添加到购物车
-            } else {                       
+            } else {
                 this.deleteShopRow(check, 'B');
             }
         },
@@ -427,7 +427,7 @@ export default {
                                     break;
                                 }
                             }
-                            this.shopList.push(selectInfo);                            
+                            this.shopList.push(selectInfo);
                         } else if (j === 1 && !selectInfo.box.B) {
                             selectInfo.A_B = 'B';
                             for (let n = 0; n < asLabsArr.length; n++) {
@@ -472,7 +472,7 @@ export default {
                     }
                 }
             }
-            console.log(this.shopList, 'shoplist-----');            
+            console.log(this.shopList, 'shoplist-----');
         },
         // 选点列表数据到购物车数据
         setShopingTable(info, letter){
@@ -480,7 +480,7 @@ export default {
                 rid: info.rid,
                 mID: info.mID,
                 mVehicle: info.mVehicle,
-                asID: info.asIDs.split(','),
+                asID: info.asIDs,//.split(','),
                 asIDs: info.asIDs,
                 asLabs: info.asLabs,
                 resName: info.resName,

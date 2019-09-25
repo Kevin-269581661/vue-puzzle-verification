@@ -560,9 +560,12 @@ export default {
         },
         // 显示缓存方案的信息
         showCookeAdPlan(adPlan){
+            // this.planForm.realNamesName
+            let ownerSales = (this.sessionData.uType === 'MD' && adPlan.planData.baseInfo.realNamesName) ?
+                adPlan.planData.baseInfo.realNamesName : adPlan.planData.baseInfo.ownerSales
             this.planInfo = {
                 planName: adPlan.planData.baseInfo.planName,
-                ownerSales: adPlan.planData.baseInfo.ownerSales,
+                ownerSales: ownerSales,
                 cleatTime: adPlan.setTime,
                 adsNum: adPlan.planData.adsList.length
             }

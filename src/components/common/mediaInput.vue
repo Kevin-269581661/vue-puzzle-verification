@@ -32,6 +32,7 @@
                                             separator="-"
                                             :show-all-levels="false"
                                             placeholder="请选择所属城市"
+                                            filterable
                                             @blur="blurFun('city')"
                                             @change="handleChange">
                                         </el-cascader>
@@ -319,7 +320,7 @@
                     </div>
                 </div>
             </div>
-            <!--媒体一 mediaMana_content_bottom-->
+            <!--媒体一-->
             <div class="mediaList_content">
                 <el-tabs v-model="activeMedia" @tab-click="handleClickMedia">
                     <el-tab-pane label="广告门" name="first">
@@ -819,13 +820,7 @@
                 isUpload: true,
                 assetIdBolean: false,
                 activeMedia: 'first',
-                mstateOption: [
-                    {label: '禁用', value: '0'},
-                    {label: '正常', value: '1'},
-                    {label: '待安装', value: '2'},
-                    {label: '待维修', value: '3'}
-                ],
-                dialogImageUrl: '',//缩略图
+                dialogImageUrl: '',     //缩略图
                 dialogVisible: false,
                 titleArr: ['媒体一', '媒体二', '媒体三', '媒体四', '媒体五', '媒体六', '媒体七', '媒体八', '媒体九', '媒体十',
                     '媒体十一', '媒体十二', '媒体十三', '媒体十四', '媒体十五', '媒体十六', '媒体十七', '媒体十八', '媒体十九', '媒体二十',
@@ -838,7 +833,6 @@
                 arrMedia: [
                     {
                         text: '媒体一',
-                        // isMediaNameError: false,    // 判断同小区下媒体名称是否重复
                         isAssetIdError: false,      // 资源编号重名信息
                         assetIdCommentData: {       // 资源编号重名信息
                             resName:'',
@@ -869,7 +863,8 @@
                 m_boolean: {isOne: false,flag: false},
                 // 道闸表单验证
                 rt_boolean: {isOne: false,flag: false},
-                editRoadGateStatue: [],               // 编辑媒体时记录状态
+                // 编辑媒体时记录状态
+                editRoadGateStatue: [],
                 roadGateMedia:[
                     {
                         text: '媒体一',
@@ -909,20 +904,20 @@
                 },
                 //资源表单
                 recForm: {
-                    rt: '',                //资源类型
-                    resname: '',          // 资源名称
+                    rt: '',                 //资源类型
+                    resname: '',            // 资源名称
                     city: [],
-                    region: '',          // 所属区域
-                    business: '',       // 所属商圈
-                    resaddr: '',        // 资源地址
-                    floorType: '',  // 楼盘类型
-                    doorwayNum: '',   // 出入数
-                    buildingNum: '1',  // 楼栋数量
-                    households: '1',   // 住户数量
-                    peopleFlowrate: '',  //人流量
-                    carNumber: '',        // 车位数
-                    carFlowrate: '',     // 车流量
-                    buildingPrice: '',  // 楼盘价格
+                    region: '',             // 所属区域
+                    business: '',           // 所属商圈
+                    resaddr: '',            // 资源地址
+                    floorType: '',          // 楼盘类型
+                    doorwayNum: '',         // 出入数
+                    buildingNum: '1',       // 楼栋数量
+                    households: '1',        // 住户数量
+                    peopleFlowrate: '',     //人流量
+                    carNumber: '',          // 车位数
+                    carFlowrate: '',        // 车流量
+                    buildingPrice: '',      // 楼盘价格
                     liveTime: '',
                     lng: '',
                     lat: '',
@@ -1249,12 +1244,12 @@
                 let params = {
                     "uid": this.sessionData.uID,
                     "token": this.sessionData.token,
-                    "service":"GetNotPush",
+                    "service": "GetNotPush",
                     "data": {}
                 }
                 api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('广告限制列表', res)
-                    if(res.data.SysCode == 200200){
+                    if (res.data.SysCode == 200200) {
                         let limit = res.data.data
                         let limitArr = []
                         for (let i = 0; i < limit.length; i++) {
@@ -1267,14 +1262,14 @@
                         }
                         this.adLimit = limitArr
                         console.log('广告限制adLimit', this.adLimit)
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout()
+                    } else {
+                        Message.warning(res.data.MSG);
                     }
                 })
             },
             //获取区域
             getRegion(val){
-                console.log('val',val) //resAddres
+                console.log('val',val)
                 for(let key of this.regionOpt){
                     if(key.value == val){
                         this.resAddres.area = key.label
@@ -1304,16 +1299,16 @@
                                     }
                                     callback(results)
                                 }else{
-                                    this.messageFun('warning',res.data.data.msg)
+                                    sessFun.messageFun('warning',res.data.data.msg)
                                     callback([])
                                 }
                             } else {
-                                this.messageFun('warning',res.data.msg)
+                                sessFun.messageFun('warning',res.data.msg)
                                 callback([])
                             }
                         })
                     }else{
-                        this.messageFun('warning','请先选择社区所在的城市')
+                        sessFun.messageFun('warning','请先选择社区所在的城市')
                     }
                 }else{
                     callback([])
@@ -1331,8 +1326,8 @@
                 }
             },
             // 根据所选的资源名称拉取房价网数据
-            getResBasicData(){
-                if(this.recForm.resname !== '' && this.resAddres.area !== '' && this.resAddres.city !== ''){
+            getResBasicData() {
+                if (this.recForm.resname !== '' && this.resAddres.area !== '' && this.resAddres.city !== '') {
                     let params = {
                         // uid: this.sessionData.uID,
                         // token: this.sessionData.token,
@@ -1342,22 +1337,19 @@
                     }
                     api.postApi(this.apiVar.QADNAPI + '/GetResDetails', params).then(res => {
                         console.log('res', res)
-                        if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                            this.loginTimeout()
-                        } else {
-                            if(res.data !== ''){
-                                if(res.data.data){
-                                    this.setFangjiaData(res.data.data)
-                                }else{
-                                    this.messageFun('warning','暂无该小区数据！')
-                                }
-                            }else{
-                                this.messageFun('warning','数据获取异常,暂无该小区数据')
+                        if (res.data !== '') {
+                            if (res.data.data) {
+                                this.setFangjiaData(res.data.data)
+                            } else {
+                                sessFun.messageFun('warning', '暂无该小区数据！')
                             }
+                        } else {
+                            sessFun.messageFun('warning', '数据获取异常,暂无该小区数据')
                         }
+
                     })
                 } else {
-                    this.messageFun('warning','资源名称及城市区域都不能为空')
+                    sessFun.messageFun('warning','资源名称及城市区域都不能为空')
                 }
             },
             // 房价网数据填充
@@ -1408,7 +1400,7 @@
                     this.recForm.salesPhoneNumber = obj.salesPhoneNumber || ''           // 售楼电话
                     this.FangJiaWangData = JSON.parse(JSON.stringify(this.recForm))      //
                 }).catch(() => {
-                    this.messageFun('info','取消成功')
+                    sessFun.messageFun('info','取消成功')
                 });
             },
             // 根据填写的具体地址去获取经纬度
@@ -1424,13 +1416,9 @@
                     console.log('根据填写的具体地址去获取经纬度',params)
                     api.postApi(this.apiVar.Map + '/Geocoder', params).then(res => {
                         console.log('Geocoder', res)
-                        if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                            this.loginTimeout()
-                        } else {
-                            if(res.data.status == 0){
-                                this.recForm.lat = res.data.result.location.lng.toFixed(6)     // 经度
-                                this.recForm.lng = res.data.result.location.lat.toFixed(6)     // 纬度
-                            }
+                        if (res.data.status == 0) {
+                            this.recForm.lat = res.data.result.location.lng.toFixed(6)     // 经度
+                            this.recForm.lng = res.data.result.location.lat.toFixed(6)     // 纬度
                         }
                     });
                 }
@@ -1523,7 +1511,6 @@
                 let addr = {lng: e.point.lng, lat: e.point.lat} // lng经度；lat纬度
                 let point = new BMap.Point(addr.lng, addr.lat)
                 this.getResDataInfoByPoint(point)
-                // console.log('点击事件e',e,addr)
             },
             // 根据坐标获取省市区、地址
             getResDataInfoByPoint(point){
@@ -1561,7 +1548,6 @@
             },
             // 当广告限制的选择框获取焦点的时候，记录下当前媒体的下标
             adLimitFocus(key) {
-                // console.log('当前key值为', key)
                 this.mediaIndex = key
             },
             //新增媒体面板
@@ -1599,18 +1585,19 @@
                     mediaArr[0].mediaForm.mediaType = '广告门'
                 }
                 mediaArr[0].text = this.titleArr[++this.ADTitleIndex]
-                // mediaImgArr[0].text = mediaArr[0].text
                 if (this.ADTitleIndex < 50) {
                     this.arrMedia.push(mediaArr[0])
                 } else {
-                    this.messageFun('warning','最多同时支持五十个媒体面板的操作!')
+                    sessFun.messageFun('warning','最多同时支持五十个媒体面板的操作!')
                 }
             },
             //删除广告门媒体面板
             mediaDelBtnFun(index) {
-                this.arrMedia.splice(index, 1)   // 删除指定下标媒体面板
+                // 删除指定下标媒体面板
+                this.arrMedia.splice(index, 1)
                 console.log('长度为', this.arrMedia.length, 'index:', index)
-                if (index < this.arrMedia.length) {   // 修改面板title标签
+                // 修改面板title标签
+                if (index < this.arrMedia.length) {
                     for (let i = 0; i < this.arrMedia.length; i++) {
                         this.arrMedia[i].text = this.titleArr[i]
                     }
@@ -1630,16 +1617,16 @@
                         },
                         roadGateForm: {
                             mediaType: '道闸',   //道闸类型mVehicle
-                            mediaName: '',  //道闸名称mtitle
-                            usableNum: '3',   //广告位面数pnum
-                            mstate: '',       //道闸状态mstate
-                            assetId: '',      //资产编号assettag
-                            LBSizeW: '',      //灯箱尺寸高度
-                            LBSizeH: '',     //灯箱尺寸宽度
-                            visualW: '',      //可视画面adviewsize
-                            visualH: '',      //可视画面
-                            mediaRemark: '',  //备注 mrk
-                            adLimit: [],     //请选择广告限制 notpush
+                            mediaName: '',      //道闸名称mtitle
+                            usableNum: '3',     //广告位面数pnum
+                            mstate: '',         //道闸状态mstate
+                            assetId: '',        //资产编号assettag
+                            LBSizeW: '',        //灯箱尺寸高度
+                            LBSizeH: '',        //灯箱尺寸宽度
+                            visualW: '',        //可视画面adviewsize
+                            visualH: '',        //可视画面
+                            mediaRemark: '',    //备注 mrk
+                            adLimit: [],        //请选择广告限制 notpush
                             mImg: '',
                             updataImg:[],
                             assetIdBolean: false,
@@ -1650,7 +1637,7 @@
                 if (this.roadGateTitleIndex < 50) {
                     this.roadGateMedia.push(roadGateMedia[0])
                 } else {
-                    this.messageFun('warning','最多同时支持五十个媒体面板的操作!')
+                    sessFun.messageFun('warning','最多同时支持五十个媒体面板的操作!')
                 }
             },
             //删除道闸媒体面板
@@ -1686,10 +1673,10 @@
                 this.regionOpt = region
                 console.log('this.regionOpt', this.regionOpt)
             },
-            // 资源输入框和下拉框失去光标validateIsHaveComment
+            // 资源输入框和下拉框失去光标
             blurFun(name) {
                 console.log('name', name)
-                // 手动触发校验 validateField
+                // 手动触发校验
                 this.$refs.recForm.validateField(name, (valid) => {
                     // console.log('错误提示信息',valid)
                     if (!valid) {
@@ -1735,23 +1722,8 @@
                             } else {
                                 callback();
                             }
-                            // if (JSON.stringify(resData) == "{}") {
-                            //     callback();
-                            // } else {
-                            //     if (resData.resId == this.recForm.resID) {
-                            //         callback();
-                            //     } else {
-                            //         this.isResError = true
-                            //         this.resCommentData.mediaNum = resData.mediaCount
-                            //         this.resCommentData.resName = resData.resName
-                            //         this.resCommentData.updateTime = resData.createTime
-                            //         callback(new Error(' '))
-                            //     }
-                            // }
-                        } else if (res.data.SysCode == 100302){
-                            this.loginTimeout()
                         } else {
-                            this.messageFun('warning',res.data.MSG)
+                            sessFun.messageFun('warning',res.data.MSG)
                         }
                     })
                 }
@@ -1789,25 +1761,8 @@
                                 callback();
                             }
                         }
-                        // if (JSON.stringify(resData) == "{}") {
-                        //     let number = this.filterlocalAssetId(resData, value)
-                        //     if (number >= 2) {
-                        //         callback(new Error('这个资产编号已在该小区内存在!'))
-                        //     } else {
-                        //         callback();
-                        //     }
-                        // } else {
-                        //     let flag = this.filterAssetId(resData, value)
-                        //     if (flag) {
-                        //         callback(new Error(' '))
-                        //     } else {
-                        //         callback();
-                        //     }
-                        // }
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout()
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -1943,11 +1898,11 @@
                         console.log('判断记录编辑道闸媒体的状态')
                         if (this.editRoadGateStatue[i] == 2 || this.editRoadGateStatue[i] === '待安装') {
                             this.roadGateMedia[i].roadGateForm.assetIdBolean = true
-                            this.messageFun('warning','请在亲邻助手中完成安装任务')
+                            sessFun.messageFun('warning','请在亲邻助手中完成安装任务')
                             this.roadGateMedia[i].roadGateForm.mstate = '2' + i
                         } else if (valArr[0] === '2') {
                             this.roadGateMedia[i].roadGateForm.assetIdBolean = false
-                            this.messageFun('warning','请按正常流程走，当前媒体已安装！')
+                            sessFun.messageFun('warning','请按正常流程走，当前媒体已安装！')
                             if (this.editRoadGateStatue[i] === '禁用' || this.editRoadGateStatue[i] == 0) {
                                 this.roadGateMedia[i].roadGateForm.mstate = '0' + i
                             } else if (this.editRoadGateStatue[i] === '正常' || this.editRoadGateStatue[i] == 1) {
@@ -2002,7 +1957,7 @@
                 }
             },
             //添加资源媒体
-            createRec() {
+            createRes() {
                 console.log(this.arrMedia)
                 this.recForm.uid = this.sessionData.uID
                 this.recForm.latlng = this.recForm.lat + ';' + this.recForm.lng
@@ -2073,22 +2028,16 @@
                         // 设置资源图片信息
                         this.resImg.ptid = recData.resID        // 资源图片的ptid就是资源的id
                         this.resImg.palt = this.recForm.resname + '-' + recData.rID
-                        // this.setImg()
-                        // Message({
-                        //     message: '资源媒体创建成功！',
-                        //     type: 'success'
-                        // })
                         this.creadMediaFun(0,0)
                     } else if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时'){
                         this.Editloading.close()
-                        this.loginTimeout()
-                    }else {
+                    } else {
                         this.Editloading.close()
-                        this.messageFun('warning','资源创建失败！')
+                        sessFun.messageFun('warning','资源创建失败！')
                     }
                 }).catch(err => {
                     console.log('新建资源请求错误', err)
-                    this.messageFun('warning','新建资源请求异常')
+                    sessFun.messageFun('warning','新建资源请求异常')
                 })
             },
             // 批量创建媒体
@@ -2109,47 +2058,54 @@
                     let mediaFrom = this.arrMedia
                     for (let i = adIndex; i < mediaFrom.length; i++) {
                         let key = mediaFrom[i].mediaForm
-                        arr.push({
-                            resID: resID,
-                            uID: this.recForm.uid,
-                            mTitle: key.mediaName,
-                            pNum: key.usableNum,
-                            adSize: key.adSizeW + "*" + key.adSizeH,
-                            adViewSize: key.visualW + "*" + key.visualH,
-                            notPush: key.adLimit.join('、'),
-                            assetTag: key.assetId,
-                            mType: key.doorType,
-                            mImg: key.mImg || '',
-                            mVehicle: key.mediaType,
-                            mRemark: key.mediaRemark, // key.mediaRemark === '' ? '暂无备注' : key.mediaRemark,
-                            mState: (key.mstate).split('')[0],
-                            // picSize:'',
-                            // lightBoxSize:'',
-                        })
+                        if(key.mediaName && key.mediaType && key.adSizeW && key.adSizeH) {
+                            arr.push({
+                                resID: resID,
+                                uID: this.recForm.uid,
+                                mTitle: key.mediaName,
+                                pNum: key.usableNum,
+                                actualNum: key.usableNum,
+                                adSize: key.adSizeW + "*" + key.adSizeH,
+                                adViewSize: key.visualW + "*" + key.visualH,
+                                notPush: key.adLimit.join('、'),
+                                assetTag: key.assetId,
+                                mType: key.doorType,
+                                mImg: key.mImg || '',
+                                mVehicle: key.mediaType,
+                                mRemark: key.mediaRemark,
+                                mState: (key.mstate).split('')[0],
+                            })
+                        } else {
+                            continue
+                        }
                     }
                 }
                 if(this.rt_boolean.flag){
-
                     let mediaFrom = this.roadGateMedia
                     for (let i = rtIndex; i < mediaFrom.length; i++){
                         let key = mediaFrom[i].roadGateForm
-                        arr.push({
-                            resID: resID,
-                            uID: this.recForm.uid,
-                            mTitle: key.mediaName,
-                            pNum: key.usableNum,
-                            adSize: '',
-                            adViewSize: '',
-                            notPush: key.adLimit.join('、'),
-                            assetTag: key.assetId,
-                            mType: '',
-                            mImg: key.mImg || '',
-                            mVehicle: key.mediaType,
-                            mRemark: key.mediaRemark,   // key.mediaRemark === '' ? '暂无备注' : key.mediaRemark,
-                            mState: (key.mstate).split('')[0],
-                            picSize: key.visualW + "*" + key.visualH,
-                            lightBoxSize:  key.LBSizeW + "*" + key.LBSizeH,
-                        })
+                        if (key.mediaName && key.LBSizeW && key.LBSizeH) {
+                            arr.push({
+                                resID: resID,
+                                uID: this.recForm.uid,
+                                mTitle: key.mediaName,
+                                pNum: 1,
+                                actualNum: key.usableNum,
+                                adSize: '',
+                                adViewSize: '',
+                                notPush: key.adLimit.join('、'),
+                                assetTag: key.assetId,
+                                mType: '',
+                                mImg: key.mImg || '',
+                                mVehicle: key.mediaType,
+                                mRemark: key.mediaRemark,
+                                mState: (key.mstate).split('')[0],
+                                picSize: key.visualW + "*" + key.visualH,
+                                lightBoxSize: key.LBSizeW + "*" + key.LBSizeH,
+                            })
+                        } else {
+                            continue
+                        }
                     }
                 }
                 let params = {
@@ -2161,18 +2117,13 @@
                         rId: rid
                     }
                 }
-                console.log('params',params)
-                if(params.data.medias.length){
+                console.log('params', params)
+                if (params.data.medias.length) {
                     api.postApi_new(this.apiVar.Media, params).then(res => {
-                        console.log('批量创建媒体',res)
+                        console.log('批量创建媒体', res)
                         this.Editloading.close()
-                        if(res.data.SysCode == 200200 && res.data.data.length > 0){
-                            // this.pushResMediaToWydt(res.data.data)
-                            // Message({
-                            //     message: '媒体创建成功',
-                            //     type: 'success'
-                            // })
-                            if(String !== 'edit'){
+                        if (res.data.SysCode == 200200 && res.data.data.length > 0) {
+                            if (String !== 'edit') {
                                 this.$confirm('资源媒体创建成功!', '提示', {
                                     confirmButtonText: '继续创建',
                                     cancelButtonText: '前往列表',
@@ -2183,19 +2134,17 @@
                                     this.resUpdata = []
                                 }).catch(() => {
                                     this.resetForm()
-                                    // window.history.go(-1)
                                     this.$router.push('./mediaList');
                                 })
-                            }else{
+                            } else {
+                                sessFun.messageFun('success', '媒体创建成功')
                                 this.$router.push('./mediaDetail');
                             }
-                        } else if (res.data.SysCode == 100302){
-                            this.loginTimeout()
-                        }else{
-                            this.messageFun('warning','媒体创建失败')
+                        } else {
+                            sessFun.messageFun('warning', '媒体创建失败')
                         }
                     })
-                }else{
+                } else {
                     console.log('媒体数据为空')
                 }
             },
@@ -2219,10 +2168,10 @@
                 const isLt2M = file.size / 1024 / 1024 < 4;
 
                 if (!isJPG) {
-                    this.messageFun('warning','上传图片只能是 JPG 或 PNG 格式!')
+                    sessFun.messageFun('warning','上传图片只能是 JPG 或 PNG 格式!')
                 }
                 if (!isLt2M) {
-                    this.messageFun('warning','上传图片大小不能超过 4MB!')
+                    sessFun.messageFun('warning','上传图片大小不能超过 4MB!')
                 }
                 return isJPG && isLt2M;
             },
@@ -2245,13 +2194,13 @@
             },
             // 设置媒体图片信息
             saveImgInfo(m_title) {
-                this.messageFun('warning','该功能暂未开放')
+                sessFun.messageFun('warning','该功能暂未开放')
                 console.log('获取当前媒体标题', m_title)
                 this.mediaImg_title = m_title
             },
             // 广告门图片上传前校验
             beforeUpload_ad(file) {
-                this.messageFun('warning','该功能暂未开放')
+                sessFun.messageFun('warning','该功能暂未开放')
                 return false
                 // const isJPG = file.type === "image/jpeg" || file.type === "image/png";
                 // const isLt6M = file.size / 1024 / 1024 < 6;
@@ -2284,7 +2233,7 @@
                 console.log('媒体图片放大',this.arrMedia)
                 let timer = setTimeout(()=>{
                     for(let key of this.arrMedia){
-                        if(this.mediaImg_title === key.text){ // adHandleRemove
+                        if(this.mediaImg_title === key.text){
                             this.mediaImgTitle =  key.mediaForm.mediaName
                             if(key.mediaForm.mImg.includes(';')){
                                 this.mediaImgSrc = key.mediaForm.mImg.split(';')
@@ -2304,7 +2253,7 @@
                 console.log('删除媒体图片', file, fileList)
                 let timer = setTimeout(()=>{
                     for(let key of this.arrMedia){
-                        if(this.mediaImg_title === key.text){ // adHandleRemove
+                        if(this.mediaImg_title === key.text){
                             if (this.PathHaveEdit){
                                 key.mediaForm.mImg = fileList[0].url
                             }else{
@@ -2319,12 +2268,12 @@
             },
             //道闸图片
             saveImgRGInfo(m_title){
-                this.messageFun('warning','该功能暂未开放')
+                sessFun.messageFun('warning','该功能暂未开放')
                 this.rgImg_title = m_title
             },
             // 道闸图片上传前校验
             beforeUpload_rg(file){
-                this.messageFun('warning','该功能暂未开放')
+                sessFun.messageFun('warning','该功能暂未开放')
                 return false
                 // const isJPG = file.type === "image/jpeg" || file.type === "image/png";
                 // const isLt6M = file.size / 1024 / 1024 < 6;
@@ -2357,7 +2306,7 @@
                 console.log('媒体图片放大',this.roadGateMedia)
                 let timer = setTimeout(()=>{
                     for(let key of this.roadGateMedia){
-                        if(this.rgImg_title === key.text){ // adHandleRemove
+                        if(this.rgImg_title === key.text){
                             this.mediaImgTitle =  key.roadGateForm.mediaName
                             if(key.roadGateForm.mImg.includes(';')){
                                 this.mediaImgSrc = key.roadGateForm.mImg.split(';')
@@ -2376,7 +2325,7 @@
                 console.log('删除道闸图片', file, fileList)
                 let timer = setTimeout(()=>{
                     for(let key of this.roadGateMedia){
-                        if(this.rgImg_title === key.text){ // adHandleRemove
+                        if(this.rgImg_title === key.text){
                             if (this.PathHaveEdit){
                                 key.roadGateForm.mImg = fileList[0].url
                             }else{
@@ -2420,7 +2369,7 @@
                 }).catch((err)=> {
                     console.log("验证失败",err)
                     //验证失败 提示reject失败状态的值
-                    this.messageFun('warning','必填项信息不能为空或填写有误！')
+                    sessFun.messageFun('warning','必填项信息不能为空或填写有误！')
                 });
             },
             // 广告门校验
@@ -2440,7 +2389,7 @@
                                 this.adDoorValidateFrom(fromName,index)
                             } else {
                                 console.log('广告门不通过',valid)
-                                this.messageFun('warning','必填项信息不能为空或填写有误!')
+                                sessFun.messageFun('warning','必填项信息不能为空或填写有误!')
                                 this.m_boolean.flag = false
                                 return
                             }
@@ -2470,7 +2419,7 @@
                                 this.rgValidateFrom(fromName,index)
                             } else {
                                 console.log('道闸不通过')
-                                this.messageFun('warning','必填项信息不能为空或填写有误！')
+                                sessFun.messageFun('warning','必填项信息不能为空或填写有误！')
                                 this.rt_boolean.flag = false
                                 return
                             }
@@ -2506,18 +2455,17 @@
                             spinner: 'el-icon-loading',
                             background: 'rgba(0, 0, 0, 0.7)'
                         })
-                        this.createRec()
+                        this.createRes()
                     }
                 } else {
                     this.$refs['mediaForm'][0].validate((valid) => {
 
                     })
-                    this.messageFun('warning', '必填项信息不能为空或填写有误！')
+                    sessFun.messageFun('warning', '必填项信息不能为空或填写有误！')
                 }
             },
             //重置表单数据
             resetForm() {
-                //  this.$refs[formName].resetFields();arrMedia.mediaForm
                 this.$refs['recForm'].resetFields();
                 for (let i = 0; i < this.arrMedia.length; i++) {
                     this.$refs['mediaForm'][i].resetFields();
@@ -2572,16 +2520,16 @@
                         this.PathHaveEdit = true
                         // 设置默认选中的城市
                         this.recForm.city[0] = recObj.rid.toString().substring(0, 2) + '0000'
-                        this.recForm.city[1] = recObj.cityId //recObj.rid.toString().substring(0, 4) + '00'
+                        this.recForm.city[1] = recObj.cityId
                         this.handleChange(this.recForm.city)
                         this.resAddres.city = recObj.city
                         this.resAddres.area = recObj.cityArea
-                        // 获取设置资源信息 resAddres
+                        // 获取设置资源信息
                         let tempObj = {
                             resID: recObj.resID,
                             rt: recObj.cType,
                             resname: recObj.resName,
-                            city: this.recForm.city, //recObj.city,
+                            city: this.recForm.city,
                             region: recObj.rid.toString(),
                             business: recObj.tradingArea,
                             resaddr: recObj.resAddress,
@@ -2638,7 +2586,7 @@
                         console.log('mediaObj', mediaObj)
                         this.editMediaLength = mediaObj.length
                         for (let i = 0; i < mediaObj.length; i++) {
-                            if (i < mediaObj.length - 1) { // 创建媒体面板，默认已有一个
+                            if (i < mediaObj.length - 1) {                     // 创建媒体面板，默认已有一个
                                 this.mediaAddFun()
                             }
                             this.keepMStatue(i, mediaObj[i].mState,'广告门')    // 记录编辑媒体，初始\修改前的媒体状态
@@ -2657,13 +2605,13 @@
                                 mediaType: mediaObj[i].mVehicle,
                                 mediaName: mediaObj[i].mTitle,
                                 usableNum: mediaObj[i].pNum,
-                                mstate: mediaObj[i].mState.toString() + i,                       // 媒体状态
+                                mstate: mediaObj[i].mState.toString() + i,   // 媒体状态
                                 assetId: mediaObj[i].assetTag,
                                 doorType: mediaObj[i].mType,
-                                adSizeW: adSize.w, //mediaObj[i].adSize.split('*')[0],
-                                adSizeH: adSize.h, //mediaObj[i].adSize.split('*')[1],
-                                visualW: visual.w, //mediaObj[i].adViewSize.split('*')[0],
-                                visualH: visual.h, //mediaObj[i].adViewSize.split('*')[1],
+                                adSizeW: adSize.w,
+                                adSizeH: adSize.h,
+                                visualW: visual.w,
+                                visualH: visual.h,
                                 mediaRemark: mediaObj[i].mRemark,
                                 adDoorLevel: mediaObj[i].grade,
                                 mImg: mediaObj[i].mImg,
@@ -2726,8 +2674,7 @@
                 console.log('roadGateList', roadGateList)
                 this.editRoadGateLength = roadGateList.length
                 for (let i = 0; i < roadGateList.length; i++) {
-                    // let media = {updataImg:[]}
-                    if (i < roadGateList.length - 1) { // 创建媒体面板，默认已有一个
+                    if (i < roadGateList.length - 1) {                   // 创建媒体面板，默认已有一个
                         this.roadGateAddFun()
                     }
                     this.keepMStatue(i, roadGateList[i].mState,'道闸')    // 记录编辑媒体，初始\修改前的媒体状态
@@ -2800,7 +2747,6 @@
                     let resImg = {name: '资源图片', url: this.recForm.fullViewUrl}
                     this.resUpdata.push(resImg)
                 }else{
-                    // let resID = sessionStorage.getItem('resID')
                     let uid = this.sessionData.uID
                     let params = {
                         uid: uid,
@@ -2881,7 +2827,8 @@
                     discount: recObj.discount
                 }
                 let recDetail = JSON.parse(sessionStorage.getItem('recDetail'))
-                if (recObj.region === recDetail.cityArea) {    // 地区没有修改的时候
+                // 地区没有修改的时候
+                if (recObj.region === recDetail.cityArea) {
                     SetResCTObj.rid = recDetail.rid
                 } else {
                     SetResCTObj.rid = Number(recObj.region)
@@ -2902,7 +2849,6 @@
                     if (res.data.SysCode == 200200) {
                         // 设置资源图片信息
                         console.log('m_boolean',this.m_boolean,'rt_boolean',this.rt_boolean)
-                        // this.creadMediaFun(0,0)
                         if(this.m_boolean.flag){
                             this.postAdDoorData()
                         }
@@ -2916,9 +2862,8 @@
                     } else {
                         if (res.data.SysCode == 100302 || res.data.MSG === '登陆超时') {
                             this.Editloading.close()
-                            this.loginTimeout()
                         } else {
-                            this.messageFun('warning','资源保存失败')
+                            sessFun.messageFun('warning','资源保存失败')
                         }
                         this.Editloading.close()
                     }
@@ -2975,11 +2920,11 @@
                                         clearTimeout(timer)
                                     },500)
                                     this.Editloading.close()
-                                    this.messageFun('success','广告门保存成功')
+                                    sessFun.messageFun('success','媒体保存成功')
                                     this.$router.push('./mediaDetail');
                                 }
                             }else{
-                                this.messageFun('warning',tempObj.mediaName + '保存失败')
+                                sessFun.messageFun('warning',tempObj.mediaName + '保存失败')
                             }
                         })
                     } else {
@@ -2990,8 +2935,7 @@
                 }
             },
             // 提交编辑后的道闸媒体信息
-            postRoadGateData(){
-                //this.roadGateMedia[i].roadGateForm = media
+            postRoadGateData() {
                 let mediaArr = this.roadGateMedia
                 let mIDArr = []
                 for (let i = 0; i < mediaArr.length; i++) {
@@ -3005,15 +2949,13 @@
                             uid: this.sessionData.uID,
                             mid: tempObj.mid,
                             mtitle: tempObj.mediaName,
-                            // adsize: tempObj.adSizeW + '*' + tempObj.adSizeH,
-                            // adviewsize: tempObj.visualW + '*' + tempObj.visualH,
                             notpush: tempObj.adLimit.join('、'),
                             assettag: tempObj.assetId,
                             mtype: tempObj.doorType,
                             mrk: tempObj.mediaRemark === '' ? '暂无备注' : tempObj.mediaRemark,
                             mimg: '',
                             picSize: tempObj.visualW + "*" + tempObj.visualH,
-                            lightBoxSize:  tempObj.LBSizeW + "*" + tempObj.LBSizeH,
+                            lightBoxSize: tempObj.LBSizeW + "*" + tempObj.LBSizeH,
                         }
                         console.log('更新媒体temp_media', temp_media)
                         if (tempObj.mstate === '正常') {
@@ -3029,24 +2971,24 @@
                         let mParams = {
                             "uid": this.sessionData.uID,
                             "token": this.sessionData.token,
-                            "service":"SetMediaInfo",
+                            "service": "SetMediaInfo",
                             "data": temp_media
                         }
                         api.postApi_new(this.apiVar.Media, mParams).then(res => {
                             console.log('道闸修改', res)
-                            if(res.data.SysCode == 200200){
+                            if (res.data.SysCode == 200200) {
                                 mIDArr.push(res.data.data.mID)
                                 if (i >= mediaArr.length - 1) {
-                                    let timer = setTimeout(()=>{
+                                    let timer = setTimeout(() => {
                                         this.pushResMediaToWydt(mIDArr)
                                         clearTimeout(timer)
-                                    },500)
+                                    }, 500)
                                     this.Editloading.close()
-                                    this.messageFun('success','道闸保存成功')
+                                    sessFun.messageFun('success', '媒体保存成功')
                                     this.$router.push('./mediaDetail');
                                 }
-                            }else{
-                                this.messageFun('warning',tempObj.mediaName + '保存失败')
+                            } else {
+                                sessFun.messageFun('warning', tempObj.mediaName + '保存失败')
                             }
                         })
                     } else {
@@ -3071,11 +3013,11 @@
                 api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('修改媒体状态', res)
                     if (res.data.SysCode === 200200 || res.data.MSG === '操作成功') {
-                        this.messageFun('success','修改成功')
+                        sessFun.messageFun('success','修改成功')
                     } else if (res.data.SysCode === 200302 || res.data.MSG === '广告位已被占用') {
-                        this.messageFun('warning',res.data.MSG)
+                        sessFun.messageFun('warning',res.data.MSG)
                     } else {
-                        this.messageFun('warning','状态更改失败')
+                        sessFun.messageFun('warning','状态更改失败')
                     }
                 })
             },
@@ -3083,21 +3025,6 @@
             clearData() {
                 this.resetForm()
                 window.history.go(-1);
-            },
-            // 操作提示统一方法
-            messageFun(mesType,mes){
-                this.$message({
-                    message: mes,
-                    type: mesType
-                })
-            },
-            // 登录超时
-            loginTimeout() {
-                this.$message({
-                    message: '登录超时或权限异常,请重新登录',
-                    type: 'warning'
-                })
-                this.$router.push('/login')
             },
         },
     }

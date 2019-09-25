@@ -99,6 +99,18 @@
                         :on-remove="removeImg">
                         <i class="el-icon-plus"></i>
                     </el-upload>
+                <!--    <el-upload
+                        :action="doUpload"
+                        list-type="picture-card"
+                        :file-list="uploadImg"
+                        :limit = '3'
+                        :multiple="true"
+                        :on-success="downSuccess"
+                        :on-preview="pictureCardPreview"
+                        :before-upload="beforeUpload"
+                        :on-remove="removeImg">
+                        <i class="el-icon-plus" v-show="uploadUrl.length < 3 "></i>
+                    </el-upload>-->
                 </p>
             </div>
             <span slot="footer" class="dialog-footer">
@@ -688,6 +700,10 @@
     .upload_img{
         height: 104px;
         overflow: hidden;
+     /*   height: 225px;
+        overflow-y: auto;
+        min-height: 104px;
+        overflow-x: hidden;*/
     }
 
     .upload_dialog_body /deep/ .el-upload--picture-card{

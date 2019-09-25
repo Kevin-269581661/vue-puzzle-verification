@@ -599,8 +599,6 @@
                     }  else if(res.data.SysCode === 200200 ){
                         let limit = res.data.data
                         let limitArr = []
-                        // let firstObj = {value: '全部', label: '全部'}
-                        // limitArr.push(firstObj)
                         for (let i = 0; i < limit.length; i++) {
                             let limitObj = {value: limit[i].nTitle, label: limit[i].nTitle}
                             limitArr.push(limitObj)
@@ -614,7 +612,6 @@
                 // 真实数据
                 let uid = JSON.parse(sessionStorage.getItem("session_data")).uID;
                 let apid = sessionStorage.getItem("order_apid");
-                // let info = {uid: uid,apid: apid}
                 let params = {
                     uid: uid,
                     token: this.sessionData.token,
@@ -627,7 +624,6 @@
                         this.FAInfo = info;
                         this.sUID = this.FAInfo.suID
                         this.FAInfo.cityList = this.delCommentCity(this.FAInfo.rIDs.split(','))
-                        // this.getCityList()
                         if (this.sessionData.uType === 'MD' && this.sessionData.mediaManageLevel == '1') {
                             this.setAllCityAndArea(this.FAInfo.cityList)
                         } else {
@@ -740,8 +736,7 @@
             },
             // 根据用户权限与投放城市的交集，显示城市
             filterCity(cityData) {
-                // this.FAInfo.rIDs
-                let FA_rIDs_arr = this.FAInfo.cityList//this.FAInfo.rIDs.split(',')
+                let FA_rIDs_arr = this.FAInfo.cityList
                 // console.log('FA_rIDs_arr',FA_rIDs_arr,'cityData',cityData)
                 let uRID = cityData
                 let cityArr = []
@@ -884,7 +879,6 @@
             initData(val){
                 console.log('搜索框变化的值',val)
                 if (!this.searchInput) {
-                    // console.log('this.copyPlanList ',this.copyPlanList,this.planList )
                     this.isOccupied = true
                     this.getAdsParamsData.tradingArea = ''
                     this.getAdsParamsData.assetTag = ''
@@ -1385,7 +1379,7 @@
                     rid: info.rid,
                     mID: info.mID,
                     mVehicle: info.mVehicle,
-                    asID: info.asIDs.split(','),
+                    asID: info.asIDs,//info.asIDs.split(','),
                     asIDs: info.asIDs,
                     asLabs: info.asLabs,
                     resName: info.resName,

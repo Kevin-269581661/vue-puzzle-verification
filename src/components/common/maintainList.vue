@@ -579,7 +579,7 @@
                             } else if (data.type == 2) {
                                 a.type = '待维修'
                             } else if (data.type == 3) {
-                                a.type = '删除'
+                                a.type = '拆除'
                             }
 
                             obj.list.push(a);
@@ -772,7 +772,7 @@
                 } else if (item.type == 2) {
                     obj.mtType = '待维修'
                 } else if (item.type == 3) {
-                    obj.mtType = '删除'
+                    obj.mtType = '拆除'
                 }
                 if (item.patrolPointPics && item.patrolPointPics.length) {
                     let arr = [];

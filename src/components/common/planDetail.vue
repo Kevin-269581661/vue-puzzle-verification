@@ -418,6 +418,9 @@ export default {
             return commaFormat.init(price);
         },
         priceToFormat(price){
+            if(!price) {
+                return 0
+            }
             return commaFormat.format(price);
         },
         // 返回

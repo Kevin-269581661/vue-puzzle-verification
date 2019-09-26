@@ -524,12 +524,13 @@
                 }
                 api.getApi_file(this.apiVar.image + '/downloadZip', params).then(res => {
                     console.log('下载压缩包', res) // data
-                    let time = timeFormat.toDateTime(new Date(), '')
+                    let time = timeFormat.toDateTime(new Date(), '').split(' ')
+                    let timeString = time[0] + time[1].split(':').join('')
                     let blob = new Blob([res.data], {type: 'application/ms-download;charset=utf-8'});
                     let downloadElement = document.createElement('a');
                     let href = window.URL.createObjectURL(blob);    //创建下载的链接
                     downloadElement.href = href;
-                    downloadElement.download = '行业图片' + time + '.zip'//res.headers['Content-Disposition'].split('=')[1]; //下载后文件名
+                    downloadElement.download = '行业图片' + timeString + '.zip'//res.headers['Content-Disposition'].split('=')[1]; //下载后文件名
                     document.body.appendChild(downloadElement);
                     downloadElement.click();                        //点击下载
                     document.body.removeChild(downloadElement);     //下载完成移除元素

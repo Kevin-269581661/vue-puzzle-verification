@@ -1139,6 +1139,10 @@
                 api.postApi_new(this.apiVar.Media, params).then(res=>{
                     if (res.data.SysCode === 200200) {
                         sessFun.messageFun('success', '成功更改状态')
+                        this.rowData.mState = '3'
+                        this.rowData.asState.A = '3'
+                        this.rowData.asState.B = '3'
+                        this.repairVisible = false
                     } else {
                         sessFun.messageFun('warning', res.data.MSG)
                     }

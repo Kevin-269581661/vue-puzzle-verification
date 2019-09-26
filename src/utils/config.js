@@ -42,6 +42,8 @@ const apiVar = {
     replace: '/replace/v1',
     // 社区画像
     portrait: '/portrait',
+    // 图片相关
+    image: '/image',
     wuYouMap: wuYouMap,
     shareWUYouMap: shareWUYouMap,
     jsonLink: jsonLink,

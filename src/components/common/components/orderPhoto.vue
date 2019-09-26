@@ -21,7 +21,8 @@
             </el-col>
             <el-col :span="12" class="el_col_upload_btn">
                 <el-button v-if="isShowBtn" type="primary" @click="uploadFun()" :disabled="!isSearch">上传图片</el-button>
-                <!--<el-button plain size="small" @click="photoDownLoad()">一键导出</el-button>-->
+                <el-button plain size="small" @click="photoDownLoad()" :loading="activeDownload">
+                    {{activeDownload ? '导出中' : '一键导出'}}</el-button>
             </el-col>
         </el-row>
         <div>
@@ -99,18 +100,18 @@
                         :on-remove="removeImg">
                         <i class="el-icon-plus"></i>
                     </el-upload>
-                <!--    <el-upload
-                        :action="doUpload"
-                        list-type="picture-card"
-                        :file-list="uploadImg"
-                        :limit = '3'
-                        :multiple="true"
-                        :on-success="downSuccess"
-                        :on-preview="pictureCardPreview"
-                        :before-upload="beforeUpload"
-                        :on-remove="removeImg">
-                        <i class="el-icon-plus" v-show="uploadUrl.length < 3 "></i>
-                    </el-upload>-->
+                    <!--    <el-upload
+                            :action="doUpload"
+                            list-type="picture-card"
+                            :file-list="uploadImg"
+                            :limit = '3'
+                            :multiple="true"
+                            :on-success="downSuccess"
+                            :on-preview="pictureCardPreview"
+                            :before-upload="beforeUpload"
+                            :on-remove="removeImg">
+                            <i class="el-icon-plus" v-show="uploadUrl.length < 3 "></i>
+                        </el-upload>-->
                 </p>
             </div>
             <span slot="footer" class="dialog-footer">
@@ -153,6 +154,7 @@
     import {Image} from 'element-ui';
     import industryToText from "../../../commonFun/industryToText.js";
     import sessFun from "../../../commonFun/sessFun"
+    import timeFormat from "../../../commonFun/timeFormat"
     import api from "../../../api/api"
     export default {
         name: "orderPhoto",
@@ -183,7 +185,7 @@
                 dialogVisible: false,
                 dialogImageUrl: '',
                 // 上传图片
-                doUpload: this.apiVar.qadnUrl + '/advertisement/image/upload',     //http://192.168.1.239/
+                doUpload: this.apiVar.qadnUrl + '/advertisement/image/upload',
                 UploadVisible: false,
                 uploadUrl: '',
                 // 上传图片的信息
@@ -197,7 +199,12 @@
                     name:'',
                     industry: [],
                     id:''
-                }
+                },
+                // 一键导出防连续点击
+                isActiveImport: false,
+                // 是否下载中
+                activeDownload: false,
+
             }
         },
         mounted(){
@@ -245,19 +252,19 @@
                 })
             },
             //
-            setImgList(data){
-                if(!data || data.length <= 0){
+            setImgList(data) {
+                if (!data || data.length <= 0) {
                     this.showPic = 1
                     return
-                }else{
+                } else {
                     let tempList = []
-                    for(let key of data){
+                    for (let key of data) {
                         tempList.push({
                             id: key.id,
                             createTime: key.createTime,
                             url: key.picUrl,
                             userName: key.userName,
-                            industry: [key.topIndustryId,key.industryId],
+                            industry: [key.topIndustryId, key.industryId],
                             industryName: key.industryName,
                             topIndustryName: key.topIndustryName,
                             userId: key.userId,
@@ -418,7 +425,7 @@
                     api.postApi(this.apiVar.Advertisement + '/image/updateIndustry',params).then(res=>{
                         console.log('修改图片关联行业res',res)
                         if (res.data.SysCode === 200200) {
-                            this.messageFun('success', '修改成功')
+                            sessFun.messageFun('success', '修改成功')
                             this.editPhotoDialogVisible = false
                             let industryNames = this.getIndustryNamebyId(this.editPhotoInfo.industry)
                             console.log('industryNames',industryNames)
@@ -431,7 +438,7 @@
                                 }
                             }
                         } else {
-                            this.messageFun('warning', res.data.MSG)
+                            sessFun.messageFun('warning', res.data.MSG)
                         }
                     })
                 }
@@ -453,36 +460,104 @@
                 }
                 return industryNames
             },
+            // 一键导出
+            photoDownLoad() {
+                this.activeDownload = true
+                if (!this.isActiveImport) {
+                    this.isActiveImport = true
+                    let timer = setTimeout(() => {
+                        let arr = []
+                        for (let key of this.imgList) {
+                            arr.push({
+                                name: key.name || '',
+                                picUrl: key.url,
+                            })
+                        }
+                        console.log('一键导出arr', arr)
+                        let params = arr
+                        api.postApi_json(this.apiVar.image + '/submitTask?uid='
+                            + this.sessionData.uID + '&token=' + this.sessionData.token, params).then(res => {
+                            console.log('一键导出图片res', res)
+                            if (res.data.SysCode === 200200) {
+                                this.getImportProgress(res.data.data)
+                            } else {
+                                sessFun.messageFun('warning', res.data.MSG)
+                                this.activeDownload = false
+                            }
+                        })
+                        this.isActiveImport = false
+                        clearTimeout(timer)
+                    }, 500)
+                } else {
+
+                }
+            },
+            // 一键导出图片进度查询
+            getImportProgress(taskId) {
+                let timer = setInterval(()=>{
+                    let params = {
+                        uid: this.sessionData.uID,
+                        token: this.sessionData.token,
+                        taskId: taskId,
+                    }
+                    api.getApi(this.apiVar.image + '/getProgressInfo', params).then(res => {
+                        console.log('一键导出进度', res)
+                        if (res.data.SysCode === 200200) {
+                            if(res.data.data >= 1) {
+                                this.downloadImgZip(taskId)
+                                clearInterval(timer)
+                            }
+                        } else {
+                            sessFun.messageFun('warning', res.data.MSG)
+                            this.activeDownload = false
+                            clearInterval(timer)
+                        }
+                    })
+                },2000)
+            },
+            // 进度100%,下载压缩包
+            downloadImgZip(taskId) {
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    taskId: taskId,
+                }
+                api.getApi_file(this.apiVar.image + '/downloadZip', params).then(res => {
+                    console.log('下载压缩包', res) // data
+                    let time = timeFormat.toDateTime(new Date(), '')
+                    let blob = new Blob([res.data], {type: 'application/ms-download;charset=utf-8'});
+                    let downloadElement = document.createElement('a');
+                    let href = window.URL.createObjectURL(blob);    //创建下载的链接
+                    downloadElement.href = href;
+                    downloadElement.download = '行业图片' + time + '.zip'//res.headers['Content-Disposition'].split('=')[1]; //下载后文件名
+                    document.body.appendChild(downloadElement);
+                    downloadElement.click();                        //点击下载
+                    document.body.removeChild(downloadElement);     //下载完成移除元素
+                    window.URL.revokeObjectURL(href);               //释放掉blob对象
+                    sessFun.messageFun('success', '下载成功')
+                    this.activeDownload = false
+                }).catch(err => {
+                    sessFun.messageFun('warning', res.data.MSG)
+                    this.activeDownload = false
+                })
+            },
             // 查看图片
             handlePictureCardPreview(item) {
-                console.log('imgInfo--------', item);
+                // console.log('imgInfo--------', item);
                 this.dialogImageUrl = item.url;
                 this.dialogVisible = true;
             },
             // 分页
             changePage(val){
-                console.log('当前页',val)
+                // console.log('当前页',val)
                 this.pageData.pageNum = val
                 this.getIndustryImgList()
             },
             // 每页的条数
             changeSize(val){
-                console.log('每页的条数',val)
+                // console.log('每页的条数',val)
                 this.pageData.pageSize = val
                 this.getIndustryImgList()
-                // this.setFixedTableHieght()
-            },
-            // 操作提示统一方法
-            messageFun(mesType,mes){
-                this.$message({
-                    message: mes,
-                    type: mesType,
-                    showClose: true,
-                })
-            },
-            loginTimeout(){
-                this.messageFun('warning',"登录超时,请重新登录");
-                this.$router.push("/login");
             },
         }
     }
@@ -700,10 +775,10 @@
     .upload_img{
         height: 104px;
         overflow: hidden;
-     /*   height: 225px;
-        overflow-y: auto;
-        min-height: 104px;
-        overflow-x: hidden;*/
+        /*   height: 225px;
+           overflow-y: auto;
+           min-height: 104px;
+           overflow-x: hidden;*/
     }
 
     .upload_dialog_body /deep/ .el-upload--picture-card{

@@ -633,9 +633,6 @@
                     api.postApi_new(this.apiVar.Media, params).then(res => {
                         console.log('社区信息---', res.data);
                        if(res.data){
-                           if(res.data.SysCode == 100302){
-                                this.loginTimeout();
-                            }
                             if(res.data.SysCode == 200200){
                                 let resData = res.data.data;
                                 if (resData === null || resData === '') {
@@ -659,10 +656,6 @@
                     api.getApi(this.apiVar.QZhike + '/GetToTalCountInfo', info).then(res => {
                         console.log('GetToTalCountInfo--', res.data);
                         if (res.data) {
-                            if (res.data.SysCode == 100302) {
-                                this.$message.warning('登录超时，请重新登录');
-                                this.$router.push('/login')
-                            }
                             let arr = res.data[0].totalCount.split(',');
                             console.log(arr);
                             for (let data of arr) {
@@ -686,10 +679,6 @@
                 api.getApi(this.apiVar.QZhike + '/GetTFre', info).then(res => {
                     console.log('GetTFre返回--', res.data);
                     if (res.data) {
-                        if (res.data.SysCode == 100302) {
-                            this.$message.warning('登录超时,请重新登录');
-                            this.$router.push('/login');
-                        }
                         for (let i in res.data) {
                             if (res.data[i].tFre) {
                                 let tFres = res.data[i].tFre.split(',');

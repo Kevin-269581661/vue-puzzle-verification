@@ -61,7 +61,7 @@
             <img src="../../assets/images/loginBg.png" alt="">
         </div>
         <div class="footer">
-            <p>copyright &copy; 2017 Qinlin technology. All rights reserved. 粤ICP备15007183号</p>
+            <p>copyright &copy; 2017 Qinlin technology. All rights reserved. <a href="http://www.beian.miit.gov.cn">粤ICP备15007183号</a></p>
         </div>
     </div>
 </template>
@@ -249,7 +249,7 @@
                 if (wsData.step === 1) {
                     this.step = 1
                     console.log('获取二维码')
-                    this.codeImg = wsData.qrurl // 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/QRCodeImg/QRCode90001.jpg'
+                    this.codeImg = wsData.qrurl //
                     // this.imgLoading = false
                     this.codeImgLoading()
                 } else if (wsData.step === 2) {
@@ -561,5 +561,9 @@
         color: rgba(0, 0, 0, 0.45);
     }
 
+    .footer a{
+        color: rgba(0, 0, 0, 0.45);
+        text-decoration: underline;
+    }
 
 </style>

@@ -560,9 +560,12 @@ export default {
         },
         // 显示缓存方案的信息
         showCookeAdPlan(adPlan){
+            // this.planForm.realNamesName
+            let ownerSales = (this.sessionData.uType === 'MD' && adPlan.planData.baseInfo.realNamesName) ?
+                adPlan.planData.baseInfo.realNamesName : adPlan.planData.baseInfo.ownerSales
             this.planInfo = {
                 planName: adPlan.planData.baseInfo.planName,
-                ownerSales: adPlan.planData.baseInfo.ownerSales,
+                ownerSales: ownerSales,
                 cleatTime: adPlan.setTime,
                 adsNum: adPlan.planData.adsList.length
             }
@@ -1008,13 +1011,13 @@ export default {
             let obj = {
                 adcID: item.adcID,
                 apID: item.apID,
-                apName: item.apName ? item.apName : '',
-                apState: item.apState ? item.apState : '',
-                apTotal: item.apTotal ? item.apTotal : '',
-                apcTime: item.apcTime ? item.apcTime : '',
-                bTitle: item.bTitle ? item.bTitle : '--',
-                cName: item.cName ? item.cName : '',
-                realName: item.realName ? item.realName : '',
+                apName: item.apName || '',
+                apState: item.apState || '',
+                apTotal: item.apTotal || '',
+                apcTime: item.apcTime || '',
+                bTitle: item.bTitle || '--',
+                cName: item.cName || '',
+                realName: item.realName || '',
                 cityArea: [],
             };
             item.details.sort((a, b)=>{

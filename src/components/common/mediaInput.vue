@@ -32,6 +32,7 @@
                                             separator="-"
                                             :show-all-levels="false"
                                             placeholder="请选择所属城市"
+                                            filterable
                                             @blur="blurFun('city')"
                                             @change="handleChange">
                                         </el-cascader>
@@ -60,7 +61,7 @@
                                             @select="changeResName"
                                             @blur="blurFun('resname')">
                                         </el-autocomplete>
-                                       <el-button size="small" type="primary" @click="getResBasicData" class="get_resName_btn">检索</el-button>
+                                        <el-button size="small" type="primary" @click="getResBasicData" class="get_resName_btn">检索</el-button>
                                     </el-form-item>
                                     <el-tooltip class="item" effect="dark" placement="bottom-end" v-show="isResError">
                                         <div slot="content">
@@ -85,14 +86,14 @@
                             <el-row :gutter="76" class="from_row">
                                 <el-col :span="6">
                                     <el-form-item label="资源地址" prop="resaddr">
-                                            <el-autocomplete
-                                                v-model="recForm.resaddr"
-                                                :fetch-suggestions="querySearchAsync"
-                                                placeholder=""
-                                                @blur="blurFun('resaddr')"
-                                                style="width: 100%"
-                                                class="el-from-item-address">
-                                            </el-autocomplete>
+                                        <el-autocomplete
+                                            v-model="recForm.resaddr"
+                                            :fetch-suggestions="querySearchAsync"
+                                            placeholder=""
+                                            @blur="blurFun('resaddr')"
+                                            style="width: 100%"
+                                            class="el-from-item-address">
+                                        </el-autocomplete>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="6">
@@ -106,16 +107,16 @@
                                         地图获取
                                     </div>
                                     <el-form-item label="经纬度" required class="lng_lat_form_item">
-                                            <div class="form_item_box_son">
-                                                <el-form-item prop="lat" class="">
-                                                    <el-input v-model.trim="recForm.lat" placeholder=""></el-input>
-                                                </el-form-item>
-                                            </div>
-                                            <div class="form_item_box_son">
-                                                <el-form-item prop="lng">
-                                                    <el-input v-model.trim="recForm.lng" placeholder=""></el-input>
-                                                </el-form-item>
-                                            </div>
+                                        <div class="form_item_box_son">
+                                            <el-form-item prop="lat" class="">
+                                                <el-input v-model.trim="recForm.lat" placeholder=""></el-input>
+                                            </el-form-item>
+                                        </div>
+                                        <div class="form_item_box_son">
+                                            <el-form-item prop="lng">
+                                                <el-input v-model.trim="recForm.lng" placeholder=""></el-input>
+                                            </el-form-item>
+                                        </div>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="6">
@@ -169,7 +170,7 @@
                                 </el-col>
                                 <el-col :span="6">
                                     <el-form-item label="楼栋数量" prop="buildingNum">
-                                        <el-input-number v-model="recForm.buildingNum" controls-position="right" :min="1" :max="9999999"></el-input-number>
+                                        <el-input-number v-model="recForm.buildingNum" controls-position="right" :min="0" :max="9999"></el-input-number>
                                     </el-form-item>
                                 </el-col>
                             </el-row>
@@ -261,7 +262,7 @@
                                 </el-col>
                                 <el-col :span="6">
                                     <el-form-item label="物业费（元/m²/月）" prop="managementFee">
-                                            <el-input v-model="recForm.managementFee" placeholder=""></el-input>
+                                        <el-input v-model="recForm.managementFee" placeholder=""></el-input>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="6">
@@ -319,7 +320,7 @@
                     </div>
                 </div>
             </div>
-            <!--媒体一 mediaMana_content_bottom-->
+            <!--媒体一-->
             <div class="mediaList_content">
                 <el-tabs v-model="activeMedia" @tab-click="handleClickMedia">
                     <el-tab-pane label="广告门" name="first">
@@ -343,19 +344,21 @@
                                             <el-col :span="6">
                                                 <el-form-item label="可投面数" prop="usableNum">
                                                     <el-input-number v-model.number="item.mediaForm.usableNum" :min="1" :max="26"
-                                                                         controls-position="right" :disabled="(PathHaveEdit && key <= editMediaLength - 1)">
+                                                                     controls-position="right" :disabled="(PathHaveEdit && key <= editMediaLength - 1)">
                                                     </el-input-number>
                                                 </el-form-item>
                                             </el-col>
                                             <el-col :span="6">
                                                 <el-form-item label="媒体状态" prop="mstate">
                                                     <el-select v-model="item.mediaForm.mstate" placeholder="请选择媒体状态"
+                                                               :disabled="item.mediaForm.mstate.includes('4') && (key + 1) <= editMediaLength && PathHaveEdit"
                                                                @blur="adDoorBlur('mstate',key)"
                                                                @change="selectMstate(item.mediaForm)">
                                                         <el-option label="禁用" :value="'0' + key"></el-option>
                                                         <el-option label="正常" :value="'1' + key"></el-option>
                                                         <el-option label="待安装" :value="'2' + key"></el-option>
                                                         <el-option label="待维修" :value="'3' + key"></el-option>
+                                                        <el-option label="已拆除" :value="'4' + key"></el-option>
                                                     </el-select>
                                                 </el-form-item>
                                             </el-col>
@@ -510,8 +513,8 @@
                                             <el-col :span="6" class="el_col_box">
                                                 <el-form-item label="资产编号" prop="assetId" ref="ResAssetId"
                                                               :rules="item.roadGateForm.assetIdBolean ? assetIdRules: mediaRules.assetId">
-                                                        <el-input v-model.trim="item.roadGateForm.assetId" placeholder="例:0034FASF342-X21"
-                                                                  :disabled="item.roadGateForm.assetIdBolean"></el-input>
+                                                    <el-input v-model.trim="item.roadGateForm.assetId" placeholder="例:0034FASF342-X21"
+                                                              :disabled="item.roadGateForm.assetIdBolean"></el-input>
                                                 </el-form-item>
                                                 <el-tooltip class="item" effect="dark" placement="bottom-end" v-show="item.isAssetIdError">
                                                     <div slot="content">
@@ -526,20 +529,22 @@
                                             </el-col>
                                             <el-col :span="6">
                                                 <el-form-item label="可投面数" prop="usableNum">
-                                                        <el-input-number v-model.number="item.roadGateForm.usableNum" :min="1" :max="3" :disabled="true"
-                                                                         controls-position="right">
-                                                        </el-input-number>
+                                                    <el-input-number v-model.number="item.roadGateForm.usableNum" :min="1" :max="3" :disabled="true"
+                                                                     controls-position="right">
+                                                    </el-input-number>
                                                 </el-form-item>
                                             </el-col>
                                             <el-col :span="6">
                                                 <el-form-item label="媒体状态" prop="mstate">
                                                     <el-select v-model="item.roadGateForm.mstate" placeholder="请选择媒体状态"
+                                                               :disabled="item.roadGateForm.mstate.includes('4') && (key + 1) <= editRoadGateLength && PathHaveEdit"
                                                                @blur="roadGateBlur('mstate',key)"
                                                                @change="selectMstate(item.roadGateForm)">
                                                         <el-option label="禁用" :value="'0' + key"></el-option>
                                                         <el-option label="正常" :value="'1' + key"></el-option>
                                                         <el-option label="待安装" :value="'2' + key"></el-option>
                                                         <el-option label="待维修" :value="'3' + key"></el-option>
+                                                        <el-option label="已拆除" :value="'4' + key"></el-option>
                                                     </el-select>
                                                 </el-form-item>
                                             </el-col>
@@ -561,47 +566,47 @@
                                             </el-col>
                                             <el-col :span="6">
                                                 <el-form-item label="画面尺寸" required>
-                                                        <div class="form_item_box_son">
-                                                            <el-form-item prop="visualW">
-                                                                <div class="mm">
-                                                                    <el-input v-model="item.roadGateForm.visualW"
-                                                                              placeholder="宽度"></el-input>
-                                                                    <span>mm</span>
-                                                                </div>
-                                                            </el-form-item>
-                                                        </div>
-                                                        <div class="form_item_box_son">
-                                                            <el-form-item prop="visualH">
-                                                                <div class="mm">
-                                                                    <el-input v-model="item.roadGateForm.visualH"
-                                                                              placeholder="高度">
-                                                                    </el-input>
-                                                                    <span>mm</span>
-                                                                </div>
-                                                            </el-form-item>
-                                                        </div>
+                                                    <div class="form_item_box_son">
+                                                        <el-form-item prop="visualW">
+                                                            <div class="mm">
+                                                                <el-input v-model="item.roadGateForm.visualW"
+                                                                          placeholder="宽度"></el-input>
+                                                                <span>mm</span>
+                                                            </div>
+                                                        </el-form-item>
+                                                    </div>
+                                                    <div class="form_item_box_son">
+                                                        <el-form-item prop="visualH">
+                                                            <div class="mm">
+                                                                <el-input v-model="item.roadGateForm.visualH"
+                                                                          placeholder="高度">
+                                                                </el-input>
+                                                                <span>mm</span>
+                                                            </div>
+                                                        </el-form-item>
+                                                    </div>
                                                 </el-form-item>
                                             </el-col>
                                             <el-col :span="6">
                                                 <el-form-item label="灯箱尺寸" required>
-                                                        <div class="form_item_box_son">
-                                                            <el-form-item prop="LBSizeW">
-                                                                <div class="mm">
-                                                                    <el-input v-model="item.roadGateForm.LBSizeW" placeholder="宽度"></el-input>
-                                                                    <span>mm</span>
-                                                                </div>
-                                                            </el-form-item>
-                                                        </div>
-                                                        <div class="form_item_box_son">
-                                                            <el-form-item prop="LBSizeH">
-                                                                <div class="mm">
-                                                                    <el-input v-model="item.roadGateForm.LBSizeH"
-                                                                              placeholder="高度">
-                                                                    </el-input>
-                                                                    <span>mm</span>
-                                                                </div>
-                                                            </el-form-item>
-                                                        </div>
+                                                    <div class="form_item_box_son">
+                                                        <el-form-item prop="LBSizeW">
+                                                            <div class="mm">
+                                                                <el-input v-model="item.roadGateForm.LBSizeW" placeholder="宽度"></el-input>
+                                                                <span>mm</span>
+                                                            </div>
+                                                        </el-form-item>
+                                                    </div>
+                                                    <div class="form_item_box_son">
+                                                        <el-form-item prop="LBSizeH">
+                                                            <div class="mm">
+                                                                <el-input v-model="item.roadGateForm.LBSizeH"
+                                                                          placeholder="高度">
+                                                                </el-input>
+                                                                <span>mm</span>
+                                                            </div>
+                                                        </el-form-item>
+                                                    </div>
                                                 </el-form-item>
                                             </el-col>
                                         </el-row>
@@ -680,6 +685,31 @@
                 <el-button size="small" @click="mapVisible = false">取 消</el-button>
                 <el-button size="small" type="primary" @click="addLatLngByBmap()">确定</el-button>
             </span>
+        </el-dialog>
+        <!--媒体拆除-->
+        <el-dialog
+            :visible.sync="dismantleVisible"
+            :close-on-click-modal="false"
+            :show-close="false"
+            width="480px"
+            custom-class="mStatueDialog">
+            <h3 slot="title" class="dismantle_title">
+                <i class="el-icon-question"></i>
+                媒体拆除
+            </h3>
+            <div>
+                <p style="line-height: 28px">被拆除的媒体将不可重新被启用</p>
+                <el-input type="textarea" v-model.trim="dismantleInfo" placeholder="请填写拆除记录，选填"></el-input>
+                <p class="push_map_box_p" v-show="isShowTag">
+                    <i class="el-icon-warning" style="color:#FAAD14"></i>
+                    在【维护管理】页面，可查阅每个拆除的媒体记录
+                    <i class="el-icon-close" @click="isShowTag = false"></i>
+                </p>
+            </div>
+            <div slot="footer" class="dialog-footer">
+                <el-button size="mini" @click="canceDismantle">取 消</el-button>
+                <el-button size="mini" type="primary" style="margin-left: 35px" @click="dismantleMedia">确 定</el-button>
+            </div>
         </el-dialog>
     </div>
 </template>
@@ -819,13 +849,7 @@
                 isUpload: true,
                 assetIdBolean: false,
                 activeMedia: 'first',
-                mstateOption: [
-                    {label: '禁用', value: '0'},
-                    {label: '正常', value: '1'},
-                    {label: '待安装', value: '2'},
-                    {label: '待维修', value: '3'}
-                ],
-                dialogImageUrl: '',//缩略图
+                dialogImageUrl: '',     //缩略图
                 dialogVisible: false,
                 titleArr: ['媒体一', '媒体二', '媒体三', '媒体四', '媒体五', '媒体六', '媒体七', '媒体八', '媒体九', '媒体十',
                     '媒体十一', '媒体十二', '媒体十三', '媒体十四', '媒体十五', '媒体十六', '媒体十七', '媒体十八', '媒体十九', '媒体二十',
@@ -838,7 +862,6 @@
                 arrMedia: [
                     {
                         text: '媒体一',
-                        // isMediaNameError: false,    // 判断同小区下媒体名称是否重复
                         isAssetIdError: false,      // 资源编号重名信息
                         assetIdCommentData: {       // 资源编号重名信息
                             resName:'',
@@ -869,7 +892,8 @@
                 m_boolean: {isOne: false,flag: false},
                 // 道闸表单验证
                 rt_boolean: {isOne: false,flag: false},
-                editRoadGateStatue: [],               // 编辑媒体时记录状态
+                // 编辑媒体时记录状态
+                editRoadGateStatue: [],
                 roadGateMedia:[
                     {
                         text: '媒体一',
@@ -909,20 +933,20 @@
                 },
                 //资源表单
                 recForm: {
-                    rt: '',                //资源类型
-                    resname: '',          // 资源名称
+                    rt: '',                 //资源类型
+                    resname: '',            // 资源名称
                     city: [],
-                    region: '',          // 所属区域
-                    business: '',       // 所属商圈
-                    resaddr: '',        // 资源地址
-                    floorType: '',  // 楼盘类型
-                    doorwayNum: '',   // 出入数
-                    buildingNum: '1',  // 楼栋数量
-                    households: '1',   // 住户数量
-                    peopleFlowrate: '',  //人流量
-                    carNumber: '',        // 车位数
-                    carFlowrate: '',     // 车流量
-                    buildingPrice: '',  // 楼盘价格
+                    region: '',             // 所属区域
+                    business: '',           // 所属商圈
+                    resaddr: '',            // 资源地址
+                    floorType: '',          // 楼盘类型
+                    doorwayNum: '',         // 出入数
+                    buildingNum: '1',       // 楼栋数量
+                    households: '1',        // 住户数量
+                    peopleFlowrate: '',     //人流量
+                    carNumber: '',          // 车位数
+                    carFlowrate: '',        // 车流量
+                    buildingPrice: '',      // 楼盘价格
                     liveTime: '',
                     lng: '',
                     lat: '',
@@ -1192,7 +1216,7 @@
                     }
                 ],
                 liveTime: '',                   // 资源时间
-                doUpload: this.apiVar.qadnUrl + '/advertisement/UpLoad',     //https://beta.qinlinad.com,
+                doUpload: this.apiVar.qadnUrl + '/advertisement/UpLoad',
                 resImg: {                       // 上传图片附带参数
                     uid: JSON.parse(sessionStorage.getItem('session_data')).uID,
                     pid: '',                // 图片id
@@ -1208,9 +1232,7 @@
                 mediaIndex: 0,                  // 当选择广告限制是记录下媒体的下标
                 Editloading: true,              // 提交时的loading
                 throwCity: '',                  // 用户权限不为全国时，根据uWho确定可选城市
-                uWho_throwCity: '',             // 用户权限不为全国时
                 cityOther: true,                // 默认显示全国省份城市
-                beforeResPID: '',               // 编辑资源前资源图片的pid
                 resImgDialog: false,            // 资源图片，大图
                 resImgUrl: '',                  // 上传成功后的url地址，用于显示大图
                 resData: {resID:''},            // 创建资源成功，保存返回来的数据
@@ -1234,6 +1256,15 @@
                 searchResData:{province:'',city:'',district:'',title:'',lat:'',lng:''},
                 searchResName:'',               // 搜索的社区名
                 resMap:'',                      // 百度地图
+                // 拆除
+                dismantleVisible: false,
+                // 拆除信息
+                dismantleInfo:'',
+                // 拆除提示标签
+                isShowTag: true,
+                // 修改媒体状态时的行数据
+                rowData: {},
+                changeBeforMediaState: ''
             };
         },
         mounted: function () {
@@ -1251,12 +1282,12 @@
                 let params = {
                     "uid": this.sessionData.uID,
                     "token": this.sessionData.token,
-                    "service":"GetNotPush",
+                    "service": "GetNotPush",
                     "data": {}
                 }
                 api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('广告限制列表', res)
-                    if(res.data.SysCode == 200200){
+                    if (res.data.SysCode == 200200) {
                         let limit = res.data.data
                         let limitArr = []
                         for (let i = 0; i < limit.length; i++) {
@@ -1269,14 +1300,14 @@
                         }
                         this.adLimit = limitArr
                         console.log('广告限制adLimit', this.adLimit)
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout()
+                    } else {
+                        Message.warning(res.data.MSG);
                     }
                 })
             },
             //获取区域
             getRegion(val){
-                console.log('val',val) //resAddres
+                console.log('val',val)
                 for(let key of this.regionOpt){
                     if(key.value == val){
                         this.resAddres.area = key.label
@@ -1306,16 +1337,16 @@
                                     }
                                     callback(results)
                                 }else{
-                                    this.messageFun('warning',res.data.data.msg)
+                                    sessFun.messageFun('warning',res.data.data.msg)
                                     callback([])
                                 }
                             } else {
-                                this.messageFun('warning',res.data.msg)
+                                sessFun.messageFun('warning',res.data.msg)
                                 callback([])
                             }
                         })
                     }else{
-                        this.messageFun('warning','请先选择社区所在的城市')
+                        sessFun.messageFun('warning','请先选择社区所在的城市')
                     }
                 }else{
                     callback([])
@@ -1333,8 +1364,8 @@
                 }
             },
             // 根据所选的资源名称拉取房价网数据
-            getResBasicData(){
-                if(this.recForm.resname !== '' && this.resAddres.area !== '' && this.resAddres.city !== ''){
+            getResBasicData() {
+                if (this.recForm.resname !== '' && this.resAddres.area !== '' && this.resAddres.city !== '') {
                     let params = {
                         // uid: this.sessionData.uID,
                         // token: this.sessionData.token,
@@ -1344,22 +1375,19 @@
                     }
                     api.postApi(this.apiVar.QADNAPI + '/GetResDetails', params).then(res => {
                         console.log('res', res)
-                        if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                            this.loginTimeout()
-                        } else {
-                            if(res.data !== ''){
-                                if(res.data.data){
-                                    this.setFangjiaData(res.data.data)
-                                }else{
-                                    this.messageFun('warning','暂无该小区数据！')
-                                }
-                            }else{
-                                this.messageFun('warning','数据获取异常,暂无该小区数据')
+                        if (res.data !== '') {
+                            if (res.data.data) {
+                                this.setFangjiaData(res.data.data)
+                            } else {
+                                sessFun.messageFun('warning', '暂无该小区数据！')
                             }
+                        } else {
+                            sessFun.messageFun('warning', '数据获取异常,暂无该小区数据')
                         }
+
                     })
                 } else {
-                    this.messageFun('warning','资源名称及城市区域都不能为空')
+                    sessFun.messageFun('warning','资源名称及城市区域都不能为空')
                 }
             },
             // 房价网数据填充
@@ -1410,7 +1438,7 @@
                     this.recForm.salesPhoneNumber = obj.salesPhoneNumber || ''           // 售楼电话
                     this.FangJiaWangData = JSON.parse(JSON.stringify(this.recForm))      //
                 }).catch(() => {
-                    this.messageFun('info','取消成功')
+                    sessFun.messageFun('info','取消成功')
                 });
             },
             // 根据填写的具体地址去获取经纬度
@@ -1426,13 +1454,9 @@
                     console.log('根据填写的具体地址去获取经纬度',params)
                     api.postApi(this.apiVar.Map + '/Geocoder', params).then(res => {
                         console.log('Geocoder', res)
-                        if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                            this.loginTimeout()
-                        } else {
-                            if(res.data.status == 0){
-                                this.recForm.lat = res.data.result.location.lng.toFixed(6)     // 经度
-                                this.recForm.lng = res.data.result.location.lat.toFixed(6)     // 纬度
-                            }
+                        if (res.data.status == 0) {
+                            this.recForm.lat = res.data.result.location.lng.toFixed(6)     // 经度
+                            this.recForm.lng = res.data.result.location.lat.toFixed(6)     // 纬度
                         }
                     });
                 }
@@ -1460,7 +1484,6 @@
                     if (this.getStatus() == BMAP_STATUS_SUCCESS) {
                         let point = new BMap.Point(r.point.lng, r.point.lat);                 //定位位置
                         that.resMap.centerAndZoom(point, 16);                                 // 初始化地图
-                        console.log('******************************')
                     } else {
                         that.resMap.centerAndZoom(new BMap.Point(113.369838,22.949325), 16);  // 初始化地图
                         that.resMap.setCurrentCity("广州")                                     // 设置地图显示的城市 此项是必须设置的
@@ -1475,7 +1498,7 @@
             },
             // 地图获取经纬度
             searchFun(){
-                console.log(this.searchResName,'1百度地图搜索',this.recForm.resname)
+                console.log(this.searchResName,'百度地图搜索',this.recForm.resname)
                 let lnglat = ''
                 let that = this
                 let options = {
@@ -1500,33 +1523,32 @@
                         }
                     },
                     onMarkersSet: function(pois) {      // 给创建的标注添加点击事件
-                        console.log('onMarkersSet', pois)
+                        // console.log('onMarkersSet', pois)
                         that.markerArr = pois
                         for (let key of pois) {
                             key.marker.addEventListener('click', that.showInfo);
                         }
                     }
                 };
-                console.log('3options',options)
+                // console.log('3options',options)
                 let local = new BMap.LocalSearch(this.resMap,options)
                 local.search(this.resAddres.city + this.searchResName)
-                console.log('4')
+                // console.log('4')
             },
             //获取点击标注的坐标
             showInfo(e) {
-                for(let mkey of this.markerArr){
-                    if(mkey.marker == e.target){
-                        this.searchResData.address =mkey.address
+                for (let mkey of this.markerArr) {
+                    if (mkey.marker == e.target) {
+                        this.searchResData.address = mkey.address
                         this.searchResData.title = mkey.title
                         // console.log('点击到相同的标注',mkey) // searchInfowindow target address title
-                    }else{
+                    } else {
                         // console.log('不相同的标注',mkey)
                     }
                 }
-                let addr = {lng:e.point.lng,lat:e.point.lat} // lng经度；lat纬度
-                let point = new BMap.Point(addr.lng,addr.lat)
+                let addr = {lng: e.point.lng, lat: e.point.lat} // lng经度；lat纬度
+                let point = new BMap.Point(addr.lng, addr.lat)
                 this.getResDataInfoByPoint(point)
-                // console.log('点击事件e',e,addr)
             },
             // 根据坐标获取省市区、地址
             getResDataInfoByPoint(point){
@@ -1564,7 +1586,6 @@
             },
             // 当广告限制的选择框获取焦点的时候，记录下当前媒体的下标
             adLimitFocus(key) {
-                console.log('当前key值为', key)
                 this.mediaIndex = key
             },
             //新增媒体面板
@@ -1602,18 +1623,19 @@
                     mediaArr[0].mediaForm.mediaType = '广告门'
                 }
                 mediaArr[0].text = this.titleArr[++this.ADTitleIndex]
-                // mediaImgArr[0].text = mediaArr[0].text
                 if (this.ADTitleIndex < 50) {
                     this.arrMedia.push(mediaArr[0])
                 } else {
-                    this.messageFun('warning','最多同时支持五十个媒体面板的操作!')
+                    sessFun.messageFun('warning','最多同时支持五十个媒体面板的操作!')
                 }
             },
             //删除广告门媒体面板
             mediaDelBtnFun(index) {
-                this.arrMedia.splice(index, 1)   // 删除指定下标媒体面板
+                // 删除指定下标媒体面板
+                this.arrMedia.splice(index, 1)
                 console.log('长度为', this.arrMedia.length, 'index:', index)
-                if (index < this.arrMedia.length) {   // 修改面板title标签
+                // 修改面板title标签
+                if (index < this.arrMedia.length) {
                     for (let i = 0; i < this.arrMedia.length; i++) {
                         this.arrMedia[i].text = this.titleArr[i]
                     }
@@ -1633,16 +1655,16 @@
                         },
                         roadGateForm: {
                             mediaType: '道闸',   //道闸类型mVehicle
-                            mediaName: '',  //道闸名称mtitle
-                            usableNum: '3',   //广告位面数pnum
-                            mstate: '',       //道闸状态mstate
-                            assetId: '',      //资产编号assettag
-                            LBSizeW: '',      //灯箱尺寸高度
-                            LBSizeH: '',     //灯箱尺寸宽度
-                            visualW: '',      //可视画面adviewsize
-                            visualH: '',      //可视画面
-                            mediaRemark: '',  //备注 mrk
-                            adLimit: [],     //请选择广告限制 notpush
+                            mediaName: '',      //道闸名称mtitle
+                            usableNum: '3',     //广告位面数pnum
+                            mstate: '',         //道闸状态mstate
+                            assetId: '',        //资产编号assettag
+                            LBSizeW: '',        //灯箱尺寸高度
+                            LBSizeH: '',        //灯箱尺寸宽度
+                            visualW: '',        //可视画面adviewsize
+                            visualH: '',        //可视画面
+                            mediaRemark: '',    //备注 mrk
+                            adLimit: [],        //请选择广告限制 notpush
                             mImg: '',
                             updataImg:[],
                             assetIdBolean: false,
@@ -1653,7 +1675,7 @@
                 if (this.roadGateTitleIndex < 50) {
                     this.roadGateMedia.push(roadGateMedia[0])
                 } else {
-                    this.messageFun('warning','最多同时支持五十个媒体面板的操作!')
+                    sessFun.messageFun('warning','最多同时支持五十个媒体面板的操作!')
                 }
             },
             //删除道闸媒体面板
@@ -1689,10 +1711,10 @@
                 this.regionOpt = region
                 console.log('this.regionOpt', this.regionOpt)
             },
-            // 资源输入框和下拉框失去光标validateIsHaveComment
+            // 资源输入框和下拉框失去光标
             blurFun(name) {
                 console.log('name', name)
-                // 手动触发校验 validateField
+                // 手动触发校验
                 this.$refs.recForm.validateField(name, (valid) => {
                     // console.log('错误提示信息',valid)
                     if (!valid) {
@@ -1738,23 +1760,8 @@
                             } else {
                                 callback();
                             }
-                            // if (JSON.stringify(resData) == "{}") {
-                            //     callback();
-                            // } else {
-                            //     if (resData.resId == this.recForm.resID) {
-                            //         callback();
-                            //     } else {
-                            //         this.isResError = true
-                            //         this.resCommentData.mediaNum = resData.mediaCount
-                            //         this.resCommentData.resName = resData.resName
-                            //         this.resCommentData.updateTime = resData.createTime
-                            //         callback(new Error(' '))
-                            //     }
-                            // }
-                        } else if (res.data.SysCode == 100302){
-                            this.loginTimeout()
                         } else {
-                            this.messageFun('warning',res.data.MSG)
+                            sessFun.messageFun('warning',res.data.MSG)
                         }
                     })
                 }
@@ -1792,25 +1799,8 @@
                                 callback();
                             }
                         }
-                        // if (JSON.stringify(resData) == "{}") {
-                        //     let number = this.filterlocalAssetId(resData, value)
-                        //     if (number >= 2) {
-                        //         callback(new Error('这个资产编号已在该小区内存在!'))
-                        //     } else {
-                        //         callback();
-                        //     }
-                        // } else {
-                        //     let flag = this.filterAssetId(resData, value)
-                        //     if (flag) {
-                        //         callback(new Error(' '))
-                        //     } else {
-                        //         callback();
-                        //     }
-                        // }
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout()
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -1865,32 +1855,6 @@
                         }
                     }
                 }
-                // for (let key of this.arrMedia) {
-                //     if (key.mediaForm.assetId === value) {
-                //         if (resData.mId !== key.mediaForm.mid) {
-                //             key.isAssetIdError = true
-                //             key.assetIdCommentData.mediaName = resData.mediaName
-                //             key.assetIdCommentData.resName = resData.resName
-                //             key.assetIdCommentData.updateTime = resData.createTime
-                //             adDoor = true
-                //         } else {
-                //             key.isAssetIdError = false
-                //         }
-                //     }
-                // }
-                // for (let key of this.roadGateMedia) {
-                //     if (key.roadGateForm.assetId === value) {
-                //         if (resData.mId !== key.roadGateForm.mid) {
-                //             key.isAssetIdError = true
-                //             key.assetIdCommentData.mediaName = resData.mediaName
-                //             key.assetIdCommentData.resName = resData.resName
-                //             key.assetIdCommentData.updateTime = resData.createTime
-                //             roadGate = true
-                //         } else {
-                //             key.isAssetIdError = false
-                //         }
-                //     }
-                // }
                 if (adDoor || roadGate) {
                     return true
                 } else {
@@ -1960,41 +1924,36 @@
             },
             // 选择媒体状态为待安装时修改资源编号的验证为非必填
             selectMstate(val) {
-                console.log('选择了', val)
+                console.log('选择了', val,this.arrMediaStatue,this.editRoadGateStatue)
                 let valArr = val.mstate.split('')
                 console.log('valArr', valArr)
                 let i = Number(valArr[1])
-                if(this.PathHaveEdit){
-                    if(val.mediaType === '广告门' && i <= this.editMediaLength - 1){
-                        this.arrMedia[i].mediaForm.assetIdBolean = false
-                        this.editMState(val.mid,valArr[0])
-                    }else if(val.mediaType === '道闸' && i <= this.editRoadGateLength - 1){
-                        console.log('判断记录编辑道闸媒体的状态')
-                        if (this.editRoadGateStatue[i] == 2 || this.editRoadGateStatue[i] === '待安装') {
-                            this.roadGateMedia[i].roadGateForm.assetIdBolean = true
-                            this.messageFun('warning','请在亲邻助手中完成安装任务')
-                            this.roadGateMedia[i].roadGateForm.mstate = '2' + i
-                        } else if (valArr[0] === '2') {
-                            this.roadGateMedia[i].roadGateForm.assetIdBolean = false
-                            this.messageFun('warning','请按正常流程走，当前媒体已安装！')
-                            if (this.editRoadGateStatue[i] === '禁用' || this.editRoadGateStatue[i] == 0) {
-                                this.roadGateMedia[i].roadGateForm.mstate = '0' + i
-                            } else if (this.editRoadGateStatue[i] === '正常' || this.editRoadGateStatue[i] == 1) {
-                                this.roadGateMedia[i].roadGateForm.mstate = '1' + i
-                            } else if (this.editRoadGateStatue[i] === '待维修' || this.editRoadGateStatue[i] == 3) {
-                                this.roadGateMedia[i].roadGateForm.mstate = '3' + i
-                            }
+                if (this.PathHaveEdit) {
+                    if (val.mediaType === '广告门' && i <= this.editMediaLength - 1) {
+                        if (valArr[0] === '4') {
+                            // 拆除媒体 this.editRoadGateStatue
+                            this.dismantleVisible = true
+                            this.rowData = val
+                            this.changeBeforMediaState = val.mstate
+                        } else {
+                            this.arrMedia[i].mediaForm.assetIdBolean = false
+                            this.editMState(val.mid, valArr[0])
+                        }
+                    } else if (val.mediaType === '道闸' && i <= this.editRoadGateLength - 1) {
+                        if (valArr[0] === '4') {
+                            // 拆除媒体
+                            this.dismantleVisible = true
                         } else {
                             this.roadGateMedia[i].roadGateForm.assetIdBolean = false
-                            this.editMState(val.mid,valArr,i)
+                            this.editMState(val.mid, valArr, i)
                         }
-                    }else{
-                        this.newMediaChangeMstatus(val.mediaType,valArr,i)
+                    } else {
+                        this.newMediaChangeMstatus(val.mediaType, valArr, i)
                     }
-                }else{
-                    this.newMediaChangeMstatus(val.mediaType,valArr,i)
+                } else {
+                    this.newMediaChangeMstatus(val.mediaType, valArr, i)
                 }
-                console.log('this.$refs',this.$refs['ResAssetId'])
+                console.log('this.$refs', this.$refs['ResAssetId'])
                 this.$refs['ResAssetId'][0].clearValidate() // 清除资产编号的验证
             },
             // 新建媒体时的媒体状态或编辑时新增媒体
@@ -2030,8 +1989,48 @@
                     }
                 }
             },
+            // 拆除媒体
+            dismantleMedia() {
+                if (!this.dismantleInfo) {
+                    sessFun.messageFun('warning', '请填写拆除备注信息!')
+                    return
+                }
+                let params = {
+                    "uid": this.sessionData.uID,
+                    "token": this.sessionData.token,
+                    "service": "AddDismantleRecord",
+                    "data": {
+                        "mID": this.rowData.mid,
+                        "remark": this.dismantleInfo,
+                        "resName": this.recForm.resname,
+                        "rId": this.recForm.region
+                    }
+                }
+                console.log('拆除媒体params',params)
+                api.postApi_new(this.apiVar.Media, params).then(res=>{
+                    if (res.data.SysCode === 200200) {
+                        this.dismantleVisible = false
+                        sessFun.messageFun('success', '拆除成功!')
+                    } else {
+                        sessFun.messageFun('warning', res.data.MSG)
+                    }
+                })
+            },
+            // 取消拆除
+            canceDismantle() {
+                let rowData = this.rowData
+                console.log('rowData',rowData)
+                let mStateArr = rowData.mstate.split('')
+                let index = Number(mStateArr[1])
+                if(rowData.mediaType === '广告门') {
+                    rowData.mstate = this.arrMediaStatue[index] + mStateArr[1]
+                } else if (rowData.mediaType === '道闸') {
+                    rowData.mstate = this.editRoadGateStatue[index] + mStateArr[1]
+                }
+                this.dismantleVisible = false
+            },
             //添加资源媒体
-            createRec() {
+            createRes() {
                 console.log(this.arrMedia)
                 this.recForm.uid = this.sessionData.uID
                 this.recForm.latlng = this.recForm.lat + ';' + this.recForm.lng
@@ -2102,22 +2101,16 @@
                         // 设置资源图片信息
                         this.resImg.ptid = recData.resID        // 资源图片的ptid就是资源的id
                         this.resImg.palt = this.recForm.resname + '-' + recData.rID
-                        // this.setImg()
-                        // Message({
-                        //     message: '资源媒体创建成功！',
-                        //     type: 'success'
-                        // })
                         this.creadMediaFun(0,0)
                     } else if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时'){
                         this.Editloading.close()
-                        this.loginTimeout()
-                    }else {
+                    } else {
                         this.Editloading.close()
-                        this.messageFun('warning','资源创建失败！')
+                        sessFun.messageFun('warning','资源创建失败！')
                     }
                 }).catch(err => {
                     console.log('新建资源请求错误', err)
-                    this.messageFun('warning','新建资源请求异常')
+                    sessFun.messageFun('warning','新建资源请求异常')
                 })
             },
             // 批量创建媒体
@@ -2138,47 +2131,54 @@
                     let mediaFrom = this.arrMedia
                     for (let i = adIndex; i < mediaFrom.length; i++) {
                         let key = mediaFrom[i].mediaForm
-                        arr.push({
-                            resID: resID,
-                            uID: this.recForm.uid,
-                            mTitle: key.mediaName,
-                            pNum: key.usableNum,
-                            adSize: key.adSizeW + "*" + key.adSizeH,
-                            adViewSize: key.visualW + "*" + key.visualH,
-                            notPush: key.adLimit.join('、'),
-                            assetTag: key.assetId,
-                            mType: key.doorType,
-                            mImg: key.mImg || '',
-                            mVehicle: key.mediaType,
-                            mRemark: key.mediaRemark, // key.mediaRemark === '' ? '暂无备注' : key.mediaRemark,
-                            mState: (key.mstate).split('')[0],
-                            // picSize:'',
-                            // lightBoxSize:'',
-                        })
+                        if(key.mediaName && key.mediaType && key.adSizeW && key.adSizeH) {
+                            arr.push({
+                                resID: resID,
+                                uID: this.recForm.uid,
+                                mTitle: key.mediaName,
+                                pNum: key.usableNum,
+                                actualNum: key.usableNum,
+                                adSize: key.adSizeW + "*" + key.adSizeH,
+                                adViewSize: key.visualW + "*" + key.visualH,
+                                notPush: key.adLimit.join('、'),
+                                assetTag: key.assetId,
+                                mType: key.doorType,
+                                mImg: key.mImg || '',
+                                mVehicle: key.mediaType,
+                                mRemark: key.mediaRemark,
+                                mState: (key.mstate).split('')[0],
+                            })
+                        } else {
+                            continue
+                        }
                     }
                 }
                 if(this.rt_boolean.flag){
-
                     let mediaFrom = this.roadGateMedia
                     for (let i = rtIndex; i < mediaFrom.length; i++){
                         let key = mediaFrom[i].roadGateForm
-                        arr.push({
-                            resID: resID,
-                            uID: this.recForm.uid,
-                            mTitle: key.mediaName,
-                            pNum: key.usableNum,
-                            adSize: '',
-                            adViewSize: '',
-                            notPush: key.adLimit.join('、'),
-                            assetTag: key.assetId,
-                            mType: '',
-                            mImg: key.mImg || '',
-                            mVehicle: key.mediaType,
-                            mRemark: key.mediaRemark,   // key.mediaRemark === '' ? '暂无备注' : key.mediaRemark,
-                            mState: (key.mstate).split('')[0],
-                            picSize: key.visualW + "*" + key.visualH,
-                            lightBoxSize:  key.LBSizeW + "*" + key.LBSizeH,
-                        })
+                        if (key.mediaName && key.LBSizeW && key.LBSizeH) {
+                            arr.push({
+                                resID: resID,
+                                uID: this.recForm.uid,
+                                mTitle: key.mediaName,
+                                pNum: 1,
+                                actualNum: key.usableNum,
+                                adSize: '',
+                                adViewSize: '',
+                                notPush: key.adLimit.join('、'),
+                                assetTag: key.assetId,
+                                mType: '',
+                                mImg: key.mImg || '',
+                                mVehicle: key.mediaType,
+                                mRemark: key.mediaRemark,
+                                mState: (key.mstate).split('')[0],
+                                picSize: key.visualW + "*" + key.visualH,
+                                lightBoxSize: key.LBSizeW + "*" + key.LBSizeH,
+                            })
+                        } else {
+                            continue
+                        }
                     }
                 }
                 let params = {
@@ -2190,18 +2190,13 @@
                         rId: rid
                     }
                 }
-                console.log('params',params)
-                if(params.data.medias.length){
+                console.log('params', params)
+                if (params.data.medias.length) {
                     api.postApi_new(this.apiVar.Media, params).then(res => {
-                        console.log('批量创建媒体',res)
+                        console.log('批量创建媒体', res)
                         this.Editloading.close()
-                        if(res.data.SysCode == 200200 && res.data.data.length > 0){
-                            // this.pushResMediaToWydt(res.data.data)
-                            // Message({
-                            //     message: '媒体创建成功',
-                            //     type: 'success'
-                            // })
-                            if(String !== 'edit'){
+                        if (res.data.SysCode == 200200 && res.data.data.length > 0) {
+                            if (String !== 'edit') {
                                 this.$confirm('资源媒体创建成功!', '提示', {
                                     confirmButtonText: '继续创建',
                                     cancelButtonText: '前往列表',
@@ -2212,19 +2207,17 @@
                                     this.resUpdata = []
                                 }).catch(() => {
                                     this.resetForm()
-                                    // window.history.go(-1)
                                     this.$router.push('./mediaList');
                                 })
-                            }else{
+                            } else {
+                                sessFun.messageFun('success', '媒体创建成功')
                                 this.$router.push('./mediaDetail');
                             }
-                        } else if (res.data.SysCode == 100302){
-                            this.loginTimeout()
-                        }else{
-                            this.messageFun('warning','媒体创建失败')
+                        } else {
+                            sessFun.messageFun('warning', '媒体创建失败')
                         }
                     })
-                }else{
+                } else {
                     console.log('媒体数据为空')
                 }
             },
@@ -2248,10 +2241,10 @@
                 const isLt2M = file.size / 1024 / 1024 < 4;
 
                 if (!isJPG) {
-                    this.messageFun('warning','上传图片只能是 JPG 或 PNG 格式!')
+                    sessFun.messageFun('warning','上传图片只能是 JPG 或 PNG 格式!')
                 }
                 if (!isLt2M) {
-                    this.messageFun('warning','上传图片大小不能超过 4MB!')
+                    sessFun.messageFun('warning','上传图片大小不能超过 4MB!')
                 }
                 return isJPG && isLt2M;
             },
@@ -2274,13 +2267,13 @@
             },
             // 设置媒体图片信息
             saveImgInfo(m_title) {
-                this.messageFun('warning','该功能暂未开放')
+                sessFun.messageFun('warning','该功能暂未开放')
                 console.log('获取当前媒体标题', m_title)
                 this.mediaImg_title = m_title
             },
             // 广告门图片上传前校验
             beforeUpload_ad(file) {
-                this.messageFun('warning','该功能暂未开放')
+                sessFun.messageFun('warning','该功能暂未开放')
                 return false
                 // const isJPG = file.type === "image/jpeg" || file.type === "image/png";
                 // const isLt6M = file.size / 1024 / 1024 < 6;
@@ -2313,7 +2306,7 @@
                 console.log('媒体图片放大',this.arrMedia)
                 let timer = setTimeout(()=>{
                     for(let key of this.arrMedia){
-                        if(this.mediaImg_title === key.text){ // adHandleRemove
+                        if(this.mediaImg_title === key.text){
                             this.mediaImgTitle =  key.mediaForm.mediaName
                             if(key.mediaForm.mImg.includes(';')){
                                 this.mediaImgSrc = key.mediaForm.mImg.split(';')
@@ -2333,7 +2326,7 @@
                 console.log('删除媒体图片', file, fileList)
                 let timer = setTimeout(()=>{
                     for(let key of this.arrMedia){
-                        if(this.mediaImg_title === key.text){ // adHandleRemove
+                        if(this.mediaImg_title === key.text){
                             if (this.PathHaveEdit){
                                 key.mediaForm.mImg = fileList[0].url
                             }else{
@@ -2348,12 +2341,12 @@
             },
             //道闸图片
             saveImgRGInfo(m_title){
-                this.messageFun('warning','该功能暂未开放')
+                sessFun.messageFun('warning','该功能暂未开放')
                 this.rgImg_title = m_title
             },
             // 道闸图片上传前校验
             beforeUpload_rg(file){
-                this.messageFun('warning','该功能暂未开放')
+                sessFun.messageFun('warning','该功能暂未开放')
                 return false
                 // const isJPG = file.type === "image/jpeg" || file.type === "image/png";
                 // const isLt6M = file.size / 1024 / 1024 < 6;
@@ -2386,7 +2379,7 @@
                 console.log('媒体图片放大',this.roadGateMedia)
                 let timer = setTimeout(()=>{
                     for(let key of this.roadGateMedia){
-                        if(this.rgImg_title === key.text){ // adHandleRemove
+                        if(this.rgImg_title === key.text){
                             this.mediaImgTitle =  key.roadGateForm.mediaName
                             if(key.roadGateForm.mImg.includes(';')){
                                 this.mediaImgSrc = key.roadGateForm.mImg.split(';')
@@ -2405,7 +2398,7 @@
                 console.log('删除道闸图片', file, fileList)
                 let timer = setTimeout(()=>{
                     for(let key of this.roadGateMedia){
-                        if(this.rgImg_title === key.text){ // adHandleRemove
+                        if(this.rgImg_title === key.text){
                             if (this.PathHaveEdit){
                                 key.roadGateForm.mImg = fileList[0].url
                             }else{
@@ -2449,7 +2442,7 @@
                 }).catch((err)=> {
                     console.log("验证失败",err)
                     //验证失败 提示reject失败状态的值
-                    this.messageFun('warning','必填项信息不能为空或填写有误！')
+                    sessFun.messageFun('warning','必填项信息不能为空或填写有误！')
                 });
             },
             // 广告门校验
@@ -2469,7 +2462,7 @@
                                 this.adDoorValidateFrom(fromName,index)
                             } else {
                                 console.log('广告门不通过',valid)
-                                this.messageFun('warning','必填项信息不能为空或填写有误!')
+                                sessFun.messageFun('warning','必填项信息不能为空或填写有误!')
                                 this.m_boolean.flag = false
                                 return
                             }
@@ -2499,7 +2492,7 @@
                                 this.rgValidateFrom(fromName,index)
                             } else {
                                 console.log('道闸不通过')
-                                this.messageFun('warning','必填项信息不能为空或填写有误！')
+                                sessFun.messageFun('warning','必填项信息不能为空或填写有误！')
                                 this.rt_boolean.flag = false
                                 return
                             }
@@ -2535,18 +2528,17 @@
                             spinner: 'el-icon-loading',
                             background: 'rgba(0, 0, 0, 0.7)'
                         })
-                        this.createRec()
+                        this.createRes()
                     }
                 } else {
                     this.$refs['mediaForm'][0].validate((valid) => {
 
                     })
-                    this.messageFun('warning', '必填项信息不能为空或填写有误！')
+                    sessFun.messageFun('warning', '必填项信息不能为空或填写有误！')
                 }
             },
             //重置表单数据
             resetForm() {
-                //  this.$refs[formName].resetFields();arrMedia.mediaForm
                 this.$refs['recForm'].resetFields();
                 for (let i = 0; i < this.arrMedia.length; i++) {
                     this.$refs['mediaForm'][i].resetFields();
@@ -2601,16 +2593,16 @@
                         this.PathHaveEdit = true
                         // 设置默认选中的城市
                         this.recForm.city[0] = recObj.rid.toString().substring(0, 2) + '0000'
-                        this.recForm.city[1] = recObj.cityId //recObj.rid.toString().substring(0, 4) + '00'
+                        this.recForm.city[1] = recObj.cityId
                         this.handleChange(this.recForm.city)
                         this.resAddres.city = recObj.city
                         this.resAddres.area = recObj.cityArea
-                        // 获取设置资源信息 resAddres
+                        // 获取设置资源信息
                         let tempObj = {
                             resID: recObj.resID,
                             rt: recObj.cType,
                             resname: recObj.resName,
-                            city: this.recForm.city, //recObj.city,
+                            city: this.recForm.city,
                             region: recObj.rid.toString(),
                             business: recObj.tradingArea,
                             resaddr: recObj.resAddress,
@@ -2667,7 +2659,7 @@
                         console.log('mediaObj', mediaObj)
                         this.editMediaLength = mediaObj.length
                         for (let i = 0; i < mediaObj.length; i++) {
-                            if (i < mediaObj.length - 1) { // 创建媒体面板，默认已有一个
+                            if (i < mediaObj.length - 1) {                     // 创建媒体面板，默认已有一个
                                 this.mediaAddFun()
                             }
                             this.keepMStatue(i, mediaObj[i].mState,'广告门')    // 记录编辑媒体，初始\修改前的媒体状态
@@ -2686,13 +2678,13 @@
                                 mediaType: mediaObj[i].mVehicle,
                                 mediaName: mediaObj[i].mTitle,
                                 usableNum: mediaObj[i].pNum,
-                                mstate: mediaObj[i].mState.toString() + i,                       // 媒体状态
+                                mstate: mediaObj[i].mState.toString() + i,   // 媒体状态
                                 assetId: mediaObj[i].assetTag,
                                 doorType: mediaObj[i].mType,
-                                adSizeW: adSize.w, //mediaObj[i].adSize.split('*')[0],
-                                adSizeH: adSize.h, //mediaObj[i].adSize.split('*')[1],
-                                visualW: visual.w, //mediaObj[i].adViewSize.split('*')[0],
-                                visualH: visual.h, //mediaObj[i].adViewSize.split('*')[1],
+                                adSizeW: adSize.w,
+                                adSizeH: adSize.h,
+                                visualW: visual.w,
+                                visualH: visual.h,
                                 mediaRemark: mediaObj[i].mRemark,
                                 adDoorLevel: mediaObj[i].grade,
                                 mImg: mediaObj[i].mImg,
@@ -2755,8 +2747,7 @@
                 console.log('roadGateList', roadGateList)
                 this.editRoadGateLength = roadGateList.length
                 for (let i = 0; i < roadGateList.length; i++) {
-                    // let media = {updataImg:[]}
-                    if (i < roadGateList.length - 1) { // 创建媒体面板，默认已有一个
+                    if (i < roadGateList.length - 1) {                   // 创建媒体面板，默认已有一个
                         this.roadGateAddFun()
                     }
                     this.keepMStatue(i, roadGateList[i].mState,'道闸')    // 记录编辑媒体，初始\修改前的媒体状态
@@ -2829,7 +2820,6 @@
                     let resImg = {name: '资源图片', url: this.recForm.fullViewUrl}
                     this.resUpdata.push(resImg)
                 }else{
-                    // let resID = sessionStorage.getItem('resID')
                     let uid = this.sessionData.uID
                     let params = {
                         uid: uid,
@@ -2910,7 +2900,8 @@
                     discount: recObj.discount
                 }
                 let recDetail = JSON.parse(sessionStorage.getItem('recDetail'))
-                if (recObj.region === recDetail.cityArea) {    // 地区没有修改的时候
+                // 地区没有修改的时候
+                if (recObj.region === recDetail.cityArea) {
                     SetResCTObj.rid = recDetail.rid
                 } else {
                     SetResCTObj.rid = Number(recObj.region)
@@ -2931,7 +2922,6 @@
                     if (res.data.SysCode == 200200) {
                         // 设置资源图片信息
                         console.log('m_boolean',this.m_boolean,'rt_boolean',this.rt_boolean)
-                        // this.creadMediaFun(0,0)
                         if(this.m_boolean.flag){
                             this.postAdDoorData()
                         }
@@ -2945,9 +2935,8 @@
                     } else {
                         if (res.data.SysCode == 100302 || res.data.MSG === '登陆超时') {
                             this.Editloading.close()
-                            this.loginTimeout()
                         } else {
-                            this.messageFun('warning','资源保存失败')
+                            sessFun.messageFun('warning','资源保存失败')
                         }
                         this.Editloading.close()
                     }
@@ -3004,11 +2993,11 @@
                                         clearTimeout(timer)
                                     },500)
                                     this.Editloading.close()
-                                    this.messageFun('success','广告门保存成功')
+                                    sessFun.messageFun('success','媒体保存成功')
                                     this.$router.push('./mediaDetail');
                                 }
                             }else{
-                                this.messageFun('warning',tempObj.mediaName + '保存失败')
+                                sessFun.messageFun('warning',tempObj.mediaName + '保存失败')
                             }
                         })
                     } else {
@@ -3019,8 +3008,7 @@
                 }
             },
             // 提交编辑后的道闸媒体信息
-            postRoadGateData(){
-                //this.roadGateMedia[i].roadGateForm = media
+            postRoadGateData() {
                 let mediaArr = this.roadGateMedia
                 let mIDArr = []
                 for (let i = 0; i < mediaArr.length; i++) {
@@ -3034,15 +3022,13 @@
                             uid: this.sessionData.uID,
                             mid: tempObj.mid,
                             mtitle: tempObj.mediaName,
-                            // adsize: tempObj.adSizeW + '*' + tempObj.adSizeH,
-                            // adviewsize: tempObj.visualW + '*' + tempObj.visualH,
                             notpush: tempObj.adLimit.join('、'),
                             assettag: tempObj.assetId,
                             mtype: tempObj.doorType,
                             mrk: tempObj.mediaRemark === '' ? '暂无备注' : tempObj.mediaRemark,
                             mimg: '',
                             picSize: tempObj.visualW + "*" + tempObj.visualH,
-                            lightBoxSize:  tempObj.LBSizeW + "*" + tempObj.LBSizeH,
+                            lightBoxSize: tempObj.LBSizeW + "*" + tempObj.LBSizeH,
                         }
                         console.log('更新媒体temp_media', temp_media)
                         if (tempObj.mstate === '正常') {
@@ -3058,24 +3044,24 @@
                         let mParams = {
                             "uid": this.sessionData.uID,
                             "token": this.sessionData.token,
-                            "service":"SetMediaInfo",
+                            "service": "SetMediaInfo",
                             "data": temp_media
                         }
                         api.postApi_new(this.apiVar.Media, mParams).then(res => {
                             console.log('道闸修改', res)
-                            if(res.data.SysCode == 200200){
+                            if (res.data.SysCode == 200200) {
                                 mIDArr.push(res.data.data.mID)
                                 if (i >= mediaArr.length - 1) {
-                                    let timer = setTimeout(()=>{
+                                    let timer = setTimeout(() => {
                                         this.pushResMediaToWydt(mIDArr)
                                         clearTimeout(timer)
-                                    },500)
+                                    }, 500)
                                     this.Editloading.close()
-                                    this.messageFun('success','道闸保存成功')
+                                    sessFun.messageFun('success', '媒体保存成功')
                                     this.$router.push('./mediaDetail');
                                 }
-                            }else{
-                                this.messageFun('warning',tempObj.mediaName + '保存失败')
+                            } else {
+                                sessFun.messageFun('warning', tempObj.mediaName + '保存失败')
                             }
                         })
                     } else {
@@ -3100,11 +3086,11 @@
                 api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('修改媒体状态', res)
                     if (res.data.SysCode === 200200 || res.data.MSG === '操作成功') {
-                        this.messageFun('success','修改成功')
+                        sessFun.messageFun('success','修改成功')
                     } else if (res.data.SysCode === 200302 || res.data.MSG === '广告位已被占用') {
-                        this.messageFun('warning',res.data.MSG)
+                        sessFun.messageFun('warning',res.data.MSG)
                     } else {
-                        this.messageFun('warning','状态更改失败')
+                        sessFun.messageFun('warning','状态更改失败')
                     }
                 })
             },
@@ -3112,21 +3098,6 @@
             clearData() {
                 this.resetForm()
                 window.history.go(-1);
-            },
-            // 操作提示统一方法
-            messageFun(mesType,mes){
-                this.$message({
-                    message: mes,
-                    type: mesType
-                })
-            },
-            // 登录超时
-            loginTimeout() {
-                this.$message({
-                    message: '登录超时或权限异常,请重新登录',
-                    type: 'warning'
-                })
-                this.$router.push('/login')
             },
         },
     }
@@ -3537,5 +3508,48 @@
 
     /deep/ .el-input-number .el-input__inner{
         text-align: left !important;
+    }
+
+    /*拆除*/
+    /deep/ .mStatueDialog{
+        width: 285px;
+    }
+
+    /deep/ .mStatueDialog h4{
+        margin: 12px 0;
+    }
+
+    /deep/ .mStatueDialog .el-dialog__body{
+        padding: 0 20px 10px;
+    }
+
+    .dismantle_title{
+        font-size: 16px;
+        color: #333;
+        font-weight: 600;
+    }
+
+    .dismantle_title .el-icon-question{
+        font-size: 21px;
+        color: #FAAD14;
+    }
+
+    .push_map_box_p{
+        height:32px;
+        background:rgba(255,251,230,1);
+        border-radius:4px;
+        border:1px solid rgba(255,229,143,1);
+        line-height: 32px;
+        padding:  0 16px;
+        margin-top: 16px;
+        position: relative;
+    }
+
+    .push_map_box_p /deep/ .el-icon-close{
+        cursor: pointer;
+        margin-left: 24px;
+        position: absolute;
+        top: 9px;
+        right: 8px;
     }
 </style>

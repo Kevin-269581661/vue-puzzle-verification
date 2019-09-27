@@ -73,17 +73,17 @@ export default {
             ChangePwdRule: {
                 currPwd: [
                     { min: 6, message: "至少输入6个字节", trigger: "blur" },
-                    { max: 16, message: "最多输入16个字节", trigger: "blur" },
+                    { max: 22, message: "最多输入22个字节", trigger: "blur" },
                     { validator: checkCurrPwd, trigger: "blur" }
                 ],
                 newPwd: [
                     { min: 6, message: "至少输入6个字节", trigger: "blur" },
-                    { max: 16, message: "最多输入16个字节", trigger: "blur" },
+                    { max: 22, message: "最多输入22个字节", trigger: "blur" },
                     { validator: validatePass, trigger: "blur" }
                 ],
                 confirmPwd: [
                     { min: 6, message: "至少输入6个字节", trigger: "blur" },
-                    { max: 16, message: "最多输入16个字节", trigger: "blur" },
+                    { max: 22, message: "最多输入22个字节", trigger: "blur" },
                     { validator: validatePass2, trigger: "blur" }
                 ]
             }
@@ -124,10 +124,7 @@ export default {
                                         this.$router.push('/login');
                                     }
                                 });
-                            } else if(result.SysCode == 100302){
-                                Message.warning('登录超时,请重新登录');
-                                this.$router.push('/login');
-                            }else{
+                            } else{
                                 Message.warning(result.MSG);
                             }
                         })

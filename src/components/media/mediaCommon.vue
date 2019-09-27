@@ -20,13 +20,13 @@
             <el-menu-item index="/media/planList">方案管理</el-menu-item>
             <el-menu-item index="/media/orderList">订单管理</el-menu-item>
             <el-menu-item index="/media/projectList">工程管理</el-menu-item>
-            <el-submenu index="7">
+            <el-submenu index="7" :show-timeout="80">
                 <template slot="title">其他模块</template>
                 <el-menu-item index="/media/publishPriceList">刊例价</el-menu-item>
                 <el-menu-item index="/media/paintedPath" v-if="!isNation">线路管理</el-menu-item>
             </el-submenu>
             <el-menu-item index="/media/photoGallery">案例库</el-menu-item>
-            <el-submenu index="8">
+            <el-submenu index="8" :show-timeout="80">
                 <template slot="title">
                     辅助资料
                 </template>
@@ -34,7 +34,7 @@
                 <el-menu-item index="/media/compact">文件下载</el-menu-item>
             </el-submenu>
             <el-menu-item index="/media/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>
-            <el-submenu index="9" class="user_center" popper-class="user_center_item">
+            <el-submenu index="9" class="user_center" popper-class="user_center_item" :show-timeout="80">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">
                     {{userName}}
@@ -117,8 +117,6 @@
                             } else {
                                 this.showQinlin = false;
                             }
-                        } else if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                            this.$router.push('/login')
                         } else {
                             this.showQinlin = false;
                         }

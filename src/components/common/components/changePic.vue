@@ -60,7 +60,7 @@
                     </el-col>
                     <el-col>
                         <span>资源名称:</span>
-                        <el-select v-model="searchInfo.resName" placeholder="请选择资源名称" @change="search()" size="small">
+                        <el-select v-model="searchInfo.resName" placeholder="请选择资源名称" @change="search()" size="small" filterable>
                             <el-option v-for="item of searchInfo.resArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-col>
@@ -520,6 +520,10 @@ export default {
             }else if(type == 3){
                 // 获取换画名称列表
                 this.getPainList().then(res =>{
+                    this.dateRange = {
+                        beginDate: this.painList[this.activePainIndex].startDate,
+                        endDate: this.painList[this.activePainIndex].endDate
+                    };
                     // 换画报告列表
                     this.search();
                 });
@@ -1360,14 +1364,10 @@ export default {
         },
         // 字段截取
         wordlimit(word, num) {
-            if(document.body.clientWidth<=1366){
-                if (word && (word.length > num)) {
-                    return word = word.substr(0, num) + '...';
-                }
-                return word;
-            }else{
-                return word;
+            if (word && (word.length > num)) {
+                return word = word.substr(0, num) + '...';
             }
+            return word;
         },
         // 隐藏上传组件
         uploadDisabled(imgList){
@@ -1402,18 +1402,36 @@ export default {
             let imgArr = this.uploadImgArr;
             let arr = this.constractArr;
             let funs = [];
-            for(let i = 0; i<arr.length+6; i=i+6){
-                let end = i+6>arr.length?arr.length:i+6;
-                let result = arr.slice(i, end);
-                if(result.length){
-                    let formData = new FormData();
-                    for(let data of imgArr.slice(i, end)){
-                        formData.append('picList', data);
-                    }
-                    formData.append('infos', JSON.stringify(result));    
-                    let pro = this.uploadFun(formData); 
-                    funs.push(pro);
-                }
+            // for(let i = 0; i<arr.length+3; i=i+3){
+            //     let end = i+3>arr.length?arr.length:i+3;
+            //     let result = arr.slice(i, end);
+            //     if(result.length){
+            //         let formData = new FormData();
+            //         for(let data of imgArr.slice(i, end)){
+            //             formData.append('picList', data);
+            //         }
+            //         formData.append('infos', JSON.stringify(result));    
+            //         let pro = this.uploadFun(formData); 
+            //         funs.push(pro);
+            //     }
+            // }
+            for(let i = 0; i<arr.length; i++){
+                let formData = new FormData();
+                formData.append('pic', imgArr[i]);   
+                formData.append('pAlt', arr[i].pAlt);    
+                formData.append('pType', arr[i].pType);    
+                formData.append('ptID', arr[i].ptID);    
+                formData.append('ptP', arr[i].ptP);    
+                formData.append('pRemarks', arr[i].pRemarks);    
+                formData.append('lStart', arr[i].lStart);    
+                formData.append('lEnd', arr[i].lEnd);    
+                formData.append('resId', arr[i].resId);    
+                formData.append('lId', arr[i].lId);    
+                formData.append('type', arr[i].type);    
+                formData.append('replaceRecordId', arr[i].replaceRecordId);    
+                formData.append('replaceRecordDetailId', arr[i].replaceRecordDetailId);    
+                let pro = this.uploadFun(formData); 
+                funs.push(pro);
             }
             Promise.all(funs).then((values)=>{
                 console.log(values);
@@ -1434,7 +1452,8 @@ export default {
         },
         uploadFun(formData, end, arr){
             let promise = new Promise((resolve, reject)=>{
-                api.postUpload_file(this.apiVar.replace+'/photo/multipartUpload', formData).then(res =>{
+                // api.postUpload_file(this.apiVar.replace+'/photo/multipartUpload', formData).then(res =>{
+                api.postUpload_file(this.apiVar.replace+'/photo/upload', formData).then(res =>{
                     console.log(res);
                     if(res.data.SysCode == 200200){
                         resolve(true);
@@ -1547,11 +1566,11 @@ export default {
             };
             let obj = {
                 pAlt: palt,
-                ptID: row.mVehicle=='广告门' ? row.asID: row.mID,
+                ptID: row.asID,
                 ptP: ptp,
                 pRemarks: JSON.stringify(prk),
-                lStart: row.lStar,
-                lEnd: row.lEnd,
+                lStart: timeFormat.toDate(row.lStar, '/'),
+                lEnd: timeFormat.toDate(row.lEnd, '/'),
                 resId: row.resID,
                 // lId: row.lID ? row.lID : "",
                 lId: row.mVehicle=='广告门'?row.lID:(row.lID?row.lID.toString().split(',')[0]:''),

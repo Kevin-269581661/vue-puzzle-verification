@@ -298,8 +298,6 @@
                         }
                         this.cityList = result;
                         this.getAreaByRID()
-                    }else if(res.data.SysCode == 100302){
-                        this.loginTimeout();
                     }else{
                         Message.warning(res.data.MSG);
                     }
@@ -361,8 +359,6 @@
                         this.pageData.totalSize = res.data.data.totalCount
                         this.checkDate = res.data.data.checkDate
                         this.setTableData(res.data.data)
-                    } else if (res.data.SysCode == 100302) {
-                        this.loginTimeout()
                     } else {
                         this.messageFun('warning', res.data.MSG)
                         this.pageData.pageNum = 0
@@ -488,14 +484,6 @@
                     type: mesType,
                     showClose: true,
                 })
-            },
-            // 登录超时
-            loginTimeout() {
-                this.$message({
-                    message: '登录超时或权限异常,请重新登录',
-                    type: 'warning'
-                })
-                this.$router.push('/login')
             },
         },
     }

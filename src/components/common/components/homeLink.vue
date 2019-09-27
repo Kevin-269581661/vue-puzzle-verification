@@ -145,9 +145,7 @@ export default {
                         }
                         this.cityList = resData
                         this.citySelectLoading = false
-                    } else if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
-                    } else {
+                    }else {
                         this.$message.warning(res.data.MSG)
                     }
                 })
@@ -204,14 +202,10 @@ export default {
                     this.mapDialogVisible = false
                 } else {
                     tempwindow.close()
-                    if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        this.loginTimeout()       // 登陆超时
-                    } else {
-                        this.$message({
-                            message: res.data.MSG + ',请尝试重新点击',
-                            type: 'warning'
-                        })
-                    }
+                    this.$message({
+                        message: res.data.MSG + ',请尝试重新点击',
+                        type: 'warning'
+                    })
                 }
             }).catch(err => {
                 console.log('error', err)
@@ -235,8 +229,6 @@ export default {
                     }else{
                         this.messageFun('warning','您在地图未提交点位')
                     }
-                }else if(res.data.code == '100302' || res.data.MSG === "登陆超时"){
-                    this.loginTimeout()
                 }else{
                     this.messageFun('warning',res.data.MSG)
                 }
@@ -249,14 +241,6 @@ export default {
                 type: mesType,
                 showClose: true,
             })
-        },
-        // 登录超时
-        loginTimeout() {
-            this.$message({
-                message: '登录超时或权限异常,请重新登录',
-                type: 'warning'
-            })
-            this.$router.push('/login')
         },
     },
 }

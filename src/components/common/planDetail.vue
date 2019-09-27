@@ -219,8 +219,8 @@ export default {
                     tradingArea: data.tradingArea,
                     cType: data.cType,
                     hPrice: data.hPrice/100,
-                    hNum: data.hNum == '0' ? '&' : data.hNum,
-                    fNum: data.fNum,
+                    hNum: data.hNum == '0' ? '#' : data.hNum,
+                    fNum: data.fNum == '0' ? '#' : data.fNum,
                     chDay: data.chDay,
                     adSize: data.mVehicle == "广告门" ? data.adSize: data.picSize,
                     adViewSize: data.mVehicle == "广告门" ? data.adViewSize: data.lightBoxSize,
@@ -418,6 +418,9 @@ export default {
             return commaFormat.init(price);
         },
         priceToFormat(price){
+            if(!price) {
+                return 0
+            }
             return commaFormat.format(price);
         },
         // 返回

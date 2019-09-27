@@ -207,7 +207,7 @@ export default {
                 },
                 {
                     name: '当月成交金额',
-                    data: '￥388,337'
+                    data: 388
                 },
             ],
 			priceList: [0, 25, 50, 75, 100],
@@ -348,8 +348,6 @@ export default {
 						clearTimeout(timer)
 					}, 200);
 
-				}else if(res.data.SysCode == 100302){
-					this.loginTimeout();
 				}else{
 					// Message.warning(res.data.MSG);
 					this.$message({
@@ -374,8 +372,6 @@ export default {
 					let resinfo = res.data.data;
 					this.saleTalk.content = resinfo.countMessage;
 					this.saleTalk.dateTime = resinfo.time;
-				}else if(res.data.SysCode == 100302){
-					this.loginTimeout();
 				}else{
 					Message.warning(res.data.MSG);
 				}
@@ -398,8 +394,6 @@ export default {
 					this.dataArr[2].data = resInfo.apTotal/100;
 
 					this.userInfo.endTime = timeFormat.toDate(resInfo.time, '/');
-				}else if(res.data.SysCode == 100302){
-					this.loginTimeout();
 				}else{
 					Message.warning(res.data.MSG);
 				}
@@ -425,8 +419,6 @@ export default {
 					}else{
 						this.isShowLine = false;
 					}
-				}else if(res.data.SysCode == 100302){
-					this.loginTimeout();
 				}else{
 					this.isShowLine = false;
 					// Message.warning(res.data.MSG);
@@ -462,16 +454,10 @@ export default {
 						console.log(1111);
 						this.resizeRank(price);
 					});
-				}else if(res.data.SysCode == 100302){
-					this.loginTimeout();
 				}else{
 					Message.warning(res.data.MSG);
 				}
 			});
-		},
-		loginTimeout() {
-			Message.warning("登录超时,请重新登录");
-			this.$router.push("/login");
 		},
 		// 开场动画
 		animateFun(){

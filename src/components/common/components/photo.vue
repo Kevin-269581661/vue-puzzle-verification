@@ -117,9 +117,7 @@
                 console.log('params', params)
                 api.postApi(this.apiVar.Advertisement + '/imageCollection/add', params).then(res => {
                     console.log('图片收藏res', res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
-                    } else if (res.data.SysCode === 200200) {
+                    if (res.data.SysCode === 200200) {
                         item.isCollection = true
                         this.$emit('doSomeThing', true)
                         this.messageFun('success', '收藏成功')
@@ -138,9 +136,7 @@
                 }
                 api.postApi(this.apiVar.Advertisement + '/imageCollection/remove', params).then(res => {
                     console.log('取消收藏res', res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        this.loginTimeout()
-                    } else if (res.data.SysCode === 200200) {
+                    if (res.data.SysCode === 200200) {
                         item.isCollection = false
                         this.$emit('doSomeThing', true)
                         this.messageFun('success', '取消成功')
@@ -205,22 +201,18 @@
                     let urlArr = this.activeImgInfo.url.split('/')
                     api.getApi_file(this.apiVar.Advertisement + '/DownloadImageWatermark', params).then(res=>{
                     // api.getApi_file('http://192.168.1.247:8002/advertisement/DownloadImageWatermark', params).then(res=>{
-                        if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                            sessFun.loginTimeout()
-                        } else {
-                            console.log('res',res)
-                            let blob = new Blob([res.data], {type: 'application/ms-download;charset=utf-8'});
-                            let downloadElement = document.createElement('a');
-                            let href = window.URL.createObjectURL(blob);    //创建下载的链接
-                            downloadElement.href = href;
-                            downloadElement.download = urlArr[urlArr.length-1]//res.headers['Content-Disposition'].split('=')[1]; //下载后文件名
-                            document.body.appendChild(downloadElement);
-                            downloadElement.click();                        //点击下载
-                            document.body.removeChild(downloadElement);     //下载完成移除元素
-                            window.URL.revokeObjectURL(href);               //释放掉blob对象
-                            sessFun.messageFun('success','下载成功')
-                            this.watermarkDialog = false
-                        }
+                        console.log('res',res)
+                        let blob = new Blob([res.data], {type: 'application/ms-download;charset=utf-8'});
+                        let downloadElement = document.createElement('a');
+                        let href = window.URL.createObjectURL(blob);    //创建下载的链接
+                        downloadElement.href = href;
+                        downloadElement.download = urlArr[urlArr.length-1]//res.headers['Content-Disposition'].split('=')[1]; //下载后文件名
+                        document.body.appendChild(downloadElement);
+                        downloadElement.click();                        //点击下载
+                        document.body.removeChild(downloadElement);     //下载完成移除元素
+                        window.URL.revokeObjectURL(href);               //释放掉blob对象
+                        sessFun.messageFun('success','下载成功')
+                        this.watermarkDialog = false
                     })
                 } else {
                     sessFun.messageFun('warning','请点击选择水印类型')
@@ -239,10 +231,6 @@
             formatTime(val) {
                 return dateFormat.toDate(val, "/");
             },
-            loginTimeout(){
-                Message.warning("登录超时,请重新登录");
-                this.$router.push("/login");
-            },
         },
     }
 </script>
@@ -258,9 +246,26 @@
                 <!--图片列表-->
                 <div class="find clearfix" v-if="showPic === 3">
                     <div class="photoCard" v-for="(img, index) of imgarr" :key="img.pID">
-                        <div class="imgBox" @mouseenter="mouseenterFun(img,index)" @mouseleave="mouseleaveFun(index)">
-                            <img :src="img.pUrl" alt=""  class="smallImg">
+                        <div class="imgBox" @mouseenter="showPreImg = index" @mouseleave="showPreImg = null">
+                            <img :src="img.pUrl" alt="" class="smallImg">
                             <!--查看缩略图和下载-->
+                            <div class="mask-btn" v-if="showPreImg == index">
+                                <p class="mask_icon">
+                                    <span v-if="isShowCollect">
+                                        <i v-if="!img.isCollection" class="el-icon-star-off" @click="saveImgFun(img)" ></i>
+                                        <i v-else="img.isCollection" class="el-icon-star-on icon_save" @click="cancelImgFun(img)" ></i>
+                                    </span>
+                                    <i class="el-icon-search" @click="handlePictureCardPreview(img)"></i>
+                                </p>
+                                <p class="mask_a">
+                                    <a v-if="tabType === 'first'" :href= "galleryImgUrl + img.pUrl" >下载图片</a>
+                                    <a v-else :href= "collectImgUrl + img.id" >下载图片</a>
+                                </p>
+                            </div>
+                        </div>
+                  <!--      <div class="imgBox" @mouseenter="mouseenterFun(img,index)" @mouseleave="mouseleaveFun(index)">
+                            <img :src="img.pUrl" alt=""  class="smallImg">
+                            &lt;!&ndash;查看缩略图和下载&ndash;&gt;
                             <div class="mask-btn" v-if="showPreImg == index">
                                 <p class="mask_icon">
                                     <span v-if="isShowCollect">
@@ -272,7 +277,7 @@
                                 <p class="mask_a">
                                     <el-dropdown @visible-change="visibleChange" @command="selectMark" placement="bottom-start">
                                         <el-button type="primary" size="small">
-                                            下载图片<i class="el-icon-arrow-down el-icon--right"></i>
+                                            下载图片<i class="el-icon-arrow-down el-icon&#45;&#45;right"></i>
                                         </el-button>
                                         <el-dropdown-menu slot="dropdown">
                                             <el-dropdown-item  command="a">
@@ -287,7 +292,7 @@
                                     </el-dropdown>
                                 </p>
                             </div>
-                        </div>
+                        </div>-->
                         <div class="detailBox">
                             <p>{{img.pRemarks.plan || '--'}}</p>
                             <!-- <span>华南碧桂园二期-东门</span> -->
@@ -448,6 +453,19 @@
         bottom: 16px;
     }
 
+    .mask_a a{
+        width: 64px;
+        padding: 6px 8px;
+        border-radius: 4px;
+        color: #fff;
+        background: #409eff;
+        font-size: 14px;
+    }
+
+    .mask_a a:hover{
+        background: #66b1ff;
+    }
+
     /deep/ .dropdown_a{
         color: rgb(96, 98, 102);
     }
@@ -479,7 +497,6 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        height: 20px;
     }
 
     .detailBox > span {

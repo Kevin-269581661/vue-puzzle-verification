@@ -105,7 +105,12 @@
         </div>
         <!--左侧搜索-->
         <div class="left_search_box">
-            <el-input v-model="selectName" placeholder="请输入关键字" size="small" style="width: 260px"></el-input>
+            <el-input v-model="selectName"
+                      placeholder="请输入关键字"
+                      clearable
+                      size="small"
+                      style="width: 260px"
+                      @clear="clearSearch"></el-input>
             <el-button icon="el-icon-search" circle class="search_btn" @click="searchFun"></el-button>
             <div class="left_search_content">
                 <div class="search_result_btn">
@@ -340,51 +345,51 @@
             },
             // 创建标注
             creatMarker() {
-                let markers = [];
-                for (let key of this.resInfo) {
-                    let point = new BMap.Point(key.lng, key.lat);
-                    let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(20, 33), {
-                        anchor: new BMap.Size(10, 33)
-                    });
-                    let marker = new BMap.Marker(point, {icon: myIcon});  // 创建标注
-                    let label = new BMap.Label(key.resName, {offset: new BMap.Size(20, 5)});
-                    label.setStyle({
-                        borderRadius: "3px"
-                    });
-                    marker.setLabel(label);
-                    marker.setTop(true);
-                    marker.addEventListener("click",()=>{
-                        this.showInfo(key,point)
-                    });
-                    markers.push(marker);
-                }
-                //最简单的用法，生成一个marker数组，然后调用markerClusterer类即可。
-                let markerClusterer = new BMapLib.MarkerClusterer(this.resMap, {markers:markers})
-                console.log('markerClusterer',markerClusterer, markerClusterer.getMarkers())
-                // let i = 0
-                // for(let key of this.resInfo){
-                //     key.isSelect = false
-                //     if(i < 500) {
-                //         let point = new BMap.Point(key.lng, key.lat);
-                //         let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(20,33),{
-                //             anchor: new BMap.Size(10, 33)
-                //         });
-                //         let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
-                //         let label = new BMap.Label(key.resName,{offset:new BMap.Size(20,5)});
-                //         label.setStyle({
-                //             borderRadius: "3px"
-                //         });
-                //         marker.setLabel(label);
-                //         marker.setTop(true);
-                //         this.resMap.addOverlay(marker);              // 将标注添加到地图中*/
-                //         marker.addEventListener("click",()=>{
-                //             this.showInfo(key,point)
-                //         });
-                //     } else {
-                //         break
-                //     }
-                //     i++
+                // let markers = [];
+                // for (let key of this.resInfo) {
+                //     let point = new BMap.Point(key.lng, key.lat);
+                //     let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(20, 33), {
+                //         anchor: new BMap.Size(10, 33)
+                //     });
+                //     let marker = new BMap.Marker(point, {icon: myIcon});  // 创建标注
+                //     let label = new BMap.Label(key.resName, {offset: new BMap.Size(20, 5)});
+                //     label.setStyle({
+                //         borderRadius: "3px"
+                //     });
+                //     marker.setLabel(label);
+                //     marker.setTop(true);
+                //     marker.addEventListener("click",()=>{
+                //         this.showInfo(key,point)
+                //     });
+                //     markers.push(marker);
                 // }
+                // //最简单的用法，生成一个marker数组，然后调用markerClusterer类即可。
+                // let markerClusterer = new BMapLib.MarkerClusterer(this.resMap, {markers:markers})
+                // console.log('markerClusterer',markerClusterer, markerClusterer.getMarkers())
+                let i = 0
+                for(let key of this.resInfo){
+                    key.isSelect = false
+                    if(i < 500) {
+                        let point = new BMap.Point(key.lng, key.lat);
+                        let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(20,33),{
+                            anchor: new BMap.Size(10, 33)
+                        });
+                        let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
+                        let label = new BMap.Label(key.resName,{offset:new BMap.Size(20,5)});
+                        label.setStyle({
+                            borderRadius: "3px"
+                        });
+                        marker.setLabel(label);
+                        marker.setTop(true);
+                        this.resMap.addOverlay(marker);              // 将标注添加到地图中*/
+                        marker.addEventListener("click",()=>{
+                            this.showInfo(key,point)
+                        });
+                    } else {
+                        break
+                    }
+                    i++
+                }
             },
             addClickHandler(content,marker){
                 marker.addEventListener("click",()=>{
@@ -584,6 +589,21 @@
                 // 在线搜索
                 this.onlineSearchFun()
             },
+            // 取消搜索
+            clearSearch() {
+                let allOverlay = this.resMap.getOverlays();
+                for (let akey of allOverlay) {
+                    akey.show()
+                }
+                // 移除
+                for(let key of this.selectOnlineList) {
+                    if(key.isSelect) {
+                        this.deleteCircle(key.id)
+                        this.deleteCircle(key.id)
+                    }
+
+                }
+            },
             // 在线搜索
             onlineSearchFun(){
                 let resultArray = []
@@ -779,32 +799,46 @@
                         strokeOpacity: 0.3
                     });
                     this.resMap.addOverlay(circle);
-                    this.showResInCircle(key.point, radius)
+                    this.showResInCircle(key, radius)
                 }
                 this.searchResList.length ?  this.activeSearchKind = 1 : this.activeSearchKind = 2
             },
             // 显示圆半径内的小区
-            showResInCircle(point,radius) {
+            showResInCircle(data,radius) {
                 let date1 = new Date();
+                let point = data.point
                 let allOverlay = this.resMap.getOverlays();
                 for(let key of this.resInfo) {
                     for (let akey of allOverlay) {
-                        if( akey.isVisible() &&
+                        if( //akey.isVisible() &&
                             akey.toString() == "[object Marker]" &&
                             akey.getLabel() &&
                             akey.getLabel().content === key.resName) {
                             let point2 = new BMap.Point(key.lng, key.lat);
-                            let distance = this.resMap.getDistance(point,point2)
-                            if(distance > radius){
-                                akey.hide()
+                            let distance = this.resMap.getDistance(point, point2)
+                            // 是否在半径内
+                            if (distance > radius) {
+                                // 多个圆时
+                                key.show ? akey.show() : akey.hide()
                             } else {
-                                let flag = this.searchResList.some((item,index)=>{
-                                    if(key.resID === item.resID) {
+                                key.show = true
+                                akey.show()
+                                let flag = this.searchResList.some((item, index) => {
+                                    if (key.resID === item.resID) {
                                         return true
                                     }
                                 })
+                                let centerInfo = {
+                                    address: data.address,
+                                    city: data.city,
+                                    point: data.point,
+                                    title: data.title
+                                }
                                 if (!flag) {
+                                    key.mapCenter = [centerInfo]
                                     this.searchResList.push(key)
+                                } else {
+                                    key.mapCenter.push(centerInfo)
                                 }
                             }
                             break

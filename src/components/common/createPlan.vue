@@ -4010,7 +4010,6 @@
                             // 全等
                             if (ADScheArr[0] == shopScheArr[0] && ADScheArr[1] == shopScheArr[1]) {
                                 if(SourceType === 'mapAds'){
-                                    // let centerName = ADData.reference.name ? ADData.reference.name +'-'+  ADData.reference.address :''
                                     let centerName = ''
                                     if (ADData.reference !== '-' && ADData.reference !== '' && ADData.reference !== undefined
                                         && ADData.reference !== null) {
@@ -4021,14 +4020,12 @@
                                             }
                                         }
                                     }
-                                    // if(shopArr[i].mapCenter !== centerName){
                                     if (shopArr[i].mapCenter !== '') {
-                                        shopArr[i].mapCenter = shopArr[i].mapCenter + ',' + centerName
+                                        shopArr[i].mapCenter = shopArr[i].mapCenter + centerName
                                     } else {
                                         console.log('mapCenter为空')
                                         shopArr[i].mapCenter = centerName
                                     }
-                                    // }
                                 }
                                 ifBoolea = false
                                 break

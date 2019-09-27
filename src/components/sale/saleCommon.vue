@@ -20,7 +20,7 @@
             <el-menu-item index="/sale/planList">方案管理</el-menu-item>
             <el-menu-item index="/sale/orderList">订单管理</el-menu-item>
             <el-menu-item index="/sale/photoGallery">案例库</el-menu-item>
-            <el-submenu index="8" show-timeout="80">
+            <el-submenu index="8" :show-timeout="80">
                 <template slot="title">
                     辅助资料
                 </template>
@@ -30,7 +30,7 @@
             </el-submenu>
             <el-menu-item index="/sale/tvOrderList">电视广告</el-menu-item>
             <el-menu-item index="/sale/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>
-            <el-submenu index="9" class="user_center" popper-class="user_center_item" show-timeout="80">
+            <el-submenu index="9" class="user_center" popper-class="user_center_item" :show-timeout="80">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">
                     {{userName}}

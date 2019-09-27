@@ -80,7 +80,7 @@
             title="上传图片"
             class="upload_dialog"
             width="324px">
-            <div class="upload_dialog_body">
+            <div class="upload_dialog_body" :class="uploadUrl.length >= 6 ? 'hide_picture_card' : ''">
                 <p class="upload_p">
                     <el-cascader :options="bussiness" size="small" class="plan-select" v-model="industryImg"
                                  change-on-select
@@ -93,25 +93,16 @@
                         :action="doUpload"
                         list-type="picture-card"
                         :file-list="uploadImg"
-                        :limit = '1'
+                        :limit='6'
+                        :multiple="true"
                         :on-success="downSuccess"
                         :on-preview="pictureCardPreview"
                         :before-upload="beforeUpload"
+                        :on-error="errorUpload"
+                        :on-exceed="exceedUpload"
                         :on-remove="removeImg">
-                        <i class="el-icon-plus"></i>
+                        <i class="el-icon-plus" v-show="uploadUrl.length < 6 "></i>
                     </el-upload>
-                    <!--    <el-upload
-                            :action="doUpload"
-                            list-type="picture-card"
-                            :file-list="uploadImg"
-                            :limit = '3'
-                            :multiple="true"
-                            :on-success="downSuccess"
-                            :on-preview="pictureCardPreview"
-                            :before-upload="beforeUpload"
-                            :on-remove="removeImg">
-                            <i class="el-icon-plus" v-show="uploadUrl.length < 3 "></i>
-                        </el-upload>-->
                 </p>
             </div>
             <span slot="footer" class="dialog-footer">
@@ -296,6 +287,7 @@
             // 图片上传
             uploadFun(){
                 this.UploadVisible = true
+                this.uploadUrl = []
             },
             // 图片上传时的行业选择
             UploadIndustryChange(val){
@@ -304,28 +296,47 @@
             // 资源图片上传前验证格式和大小
             beforeUpload(file) {
                 const isJPG = file.type === "image/jpeg" || file.type === "image/png";
-                const isLt10M = file.size / 1024 / 1024 < 10;
+                const isLt10M = file.size / 1024 / 1024 < 5;
 
                 if (!isJPG) {
                     this.$message.error('上传图片只能是 JPG 或 PNG 格式!');
                 }
                 if (!isLt10M) {
-                    this.$message.error('上传图片大小不能超过 10MB!');
+                    this.$message.error('上传图片大小不能超过 5MB!');
                 }
                 return isJPG && isLt10M;
             },
-            // 资源图片上传成功
+            // 上传失败
+            errorUpload(err,file, fileList) {
+                console.log('上传失败',err,file, fileList)
+                sessFun.messageFun('waring','上传失败！')
+            },
+            // 超出文件个数
+            exceedUpload(file, fileList) {
+                console.log('超出文件个数',file, fileList)
+                sessFun.messageFun('waring','最多可上传6张！')
+            },
+
+            // 行业图片上传成功
             downSuccess(res) {
                 console.log('上传行业图片', res)
                 if(res.SysCode === 200200){
-                    this.uploadUrl = res.data
+                    for(let key of res.data) {
+                        this.uploadUrl.push(key)
+                    }
+                    // this.uploadUrl = res.data
                     console.log('this.uploadUrl',this.uploadUrl)
                 }
             },
-            // 删除原资源图片，进行重新选择
+            // 删除行业图片
             removeImg(file, fileList) {
                 console.log('删除或修改了资源图片', file, fileList)
-                this.uploadUrl = []
+                let arr = []
+                for(let key of fileList){
+                    arr.push(key.response.data[0])
+                }
+                this.uploadUrl = arr
+                console.log('删除行业图片',this.uploadUrl)
             },
             // 资源图片放大
             pictureCardPreview(file) {
@@ -343,11 +354,15 @@
                     this.messageFun('warning','请上传图片!')
                     return
                 }
+                let picUrls = []
+                for (let key of this.uploadUrl) {
+                    picUrls.push(key)
+                }
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                     industryId: this.industryImg[1],
-                    picUrls: this.uploadUrl[0]
+                    picUrls: picUrls.join(',')
                 }
                 console.log('params',params)
                 api.postApi(this.apiVar.Advertisement + '/image/save',params).then(res=>{
@@ -773,19 +788,21 @@
         width: 100%;
     }
 
-    .upload_img{
-        height: 104px;
-        overflow: hidden;
-        /*   height: 225px;
-           overflow-y: auto;
-           min-height: 104px;
-           overflow-x: hidden;*/
+    .upload_img {
+        height: 225px;
+        overflow-y: auto;
+        min-height: 104px;
+        overflow-x: hidden;
     }
 
     .upload_dialog_body /deep/ .el-upload--picture-card{
         width: 100%;
         height: 104px;
         line-height: 104px;
+    }
+
+    .upload_dialog_body.hide_picture_card /deep/ .el-upload--picture-card{
+        display: none;
     }
 
     /*上传成功*/
@@ -821,5 +838,17 @@
     /*编辑弹出框*/
     .edit_photo_ul li:nth-child(1){
         margin-bottom: 12px;
+    }
+
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 8px;
+        background: #FAFAFA;
+    }
+
+    ::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        background: #C1C1C1;
+        border-radius: 4px;
     }
 </style>

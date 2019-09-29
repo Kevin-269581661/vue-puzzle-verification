@@ -477,8 +477,7 @@
                                     prop="mediaName"
                                     label="媒体名称"
                                     width="140"
-                                    class="tar"
-                                >
+                                    :show-overflow-tooltip="true">
                                 </el-table-column>
                                 <el-table-column
                                     prop="city"
@@ -2355,7 +2354,8 @@
                     mID: info.mID,
                     resType: info.resType,
                     resID: info.resID,
-                    asID: '',
+                    // asID: '',
+                    asID: info.asID,
                     asIDs: info.asID,
                     asLabs: info.asLab,
                     resName: info.resName,
@@ -2388,11 +2388,11 @@
                     asrID: info.asrID,                 // 所属公司id,
                     lState: info.adlInfo ? info.adlInfo : '',   // 是否被占
                 };
-                if(info.mVehicle === '道闸'){
-                    importInfo.asID = info.asIDs.split(',')
-                }else if(info.mVehicle === '广告门'){
-                    importInfo.asID = info.asID
-                }
+                // if(info.mVehicle === '道闸'){
+                //     importInfo.asID = info.asIDs.split(',')
+                // }else if(info.mVehicle === '广告门'){
+                //     importInfo.asID = info.asID
+                // }
                 return importInfo;
             },
             // 第四步的导出方案

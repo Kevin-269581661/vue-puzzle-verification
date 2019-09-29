@@ -365,8 +365,7 @@
                                     class-name="el-table-column-resName"
                                     label="资源名称"
                                     width="200"
-                                    prop="resName"
-                                >
+                                    prop="resName">
                                 </el-table-column>
                                 <el-table-column
                                     fixed
@@ -374,20 +373,17 @@
                                     prop="mediaName"
                                     label="媒体名称"
                                     width="140"
-                                    class="tar"
-                                >
+                                    :show-overflow-tooltip="true">
                                 </el-table-column>
                                 <el-table-column
                                     prop="city"
                                     label="城市"
-                                    min-width="110"
-                                >
+                                    min-width="110">
                                 </el-table-column>
                                 <el-table-column
                                     prop="origin"
                                     label="区域"
-                                    min-width="110"
-                                >
+                                    min-width="110">
                                 </el-table-column>
                                 <el-table-column
                                     label="商圈"

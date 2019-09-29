@@ -569,7 +569,7 @@
                         for (let data of res.data.data.list) {
                             let a = {
                                 time: data.createTime,
-                                text: data.feedback,
+                                text: data.remark,
                                 address: data.resAddress,
                                 recordId: data.recordId,
                                 mID: data.mID,
@@ -757,7 +757,7 @@
                     mediaName: item.mTitle,
                     cityName: item.cityName,
                     area: item.districtName,
-                    issueRecord: item.feedback ? item.feedback : '--',
+                    issueRecord: item.remark ? item.remark : '--',
                     updateTime:item.updateTime?item.updateTime:'---',
                     createTime:item.createTime?item.createTime:'---',
                     createUserName:item.createUserName?item.createUserName:'---',

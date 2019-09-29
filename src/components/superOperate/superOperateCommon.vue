@@ -42,6 +42,7 @@
             <el-menu-item index="/superOperate/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>
             <el-submenu index="9" class="user_center" popper-class="user_center_item" show-timeout="80">
                 <template slot="title">
+
                     <img class="user_avator" :src="avator" alt="">
                     {{userName}}
                 </template>
@@ -49,6 +50,7 @@
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
                 <el-menu-item index="/login">退出登陆</el-menu-item>
             </el-submenu>
+            <messageNotice></messageNotice>
         </el-menu>
 
         <!--body-->
@@ -79,8 +81,12 @@
 <script>
     import uTypeToText from "../../commonFun/uTypeToText.js";
     import api from "../../api/api"
+    import messageNotice from '../common/components/messageNotice.vue';
     export default {
         name: "superOpertaeCommon",
+        components:{
+            messageNotice
+        },
         data(){
             return{
                 newDate: new Date().getFullYear(),

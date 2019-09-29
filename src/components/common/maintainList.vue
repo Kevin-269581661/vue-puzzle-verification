@@ -412,16 +412,16 @@
                 imgUrls: '',
                 // 问题列表
                 logList: {
-                    resName: '中心西关海',
-                    mTitle: '西南门',
-                    assetTag: '005B201903GZ-X919',
+                    resName: '',
+                    mTitle: '',
+                    assetTag: '',
                     list: [
                         {
                             id: 1,
-                            time: '2019/08/30 20:32:56',
-                            text: '这是一条很长很长的巡点记录，这是一条很长很长的巡点记录，这是一条很长很长的巡点记录。',
-                            address: '广州市越秀区广州大道中307号福利新天地中心',
-                            type: '巡点',
+                            time: '',
+                            text: '',
+                            address: '',
+                            type: '',
                         },
                     ]
                 },
@@ -616,29 +616,35 @@
             },
             // 确认处理
             handleRemark() {
-                let info = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token,
-                    service: "UpdateMediaMaintenanceAction",
-                    data: {
-                        "updateTime": timeFormat.toDate(this.maintainForm.date, '-'),
-                        "feedback": this.maintainForm.reamrk,
-                        "recordId": this.maintainForm.recordId,
-                    }
-                };
-                api.postApi_new(this.apiVar.Media, info).then(res => {
-                    console.log('处理',res.data);
-                    if (res.data.SysCode == 200200) {
-                        Message.success(res.data.MSG);
-                        this.searchFun();
+                // console.log(this.maintainForm.date);
+                if(this.maintainForm.date==''||this.maintainForm.date==null){
+                    Message.warning('请填写处理日期')
+                }else{
+                    let info = {
+                        uid: this.sessionData.uID,
+                        token: this.sessionData.token,
+                        service: "UpdateMediaMaintenanceAction",
+                        data: {
+                            "updateTime": timeFormat.toDate(this.maintainForm.date, '-'),
+                            "feedback": this.maintainForm.reamrk,
+                            "recordId": this.maintainForm.recordId,
+                        }
+                    };
+                    api.postApi_new(this.apiVar.Media, info).then(res => {
+                        console.log('处理',res.data);
+                        if (res.data.SysCode == 200200) {
+                            Message.success(res.data.MSG);
+                            this.searchFun();
 
-                        this.isShowHandle = false;
-                    } else {
-                        Message.warning(res.data.MSG);
-                    }
-                }).catch(err => {
-                    console.log(err);
-                });
+                            this.isShowHandle = false;
+                        } else {
+                            Message.warning(res.data.MSG);
+                        }
+                    }).catch(err => {
+                        console.log(err);
+                    });
+                }
+
             },
             // 判断角色是否有新建按钮(销售有)
             getRole() {

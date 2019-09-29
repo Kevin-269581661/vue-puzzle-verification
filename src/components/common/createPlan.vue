@@ -477,8 +477,7 @@
                                     prop="mediaName"
                                     label="媒体名称"
                                     width="140"
-                                    class="tar"
-                                >
+                                    :show-overflow-tooltip="true">
                                 </el-table-column>
                                 <el-table-column
                                     prop="city"

@@ -45,11 +45,12 @@
                     <el-col>
                         <el-button type="primary" @click="search()" :disabled="!isSearch">查询</el-button>
                         <el-button plain @click="reset()">重置</el-button>
+                        <el-button plain @click="paintedCount">上画统计</el-button>
                     </el-col>
                 </el-row>
-                
+
                 <div class="table_wrap">
-                    <el-table border :data="projectList" @sort-change="sortChange" v-loading="loading" 
+                    <el-table border :data="projectList" @sort-change="sortChange" v-loading="loading"
                         element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                         <el-table-column label="上画时间" min-width="11.8%" prop="publishDate" sortable="custom">
                         </el-table-column>
@@ -59,7 +60,7 @@
                         </el-table-column>
                         <el-table-column prop="photoNum" label="上画面数" min-width="8.9%" align="right">
                         </el-table-column>
-                        <el-table-column prop="mediaNum" label="媒体数" min-width="8.9%" align="right"> 
+                        <el-table-column prop="mediaNum" label="媒体数" min-width="8.9%" align="right">
                         </el-table-column>
                         <el-table-column prop="resNum" label="小区数" min-width="8.9%" align="right">
                         </el-table-column>
@@ -90,7 +91,7 @@
                                 </el-dropdown>
                             </template>
                         </el-table-column>
-                        
+
                         <div slot="empty">
                             <no-search-result></no-search-result>
                         </div>
@@ -115,7 +116,7 @@
         <!-- 分配人员弹出框 -->
         <el-dialog title="分配上画人员"
             :visible.sync="isShowDistri"
-            custom-class="size_detail_dialog"            
+            custom-class="size_detail_dialog"
             width="400px">
             <el-select v-model="currEngineer" placeholder="请选择" size="small" multiple>
                 <el-option v-for="item of engineerArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -155,7 +156,7 @@
     import timeFormat from '../../commonFun/timeFormat.js';
     import sessFun from '../../commonFun/sessFun.js';
     import noSearchResult from "./components/noSearchResult.vue";
-    
+
     export default {
         components:{
             noSearchResult,
@@ -204,7 +205,7 @@
                 currPage: 1,
                 totalNum: 0,
                 // 分配人员loading
-                disTriLoading: false,    
+                disTriLoading: false,
             }
         },
         methods:{
@@ -248,7 +249,7 @@
                     this.searchInfo.orderby = column.prop;
                     this.searchInfo.desc = 1;
                 }
-                this.currPage = 1;                
+                this.currPage = 1;
                 this.searchFun();
             },
             // 线路列表
@@ -452,9 +453,13 @@
                 }, 1000);
                 this.searchFun();
             },
+            // 上画统计
+            paintedCount() {
+                this.$router.push('./paintedCount')
+            },
             //日期排序
             sortData(a, b) {
-                return dateFormat.toDate(a.createTime, '') - dateFormat.toDate(b.createTime, '');                            
+                return dateFormat.toDate(a.createTime, '') - dateFormat.toDate(b.createTime, '');
             },
             // 时间格式化
             formatTime(time) {
@@ -489,7 +494,7 @@
                     taskId: this.currTaskId,
                     userIds: this.currEngineer.join(','),
                 };
-                this.disTriLoading = true;                
+                this.disTriLoading = true;
                 api.postApi(this.apiVar.publishPaintTask+"/setEngineerUser", info).then(res =>{
                     if(res.data.SysCode == 200200){
                         let updateArr = this.engineerArr.filter(ele=>{
@@ -551,7 +556,7 @@
     /deep/ .popper__arrow {
         display: none;
     }
-    
+
     /deep/ .el-date-editor--daterange.el-input__inner{
         width: 240px;
         min-width: 240px;

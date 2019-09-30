@@ -43,6 +43,9 @@
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
                 <el-menu-item index="/login">退出登陆</el-menu-item>
             </el-submenu>
+            <el-menu-item index="" style="cursor: default;float: right">
+                <messageNotice></messageNotice>
+            </el-menu-item>
         </el-menu>
 
         <!--body-->
@@ -73,8 +76,12 @@
 <script>
     import uTypeToText from "../../commonFun/uTypeToText.js";
     import api from "../../api/api"
+    import messageNotice from '../common/components/messageNotice.vue';
     export default {
         name: "mediaCommon",
+        components:{
+            messageNotice
+        },
         data(){
             return{
                 newDate: new Date().getFullYear(),

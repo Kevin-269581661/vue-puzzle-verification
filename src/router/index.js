@@ -44,6 +44,7 @@ const companyList = () => import('../components/common/companyList.vue')
 const compact = () => import('../components/common/compact.vue')
 const paintedPath = () => import('../components/common/paintedPath.vue')
 const adsDialPlate = () => import('../components/common/adsDialPlate.vue')
+const messageList = () => import('../components/common/messageList.vue')
 // const qinlinMap = () => import('../components/common/components/qinlinMap')
 
 // 下载进度页面
@@ -91,6 +92,8 @@ const visitFrequency = () => import('../components/adOwner/visitFrequency.vue')
 const hotSource = () => import('../components/adOwner/hotSource.vue')
 
 
+
+
 //亲邻科技上刊报告
 const Report = () => import('../components/h5/Report.vue')
 
@@ -105,6 +108,7 @@ export default new Router({
         {path: '/progressDown', name: 'progressDown', component: progressDown},
         {path: '/shareADList', name: 'shareADList', component: shareADList},
         {path: '/emptyPoint', name: 'emptyPoint', component: emptyPoint},
+        //消息列表
         //上下刊报告h5页面
         {path: '/Report', name: 'Report', component: Report},
         //admin
@@ -213,6 +217,7 @@ export default new Router({
                 {path: '/media/adsDialPlate', component: adsDialPlate},
                 {path: '/media/projectList', component: projectList},
                 {path: '/media/projectDetail', component: projectDetail},
+                {path: '/messageList', name: 'messageList', component: messageList},
                 // 亲邻地图
                 // {path: '/media/qinlinMap',component: qinlinMap},
                 {path: '/media/communityPortrait',component: communityPortrait},
@@ -246,6 +251,7 @@ export default new Router({
                 {path: '/sale/myInfo', component: myInfo},
                 {path: '/sale/compact', component: compact},
                 {path: '/sale/communityPortrait',component: communityPortrait},
+                {path: '/messageList', name: 'messageList', component: messageList},
                 // 亲邻地图
                 // {path: '/sale/qinlinMap',component: qinlinMap},
             ]

@@ -146,6 +146,17 @@
                             </template>
                         </el-table-column>
                         <el-table-column
+                            prop="feedback"
+                            label="处理记录"
+                            min-width="170"
+                            class="tar"
+                            :show-overflow-tooltip="true"
+                        >
+                            <template slot-scope="scope">
+                                <span>{{scope.row.feedback||'--'}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
                             prop="createTime"
                             label="提交日期"
                             min-width="150"
@@ -379,6 +390,7 @@
                     mediaName: '媒体名称',
                     assetTag: '资产编号',
                     issueRecord: '问题记录',
+                    feedback:'处理记录'
                 }],
                 //所在区域
                 areaArr: [],
@@ -765,6 +777,7 @@
                     cityName: item.cityName,
                     area: item.districtName,
                     issueRecord: item.remark ? item.remark : '--',
+                    feedback: item.feedback ? item.feedback : '--',
                     updateTime: item.updateTime ? item.updateTime : '---',
                     createTime: item.createTime ? item.createTime : '---',
                     createUserName: item.createUserName ? item.createUserName : '---',

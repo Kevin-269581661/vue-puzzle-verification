@@ -31,7 +31,7 @@
                     </el-col>
                     <el-col :span="6">
                         <span>维护类型:</span>
-                        <el-select v-model="searchInfo.type" placeholder="请选择维护类型" clearable >
+                        <el-select v-model="searchInfo.type" placeholder="请选择维护类型" clearable>
                             <el-option v-for="item of typeArr" :key="item.value" :label="item.label"
                                        :value="item.value"></el-option>
                         </el-select>
@@ -41,14 +41,14 @@
                 <el-row>
                     <el-col :span="6">
                         <span>维护状态:</span>
-                        <el-select v-model="searchInfo.status" placeholder="请选择维护状态" clearable >
+                        <el-select v-model="searchInfo.status" placeholder="请选择维护状态" clearable>
                             <el-option v-for="item of stateArr" :key="item.value" :label="item.label"
                                        :value="item.value"></el-option>
                         </el-select>
                     </el-col>
                     <el-col :span="6">
                         <span style="text-align: right;padding-right: 6px;box-sizing: border-box">提交者:</span>
-                        <el-select v-model="searchInfo.userId" placeholder="请选择提交者" filterable clearable >
+                        <el-select v-model="searchInfo.userId" placeholder="请选择提交者" filterable clearable>
                             <el-option v-for="item of engineerArr" :key="item.value" :label="item.label"
                                        :value="item.value"></el-option>
                         </el-select>
@@ -616,10 +616,10 @@
             },
             // 确认处理
             handleRemark() {
-                // console.log(this.maintainForm.date);
-                if(this.maintainForm.date==''||this.maintainForm.date==null){
+                console.log(this.maintainForm.date);
+                if (this.maintainForm.date == '' || this.maintainForm.date == null) {
                     Message.warning('请填写处理日期')
-                }else{
+                } else {
                     let info = {
                         uid: this.sessionData.uID,
                         token: this.sessionData.token,
@@ -631,14 +631,15 @@
                         }
                     };
                     api.postApi_new(this.apiVar.Media, info).then(res => {
-                        console.log('处理',res.data);
+                        console.log('处理', res.data);
                         if (res.data.SysCode == 200200) {
                             Message.success(res.data.MSG);
                             this.searchFun();
-
                             this.isShowHandle = false;
+                        } else if (res.data.SysCode == 200111) {
+                            Message.warning('请填写处理日期')
                         } else {
-                            Message.warning(res.data.MSG);
+                            Message.success(res.data.MSG);
                         }
                     }).catch(err => {
                         console.log(err);
@@ -669,7 +670,7 @@
                 data = {
                     ...data,
                     ...(districtId && {cityId: districtId[0]}),
-                    ...(districtId.length>1 && {districtId: districtId[1]}),
+                    ...(districtId.length > 1 && {districtId: districtId[1]}),
                     ...(type && {type: type}),
                     ...(assetTag && {assetTag: assetTag}),
                     ...(resName && {resName: resName}),
@@ -764,14 +765,14 @@
                     cityName: item.cityName,
                     area: item.districtName,
                     issueRecord: item.remark ? item.remark : '--',
-                    updateTime:item.updateTime?item.updateTime:'---',
-                    createTime:item.createTime?item.createTime:'---',
-                    createUserName:item.createUserName?item.createUserName:'---',
+                    updateTime: item.updateTime ? item.updateTime : '---',
+                    createTime: item.createTime ? item.createTime : '---',
+                    createUserName: item.createUserName ? item.createUserName : '---',
                     status: item.status,
                     remark: item.remark,
                     mTitle: item.mTitle,
                     recordId: item.recordId,
-                    picUrl:item.picUrl
+                    picUrl: item.picUrl
                 };
                 if (item.type == 1) {
                     obj.mtType = '巡点'
@@ -863,9 +864,11 @@
     /deep/ .el-select {
         width: 100%;
     }
-    /deep/.el-col .el-date-editor .el-range__close-icon{
+
+    /deep/ .el-col .el-date-editor .el-range__close-icon {
         line-height: 27px;
     }
+
     .table_dt dl dt {
         font-size: 14px;
     }
@@ -973,11 +976,12 @@
         height: 32px;
         width: 350px;
     }
-    /deep/ .block .el-date-editor.el-input, .el-date-editor.el-input__inner{
+
+    /deep/ .block .el-date-editor.el-input, .el-date-editor.el-input__inner {
         width: 350px;
     }
 
-    /deep/ .block  .el-input__icon {
+    /deep/ .block .el-input__icon {
         line-height: 32px;
     }
 
@@ -1005,6 +1009,7 @@
     /deep/ .ad_mediaDetail_wrap .el-date-editor .el-range-separator {
         line-height: 25px;
     }
+
     /*滚动条*/
     /deep/ .el-table__body-wrapper {
 

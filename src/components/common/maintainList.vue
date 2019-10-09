@@ -635,6 +635,7 @@
                         if (res.data.SysCode == 200200) {
                             Message.success(res.data.MSG);
                             this.searchFun();
+
                             this.isShowHandle = false;
                         } else {
                             Message.warning(res.data.MSG);

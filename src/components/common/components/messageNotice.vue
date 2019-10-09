@@ -25,7 +25,7 @@
                             <p><span>{{item.messagePart1}}</span>{{item.messagePart2}}</p>
                             <span>{{timeFormat(item.createTime*1)}}</span>
                         </div>
-                        <div class="read-mask" v-if="item.status!=1"></div>
+                        <div class="read-mask" v-if="item.status!=0"></div>
                     </li>
 
                 </ul>
@@ -120,7 +120,7 @@
                 api.postApi(this.system + '/readMessage', {messageId: messageId}).then(res => {
                     if (res.data.SysCode == 200200) {
                         //操作成功
-                        item.status = 0
+                        item.status = 1
                     }
                 })
             },

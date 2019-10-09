@@ -204,7 +204,7 @@
                                                           v-if="scope.row.mtType=='巡点'">照片
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="toHandle(scope.row)"
-                                                          v-if="scope.row.mtType=='巡点'">处理
+                                                          v-if="scope.row.mtType!='拆除'">处理
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="showHistory(scope.row)">历史记录
                                         </el-dropdown-item>

@@ -4,6 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import sessFun from './commonFun/sessFun.js';
+import directives from "./commonFun/directives";
 
 Vue.config.productionTip = false;
 

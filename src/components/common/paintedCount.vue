@@ -13,31 +13,32 @@
             </div>
             <div class="mediaList_container">
                 <el-row :gutter="16">
-                    <el-col :span="6">
+                    <el-col :span="7">
                         <span class="search_title">统计时间:</span>
                         <el-date-picker
                             v-model="searchInfo.countDate"
+                            :clearable="false"
                             type="daterange"
                             size="small"
                             start-placeholder="开始日期"
                             end-placeholder="结束日期"
                             value-format="yyyy/MM/dd"
-                            format="yyyy/MM/dd"
-                            class="">
+                            format="yyyy/MM/dd">
                         </el-date-picker>
                     </el-col>
-                    <el-col :span="6">
+                    <el-col :span="7">
                         <span class="search_title">工程人员:</span>
-                        <el-select v-model="searchInfo.EPname" placeholder="请选择" size="small">
+                        <el-select v-model="searchInfo.EPID" placeholder="请选择" size="small" clearable filterable>
                             <el-option v-for="item of engineerArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-col>
-                    <el-col :span="8">
+                    <el-col :span="6">
                         <el-button type="primary" @click="searchFun()">搜索</el-button>
                         <el-button plain @click="reset()">重置</el-button>
                     </el-col>
                     <el-col :span="4" style="text-align: right">
-                        <el-button type="primary" @click="importList()">导出</el-button>
+                        <el-button type="primary" @click="importList()" :loading="activeDownload">
+                            {{activeDownload ? '导出中' : '导出'}}</el-button>
                     </el-col>
                 </el-row>
                 <div class="table_box">
@@ -56,24 +57,12 @@
                         <el-table-column prop="unPublishAdsCount" label="下刊点位" min-width="8.9%" align="right" sortable="custom">
                         </el-table-column>
                         <el-table-column prop="unPublishPhotoCount" label="下刊张数" min-width="8.9%" align="right" sortable="custom">
-                            <template slot-scope="scope">
-                                <span>{{scope.row.unPublishPhotoCount || '--'}}</span>
-                            </template>
                         </el-table-column>
                         <el-table-column prop="replaceAdsCount" label="换画点位" min-width="8.9%" align="right" sortable="custom">
-                            <template slot-scope="scope">
-                                <span>{{scope.row.replaceAdsCount || '--'}}</span>
-                            </template>
                         </el-table-column>
                         <el-table-column prop="replacePhotoCount" label="换画张数" min-width="8.9%" align="right" sortable="custom">
-                            <template slot-scope="scope">
-                                <span>{{scope.row.replacePhotoCount || '--'}}</span>
-                            </template>
                         </el-table-column>
                         <el-table-column prop="patrolCount" label="巡点次数" min-width="8.9%" align="right" sortable="custom">
-                            <template slot-scope="scope">
-                                <span>{{scope.row.patrolCount || '--'}}</span>
-                            </template>
                         </el-table-column>
                         <div slot="empty">
                             <no-search-result></no-search-result>
@@ -101,38 +90,23 @@
     import sessFun from "../../commonFun/sessFun";
     import api from "../../api/api"
     import noSearchResult from "./components/noSearchResult";
+    import timeFormat from "../../commonFun/timeFormat";
 
     export default {
         name: "paintedCount",
         data() {
             return {
                 sessionData: sessFun.getSess(),
+                dateTime:[],
                 // 搜索条件
                 searchInfo:{
                     countDate: [],
                     EPID: ''
                 },
-                // 搜索多次点击
                 // 工程人员list
                 engineerArr: [],
-                //
-                loadingEPname: true,
                 // 表格数据
-                paintedCountList:[
-                    {
-                        userId: 1200,
-                        userName: '陈立秋',
-                        orderCount: 2,
-                        resourceCount: 10,
-                        publishAdsCount: 100,
-                        publishPhotoCount: 200,
-                        unPublishAdsCount: 91,
-                        unPublishPhotoCount: 180,
-                        replaceAdsCount: 25,
-                        replacePhotoCount: 52,
-                        patrolCount: 12
-                    }
-                ],
+                paintedCountList:[],
                 // 表格loading
                 tableLoading: true,
                 orderArr: [],
@@ -143,12 +117,18 @@
                     totalNum: 0,
                 },
                 pageSizes: [10, 20, 50],
+                // 是否下载中
+                activeDownload: false,
             }
         },
         components:{
             noSearchResult,
         },
         mounted() {
+            let starTime = timeFormat.returnDayCount(-14,'/')
+            let endTime = timeFormat.returnDayCount(0,'/')
+            this.dateTime = [starTime,endTime]
+            this.searchInfo.countDate = this.dateTime.concat()
             this.getData();
             this.getEngineer();
         },
@@ -195,7 +175,7 @@
             // 重置
             reset() {
                 this.searchInfo = {
-                    countDate: [],
+                    countDate: this.dateTime.concat(),
                     EPID: ''
                 }
                 this.resetSearchData()
@@ -225,6 +205,10 @@
             },
             // 获取上画统计list
             getData() {
+                if(!this.searchInfo.countDate){
+                    sessFun.messageFun('warning','请选择时间!')
+                    return
+                }
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
@@ -268,14 +252,50 @@
                     sessFun.messageFun('warning', '上画统计接口异常！');
                     this.tableLoading = false
                 })
-                let timer = setTimeout(()=>{
-                    this.tableLoading = false
-                    clearTimeout(timer)
-                },500)
             },
             // 导出
             importList() {
-
+                if(!this.searchInfo.countDate){
+                    sessFun.messageFun('warning','请选择时间!')
+                    return
+                }
+                this.activeDownload = true
+                // sessFun.messageFun('warning','导出excel可能需要一分钟甚至更长时间!')
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    startDate: this.searchInfo.countDate[0],
+                    endDate: this.searchInfo.countDate[1],
+                    userId: this.searchInfo.EPID,                     // 工程人员uID
+                }
+                for (let i in params) {
+                    if (!params[i]) {
+                        delete params[i]
+                    }
+                }
+                api.getApi_file(this.apiVar.report + '/publish/export', params).then(res=>{
+                    console.log('导出res',res)
+                    if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
+                        sessFun.loginTimeout()
+                    } else {
+                        console.log('导出headers',res.headers);
+                        let time = timeFormat.toDateTime(new Date(), '').split(' ')
+                        let timeString = time[0] + time[1].split(':').join('')
+                        let blob = new Blob([res.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
+                        let downloadElement = document.createElement('a');
+                        let href = window.URL.createObjectURL(blob);    //创建下载的链接
+                        downloadElement.href = href;
+                        downloadElement.download = '上画统计' + timeString + '.xls'// res.headers['content-disposition'].split('=')[1]; //下载后文件名
+                        document.body.appendChild(downloadElement);
+                        downloadElement.click();                        //点击下载
+                        document.body.removeChild(downloadElement);     //下载完成移除元素
+                        window.URL.revokeObjectURL(href);               //释放掉blob对象
+                    }
+                    this.activeDownload = false
+                }).catch(error => {
+                    sessFun.messageFun('warning','导出接口异常！')
+                    this.activeDownload = false
+                })
             },
         },
     }
@@ -289,11 +309,11 @@
     }
 
     /deep/ .el-row .el-date-editor{
-        width: calc(98% - 70px);
+        width: calc(100% - 70px);
     }
 
     /deep/.el-row .el-select{
-        width: calc(98% - 70px);
+        width: calc(100% - 70px);
     }
 
     .table_box{

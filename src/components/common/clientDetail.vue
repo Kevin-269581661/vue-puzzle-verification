@@ -77,8 +77,8 @@
         </div>
 
         <div class="content_bottom_btn">
-            <el-button type="primary" @click="editClient" v-if="role=='BD'">编辑</el-button>
-            <el-button plain @click="goBack">返回</el-button>
+            <el-button type="primary" @click="editClient" v-if="role=='BD'" v-qadn-mta-h5="{id: 'a001_b002_c000_d000_bt007_ck03'}">编辑</el-button>
+            <el-button plain @click="goBack" v-qadn-mta-h5="{id: 'a001_b002_c000_d000_bt008_ck03'}">返回</el-button>
         </div>
     </div>
 </template>
@@ -167,7 +167,7 @@ export default {
                         email: info.email,
                         phone: info.phone,
                         position: info.position,
-                        telephone: info.telephone,  
+                        telephone: info.telephone,
                         rName: "",
                         division: info.division,
                         puName: info.puName,
@@ -219,7 +219,7 @@ export default {
 }
 
 .mediaList_handel span{
-    color: #666666;    
+    color: #666666;
 }
 .row_box{
     margin: 16px 0;

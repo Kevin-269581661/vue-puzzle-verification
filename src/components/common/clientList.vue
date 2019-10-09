@@ -23,9 +23,10 @@
                     <el-select v-model="searchInfo.company" placeholder="请选择公司" size="small" v-if="sessionData.uType !='BD'" class="marginR">
                         <el-option v-for="item of companyArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                     </el-select>
-                    <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch" class="marginR">搜索</el-button>
-                    <el-button plain @click="reset()" :disabled="!isReset" class="marginR">重置</el-button>
-                    <el-button plain @click="newClient()" v-if="showNewBtn" class="marginR">新建</el-button>
+                    <el-button type="primary" icon="el-icon-search" @click="search()"
+                               :disabled="!isSearch" class="marginR" v-qadn-mta-h5="{id: 'a001_b000_c000_d000_bt001_ck01'}">搜索</el-button>
+                    <el-button plain @click="reset()" :disabled="!isReset" class="marginR" v-qadn-mta-h5="{id: 'a001_b000_c000_d000_bt002_ck02'}">重置</el-button>
+                    <el-button plain @click="newClient()" v-if="showNewBtn" class="marginR" v-qadn-mta-h5="{id: 'a001_b000_c000_d000_bt003_ck03'}">新建</el-button>
                 </div>
 				<div class="table_wrap">
 					<el-table border :data="currentPlan" @sort-change="sortChange" v-loading="loading" element-loading-text="玩命加载中..." element-loading-spinner="el-icon-loading" style="width: 100%" :default-sort="{prop: 'joinTime', order: 'descending'}">
@@ -52,7 +53,8 @@
 						</el-table-column>
 						<el-table-column label="操作" min-width="4.1%">
 							<template slot-scope="scope">
-								<a href="javascript:void(0)" @click="showDetail(scope.row)" style="color: #108EE9">查看</a>
+								<a href="javascript:void(0)" @click="showDetail(scope.row)" style="color: #108EE9"
+                                   v-qadn-mta-h5="{id: 'a001_b000_c000_d000_bt004_ck03'}">查看</a>
 							</template>
 						</el-table-column>
 
@@ -338,7 +340,7 @@ export default {
                 this.searchInfo.orderby = column.prop;
                 this.searchInfo.desc = 1;
             }
-            this.currPage = 1;            
+            this.currPage = 1;
             this.searchFun();
         },
     }

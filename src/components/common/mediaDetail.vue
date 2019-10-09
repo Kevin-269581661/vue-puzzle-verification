@@ -404,7 +404,6 @@
 
 <script>
     import api from '../../api/api'
-    import areaToText_new from '../../commonFun/areaToText_new'
     import sessFun from '../../commonFun/sessFun.js'
     import {Button, Table, TableColumn, Row, Col, Message} from 'element-ui';
 
@@ -540,7 +539,6 @@
                             sessFun.messageFun('warning', '媒体资源信息为空!')
                         } else {
                             let resData = res.data.data
-                            // let cityArea = areaToText_new.toTextCityArea(resData.rID)
                             this.resData = {
                                 resID: this.resID,
                                 cType: '',
@@ -610,13 +608,11 @@
                             }
                             console.log('this.resData', this.resData)
                         }
-                    } else if (res.data.SysCode == 100302) {
-                        sessFun.loginTimeout()
                     } else {
                         sessFun.messageFun('warning', '资源详情获取异常!')
                     }
                 }).catch(err => {
-                    console.log(err);
+                    sessFun.messageFun('warning', '接口异常!')
                 });
                 let mParams = {
                     "uid": this.sessionData.uID,
@@ -644,8 +640,6 @@
                             }
                         }
                         this.mediaLoading = false
-                    } else if (res.data.SysCode == 100302) {
-                        sessFun.loginTimeout()
                     } else {
                         sessFun.messageFun('warning', '媒体详情获取异常!')
                         this.mediaLoading = false
@@ -742,34 +736,31 @@
                         resID: this.resID
                     }
                     api.getApi(this.apiVar.Advertisement + '/GetConnRowInfo', params).then(res => {
-                        if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                            sessFun.loginTimeout()
-                        } else {
-                            this.ConnectDoorDialogVisible = true
-                            this.isUpdataConnectAD = false
-                            console.log('获取该资源的连排门信息', res)
-                            let resArr = res.data
-                            // 初始化连排门-最少一个
-                            let connectAdBox = []
-                            for (let Rkey of resArr) {
-                                let mIDList = Rkey.mIDs.split(',')
-                                connectAdBox.push({
-                                    connID: Rkey.connID,
-                                    selectMIDs: mIDList,
-                                    options: JSON.parse(JSON.stringify(this.connectOptions)),
-                                    index: connectAdBox.length
-                                })
-                            }
+                        this.ConnectDoorDialogVisible = true
+                        this.isUpdataConnectAD = false
+                        console.log('获取该资源的连排门信息', res)
+                        let resArr = res.data
+                        // 初始化连排门-最少一个
+                        let connectAdBox = []
+                        for (let Rkey of resArr) {
+                            let mIDList = Rkey.mIDs.split(',')
                             connectAdBox.push({
-                                connID: '',
-                                selectMIDs: [],
+                                connID: Rkey.connID,
+                                selectMIDs: mIDList,
                                 options: JSON.parse(JSON.stringify(this.connectOptions)),
                                 index: connectAdBox.length
                             })
-                            this.connectAdArr = connectAdBox
-                            this.changeMedia()
-                            console.log('this.connectAdArr', this.connectAdArr)
                         }
+                        connectAdBox.push({
+                            connID: '',
+                            selectMIDs: [],
+                            options: JSON.parse(JSON.stringify(this.connectOptions)),
+                            index: connectAdBox.length
+                        })
+                        this.connectAdArr = connectAdBox
+                        this.changeMedia()
+                        console.log('this.connectAdArr', this.connectAdArr)
+
                     })
                 } else {
                     this.ConnectDoorDialogVisible = true

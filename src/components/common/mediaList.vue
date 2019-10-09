@@ -187,24 +187,24 @@
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item command="0"
                                             @click.native.prevent="changeState('0',scope.$index, scope.row)"
-                                            :disabled="scope.row.mState == '0' || scope.row.mState === 4">禁用</el-dropdown-item>
+                                            :disabled="scope.row.mState == 0 || scope.row.mState === 4">禁用</el-dropdown-item>
                                         <el-dropdown-item command="1"
                                             @click.native.prevent="changeState('1',scope.$index, scope.row)"
-                                            :disabled="scope.row.mState === 4">
+                                            :disabled="scope.row.mState == 4">
                                             正常
                                         </el-dropdown-item>
                                         <el-dropdown-item command="2"
                                             @click.native.prevent="changeState('2',scope.$index, scope.row)"
-                                            :disabled="scope.row.mState === '2' || scope.row.mState === 4">待安装</el-dropdown-item>
+                                            :disabled="scope.row.mState == 2 || scope.row.mState === 4">待安装</el-dropdown-item>
                                         <el-dropdown-item command="3"
                                             @click.native.prevent="changeState('3',scope.$index, scope.row)"
-                                            :disabled="scope.row.mState === '3' || scope.row.mState === 4">待维修</el-dropdown-item>
+                                            :disabled="scope.row.mState == 3 || scope.row.mState === 4">待维修</el-dropdown-item>
                                         <el-dropdown-item command="5"
                                                           @click.native.prevent="changeState('5',scope.$index, scope.row)"
-                                                          :disabled="scope.row.mState === '5'">删除</el-dropdown-item>
-<!--                                        <el-dropdown-item command="4"-->
-<!--                                                          @click.native.prevent="changeState('4',scope.$index, scope.row)"-->
-<!--                                                          :disabled="scope.row.mState === 4">拆除</el-dropdown-item>-->
+                                                          :disabled="scope.row.mState == 5">删除</el-dropdown-item>
+                                        <el-dropdown-item command="4"
+                                                          @click.native.prevent="changeState('4',scope.$index, scope.row)"
+                                                          :disabled="scope.row.mState == 4">拆除</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </el-dropdown>
                             </template>
@@ -888,13 +888,11 @@
                     // 禁用转正常
                     this.isDisabled = false
                     this.mStateDialogVisible = true
-                }
-                // else if (selectState === '3') {
-                //     // 待维修
-                //     this.isShowTag = true
-                //     this.repairVisible = true
-                // }
-                else if(selectState === '4') {
+                } else if (selectState === '3') {
+                    // 待维修
+                    this.isShowTag = true
+                    this.repairVisible = true
+                } else if(selectState === '4') {
                     // 拆除
                     this.dismantleInfo = ''
                     this.isShowTag = true
@@ -1141,6 +1139,10 @@
                 api.postApi_new(this.apiVar.Media, params).then(res=>{
                     if (res.data.SysCode === 200200) {
                         sessFun.messageFun('success', '成功更改状态')
+                        this.rowData.mState = '3'
+                        this.rowData.asState.A = '3'
+                        this.rowData.asState.B = '3'
+                        this.repairVisible = false
                     } else {
                         sessFun.messageFun('warning', res.data.MSG)
                     }

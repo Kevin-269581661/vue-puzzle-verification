@@ -21,7 +21,8 @@
             </el-col>
             <el-col :span="12" class="el_col_upload_btn">
                 <el-button v-if="isShowBtn" type="primary" @click="uploadFun()" :disabled="!isSearch">上传图片</el-button>
-                <!--<el-button plain size="small" @click="photoDownLoad()">一键导出</el-button>-->
+                <el-button plain size="small" @click="photoDownLoad()" :loading="activeDownload">
+                    {{activeDownload ? '导出中' : '一键导出'}}</el-button>
             </el-col>
         </el-row>
         <div>
@@ -79,7 +80,7 @@
             title="上传图片"
             class="upload_dialog"
             width="324px">
-            <div class="upload_dialog_body">
+            <div class="upload_dialog_body" :class="uploadUrl.length >= 6 ? 'hide_picture_card' : ''">
                 <p class="upload_p">
                     <el-cascader :options="bussiness" size="small" class="plan-select" v-model="industryImg"
                                  change-on-select
@@ -92,25 +93,16 @@
                         :action="doUpload"
                         list-type="picture-card"
                         :file-list="uploadImg"
-                        :limit = '1'
-                        :on-success="downSuccess"
-                        :on-preview="pictureCardPreview"
-                        :before-upload="beforeUpload"
-                        :on-remove="removeImg">
-                        <i class="el-icon-plus"></i>
-                    </el-upload>
-                <!--    <el-upload
-                        :action="doUpload"
-                        list-type="picture-card"
-                        :file-list="uploadImg"
-                        :limit = '3'
+                        :limit='6'
                         :multiple="true"
                         :on-success="downSuccess"
                         :on-preview="pictureCardPreview"
                         :before-upload="beforeUpload"
+                        :on-error="errorUpload"
+                        :on-exceed="exceedUpload"
                         :on-remove="removeImg">
-                        <i class="el-icon-plus" v-show="uploadUrl.length < 3 "></i>
-                    </el-upload>-->
+                        <i class="el-icon-plus" v-show="uploadUrl.length < 6 "></i>
+                    </el-upload>
                 </p>
             </div>
             <span slot="footer" class="dialog-footer">
@@ -153,6 +145,7 @@
     import {Image} from 'element-ui';
     import industryToText from "../../../commonFun/industryToText.js";
     import sessFun from "../../../commonFun/sessFun"
+    import timeFormat from "../../../commonFun/timeFormat"
     import api from "../../../api/api"
     export default {
         name: "orderPhoto",
@@ -183,7 +176,7 @@
                 dialogVisible: false,
                 dialogImageUrl: '',
                 // 上传图片
-                doUpload: this.apiVar.qadnUrl + '/advertisement/image/upload',     //http://192.168.1.239/
+                doUpload: this.apiVar.qadnUrl + '/advertisement/image/upload',
                 UploadVisible: false,
                 uploadUrl: '',
                 // 上传图片的信息
@@ -197,7 +190,12 @@
                     name:'',
                     industry: [],
                     id:''
-                }
+                },
+                // 一键导出防连续点击
+                isActiveImport: false,
+                // 是否下载中
+                activeDownload: false,
+
             }
         },
         mounted(){
@@ -245,19 +243,19 @@
                 })
             },
             //
-            setImgList(data){
-                if(!data || data.length <= 0){
+            setImgList(data) {
+                if (!data || data.length <= 0) {
                     this.showPic = 1
                     return
-                }else{
+                } else {
                     let tempList = []
-                    for(let key of data){
+                    for (let key of data) {
                         tempList.push({
                             id: key.id,
                             createTime: key.createTime,
                             url: key.picUrl,
                             userName: key.userName,
-                            industry: [key.topIndustryId,key.industryId],
+                            industry: [key.topIndustryId, key.industryId],
                             industryName: key.industryName,
                             topIndustryName: key.topIndustryName,
                             userId: key.userId,
@@ -289,6 +287,7 @@
             // 图片上传
             uploadFun(){
                 this.UploadVisible = true
+                this.uploadUrl = []
             },
             // 图片上传时的行业选择
             UploadIndustryChange(val){
@@ -297,28 +296,47 @@
             // 资源图片上传前验证格式和大小
             beforeUpload(file) {
                 const isJPG = file.type === "image/jpeg" || file.type === "image/png";
-                const isLt10M = file.size / 1024 / 1024 < 10;
+                const isLt10M = file.size / 1024 / 1024 < 5;
 
                 if (!isJPG) {
                     this.$message.error('上传图片只能是 JPG 或 PNG 格式!');
                 }
                 if (!isLt10M) {
-                    this.$message.error('上传图片大小不能超过 10MB!');
+                    this.$message.error('上传图片大小不能超过 5MB!');
                 }
                 return isJPG && isLt10M;
             },
-            // 资源图片上传成功
+            // 上传失败
+            errorUpload(err,file, fileList) {
+                console.log('上传失败',err,file, fileList)
+                sessFun.messageFun('waring','上传失败！')
+            },
+            // 超出文件个数
+            exceedUpload(file, fileList) {
+                console.log('超出文件个数',file, fileList)
+                sessFun.messageFun('waring','最多可上传6张！')
+            },
+
+            // 行业图片上传成功
             downSuccess(res) {
                 console.log('上传行业图片', res)
                 if(res.SysCode === 200200){
-                    this.uploadUrl = res.data
+                    for(let key of res.data) {
+                        this.uploadUrl.push(key)
+                    }
+                    // this.uploadUrl = res.data
                     console.log('this.uploadUrl',this.uploadUrl)
                 }
             },
-            // 删除原资源图片，进行重新选择
+            // 删除行业图片
             removeImg(file, fileList) {
                 console.log('删除或修改了资源图片', file, fileList)
-                this.uploadUrl = []
+                let arr = []
+                for(let key of fileList){
+                    arr.push(key.response.data[0])
+                }
+                this.uploadUrl = arr
+                console.log('删除行业图片',this.uploadUrl)
             },
             // 资源图片放大
             pictureCardPreview(file) {
@@ -336,11 +354,15 @@
                     this.messageFun('warning','请上传图片!')
                     return
                 }
+                let picUrls = []
+                for (let key of this.uploadUrl) {
+                    picUrls.push(key)
+                }
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                     industryId: this.industryImg[1],
-                    picUrls: this.uploadUrl[0]
+                    picUrls: picUrls.join(',')
                 }
                 console.log('params',params)
                 api.postApi(this.apiVar.Advertisement + '/image/save',params).then(res=>{
@@ -418,7 +440,7 @@
                     api.postApi(this.apiVar.Advertisement + '/image/updateIndustry',params).then(res=>{
                         console.log('修改图片关联行业res',res)
                         if (res.data.SysCode === 200200) {
-                            this.messageFun('success', '修改成功')
+                            sessFun.messageFun('success', '修改成功')
                             this.editPhotoDialogVisible = false
                             let industryNames = this.getIndustryNamebyId(this.editPhotoInfo.industry)
                             console.log('industryNames',industryNames)
@@ -431,7 +453,7 @@
                                 }
                             }
                         } else {
-                            this.messageFun('warning', res.data.MSG)
+                            sessFun.messageFun('warning', res.data.MSG)
                         }
                     })
                 }
@@ -453,36 +475,105 @@
                 }
                 return industryNames
             },
+            // 一键导出
+            photoDownLoad() {
+                this.activeDownload = true
+                if (!this.isActiveImport) {
+                    this.isActiveImport = true
+                    let timer = setTimeout(() => {
+                        let arr = []
+                        for (let key of this.imgList) {
+                            arr.push({
+                                name: key.name || '',
+                                picUrl: key.url,
+                            })
+                        }
+                        console.log('一键导出arr', arr)
+                        let params = arr
+                        api.postApi_json(this.apiVar.image + '/submitTask?uid='
+                            + this.sessionData.uID + '&token=' + this.sessionData.token, params).then(res => {
+                            console.log('一键导出图片res', res)
+                            if (res.data.SysCode === 200200) {
+                                this.getImportProgress(res.data.data)
+                            } else {
+                                sessFun.messageFun('warning', res.data.MSG)
+                                this.activeDownload = false
+                            }
+                        })
+                        this.isActiveImport = false
+                        clearTimeout(timer)
+                    }, 500)
+                } else {
+
+                }
+            },
+            // 一键导出图片进度查询
+            getImportProgress(taskId) {
+                let timer = setInterval(()=>{
+                    let params = {
+                        uid: this.sessionData.uID,
+                        token: this.sessionData.token,
+                        taskId: taskId,
+                    }
+                    api.getApi(this.apiVar.image + '/getProgressInfo', params).then(res => {
+                        console.log('一键导出进度', res)
+                        if (res.data.SysCode === 200200) {
+                            if(res.data.data >= 1) {
+                                this.downloadImgZip(taskId)
+                                clearInterval(timer)
+                            }
+                        } else {
+                            sessFun.messageFun('warning', res.data.MSG)
+                            this.activeDownload = false
+                            clearInterval(timer)
+                        }
+                    })
+                },2000)
+            },
+            // 进度100%,下载压缩包
+            downloadImgZip(taskId) {
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    taskId: taskId,
+                }
+                api.getApi_file(this.apiVar.image + '/downloadZip', params).then(res => {
+                    console.log('下载压缩包', res) // data
+                    let time = timeFormat.toDateTime(new Date(), '').split(' ')
+                    let timeString = time[0] + time[1].split(':').join('')
+                    let blob = new Blob([res.data], {type: 'application/ms-download;charset=utf-8'});
+                    let downloadElement = document.createElement('a');
+                    let href = window.URL.createObjectURL(blob);    //创建下载的链接
+                    downloadElement.href = href;
+                    downloadElement.download = '行业图片' + timeString + '.zip'//res.headers['Content-Disposition'].split('=')[1]; //下载后文件名
+                    document.body.appendChild(downloadElement);
+                    downloadElement.click();                        //点击下载
+                    document.body.removeChild(downloadElement);     //下载完成移除元素
+                    window.URL.revokeObjectURL(href);               //释放掉blob对象
+                    sessFun.messageFun('success', '下载成功')
+                    this.activeDownload = false
+                }).catch(err => {
+                    sessFun.messageFun('warning', res.data.MSG)
+                    this.activeDownload = false
+                })
+            },
             // 查看图片
             handlePictureCardPreview(item) {
-                console.log('imgInfo--------', item);
+                // console.log('imgInfo--------', item);
                 this.dialogImageUrl = item.url;
                 this.dialogVisible = true;
             },
             // 分页
             changePage(val){
-                console.log('当前页',val)
+                // console.log('当前页',val)
                 this.pageData.pageNum = val
                 this.getIndustryImgList()
             },
             // 每页的条数
             changeSize(val){
-                console.log('每页的条数',val)
+                // console.log('每页的条数',val)
                 this.pageData.pageSize = val
                 this.getIndustryImgList()
-                // this.setFixedTableHieght()
-            },
-            // 操作提示统一方法
-            messageFun(mesType,mes){
-                this.$message({
-                    message: mes,
-                    type: mesType,
-                    showClose: true,
-                })
-            },
-            loginTimeout(){
-                this.messageFun('warning',"登录超时,请重新登录");
-                this.$router.push("/login");
             },
         }
     }
@@ -697,19 +788,21 @@
         width: 100%;
     }
 
-    .upload_img{
-        height: 104px;
-        overflow: hidden;
-     /*   height: 225px;
+    .upload_img {
+        height: 225px;
         overflow-y: auto;
         min-height: 104px;
-        overflow-x: hidden;*/
+        overflow-x: hidden;
     }
 
     .upload_dialog_body /deep/ .el-upload--picture-card{
         width: 100%;
         height: 104px;
         line-height: 104px;
+    }
+
+    .upload_dialog_body.hide_picture_card /deep/ .el-upload--picture-card{
+        display: none;
     }
 
     /*上传成功*/
@@ -745,5 +838,17 @@
     /*编辑弹出框*/
     .edit_photo_ul li:nth-child(1){
         margin-bottom: 12px;
+    }
+
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 8px;
+        background: #FAFAFA;
+    }
+
+    ::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        background: #C1C1C1;
+        border-radius: 4px;
     }
 </style>

@@ -61,7 +61,7 @@
                                             @select="changeResName"
                                             @blur="blurFun('resname')">
                                         </el-autocomplete>
-                                       <el-button size="small" type="primary" @click="getResBasicData" class="get_resName_btn">检索</el-button>
+                                        <el-button size="small" type="primary" @click="getResBasicData" class="get_resName_btn">检索</el-button>
                                     </el-form-item>
                                     <el-tooltip class="item" effect="dark" placement="bottom-end" v-show="isResError">
                                         <div slot="content">
@@ -86,14 +86,14 @@
                             <el-row :gutter="76" class="from_row">
                                 <el-col :span="6">
                                     <el-form-item label="资源地址" prop="resaddr">
-                                            <el-autocomplete
-                                                v-model="recForm.resaddr"
-                                                :fetch-suggestions="querySearchAsync"
-                                                placeholder=""
-                                                @blur="blurFun('resaddr')"
-                                                style="width: 100%"
-                                                class="el-from-item-address">
-                                            </el-autocomplete>
+                                        <el-autocomplete
+                                            v-model="recForm.resaddr"
+                                            :fetch-suggestions="querySearchAsync"
+                                            placeholder=""
+                                            @blur="blurFun('resaddr')"
+                                            style="width: 100%"
+                                            class="el-from-item-address">
+                                        </el-autocomplete>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="6">
@@ -107,16 +107,16 @@
                                         地图获取
                                     </div>
                                     <el-form-item label="经纬度" required class="lng_lat_form_item">
-                                            <div class="form_item_box_son">
-                                                <el-form-item prop="lat" class="">
-                                                    <el-input v-model.trim="recForm.lat" placeholder=""></el-input>
-                                                </el-form-item>
-                                            </div>
-                                            <div class="form_item_box_son">
-                                                <el-form-item prop="lng">
-                                                    <el-input v-model.trim="recForm.lng" placeholder=""></el-input>
-                                                </el-form-item>
-                                            </div>
+                                        <div class="form_item_box_son">
+                                            <el-form-item prop="lat" class="">
+                                                <el-input v-model.trim="recForm.lat" placeholder=""></el-input>
+                                            </el-form-item>
+                                        </div>
+                                        <div class="form_item_box_son">
+                                            <el-form-item prop="lng">
+                                                <el-input v-model.trim="recForm.lng" placeholder=""></el-input>
+                                            </el-form-item>
+                                        </div>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="6">
@@ -262,7 +262,7 @@
                                 </el-col>
                                 <el-col :span="6">
                                     <el-form-item label="物业费（元/m²/月）" prop="managementFee">
-                                            <el-input v-model="recForm.managementFee" placeholder=""></el-input>
+                                        <el-input v-model="recForm.managementFee" placeholder=""></el-input>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="6">
@@ -344,19 +344,21 @@
                                             <el-col :span="6">
                                                 <el-form-item label="可投面数" prop="usableNum">
                                                     <el-input-number v-model.number="item.mediaForm.usableNum" :min="1" :max="26"
-                                                                         controls-position="right" :disabled="(PathHaveEdit && key <= editMediaLength - 1)">
+                                                                     controls-position="right" :disabled="(PathHaveEdit && key <= editMediaLength - 1)">
                                                     </el-input-number>
                                                 </el-form-item>
                                             </el-col>
                                             <el-col :span="6">
                                                 <el-form-item label="媒体状态" prop="mstate">
                                                     <el-select v-model="item.mediaForm.mstate" placeholder="请选择媒体状态"
+                                                               :disabled="item.mediaForm.mstate.includes('4') && (key + 1) <= editMediaLength && PathHaveEdit"
                                                                @blur="adDoorBlur('mstate',key)"
                                                                @change="selectMstate(item.mediaForm)">
                                                         <el-option label="禁用" :value="'0' + key"></el-option>
                                                         <el-option label="正常" :value="'1' + key"></el-option>
                                                         <el-option label="待安装" :value="'2' + key"></el-option>
                                                         <el-option label="待维修" :value="'3' + key"></el-option>
+                                                        <el-option label="已拆除" :value="'4' + key"></el-option>
                                                     </el-select>
                                                 </el-form-item>
                                             </el-col>
@@ -511,8 +513,8 @@
                                             <el-col :span="6" class="el_col_box">
                                                 <el-form-item label="资产编号" prop="assetId" ref="ResAssetId"
                                                               :rules="item.roadGateForm.assetIdBolean ? assetIdRules: mediaRules.assetId">
-                                                        <el-input v-model.trim="item.roadGateForm.assetId" placeholder="例:0034FASF342-X21"
-                                                                  :disabled="item.roadGateForm.assetIdBolean"></el-input>
+                                                    <el-input v-model.trim="item.roadGateForm.assetId" placeholder="例:0034FASF342-X21"
+                                                              :disabled="item.roadGateForm.assetIdBolean"></el-input>
                                                 </el-form-item>
                                                 <el-tooltip class="item" effect="dark" placement="bottom-end" v-show="item.isAssetIdError">
                                                     <div slot="content">
@@ -527,20 +529,22 @@
                                             </el-col>
                                             <el-col :span="6">
                                                 <el-form-item label="可投面数" prop="usableNum">
-                                                        <el-input-number v-model.number="item.roadGateForm.usableNum" :min="1" :max="3" :disabled="true"
-                                                                         controls-position="right">
-                                                        </el-input-number>
+                                                    <el-input-number v-model.number="item.roadGateForm.usableNum" :min="1" :max="3" :disabled="true"
+                                                                     controls-position="right">
+                                                    </el-input-number>
                                                 </el-form-item>
                                             </el-col>
                                             <el-col :span="6">
                                                 <el-form-item label="媒体状态" prop="mstate">
                                                     <el-select v-model="item.roadGateForm.mstate" placeholder="请选择媒体状态"
+                                                               :disabled="item.roadGateForm.mstate.includes('4') && (key + 1) <= editRoadGateLength && PathHaveEdit"
                                                                @blur="roadGateBlur('mstate',key)"
                                                                @change="selectMstate(item.roadGateForm)">
                                                         <el-option label="禁用" :value="'0' + key"></el-option>
                                                         <el-option label="正常" :value="'1' + key"></el-option>
                                                         <el-option label="待安装" :value="'2' + key"></el-option>
                                                         <el-option label="待维修" :value="'3' + key"></el-option>
+                                                        <el-option label="已拆除" :value="'4' + key"></el-option>
                                                     </el-select>
                                                 </el-form-item>
                                             </el-col>
@@ -562,47 +566,47 @@
                                             </el-col>
                                             <el-col :span="6">
                                                 <el-form-item label="画面尺寸" required>
-                                                        <div class="form_item_box_son">
-                                                            <el-form-item prop="visualW">
-                                                                <div class="mm">
-                                                                    <el-input v-model="item.roadGateForm.visualW"
-                                                                              placeholder="宽度"></el-input>
-                                                                    <span>mm</span>
-                                                                </div>
-                                                            </el-form-item>
-                                                        </div>
-                                                        <div class="form_item_box_son">
-                                                            <el-form-item prop="visualH">
-                                                                <div class="mm">
-                                                                    <el-input v-model="item.roadGateForm.visualH"
-                                                                              placeholder="高度">
-                                                                    </el-input>
-                                                                    <span>mm</span>
-                                                                </div>
-                                                            </el-form-item>
-                                                        </div>
+                                                    <div class="form_item_box_son">
+                                                        <el-form-item prop="visualW">
+                                                            <div class="mm">
+                                                                <el-input v-model="item.roadGateForm.visualW"
+                                                                          placeholder="宽度"></el-input>
+                                                                <span>mm</span>
+                                                            </div>
+                                                        </el-form-item>
+                                                    </div>
+                                                    <div class="form_item_box_son">
+                                                        <el-form-item prop="visualH">
+                                                            <div class="mm">
+                                                                <el-input v-model="item.roadGateForm.visualH"
+                                                                          placeholder="高度">
+                                                                </el-input>
+                                                                <span>mm</span>
+                                                            </div>
+                                                        </el-form-item>
+                                                    </div>
                                                 </el-form-item>
                                             </el-col>
                                             <el-col :span="6">
                                                 <el-form-item label="灯箱尺寸" required>
-                                                        <div class="form_item_box_son">
-                                                            <el-form-item prop="LBSizeW">
-                                                                <div class="mm">
-                                                                    <el-input v-model="item.roadGateForm.LBSizeW" placeholder="宽度"></el-input>
-                                                                    <span>mm</span>
-                                                                </div>
-                                                            </el-form-item>
-                                                        </div>
-                                                        <div class="form_item_box_son">
-                                                            <el-form-item prop="LBSizeH">
-                                                                <div class="mm">
-                                                                    <el-input v-model="item.roadGateForm.LBSizeH"
-                                                                              placeholder="高度">
-                                                                    </el-input>
-                                                                    <span>mm</span>
-                                                                </div>
-                                                            </el-form-item>
-                                                        </div>
+                                                    <div class="form_item_box_son">
+                                                        <el-form-item prop="LBSizeW">
+                                                            <div class="mm">
+                                                                <el-input v-model="item.roadGateForm.LBSizeW" placeholder="宽度"></el-input>
+                                                                <span>mm</span>
+                                                            </div>
+                                                        </el-form-item>
+                                                    </div>
+                                                    <div class="form_item_box_son">
+                                                        <el-form-item prop="LBSizeH">
+                                                            <div class="mm">
+                                                                <el-input v-model="item.roadGateForm.LBSizeH"
+                                                                          placeholder="高度">
+                                                                </el-input>
+                                                                <span>mm</span>
+                                                            </div>
+                                                        </el-form-item>
+                                                    </div>
                                                 </el-form-item>
                                             </el-col>
                                         </el-row>
@@ -681,6 +685,31 @@
                 <el-button size="small" @click="mapVisible = false">取 消</el-button>
                 <el-button size="small" type="primary" @click="addLatLngByBmap()">确定</el-button>
             </span>
+        </el-dialog>
+        <!--媒体拆除-->
+        <el-dialog
+            :visible.sync="dismantleVisible"
+            :close-on-click-modal="false"
+            :show-close="false"
+            width="480px"
+            custom-class="mStatueDialog">
+            <h3 slot="title" class="dismantle_title">
+                <i class="el-icon-question"></i>
+                媒体拆除
+            </h3>
+            <div>
+                <p style="line-height: 28px">被拆除的媒体将不可重新被启用</p>
+                <el-input type="textarea" v-model.trim="dismantleInfo" placeholder="请填写拆除记录，选填"></el-input>
+                <p class="push_map_box_p" v-show="isShowTag">
+                    <i class="el-icon-warning" style="color:#FAAD14"></i>
+                    在【维护管理】页面，可查阅每个拆除的媒体记录
+                    <i class="el-icon-close" @click="isShowTag = false"></i>
+                </p>
+            </div>
+            <div slot="footer" class="dialog-footer">
+                <el-button size="mini" @click="canceDismantle">取 消</el-button>
+                <el-button size="mini" type="primary" style="margin-left: 35px" @click="dismantleMedia">确 定</el-button>
+            </div>
         </el-dialog>
     </div>
 </template>
@@ -1227,6 +1256,15 @@
                 searchResData:{province:'',city:'',district:'',title:'',lat:'',lng:''},
                 searchResName:'',               // 搜索的社区名
                 resMap:'',                      // 百度地图
+                // 拆除
+                dismantleVisible: false,
+                // 拆除信息
+                dismantleInfo:'',
+                // 拆除提示标签
+                isShowTag: true,
+                // 修改媒体状态时的行数据
+                rowData: {},
+                changeBeforMediaState: ''
             };
         },
         mounted: function () {
@@ -1886,41 +1924,36 @@
             },
             // 选择媒体状态为待安装时修改资源编号的验证为非必填
             selectMstate(val) {
-                console.log('选择了', val)
+                console.log('选择了', val,this.arrMediaStatue,this.editRoadGateStatue)
                 let valArr = val.mstate.split('')
                 console.log('valArr', valArr)
                 let i = Number(valArr[1])
-                if(this.PathHaveEdit){
-                    if(val.mediaType === '广告门' && i <= this.editMediaLength - 1){
-                        this.arrMedia[i].mediaForm.assetIdBolean = false
-                        this.editMState(val.mid,valArr[0])
-                    }else if(val.mediaType === '道闸' && i <= this.editRoadGateLength - 1){
-                        console.log('判断记录编辑道闸媒体的状态')
-                        if (this.editRoadGateStatue[i] == 2 || this.editRoadGateStatue[i] === '待安装') {
-                            this.roadGateMedia[i].roadGateForm.assetIdBolean = true
-                            sessFun.messageFun('warning','请在亲邻助手中完成安装任务')
-                            this.roadGateMedia[i].roadGateForm.mstate = '2' + i
-                        } else if (valArr[0] === '2') {
-                            this.roadGateMedia[i].roadGateForm.assetIdBolean = false
-                            sessFun.messageFun('warning','请按正常流程走，当前媒体已安装！')
-                            if (this.editRoadGateStatue[i] === '禁用' || this.editRoadGateStatue[i] == 0) {
-                                this.roadGateMedia[i].roadGateForm.mstate = '0' + i
-                            } else if (this.editRoadGateStatue[i] === '正常' || this.editRoadGateStatue[i] == 1) {
-                                this.roadGateMedia[i].roadGateForm.mstate = '1' + i
-                            } else if (this.editRoadGateStatue[i] === '待维修' || this.editRoadGateStatue[i] == 3) {
-                                this.roadGateMedia[i].roadGateForm.mstate = '3' + i
-                            }
+                if (this.PathHaveEdit) {
+                    if (val.mediaType === '广告门' && i <= this.editMediaLength - 1) {
+                        if (valArr[0] === '4') {
+                            // 拆除媒体 this.editRoadGateStatue
+                            this.dismantleVisible = true
+                            this.rowData = val
+                            this.changeBeforMediaState = val.mstate
+                        } else {
+                            this.arrMedia[i].mediaForm.assetIdBolean = false
+                            this.editMState(val.mid, valArr[0])
+                        }
+                    } else if (val.mediaType === '道闸' && i <= this.editRoadGateLength - 1) {
+                        if (valArr[0] === '4') {
+                            // 拆除媒体
+                            this.dismantleVisible = true
                         } else {
                             this.roadGateMedia[i].roadGateForm.assetIdBolean = false
-                            this.editMState(val.mid,valArr,i)
+                            this.editMState(val.mid, valArr, i)
                         }
-                    }else{
-                        this.newMediaChangeMstatus(val.mediaType,valArr,i)
+                    } else {
+                        this.newMediaChangeMstatus(val.mediaType, valArr, i)
                     }
-                }else{
-                    this.newMediaChangeMstatus(val.mediaType,valArr,i)
+                } else {
+                    this.newMediaChangeMstatus(val.mediaType, valArr, i)
                 }
-                console.log('this.$refs',this.$refs['ResAssetId'])
+                console.log('this.$refs', this.$refs['ResAssetId'])
                 this.$refs['ResAssetId'][0].clearValidate() // 清除资产编号的验证
             },
             // 新建媒体时的媒体状态或编辑时新增媒体
@@ -1955,6 +1988,46 @@
                         }
                     }
                 }
+            },
+            // 拆除媒体
+            dismantleMedia() {
+                if (!this.dismantleInfo) {
+                    sessFun.messageFun('warning', '请填写拆除备注信息!')
+                    return
+                }
+                let params = {
+                    "uid": this.sessionData.uID,
+                    "token": this.sessionData.token,
+                    "service": "AddDismantleRecord",
+                    "data": {
+                        "mID": this.rowData.mid,
+                        "remark": this.dismantleInfo,
+                        "resName": this.recForm.resname,
+                        "rId": this.recForm.region
+                    }
+                }
+                console.log('拆除媒体params',params)
+                api.postApi_new(this.apiVar.Media, params).then(res=>{
+                    if (res.data.SysCode === 200200) {
+                        this.dismantleVisible = false
+                        sessFun.messageFun('success', '拆除成功!')
+                    } else {
+                        sessFun.messageFun('warning', res.data.MSG)
+                    }
+                })
+            },
+            // 取消拆除
+            canceDismantle() {
+                let rowData = this.rowData
+                console.log('rowData',rowData)
+                let mStateArr = rowData.mstate.split('')
+                let index = Number(mStateArr[1])
+                if(rowData.mediaType === '广告门') {
+                    rowData.mstate = this.arrMediaStatue[index] + mStateArr[1]
+                } else if (rowData.mediaType === '道闸') {
+                    rowData.mstate = this.editRoadGateStatue[index] + mStateArr[1]
+                }
+                this.dismantleVisible = false
             },
             //添加资源媒体
             createRes() {
@@ -3435,5 +3508,48 @@
 
     /deep/ .el-input-number .el-input__inner{
         text-align: left !important;
+    }
+
+    /*拆除*/
+    /deep/ .mStatueDialog{
+        width: 285px;
+    }
+
+    /deep/ .mStatueDialog h4{
+        margin: 12px 0;
+    }
+
+    /deep/ .mStatueDialog .el-dialog__body{
+        padding: 0 20px 10px;
+    }
+
+    .dismantle_title{
+        font-size: 16px;
+        color: #333;
+        font-weight: 600;
+    }
+
+    .dismantle_title .el-icon-question{
+        font-size: 21px;
+        color: #FAAD14;
+    }
+
+    .push_map_box_p{
+        height:32px;
+        background:rgba(255,251,230,1);
+        border-radius:4px;
+        border:1px solid rgba(255,229,143,1);
+        line-height: 32px;
+        padding:  0 16px;
+        margin-top: 16px;
+        position: relative;
+    }
+
+    .push_map_box_p /deep/ .el-icon-close{
+        cursor: pointer;
+        margin-left: 24px;
+        position: absolute;
+        top: 9px;
+        right: 8px;
     }
 </style>

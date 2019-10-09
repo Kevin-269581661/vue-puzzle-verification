@@ -70,7 +70,7 @@
             return {
                 currPage: 1,
                 pageSize: 10,
-                totalSize: 50,
+                totalSize: 10,
                 searchInfo: {
                     messageType: '',
                     date: '',
@@ -114,6 +114,7 @@
                         status: 1,
                     },
                 ],
+                system:'http://192.168.1.239:8021/system/message',
             }
 
         },
@@ -159,7 +160,7 @@
             //标记已读
             read(item) {
                 let messageId = item.messageId
-                api.postApi(this.system + '/readMessage', {messageId: messageId}).then(res => {
+                api.postApi(this.apiVar.system + '/readMessage', {messageId: messageId}).then(res => {
                     if (res.data.Syscode == 200200) {
                         //操作成功
                     }
@@ -267,6 +268,9 @@
     .mess-li p {
         padding: 15px 25px;
         color: rgba(0, 0, 0, 0.65);
+    }
+    /deep/ .el-select .el-input .el-select__caret{
+        line-height: 30px;
     }
 
     @media screen and (max-width: 1420px) {

@@ -130,28 +130,33 @@
             // 是否显示亲邻
             getIsShowQinlin(){
                 let portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo'))
-                if (portraitInfo && portraitInfo.length) {
+                if(this.sessionData.uType=='SM'&&this.sessionData.rela== '直营'){
                     this.showQinlin = true;
-                } else {
-                    let params = {
-                        uid: this.sessionData.uID,
-                        token: this.sessionData.token
-                    }
-                    api.getApi(this.apiVar.portrait + '/api/v1/ascrInfo/getAscrList', params).then(res => {
-                        console.log('用户权限城市和默认小区res', res)
-                        if (res.data.SysCode === 200200) {
-                            let portraitInfo = res.data.data
-                            sessionStorage.setItem("portraitInfo", JSON.stringify(portraitInfo));
-                            if (portraitInfo.length) {
-                                this.showQinlin = true;
+                }else{
+                    if (portraitInfo && portraitInfo.length) {
+                        this.showQinlin = true;
+                    } else {
+                        let params = {
+                            uid: this.sessionData.uID,
+                            token: this.sessionData.token
+                        }
+                        api.getApi(this.apiVar.portrait + '/api/v1/ascrInfo/getAscrList', params).then(res => {
+                            console.log('用户权限城市和默认小区res', res)
+                            if (res.data.SysCode === 200200) {
+                                let portraitInfo = res.data.data
+                                sessionStorage.setItem("portraitInfo", JSON.stringify(portraitInfo));
+                                if (portraitInfo.length) {
+                                    this.showQinlin = true;
+                                } else {
+                                    this.showQinlin = false;
+                                }
                             } else {
                                 this.showQinlin = false;
                             }
-                        } else {
-                            this.showQinlin = false;
-                        }
-                    })
+                        })
+                    }
                 }
+
             },
             // 是否显示公司管理
             getIsShowCom(){

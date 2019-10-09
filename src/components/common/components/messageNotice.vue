@@ -6,10 +6,14 @@
             class="popper"
             trigger="click">
             <div>
-                <el-tabs v-model="activeName" @tab-click="handleClick">
-                    <el-tab-pane :label="'全部('+messageList.allTxt+')'" name="all"></el-tab-pane>
-                    <el-tab-pane :label="'未读('+messageList.unread+')'" name="unread"></el-tab-pane>
-                </el-tabs>
+                <!--<el-tabs v-model="activeName" @tab-click="handleClick">-->
+                    <!--<el-tab-pane :label="'全部('+messageList.allTxt+')'" name="all"></el-tab-pane>-->
+                    <!--<el-tab-pane :label="'未读('+messageList.unread+')'" name="unread"></el-tab-pane>-->
+                <!--</el-tabs>-->
+                <div class="tab-pane">
+                    <span @click="handleClick('all')" :class="activeName=='all'?'active':''">全部({{messageList.allTxt}})</span>
+                    <span @click="handleClick('unread')" :class="activeName=='unread'?'active':''">未读({{messageList.unread}})</span>
+                </div>
                 <ul class="list-wrap" ref="scrollBox">
                     <li v-for="(item,index) in messageList.list" :class="messageList.readStatus==1?'readed':''"
                         @click="read(item)">
@@ -29,7 +33,7 @@
                     消息列表
                 </div>
             </div>
-            <el-badge slot="reference" :value="200" :max="99">
+            <el-badge slot="reference" :value="messageList.unread" :max="99">
                 <i class="el-icon-bell" style="color: #fff;font-size: 20px"></i>
             </el-badge>
         </el-popover>
@@ -41,37 +45,6 @@
     import timeFormat from '../../../commonFun/timeFormat'
 
     export default {
-        // props:{
-        //     messageList: {
-        //         type: Object,
-        //         default: {
-        //             unread:1,
-        //             list:[
-        //                 {
-        //                     messageType:'media',
-        //                     title:'媒体禁用',
-        //                     messagePart1:'中信西关海北门',
-        //                     messagePart2:'已被xx禁用',
-        //                     createTime:'1569750591000'
-        //                 },
-        //                 {
-        //                     messageType:'plan',
-        //                     title:'媒体禁用',
-        //                     messagePart1:'中信西关海北门',
-        //                     messagePart2:'已被xx禁用',
-        //                     createTime:'1569750591000'
-        //                 },
-        //                 {
-        //                     messageType:'order',
-        //                     title:'媒体禁用',
-        //                     messagePart1:'中信西关海北门',
-        //                     messagePart2:'已被xx禁用',
-        //                     createTime:'1569750591000'
-        //                 }
-        //             ]
-        //         }
-        //     }
-        // },
         data() {
             return {
                 activeName:'all',
@@ -88,39 +61,10 @@
                             createTime: '1569750591000',
                             status:0,
                         },
-                        {
-                            messageType: '1',
-                            title: '媒体禁用',
-                            messagePart1: '中信西关海北门',
-                            messagePart2: '已被xx禁用',
-                            createTime: '1569750591000',
-                            status:1,
-                        },
-                        {
-                            messageType: '2',
-                            title: '媒体禁用',
-                            messagePart1: '中信西关海北门',
-                            messagePart2: '已被xx禁用',
-                            createTime: '1569750591000'
-                        },
-                        {
-                            messageType: '2',
-                            title: '媒体禁用',
-                            messagePart1: '中信西关海北门',
-                            messagePart2: '已被xx禁用',
-                            createTime: '1569750591000'
-                        },
-                        {
-                            messageType: '2',
-                            title: '媒体禁用',
-                            messagePart1: '中信西关海北门',
-                            messagePart2: '已被xx禁用',
-                            createTime: '1569750591000'
-                        },
-
                     ]
                 },
                 sessionData:'',
+                system:'http://192.168.1.239:8021/system/message',
             }
         },
         methods: {
@@ -138,8 +82,8 @@
                 })
             },
             //切换全部和已读
-            handleClick() {
-                console.log(this.activeName);
+            handleClick(type) {
+                this.activeName = type
                 this.getMessageList()
             },
             ///获取消息列表
@@ -151,16 +95,18 @@
                 if(this.activeName=='unread'){
                     info.hasRead = 0
                 }
+                // api.getApi(this.apiVar.system + '/list',info).then(res => {
                 api.getApi(this.system + '/list',info).then(res => {
-                    if (res.data.Syscode == 200200) {
-                        this.messageList.list = res.data.data
+                    if (res.data.SysCode == 200200) {
+                        this.messageList.list = res.data.data.dataList
                     }
                 })
             },
             //查询全部和未读条数
             getUnreadCount() {
+                // api.getApi(this.apiVar.system + '/unreadCount').then(res => {
                 api.getApi(this.system + '/unreadCount').then(res => {
-                    if (res.data.Syscode == 200200) {
+                    if (res.data.SysCode == 200200) {
                        this.messageList.unread = res.data.data.unreadCount
                        this.messageList.allTxt = res.data.data.hasReadCount
                     }
@@ -169,16 +115,20 @@
             //单个已读跳转
             read(item) {
                 let messageId = item.messageId
-                // api.postApi(this.system + '/readMessage', {messageId: messageId}).then(res => {
-                //     if (res.data.Syscode == 200200) {
-                //         //操作成功 跳转
-                //     }
-                // })
+
+                // api.postApi(this.apiVar.system + '/readMessage', {messageId: messageId}).then(res => {
+                api.postApi(this.system + '/readMessage', {messageId: messageId}).then(res => {
+                    if (res.data.SysCode == 200200) {
+                        //操作成功
+                        item.status = 0
+                    }
+                })
             },
             //全部已读
             readAll() {
+                // api.postApi(this.apiVar.system + '/readAllMessage').then(res => {
                 api.postApi(this.system + '/readAllMessage').then(res => {
-                    if (res.data.Syscode == 200200) {
+                    if (res.data.SysCode == 200200) {
                         //操作成功
                     } else {
                         Message.warning(res.data.MSG);
@@ -191,7 +141,10 @@
             }
         },
         mounted(){
+            this.getUnreadCount()
             this.scrollFn()
+            this.getMessageList()
+
         }
     }
 </script>
@@ -217,6 +170,7 @@
     .list-wrap{
         height: 450px;
         overflow-y: scroll;
+        padding: 0 12px;
     }
     /*!*滚动条*!*/
     .list-wrap::-webkit-scrollbar {
@@ -314,6 +268,30 @@
         text-align: center;
         color: #108EE9;
         cursor: pointer;
+        border-top: 1px solid #E8E8E8;
+        padding-top: 12px;
     }
+    .tab-pane{
+        position: relative;
+        border-bottom: 1px solid #E8E8E8;
+        font-size: 14px;
+        color: #525253;
+        display: flex;
+        justify-content: space-around;
+        padding: 0 12px;
+    }
+    .tab-pane span{
+        display: inline-block;
+        width: 80px;
+        height: 34px;
+        line-height: 34px;
+        text-align: center;
+        cursor: pointer;
+    }
+    .tab-pane span.active{
+        border-bottom: 2px solid #1890FF;
+        color: #1890ff;
+    }
+
 
 </style>

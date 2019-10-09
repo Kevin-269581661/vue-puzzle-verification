@@ -29,11 +29,16 @@
                     <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small" class="marginR">
                         <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
                     </el-select>
-                    <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch" class="marginR">搜索</el-button>
-                    <el-button plain @click="reset()" :disabled="!isReset" class="marginR">重置</el-button>
+                    <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch" class="marginR"
+                               v-qadn-mta-h5="{id: 'a006_b000_c000_d000_bt105_ck01'}">搜索</el-button>
+                    <el-button plain @click="reset()" :disabled="!isReset" class="marginR"
+                               v-qadn-mta-h5="{id: 'a006_b000_c000_d000_bt106_ck02'}">重置</el-button>
                 </div>
                 <div class="table_wrap">
-                    <el-table border :data="currentOrder" style="width: 100%" @sort-change="sortChange" v-loading="loading" element-loading-text="玩命加载中" element-loading-spinner="el-icon-loading" :default-sort="{prop: 'appTime', order: 'descending'}">
+                    <el-table border :data="currentOrder" style="width: 100%" @sort-change="sortChange" v-loading="loading"
+                              element-loading-text="玩命加载中"
+                              element-loading-spinner="el-icon-loading"
+                              :default-sort="{prop: 'appTime', order: 'descending'}">
                         <el-table-column label="订单名称" min-width="14.6%">
                             <template slot-scope="scope">
                                 <span style="color: #108ee9;cursor: pointer" @click="ToDetail(scope.row)">{{scope.row.apName}}</span>
@@ -82,9 +87,16 @@
                                         操作<i class="el-icon-arrow-down el-icon--right"></i>
                                     </span>
                                     <el-dropdown-menu slot="dropdown">
-                                        <el-dropdown-item :disabled="(scope.row.apState==0)||(scope.row.apState==5)||(role!='SM') " @click.native.prevent="finishOrder(scope.row)" class="finish">结束订单</el-dropdown-item>
+                                        <el-dropdown-item
+                                            :disabled="(scope.row.apState==0)||(scope.row.apState==5)||(role!='SM') "
+                                            @click.native.prevent="finishOrder(scope.row)" class="finish"
+                                            v-qadn-mta-h5="{id: 'a006_b000_c000_d000_bt108_ck04'}">结束订单
+                                        </el-dropdown-item>
                                         <!-- <el-dropdown-item :disabled="(role!='SM')" @click.native.prevent="applyPhoto(scope.row)" class="finish">申请画像</el-dropdown-item> -->
-                                        <el-dropdown-item :disabled="(scope.row.apState==0)||(scope.row.apState==5)||(role!='MD')" @click.native.prevent="changePoint(scope.row)" class="update">更换点位
+                                        <el-dropdown-item
+                                            :disabled="(scope.row.apState==0)||(scope.row.apState==5)||(role!='MD')"
+                                            @click.native.prevent="changePoint(scope.row)" class="update"
+                                            v-qadn-mta-h5="{id: 'a006_b000_c000_d000_bt107_ck03'}">更换点位
                                         </el-dropdown-item>
                                     </el-dropdown-menu>
                                 </el-dropdown>
@@ -439,7 +451,7 @@ export default {
             sessionStorage.setItem('change_point', 'yes');
             sessionStorage.setItem("order_apid", row.apID);
             sessionStorage.setItem('order_citylist', JSON.stringify(row.companyList));
-            this.$router.push("./orderDetail");            
+            this.$router.push("./orderDetail");
         },
         // 状态转换成文本
         stateToText(val) {

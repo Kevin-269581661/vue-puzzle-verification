@@ -20,7 +20,7 @@
                         <span>消息日期:</span>
                         <el-date-picker class="input-with-select" v-model="searchInfo.date" type="daterange"
                                         range-separator="-" format="yyyy/MM/dd" value-format="yyyy/MM/dd"
-                                        start-placeholder="巡点日期" end-placeholder="巡点日期">
+                                        start-placeholder="消息日期" end-placeholder="消息日期">
                         </el-date-picker>
                     </el-col>
                     <el-col :span="7">
@@ -36,9 +36,9 @@
                     <li class="mess-li" v-for="(item,index) in messageList" :key="index">
                         <div>
                             <h6>
-                                {{item.title}} <span :class="item.status==1?'unread':'read'">{{item.status==1?'未读':'已读'}}</span>
+                                {{item.title}} <span :class="item.status==0?'unread':'read'">{{item.status==0?'未读':'已读'}}</span>
                             </h6>
-                            <a v-if="item.status==1" href="javascript:;" @click="read(item)">标记已读</a>
+                            <a v-if="item.status==0" href="javascript:;" @click="read(item)">标记已读</a>
                         </div>
                         <p>{{item.messagePart1}}{{item.messagePart2}}</p>
 
@@ -70,7 +70,7 @@
             return {
                 currPage: 1,
                 pageSize: 10,
-                totalSize: 10,
+                totalSize: 0,
                 searchInfo: {
                     messageType: '',
                     date: '',
@@ -91,28 +91,17 @@
                     }
                 ],
                 messageList: [
-                    {
-                        "messageId": "ddddddddd",
-                        "messageType": 1,
-                        "receiveUserId": 5,
-                        "title": "媒体禁用",
-                        "messagePart1": "骏景花园-正大门",
-                        "messagePart2": "已被小仪进行禁用",
-                        "createTime": 1569752744939,
-                        "readTime": 1569752784939,
-                        status: 0,
-                    },
-                    {
-                        "messageId": "ddddddddd",
-                        "messageType": 1,
-                        "receiveUserId": 5,
-                        "title": "媒体禁用",
-                        "messagePart1": "骏景花园-正大门",
-                        "messagePart2": "已被小仪进行禁用",
-                        "createTime": 1569752744939,
-                        "readTime": 1569752784939,
-                        status: 1,
-                    },
+                    // {
+                    //     "messageId": "ddddddddd",
+                    //     "messageType": 1,
+                    //     "receiveUserId": 5,
+                    //     "title": "媒体禁用",
+                    //     "messagePart1": "骏景花园-正大门",
+                    //     "messagePart2": "已被小仪进行禁用",
+                    //     "createTime": 1569752744939,
+                    //     "readTime": 1569752784939,
+                    //     status: 0,
+                    // }
                 ],
                 system:'http://192.168.1.239:8021/system/message',
             }
@@ -136,14 +125,22 @@
                     info.endTime = new Date(this.searchInfo.date[1]).getTime()
                 }
                 console.log(info);
-                // api.getApi(this.system + '/list',info).then(res => {
-                //     if (res.data.Syscode == 200200) {
-                //         this.messageList = res.data.data
-                //     }
-                // })
+                api.getApi(this.system + '/list',info).then(res => {
+                    if (res.data.SysCode == 200200) {
+                        this.totalSize = res.data.data.totalSize
+                        this.messageList = res.data.data.dataList
+                    }
+                    console.log(this.messageList);
+                })
             },
             reset() {
-
+                let obj = {
+                    messageType: '',
+                    date: '',
+                    info: '',
+                }
+                this.searchInfo = obj
+                this.search()
             },
             // 分页
             changePage(val) {
@@ -160,15 +157,17 @@
             //标记已读
             read(item) {
                 let messageId = item.messageId
-                api.postApi(this.apiVar.system + '/readMessage', {messageId: messageId}).then(res => {
-                    if (res.data.Syscode == 200200) {
+                // api.postApi(this.apiVar.system + '/readMessage', {messageId: messageId}).then(res => {
+                api.postApi(this.system + '/readMessage', {messageId: messageId}).then(res => {
+                    if (res.data.SysCode == 200200) {
                         //操作成功
+                        item.status = 1
                     }
                 })
             },
         },
         mounted() {
-
+            this.search()
         }
     }
 </script>

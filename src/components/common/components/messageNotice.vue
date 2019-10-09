@@ -2,6 +2,7 @@
     <div class="bell-wrap">
         <el-popover
             placement="bottom"
+            v-model="showPopover"
             width="340"
             class="popper"
             trigger="click">
@@ -65,6 +66,7 @@
                 },
                 sessionData:'',
                 system:'http://192.168.1.239:8021/system/message',
+                showPopover:false,
             }
         },
         methods: {
@@ -121,6 +123,7 @@
                     if (res.data.SysCode == 200200) {
                         //操作成功
                         item.status = 1
+                        this.getUnreadCount()
                     }
                 })
             },
@@ -137,6 +140,7 @@
             },
             //跳转消息列表
             goMessageList(){
+                this.showPopover = false
                 this.$router.push('/messageList')
             }
         },

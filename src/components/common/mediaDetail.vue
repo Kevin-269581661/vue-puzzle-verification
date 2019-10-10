@@ -9,9 +9,11 @@
                 <div class="ad_mediaInfo_head">
                     <h2>{{resData.resName}}</h2>
                     <div class="ad_mediaInfo_head_btn">
-                        <el-button plain size="mini" @click="edit('add')" v-if="haveEdit">添加媒体</el-button>
-                        <el-button plain size="mini" style="color:rgba(0,0,0,0.65)" @click="showResImg" >小区全貌</el-button>
-                        <el-button type="primary" @click="edit" v-if="haveEdit" size="mini">编辑</el-button>
+                        <el-button plain size="mini" @click="edit('add')" v-if="haveEdit"
+                                   v-qadn-mta-h5="{id: 'a002_b005_c000_d000_bt027_ck03'}">添加媒体</el-button>
+                        <el-button plain size="mini" style="color:rgba(0,0,0,0.65)" @click="showResImg">小区全貌</el-button>
+                        <el-button type="primary" @click="edit" v-if="haveEdit" size="mini"
+                                   v-qadn-mta-h5="{id: 'a002_b005_c000_d000_bt025_ck03'}">编辑</el-button>
                     </div>
                 </div>
                 <div class="ad_mediaInfoPanel" v-model="resData">
@@ -189,7 +191,8 @@
                 <!--媒介载体-->
                 <div class="ad_ad">
                     <div v-if="haveEdit && activeMedia === 'first'" class="connect_door">
-                        <span class="connect_door_btn" @click="connectDoorFun">设置连排门</span>
+                        <span class="connect_door_btn" @click="connectDoorFun"
+                              v-qadn-mta-h5="{id: 'a002_b005_c000_d000_bt026_ck04'}">设置连排门</span>
                     </div>
                     <el-tabs v-model="activeMedia">
                         <el-tab-pane label="广告门" name="first">
@@ -502,6 +505,7 @@
                 this.haveEdit = false
             }
             this.getDataFun()
+            MtaH5.clickStat('a002_b005_c000_d000_bt000_sw01')
         },
         methods: {
             // 返回

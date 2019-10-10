@@ -38,7 +38,7 @@
                     <el-button icon="el-icon-arrow-right" plain class="compare" @click="toRight()" :disabled="activePainIndex == painList.length-1"></el-button>
                 </div>
                 <div class="process">
-                    <el-button type="primary" @click="editReport()">编辑报告</el-button>
+                    <el-button type="primary" @click="editReport()" v-qadn-mta-h5="{id: 'a006_b011_c013_d000_bt161_ck04'}">编辑报告</el-button>
                     <span class="process_box">
                         <el-progress :percentage="publishNumInfo.percent" :text-inside="true" :stroke-width="16"></el-progress>
                         {{ publishNumInfo.currNum }} / {{ publishNumInfo.totalNum}}
@@ -115,6 +115,7 @@
                         <el-upload class="upload_plus"
                             :key="index+'-'+pageInfo.currPage+'-1'"
                             @click.native="saveId(item)"
+                            v-qadn-mta-h5="{id: type == 1 ? 'a006_b011_c009_d000_bt129_ck05' : type == 2 ? 'a006_b011_c010_d000_bt135_ck05' : 'a006_b011_c013_d000_bt156_ck05'}"
                             :class="{disabled:uploadDisabled(item.photoList)}"
                             :action="doUpload"
                             :http-request="uploadImg"
@@ -141,10 +142,22 @@
         </div>
 
         <div class="up-report-bottom">
-            <el-button plain @click="downloadImg()" :loading="downLoading">导出图片</el-button>
-            <el-button type="primary" @click="submitUpload()">保存</el-button>
-            <el-button plain @click="showH5()">查看H5</el-button>
-            <el-button plain @click="updateReport()" :loading="updateLoading">更新报告</el-button>
+            <el-button plain @click="downloadImg()" :loading="downLoading"
+                       v-qadn-mta-h5="{id: type == 1 ? 'a006_b011_c009_d000_bt130_ck05' : type == 2 ? 'a006_b011_c010_d000_bt136_ck05' : 'a006_b011_c013_d000_bt157_ck05'}">
+                导出图片
+            </el-button>
+            <el-button type="primary" @click="submitUpload()"
+                       v-qadn-mta-h5="{id: type == 1 ? 'a006_b011_c009_d000_bt131_ck05' : type == 2 ? 'a006_b011_c010_d000_bt137_ck05' : 'a006_b011_c013_d000_bt158_ck05'}">
+                保存
+            </el-button>
+            <el-button plain @click="showH5()"
+                       v-qadn-mta-h5="{id: type == 1 ? 'a006_b011_c009_d000_bt132_ck03' : type == 2 ? 'a006_b011_c010_d000_bt138_ck03' : 'a006_b011_c013_d000_bt159_ck03'}">
+                查看H5
+            </el-button>
+            <el-button plain @click="updateReport()" :loading="updateLoading"
+                       v-qadn-mta-h5="{id: type == 1 ? 'a006_b011_c009_d000_bt133_ck03' : type == 2 ? 'a006_b011_c010_d000_bt139_ck03' : 'a006_b011_c013_d000_bt160_ck03'}">
+                更新报告
+            </el-button>
         </div>
 
         <!-- 换画弹出框 -->
@@ -240,12 +253,12 @@
                 </el-col>
                 <el-col class="flex_box imgpain_box">
                     <span>换画素材：</span>
-                    <el-upload 
-                        :action="doUpload" 
+                    <el-upload
+                        :action="doUpload"
                         list-type="picture-card"
-                        :file-list="imgUrl" 
+                        :file-list="imgUrl"
                         :before-upload="beforeUpload"
-                        :on-success="onsucess"                 
+                        :on-success="onsucess"
                         :limit='1'>
                         <span class="upload_border">
                             <i class="el-icon-plus"></i>
@@ -499,14 +512,14 @@ export default {
     methods: {
         // 改变页数
         sizeChange(pageVal) {
-            this.pageInfo.loading = true;            
+            this.pageInfo.loading = true;
             this.pageInfo.currPage = 1;
             this.pageInfo.pageSize = pageVal;
             this.getImgArr();
         },
         // 点击页数
         changePage(page) {
-            this.pageInfo.loading = true;            
+            this.pageInfo.loading = true;
             this.pageInfo.currPage = page;
             this.getImgArr();
         },
@@ -631,7 +644,7 @@ export default {
         // 上下刊报告
         searchFun(){
             this.pageInfo.paginationShow = false;
-            this.pageInfo.loading = true;            
+            this.pageInfo.loading = true;
             let info = {};
             if(this.type == 1){
                 info = this.searchFormat('SK');
@@ -720,7 +733,7 @@ export default {
                 })
                 .catch(res => {
                     console.log(res);
-                    this.pageInfo.loading = false;                    
+                    this.pageInfo.loading = false;
                 });
         },
         // 检查图片是否已收藏
@@ -822,14 +835,14 @@ export default {
                     }
                     this.imageArr = dataInfo.dataList;
                     this.checkImgStatus();
-                    
+
                     if(dataInfo.totalSize == 0){
                         // sessFun.messageFun('warning', '暂无数据');
                     }
                 }else{
                     sessFun.messageFun('warning', res.data.MSG);
                 }
-                this.pageInfo.loading = false;                
+                this.pageInfo.loading = false;
             });
         },
         // 城市区域变化
@@ -851,13 +864,15 @@ export default {
         },
         // 搜索
         search(){
-            this.pageInfo.paginationShow = false; 
-            this.pageInfo.loading = true;           
+            this.pageInfo.paginationShow = false;
+            this.pageInfo.loading = true;
             let info = this.searchPointFormat();
             this.getData(info);
             this.$nextTick(function () {
                 this.pageInfo.paginationShow = true;
             });
+            this.type == 1 ? MtaH5.clickStat('a006_b011_c009_d000_bt128_ck01')
+                : this.type == 2 ? MtaH5.clickStat('a006_b011_c010_d000_bt134_ck01') : 'a006_b011_c013_d000_bt155_ck01'
         },
         // 搜索换画列表条件
         searchPointFormat(){
@@ -892,7 +907,7 @@ export default {
             }else{
                 this.activePainIndex = this.painList.length -1;
             }
-            this.changePain(this.activePainIndex);            
+            this.changePain(this.activePainIndex);
         },
         // 点击换画名称
         changePain(index){
@@ -900,7 +915,7 @@ export default {
                 beginDate: this.painList[index].startDate,
                 endDate: this.painList[index].endDate
             };
-            this.pageInfo.currPage = 1;            
+            this.pageInfo.currPage = 1;
             this.searchInfo = {
                 ...this.searchInfo,
                 city: [],
@@ -1025,7 +1040,7 @@ export default {
                     if(!this.isHaveFun(this.shoplist, data)){
                         this.shoplist.push(data);
                     }
-                } 
+                }
             }else{
                 // 取消选中
                 if(this.isHaveFun(this.shoplist, row)){
@@ -1060,7 +1075,7 @@ export default {
                     }
                 }
             }
-            console.log(this.shoplist, 'all--shoplist');            
+            console.log(this.shoplist, 'all--shoplist');
         },
         // 判断一个对象是否已经在数组中
         isHaveFun(arr, obj){
@@ -1263,7 +1278,7 @@ export default {
         cancel() {
             this.isShowPic = false;
             this.shoplist = [];
-            this.search();            
+            this.search();
         },
         // 保存
         saveAll() {
@@ -1275,7 +1290,7 @@ export default {
                         let obj = {
                             ...data,
                             status: 1,
-                            replaceRecordId: this.painList[this.activePainIndex].id                            
+                            replaceRecordId: this.painList[this.activePainIndex].id
                         };
                         result.push(obj);
                     }
@@ -1284,7 +1299,7 @@ export default {
                     api.postApi_json(this.apiVar.replace+ '/report/saveDetailInfo', result).then(res =>{
                         console.log(res.data);
                         if(res.data.SysCode == 200200){
-                            this.isShowPic = false;                            
+                            this.isShowPic = false;
                             sessFun.messageFun('success', res.data.MSG);
                         }else{
                             sessFun.messageFun('warning', res.data.MSG);
@@ -1334,9 +1349,9 @@ export default {
                 api.postApi_json(this.apiVar.replace+ '/report/saveDetailInfo', result).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 200200){
-                        this.isShowPic = false;                        
+                        this.isShowPic = false;
                         sessFun.messageFun('success', res.data.MSG);
-                        this.search();                            
+                        this.search();
                     }else{
                         sessFun.messageFun('warning', res.data.MSG);
                     }
@@ -1410,34 +1425,34 @@ export default {
             //         for(let data of imgArr.slice(i, end)){
             //             formData.append('picList', data);
             //         }
-            //         formData.append('infos', JSON.stringify(result));    
-            //         let pro = this.uploadFun(formData); 
+            //         formData.append('infos', JSON.stringify(result));
+            //         let pro = this.uploadFun(formData);
             //         funs.push(pro);
             //     }
             // }
             for(let i = 0; i<arr.length; i++){
                 let formData = new FormData();
-                formData.append('pic', imgArr[i]);   
-                formData.append('pAlt', arr[i].pAlt);    
-                formData.append('pType', arr[i].pType);    
-                formData.append('ptID', arr[i].ptID);    
-                formData.append('ptP', arr[i].ptP);    
-                formData.append('pRemarks', arr[i].pRemarks);    
-                formData.append('lStart', arr[i].lStart);    
-                formData.append('lEnd', arr[i].lEnd);    
-                formData.append('resId', arr[i].resId);    
-                formData.append('lId', arr[i].lId);    
-                formData.append('type', arr[i].type);    
-                formData.append('replaceRecordId', arr[i].replaceRecordId);    
-                formData.append('replaceRecordDetailId', arr[i].replaceRecordDetailId);    
-                let pro = this.uploadFun(formData); 
+                formData.append('pic', imgArr[i]);
+                formData.append('pAlt', arr[i].pAlt);
+                formData.append('pType', arr[i].pType);
+                formData.append('ptID', arr[i].ptID);
+                formData.append('ptP', arr[i].ptP);
+                formData.append('pRemarks', arr[i].pRemarks);
+                formData.append('lStart', arr[i].lStart);
+                formData.append('lEnd', arr[i].lEnd);
+                formData.append('resId', arr[i].resId);
+                formData.append('lId', arr[i].lId);
+                formData.append('type', arr[i].type);
+                formData.append('replaceRecordId', arr[i].replaceRecordId);
+                formData.append('replaceRecordDetailId', arr[i].replaceRecordDetailId);
+                let pro = this.uploadFun(formData);
                 funs.push(pro);
             }
             Promise.all(funs).then((values)=>{
                 console.log(values);
                 this.constractArr = [];
                 this.uploadImgArr = [];
-                let type = this.type;                            
+                let type = this.type;
                 if(type == 1 || type ==2){
                     // 上下刊报告列表
                     this.searchFun();
@@ -1445,7 +1460,7 @@ export default {
                     // 换画报告列表
                     this.search();
                 }
-                this.addload.close();                                
+                this.addload.close();
             }).catch((err)=> {
                 console.log(err);
             });
@@ -1461,7 +1476,7 @@ export default {
                         sessFun.messageFun('warning', res.data.MSG);
                         reject(false);
                     }
-                });  
+                });
             });
             return promise;
         },
@@ -1623,7 +1638,7 @@ export default {
                     // 实时更新进度条
                     if (res.data.SysCode == 200200) {
                         sessFun.messageFun('success', res.data.MSG);
-                        let type = this.type;                            
+                        let type = this.type;
                         if(type == 1 || type ==2){
                             // 上下刊报告列表
                             this.searchFun();
@@ -1670,7 +1685,7 @@ export default {
             }else if(type == 2){
                 info.type = 1;
             }else{
-                info.type = 2;                
+                info.type = 2;
                 info.replaceRecordId = this.painList[this.activePainIndex].id;
             }
             this.downLoading = true;
@@ -1692,7 +1707,7 @@ export default {
         },
         // 更新报告
         updateReport(){
-            let type = this.getTypeToText();            
+            let type = this.getTypeToText();
             let info = {
                 apId: this.orderDetail.apID,
                 type: type,
@@ -1951,7 +1966,7 @@ export default {
     text-align: center;
 }
 
-/deep/.img_box .el-upload-list--picture-card .el-upload-list__item, 
+/deep/.img_box .el-upload-list--picture-card .el-upload-list__item,
 /deep/.upload_plus .el-upload-list--picture-card .el-upload-list__item{
     width: 30%;
     height: 105px;
@@ -1963,7 +1978,7 @@ export default {
 
     width: 30%;
     margin: 2% 1.6% 0 1.6%;
-    
+
     /* margin-bottom: 16px; */
     float: left;
     position: relative;
@@ -2032,7 +2047,7 @@ export default {
     border-radius: 4px;
     border: 1px dashed #dedede;
     text-align: center;
-    
+
 }
 
 /* 分页 */

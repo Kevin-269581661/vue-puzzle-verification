@@ -6,9 +6,11 @@
                     <div class="title">
                         <h1>{{report.apName}}{{stateToText(Info.name)}}报告
                             <span class="button_box">
-                                <el-button plain @click="getPTTx()" size="small" :loading="pptxLoading">导出PPTx</el-button>
+                                <el-button plain @click="getPTTx()" size="small" :loading="pptxLoading"
+                                           v-qadn-mta-h5="{id: 'a006_b011_c011_d000_bt140_ck05'}">导出PPTx</el-button>
                                 <!-- <el-button plain @click="getPTT()" size="small" :loading="pptLoading">导出PPT</el-button> -->
-                                <el-button plain @click="getPDF()" size="small" :loading="pdfLoading">导出PDF</el-button>
+                                <el-button plain @click="getPDF()" size="small" :loading="pdfLoading"
+                                           v-qadn-mta-h5="{id: 'a006_b011_c011_d000_bt142_ck05'}">导出PDF</el-button>
                             </span>
                         </h1>
                         <h3>{{report.bTitle}} &nbsp;&nbsp;{{formatTime(report.apcTime)}}</h3>
@@ -34,7 +36,8 @@
                                     <el-option v-for="item in typeSelect" :key="item.value" :label="item.label" :value="item.value"></el-option>
                                 </el-select>
                                 <el-input v-model="keyword" placeholder="请输入要搜索的内容" class="searchInput" @change="initData"></el-input>
-                                <el-button type="primary" icon="el-icon-search" class="searchBtn" @click="search()">搜索</el-button>
+                                <el-button type="primary" icon="el-icon-search" class="searchBtn" @click="search()"
+                                           v-qadn-mta-h5="{id: 'a006_b011_c011_d006_bt146_ck01'}">搜索</el-button>
                             </div>
                             <div class="table_wrap">
                                 <el-table border :data="currPutDetail" style="width: 100%" :default-sort="{prop: 'recName', order: 'descending'}" v-loading="loading" element-loading-text="玩命加载中" element-loading-spinner="el-icon-loading">
@@ -82,7 +85,8 @@
                                     </el-table-column>
                                     <el-table-column label="操作" min-width="6.1%">
                                         <template slot-scope="scope">
-                                            <el-button type="text" @click="showImg(scope.row)">查看监播</el-button>
+                                            <el-button type="text" @click="showImg(scope.row)"
+                                                       v-qadn-mta-h5="{id: 'a006_b011_c011_d006_bt147_ck04'}">查看监播</el-button>
                                         </template>
                                     </el-table-column>
 
@@ -130,11 +134,11 @@
                                                 <img v-lazyload="item.url" alt="" @click="handlePictureCardPreview(item.url)">
                                                 <!-- <img :src="item.url" alt="" @click="handlePictureCardPreview(item.url)"> -->
                                                 <div class="mask-btn" v-if="showPreImg == upIndex ">
-                                                    <i class="el-icon-search" @click="handlePictureCardPreview(item.url)"></i>
+                                                    <i class="el-icon-search" @click="handlePictureCardPreview(item.url)"
+                                                       v-qadn-mta-h5="{id: 'a006_b011_c011_d007_bt148_ck04'}"></i>
                                                 </div>
                                             </el-carousel-item>
                                         </el-carousel>
-
                                     </el-card>
                                 </div>
                             </div>
@@ -154,7 +158,6 @@
                                     </el-table-column>
                                     <el-table-column prop="resolveNum" label="问题解决数" min-width="19.8%" align="right">
                                     </el-table-column>
-
                                     <div slot="empty">
                                         <no-search-result></no-search-result>
                                     </div>
@@ -312,6 +315,7 @@ export default {
     created() {
         this.getRouter();
         this.getReportInfo();
+        MtaH5.clickStat('a006_b011_c011_d000_bt000_sw01')
     },
     methods: {
         // 状态变中文
@@ -349,8 +353,13 @@ export default {
         },
         // tab点击
         handleClick() {
-            if (this.planPanel == "third") {
+            if (this.planPanel == "first") {
+                MtaH5.clickStat('a006_b011_c011_d000_bt143_ck09')
+            } else if(this.planPanel == "second") {
+                MtaH5.clickStat('a006_b011_c011_d000_bt144_ck09')
+            } else if(this.planPanel == "third") {
                 this.getDataFromType();
+                MtaH5.clickStat('a006_b011_c011_d000_bt145_ck09')
             }
         },
         // 获取pptx

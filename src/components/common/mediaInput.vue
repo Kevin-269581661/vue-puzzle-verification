@@ -61,7 +61,9 @@
                                             @select="changeResName"
                                             @blur="blurFun('resname')">
                                         </el-autocomplete>
-                                        <el-button size="small" type="primary" @click="getResBasicData" class="get_resName_btn">检索</el-button>
+                                        <el-button size="small" type="primary" @click="getResBasicData" class="get_resName_btn"
+                                                   v-qadn-mta-h5="{id: PathHaveEdit ? 'a002_b006_c000_d000_bt028_ck05' : 'a002_b004_c000_d000_bt019_ck05'}">
+                                            检索</el-button>
                                     </el-form-item>
                                     <el-tooltip class="item" effect="dark" placement="bottom-end" v-show="isResError">
                                         <div slot="content">
@@ -102,7 +104,8 @@
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="6" class="col_lng_lat">
-                                    <div class="lng_lat_map_btn" @click="openBmap">
+                                    <div class="lng_lat_map_btn" @click="openBmap"
+                                         v-qadn-mta-h5="{id: PathHaveEdit ? 'a002_b006_c000_d000_bt029_ck04' : 'a002_b004_c000_d000_bt020_ck04'}">
                                         <i class="el-icon-location-outline"></i>
                                         地图获取
                                     </div>
@@ -328,7 +331,8 @@
                             <div class="content_bottom_wrap" v-for="(item,key) in arrMedia" :key="key">
                                 <div class="content_bottom_head">
                                     <h2>{{item.text}}</h2>
-                                    <div class="media_deleBtn" @click="mediaDelBtnFun(key)" v-show="(key + 1) > editMediaLength">
+                                    <div class="media_deleBtn" @click="mediaDelBtnFun(key)" v-show="(key + 1) > editMediaLength"
+                                         v-qadn-mta-h5="{id: PathHaveEdit ? 'a002_b006_c000_d000_bt031_ck07' : 'a002_b004_c000_d000_bt022_ck07'}">
                                         <i class="el-icon-remove"></i>
                                     </div>
                                 </div>
@@ -489,7 +493,10 @@
                                     </el-form>
                                 </div>
                             </div>
-                            <div class="add_media_btn" @click="mediaAddFun()">+ 新增媒体</div>
+                            <div class="add_media_btn" @click="mediaAddFun()"
+                                 v-qadn-mta-h5="{id: PathHaveEdit ? 'a002_b006_c000_d000_bt030_ck06' : 'a002_b004_c000_d000_bt021_ck06'}">
+                                + 新增媒体
+                            </div>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane label="道 闸" name="second">
@@ -497,7 +504,8 @@
                             <div class="content_bottom_wrap" v-for="(item,key) in roadGateMedia" :key="key">
                                 <div class="content_bottom_head">
                                     <h2>{{item.text}}</h2>
-                                    <div class="media_deleBtn" @click="roadGateDelBtnFun(key)" v-show="(key + 1) > editRoadGateLength">
+                                    <div class="media_deleBtn" @click="roadGateDelBtnFun(key)" v-show="(key + 1) > editRoadGateLength"
+                                         v-qadn-mta-h5="{id: PathHaveEdit ? 'a002_b006_c000_d000_bt031_ck07' : 'a002_b004_c000_d000_bt022_ck07'}">
                                         <i class="el-icon-remove"></i>
                                     </div>
                                 </div>
@@ -639,14 +647,20 @@
                                     </el-form>
                                 </div>
                             </div>
-                            <div class="add_media_btn" @click="roadGateAddFun()">+ 新增媒体</div>
+                            <div class="add_media_btn" @click="roadGateAddFun()"
+                                 v-qadn-mta-h5="{id: PathHaveEdit ? 'a002_b006_c000_d000_bt030_ck06' : 'a002_b004_c000_d000_bt021_ck06'}">+ 新增媒体</div>
                         </div>
                     </el-tab-pane>
                 </el-tabs>
                 <div class="content_bottom_btn">
                     <el-button type="primary" class="create" :disabled="submitBtnIsAble"
-                               @click="submitForm('recForm','mediaForm','roadGateForm')">{{PathHaveEdit?'保存':'创建'}}</el-button>
-                    <el-button plain class="cancel" @click="clearData">取消</el-button>
+                               @click="submitForm('recForm','mediaForm','roadGateForm')"
+                               v-qadn-mta-h5="{id: PathHaveEdit ? 'a002_b006_c000_d000_bt032_ck03' : 'a002_b004_c000_d000_bt023_ck03'}">
+                        {{PathHaveEdit?'保存':'创建'}}
+                    </el-button>
+                    <el-button plain class="cancel" @click="clearData"
+                               v-qadn-mta-h5="{id: PathHaveEdit ? 'a002_b006_c000_d000_bt033_ck03' : 'a002_b004_c000_d000_bt024_ck03'}">
+                        取消</el-button>
                 </div>
             </div>
         </div>

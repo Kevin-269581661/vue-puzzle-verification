@@ -8,11 +8,12 @@
             trigger="click">
             <div>
                 <!--<el-tabs v-model="activeName" @tab-click="handleClick">-->
-                    <!--<el-tab-pane :label="'全部('+messageList.allTxt+')'" name="all"></el-tab-pane>-->
-                    <!--<el-tab-pane :label="'未读('+messageList.unread+')'" name="unread"></el-tab-pane>-->
+                <!--<el-tab-pane :label="'全部('+messageList.allTxt+')'" name="all"></el-tab-pane>-->
+                <!--<el-tab-pane :label="'未读('+messageList.unread+')'" name="unread"></el-tab-pane>-->
                 <!--</el-tabs>-->
                 <div class="tab-pane">
-                    <span @click="handleClick('all')" :class="activeName=='all'?'active':''">全部({{messageList.allTxt}})</span>
+                    <span @click="handleClick('all')"
+                          :class="activeName=='all'?'active':''">全部({{messageList.allTxt}})</span>
                     <span @click="handleClick('unread')" :class="activeName=='unread'?'active':''">未读({{messageList.unread}})</span>
                 </div>
                 <ul class="list-wrap" ref="scrollBox">
@@ -48,11 +49,12 @@
     export default {
         data() {
             return {
-                activeName:'all',
-                page:1,
+                activeName: 'all',
+                page: 1,
+                maxPage: 0,
                 messageList: {
                     unread: 1,
-                    allTxt:1,
+                    allTxt: 1,
                     list: [
                         {
                             messageType: '0',
@@ -60,13 +62,13 @@
                             messagePart1: '中信西关海北门',
                             messagePart2: '已被xx禁用',
                             createTime: '1569750591000',
-                            status:0,
+                            status: 0,
                         },
                     ]
                 },
-                sessionData:'',
-                system:'http://192.168.1.239:8021/system/message',
-                showPopover:false,
+                sessionData: '',
+                system: 'http://192.168.1.239:8021/system/message',
+                showPopover: false,
             }
         },
         methods: {
@@ -74,33 +76,43 @@
                 return timeFormat.timestampFormat(createTime)
             },
             //列表滚动到底部
-            scrollFn(){
-                this.$refs.scrollBox.addEventListener('scroll',()=>{
-                    if(this.$refs.scrollBox.scrollTop+this.$refs.scrollBox.clientHeight==this.$refs.scrollBox.scrollHeight){
-                        console.log('到底了');
-                        this.page++;
-                        this.getMessageList()
+            scrollFn() {
+                this.$refs.scrollBox.addEventListener('scroll', () => {
+                    if (this.$refs.scrollBox.scrollTop + this.$refs.scrollBox.clientHeight == this.$refs.scrollBox.scrollHeight) {
+                        // console.log('到底了');
+                        if (this.page < this.maxPage) {
+                            this.page++;
+                            this.getMessageList()
+                        }
+
                     }
                 })
             },
             //切换全部和已读
             handleClick(type) {
                 this.activeName = type
+                this.messageList.list = []
+                this.getUnreadCount()
                 this.getMessageList()
             },
             ///获取消息列表
-            getMessageList(){
+            getMessageList() {
                 let info = {
-                    pageSize:10,
-                    pageNum:this.page,
+                    pageSize: 10,
+                    pageNum: this.page,
                 };
-                if(this.activeName=='unread'){
+                if (this.activeName == 'unread') {
                     info.hasRead = 0
                 }
                 // api.getApi(this.apiVar.system + '/list',info).then(res => {
-                api.getApi(this.system + '/list',info).then(res => {
+                api.getApi(this.system + '/list', info).then(res => {
                     if (res.data.SysCode == 200200) {
-                        this.messageList.list = res.data.data.dataList
+                        this.maxPage = res.data.data.totalPage
+                        if (res.data.data.dataList.length > 0) {
+                            for (let data of res.data.data.dataList) {
+                                this.messageList.list.push(data)
+                            }
+                        }
                     }
                 })
             },
@@ -109,21 +121,25 @@
                 // api.getApi(this.apiVar.system + '/unreadCount').then(res => {
                 api.getApi(this.system + '/unreadCount').then(res => {
                     if (res.data.SysCode == 200200) {
-                       this.messageList.unread = res.data.data.unreadCount
-                       this.messageList.allTxt = res.data.data.hasReadCount
+                        this.messageList.unread = res.data.data.unreadCount
+                        this.messageList.allTxt = res.data.data.hasReadCount + res.data.data.unreadCount
                     }
                 })
             },
-            //单个已读跳转
+            //单个已读
             read(item) {
                 let messageId = item.messageId
-
+                let that = this
                 // api.postApi(this.apiVar.system + '/readMessage', {messageId: messageId}).then(res => {
                 api.postApi(this.system + '/readMessage', {messageId: messageId}).then(res => {
                     if (res.data.SysCode == 200200) {
                         //操作成功
                         item.status = 1
-                        this.getUnreadCount()
+                        setTimeout(() => {
+                            that.messageList.list = []
+                            that.getUnreadCount()
+                            that.getMessageList()
+                        }, 500)
                     }
                 })
             },
@@ -139,14 +155,15 @@
                 })
             },
             //跳转消息列表
-            goMessageList(){
+            goMessageList() {
                 this.showPopover = false
                 this.$router.push('/messageList')
             }
         },
-        mounted(){
+        mounted() {
             this.getUnreadCount()
             this.scrollFn()
+            this.messageList.list = []
             this.getMessageList()
 
         }
@@ -171,11 +188,13 @@
         color: #fff;
         font-size: 20px;
     }
-    .list-wrap{
-        height: 450px;
+
+    .list-wrap {
+        height: 430px;
         overflow-y: scroll;
         padding: 0 12px;
     }
+
     /*!*滚动条*!*/
     .list-wrap::-webkit-scrollbar {
         /*滚动条整体样式*/
@@ -204,13 +223,14 @@
         cursor: pointer;
         position: relative;
     }
-    .list-wrap .read-mask{
+
+    .list-wrap .read-mask {
         position: absolute;
         left: 0;
         top: 0;
         width: 100%;
         height: 100%;
-        background: rgba(255,255,255,0.45);
+        background: rgba(255, 255, 255, 0.45);
     }
 
     .list-wrap li:last-child {
@@ -264,18 +284,21 @@
         color: #1890FF;
         cursor: pointer;
     }
-    /deep/ .el-tabs__nav-scroll{
+
+    /deep/ .el-tabs__nav-scroll {
         display: flex;
         justify-content: space-around;
     }
-    .messagelist-btn{
+
+    .messagelist-btn {
         text-align: center;
         color: #108EE9;
         cursor: pointer;
         border-top: 1px solid #E8E8E8;
         padding-top: 12px;
     }
-    .tab-pane{
+
+    .tab-pane {
         position: relative;
         border-bottom: 1px solid #E8E8E8;
         font-size: 14px;
@@ -284,7 +307,8 @@
         justify-content: space-around;
         padding: 0 12px;
     }
-    .tab-pane span{
+
+    .tab-pane span {
         display: inline-block;
         width: 80px;
         height: 34px;
@@ -292,7 +316,8 @@
         text-align: center;
         cursor: pointer;
     }
-    .tab-pane span.active{
+
+    .tab-pane span.active {
         border-bottom: 2px solid #1890FF;
         color: #1890ff;
     }

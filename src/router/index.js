@@ -45,6 +45,7 @@ const compact = () => import('../components/common/compact.vue')
 const paintedPath = () => import('../components/common/paintedPath.vue')
 const adsDialPlate = () => import('../components/common/adsDialPlate.vue')
 const messageList = () => import('../components/common/messageList.vue')
+const communityRank = () => import('../components/common/communityRank.vue')
 // const qinlinMap = () => import('../components/common/components/qinlinMap')
 
 // 下载进度页面
@@ -160,6 +161,7 @@ export default new Router({
                 {path: '/superOperate/companyList', component: companyList},
                 {path: '/superOperate/compact', component: compact},
                 {path: '/superOperate/communityPortrait',component: communityPortrait},
+                {path: '/superOperate/communityRank',component: communityRank},
                 // 亲邻地图
                 // {path: '/superOperate/qinlinMap',component: qinlinMap},
             ]
@@ -221,6 +223,7 @@ export default new Router({
                 // 亲邻地图
                 // {path: '/media/qinlinMap',component: qinlinMap},
                 {path: '/media/communityPortrait',component: communityPortrait},
+                {path: '/media/communityRank',component: communityRank},
             ]
         },
         //销售
@@ -251,6 +254,7 @@ export default new Router({
                 {path: '/sale/myInfo', component: myInfo},
                 {path: '/sale/compact', component: compact},
                 {path: '/sale/communityPortrait',component: communityPortrait},
+                {path: '/sale/communityRank',component: communityRank},
                 {path: '/messageList', name: 'messageList', component: messageList},
                 // 亲邻地图
                 // {path: '/sale/qinlinMap',component: qinlinMap},
@@ -281,6 +285,7 @@ export default new Router({
                 {path: '/adOwner/compact', component: compact},
                 {path: '/adOwner/myInfo', component: myInfo},
                 {path: '/adOwner/communityPortrait',component: communityPortrait},
+                {path: '/adOwner/communityRank',component: communityRank},
             ]
         },
         //404

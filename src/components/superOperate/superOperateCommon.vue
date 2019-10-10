@@ -39,6 +39,11 @@
                 <el-menu-item index="/superOperate/compact">文件下载</el-menu-item>
             </el-submenu>
             <el-menu-item index="/superOperate/tvOrderList">电视广告</el-menu-item>
+            <!--<el-submenu index="8" show-timeout="80">-->
+                <!--<template slot="title">亲邻智邻</template>-->
+                <!--<el-menu-item index="/superOperate/communityPortrait">社区画像</el-menu-item>-->
+                <!--<el-menu-item index="/superOperate/communityRank">社区排名</el-menu-item>-->
+            <!--</el-submenu>-->
             <el-menu-item index="/superOperate/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>
             <el-submenu index="9" class="user_center" popper-class="user_center_item" show-timeout="80">
                 <template slot="title">

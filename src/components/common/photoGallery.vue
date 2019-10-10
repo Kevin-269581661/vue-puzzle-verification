@@ -93,7 +93,7 @@
                                 </el-pagination>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane v-if="isShowAllTab || isShowOrderPhoto" label="收藏夹" name="second">
+                        <el-tab-pane v-if="isShowAllTab" label="收藏夹" name="second">
                             <div v-loading="secondBodyLoading"
                                  element-loading-text="玩命加载中..."
                                  element-loading-spinner="el-icon-loading">
@@ -261,7 +261,7 @@
         methods: {
             getSessionData() {
                 this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
-                if (this.sessionData.asrID === '999') {
+                if (this.sessionData.asrID === '999' && this.sessionData.uType === 'SM') {
                     this.isShowAllTab = false
                 } else {
                     this.isShowAllTab = true

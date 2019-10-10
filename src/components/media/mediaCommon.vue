@@ -43,6 +43,9 @@
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
                 <el-menu-item index="/login">退出登陆</el-menu-item>
             </el-submenu>
+            <el-menu-item index="" style="cursor: default;float: right">
+                <messageNotice></messageNotice>
+            </el-menu-item>
         </el-menu>
 
         <!--body-->
@@ -73,8 +76,12 @@
 <script>
     import uTypeToText from "../../commonFun/uTypeToText.js";
     import api from "../../api/api"
+    import messageNotice from '../common/components/messageNotice.vue';
     export default {
         name: "mediaCommon",
+        components:{
+            messageNotice
+        },
         data(){
             return{
                 newDate: new Date().getFullYear(),
@@ -100,28 +107,33 @@
             // 是否显示亲邻
             getIsShowQinlin(){
                 let portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo'))
-                if (portraitInfo && portraitInfo.length) {
+                if (this.sessionData.uType=='SM'&&this.sessionData.rela== '直营') {
                     this.showQinlin = true;
                 } else {
-                    let params = {
-                        uid: this.sessionData.uID,
-                        token: this.sessionData.token
-                    }
-                    api.getApi(this.apiVar.portrait + '/api/v1/ascrInfo/getAscrList', params).then(res => {
-                        console.log('用户权限城市和默认小区res', res)
-                        if (res.data.SysCode === 200200) {
-                            let portraitInfo = res.data.data
-                            sessionStorage.setItem("portraitInfo", JSON.stringify(portraitInfo));
-                            if (portraitInfo.length) {
-                                this.showQinlin = true;
+                    if (portraitInfo && portraitInfo.length) {
+                        this.showQinlin = true;
+                    } else {
+                        let params = {
+                            uid: this.sessionData.uID,
+                            token: this.sessionData.token
+                        }
+                        api.getApi(this.apiVar.portrait + '/api/v1/ascrInfo/getAscrList', params).then(res => {
+                            console.log('用户权限城市和默认小区res', res)
+                            if (res.data.SysCode === 200200) {
+                                let portraitInfo = res.data.data
+                                sessionStorage.setItem("portraitInfo", JSON.stringify(portraitInfo));
+                                if (portraitInfo.length) {
+                                    this.showQinlin = true;
+                                } else {
+                                    this.showQinlin = false;
+                                }
                             } else {
                                 this.showQinlin = false;
                             }
-                        } else {
-                            this.showQinlin = false;
-                        }
-                    })
+                        })
+                    }
                 }
+
             },
             // 获取用户名称和角色
             getUserName() {

@@ -3310,7 +3310,7 @@
     }
 
     /deep/ .el-form-item.is-required .el-form-item__label:before{
-        margin-right: -6px;
+        margin-right: -6px !important;
         position: relative;
         left: 60px;
     }

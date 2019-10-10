@@ -372,8 +372,7 @@
                                     class-name="el-table-column-resName"
                                     label="资源名称"
                                     width="200"
-                                    prop="resName"
-                                >
+                                    prop="resName">
                                 </el-table-column>
                                 <el-table-column
                                     fixed
@@ -381,20 +380,17 @@
                                     prop="mediaName"
                                     label="媒体名称"
                                     width="140"
-                                    class="tar"
-                                >
+                                    :show-overflow-tooltip="true">
                                 </el-table-column>
                                 <el-table-column
                                     prop="city"
                                     label="城市"
-                                    min-width="110"
-                                >
+                                    min-width="110">
                                 </el-table-column>
                                 <el-table-column
                                     prop="origin"
                                     label="区域"
-                                    min-width="110"
-                                >
+                                    min-width="110">
                                 </el-table-column>
                                 <el-table-column
                                     label="商圈"
@@ -1846,7 +1842,8 @@
                     mID: info.mID,
                     resType: info.resType,
                     resID: info.resID,
-                    asID: '',
+                    // asID: '',
+                    asID: info.asID,
                     asIDs: info.asID,
                     asLabs: info.asLab,
                     resName: info.resName,
@@ -1879,11 +1876,11 @@
                     asrID: info.asrID,                 // 所属公司id,
                     lState: info.adlInfo ? info.adlInfo : '',   // 是否被占
                 };
-                if(info.mVehicle === '道闸'){
-                    importInfo.asID = info.asIDs.split(',')
-                }else if(info.mVehicle === '广告门'){
-                    importInfo.asID = info.asID
-                }
+                // if(info.mVehicle === '道闸'){
+                //     importInfo.asID = info.asIDs.split(',')
+                // }else if(info.mVehicle === '广告门'){
+                //     importInfo.asID = info.asID
+                // }
                 return importInfo;
             },
             // 第四步的导出方案

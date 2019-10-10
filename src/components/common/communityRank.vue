@@ -26,23 +26,169 @@
                     </el-tab-pane>
                     <el-tab-pane label="偏好标签" name="second">偏好标签</el-tab-pane>
                 </el-tabs>
-                <div class="choose-panel">
-                    <div>
-                        <el-button plain  v-for="(tag,index) in chooseTagsArr" :key="index" size="mini" @click="cancelChooseTag(tag)">{{tag}}<i class="el-icon-close"></i></el-button>
+                <div class="choose-panel-wrap">
+                    <div class="choose-panel">
+                        <div>
+                            <el-button plain  v-for="(tag,index) in chooseTagsArr" :key="index" size="mini" @click="cancelChooseTag(tag)">{{tag}}<i class="el-icon-close"></i></el-button>
+                        </div>
+                        <span @click="clearAllTag">清空条件</span>
                     </div>
-                    <span @click="clearAllTag">清空条件</span>
                 </div>
             </div>
             <div class="bottom">
+                <h5>排名TOP200</h5>
+                <div class="table-wrap">
+                    <div class="table_dt">
+                        <el-table
+                            v-loading="loading"
+                            element-loading-text="拼命加载中..."
+                            element-loading-spinner="el-icon-loading"
+                            border
+                            :data="currentPlan"
+                            style="width: 100%">
+                            <el-table-column
+                                label="排名"
+                                min-width="50"
+                                :show-overflow-tooltip="true">
+                                <template slot-scope="scope">
+                                    <span>{{scope.row.rank}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                label="资源"
+                                min-width="180"
+                                :show-overflow-tooltip="true">
+                                <template slot-scope="scope">
+                                    <span>{{scope.row.resName}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                prop="cityName"
+                                label="城市"
+                                min-width="80"
+                                :show-overflow-tooltip="true">
+                                <template slot-scope="scope">
+                                    <span>{{scope.row.cityName || '--' }}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                prop="area"
+                                label="区域"
+                                min-width="100"
+                                :show-overflow-tooltip="true">
+                                <template slot-scope="scope">
+                                    <span>{{scope.row.area || '--' }}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                prop="businessCircle"
+                                label="商圈"
+                                min-width="100"
+                                :show-overflow-tooltip="true">
+                                <template slot-scope="scope">
+                                    <span>{{scope.row.businessCircle || '--' }}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                prop="resType"
+                                label="资源类型"
+                                min-width="100"
+                                :show-overflow-tooltip="true">
+                                <template slot-scope="scope">
+                                    <span>{{scope.row.resType || '--' }}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                prop="building"
+                                label="楼盘类型"
+                                min-width="100"
+                                :show-overflow-tooltip="true">
+                                <template slot-scope="scope">
+                                    {{ scope.row.building || '--' }}
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                prop="price"
+                                label="楼盘价格"
+                                min-width="100"
+                                :show-overflow-tooltip="true"
+                            >
+                                <template slot-scope="scope">
+                                    <span>{{scope.row.price||'--'}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                prop="houseNum"
+                                label="住户数量"
+                                min-width="100"
+                                :show-overflow-tooltip="true"
+                            >
+                                <template slot-scope="scope">
+                                    <span>{{scope.row.houseNum || '--'}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                prop="mediaNum"
+                                label="媒体数量"
+                                min-width="100"
+                                :show-overflow-tooltip="true"
+                            >
+                                <template slot-scope="scope">
+                                    <span>{{scope.row.mediaNum|| '--'}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                prop="resNum"
+                                label="点位数量"
+                                min-width="100"
+                            >
+                                <template slot-scope="scope">
+                                    <span>{{scope.row.resNum}}</span>
+                                </template>
+                            </el-table-column>
 
+                            <div slot="empty">
+                                <no-search-result></no-search-result>
+                            </div>
+                        </el-table>
+                    </div>
+                    <div class="ad_pagination" v-if="totalSize">
+                        <el-pagination
+                            background
+                            layout="total, sizes, prev, pager, next, jumper"
+                            @current-change="changePage"
+                            @size-change="sizeChange"
+                            :page-sizes="[10, 20, 50]"
+                            :current-page.sync="currPage"
+                            :page-size="pageSize"
+                            :total="totalSize">
+                        </el-pagination>
+                    </div>
+
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+    import {
+        Table,
+        Tabs,
+        TableColumn,
+        Button,
+        Message
+    } from "element-ui";
+    import noSearchResult from "./components/noSearchResult.vue";
     export default {
         name: "communityRank",
+        components: {
+            elTable: Table,
+            elTableColumn: TableColumn,
+            elButton: Button,
+            elTabs: Tabs,
+            noSearchResult,
+        },
         data() {
             return {
                 activeName: 'first',
@@ -117,12 +263,31 @@
                             }, {name: '社会公共管理', flag: 0}]
                     },
                 ],
-                chooseTagsArr: []
+                chooseTagsArr: [],
+                // 表格数据
+                currentPlan: [{
+                    rank: '排名',
+                    resName: '资源',
+                    resType: '资源类型',
+                    cityName: '城市',
+                    area: '区域',
+                    businessCircle: '商圈',
+                    building: '楼盘类型',
+                    price: '楼盘价格',
+                    houseNum: '住户数量',
+                    mediaNum:'媒体数量',
+                    resNum:'点位数量',
+                }],
+                //加载中
+                loading: false,
+                currPage: 1,
+                pageSize: 10,
+                totalSize: 10,
             };
         },
         methods: {
             handleClick(tab, event) {
-                console.log(tab, event);
+                // console.log(tab, event);
             },
             //人群标签-选中标签
             chooseTags(first,second) {
@@ -140,8 +305,13 @@
                     this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(str), 1);
                 } else {
                     //选中
-                    second.flag = 1
-                    this.chooseTagsArr.push(str)
+                    if(this.chooseTagsArr.length<4){
+                        second.flag = 1
+                        this.chooseTagsArr.push(str)
+                    }else{
+                        Message.warning("最多只能选择4个标签");
+                    }
+
                 }
             },
             //删除选择的标签
@@ -151,7 +321,6 @@
                     for(let data2 of data.children){
                         if(data2.name == tag){
                             data2.flag=0
-
                         }
                     }
                 }
@@ -168,7 +337,19 @@
                         }
                     }
                 }
-            }
+            },
+            // 分页
+            changePage(val) {
+                // console.log('当前页',val)
+                this.currPage = val
+                this.searchFun();
+            },
+            // 每页条数切换
+            sizeChange(val) {
+                this.pageSize = val;
+                this.currPage = 1;
+                this.searchFun();
+            },
         }
     }
 </script>
@@ -178,7 +359,7 @@
         margin: 0 64px;
     }
 
-    .top {
+    .top,.bottom{
         background: #fff;
         border: 1px solid rgba(230, 231, 233, 1);
     }
@@ -186,9 +367,18 @@
     .top /deep/ .el-tabs__nav-wrap {
         padding: 0 14px;
     }
+    .top /deep/ .el-tabs__item.is-top{
+        color:rgba(0,0,0,0.45);
+    }
+    .top /deep/ .el-tabs__item.is-active{
+        color: #1890FF;
+    }
 
     .tab-content-wrap {
-        padding: 24px 32px;
+        padding: 24px 32px 0;
+    }
+    .choose-panel-wrap{
+        padding: 0 24px 24px;
     }
 
     .first-tags {
@@ -262,4 +452,23 @@
         text-align: center;
         padding: 0 12px 0 8px;
     }
+    .table-wrap {
+       padding: 24px 32px;
+    }
+    .bottom{
+        margin-top: 16px;
+    }
+    .bottom h5{
+        font-size:16px;
+        font-weight:600;
+        color:rgba(44,49,60,1);
+        height: 48px;
+        line-height: 48px;
+        padding: 0 16px;
+        border-bottom: 1px solid #E6E7E9;
+    }
+    /deep/ .el-table__body-wrapper{
+        overflow-y: hidden;
+    }
+
 </style>

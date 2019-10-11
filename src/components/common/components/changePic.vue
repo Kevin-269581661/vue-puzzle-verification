@@ -872,7 +872,7 @@ export default {
                 this.pageInfo.paginationShow = true;
             });
             this.type == 1 ? MtaH5.clickStat('a006_b011_c009_d000_bt128_ck01')
-                : this.type == 2 ? MtaH5.clickStat('a006_b011_c010_d000_bt134_ck01') : 'a006_b011_c013_d000_bt155_ck01'
+                : this.type == 2 ? MtaH5.clickStat('a006_b011_c010_d000_bt134_ck01') : MtaH5.clickStat('a006_b011_c013_d000_bt155_ck01')
         },
         // 搜索换画列表条件
         searchPointFormat(){
@@ -1226,7 +1226,7 @@ export default {
         },
         // 上传图片之前的格式大小判断
         beforeUpload(file){
-            const isJPG = file.type === "image/jpeg" || file.type === "image/png";;
+            const isJPG = file.type === "image/jpeg" || file.type === "image/png";
             const isLt2M = file.size / 1024 / 1024 < 2;
 
             if (!isJPG) {

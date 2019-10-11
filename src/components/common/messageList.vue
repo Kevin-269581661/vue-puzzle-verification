@@ -103,7 +103,7 @@
                     //     status: 0,
                     // }
                 ],
-                system:'http://192.168.1.239:8021/system/message',
+                // system:'http://192.168.1.239:8021/system/message',
             }
 
         },
@@ -157,8 +157,8 @@
             //标记已读
             read(item) {
                 let messageId = item.messageId
-                // api.postApi(this.apiVar.system + '/readMessage', {messageId: messageId}).then(res => {
-                api.postApi(this.system + '/readMessage', {messageId: messageId}).then(res => {
+                api.postApi(this.apiVar.system + '/readMessage', {messageId: messageId}).then(res => {
+                // api.postApi(this.system + '/readMessage', {messageId: messageId}).then(res => {
                     if (res.data.SysCode == 200200) {
                         //操作成功
                         item.status = 1

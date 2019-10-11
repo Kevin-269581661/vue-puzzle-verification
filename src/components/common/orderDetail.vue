@@ -15,20 +15,24 @@
                         <h4>
                             <img src="../../assets/images/planlogo.png" alt="">{{orderDetail.apName}}
                             <p>{{orderDetail.apQC}}
-                                <i class="el-icon-edit" v-if="(role=='MD')" @click="changeCID = true" :class="{changeCID:!usableBtn}"></i>
+                                <i class="el-icon-edit" v-if="(role=='MD')" @click="changeCID = true" :class="{changeCID:!usableBtn}"
+                                   v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt118_ck10'}"></i>
                             </p>
                         </h4>
                         <!--修改合同号对话框-->
                         <el-dialog title="修改合同编号" :visible.sync="changeCID" width="30%">
                             <el-input v-model="apQC"></el-input>
                             <span slot="footer" class="dialog-footer">
-                                <el-button plain @click="cancelChangeID">取 消</el-button>
-                                <el-button type="primary" @click="confirmChangeID">确 定</el-button>
+                                <el-button plain @click="cancelChangeID" v-qadn-mta-h5="{id: 'a006_b011_c005_d000_bt120_ck08'}">取 消</el-button>
+                                <el-button type="primary" @click="confirmChangeID" v-qadn-mta-h5="{id: 'a006_b011_c005_d000_bt119_ck08'}">确 定</el-button>
                             </span>
                         </el-dialog>
                         <div class="handleBtn">
-                            <el-button type="plain" @click="changePain()" v-if="role=='MD'">换画</el-button>
-                            <el-button type="primary" :disabled="usableBtn" v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0" @click="changePoint">换点</el-button>
+                            <el-button type="plain" @click="changePain()" v-if="role=='MD'"
+                                       v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt110_ck04'}">换画</el-button>
+                            <el-button type="primary" :disabled="usableBtn"
+                                       v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0" @click="changePoint"
+                                       v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}">换点</el-button>
                         </div>
                     </div>
                     <div>
@@ -51,12 +55,14 @@
                                             <el-option label="资源名称" value="1"></el-option>
                                         </el-select>
                                     </el-input>
-                                    <el-button type="primary" icon="el-icon-search" @click="search()">搜索</el-button>
-                                    <el-button type="primary" @click="showAddPointDialog" v-show="showHandel">添加点位</el-button>
-                                    <el-button plain type="default" icon="el-icon-download" @click="export2Excel(orderDetail.apName)" :disabled="isDown">导出</el-button>
+                                    <el-button type="primary" icon="el-icon-search" @click="search()"
+                                               v-qadn-mta-h5="{id: showHandel ? 'a006_b011_c012_d000_bt149_ck01' : 'a006_b011_c006_d000_bt121_ck01'}">搜索</el-button>
+                                    <el-button type="primary" @click="showAddPointDialog" v-show="showHandel"
+                                               v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt150_ck04'}">添加点位</el-button>
+                                    <el-button plain type="default" icon="el-icon-download" @click="export2Excel(orderDetail.apName)" :disabled="isDown"
+                                               v-qadn-mta-h5="{id: 'a006_b011_c006_d000_bt122_ck05'}">导出</el-button>
                                 </el-col>
                             </el-row>
-
                             <div class="table_wrap">
                                 <el-table border :data="currentSetpoint" style="width: 100%"
                                           :default-sort="{prop: 'recName', order: 'descending'}"
@@ -137,7 +143,8 @@
                                     <el-table-column label="操作" min-width="4.3%" v-if="showHandel">
                                         <template slot-scope="scope">
                                             <span style="color:#999;cursor: pointer;" v-if="scope.row.lState==2">终止</span>
-                                            <span style="color:#409EFF;cursor: pointer;" v-else @click="disContinue(scope.row)">终止</span>
+                                            <span style="color:#409EFF;cursor: pointer;" v-else @click="disContinue(scope.row)"
+                                                  v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt151_ck05'}">终止</span>
                                         </template>
                                     </el-table-column>
 
@@ -181,8 +188,8 @@
                            :show-close="false">
                     <add-ads :IsAddAds="IsAddPoint" @ievent = "ievent"></add-ads>
                     <span slot="footer" class="dialog-footer">
-                        <el-button plain @click="cancelAddPoint">取 消</el-button>
-                        <el-button type="primary" @click="confirmAddPoint">确 定</el-button>
+                        <el-button plain @click="cancelAddPoint" v-qadn-mta-h5="{id: 'a006_b011_c012_d009_bt154_ck08'}">取 消</el-button>
+                        <el-button type="primary" @click="confirmAddPoint" v-qadn-mta-h5="{id: 'a006_b011_c012_d009_bt153_ck08'}">确 定</el-button>
                     </span>
                 </el-dialog>
 
@@ -206,7 +213,7 @@
             </div>
             <!-- 返回框 -->
             <div class="content_bottom_btn">
-                <el-button plain type="default" @click="goBack">返回</el-button>
+                <el-button plain type="default" @click="goBack" v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt111_ck03'}">返回</el-button>
             </div>
         </div>
     </div>
@@ -470,7 +477,19 @@ export default {
             this.citySelect = [];
             if (this.planPanel == "first") {
                 this.getSetPoint();
+                MtaH5.clickStat('a006_b011_c000_d000_bt112_ck09')
+            } else if (this.planPanel == "second") {
+                MtaH5.clickStat('a006_b011_c000_d000_bt113_ck09')
+            } else if (this.planPanel == "third") {
+                MtaH5.clickStat('a006_b011_c000_d000_bt114_ck09')
+            } else if (this.planPanel == "forth") {
+                MtaH5.clickStat('a006_b011_c000_d000_bt115_ck09')
+            } else if (this.planPanel == "fifth") {
+                MtaH5.clickStat('a006_b011_c000_d000_bt116_ck09')
+            } else if (this.planPanel == "sixth") {
+                MtaH5.clickStat('a006_b011_c000_d000_bt117_ck09')
             }
+
         },
         //返回列表
         goBack() {

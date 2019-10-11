@@ -53,8 +53,8 @@
                 page: 1,
                 maxPage: 0,
                 messageList: {
-                    unread: 1,
-                    allTxt: 1,
+                    unread: 0,
+                    allTxt: 0,
                     list: [
                         {
                             messageType: '0',
@@ -67,7 +67,7 @@
                     ]
                 },
                 sessionData: '',
-                system: 'http://192.168.1.239:8021/system/message',
+                // system: 'http://192.168.1.239:8021/system/message',
                 showPopover: false,
             }
         },
@@ -90,6 +90,7 @@
             },
             //切换全部和已读
             handleClick(type) {
+                this.page = 1
                 this.activeName = type
                 this.messageList.list = []
                 this.getUnreadCount()
@@ -104,8 +105,8 @@
                 if (this.activeName == 'unread') {
                     info.hasRead = 0
                 }
-                // api.getApi(this.apiVar.system + '/list',info).then(res => {
-                api.getApi(this.system + '/list', info).then(res => {
+                api.getApi(this.apiVar.system + '/list',info).then(res => {
+                // api.getApi(this.system + '/list', info).then(res => {
                     if (res.data.SysCode == 200200) {
                         this.maxPage = res.data.data.totalPage
                         if (res.data.data.dataList.length > 0) {
@@ -118,8 +119,8 @@
             },
             //查询全部和未读条数
             getUnreadCount() {
-                // api.getApi(this.apiVar.system + '/unreadCount').then(res => {
-                api.getApi(this.system + '/unreadCount').then(res => {
+                api.getApi(this.apiVar.system + '/unreadCount').then(res => {
+                // api.getApi(this.system + '/unreadCount').then(res => {
                     if (res.data.SysCode == 200200) {
                         this.messageList.unread = res.data.data.unreadCount
                         this.messageList.allTxt = res.data.data.hasReadCount + res.data.data.unreadCount
@@ -130,12 +131,13 @@
             read(item) {
                 let messageId = item.messageId
                 let that = this
-                // api.postApi(this.apiVar.system + '/readMessage', {messageId: messageId}).then(res => {
-                api.postApi(this.system + '/readMessage', {messageId: messageId}).then(res => {
+                api.postApi(this.apiVar.system + '/readMessage', {messageId: messageId}).then(res => {
+                // api.postApi(this.system + '/readMessage', {messageId: messageId}).then(res => {
                     if (res.data.SysCode == 200200) {
                         //操作成功
                         item.status = 1
                         setTimeout(() => {
+                            this.page = 1
                             that.messageList.list = []
                             that.getUnreadCount()
                             that.getMessageList()
@@ -145,8 +147,8 @@
             },
             //全部已读
             readAll() {
-                // api.postApi(this.apiVar.system + '/readAllMessage').then(res => {
-                api.postApi(this.system + '/readAllMessage').then(res => {
+                api.postApi(this.apiVar.system + '/readAllMessage').then(res => {
+                // api.postApi(this.system + '/readAllMessage').then(res => {
                     if (res.data.SysCode == 200200) {
                         //操作成功
                     } else {

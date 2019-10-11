@@ -30,11 +30,11 @@
                                 <li class="hobby-tags-li">
                                     <span>标签一：</span>
                                     <el-popover
-                                        placement="bottom"
+                                        placement="bottom-start"
                                         width="132"
                                         v-for="(firstTag,index) in hobbyTags"
                                         :key="index"
-                                        visible-arrow="none"
+                                        :visible-arrow="false"
                                         popper-class="tag-popover"
                                     >
                                         <el-button plain slot="reference">{{firstTag.label}}</el-button>
@@ -520,15 +520,15 @@
 
     .third-tag-ul {
         position: absolute;
-        left: 145px;
-        top: -11px;
+        left: 144px;
+        top: -13px;
         background: #fff;
     }
 
     .forth-tag-ul {
         position: absolute;
-        left: 264px;
-        top: 0;
+        left: 156px;
+        top: -1px;
         background: #fff;
     }
 

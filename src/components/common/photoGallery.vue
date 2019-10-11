@@ -261,7 +261,7 @@
         methods: {
             getSessionData() {
                 this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
-                if (this.sessionData.asrID === '999') {
+                if (this.sessionData.asrID === '999' && this.sessionData.uType === 'SM') {
                     this.isShowAllTab = false
                 } else {
                     this.isShowAllTab = true

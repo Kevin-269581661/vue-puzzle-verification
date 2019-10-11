@@ -182,7 +182,7 @@
                 } else if (path.includes('/orderDetail')) {
                     // 订单管理
                     routePath = '/media/orderList'
-                } else if (path.includes('/projectDetail')) {
+                } else if (path.includes('/projectDetail') || path.includes('/paintedCount')) {
                     // 工程管理
                     routePath = '/media/projectList'
                 }  else {

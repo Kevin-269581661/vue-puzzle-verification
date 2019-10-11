@@ -90,6 +90,7 @@
             },
             //切换全部和已读
             handleClick(type) {
+                this.page = 1
                 this.activeName = type
                 this.messageList.list = []
                 this.getUnreadCount()
@@ -136,6 +137,7 @@
                         //操作成功
                         item.status = 1
                         setTimeout(() => {
+                            this.page = 1
                             that.messageList.list = []
                             that.getUnreadCount()
                             that.getMessageList()

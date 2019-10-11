@@ -35,9 +35,10 @@
                     消息列表
                 </div>
             </div>
-            <el-badge slot="reference" :value="messageList.unread" :max="99">
+            <el-badge v-if="messageList.unread>0" slot="reference" :value="messageList.unread" :max="99">
                 <i class="el-icon-bell" style="color: #fff;font-size: 20px"></i>
             </el-badge>
+            <i v-if="messageList.unread==0" class="el-icon-bell" slot="reference"  style="color: #fff;font-size: 20px"></i>
         </el-popover>
     </div>
 </template>
@@ -53,8 +54,8 @@
                 page: 1,
                 maxPage: 0,
                 messageList: {
-                    unread: 1,
-                    allTxt: 1,
+                    unread: 0,
+                    allTxt: 0,
                     list: [
                         {
                             messageType: '0',

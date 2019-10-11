@@ -37,7 +37,7 @@
                                         :visible-arrow="false"
                                         popper-class="tag-popover"
                                     >
-                                        <el-button plain slot="reference">{{firstTag.label}}</el-button>
+                                        <el-button plain slot="reference" @click="chooseHobbyTag(firstTag)">{{firstTag.label}}</el-button>
                                         <ul class="second-tag-ul">
                                             <li class="second-tag-li tag-li"
                                                 v-for="(secondTag,index) in firstTag.children" :key="index">
@@ -269,6 +269,20 @@
                                 }]
                             }
                         ]
+                    },
+                    {
+                        "value": "100",
+                        "label": "一级3",
+                        "children": [
+                            {
+                                "value": "100",
+                                "label": "二级",
+                                "children": [{
+                                    "value": "100",
+                                    "label": "三级",
+                                }]
+                            }
+                        ]
                     }
                 ],
                 chooseTagsArr: [],
@@ -358,6 +372,10 @@
                 this.currPage = 1;
                 this.searchFun();
             },
+            //偏好标签-选中标签
+            chooseHobbyTag(){
+
+            }
         },
         mounted() {
             this.personTags = personTags
@@ -512,6 +530,9 @@
         width: 132px;
         padding: 12px;
         border: 1px solid #ebeef5;
+    }
+    .tag-li{
+        cursor: pointer;
     }
 
     .second-tag-li {

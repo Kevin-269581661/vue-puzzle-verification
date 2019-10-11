@@ -7,10 +7,6 @@
             class="popper"
             trigger="click">
             <div>
-                <!--<el-tabs v-model="activeName" @tab-click="handleClick">-->
-                <!--<el-tab-pane :label="'全部('+messageList.allTxt+')'" name="all"></el-tab-pane>-->
-                <!--<el-tab-pane :label="'未读('+messageList.unread+')'" name="unread"></el-tab-pane>-->
-                <!--</el-tabs>-->
                 <div class="tab-pane">
                     <span @click="handleClick('all')"
                           :class="activeName=='all'?'active':''">全部({{messageList.allTxt}})</span>
@@ -35,7 +31,7 @@
                     消息列表
                 </div>
             </div>
-            <el-badge v-if="messageList.unread>0" slot="reference" :value="messageList.unread" :max="99">
+            <el-badge v-if="messageList.unread>0" slot="reference" :value="messageList.unread" :max="99" @click="showPopover=true">
                 <i class="el-icon-bell" style="color: #fff;font-size: 20px"></i>
             </el-badge>
             <i v-if="messageList.unread==0" class="el-icon-bell" slot="reference"  style="color: #fff;font-size: 20px"></i>

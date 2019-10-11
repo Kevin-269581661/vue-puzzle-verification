@@ -125,7 +125,7 @@
                     info.endTime = new Date(this.searchInfo.date[1]).getTime()
                 }
                 console.log(info);
-                api.getApi(this.system + '/list',info).then(res => {
+                api.getApi(this.apiVar.system + '/list',info).then(res => {
                     if (res.data.SysCode == 200200) {
                         this.totalSize = res.data.data.totalSize
                         this.messageList = res.data.data.dataList

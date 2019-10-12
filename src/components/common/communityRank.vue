@@ -41,16 +41,22 @@
                                         <ul class="second-tag-ul">
                                             <li class="second-tag-li tag-li"
                                                 v-for="(secondTag,index) in firstTag.children" :key="index">
-                                                <p>{{secondTag.label}}</p>
-                                                <ul class="third-tag-ul tag-ul" v-if="secondTag.children">
+                                                <!--<p>{{secondTag.label}}</p>-->
+                                               <div>
+                                                   <el-checkbox v-model="secondTag.checked" @change="secondChecked($event,secondTag)">{{secondTag.label}}</el-checkbox>
+                                                   <i class="el-icon-arrow-right"></i>
+                                               </div>
+                                                <ul class="third-tag-ul tag-ul" v-if="secondTag.checked&&secondTag.children">
                                                     <li class="third-tag-li tag-li"
                                                         v-for="(thirdTag,index) in secondTag.children" :key="index">
-                                                        <p>{{thirdTag.label}}</p>
-                                                        <ul class="forth-tag-ul tag-ul" v-if="thirdTag.children">
+                                                        <!--<p>{{thirdTag.label}}</p>-->
+                                                        <el-checkbox v-model="thirdTag.checked">{{thirdTag.label}}</el-checkbox>
+                                                        <ul class="forth-tag-ul tag-ul" v-if="thirdTag.checked&&thirdTag.children">
                                                             <li class="forth-tag-li tag-li"
                                                                 v-for="(forthTag,index) in thirdTag.children"
                                                                 :key="index">
-                                                                <p>{{forthTag.label}}</p>
+                                                                <!--<p>{{forthTag.label}}</p>-->
+                                                                <el-checkbox v-model="forthTag.checked" >{{forthTag.label}}</el-checkbox>
                                                             </li>
                                                         </ul>
                                                     </li>
@@ -241,16 +247,34 @@
                     {
                         "value": "100",
                         "label": "一级1",
+                        "checked":false,
                         "children": [
                             {
                                 "value": "100",
-                                "label": "二级",
+                                "label": "1二级1",
+                                "checked":false,
                                 "children": [{
                                     "value": "100",
-                                    "label": "三级",
+                                    "label": "三级1",
+                                    "checked":false,
+                                    "children": [{
+                                        "checked":false,
+                                        "value": "100",
+                                        "label": "四级1",
+                                    }]
+                                }]
+                            },
+                            {
+                                "value": "100",
+                                "label": "1二级2",
+                                "checked":false,
+                                "children": [{
+                                    "value": "100",
+                                    "label": "三级2",
+                                    "checked":false,
                                     "children": [{
                                         "value": "100",
-                                        "label": "四级",
+                                        "label": "四级2",
                                     }]
                                 }]
                             }
@@ -259,10 +283,12 @@
                     {
                         "value": "100",
                         "label": "一级2",
+                        "checked":false,
                         "children": [
                             {
                                 "value": "100",
-                                "label": "二级",
+                                "label": "2二级",
+                                "checked":false,
                                 "children": [{
                                     "value": "100",
                                     "label": "三级",
@@ -273,10 +299,12 @@
                     {
                         "value": "100",
                         "label": "一级3",
+                        "checked":false,
                         "children": [
                             {
                                 "value": "100",
-                                "label": "二级",
+                                "label": "3二级",
+                                "checked":false,
                                 "children": [{
                                     "value": "100",
                                     "label": "三级",
@@ -372,10 +400,14 @@
                 this.currPage = 1;
                 this.searchFun();
             },
-            //偏好标签-选中标签
+            //偏好标签-选中一级标签
             chooseHobbyTag(){
 
-            }
+            },
+            //偏好标签-选中二级
+            secondChecked(e,tag){
+                console.log(e,tag);
+            },
         },
         mounted() {
             this.personTags = personTags
@@ -534,6 +566,9 @@
     .tag-li{
         cursor: pointer;
     }
+    .tag-li:hover{
+
+    }
 
     .second-tag-li {
         position: relative;
@@ -542,7 +577,7 @@
     .third-tag-ul {
         position: absolute;
         left: 144px;
-        top: -13px;
+        top: -14px;
         background: #fff;
     }
 

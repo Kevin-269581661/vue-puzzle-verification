@@ -43,7 +43,7 @@
                                         <ul class="second-tag-ul">
                                             <li class="second-tag-li tag-li"
                                                 v-for="(secondTag,index) in firstTag.children" :key="index">
-                                                <div class="check-wrap" @mouseover="secondTag.hovered = true" @mouseout="secondTag.hovered = false">
+                                                <div class="check-wrap" @mouseover="secondTag.hovered = true" >
                                                     <el-checkbox @change="secondChecked($event,secondTag)">
                                                         {{secondTag.label}}
                                                     </el-checkbox>
@@ -569,7 +569,6 @@
 
     .tag-ul {
         width: 132px;
-        padding: 5px 12px;
         border: 1px solid #ebeef5;
     }
     .second-tag-ul{
@@ -587,8 +586,8 @@
 
     .third-tag-ul {
         position: absolute;
-        left: 144px;
-        top: -14px;
+        left: 116px;
+        top: -6px;
         background: #fff;
     }
 

@@ -156,7 +156,12 @@
             //跳转消息列表
             goMessageList() {
                 this.showPopover = false
-                this.$router.push('/messageList')
+                if(this.$route.path.includes('sale')){
+                    this.$router.push('sale/messageList')
+                }else{
+                    this.$router.push('media/messageList')
+                }
+
             }
         },
         mounted() {

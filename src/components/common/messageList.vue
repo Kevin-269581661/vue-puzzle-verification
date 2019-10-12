@@ -193,7 +193,6 @@
 
     .table-wrap {
         padding: 24px 32px;
-        width: 100%;
     }
 
     /deep/ .input-wrap .el-input, /deep/ .input-wrap .el-input__inner, /deep/ .input-wrap .el-range-editor.el-input__inner {

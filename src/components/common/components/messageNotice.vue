@@ -156,11 +156,16 @@
             //跳转消息列表
             goMessageList() {
                 this.showPopover = false
-                if(this.$route.path.includes('sale')){
-                    this.$router.push('sale/messageList')
+                if(this.$route.path.includes('media/messageList')||this.$route.path.includes('sale/messageList')){
+                    //已是消息列表页
                 }else{
-                    this.$router.push('media/messageList')
+                    if(this.$route.path.includes('sale')){
+                        this.$router.push('sale/messageList')
+                    }else{
+                        this.$router.push('media/messageList')
+                    }
                 }
+
 
             }
         },

@@ -28,50 +28,56 @@
                         <div class="tab-content-wrap">
                             <ul class="hobby-tags-ul">
                                 <li class="hobby-tags-li">
-                                    <span>标签一：</span>
                                     <el-popover
                                         placement="bottom-start"
-                                        width="132"
                                         v-for="(firstTag,index) in hobbyTags"
                                         :key="index"
+                                        :width="width"
+                                        trigger="hover"
                                         :visible-arrow="false"
+                                        @hide="hideUl"
                                         popper-class="tag-popover"
                                     >
-                                        <el-button plain slot="reference" @click="chooseHobbyTag(firstTag)">
+                                        <span class="first-tag-btn" :class="firstTag.choose?'active':''"  slot="reference" @click="chooseHobbyTag(firstTag)">
                                             {{firstTag.label}}
-                                        </el-button>
-                                        <ul class="second-tag-ul">
-                                            <li class="second-tag-li tag-li"
-                                                v-for="(secondTag,index) in firstTag.children" :key="index">
-                                                <div class="check-wrap" @mouseover="secondTag.hovered = true" >
-                                                    <el-checkbox @change="secondChecked($event,secondTag)">
-                                                        {{secondTag.label}}
-                                                    </el-checkbox>
-                                                    <i class="el-icon-arrow-right"></i>
-                                                </div>
-                                                <ul class="third-tag-ul tag-ul"
-                                                    v-if="secondTag.hovered&&secondTag.children">
-                                                    <li class="third-tag-li tag-li"
-                                                        v-for="(thirdTag,index) in secondTag.children" :key="index">
-                                                        <div class="check-wrap">
-                                                            <el-checkbox>{{thirdTag.label}}</el-checkbox>
-                                                            <i class="el-icon-arrow-right"></i>
-                                                        </div>
-                                                        <ul class="forth-tag-ul tag-ul"
-                                                            v-if="thirdTag.hovered&&thirdTag.children">
-                                                            <li class="forth-tag-li tag-li"
-                                                                v-for="(forthTag,index) in thirdTag.children"
-                                                                :key="index">
-                                                                <div class="check-wrap">
-                                                                    <el-checkbox>{{forthTag.label}}</el-checkbox>
-                                                                    <i class="el-icon-arrow-right"></i>
-                                                                </div>
-                                                            </li>
-                                                        </ul>
-                                                    </li>
-                                                </ul>
-                                            </li>
-                                        </ul>
+                                        </span>
+                                        <div class="ul-wrap">
+                                            <ul class="second-tag-ul tag-ul">
+                                                <li class="second-tag-li tag-li"
+                                                    v-for="(secondTag,index) in firstTag.children" :key="index"
+                                                    @mouseenter="showUl(2,secondTag)">
+                                                    <div class="check-wrap">
+                                                        <el-checkbox @change="tagChecked($event,2,firstTag)">
+                                                            {{secondTag.label}}
+                                                        </el-checkbox>
+                                                        <i class="el-icon-arrow-right"></i>
+                                                    </div>
+
+                                                </li>
+                                            </ul>
+                                            <ul class="third-tag-ul tag-ul"
+                                                v-if="thirdShow">
+                                                <li class="third-tag-li tag-li"
+                                                    v-for="(thirdTag,index) in currentThirdList" :key="index"
+                                                    @mouseenter="showUl(3,thirdTag)">
+                                                    <div class="check-wrap">
+                                                        <el-checkbox  @change="tagChecked($event,3,firstTag)">{{thirdTag.label}}</el-checkbox>
+                                                        <i v-if="thirdTag.children" class="el-icon-arrow-right"></i>
+                                                    </div>
+
+                                                </li>
+                                            </ul>
+                                            <ul class="forth-tag-ul"
+                                                v-if="forthShow">
+                                                <li class="forth-tag-li tag-li"
+                                                    v-for="(forthTag,index) in currentForthList"
+                                                    :key="index">
+                                                    <div class="check-wrap">
+                                                        <el-checkbox  @change="tagChecked($event,4,firstTag)">{{forthTag.label}}</el-checkbox>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </el-popover>
                                 </li>
                             </ul>
@@ -250,40 +256,43 @@
         },
         data() {
             return {
+                width: 132,//面板宽度
                 activeName: 'second',
+                thirdShow: false,
+                forthShow: false,
+                currentThirdList: [],//当前展示的三级标签
+                currentForthList: [],//当前展示的四级标签
                 personTags: [],
                 hobbyTags: [
                     {
                         "value": "100",
                         "label": "一级1",
-                        "hovered": false,
+                        "choose": false,
                         "children": [
                             {
                                 "value": "100",
                                 "label": "1二级1",
-                                "hovered": false,
+
                                 "children": [{
                                     "value": "100",
-                                    "label": "三级1",
-                                    "hovered": false,
+                                    "label": "1三级1",
                                     "children": [{
-                                        "hovered": false,
                                         "value": "100",
-                                        "label": "四级1",
+                                        "label": "1四级1",
                                     }]
                                 }]
                             },
                             {
                                 "value": "100",
                                 "label": "1二级2",
-                                "hovered": false,
+
                                 "children": [{
                                     "value": "100",
-                                    "label": "三级2",
-                                    "hovered": false,
+                                    "label": "1三级2",
+
                                     "children": [{
                                         "value": "100",
-                                        "label": "四级2",
+                                        "label": "1四级2",
                                     }]
                                 }]
                             }
@@ -292,15 +301,15 @@
                     {
                         "value": "100",
                         "label": "一级2",
-                        "hovered": false,
+                        "choose": false,
                         "children": [
                             {
                                 "value": "100",
                                 "label": "2二级",
-                                "hovered": false,
+
                                 "children": [{
                                     "value": "100",
-                                    "label": "三级",
+                                    "label": "2三级",
                                 }]
                             }
                         ]
@@ -308,15 +317,15 @@
                     {
                         "value": "100",
                         "label": "一级3",
-                        "hovered": false,
+                        "choose": false,
                         "children": [
                             {
                                 "value": "100",
                                 "label": "3二级",
-                                "hovered": false,
+
                                 "children": [{
                                     "value": "100",
-                                    "label": "三级",
+                                    "label": "3三级",
                                 }]
                             }
                         ]
@@ -410,13 +419,66 @@
                 this.searchFun();
             },
             //偏好标签-选中一级标签
-            chooseHobbyTag() {
+            chooseHobbyTag(item) {
+                if(item.choose){
+                    item.choose = false
+                }else{
+                    item.choose = true
+                }
 
             },
-            //偏好标签-选中二级
-            secondChecked(e, tag) {
-                console.log(e, tag);
+            //偏好标签-选中
+            tagChecked(e, level,tag) {
+                console.log(e, level,tag);
+                if(e){
+                    //选中
+                    if(level==2){
+
+                    }else if(level == 3){
+
+                    }else{
+
+                    }
+                }else{
+                    //取消选中
+                    if(level==2){
+
+                    }else if(level == 3){
+
+                    }else{
+
+                    }
+                }
             },
+            //偏好标签-鼠标移入
+            showUl(level, tag) {
+                // console.log(level,tag);
+                let arr = [];
+                arr = tag.children;
+                if (tag.children) {
+                    if (level == 2) {
+                        this.width = 264
+                        this.thirdShow = true
+                        this.currentThirdList = arr
+                    } else {
+                        this.width = 400
+                        this.forthShow = true
+                        this.currentForthList = arr
+                    }
+
+                }
+
+            },
+            //隐藏后重置
+            hideUl() {
+                this.width = 132;
+                this.activeName = 'second';
+                this.thirdShow = false;
+                this.forthShow = false;
+                this.currentThirdList = [];
+                this.currentForthList = [];
+            }
+
         },
         mounted() {
             this.personTags = personTags
@@ -567,13 +629,16 @@
         overflow-y: hidden;
     }
 
+    .ul-wrap {
+
+    }
+
     .tag-ul {
         width: 132px;
-        border: 1px solid #ebeef5;
-    }
-    .second-tag-ul{
-        box-shadow:0px 0px 8px 0px rgba(0,0,0,0.12);
         padding: 5px 0;
+        border-right: 1px solid #ebeef5;
+        box-sizing: border-box;
+        height: 140px;
     }
 
     .tag-li {
@@ -586,16 +651,18 @@
 
     .third-tag-ul {
         position: absolute;
-        left: 116px;
-        top: -6px;
-        background: #fff;
+        left: 132px;
+        top: 0px;
     }
 
     .forth-tag-ul {
+        width: 132px;
+        height: 140px;
+        padding: 5px 0;
         position: absolute;
-        left: 156px;
-        top: -1px;
-        background: #fff;
+        left: 264px;
+        top: 0px;
+
     }
 
     .tag-popover {
@@ -603,15 +670,36 @@
         box-shadow: none;
     }
 
-    .check-wrap{
+    .check-wrap {
         height: 30px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding:0 12px;
+        padding: 0 12px;
     }
-    .check-wrap:hover{
-        background:rgba(23,143,254,0.08);
+
+    .check-wrap:hover {
+        background: rgba(23, 143, 254, 0.08);
+    }
+    .first-tag-btn{
+        display: inline-block;
+        text-align: center;
+        font-size: 14px;
+        width: 76px;
+        height: 26px;
+        line-height: 26px;
+        border-radius: 0;
+        margin-right: 8px;
+        color:rgba(0,0,0,0.35);
+        border:1px solid rgba(194,194,194,1);
+        cursor: pointer;
+    }
+    .first-tag-btn:focus{
+        outline: none;
+    }
+    .first-tag-btn.active{
+        border:1px solid rgba(24,144,255,1);
+        color: #1890FF;
     }
 
 </style>
@@ -620,7 +708,7 @@
         min-width: 132px;
         border: none;
         border-radius: 0;
-        box-shadow:none;
         padding: 0;
+        height: 140px;
     }
 </style>

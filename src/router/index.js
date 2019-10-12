@@ -222,7 +222,7 @@ export default new Router({
                 {path: '/media/projectList', component: projectList},
                 {path: '/media/projectDetail', component: projectDetail},
                 {path: '/media/paintedCount', component: paintedCount},
-                {path: '/messageList', name: 'messageList', component: messageList},
+                {path: '/media/messageList', name: 'messageList', component: messageList},
                 // 亲邻地图
                 {path: '/media/qinlinMap',component: qinlinMap},
                 {path: '/media/communityPortrait',component: communityPortrait},
@@ -258,7 +258,7 @@ export default new Router({
                 {path: '/sale/compact', component: compact},
                 {path: '/sale/communityPortrait',component: communityPortrait},
                 {path: '/sale/communityRank',component: communityRank},
-                {path: '/messageList', name: 'messageList', component: messageList},
+                {path: '/sale/messageList', name: 'messageList', component: messageList},
                 // 亲邻地图
                 {path: '/sale/qinlinMap',component: qinlinMap},
             ]

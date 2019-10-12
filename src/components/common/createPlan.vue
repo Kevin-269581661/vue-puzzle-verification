@@ -5251,33 +5251,20 @@
                     MtaH5.clickStat(mtaStatIdRoadGate)
                 }
             },
-            // 离开页面前
-            beforeunloadHandler(){
-                this._beforeUnload_time = new Date().getTime();
-            },
-            // 离开页面时
-            unloadHandler(e) {
-                this._gap_time = new Date().getTime() - this._beforeUnload_time;
-                debugger
-                // 判断是窗口关闭还是刷新
-                if (this._gap_time <= 5) {
-                    let params = {
-                        uid: this.sessionData.UID,
-                        token: this.sessionData.token
-                    }
-                    api.postApi(this.apiVar.Advertisement + '/AddCreatePlanLog',params).then(res => {
-                        console.log('上报成功-----',res)
-                    }).catch(err => {
-                        console.log('上报失败-----',err)
-                    })
-                }
-            }
         },
         // 页面销毁
         destroyed() {
             if(this.active == 1 || this.active == 2) {
-                window.removeEventListener('beforeunload', e => this.beforeunloadHandler(e))
-                window.removeEventListener('unload', e => this.unloadHandler(e))
+                console.log('页面销毁----')
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token
+                }
+                api.postApi(this.apiVar.Advertisement + '/AddCreatePlanLog',params).then(res => {
+                    console.log('上报成功-----',res)
+                }).catch(err => {
+                    console.log('上报失败-----',err)
+                })
             }
         },
     }

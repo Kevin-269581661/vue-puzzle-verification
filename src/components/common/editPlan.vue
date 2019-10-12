@@ -3296,8 +3296,10 @@
                             sessFun.messageFun('success', '方案编辑成功')
                         }
                     } else {
-                        sessFun.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG || '方案异常')
                     }
+                }).catch(err=>{
+                    sessFun.messageFun('warning','接口异常')
                 })
             },
             // 根据城市和公司id返回pdid

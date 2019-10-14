@@ -45,6 +45,7 @@ const compact = () => import('../components/common/compact.vue')
 const paintedPath = () => import('../components/common/paintedPath.vue')
 const adsDialPlate = () => import('../components/common/adsDialPlate.vue')
 const qinlinMap = () => import('../components/common/components/qinlinMap')
+const qinLinMap_ = () => import('../components/common/qinLinMap.vue')
 
 // 下载进度页面
 const progressDown = () => import('../components/common/progressDown.vue')
@@ -250,6 +251,7 @@ export default new Router({
                 {path: '/sale/communityPortrait',component: communityPortrait},
                 // 亲邻地图
                 {path: '/sale/qinlinMap',component: qinlinMap},
+                {path: '/sale/qinLinMap_',component: qinLinMap_}
             ]
         },
         //广告主

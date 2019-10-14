@@ -89,7 +89,7 @@
                     <div class="choose-panel">
                         <div>
                             <el-button plain v-for="(tag,index) in chooseTagsArr" :key="index" size="mini"
-                                       @click="cancelChooseTag(tag)">{{tag}}<i class="el-icon-close"></i></el-button>
+                                       @click="cancelChooseTag(tag)">{{tag.label}}<i class="el-icon-close"></i></el-button>
                         </div>
                         <p>
                             <span>已选{{chooseTagsArr.length}}个标签，默认交集组合查询</span>
@@ -295,6 +295,60 @@
                                         "label": "1四级2",
                                     }]
                                 }]
+                            },
+                            {
+                                "value": "100",
+                                "label": "1二级1",
+
+                                "children": [{
+                                    "value": "100",
+                                    "label": "1三级1",
+                                    "children": [{
+                                        "value": "100",
+                                        "label": "1四级1",
+                                    }]
+                                }]
+                            },
+                            {
+                                "value": "100",
+                                "label": "1二级2",
+
+                                "children": [{
+                                    "value": "100",
+                                    "label": "1三级2",
+
+                                    "children": [{
+                                        "value": "100",
+                                        "label": "1四级2",
+                                    }]
+                                }]
+                            },
+                            {
+                                "value": "100",
+                                "label": "1二级1",
+
+                                "children": [{
+                                    "value": "100",
+                                    "label": "1三级1",
+                                    "children": [{
+                                        "value": "100",
+                                        "label": "1四级1",
+                                    }]
+                                }]
+                            },
+                            {
+                                "value": "100",
+                                "label": "1二级2",
+
+                                "children": [{
+                                    "value": "100",
+                                    "label": "1三级2",
+
+                                    "children": [{
+                                        "value": "100",
+                                        "label": "1四级2",
+                                    }]
+                                }]
                             }
                         ]
                     },
@@ -329,7 +383,8 @@
                                 }]
                             }
                         ]
-                    }
+                    },
+
                 ],
                 chooseTagsArr: [],
                 // 表格数据
@@ -360,6 +415,10 @@
             //人群标签-选中标签
             chooseTags(first, second) {
                 let str = first.label + '：' + second.label
+                let obj = {
+                    label:str,
+                    value:second.value
+                }
                 if (second.flag == 1) {
                     //取消
                     second.flag = 0
@@ -375,7 +434,7 @@
                     //选中
                     if (this.chooseTagsArr.length < 4) {
                         second.flag = 1
-                        this.chooseTagsArr.push(str)
+                        this.chooseTagsArr.push(obj)
                     } else {
                         Message.warning("最多只能选择4个标签");
                     }
@@ -384,7 +443,8 @@
             },
             //删除选择的标签
             cancelChooseTag(item) {
-                let tag = item.split('：')[1]
+                console.log(item);
+                let tag = item.label.split('：')[1]
                 for (let data of this.personTags) {
                     for (let data2 of data.children) {
                         if (data2.label == tag) {
@@ -392,6 +452,13 @@
                         }
                     }
                 }
+                // for (let data of this.hobbyTags) {
+                //     for (let data2 of data.children) {
+                //         if (data2.label == tag) {
+                //             data2.flag = 0
+                //         }
+                //     }
+                // }
                 this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(item), 1);
 
             },
@@ -420,14 +487,19 @@
             },
             //偏好标签-选中一级标签
             chooseHobbyTag(item) {
+                // console.log(item);
+                // console.log(this.chooseTagsArr);
                 if(item.choose){
                     item.choose = false
+                    this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(item), 1);
                 }else{
                     item.choose = true
+                    this.chooseTagsArr.push(item)
+
                 }
 
             },
-            //偏好标签-选中
+            //偏好标签-选中二三四级
             tagChecked(e, level,tag) {
                 console.log(e, level,tag);
                 if(e){
@@ -459,9 +531,10 @@
                     if (level == 2) {
                         this.width = 264
                         this.thirdShow = true
+                        this.forthShow = false
                         this.currentThirdList = arr
                     } else {
-                        this.width = 400
+                        this.width = 396
                         this.forthShow = true
                         this.currentForthList = arr
                     }
@@ -629,9 +702,6 @@
         overflow-y: hidden;
     }
 
-    .ul-wrap {
-
-    }
 
     .tag-ul {
         width: 132px;
@@ -693,6 +763,7 @@
         color:rgba(0,0,0,0.35);
         border:1px solid rgba(194,194,194,1);
         cursor: pointer;
+        position: relative;
     }
     .first-tag-btn:focus{
         outline: none;
@@ -700,6 +771,41 @@
     .first-tag-btn.active{
         border:1px solid rgba(24,144,255,1);
         color: #1890FF;
+    }
+
+    /*滚动条*/
+    .tag-ul,.forth-tag-ul {
+        height: 140px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+
+    .tag-ul::-webkit-scrollbar,.forth-tag-ul::-webkit-scrollbar {
+        width: 4px;
+        background: #fff;
+    }
+
+    .tag-ul::-webkit-scrollbar-thumb,.forth-tag-ul::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        background: #D8D8D8;
+        border-radius: 4px;
+    }
+    .first-tag-btn::before,.first-tag-btn.active::before{
+        display: inline-block;
+        content: '';
+        width: 0;
+        height: 0;
+        border: 4px solid transparent;
+        border-bottom-color: rgba(0,0,0,0.35);
+        border-right-color: rgba(0,0,0,0.35);
+        position: absolute;
+        right: 2px;
+        bottom: 2px;
+        z-index: 10;
+    }
+    .first-tag-btn.active::before{
+        border-bottom-color: rgba(24, 144, 255, 1);
+        border-right-color: rgba(24, 144, 255, 1);
     }
 
 </style>

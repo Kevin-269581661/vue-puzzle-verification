@@ -14,7 +14,7 @@
                                         <span>{{first.label}}：</span>
                                         <ul class="second-tags">
                                             <li class="second-tags-li" v-for="(second,index) in first.children"
-                                                @click="chooseTags(first,second)" :class="second.flag==1?'active':''">
+                                                @click="chooseTags(first,second)" :class="second.checked?'active':''">
                                                 {{second.label}}
                                             </li>
                                         </ul>
@@ -33,21 +33,25 @@
                                         v-for="(firstTag,index) in hobbyTags"
                                         :key="index"
                                         :width="width"
-                                        trigger="hover"
+                                        trigger="manual"
                                         :visible-arrow="false"
-                                        @hide="hideUl"
+                                        :value="firstTag.hovered"
                                         popper-class="tag-popover"
                                     >
-                                        <span class="first-tag-btn" :class="firstTag.choose?'active':''"  slot="reference" @click="chooseHobbyTag(firstTag)">
+                                        <span class="first-tag-btn" :class="firstTag.checked?'active':''"
+                                              slot="reference" @click="chooseHobbyTag(firstTag)"
+                                              @mouseenter="showPopver(firstTag)" @mouseleave="hidePopver(firstTag)">
                                             {{firstTag.label}}
                                         </span>
-                                        <div class="ul-wrap">
+                                        <div class="ul-wrap" @mouseenter="enterPopver(firstTag)"
+                                             @mouseleave="leavePopver(firstTag)">
                                             <ul class="second-tag-ul tag-ul">
                                                 <li class="second-tag-li tag-li"
                                                     v-for="(secondTag,index) in firstTag.children" :key="index"
                                                     @mouseenter="showUl(2,secondTag)">
                                                     <div class="check-wrap">
-                                                        <el-checkbox @change="tagChecked($event,2,firstTag)">
+                                                        <el-checkbox v-model="secondTag.checked"
+                                                                     @change="tagChecked($event,2,firstTag,secondTag)">
                                                             {{secondTag.label}}
                                                         </el-checkbox>
                                                         <i class="el-icon-arrow-right"></i>
@@ -61,7 +65,10 @@
                                                     v-for="(thirdTag,index) in currentThirdList" :key="index"
                                                     @mouseenter="showUl(3,thirdTag)">
                                                     <div class="check-wrap">
-                                                        <el-checkbox  @change="tagChecked($event,3,firstTag)">{{thirdTag.label}}</el-checkbox>
+                                                        <el-checkbox v-model="thirdTag.checked"
+                                                                     @change="tagChecked($event,3,firstTag,thirdTag)">
+                                                            {{thirdTag.label}}
+                                                        </el-checkbox>
                                                         <i v-if="thirdTag.children" class="el-icon-arrow-right"></i>
                                                     </div>
 
@@ -73,7 +80,10 @@
                                                     v-for="(forthTag,index) in currentForthList"
                                                     :key="index">
                                                     <div class="check-wrap">
-                                                        <el-checkbox  @change="tagChecked($event,4,firstTag)">{{forthTag.label}}</el-checkbox>
+                                                        <el-checkbox v-model="forthTag.checked"
+                                                                     @change="tagChecked($event,4,firstTag,forthTag)">
+                                                            {{forthTag.label}}
+                                                        </el-checkbox>
                                                     </div>
                                                 </li>
                                             </ul>
@@ -85,11 +95,12 @@
 
                     </el-tab-pane>
                 </el-tabs>
-                <div class="choose-panel-wrap">
-                    <div class="choose-panel">
+                <div class="checked-panel-wrap">
+                    <div class="checked-panel">
                         <div>
                             <el-button plain v-for="(tag,index) in chooseTagsArr" :key="index" size="mini"
-                                       @click="cancelChooseTag(tag)">{{tag.label}}<i class="el-icon-close"></i></el-button>
+                                       @click="cancelChooseTag(tag)">{{tag.label}}<i class="el-icon-close"></i>
+                            </el-button>
                         </div>
                         <p>
                             <span>已选{{chooseTagsArr.length}}个标签，默认交集组合查询</span>
@@ -97,6 +108,10 @@
                         </p>
                     </div>
                 </div>
+                <div class="btn">
+                    <el-button type="primary" >查 询</el-button>
+                </div>
+
             </div>
             <div class="bottom">
                 <h5>排名TOP200</h5>
@@ -265,121 +280,132 @@
                 personTags: [],
                 hobbyTags: [
                     {
-                        "value": "100",
+                        "value": "1",
                         "label": "一级1",
-                        "choose": false,
+                        "checked": false,
+                        "hovered": false,
                         "children": [
                             {
-                                "value": "100",
+                                "value": "121",
                                 "label": "1二级1",
-
+                                "checked": false,
                                 "children": [{
-                                    "value": "100",
+                                    "value": "12131",
                                     "label": "1三级1",
                                     "children": [{
-                                        "value": "100",
+                                        "value": "12141",
                                         "label": "1四级1",
                                     }]
                                 }]
                             },
                             {
-                                "value": "100",
+                                "value": "122",
                                 "label": "1二级2",
-
+                                "checked": false,
                                 "children": [{
-                                    "value": "100",
+                                    "value": "12231",
                                     "label": "1三级2",
-
+                                    "checked": false,
                                     "children": [{
-                                        "value": "100",
+                                        "value": "12241",
                                         "label": "1四级2",
                                     }]
                                 }]
                             },
                             {
-                                "value": "100",
+                                "value": "123",
                                 "label": "1二级1",
-
+                                "checked": false,
                                 "children": [{
-                                    "value": "100",
+                                    "value": "12331",
                                     "label": "1三级1",
+                                    "checked": false,
                                     "children": [{
-                                        "value": "100",
+                                        "value": "12341",
                                         "label": "1四级1",
+                                        "checked": false,
                                     }]
                                 }]
                             },
                             {
-                                "value": "100",
+                                "value": "124",
                                 "label": "1二级2",
-
+                                "checked": false,
                                 "children": [{
-                                    "value": "100",
+                                    "value": "12431",
                                     "label": "1三级2",
-
+                                    "checked": false,
                                     "children": [{
-                                        "value": "100",
+                                        "value": "12441",
                                         "label": "1四级2",
+                                        "checked": false,
                                     }]
                                 }]
                             },
                             {
-                                "value": "100",
+                                "value": "125",
                                 "label": "1二级1",
-
+                                "checked": false,
                                 "children": [{
-                                    "value": "100",
+                                    "value": "12531",
                                     "label": "1三级1",
+                                    "checked": false,
                                     "children": [{
-                                        "value": "100",
+                                        "value": "12541",
                                         "label": "1四级1",
+                                        "checked": false,
                                     }]
                                 }]
                             },
                             {
-                                "value": "100",
+                                "value": "126",
                                 "label": "1二级2",
-
+                                "checked": false,
                                 "children": [{
-                                    "value": "100",
+                                    "value": "12631",
                                     "label": "1三级2",
-
+                                    "checked": false,
                                     "children": [{
-                                        "value": "100",
+                                        "value": "12641",
                                         "label": "1四级2",
+                                        "checked": false,
                                     }]
                                 }]
                             }
                         ]
                     },
                     {
-                        "value": "100",
+                        "value": "2",
                         "label": "一级2",
-                        "choose": false,
+                        "checked": false,
+                        "hovered": false,
                         "children": [
                             {
-                                "value": "100",
+                                "value": "221",
                                 "label": "2二级",
-
+                                "checked": false,
                                 "children": [{
-                                    "value": "100",
+                                    "value": "22131",
                                     "label": "2三级",
+                                    "checked": false,
                                 }]
                             }
                         ]
                     },
                     {
-                        "value": "100",
+                        "value": "3",
                         "label": "一级3",
-                        "choose": false,
+                        "checked": false,
+                        "hovered": false,
                         "children": [
                             {
-                                "value": "100",
+                                "value": "321",
                                 "label": "3二级",
-
+                                "checked": false,
                                 "children": [{
-                                    "value": "100",
+                                    "value": "32131",
                                     "label": "3三级",
+                                    "checked": false,
                                 }]
                             }
                         ]
@@ -412,33 +438,28 @@
             handleClick(tab, event) {
                 // console.log(tab, event);
             },
-            //人群标签-选中标签
+            //人群标签标签-选中标签
             chooseTags(first, second) {
+                console.log(first, this.chooseTagsArr);
                 let str = first.label + '：' + second.label
                 let obj = {
-                    label:str,
-                    value:second.value
+                    label: str,
+                    value: second.value
                 }
-                if (second.flag == 1) {
+                if (second.checked) {
                     //取消
-                    second.flag = 0
+                    second.checked = false
                     for (let data of this.personTags) {
                         for (let data2 of data.children) {
                             if (data2.label == second) {
-                                data2.flag = 0
+                                data2.checked = 0
                             }
                         }
                     }
                     this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(str), 1);
                 } else {
                     //选中
-                    if (this.chooseTagsArr.length < 4) {
-                        second.flag = 1
-                        this.chooseTagsArr.push(obj)
-                    } else {
-                        Message.warning("最多只能选择4个标签");
-                    }
-
+                    this.pushArr(obj, second)
                 }
             },
             //删除选择的标签
@@ -448,14 +469,14 @@
                 for (let data of this.personTags) {
                     for (let data2 of data.children) {
                         if (data2.label == tag) {
-                            data2.flag = 0
+                            data2.checked = 0
                         }
                     }
                 }
                 // for (let data of this.hobbyTags) {
                 //     for (let data2 of data.children) {
                 //         if (data2.label == tag) {
-                //             data2.flag = 0
+                //             data2.checked = 0
                 //         }
                 //     }
                 // }
@@ -467,11 +488,30 @@
                 this.chooseTagsArr = [];
                 for (let data of this.personTags) {
                     for (let item of data.children) {
-                        if (item.flag == 1) {
-                            item.flag = 0
+                        if (item.checked) {
+                            item.checked = false
                         }
                     }
                 }
+                for (let data of this.hobbyTags) {
+                    data.checked = false
+                    if (data.children) {
+                        for (let data2 of data.children) {
+                            data2.checked = false
+                            if (data2.children) {
+                                for (let data3 of data2.children) {
+                                    data3.checked = false
+                                    if (data3.children) {
+                                        for (let data4 of data3.children) {
+                                            data4.checked = false
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                console.log(this.hobbyTags);
             },
             // 分页
             changePage(val) {
@@ -485,41 +525,110 @@
                 this.currPage = 1;
                 this.searchFun();
             },
+            //移入移出一级标签
+            showPopver(firstTag) {
+                firstTag.hovered = true
+            },
+            hidePopver(firstTag) {
+                // console.log(this.thirdShow);
+                let that = this
+                setTimeout(() => {
+                    if (!that.thirdShow == true) {
+                        //直接离开 面板消失
+                        firstTag.hovered = false
+                    }
+                }, 100)
+
+            },
+            //进入和离开面板
+            enterPopver(firstTag) {
+                firstTag.hovered = true
+            },
+            leavePopver(firstTag) {
+                // console.log('从面板离开');
+                firstTag.hovered = false;
+                //重置数据
+                this.width = 132;
+                this.thirdShow = false;
+                this.forthShow = false;
+                this.currentThirdList = [];
+                this.currentForthList = [];
+            },
             //偏好标签-选中一级标签
             chooseHobbyTag(item) {
                 // console.log(item);
                 // console.log(this.chooseTagsArr);
-                if(item.choose){
-                    item.choose = false
+                if (item.checked) {
+                    item.checked = false
                     this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(item), 1);
-                }else{
-                    item.choose = true
-                    this.chooseTagsArr.push(item)
-
+                } else {
+                    let obj = {
+                        value: item.value,
+                        label: item.label
+                    }
+                    this.pushArr(obj, item)
                 }
-
             },
             //偏好标签-选中二三四级
-            tagChecked(e, level,tag) {
-                console.log(e, level,tag);
-                if(e){
+            tagChecked(e, level, tag1, tag2) {
+                console.log(e, level, tag1, tag2);
+                let obj = {
+                    label: '',
+                    value: ''
+                }
+                if (e) {
                     //选中
-                    if(level==2){
+                    if (level == 2) {
+                        obj.label = tag1.label + '：' + tag2.label
+                        obj.value = tag2.value
+                    } else if (level == 3) {
+                        for (let data of tag1.children) {
+                            for (let data2 of data.children) {
+                                if (data2.value == tag2.value) {
+                                    obj.label = tag1.label + '/' + data.label + '：' + data2.label
+                                    obj.value = data2.value
+                                }
 
-                    }else if(level == 3){
-
-                    }else{
+                            }
+                        }
+                    } else {
+                        for (let data of tag1.children) {
+                            for (let data2 of data.children) {
+                                for (let data3 of data2.children) {
+                                    if (data3.value == tag2.value) {
+                                        obj.label = tag1.label + '/' + data.label + '/' + data2.label + '：' + data3.label
+                                        obj.value = data3.value
+                                    }
+                                }
+                            }
+                        }
 
                     }
-                }else{
+                    console.log(obj, tag2);
+                    for(let data of this.chooseTagsArr){
+                        if(data.label.indexOf(tag1.label)!=-1){
+                            this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                        }
+                    }
+                    this.pushArr(obj, tag2)
+                } else {
                     //取消选中
-                    if(level==2){
+                    if (level == 2) {
 
-                    }else if(level == 3){
+                    } else if (level == 3) {
 
-                    }else{
+                    } else {
 
                     }
+                }
+            },
+            pushArr(obj, item) {
+                if (this.chooseTagsArr.length < 4) {
+                    item.checked = true;
+                    this.chooseTagsArr.push(obj)
+                } else {
+                    item.checked = false;
+                    Message.warning("最多只能选择4个标签");
                 }
             },
             //偏好标签-鼠标移入
@@ -542,15 +651,6 @@
                 }
 
             },
-            //隐藏后重置
-            hideUl() {
-                this.width = 132;
-                this.activeName = 'second';
-                this.thirdShow = false;
-                this.forthShow = false;
-                this.currentThirdList = [];
-                this.currentForthList = [];
-            }
 
         },
         mounted() {
@@ -585,8 +685,8 @@
         padding: 24px 32px 0;
     }
 
-    .choose-panel-wrap {
-        padding: 0 24px 24px;
+    .checked-panel-wrap {
+        padding: 0 32px;
     }
 
     .first-tags {
@@ -599,7 +699,7 @@
         box-sizing: border-box;
         border-bottom: 1px dashed rgba(0, 0, 0, 0.12);
         /*height: 48px;*/
-        padding: 10px 0;
+        padding: 5px 0;
         align-items: center;
         font-size: 14px;
     }
@@ -620,9 +720,12 @@
 
     .second-tags-li {
         color: rgba(0, 0, 0, 0.65);
-        padding: 4px 12px;
+        padding: 4px 8px;
         cursor: pointer;
         float: left;
+        margin-bottom: 2px;
+        margin-top: 2px;
+        margin-right: 4px;
     }
 
     .second-tags-li.active {
@@ -631,7 +734,7 @@
         border-radius: 2px;
     }
 
-    .choose-panel {
+    .checked-panel {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -643,23 +746,23 @@
         margin-top: 8px;
     }
 
-    .choose-panel p span:first-child {
+    .checked-panel p span:first-child {
         font-size: 14px;
         color: rgba(0, 0, 0, 0.35);
     }
 
-    .choose-panel p span:last-child {
+    .checked-panel p span:last-child {
         color: #1890ff;
         cursor: pointer;
         font-size: 14px;
     }
 
-    .choose-panel .el-icon-close {
+    .checked-panel .el-icon-close {
         position: relative;
         right: -6px;
     }
 
-    .choose-panel /deep/ .el-button {
+    .checked-panel /deep/ .el-button {
         min-width: 40px;
         height: 32px;
         line-height: 32px;
@@ -701,7 +804,6 @@
     /deep/ .el-table__body-wrapper {
         overflow-y: hidden;
     }
-
 
     .tag-ul {
         width: 132px;
@@ -751,7 +853,8 @@
     .check-wrap:hover {
         background: rgba(23, 143, 254, 0.08);
     }
-    .first-tag-btn{
+
+    .first-tag-btn {
         display: inline-block;
         text-align: center;
         font-size: 14px;
@@ -760,52 +863,67 @@
         line-height: 26px;
         border-radius: 0;
         margin-right: 8px;
-        color:rgba(0,0,0,0.35);
-        border:1px solid rgba(194,194,194,1);
+        color: rgba(0, 0, 0, 0.35);
+        border: 1px solid rgba(194, 194, 194, 1);
         cursor: pointer;
         position: relative;
     }
-    .first-tag-btn:focus{
+
+    .first-tag-btn:focus {
         outline: none;
     }
-    .first-tag-btn.active{
-        border:1px solid rgba(24,144,255,1);
+
+    .first-tag-btn.active {
+        border: 1px solid rgba(24, 144, 255, 1);
         color: #1890FF;
     }
 
     /*滚动条*/
-    .tag-ul,.forth-tag-ul {
+    .tag-ul, .forth-tag-ul {
         height: 140px;
         overflow-y: scroll;
         overflow-x: hidden;
     }
 
-    .tag-ul::-webkit-scrollbar,.forth-tag-ul::-webkit-scrollbar {
+    .tag-ul::-webkit-scrollbar, .forth-tag-ul::-webkit-scrollbar {
         width: 4px;
         background: #fff;
     }
 
-    .tag-ul::-webkit-scrollbar-thumb,.forth-tag-ul::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+    .tag-ul::-webkit-scrollbar-thumb, .forth-tag-ul::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
         -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
         background: #D8D8D8;
         border-radius: 4px;
     }
-    .first-tag-btn::before,.first-tag-btn.active::before{
+
+    .first-tag-btn::before, .first-tag-btn.active::before {
         display: inline-block;
         content: '';
         width: 0;
         height: 0;
         border: 4px solid transparent;
-        border-bottom-color: rgba(0,0,0,0.35);
-        border-right-color: rgba(0,0,0,0.35);
+        border-bottom-color: rgba(0, 0, 0, 0.35);
+        border-right-color: rgba(0, 0, 0, 0.35);
         position: absolute;
         right: 2px;
         bottom: 2px;
         z-index: 10;
     }
-    .first-tag-btn.active::before{
+
+    .first-tag-btn.active::before {
         border-bottom-color: rgba(24, 144, 255, 1);
         border-right-color: rgba(24, 144, 255, 1);
+    }
+    .btn{
+        width: 100%;
+        text-align: center;
+        margin-bottom: 24px;
+        margin-top: 16px;
+    }
+    .btn button{
+        width: 74px;
+        height: 32px;
+
     }
 
 </style>
@@ -816,5 +934,10 @@
         border-radius: 0;
         padding: 0;
         height: 140px;
+
+    }
+
+    .el-popper[x-placement^=bottom] {
+        margin-top: 4px;
     }
 </style>

@@ -4,11 +4,11 @@
         "children": [
             {
                 "label": "男",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "女",
-                "flag": 0
+                "checked": false
             }
         ]
     },
@@ -17,31 +17,31 @@
         "children": [
             {
                 "label": "18岁以下",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "18~24岁",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "25~34岁",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "35-44岁",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "45~54岁",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "55~64岁",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "65岁及以上",
-                "flag": 0
+                "checked": false
             }
         ]
     },
@@ -50,15 +50,15 @@
         "children": [
             {
                 "label": "高中及以下",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "大专",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "本科及以上",
-                "flag": 0
+                "checked": false
             }
         ]
     },
@@ -67,23 +67,23 @@
         "children": [
             {
                 "label": "2,499元及以下",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "2,500~3,999元",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "4,000~7,999元",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "8,000~19,999元",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "20,000元及以上",
-                "flag": 0
+                "checked": false
             }
         ]
     },
@@ -92,15 +92,15 @@
         "children": [
             {
                 "label": "高",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "中",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "低",
-                "flag": 0
+                "checked": false
             }
         ]
     },
@@ -109,11 +109,11 @@
         "children": [
             {
                 "label": "有车",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "无车",
-                "flag": 0
+                "checked": false
             }
         ]
     },
@@ -122,55 +122,55 @@
         "children": [
             {
                 "label": "初中生",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "高中生",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "大学生",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "研究生",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "孕期",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "育儿阶段",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "家有孕妇",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "家有0-1岁小孩",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "家有1-3岁小孩",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "家有3-6岁小孩",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "家有小学生",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "家有初中生",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "家有高中生",
-                "flag": 0
+                "checked": false
             }
         ]
     },
@@ -179,27 +179,27 @@
         "children": [
             {
                 "label": "生产操作人员",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "文职人员",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "专业技术人员",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "管理者和企业主",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "个体经营者",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "服务人员",
-                "flag": 0
+                "checked": false
             }
         ]
     },
@@ -208,87 +208,87 @@
         "children": [
             {
                 "label": "农林牧渔",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "能源采矿化工",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "食品加工",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "纺织服装",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "建材家居",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "医药卫生",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "机械制造",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "IT通信电子",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "建筑房地产",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "交通运输和仓储邮政",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "餐饮",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "日化百货",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "金融保险",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "生活服务",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "住宿旅游",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "广告营销",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "法律商务人力外贸",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "科学研究",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "教育",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "文化体育娱乐",
-                "flag": 0
+                "checked": false
             },
             {
                 "label": "社会公共管理",
-                "flag": 0
+                "checked": false
             }
         ]
     }

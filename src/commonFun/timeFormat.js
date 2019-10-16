@@ -189,9 +189,9 @@ timeFormat.timestampFormat = function (timestamp) {
 		if (newDate.getFullYear() == Y && newDate.getMonth() + 1 == m && newDate.getDate() == d) {
 			return '昨天' + zeroize(H) + ':' + zeroize(i);
 		} else if (curDate.getFullYear() == Y) {
-			return zeroize(m) + '月' + zeroize(d) + '日 ' + zeroize(H) + ':' + zeroize(i);
+			return zeroize(m) + '月' + zeroize(d) + '日 ' + zeroize(H) + ':' + zeroize(i)+ ':' + zeroize(s);
 		} else {
-			return Y + '年' + zeroize(m) + '月' + zeroize(d) + '日 ' + zeroize(H) + ':' + zeroize(i);
+			return Y + '年' + zeroize(m) + '月' + zeroize(d) + '日 ' + zeroize(H) + ':' + zeroize(i)+ ':' + zeroize(s);
 		}
 	}
 };

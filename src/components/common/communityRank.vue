@@ -642,7 +642,7 @@
                         for(let data of this.chooseTagsArr){
                             console.log(data,temp.label);
                             let str = data.label.split('：')[0]
-                            if( str == temp.label){
+                            if( str == temp.label.split('：')[0]){
                                 temp.checked = false
                                 this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
                             }

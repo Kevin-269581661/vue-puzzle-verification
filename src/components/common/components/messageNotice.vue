@@ -18,7 +18,7 @@
                         <img v-if="item.messageType=='0'" src="../../../assets/images/media.png" alt="">
                         <img v-if="item.messageType=='2'" src="../../../assets/images/order.png" alt="">
                         <img v-if="item.messageType=='1'" src="../../../assets/images/editor.png" alt="">
-                        <div class="content">
+                        <div class="content" style="text-align: left">
                             <h5>{{item.title}}</h5>
                             <p v-html="item.messagePart1"></p>
                             <span>{{timeFormat(item.createTime*1)}}</span>

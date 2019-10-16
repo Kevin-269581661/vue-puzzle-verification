@@ -16,7 +16,7 @@
                 </div>
             </el-menu-item>
             <el-menu-item index="/superOperate">首页</el-menu-item>
-            <el-submenu index="2" show-timeout="80">
+            <el-submenu index="2" :show-timeout="80">
                 <template slot="title">常用模块</template>
                 <el-menu-item index="/superOperate/mediaList">媒体管理</el-menu-item>
                 <el-menu-item index="/superOperate/clientList">客户管理</el-menu-item>

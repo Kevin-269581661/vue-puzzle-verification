@@ -9,7 +9,7 @@
                     <el-tab-pane label="人群标签" name="first">
                         <div class="tab-content-wrap">
                             <div class="tab-content">
-                                <ul class="first-tags">
+                                <ul class="first-tags" :style="{height:tabHeight}">
                                     <li class="first-tags-li" v-for="(first,index) in personTags" :key="index">
                                         <span>{{first.label}}：</span>
                                         <ul class="second-tags">
@@ -20,7 +20,10 @@
                                         </ul>
                                     </li>
                                 </ul>
-
+                                <div class="show-hide-btn" :class="showhideText=='展开'?'':'show'" @click="toggleShowTags">
+                                    <i :class="showhideText=='展开'?'el-icon-d-arrow-left':'el-icon-d-arrow-right'"></i>
+                                    {{showhideText}}
+                                </div>
                             </div>
                         </div>
                     </el-tab-pane>
@@ -271,6 +274,8 @@
         },
         data() {
             return {
+                tabHeight:'232px',
+                showhideText:'展开',
                 width: 132,//面板宽度
                 activeName: 'second',
                 thirdShow: false,
@@ -435,10 +440,20 @@
             };
         },
         methods: {
+            //展开收起面板
+            toggleShowTags(){
+                if(this.tabHeight=='232px'){
+                    this.tabHeight = '452px'
+                    this.showhideText = '收起'
+                }else{
+                    this.tabHeight = '232px'
+                    this.showhideText = '展开'
+                }
+            },
             handleClick(tab, event) {
                 // console.log(tab, event);
             },
-            //人群标签标签-选中标签
+            //人群标签-选中标签
             chooseTags(first, second) {
                 console.log(first, this.chooseTagsArr);
                 let str = first.label + '：' + second.label
@@ -447,20 +462,43 @@
                     value: second.value
                 }
                 if (second.checked) {
-                    //取消
+                    //取消选中
                     second.checked = false
                     for (let data of this.personTags) {
                         for (let data2 of data.children) {
                             if (data2.label == second) {
-                                data2.checked = 0
+                                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(str), 1);
                             }
                         }
                     }
-                    this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(str), 1);
+
                 } else {
                     //选中
                     this.pushArr(obj, second)
+                    this.filterArr(first)
                 }
+
+            },
+            //选中的标签数组 取交集
+            filterArr(arr){
+                let a = [...this.chooseTagsArr]//展示的标签数组
+                let b = [...arr.children]//该标签的下级标签数组
+                //交集
+                let intersect = a.filter(x => [...b].some(y => y.label === x.label.split('：')[1]))
+                console.log('交集--',intersect);
+                if(intersect.length == b.length){
+                    //可合并部分标签。取差集
+                    // console.log('合并部分标签前',this.chooseTagsArr);
+                    this.chooseTagsArr =a.filter(x => [...b].every(y => y.label !== x.label.split('：')[1]))
+                    //加上一个新的一级标签
+                    let obj = {
+                        value:arr.value,
+                        label:arr.label
+                    }
+                    this.chooseTagsArr.push(obj)
+                    console.log('合并部分标签后',this.chooseTagsArr);
+                }
+
             },
             //删除选择的标签
             cancelChooseTag(item) {
@@ -580,15 +618,33 @@
                     //选中
                     if (level == 2) {
                         obj.label = tag1.label + '：' + tag2.label
-                        obj.value = tag2.value
+                        obj.value = tag2.value;
+                        //判断是否选中上级，去掉选中
+                        for(let data of this.chooseTagsArr){
+                            if(data.label == tag1.label){
+                                tag1.checked = false
+                                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                            }
+                        }
                     } else if (level == 3) {
+                        let temp = ''
                         for (let data of tag1.children) {
                             for (let data2 of data.children) {
                                 if (data2.value == tag2.value) {
+                                    temp = data2
                                     obj.label = tag1.label + '/' + data.label + '：' + data2.label
                                     obj.value = data2.value
                                 }
 
+                            }
+                        }
+                        // //判断是否选中上级，去掉选中
+                        for(let data of this.chooseTagsArr){
+                            console.log(data,temp.label);
+                            let str = data.label.split('：')[0]
+                            if( str == temp.label){
+                                temp.checked = false
+                                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
                             }
                         }
                     } else {
@@ -604,30 +660,27 @@
                         }
 
                     }
-                    console.log(obj, tag2);
-                    for(let data of this.chooseTagsArr){
-                        if(data.label.indexOf(tag1.label)!=-1){
-                            this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
-                        }
-                    }
-                    this.pushArr(obj, tag2)
+                    // console.log(obj, tag2);
+
+                    this.pushArr(obj, tag2);
+
+
                 } else {
                     //取消选中
-                    if (level == 2) {
-
-                    } else if (level == 3) {
-
-                    } else {
-
-                    }
+                   for(let data of this.chooseTagsArr){
+                       if(data.value == tag2.value){
+                           this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                       }
+                   }
                 }
             },
             pushArr(obj, item) {
                 if (this.chooseTagsArr.length < 4) {
-                    item.checked = true;
+                    item?item.checked = true:'';
                     this.chooseTagsArr.push(obj)
+
                 } else {
-                    item.checked = false;
+                    item?item.checked = false:'';
                     Message.warning("最多只能选择4个标签");
                 }
             },
@@ -688,11 +741,39 @@
     .checked-panel-wrap {
         padding: 0 32px;
     }
+    .tab-content{
+        position: relative;
+        border: 1px solid rgba(224, 224, 224, 1);
+        overflow: hidden;
+    }
+    .show-hide-btn{
+        width: 100%;
+        height: 42px;
+        line-height: 42px;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%);
+        text-align: center;
+        color:rgba(0,0,0,0.45);
+        font-size: 14px;
+        cursor: pointer;
+
+    }
+    .show-hide-btn.show{
+        border-top: 1px solid #E0E0E0;
+    }
+    .show-hide-btn /deep/ .el-icon-d-arrow-left, .show-hide-btn /deep/ .el-icon-d-arrow-right{
+        transform: rotateZ(270deg)
+    }
 
     .first-tags {
+        height: 232px;
         padding: 0 16px;
-        border: 1px solid rgba(224, 224, 224, 1);
+
+        transition: all 0.3s;
     }
+
 
     .first-tags-li {
         display: flex;

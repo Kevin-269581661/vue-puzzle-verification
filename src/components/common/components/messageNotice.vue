@@ -20,7 +20,7 @@
                         <img v-if="item.messageType=='1'" src="../../../assets/images/editor.png" alt="">
                         <div class="content">
                             <h5>{{item.title}}</h5>
-                            <p><span>{{item.messagePart1}}</span>{{item.messagePart2}}</p>
+                            <p v-html="item.messagePart1"></p>
                             <span>{{timeFormat(item.createTime*1)}}</span>
                         </div>
                         <div class="read-mask" v-if="item.status!=0"></div>

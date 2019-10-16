@@ -315,7 +315,7 @@ export default {
     created() {
         this.getRouter();
         this.getReportInfo();
-        MtaH5.clickStat('a006_b011_c011_d000_bt000_sw01')
+        // MtaH5.clickStat('a006_b011_c011_d000_bt000_sw01')
     },
     methods: {
         // 状态变中文

@@ -505,7 +505,7 @@
                 this.haveEdit = false
             }
             this.getDataFun()
-            MtaH5.clickStat('a002_b005_c000_d000_bt000_sw01')
+            // MtaH5.clickStat('a002_b005_c000_d000_bt000_sw01')
         },
         methods: {
             // 返回

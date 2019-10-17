@@ -43,8 +43,13 @@
                         <template v-if="isSale ">
                             <el-form-item label="销售类别:" prop="roleLevel">
                                 <el-select v-model="accountForm.saleManageLevel" placeholder="请选择角色">
-                                    <el-option :value="1" label="全国销售" v-if="sessionData.saleManageLevel"></el-option>
-                                    <el-option :value="0" label="地方销售"></el-option>
+                                    <!--                                    <el-option :value="1" label="全国销售" v-if="sessionData.saleManageLevel"></el-option>-->
+                                    <!--                                    <el-option :value="0" label="地方销售"></el-option>-->
+                                    <el-option v-for="key in saleKind"
+                                               :key="key.value"
+                                               :value="key.value"
+                                               :label="key.label">
+                                    </el-option>
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="权限城市:" prop="roleCity" v-if="accountForm.saleManageLevel">
@@ -276,6 +281,17 @@
                 isSale: false,
                 isMedia: false,
                 isSM: false,
+                // 销售类型
+                saleKind: [
+                    {
+                        value: 0,
+                        label: '地方销售',
+                    },
+                    // {
+                    //     value: '1',
+                    //     label: '全国销售',
+                    // },
+                ]
             };
         },
         mounted() {
@@ -287,9 +303,23 @@
             // 登录信息及角色数据
             getSession(){
                 this.sessionData = sessFun.getSess();
-                let {ascType} = this.sessionData;
+                let {ascType, asrID, uType,saleManageLevel} = this.sessionData;
                 this.type = ascType;
-                console.log(this.roleArr);
+                if (uType === 'SM') {
+                    if (saleManageLevel) {
+                        this.saleKind.push({
+                            value: 1,
+                            label: '全国销售'
+                        })
+                    }
+                    if (asrID == '999') {
+                        this.saleKind.push({
+                            value: 2,
+                            label: 'KA销售'
+                        })
+                    }
+                }
+                console.log(this.saleKind);
             },
             // 公司数据
             getCompany(){

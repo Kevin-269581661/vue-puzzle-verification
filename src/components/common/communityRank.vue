@@ -274,14 +274,16 @@
         },
         data() {
             return {
-                tabHeight:'232px',
+                tabHeight:'252px',
                 showhideText:'展开',
                 width: 132,//面板宽度
-                activeName: 'second',
+                activeName: 'first',
                 thirdShow: false,
                 forthShow: false,
-                currentThirdList: [],//当前展示的三级标签
-                currentForthList: [],//当前展示的四级标签
+                currSecondTag:'',//当前选中的二级标签
+                currThirdTag:'',//当前选中的三级标签
+                currentThirdList: [],//当前展示的三级标签列表
+                currentForthList: [],//当前展示的四级标签列表
                 personTags: [],
                 hobbyTags: [
                     {
@@ -442,11 +444,11 @@
         methods: {
             //展开收起面板
             toggleShowTags(){
-                if(this.tabHeight=='232px'){
+                if(this.tabHeight=='252px'){
                     this.tabHeight = '452px'
                     this.showhideText = '收起'
                 }else{
-                    this.tabHeight = '232px'
+                    this.tabHeight = '252px'
                     this.showhideText = '展开'
                 }
             },
@@ -503,21 +505,39 @@
             //删除选择的标签
             cancelChooseTag(item) {
                 console.log(item);
-                let tag = item.label.split('：')[1]
                 for (let data of this.personTags) {
-                    for (let data2 of data.children) {
-                        if (data2.label == tag) {
-                            data2.checked = 0
+                    if(item.label.includes('：')){
+                        let tag = item.label.split('：')[1]
+                        for (let data2 of data.children) {
+                            if (data2.label == tag) {
+                                data2.checked = false
+                            }
+                        }
+                    }else{
+                        //选中一级
+                        if(data.label == item.label){
+                            for(let data2 of data.children){
+                                data2.checked = false
+                            }
                         }
                     }
                 }
-                // for (let data of this.hobbyTags) {
-                //     for (let data2 of data.children) {
-                //         if (data2.label == tag) {
-                //             data2.checked = 0
-                //         }
-                //     }
-                // }
+
+                for (let data of this.hobbyTags) {
+                    if(item.label.includes('：')){
+                        let tag = item.label.split('：')[1]
+                        for (let data2 of data.children) {
+                            if (data2.label == tag) {
+                                data2.checked = false
+                            }
+                        }
+                    }else{
+                        //选中一级
+                        if(data.label == item.label){
+                            data.checked = false
+                        }
+                    }
+                }
                 this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(item), 1);
 
             },
@@ -531,24 +551,16 @@
                         }
                     }
                 }
-                for (let data of this.hobbyTags) {
-                    data.checked = false
-                    if (data.children) {
-                        for (let data2 of data.children) {
-                            data2.checked = false
-                            if (data2.children) {
-                                for (let data3 of data2.children) {
-                                    data3.checked = false
-                                    if (data3.children) {
-                                        for (let data4 of data3.children) {
-                                            data4.checked = false
-                                        }
-                                    }
-                                }
-                            }
+                let clear = function (arr) {
+                    for (let data of arr) {
+                        data.checked = false
+                        if (data.children) {
+                            clear(data.children)
                         }
                     }
                 }
+                clear(this.hobbyTags)
+
                 console.log(this.hobbyTags);
             },
             // 分页
@@ -625,27 +637,49 @@
                                 tag1.checked = false
                                 this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
                             }
+                            //是否选中下级
+                            let a = data.label.split('：')[0].split('/')[1];
+                            if(a == tag2.label){
+                                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                                //清空所有下级
+                                for(let data of tag2.children){
+                                    data.checked = false
+                                }
+                            }
                         }
+
                     } else if (level == 3) {
-                        let temp = ''
                         for (let data of tag1.children) {
-                            temp = data
                             for (let data2 of data.children) {
                                 if (data2.value == tag2.value) {
 
                                     obj.label = tag1.label + '/' + data.label + '：' + data2.label
                                     obj.value = data2.value
                                 }
-
                             }
                         }
-                        // //判断是否选中上级，去掉选中
+                        //判断是否选中上级，去掉选中
                         for(let data of this.chooseTagsArr){
-                            console.log(data,temp.label);
-                            let str = data.label.split('：')[0]
-                            if( str == temp.label.split('/')[0]){
-                                temp.checked = false
+                            if(data.label == tag1.label){
+                                tag1.checked = false
                                 this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                            }
+                        }
+                        for(let data of this.chooseTagsArr){
+                            let str = data.label.split('：')[1]
+                            let a = this.currSecondTag.label
+                            if( str == a){
+                                this.currSecondTag.checked = false
+                                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                            }
+                            //是否选中下级
+                            let b = data.label.split('：')[0].split('/')[2];
+                            if(b == tag2.label){
+                                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                                //清空所有下级
+                                for(let data of tag2.children){
+                                    data.checked = false
+                                }
                             }
                         }
                     } else {
@@ -659,7 +693,32 @@
                                 }
                             }
                         }
-
+                        //判断是否选中上级，去掉选中
+                        //三级
+                        for(let data of this.chooseTagsArr){
+                            let str = data.label.split('：')[1]
+                            let a = this.currThirdTag.label
+                            if( str == a){
+                                this.currThirdTag.checked = false
+                                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                            }
+                        }
+                        //二级
+                        for(let data of this.chooseTagsArr){
+                            let str = data.label.split('：')[1]
+                            let a = this.currSecondTag.label
+                            if( str == a){
+                                this.currSecondTag.checked = false
+                                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                            }
+                        }
+                        //一级
+                        for(let data of this.chooseTagsArr){
+                            if(data.label == tag1.label){
+                                tag1.checked = false
+                                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                            }
+                        }
                     }
                     // console.log(obj, tag2);
 
@@ -695,16 +754,22 @@
                         this.width = 264
                         this.thirdShow = true
                         this.forthShow = false
+                        this.currSecondTag = tag
                         this.currentThirdList = arr
                     } else {
                         this.width = 396
                         this.forthShow = true
+                        this.currThirdTag = tag
                         this.currentForthList = arr
                     }
 
                 }
 
             },
+            //排名列表
+            getRankList(){
+
+            }
 
         },
         mounted() {

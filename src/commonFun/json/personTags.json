@@ -1,30 +1,37 @@
 [
     {
         "label": "性别",
+        "value": "0",
         "children": [
             {
                 "label": "男",
+                "value": "1",
                 "checked": false
             },
             {
                 "label": "女",
+                "value": "2",
                 "checked": false
             }
         ]
     },
     {
         "label": "年龄",
+        "value": "3",
         "children": [
             {
                 "label": "18岁以下",
+                "value": "4",
                 "checked": false
             },
             {
                 "label": "18~24岁",
+                "value": "5",
                 "checked": false
             },
             {
                 "label": "25~34岁",
+                "value": "6",
                 "checked": false
             },
             {

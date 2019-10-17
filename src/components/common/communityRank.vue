@@ -20,7 +20,8 @@
                                         </ul>
                                     </li>
                                 </ul>
-                                <div class="show-hide-btn" :class="showhideText=='展开'?'':'show'" @click="toggleShowTags">
+                                <div class="show-hide-btn" :class="showhideText=='展开'?'':'show'"
+                                     @click="toggleShowTags">
                                     <i :class="showhideText=='展开'?'el-icon-d-arrow-left':'el-icon-d-arrow-right'"></i>
                                     {{showhideText}}
                                 </div>
@@ -112,7 +113,7 @@
                     </div>
                 </div>
                 <div class="btn">
-                    <el-button type="primary" >查 询</el-button>
+                    <el-button type="primary">查 询</el-button>
                 </div>
 
             </div>
@@ -274,14 +275,14 @@
         },
         data() {
             return {
-                tabHeight:'252px',
-                showhideText:'展开',
+                tabHeight: '252px',
+                showhideText: '展开',
                 width: 132,//面板宽度
                 activeName: 'first',
                 thirdShow: false,
                 forthShow: false,
-                currSecondTag:'',//当前选中的二级标签
-                currThirdTag:'',//当前选中的三级标签
+                currSecondTag: '',//当前选中的二级标签
+                currThirdTag: '',//当前选中的三级标签
                 currentThirdList: [],//当前展示的三级标签列表
                 currentForthList: [],//当前展示的四级标签列表
                 personTags: [],
@@ -443,11 +444,11 @@
         },
         methods: {
             //展开收起面板
-            toggleShowTags(){
-                if(this.tabHeight=='252px'){
+            toggleShowTags() {
+                if (this.tabHeight == '252px') {
                     this.tabHeight = '452px'
                     this.showhideText = '收起'
-                }else{
+                } else {
                     this.tabHeight = '252px'
                     this.showhideText = '展开'
                 }
@@ -482,63 +483,62 @@
 
             },
             //选中的标签数组 取交集
-            filterArr(arr){
+            filterArr(arr) {
                 let a = [...this.chooseTagsArr]//展示的标签数组
                 let b = [...arr.children]//该标签的下级标签数组
                 //交集
                 let intersect = a.filter(x => [...b].some(y => y.label === x.label.split('：')[1]))
-                console.log('交集--',intersect);
-                if(intersect.length == b.length){
+                console.log('交集--', intersect);
+                if (intersect.length == b.length) {
                     //可合并部分标签。取差集
                     // console.log('合并部分标签前',this.chooseTagsArr);
-                    this.chooseTagsArr =a.filter(x => [...b].every(y => y.label !== x.label.split('：')[1]))
+                    this.chooseTagsArr = a.filter(x => [...b].every(y => y.label !== x.label.split('：')[1]))
                     //加上一个新的一级标签
                     let obj = {
-                        value:arr.value,
-                        label:arr.label
+                        value: arr.value,
+                        label: arr.label
                     }
                     this.chooseTagsArr.push(obj)
-                    console.log('合并部分标签后',this.chooseTagsArr);
+                    console.log('合并部分标签后', this.chooseTagsArr);
                 }
 
             },
-            //删除选择的标签
+            //删除单个的标签
             cancelChooseTag(item) {
                 console.log(item);
+                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(item), 1);
                 for (let data of this.personTags) {
-                    if(item.label.includes('：')){
+                    if (item.label.includes('：')) {
                         let tag = item.label.split('：')[1]
                         for (let data2 of data.children) {
                             if (data2.label == tag) {
                                 data2.checked = false
                             }
                         }
-                    }else{
+                    } else {
                         //选中一级
-                        if(data.label == item.label){
-                            for(let data2 of data.children){
+                        if (data.label == item.label) {
+                            for (let data2 of data.children) {
                                 data2.checked = false
                             }
                         }
                     }
                 }
 
-                for (let data of this.hobbyTags) {
-                    if(item.label.includes('：')){
-                        let tag = item.label.split('：')[1]
-                        for (let data2 of data.children) {
-                            if (data2.label == tag) {
-                                data2.checked = false
-                            }
-                        }
-                    }else{
-                        //选中一级
-                        if(data.label == item.label){
+                let fn = function (arr){
+                    for (let data of arr) {
+                        if (data.value == item.value) {
                             data.checked = false
+                            return
+                        } else {
+                            if (data.children) {
+                              fn(data.children)
+                            }
                         }
                     }
                 }
-                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(item), 1);
+                fn(this.hobbyTags)
+
 
             },
             //清空所有标签
@@ -551,17 +551,45 @@
                         }
                     }
                 }
-                let clear = function (arr) {
-                    for (let data of arr) {
+
+                this.clear(this.hobbyTags)
+
+                console.log(this.hobbyTags);
+            },
+            clear(obj, type) {
+                if (obj.children) {
+                    //偏好
+                    if (type == 'split') {
+                        for (let data of this.chooseTagsArr) {
+                            let a = data.label.split('：')[0]
+                            if (data.label.includes('：') && a.includes(obj.label)) {
+                                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                                if (data.children) {
+                                    this.clear(data, 'split')
+                                }
+                            }
+
+                        }
+
+                    } else {
+                        for (let data of obj.children) {
+                            data.checked = false
+                            if (data.children) {
+                                this.clear(data.children)
+                            }
+                        }
+                    }
+
+                } else {
+                    //人群
+                    for (let data of obj) {
                         data.checked = false
                         if (data.children) {
-                            clear(data.children)
+                            this.clear(data.children)
                         }
                     }
                 }
-                clear(this.hobbyTags)
 
-                console.log(this.hobbyTags);
             },
             // 分页
             changePage(val) {
@@ -616,8 +644,12 @@
                         value: item.value,
                         label: item.label
                     }
+                    item.hovered = false
+                    //清空下级
+                    this.clear(item, 'split')
                     this.pushArr(obj, item)
                 }
+
             },
             //偏好标签-选中二三四级
             tagChecked(e, level, tag1, tag2) {
@@ -632,19 +664,18 @@
                         obj.label = tag1.label + '：' + tag2.label
                         obj.value = tag2.value;
                         //判断是否选中上级，去掉选中
-                        for(let data of this.chooseTagsArr){
-                            if(data.label == tag1.label){
+                        for (let data of this.chooseTagsArr) {
+                            if (data.label == tag1.label) {
                                 tag1.checked = false
                                 this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
                             }
                             //是否选中下级
                             let a = data.label.split('：')[0].split('/')[1];
-                            if(a == tag2.label){
+                            if (a == tag2.label) {
                                 this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
                                 //清空所有下级
-                                for(let data of tag2.children){
-                                    data.checked = false
-                                }
+                                this.clear(tag2.children)
+
                             }
                         }
 
@@ -652,34 +683,31 @@
                         for (let data of tag1.children) {
                             for (let data2 of data.children) {
                                 if (data2.value == tag2.value) {
-
                                     obj.label = tag1.label + '/' + data.label + '：' + data2.label
                                     obj.value = data2.value
                                 }
                             }
                         }
                         //判断是否选中上级，去掉选中
-                        for(let data of this.chooseTagsArr){
-                            if(data.label == tag1.label){
+                        for (let data of this.chooseTagsArr) {
+                            if (data.label == tag1.label) {
                                 tag1.checked = false
                                 this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
                             }
                         }
-                        for(let data of this.chooseTagsArr){
+                        for (let data of this.chooseTagsArr) {
                             let str = data.label.split('：')[1]
                             let a = this.currSecondTag.label
-                            if( str == a){
+                            if (str == a) {
                                 this.currSecondTag.checked = false
                                 this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
                             }
                             //是否选中下级
                             let b = data.label.split('：')[0].split('/')[2];
-                            if(b == tag2.label){
+                            if (b == tag2.label) {
                                 this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
                                 //清空所有下级
-                                for(let data of tag2.children){
-                                    data.checked = false
-                                }
+                                this.clear(tag2.children)
                             }
                         }
                     } else {
@@ -695,26 +723,26 @@
                         }
                         //判断是否选中上级，去掉选中
                         //三级
-                        for(let data of this.chooseTagsArr){
+                        for (let data of this.chooseTagsArr) {
                             let str = data.label.split('：')[1]
                             let a = this.currThirdTag.label
-                            if( str == a){
+                            if (str == a) {
                                 this.currThirdTag.checked = false
                                 this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
                             }
                         }
                         //二级
-                        for(let data of this.chooseTagsArr){
+                        for (let data of this.chooseTagsArr) {
                             let str = data.label.split('：')[1]
                             let a = this.currSecondTag.label
-                            if( str == a){
+                            if (str == a) {
                                 this.currSecondTag.checked = false
                                 this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
                             }
                         }
                         //一级
-                        for(let data of this.chooseTagsArr){
-                            if(data.label == tag1.label){
+                        for (let data of this.chooseTagsArr) {
+                            if (data.label == tag1.label) {
                                 tag1.checked = false
                                 this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
                             }
@@ -727,20 +755,20 @@
 
                 } else {
                     //取消选中
-                   for(let data of this.chooseTagsArr){
-                       if(data.value == tag2.value){
-                           this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
-                       }
-                   }
+                    for (let data of this.chooseTagsArr) {
+                        if (data.value == tag2.value) {
+                            this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                        }
+                    }
                 }
             },
             pushArr(obj, item) {
                 if (this.chooseTagsArr.length < 4) {
-                    item?item.checked = true:'';
+                    item ? item.checked = true : '';
                     this.chooseTagsArr.push(obj)
 
                 } else {
-                    item?item.checked = false:'';
+                    item ? item.checked = false : '';
                     Message.warning("最多只能选择4个标签");
                 }
             },
@@ -767,7 +795,7 @@
 
             },
             //排名列表
-            getRankList(){
+            getRankList() {
 
             }
 
@@ -807,29 +835,33 @@
     .checked-panel-wrap {
         padding: 0 32px;
     }
-    .tab-content{
+
+    .tab-content {
         position: relative;
         border: 1px solid rgba(224, 224, 224, 1);
         overflow: hidden;
     }
-    .show-hide-btn{
+
+    .show-hide-btn {
         width: 100%;
         height: 42px;
         line-height: 42px;
         position: absolute;
         left: 0;
         bottom: 0;
-        background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
         text-align: center;
-        color:rgba(0,0,0,0.45);
+        color: rgba(0, 0, 0, 0.45);
         font-size: 14px;
         cursor: pointer;
 
     }
-    .show-hide-btn.show{
+
+    .show-hide-btn.show {
         border-top: 1px solid #E0E0E0;
     }
-    .show-hide-btn /deep/ .el-icon-d-arrow-left, .show-hide-btn /deep/ .el-icon-d-arrow-right{
+
+    .show-hide-btn /deep/ .el-icon-d-arrow-left, .show-hide-btn /deep/ .el-icon-d-arrow-right {
         transform: rotateZ(270deg)
     }
 
@@ -839,7 +871,6 @@
 
         transition: all 0.3s;
     }
-
 
     .first-tags-li {
         display: flex;
@@ -1061,13 +1092,15 @@
         border-bottom-color: rgba(24, 144, 255, 1);
         border-right-color: rgba(24, 144, 255, 1);
     }
-    .btn{
+
+    .btn {
         width: 100%;
         text-align: center;
         margin-bottom: 24px;
         margin-top: 16px;
     }
-    .btn button{
+
+    .btn button {
         width: 74px;
         height: 32px;
 

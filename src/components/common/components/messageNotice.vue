@@ -13,14 +13,26 @@
                     <span @click="handleClick('unread')" :class="activeName=='unread'?'active':''">未读({{messageList.unread}})</span>
                 </div>
                 <ul class="list-wrap" ref="scrollBox">
-                    <li v-for="(item,index) in messageList.list" :class="messageList.readStatus==1?'readed':''"
+                    <li v-if="activeName=='all'" v-for="(item,index) in messageList.list" :key="index" :class="messageList.readStatus==1?'readed':''"
                         @click="read(item)">
                         <img v-if="item.messageType=='0'" src="../../../assets/images/media.png" alt="">
                         <img v-if="item.messageType=='2'" src="../../../assets/images/order.png" alt="">
                         <img v-if="item.messageType=='1'" src="../../../assets/images/editor.png" alt="">
                         <div class="content">
                             <h5>{{item.title}}</h5>
-                            <p><span>{{item.messagePart1}}</span>{{item.messagePart2}}</p>
+                            <p v-html="item.messagePart1" style="text-align: left"></p>
+                            <span>{{timeFormat(item.createTime*1)}}</span>
+                        </div>
+                        <div class="read-mask" v-if="item.status!=0"></div>
+                    </li>
+                    <li v-if="activeName=='unread'" v-for="(item,index) in messageList.unreadlist" :key="index" :class="messageList.readStatus==1?'readed':''"
+                        @click="read(item)">
+                        <img v-if="item.messageType=='0'" src="../../../assets/images/media.png" alt="">
+                        <img v-if="item.messageType=='2'" src="../../../assets/images/order.png" alt="">
+                        <img v-if="item.messageType=='1'" src="../../../assets/images/editor.png" alt="">
+                        <div class="content">
+                            <h5>{{item.title}}</h5>
+                            <p v-html="item.messagePart1" style="text-align: left"></p>
                             <span>{{timeFormat(item.createTime*1)}}</span>
                         </div>
                         <div class="read-mask" v-if="item.status!=0"></div>
@@ -52,16 +64,8 @@
                 messageList: {
                     unread: 0,
                     allTxt: 0,
-                    list: [
-                        {
-                            messageType: '0',
-                            title: '媒体禁用',
-                            messagePart1: '中信西关海北门',
-                            messagePart2: '已被xx禁用',
-                            createTime: '1569750591000',
-                            status: 0,
-                        },
-                    ]
+                    list: [],
+                    unreadlist:[]
                 },
                 sessionData: '',
                 // system: 'http://192.168.1.239:8021/system/message',
@@ -87,11 +91,15 @@
             },
             //切换全部和已读
             handleClick(type) {
+                let that = this
                 this.page = 1
                 this.activeName = type
                 this.messageList.list = []
-                this.getUnreadCount()
-                this.getMessageList()
+                this.messageList.unreadlist = []
+                setTimeout(function () {
+                    that.getUnreadCount()
+                    that.getMessageList()
+                },50)
             },
             ///获取消息列表
             getMessageList() {
@@ -108,7 +116,11 @@
                         this.maxPage = res.data.data.totalPage
                         if (res.data.data.dataList.length > 0) {
                             for (let data of res.data.data.dataList) {
-                                this.messageList.list.push(data)
+                                if(this.activeName == 'unread'){
+                                    this.messageList.unreadlist.push(data)
+                                }else{
+                                    this.messageList.list.push(data)
+                                }
                             }
                         }
                     }
@@ -136,6 +148,7 @@
                         setTimeout(() => {
                             this.page = 1
                             that.messageList.list = []
+                            that.messageList.unreadlist = []
                             that.getUnreadCount()
                             that.getMessageList()
                         }, 500)

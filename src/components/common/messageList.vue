@@ -41,7 +41,7 @@
                             <a v-if="item.status==0" href="javascript:;" @click="read(item)">标记已读</a>
                         </div>
                         <p>
-                            <span>{{item.messagePart1}}{{item.messagePart2}}</span>
+                            <span v-html="item.messagePart1"></span>
                             <span>{{timeFormat(item.createTime*1)}}</span>
                         </p>
 
@@ -269,6 +269,9 @@
         color: rgba(0, 0, 0, 0.65);
         display: flex;
         justify-content: space-between;
+    }
+    .mess-li p span:first-child /deep/ b{
+        font-weight: normal;
     }
     .mess-li p span:last-child{
         color:rgba(0,0,0,0.45);

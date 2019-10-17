@@ -52,7 +52,7 @@
 /*滚动条*/
 .el-table__body-wrapper {
     /*height: 405px;*/
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
 }
 

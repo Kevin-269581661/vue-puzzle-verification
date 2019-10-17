@@ -47,8 +47,9 @@
                         </el-date-picker>
                     </el-col>
                     <el-col :span="5">
-                        <el-button type="primary" :disabled="searchBtnAbled" @click="searchFun">搜索</el-button>
-                        <el-button @click="clearSearch">重置</el-button>
+                        <el-button type="primary" :disabled="searchBtnAbled" @click="searchFun"
+                                   v-qadn-mta-h5="{id: 'a005_b000_c000_d000_bt103_ck01'}">搜索</el-button>
+                        <el-button @click="clearSearch" v-qadn-mta-h5="{id: 'a005_b000_c000_d000_bt104_ck02'}">重置</el-button>
                     </el-col>
                 </el-row>
                 <div class="table_wrap" :class="!tableLength && (pageData.pageSize == 20 ? 'table_wrap_20' : pageData.pageSize == 30 ? 'table_wrap_30' : pageData.pageSize == 40 ? 'table_wrap_40' : '')">

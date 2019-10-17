@@ -2,7 +2,8 @@
     <div class="third-wrap box-wrap">
         <div class="table_wrap">
             <p class="search-row">
-                <el-button type="primary" size="small" @click="uploadMater()" v-show="isOrder">添加上画信息</el-button>
+                <el-button type="primary" size="small" @click="uploadMater()" v-show="isOrder"
+                           v-qadn-mta-h5="{id: 'a006_b011_c008_d000_bt123_ck04'}">添加上画信息</el-button>
             </p>
             <el-radio-group v-model="mediaType" size="medium">
                 <el-radio-button label="广告门"></el-radio-button>
@@ -59,8 +60,10 @@
                 <el-select v-model="mapName" placeholder="请选择地图中心点" size="small">
                     <el-option v-for="(item, index) of mapArr" :key="index" :label="item.name" :value="item.name"></el-option>
                 </el-select>
-                <el-button size="small" type="primary" @click="searchInfo()" :disabled="!isSearch">搜索</el-button>
-                <el-button plain size="small" @click="resetInfo()" :disabled="!isReset">重置</el-button>
+                <el-button size="small" type="primary" @click="searchInfo()" :disabled="!isSearch"
+                           v-qadn-mta-h5="{id: 'a006_b011_c008_d005_bt124_ck01'}">搜索</el-button>
+                <el-button plain size="small" @click="resetInfo()" :disabled="!isReset"
+                           v-qadn-mta-h5="{id: 'a006_b011_c008_d005_bt125_ck02'}">重置</el-button>
             </p>
             <p style="margin-top:15px;">
                 <el-upload
@@ -71,9 +74,9 @@
                     :disabled="!shopList.length"
                     style="display:inline-block;"
                 >
-                    <el-button plain size="small">添加画像</el-button>
+                    <el-button plain size="small" v-qadn-mta-h5="{id: 'a006_b011_c008_d005_bt126_ck04'}">添加画像</el-button>
                 </el-upload>
-                <el-button plain size="small" @click="openRemark()">添加备注</el-button>
+                <el-button plain size="small" @click="openRemark()" v-qadn-mta-h5="{id: 'a006_b011_c008_d005_bt127_ck04'}">添加备注</el-button>
             </p>
             <div class="car-title">
                 <i class="el-icon-info" style="color: #1890FF;"></i>

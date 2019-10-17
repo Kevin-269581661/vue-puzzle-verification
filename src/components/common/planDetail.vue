@@ -19,7 +19,8 @@
                         <div class="handleBtn">
                             <!--<el-button plain>导出</el-button>-->
                             <template v-if="planDetail.apState==1">
-                                <el-button type="primary" @click="edit()" v-if="(role=='BD')|| (role=='MD')">编辑</el-button>
+                                <el-button type="primary" @click="edit()" v-if="(role=='BD')|| (role=='MD')"
+                                           v-qadn-mta-h5="{id: 'a004_b010_c000_d000_bt097_ck03'}">编辑</el-button>
                             </template>
                         </div>
                     </div>
@@ -109,8 +110,11 @@
                 </el-tabs>
             </div>
             <div class="content_bottom_btn">
-                <el-button plain type="default" icon="el-icon-download" class="searchBtn" v-if="planPanel=='first'" @click="export2Excel(planDetail.apName)" :disabled="isDown">导出</el-button>
-                <el-button plain class="cancel" @click="goBack()">返回</el-button>
+                <el-button plain type="default" icon="el-icon-download" class="searchBtn" v-if="planPanel=='first'"
+                           v-qadn-mta-h5="{id: 'a004_b010_c002_d000_bt102_ck04'}"
+                           @click="export2Excel(planDetail.apName)" :disabled="isDown">导出</el-button>
+                <el-button plain class="cancel" @click="goBack()"
+                           v-qadn-mta-h5="{id: 'a004_b010_c000_d000_bt098_ck03'}">返回</el-button>
             </div>
         </div>
     </div>
@@ -247,6 +251,11 @@ export default {
         handleClick() {
             if (this.planPanel == "first") {
                 this.getSetPoint();
+                MtaH5.clickStat('a004_b010_c000_d000_bt099_ck09')
+            } else if(this.planPanel == "second") {
+                MtaH5.clickStat('a004_b010_c000_d000_bt100_ck09')
+            } else if(this.planPanel == "third") {
+                MtaH5.clickStat('a004_b010_c000_d000_bt101_ck09')
             }
         },
         // 获取选点排期列表数据

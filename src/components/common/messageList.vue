@@ -40,7 +40,10 @@
                             </h6>
                             <a v-if="item.status==0" href="javascript:;" @click="read(item)">标记已读</a>
                         </div>
-                        <p>{{item.messagePart1}}{{item.messagePart2}}</p>
+                        <p>
+                            <span>{{item.messagePart1}}{{item.messagePart2}}</span>
+                            <span>{{timeFormat(item.createTime*1)}}</span>
+                        </p>
 
                     </li>
                 </ul>
@@ -90,24 +93,15 @@
                         value: 2
                     }
                 ],
-                messageList: [
-                    // {
-                    //     "messageId": "ddddddddd",
-                    //     "messageType": 1,
-                    //     "receiveUserId": 5,
-                    //     "title": "媒体禁用",
-                    //     "messagePart1": "骏景花园-正大门",
-                    //     "messagePart2": "已被小仪进行禁用",
-                    //     "createTime": 1569752744939,
-                    //     "readTime": 1569752784939,
-                    //     status: 0,
-                    // }
-                ],
+                messageList: [],
                 // system:'http://192.168.1.239:8021/system/message',
             }
 
         },
         methods: {
+            timeFormat(createTime) {
+                return timeFormat.timestampFormat(createTime)
+            },
             search() {
                 console.log(this.searchInfo);
                 let info = {
@@ -120,7 +114,7 @@
                 if (this.searchInfo.messageType !== '') {
                     info.messageType = this.searchInfo.messageType
                 }
-                if(this.searchInfo.date.length>1){
+                if(this.searchInfo.date!=null&&this.searchInfo.date.length>1){
                     info.startTime = new Date(this.searchInfo.date[0]).getTime()
                     info.endTime = new Date(this.searchInfo.date[1]).getTime()
                 }
@@ -213,6 +207,9 @@
     .table-wrap span {
         color: rgba(0, 0, 0, 0.85);
     }
+    .table-wrap /deep/ .el-date-editor .el-range__close-icon{
+        line-height: 26px;
+    }
 
     .mess-ul {
         margin-top: 16px;
@@ -246,7 +243,7 @@
         font-size: 14px;
     }
 
-    .mess-li span {
+    .mess-li>div span {
         font-size: 12px;
         display: inline-block;
         width: 32px;
@@ -267,8 +264,14 @@
     }
 
     .mess-li p {
+        font-size: 14px;
         padding: 15px 25px;
         color: rgba(0, 0, 0, 0.65);
+        display: flex;
+        justify-content: space-between;
+    }
+    .mess-li p span:last-child{
+        color:rgba(0,0,0,0.45);
     }
     /deep/ .el-select .el-input .el-select__caret{
         line-height: 30px;

@@ -1,5 +1,10 @@
 <template>
     <div>
+        <header class="share_index_header">
+            <div class="logo_img">
+                <img src="../../assets/images/logo.png" alt="qinlink">
+            </div>
+        </header>
         <!--地图标签-->
         <div id="qinlinMap" ref="qinlinMap" style=""></div>
         <!--左侧搜索-->
@@ -239,7 +244,39 @@
                 <span><i class="el-icon-share"></i>分享</span>
                 <span><i class="el-icon-download" @click="exportExcel"></i>下载</span>
                 <span @click="deleteAll"><i class="el-icon-delete"></i>清空</span>
+                <el-button type="primary" size="small" @click="pushMapRes">选定</el-button>
             </div>
+        </div>
+        <!--底部右侧鼠标绘制-->
+        <div class="bottom_right_control">
+            <!--比例尺-->
+            <ul class="scale_control">
+                <li class="li_map_zoom">
+                    <span>{{scale}}</span>
+                    <div class="zoom_scale"></div>
+                </li>
+                <li class="li_btn" @click="setMapZoom('minus')">
+                    <i class="el-icon-minus"></i>
+                </li>
+                <li class="li_btn" @click="setMapZoom('add')">
+                    <i class="el-icon-plus"></i>
+                </li>
+            </ul>
+            <!--鼠标绘制-->
+            <ul class="mouse_control">
+                <li class="mouse_control_li" @click="">
+                    <img src="../../assets/images/map/scale.png" alt="">
+                </li>
+                <li class="mouse_control_li" @click="drawingMouse('circle')">
+                    <img src="../../assets/images/map/circle.png" alt="">
+                </li>
+                <li class="mouse_control_li" @click="drawingMouse('polygon')">
+                    <img src="../../assets/images/map/polygon.png" alt="">
+                </li>
+                <li class="mouse_control_li" @click="">
+                    <img src="../../assets/images/map/overlay.png" alt="">
+                </li>
+            </ul>
         </div>
         <!--标注info框-->
         <div class="res_info_window" ref="resInfoWindow" v-show="isShowInfo">
@@ -313,6 +350,8 @@
                 resMap: '',
                 markerIcon: require('../../assets/images/map/markerIcon.png'),
                 dateTime:[],
+                //比例尺
+                scale: '5公里',
                 // 当前显示到小区数据
                 resInfo:[],
                 // 搜索到关键词
@@ -502,13 +541,13 @@
                 // 创建Map实例
                 this.resMap = new BMap.Map("qinlinMap", {enableMapClick:false});
                 console.log('resMap',this.resMap)
-                // 初始化地图,设置中心点坐标和地图级别
-                this.resMap.centerAndZoom(new BMap.Point(113.36133,23.13129), 12);//11
                 // 设置地图显示的城市 此项是必须设置的
                 this.resMap.setCurrentCity("广州市");
+                // 初始化地图,设置中心点坐标和地图级别
+                this.resMap.centerAndZoom(new BMap.Point(113.36133,23.13129), 12);//11
                 //开启鼠标滚轮缩放
                 this.resMap.enableScrollWheelZoom(true);
-                let myStyleJson = [
+                let mapStyleJson = [
                     {
                         "featureType": "land",
                         "elementType": "geometry.stroke",
@@ -531,16 +570,14 @@
                         }
                     },
                 ]
-                this.resMap.setMapStyle({styleJson: myStyleJson })
+                this.resMap.setMapStyle({styleJson: mapStyleJson })
                 // 监听点击地图
                 this.resMap.addEventListener("click", () => {
                     console.log('监听点击地图---')
                     this.isShowMediaInfo = false
                 });
                 // 初始化鼠标绘制
-                // this.initMouseDrawing()
-                // 城市边界
-                this.displayBoundary()
+                this.initMouseDrawing()
             },
             // 城市边界
             displayBoundary() {
@@ -629,13 +666,13 @@
             // 创建标注
             creatMarker() {
                 let i = 0
+                let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(16,16),{
+                    anchor: new BMap.Size(8, 8)
+                });
                 for(let key of this.resInfo) {
                     this.$set(key, "isSelect", false);
                     if(i < 1000) {
                         let point = new BMap.Point(key.lng, key.lat);
-                        let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(16,16),{
-                            anchor: new BMap.Size(8, 8)
-                        });
                         let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
                         let label = new BMap.Label(key.resName,{offset:new BMap.Size(-20,-16)});
                         label.setStyle({
@@ -657,6 +694,8 @@
                     }
                     i++
                 }
+                // 城市边界
+                this.displayBoundary()
             },
             // 显示详情
             showInfo(info,point){
@@ -676,6 +715,148 @@
             // 详情里选定按钮
             addResFun(item) {
                 this.checkBoxFun(this.showResInfo)
+            },
+            /**
+             * 鼠标绘制
+             * */
+            // 初始化鼠标绘制
+            initMouseDrawing(){
+                if(!this.drawingManager){
+                    // 鼠标绘制控件
+                    let styleOptions = {
+                        strokeColor:'rgba(24,144,255,1)',   //边线颜色。
+                        fillColor: 'rgba(24,144,255,0.15)', //填充颜色。当参数为空时，圆形将没有填充效果。
+                        strokeWeight: 2,                    //边线的宽度，以像素为单位。
+                        strokeOpacity: 1,                   //边线透明度，取值范围0 - 1。
+                        fillOpacity: 1,                     //填充的透明度，取值范围0 - 1。
+                        strokeStyle: 'solid',               //边线的样式，solid或dashed。
+                    }
+                    //实例化鼠标绘制工具
+                    this.drawingManager = new BMapLib.DrawingManager(this.resMap, {
+                        isOpen: false, //是否开启绘制模式
+                        enableDrawingTool: false, //是否显示工具栏
+                        drawingToolOptions: {
+                            anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
+                            offset: new BMap.Size(5, 5), //偏离值
+                            drawingModes : [
+                                // BMAP_DRAWING_MARKER,        // 画点
+                                BMAP_DRAWING_CIRCLE,        // 画圆
+                                // BMAP_DRAWING_POLYLINE,      // 画线
+                                BMAP_DRAWING_POLYGON,       // 画多边形
+                                BMAP_DRAWING_RECTANGLE      // 画矩形
+                            ]
+                        },
+                        circleOptions: styleOptions,    // 圆的样式
+                        polylineOptions: styleOptions,  // 线的样式
+                        polygonOptions: styleOptions,   // 多边形的样式
+                        rectangleOptions: styleOptions  // 矩形的样式
+                    });
+                    let that = this
+                    //添加鼠标绘制工具监听事件，用于获取绘制结果
+                    this.drawingManager.addEventListener("overlaycomplete", function(e) {
+                        console.log(e.drawingMode);
+                        console.log(e.overlay);
+                        console.log(e.calculate);
+                        console.log(e.label);
+                        that.drawingManager.close()
+                        if(e.drawingMode === 'circle') {
+                            that.showResInPolygon('circle',e.overlay)
+                        } else if(e.drawingMode === 'polygon') {
+                            console.log('画多边形',overlay,e.overlay.getPath());
+                            that.polygonPoint = e.overlay.getPath()
+                            that.showResInPolygon('polygon',e.overlay)
+                        }
+                    });
+                }
+            },
+            // 打开绘制类型
+            drawingMouse(temp) {
+                this.deleteDrawingOverlay()
+                if(temp === 'circle') {
+                    this.drawingManager.open()
+                    this.drawingManager.enableCalculate()
+                    this.drawingManager.setDrawingMode(BMAP_DRAWING_CIRCLE);
+                } else if(temp === 'polygon'){
+                    this.drawingManager.open()
+                    this.drawingManager.setDrawingMode(BMAP_DRAWING_POLYGON);
+                } else {
+
+                }
+            },
+            // 匹配多边形内的点位
+            isInsidePolygon(pt, poly) {
+                for (var c = false, i = -1, l = poly.length, j = l - 1; ++i < l; j = i)
+                    ((poly[i].lat <= pt.lat && pt.lat < poly[j].lat) || (poly[j].lat <= pt.lat && pt.lat < poly[i].lat)) &&
+                    (pt.lng < (poly[j].lng - poly[i].lng) * (pt.lat - poly[i].lat) / (poly[j].lat - poly[i].lat) + poly[i].lng) &&
+                    (c = !c);
+                return c;
+            },
+            // 显示多边形内的点位
+            showResInPolygon(temp,overlay) {
+                let date1 = new Date();
+                let allOverlay = this.resMap.getOverlays();
+                for(let key of this.resInfo) {
+                    for (let akey of allOverlay) {
+                        if( akey.isVisible() &&
+                            akey.toString() == "[object Marker]" &&
+                            akey.getLabel() &&
+                            akey.getLabel().content === key.resName) {
+                            //
+                            let point = new BMap.Point(key.lng, key.lat);
+                            let isShow = ''
+                            if(temp === 'circle') {
+                                isShow = BMapLib.GeoUtils.isPointInCircle(point,overlay)
+                            } else if (temp === 'polygon') {
+                                // isShow = this.isInsidePolygon(point,this.polygonPoint)
+                                isShow = BMapLib.GeoUtils.isPointInPolygon(point,overlay)
+                            }
+                            if(!isShow){
+                                akey.hide()
+                            } else {
+                                let flag = this.searchResList.some((item,index)=>{
+                                    if(key.resID === item.resID) {
+                                        return true
+                                    }
+                                })
+                                if (!flag) {
+                                    this.searchResList.push(key)
+                                }
+                            }
+                            break
+                        }
+                    }
+                }
+                let date2 = new Date();
+                let haomiao = date2.getTime() - date1.getTime();
+                console.log('用时',haomiao/(1000*60))
+            },
+            // 清除上一次的绘制
+            deleteDrawingOverlay() {
+                let allOverlay = this.resMap.getOverlays();
+                for (let akey of allOverlay) {
+                    if (akey.toString() == "[object Circle]" || akey.toString() == "[object Polygon]") {
+                        this.resMap.removeOverlay(akey);
+                        // break;
+                    } else if(!akey.isVisible()){
+                        akey.show()
+                    } else {
+
+                    }
+                }
+                this.searchResList = []
+            },
+            // 地图缩放
+            setMapZoom(temp) {
+                if(temp === 'add') {
+                    this.resMap.zoomIn()
+                } else if(temp === 'minus'){
+                    this.resMap.zoomOut()
+                }
+                let scaleArr = ['20米','50米','100米','200米','500米','1公里','2公里','5公里','10公里','20公里','25公里','50公里','100公里','200公里','500公里','1000公里','2000公里','5000公里','10000公里']
+                let mapLevel = [19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1]
+                let index = mapLevel.indexOf(this.resMap.getZoom())
+                this.scale = scaleArr[index]
+                console.log('当前地图缩放等级---',this.resMap.getZoom(),this.scale)
             },
             /**
             *  左侧搜索
@@ -888,6 +1069,7 @@
             // 周边搜索
             searchAround() {
                 console.log('this.selectOnlineList',this.selectOnlineList)
+                this.searchResList = []
                 let radius = this.aroundSearchInfo.searchRadius * 1000
                 for (let key of this.selectOnlineList) {
                     let circle = new BMap.Circle(key.point, radius, {
@@ -928,13 +1110,13 @@
                                     }
                                 })
                                 let centerInfo = {
-                                    address: data.address,
-                                    city: data.city,
-                                    point: data.point,
-                                    title: data.title
+                                    centerAddress: data.address || '',
+                                    city: data.city || '',
+                                    point: data.point || '',
+                                    centerName: data.title || ''
                                 }
                                 if (flag) {
-                                    key.mapCenter.push(centerInfo)
+                                    key.mapCenter ? key.mapCenter.push(centerInfo) : key.mapCenter = [centerInfo]
                                 } else {
                                     key.mapCenter = [centerInfo]
                                     this.searchResList.push(key)
@@ -1113,9 +1295,36 @@
                 }
                 this.selectResList = []
             },
-            // 选定提交点位
+            // 选定提交小区资源ID
             pushMapRes(){
-
+                console.log('selectResList',this.selectResList)
+                if (!this.selectResList.length) {
+                    sessFun.messageFun('warning','请选择小区')
+                    return
+                }
+                let arr = this.selectResList.map(item=>{
+                    return {
+                        resID: item.resID,
+                        centerInfo:item.mapCenter || []
+                    }
+                })
+                let params = {
+                    startTime: this.dateTime[0],
+                    endTime: this.dateTime[1],
+                    resIDList: arr,
+                }
+                console.log('选定提交小区资源IDparams',params)
+                api.postApi_json(this.apiVar.mapApi + '/adsList',params).then(res=>{
+                    console.log('res',res)
+                    if(res.data.SysCode === 200200) {
+                        this.$emit('childFun',res.data.data)
+                        sessFun.messageFun('success', '提交成功')
+                    } else {
+                        sessFun.messageFun('warning', res.data.MSG || '小区提交失败')
+                    }
+                }).catch(err=>{
+                    sessFun.messageFun('warning','小区提交异常')
+                })
             },
             // 导出exc
             exportExcel(){
@@ -1160,6 +1369,16 @@
 </script>
 
 <style scoped>
+    .share_index_header {
+        width: 100%;
+        background: #444;
+        height: 60px;
+    }
+
+    .logo_img {
+        padding: 14px 0 0 38px;
+    }
+
     #qinlinMap {
         position: fixed !important;
         top: 60px;
@@ -1511,7 +1730,6 @@
     }
 
     /* 标注info框 */
-
     .res_info_header{
         padding: 0 0 8px 0;
         border-bottom: 1px solid rgba(232,232,232,1);
@@ -1567,6 +1785,99 @@
         height: 320px;
         width: 220px;
         background: #fff;
+    }
+
+    /*底部右侧控件*/
+    .bottom_right_control{
+        position: fixed;
+        bottom: 16px;
+        right: 24px;
+        width: 265px;
+    }
+
+    .scale_control {
+        width: 48%;
+        height: 20px;
+        background: #fff;
+        box-shadow:0px 0px 8px 0px rgba(0,0,0,0.12);
+        border-radius:4px;
+        float: right;
+        padding: 6px 0;
+    }
+
+    .scale_control li {
+        float: left;
+        text-align: center;
+        color:rgba(0,0,0,0.65);
+        font-size: 12px;
+        border-right: 1px solid #E8E8E8;
+    }
+
+    .scale_control li:last-child{
+        border-right: none;
+    }
+
+    .li_map_zoom {
+        width: 44%;
+        height: 20px;
+    }
+
+    .zoom_scale {
+        height: 8px;
+        margin: 0 10%;
+        border-bottom: 1px solid rgba(0,0,0,0.5);
+        border-left: 1px solid rgba(0,0,0,0.5);
+        border-right: 1px solid rgba(0,0,0,0.5);
+        position: relative;
+        top: -4px;
+    }
+
+    .scale_control .li_btn {
+        width: 26%;
+        line-height: 20px;
+        font-size: 16px;
+        color:rgba(0,0,0,0.85);
+        cursor: pointer;
+    }
+
+    .mouse_control {
+        width: 48%;
+        height: 32px;
+        float: left;
+        margin-right: 2%;
+        background: #fff;
+        box-shadow:0px 0px 8px 0px rgba(0,0,0,0.12);
+        border-radius:4px;
+    }
+
+    .mouse_control_li{
+        float: left;
+        width: 25%;
+        text-align: center;
+        line-height: 34px;
+        cursor: pointer;
+    }
+
+    .mouse_control_li:hover{
+        background:rgba(24,144,255,0.1);
+    }
+
+    .mouse_control_li:after{
+        content: "";
+        color: #d9d9d9;
+        position: relative;
+        left: 8px;
+        border-right: 1px solid #E8E8E8;
+    }
+
+    .mouse_control_li:last-child:after{
+        content: "";
+        border-right: none;
+    }
+
+    .mouse_control_li img {
+        width: 16px;
+        height: 16px;
     }
 
     ::-webkit-scrollbar {

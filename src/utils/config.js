@@ -43,7 +43,7 @@ const apiVar = {
     // 换画报告
     replace: '/replace/v1',
     // 社区画像
-    portrait: '/portrait',
+    portrait: '/portrait/api/v1/',
     // 图片相关
     image: '/image',
     wuYouMap: wuYouMap,

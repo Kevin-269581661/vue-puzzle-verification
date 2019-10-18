@@ -113,12 +113,15 @@
                     </div>
                 </div>
                 <div class="btn">
-                    <el-button type="primary">查 询</el-button>
+                    <el-button type="primary" @click="getRankList">查 询</el-button>
                 </div>
 
             </div>
             <div class="bottom">
-                <h5>排名TOP200</h5>
+                <h5>
+                    <span>排名TOP200</span>
+                    <span @click="exportTable"><i class="el-icon-upload2"></i>导出</span>
+                </h5>
                 <div class="table-wrap">
                     <div class="table_dt">
                         <el-table
@@ -156,7 +159,7 @@
                             <el-table-column
                                 prop="area"
                                 label="区域"
-                                min-width="100"
+                                min-width="80"
                                 :show-overflow-tooltip="true">
                                 <template slot-scope="scope">
                                     <span>{{scope.row.area || '--' }}</span>
@@ -212,7 +215,7 @@
                             <el-table-column
                                 prop="mediaNum"
                                 label="媒体数量"
-                                min-width="100"
+                                min-width="80"
                                 :show-overflow-tooltip="true"
                             >
                                 <template slot-scope="scope">
@@ -222,13 +225,21 @@
                             <el-table-column
                                 prop="resNum"
                                 label="点位数量"
-                                min-width="100"
+                                min-width="80"
                             >
                                 <template slot-scope="scope">
                                     <span>{{scope.row.resNum}}</span>
                                 </template>
                             </el-table-column>
-
+                            <el-table-column
+                                prop="action"
+                                label="操作"
+                                min-width="80"
+                            >
+                                <template slot-scope="scope">
+                                    <el-button type="text" @click="gotoDetail">画像详情</el-button>
+                                </template>
+                            </el-table-column>
                             <div slot="empty">
                                 <no-search-result></no-search-result>
                             </div>
@@ -263,6 +274,7 @@
     } from "element-ui";
     import noSearchResult from "./components/noSearchResult.vue";
     import personTags from "../../commonFun/json/personTags.json"
+    import api from "../../api/api.js";
 
     export default {
         name: "communityRank",
@@ -796,7 +808,25 @@
             },
             //排名列表
             getRankList() {
+                let info = {
 
+                }
+                api.getApi(this.apiVar.portrait+'label/search',info).then(res=>{
+
+                })
+            },
+            //导出表格
+            exportTable(){
+            },
+            //跳转画像详情
+            gotoDetail(){
+                this.$router.push('./portraitDetail')
+            },
+            //获取标签数据
+            getTags(){
+                api.getApi(this.apiVar.portrait+'label/getLabels').then(res=>{
+
+                })
             }
 
         },
@@ -951,19 +981,30 @@
     .table-wrap {
         padding: 24px 32px;
     }
-
+    .table-wrap button{
+        min-width: 0;
+    }
     .bottom {
         margin-top: 16px;
     }
 
-    .bottom h5 {
+    .bottom h5{
         font-size: 16px;
         font-weight: 600;
         color: rgba(44, 49, 60, 1);
         height: 48px;
         line-height: 48px;
-        padding: 0 16px;
+        padding: 0 32px 0 16px;
         border-bottom: 1px solid #E6E7E9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .bottom h5 span:last-child{
+        color: #1890ff;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight:400;
     }
 
     .hobby-tags-ul {

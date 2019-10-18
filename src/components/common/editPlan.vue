@@ -4328,23 +4328,12 @@
                 let arr = []
                 for (let key of this.cityAdsScheduled) {
                     for (let aKey of key.adsArr) {
-                        if (aKey.mVehicle === '道闸') {
-                            for (let tKey of aKey.asID) {
-                                arr.push({
-                                    asID: tKey,
-                                    st: key.newTime.split('-')[0],
-                                    et: key.newTime.split('-')[1],
-                                    schedules: key.oldTime
-                                })
-                            }
-                        } else {
-                            arr.push({
-                                asID: aKey.asID,
-                                st: key.newTime.split('-')[0],
-                                et: key.newTime.split('-')[1],
-                                schedules: key.oldTime                  // 原排期
-                            })
-                        }
+                        arr.push({
+                            asID: aKey.asID,
+                            st: key.newTime.split('-')[0],
+                            et: key.newTime.split('-')[1],
+                            schedules: key.oldTime                  // 原排期
+                        })
                     }
                 }
                 console.log('arr',arr)

@@ -485,7 +485,7 @@
                 if (role == "BD" || role == "SM") {
                     this.isDisable = true;
                 }
-                if(role == "BD") {
+                if(role == "BD" && (this.sessionData.saleManageLevel === 0 || this.sessionData.saleManageLevel === 1)) {
                     this.isNation = false
                 }
             },

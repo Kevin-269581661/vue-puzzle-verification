@@ -305,7 +305,7 @@
                 this.sessionData = sessFun.getSess();
                 let {ascType, asrID, uType,saleManageLevel} = this.sessionData;
                 this.type = ascType;
-                if (uType === 'SM') {
+                if (uType === 'SM' || uType === 'SA') {
                     if (saleManageLevel) {
                         this.saleKind.push({
                             value: 1,

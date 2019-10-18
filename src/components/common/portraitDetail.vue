@@ -147,11 +147,16 @@
         background: #f5f6fa;
         padding-top: 24px;
     }
+    .tab-wrap /deep/ .el-tabs__item{
+        color:rgba(0,0,0,0.45);
+    }
+    .tab-wrap /deep/ .el-tabs__item.is-active{
+        color: #409EFF;
+    }
 
     .top-content-wrap .title {
         display: flex;
         align-items: center;
-
     }
 
     .top-content-wrap .title h5 {

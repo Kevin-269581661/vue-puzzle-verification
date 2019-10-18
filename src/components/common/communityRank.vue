@@ -1154,8 +1154,7 @@
         border: none;
         border-radius: 0;
         padding: 0;
-        height: 140px;
-
+        /*height: 140px;*/
     }
 
     .el-popper[x-placement^=bottom] {

@@ -263,6 +263,7 @@ export default new Router({
                 {path: '/sale/communityRank',component: communityRank},
                 {path: '/sale/portraitDetail',component: portraitDetail},
                 {path: '/sale/messageList', name: 'messageList', component: messageList},
+                {path: '/sale/adsDialPlate', component: adsDialPlate},
                 // 亲邻地图
                 {path: '/sale/qinlinMap',component: qinlinMap},
             ]

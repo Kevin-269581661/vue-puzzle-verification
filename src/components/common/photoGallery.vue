@@ -266,7 +266,7 @@
                 } else {
                     this.isShowAllTab = true
                 }
-                if (this.sessionData.uType === 'MD') {
+                if (this.sessionData.uType === 'MD' || this.sessionData.uType === 'BD') {
                     this.isShowOrderPhoto = true
                 } else {
                     this.isShowOrderPhoto = false

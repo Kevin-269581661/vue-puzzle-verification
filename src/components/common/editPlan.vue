@@ -4794,7 +4794,7 @@
                                     LockNum += 1
                                 }
                                 let selectInfo = {
-                                    asID: '',
+                                    // asID: '',
                                     pbStar: data.pbStar,
                                     pbEnd: data.pbEnd,
                                     rid: data.rID.toString().substring(0, 4) + '00', //
@@ -4895,7 +4895,7 @@
                         this.industryID = this.FAInfo.piID
                         this.BDData.uid = this.FAInfo.suID || ''
                         this.FAInfo.cityList = this.delCommentCity(this.FAInfo.rIDs.split(','))
-                        if ((this.sessionData.uType === 'BD' && this.sessionData.saleManageLevel == '1')
+                        if ((this.sessionData.uType === 'BD' && (this.sessionData.saleManageLevel == '1' || this.sessionData.saleManageLevel == '2'))
                             ||(this.sessionData.uType === 'MD' && this.sessionData.mediaManageLevel == '1')) {
                             this.setAllCityAndArea(this.FAInfo.cityList)
                         } else {

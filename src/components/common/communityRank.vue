@@ -13,7 +13,7 @@
                                     <li class="first-tags-li" v-for="(first,index) in personTags" :key="index">
                                         <span>{{first.label}}：</span>
                                         <ul class="second-tags">
-                                            <li class="second-tags-li" v-for="(second,index) in first.children"
+                                            <li class="second-tags-li" v-for="(second,index) in first.childer"
                                                 @click="chooseTags(first,second)" :class="second.checked?'active':''">
                                                 {{second.label}}
                                             </li>
@@ -51,7 +51,7 @@
                                              @mouseleave="leavePopver(firstTag)">
                                             <ul class="second-tag-ul tag-ul">
                                                 <li class="second-tag-li tag-li"
-                                                    v-for="(secondTag,index) in firstTag.children" :key="index"
+                                                    v-for="(secondTag,index) in firstTag.childer" :key="index"
                                                     @mouseenter="showUl(2,secondTag)">
                                                     <div class="check-wrap">
                                                         <el-checkbox v-model="secondTag.checked"
@@ -73,7 +73,7 @@
                                                                      @change="tagChecked($event,3,firstTag,thirdTag)">
                                                             {{thirdTag.label}}
                                                         </el-checkbox>
-                                                        <i v-if="thirdTag.children" class="el-icon-arrow-right"></i>
+                                                        <i v-if="thirdTag.childer" class="el-icon-arrow-right"></i>
                                                     </div>
 
                                                 </li>
@@ -133,11 +133,8 @@
                             style="width: 100%">
                             <el-table-column
                                 label="排名"
-                                min-width="50"
-                                :show-overflow-tooltip="true">
-                                <template slot-scope="scope">
-                                    <span>{{scope.row.rank}}</span>
-                                </template>
+                                width="50"
+                                type="index">
                             </el-table-column>
                             <el-table-column
                                 label="资源"
@@ -148,30 +145,30 @@
                                 </template>
                             </el-table-column>
                             <el-table-column
-                                prop="cityName"
+                                prop="rname"
                                 label="城市"
                                 min-width="80"
                                 :show-overflow-tooltip="true">
                                 <template slot-scope="scope">
-                                    <span>{{scope.row.cityName || '--' }}</span>
+                                    <span>{{scope.row.rname || '--' }}</span>
                                 </template>
                             </el-table-column>
                             <el-table-column
-                                prop="area"
+                                prop="pname"
                                 label="区域"
                                 min-width="80"
                                 :show-overflow-tooltip="true">
                                 <template slot-scope="scope">
-                                    <span>{{scope.row.area || '--' }}</span>
+                                    <span>{{scope.row.pname || '--' }}</span>
                                 </template>
                             </el-table-column>
                             <el-table-column
-                                prop="businessCircle"
+                                prop="tradingArea"
                                 label="商圈"
                                 min-width="100"
                                 :show-overflow-tooltip="true">
                                 <template slot-scope="scope">
-                                    <span>{{scope.row.businessCircle || '--' }}</span>
+                                    <span>{{scope.row.tradingArea || '--' }}</span>
                                 </template>
                             </el-table-column>
                             <el-table-column
@@ -180,55 +177,61 @@
                                 min-width="100"
                                 :show-overflow-tooltip="true">
                                 <template slot-scope="scope">
-                                    <span>{{scope.row.resType || '--' }}</span>
+                                    <span v-if="scope.row.resType==1">社区</span>
+                                    <span v-if="scope.row.resType==2">写字楼</span>
+                                    <span v-if="scope.row.resType==3">街道</span>
+                                    <span v-if="scope.row.resType==4">地铁</span>
+                                    <span v-if="scope.row.resType==5">学校</span>
+                                    <span v-if="scope.row.resType==6">寺庙</span>
+                                    <span v-if="scope.row.resType==7">户外路牌</span>
                                 </template>
                             </el-table-column>
                             <el-table-column
-                                prop="building"
+                                prop="ctype"
                                 label="楼盘类型"
                                 min-width="100"
                                 :show-overflow-tooltip="true">
                                 <template slot-scope="scope">
-                                    {{ scope.row.building || '--' }}
+                                    {{ scope.row.ctype || '--' }}
                                 </template>
                             </el-table-column>
                             <el-table-column
-                                prop="price"
+                                prop="hprice"
                                 label="楼盘价格"
                                 min-width="100"
                                 :show-overflow-tooltip="true"
                             >
                                 <template slot-scope="scope">
-                                    <span>{{scope.row.price||'--'}}</span>
+                                    <span>{{priceFormat(scope.row.hprice)||'--'}}</span>
                                 </template>
                             </el-table-column>
                             <el-table-column
-                                prop="houseNum"
+                                prop="hnum"
                                 label="住户数量"
                                 min-width="100"
                                 :show-overflow-tooltip="true"
                             >
                                 <template slot-scope="scope">
-                                    <span>{{scope.row.houseNum || '--'}}</span>
+                                    <span>{{scope.row.hnum || '--'}}</span>
                                 </template>
                             </el-table-column>
                             <el-table-column
-                                prop="mediaNum"
+                                prop="mediaCount"
                                 label="媒体数量"
                                 min-width="80"
                                 :show-overflow-tooltip="true"
                             >
                                 <template slot-scope="scope">
-                                    <span>{{scope.row.mediaNum|| '--'}}</span>
+                                    <span>{{scope.row.mediaCount|| '--'}}</span>
                                 </template>
                             </el-table-column>
                             <el-table-column
-                                prop="resNum"
+                                prop="asCount"
                                 label="点位数量"
                                 min-width="80"
                             >
                                 <template slot-scope="scope">
-                                    <span>{{scope.row.resNum}}</span>
+                                    <span>{{scope.row.asCount}}</span>
                                 </template>
                             </el-table-column>
                             <el-table-column
@@ -237,7 +240,7 @@
                                 min-width="80"
                             >
                                 <template slot-scope="scope">
-                                    <el-button type="text" @click="gotoDetail">画像详情</el-button>
+                                    <el-button type="text" @click="gotoDetail(scope.row)">画像详情</el-button>
                                 </template>
                             </el-table-column>
                             <div slot="empty">
@@ -274,6 +277,7 @@
     } from "element-ui";
     import noSearchResult from "./components/noSearchResult.vue";
     import personTags from "../../commonFun/json/personTags.json"
+    import commaFormat from "../../commonFun/commaFormat.js"
     import api from "../../api/api.js";
 
     export default {
@@ -304,15 +308,15 @@
                         "label": "一级1",
                         "checked": false,
                         "hovered": false,
-                        "children": [
+                        "childer": [
                             {
                                 "value": "121",
                                 "label": "1二级1",
                                 "checked": false,
-                                "children": [{
+                                "childer": [{
                                     "value": "12131",
                                     "label": "1三级1",
-                                    "children": [{
+                                    "childer": [{
                                         "value": "12141",
                                         "label": "1四级1",
                                     }]
@@ -322,11 +326,11 @@
                                 "value": "122",
                                 "label": "1二级2",
                                 "checked": false,
-                                "children": [{
+                                "childer": [{
                                     "value": "12231",
                                     "label": "1三级2",
                                     "checked": false,
-                                    "children": [{
+                                    "childer": [{
                                         "value": "12241",
                                         "label": "1四级2",
                                     }]
@@ -336,11 +340,11 @@
                                 "value": "123",
                                 "label": "1二级1",
                                 "checked": false,
-                                "children": [{
+                                "childer": [{
                                     "value": "12331",
                                     "label": "1三级1",
                                     "checked": false,
-                                    "children": [{
+                                    "childer": [{
                                         "value": "12341",
                                         "label": "1四级1",
                                         "checked": false,
@@ -351,11 +355,11 @@
                                 "value": "124",
                                 "label": "1二级2",
                                 "checked": false,
-                                "children": [{
+                                "childer": [{
                                     "value": "12431",
                                     "label": "1三级2",
                                     "checked": false,
-                                    "children": [{
+                                    "childer": [{
                                         "value": "12441",
                                         "label": "1四级2",
                                         "checked": false,
@@ -366,11 +370,11 @@
                                 "value": "125",
                                 "label": "1二级1",
                                 "checked": false,
-                                "children": [{
+                                "childer": [{
                                     "value": "12531",
                                     "label": "1三级1",
                                     "checked": false,
-                                    "children": [{
+                                    "childer": [{
                                         "value": "12541",
                                         "label": "1四级1",
                                         "checked": false,
@@ -381,11 +385,11 @@
                                 "value": "126",
                                 "label": "1二级2",
                                 "checked": false,
-                                "children": [{
+                                "childer": [{
                                     "value": "12631",
                                     "label": "1三级2",
                                     "checked": false,
-                                    "children": [{
+                                    "childer": [{
                                         "value": "12641",
                                         "label": "1四级2",
                                         "checked": false,
@@ -399,12 +403,12 @@
                         "label": "一级2",
                         "checked": false,
                         "hovered": false,
-                        "children": [
+                        "childer": [
                             {
                                 "value": "221",
                                 "label": "2二级",
                                 "checked": false,
-                                "children": [{
+                                "childer": [{
                                     "value": "22131",
                                     "label": "2三级",
                                     "checked": false,
@@ -417,12 +421,12 @@
                         "label": "一级3",
                         "checked": false,
                         "hovered": false,
-                        "children": [
+                        "childer": [
                             {
                                 "value": "321",
                                 "label": "3二级",
                                 "checked": false,
-                                "children": [{
+                                "childer": [{
                                     "value": "32131",
                                     "label": "3三级",
                                     "checked": false,
@@ -434,19 +438,7 @@
                 ],
                 chooseTagsArr: [],
                 // 表格数据
-                currentPlan: [{
-                    rank: '排名',
-                    resName: '资源',
-                    resType: '资源类型',
-                    cityName: '城市',
-                    area: '区域',
-                    businessCircle: '商圈',
-                    building: '楼盘类型',
-                    price: '楼盘价格',
-                    houseNum: '住户数量',
-                    mediaNum: '媒体数量',
-                    resNum: '点位数量',
-                }],
+                currentPlan: [],
                 //加载中
                 loading: false,
                 currPage: 1,
@@ -455,6 +447,10 @@
             };
         },
         methods: {
+            // 价格加上逗号
+            priceFormat(price) {
+                return commaFormat.format(price);
+            },
             //展开收起面板
             toggleShowTags() {
                 if (this.tabHeight == '252px') {
@@ -468,52 +464,100 @@
             handleClick(tab, event) {
                 // console.log(tab, event);
             },
-            //人群标签-选中标签
+            //人群标签-选中和取消标签
             chooseTags(first, second) {
-                console.log(first, this.chooseTagsArr);
-                let str = first.label + '：' + second.label
-                let obj = {
-                    label: str,
-                    value: second.value
-                }
+                console.log(first, second, this.chooseTagsArr);
+
                 if (second.checked) {
-                    //取消选中
+                    //取消选中当前二级
                     second.checked = false
-                    for (let data of this.personTags) {
-                        for (let data2 of data.children) {
-                            if (data2.label == second) {
-                                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(str), 1);
+                    //一级被选中
+                    if (first.checked) {
+                        //取消选中
+                        first.checked = false
+                        let item = {
+                            value:first.value,
+                            label:first.label
+                        }
+                        this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(item), 1);
+                        for (let data of first.childer) {
+                            if(data.checked){
+                                let obj = {
+                                    value:data.value,
+                                    label:first.label+'：'+data.label
+                                }
+                                this.chooseTagsArr.push(obj)
                             }
+
                         }
                     }
-
+                    // this.showPersonTags()
                 } else {
                     //选中
-                    this.pushArr(obj, second)
-                    this.filterArr(first)
+                    // second.checked = true
+                    this.filterArr(first, second)
                 }
+
+
+            },
+            //人群标签-展示
+            showPersonTags() {
+                console.log(this.personTags);
+                this.chooseTagsArr = []
+                //   for(let data of this.personTags){
+                //       let obj = ''
+                //       if(data.checked){
+                //            obj = {
+                //               value:data.value,
+                //               label:data.label
+                //           }
+                //           this.chooseTagsArr.push(obj)
+                //       }else{
+                //           for(let data2 of data.childer){
+                //               if(data2.checked){
+                //                   obj = {
+                //                       value:data2.value,
+                //                       label:data.label+'：'+data2.label
+                //                   }
+                //                   this.chooseTagsArr.push(obj)
+                //               }
+                //           }
+                //       }
+                // }
 
             },
             //选中的标签数组 取交集
-            filterArr(arr) {
+            filterArr(arr, second) {
                 let a = [...this.chooseTagsArr]//展示的标签数组
-                let b = [...arr.children]//该标签的下级标签数组
+                let b = [...arr.childer]//该标签的下级标签数组
+                let obj = ''
                 //交集
                 let intersect = a.filter(x => [...b].some(y => y.label === x.label.split('：')[1]))
                 console.log('交集--', intersect);
-                if (intersect.length == b.length) {
+                if (intersect.length == b.length - 1) {
                     //可合并部分标签。取差集
                     // console.log('合并部分标签前',this.chooseTagsArr);
                     this.chooseTagsArr = a.filter(x => [...b].every(y => y.label !== x.label.split('：')[1]))
                     //加上一个新的一级标签
-                    let obj = {
+                    obj = {
                         value: arr.value,
                         label: arr.label
                     }
-                    this.chooseTagsArr.push(obj)
+                    // this.chooseTagsArr.push(obj)
+                    for (let data of this.personTags) {
+                        if (data.value == arr.value) {
+                            data.checked = true
+                        }
+                    }
                     console.log('合并部分标签后', this.chooseTagsArr);
-                }
+                } else {
+                    obj = {
+                        value: second.value,
+                        label: arr.label + '：' + second.label
+                    }
 
+                }
+                this.pushArr(obj,second)
             },
             //删除单个的标签
             cancelChooseTag(item) {
@@ -522,7 +566,7 @@
                 for (let data of this.personTags) {
                     if (item.label.includes('：')) {
                         let tag = item.label.split('：')[1]
-                        for (let data2 of data.children) {
+                        for (let data2 of data.childer) {
                             if (data2.label == tag) {
                                 data2.checked = false
                             }
@@ -530,21 +574,21 @@
                     } else {
                         //选中一级
                         if (data.label == item.label) {
-                            for (let data2 of data.children) {
+                            for (let data2 of data.childer) {
                                 data2.checked = false
                             }
                         }
                     }
                 }
 
-                let fn = function (arr){
+                let fn = function (arr) {
                     for (let data of arr) {
                         if (data.value == item.value) {
                             data.checked = false
                             return
                         } else {
-                            if (data.children) {
-                              fn(data.children)
+                            if (data.childer) {
+                                fn(data.childer)
                             }
                         }
                     }
@@ -557,7 +601,7 @@
             clearAllTag() {
                 this.chooseTagsArr = [];
                 for (let data of this.personTags) {
-                    for (let item of data.children) {
+                    for (let item of data.childer) {
                         if (item.checked) {
                             item.checked = false
                         }
@@ -566,17 +610,17 @@
 
                 this.clear(this.hobbyTags)
 
-                console.log(this.hobbyTags);
+                // console.log(this.chooseTagsArr);
             },
             clear(obj, type) {
-                if (obj.children) {
+                if (obj.childer) {
                     //偏好
                     if (type == 'split') {
                         for (let data of this.chooseTagsArr) {
                             let a = data.label.split('：')[0]
                             if (data.label.includes('：') && a.includes(obj.label)) {
                                 this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
-                                if (data.children) {
+                                if (data.childer) {
                                     this.clear(data, 'split')
                                 }
                             }
@@ -584,10 +628,10 @@
                         }
 
                     } else {
-                        for (let data of obj.children) {
+                        for (let data of obj.childer) {
                             data.checked = false
-                            if (data.children) {
-                                this.clear(data.children)
+                            if (data.childer) {
+                                this.clear(data.childer)
                             }
                         }
                     }
@@ -596,8 +640,8 @@
                     //人群
                     for (let data of obj) {
                         data.checked = false
-                        if (data.children) {
-                            this.clear(data.children)
+                        if (data.childer) {
+                            this.clear(data.childer)
                         }
                     }
                 }
@@ -686,14 +730,14 @@
                             if (a == tag2.label) {
                                 this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
                                 //清空所有下级
-                                this.clear(tag2.children)
+                                this.clear(tag2.childer)
 
                             }
                         }
 
                     } else if (level == 3) {
-                        for (let data of tag1.children) {
-                            for (let data2 of data.children) {
+                        for (let data of tag1.childer) {
+                            for (let data2 of data.childer) {
                                 if (data2.value == tag2.value) {
                                     obj.label = tag1.label + '/' + data.label + '：' + data2.label
                                     obj.value = data2.value
@@ -719,13 +763,13 @@
                             if (b == tag2.label) {
                                 this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
                                 //清空所有下级
-                                this.clear(tag2.children)
+                                this.clear(tag2.childer)
                             }
                         }
                     } else {
-                        for (let data of tag1.children) {
-                            for (let data2 of data.children) {
-                                for (let data3 of data2.children) {
+                        for (let data of tag1.childer) {
+                            for (let data2 of data.childer) {
+                                for (let data3 of data2.childer) {
                                     if (data3.value == tag2.value) {
                                         obj.label = tag1.label + '/' + data.label + '/' + data2.label + '：' + data3.label
                                         obj.value = data3.value
@@ -788,8 +832,8 @@
             showUl(level, tag) {
                 // console.log(level,tag);
                 let arr = [];
-                arr = tag.children;
-                if (tag.children) {
+                arr = tag.childer;
+                if (tag.childer) {
                     if (level == 2) {
                         this.width = 264
                         this.thirdShow = true
@@ -808,30 +852,56 @@
             },
             //排名列表
             getRankList() {
-                let info = {
-
+                console.log(this.chooseTagsArr);
+                if (this.chooseTagsArr.length > 0) {
+                    let ids = ''
+                    for (let data of this.chooseTagsArr) {
+                        ids += data.value + ','
+                    }
+                    ids = ids.substring(0, ids.length - 1);
+                    api.getApi(this.apiVar.portrait + 'label/search', {ids: ids}).then(res => {
+                        console.log(res.data);
+                        if (res.data.SysCode == 200200) {
+                            this.currentPlan = res.data.data
+                        } else {
+                            this.$message.warning(res.data.MSG)
+                        }
+                    })
+                } else {
+                    api.getApi(this.apiVar.portrait + 'label/search').then(res => {
+                        console.log(res.data);
+                        if (res.data.SysCode == 200200) {
+                            this.currentPlan = res.data.data
+                        } else {
+                            this.$message.warning(res.data.MSG)
+                        }
+                    })
                 }
-                api.getApi(this.apiVar.portrait+'label/search',info).then(res=>{
 
-                })
             },
             //导出表格
-            exportTable(){
+            exportTable() {
             },
             //跳转画像详情
-            gotoDetail(){
+            gotoDetail() {
                 this.$router.push('./portraitDetail')
             },
             //获取标签数据
-            getTags(){
-                api.getApi(this.apiVar.portrait+'label/getLabels').then(res=>{
-
+            getTags() {
+                api.getApi(this.apiVar.portrait + 'label/getLabels').then(res => {
+                    console.log(res.data);
+                    if (res.data.SysCode == 200200) {
+                        this.personTags = res.data.data
+                    } else {
+                        this.$message.warning(res.data.MSG)
+                    }
                 })
             }
 
         },
         mounted() {
-            this.personTags = personTags
+            this.getTags()
+            this.getRankList()
         }
     }
 </script>
@@ -981,14 +1051,16 @@
     .table-wrap {
         padding: 24px 32px;
     }
-    .table-wrap button{
+
+    .table-wrap button {
         min-width: 0;
     }
+
     .bottom {
         margin-top: 16px;
     }
 
-    .bottom h5{
+    .bottom h5 {
         font-size: 16px;
         font-weight: 600;
         color: rgba(44, 49, 60, 1);
@@ -1000,11 +1072,12 @@
         justify-content: space-between;
         align-items: center;
     }
-    .bottom h5 span:last-child{
+
+    .bottom h5 span:last-child {
         color: #1890ff;
         cursor: pointer;
         font-size: 14px;
-        font-weight:400;
+        font-weight: 400;
     }
 
     .hobby-tags-ul {

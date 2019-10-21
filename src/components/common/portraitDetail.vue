@@ -9,7 +9,7 @@
                 <p class="el-dropdown-link">
                     下拉菜单<i class="el-icon-arrow-down el-icon--right"></i>
                 </p>
-                <el-dropdown-menu slot="dropdown" >
+                <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item>黄金糕</el-dropdown-item>
                     <el-dropdown-item>狮子头</el-dropdown-item>
                     <el-dropdown-item>螺蛳粉</el-dropdown-item>
@@ -81,10 +81,44 @@
         </div>
         <div class="tab-wrap">
             <el-tabs>
-                <el-tab-pane label="用户管理">
-                    用户管理
+                <el-tab-pane label="人群画像">
+                    <div class="part part1">
+                        <div class="flex1">
+                            <h6>性别情况</h6>
+                            <div class="sex-chart" ref="sexChart" style="width: 400px;height: 352px"></div>
+                        </div>
+                        <div class="flex2">
+                            <h6>年龄分布</h6>
+                            <div class="age-chart" ref="ageChart" style="width: 822px;height: 352px"></div>
+                        </div>
+                    </div>
+                    <div class="part part2">
+                        <div class="flex1">
+                            <h6>教育水平</h6>
+                            <div class="sex-chart" ref="eduChart" style="width: 400px;height: 352px"></div>
+                        </div>
+                        <div class="flex1">
+                            <h6>消费水平</h6>
+                            <div class="sex-chart" ref="spendChart" style="width: 400px;height: 352px"></div>
+                        </div>
+                        <div class="flex1 last-flex">
+                            <h6>月收入水平</h6>
+                            <div class="table-wrap">
+                                <el-table
+                                    :data="incomeList"
+                                    style="width: 100%" >
+                                    <el-table-column  prop="rank" label="排名" min-width="20" >
+                                    </el-table-column>
+                                    <el-table-column prop="income" label="月收入" min-width="80" >
+                                    </el-table-column>
+                                    <el-table-column prop="percent" label="占比" min-width="80" >
+                                    </el-table-column>
+                                </el-table>
+                            </div>
+                        </div>
+                    </div>
                 </el-tab-pane>
-                <el-tab-pane label="配置管理"></el-tab-pane>
+                <el-tab-pane label="偏好画像"></el-tab-pane>
             </el-tabs>
         </div>
 
@@ -111,46 +145,261 @@
                     mediaNum: 0,
                     adsNum: 0
                 },
+                incomeList:[{rank:1,income:'2499元及以下',percent:'28%'}],//月收入排行
+                sexChart:'',//性别情况
+                ageChart:'',//年龄情况
+                eduChart:'',//教育水平
+                spendChart:'',//消费水平
             }
+        },
+        methods: {
+            //性别情况
+            sexChartFn() {
+                this.sexChart = this.$echarts.init(this.$refs.sexChart)
+                this.sexChart.setOption({
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        left: 'center',
+                        bottom: 10,
+                        data: ['男', '女'],
+                        icon:'circle',
+                        itemWidth:9,
+                        itemHeight:9
+                    },
+                    series: [
+                        {
+                            name: '性别情况',
+                            type: 'pie',
+                            radius: ['40%', '60%'],
+                            center: ['50%', '45%'],
+                            color: ['#1890FF', '#F1627A'],
+                            label: {
+                                formatter: '{d}%'
+                            },
+                            data: [
+                                {value: 335, name: '男'},
+                                {value: 310, name: '女'},
+                            ],
+                            itemStyle: {
+                                emphasis: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        }
+                    ]
+                })
+            },
+            //年龄分布
+            ageChartFn(){
+                this.ageChart = this.$echarts.init(this.$refs.ageChart)
+                this.ageChart.setOption({
+                    color: ['#1890FF'],
+                    tooltip : {
+                        trigger: 'axis',
+                        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                        }
+                    },
+                    xAxis: {
+                        type: 'category',
+                        axisLine: {
+                            //坐标轴线条相关设置(颜色等)
+                            lineStyle: {
+                                color: "#E8E8E8"
+                            }
+                        },
+                        axisLabel: {
+                            //坐标轴刻度标签
+                            margin: 7, //刻度标签与轴线之间的距离
+                            interval: 0,    //强制文字产生间隔
+                            textStyle: {
+                                fontFamily: "DINPro-Regular",
+                                color: "#2C313C" //坐标轴刻度文字的颜色
+                            }
+                        },
+                        data: ['15岁以下', '16-25岁', '26-35岁', '36-45岁', '46-55岁', '56岁以上', '未知']
+                    },
+                    yAxis: {
+                        type: 'value',
+                        axisLine: {
+                            //坐标轴线条相关设置(颜色等)
+                            lineStyle: {
+                                color: "#E8E8E8"
+                            }
+                        },
+                        axisLabel: {
+                            //坐标轴刻度标签
+                            margin: 7, //刻度标签与轴线之间的距离
+                            textStyle: {
+                                fontFamily: "DINPro-Regular",
+                                color: "#2C313C" //坐标轴刻度文字的颜色
+                            }
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: "#E8E8E8",
+                                type: "dashed"
+                            }
+                        }
+                    },
+                    series: [{
+                        data: [120, 200, 150, 80, 70, 110, 130],
+                        type: 'bar',
+                        barWidth: '18%',
+                    }]
+                })
+            },
+            //教育水平
+            eduChartFn() {
+                this.eduChart = this.$echarts.init(this.$refs.eduChart)
+                this.eduChart.setOption({
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        left: 'center',
+                        bottom: 10,
+                        data: ['本科及以上', '大专','高中及以下'],
+                        icon:'circle',
+                        itemWidth:9,
+                        itemHeight:9
+                    },
+                    series: [
+                        {
+                            name: '教育水平',
+                            type: 'pie',
+                            radius: ['40%', '60%'],
+                            center: ['50%', '45%'],
+                            color: ['#1890FF', '#F1627A','#4DCB73'],
+                            label: {
+                                formatter: '{d}%'
+                            },
+                            data: [
+                                {value: 335, name: '本科及以上'},
+                                {value: 310, name: '大专'},
+                                {value: 310, name: '高中及以下'},
+                            ],
+                            itemStyle: {
+                                emphasis: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        }
+                    ]
+                })
+            },
+            //消费水平
+            spendChartFn() {
+                this.spendChart = this.$echarts.init(this.$refs.spendChart)
+                this.spendChart.setOption({
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        left: 'center',
+                        bottom: 10,
+                        data: ['高', '中','低'],
+                        icon:'circle',
+                        itemWidth:9,
+                        itemHeight:9
+                    },
+                    series: [
+                        {
+                            name: '消费水平',
+                            type: 'pie',
+                            radius: ['40%', '60%'],
+                            center: ['50%', '45%'],
+                            color: ['#1890FF', '#F1627A','#4DCB73'],
+                            label: {
+                                formatter: '{d}%'
+                            },
+                            data: [
+                                {value: 335, name: '高'},
+                                {value: 310, name: '中'},
+                                {value: 310, name: '低'},
+                            ],
+                            itemStyle: {
+                                emphasis: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        }
+                    ]
+                })
+            },
+            // 统一监听
+            echartsListener(){
+                window.addEventListener("resize", ()=> {
+                    this.sexChart.resize();
+                    this.ageChart.resize();
+                    this.eduChart.resize();
+                    this.spendChart.resize();
+                });
+            },
+        },
+        mounted() {
+            this.sexChartFn()
+            this.ageChartFn()
+            this.eduChartFn()
+            this.spendChartFn()
+            this.echartsListener();
         }
     }
 </script>
 
 <style scoped>
-    .el-dropdown-link{
+    .el-dropdown-link {
         cursor: pointer;
     }
+
     .ad_mediaDetail_nav {
         display: flex;
         justify-content: space-between;
     }
 
-    .top-content-wrap{
+    .top-content-wrap {
         margin: 0 64px;
         box-sizing: border-box;
         background: rgba(255, 255, 255, 1);
         border: 1px solid rgba(230, 231, 233, 1);
         padding: 32px;
     }
-    .tab-wrap{
+
+    .tab-wrap {
         margin: 24px 64px;
         background: #fff;
     }
-    .tab-wrap /deep/ .el-tabs__nav-wrap{
+
+    .tab-wrap /deep/ .el-tabs__nav-wrap {
         padding: 0 14px;
-        border:1px solid rgba(230,231,233,1);
+        border: 1px solid rgba(230, 231, 233, 1);
     }
-    .tab-wrap /deep/ .el-tabs__header{
+
+    .tab-wrap /deep/ .el-tabs__header {
         margin-bottom: 0;
     }
-    .tab-wrap /deep/ .el-tabs__content{
+
+    .tab-wrap /deep/ .el-tabs__content {
         background: #f5f6fa;
         padding-top: 24px;
     }
-    .tab-wrap /deep/ .el-tabs__item{
-        color:rgba(0,0,0,0.45);
+
+    .tab-wrap /deep/ .el-tabs__item {
+        color: rgba(0, 0, 0, 0.45);
     }
-    .tab-wrap /deep/ .el-tabs__item.is-active{
+
+    .tab-wrap /deep/ .el-tabs__item.is-active {
         color: #409EFF;
     }
 
@@ -183,8 +432,43 @@
         color: #666666;
     }
 
-
     .community_info_row .community_info_label {
         color: #333333;
     }
+    .part .flex2{
+        flex: 2;
+    }
+    .part .flex1{
+        flex: 1;
+        margin-right: 24px;
+        width: 400px;
+        height: 400px;
+    }
+    .part .last-flex{
+        margin-right: 0;
+    }
+    .part{
+        margin-bottom: 24px;
+        display: flex;
+        justify-content: space-between;
+    }
+    .part>div h6 {
+        color: rgba(44, 49, 60, 1);
+        font-size: 16px;
+        line-height: 48px;
+        padding: 0 16px;
+        border-bottom: 1px solid rgba(230, 231, 233, 1);
+        box-sizing: border-box;
+    }
+    .part>div{
+        border:1px solid rgba(230,231,233,1);
+        background: #fff;
+    }
+    .part .part1 .table-wrap{
+        padding: 0 24px;
+    }
+
+
+
+
 </style>

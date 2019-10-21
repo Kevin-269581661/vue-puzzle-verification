@@ -657,25 +657,25 @@ export default {
             return industryNames
         },
         // 判断公司信息是否修改
-        isChangeCom() {
-            let companyInfo = JSON.parse(sessionStorage.getItem("companyInfo"));
-            console.log(companyInfo);
-            for (let data of [this.companyForm]) {
-                for (let item of [companyInfo]) {
-                    if (
-                        data.cID != item.cID ||
-                        data.cAddress != item.cAddress ||
-                        data.cName != item.cName ||
-                        data.cRemark != item.cRemark ||
-                        this.companyForm.industryIdArr[1] != item.iID ||
-                        this.companyForm.cityArr[1] != item.rID
-                    ) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        },
+        // isChangeCom() {
+        //     let companyInfo = JSON.parse(sessionStorage.getItem("companyInfo"));
+        //     console.log('---',companyInfo,this.companyForm);
+        //     for (let data of [this.companyForm]) {
+        //         for (let item of [companyInfo]) {
+        //             if (
+        //                 data.cID != item.cID ||
+        //                 data.cAddress != item.cAddress ||
+        //                 data.cName != item.cName ||
+        //                 data.cRemark != item.cRemark ||
+        //                 this.companyForm.industryIdArr[1] != item.iID ||
+        //                 this.companyForm.cityArr[1] != item.rID
+        //             ) {
+        //                 return true;
+        //             }
+        //         }
+        //     }
+        //     return false;
+        // },
         // 判断客户信息是否修改
         isChangeUser() {
             let userInfo = this.oldClientForm;
@@ -699,7 +699,7 @@ export default {
         },
         // 修改
         submitData() {
-            console.log(this.isChangeCom());
+            // console.log(this.isChangeCom());
             let client_bool = false;
             let company_bool = false;
             this.$refs["clientForm"].validate(valid => {
@@ -747,7 +747,7 @@ export default {
                 iid: cForm.industryIdArr[1],
                 cremark: cForm.cRemark
             };
-            if(this.isChangeCom()){
+            // if(this.isChangeCom()){
                 // 修改公司信息
                 api.postApi(this.apiVar.UCAPI+"/SetMyCom", companyInfo)
                     .then(res => {
@@ -774,13 +774,13 @@ export default {
                     .catch(res => {
                         console.log(res);
                     });
-            }else{
-                if(this.isChangeUser()){
-                    this.updateUser();
-                }else{
-                    Message.warning('请填写你需要修改的信息');
-                }
-            }
+            // }else{
+            //     if(this.isChangeUser()){
+            //         this.updateUser();
+            //     }else{
+            //         Message.warning('请填写你需要修改的信息');
+            //     }
+            // }
         },
         // 编辑之后进行跳转
         changRoute(str){

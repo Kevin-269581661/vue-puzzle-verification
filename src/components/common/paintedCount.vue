@@ -46,23 +46,23 @@
                               element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                         <el-table-column prop="userName" label="工程人员" min-width="11.8%" >
                         </el-table-column>
-                        <el-table-column prop="orderCount" label="订单数" min-width="8.1%" align="right" sortable="custom">
+                        <el-table-column prop="orderCount" label="订单数" min-width="8.1%" align="right" sortable>
                         </el-table-column>
-                        <el-table-column prop="resourceCount" label="小区数" min-width="10.8%" align="right" sortable="custom">
+                        <el-table-column prop="resourceCount" label="小区数" min-width="10.8%" align="right" sortable>
                         </el-table-column>
-                        <el-table-column prop="publishAdsCount" label="上刊点位" min-width="8.9%" align="right" sortable="custom">
+                        <el-table-column prop="publishAdsCount" label="上刊点位" min-width="8.9%" align="right" sortable>
                         </el-table-column>
-                        <el-table-column prop="publishPhotoCount" label="上刊张数" min-width="8.9%" align="right" sortable="custom">
+                        <el-table-column prop="publishPhotoCount" label="上刊张数" min-width="8.9%" align="right" sortable>
                         </el-table-column>
-                        <el-table-column prop="unPublishAdsCount" label="下刊点位" min-width="8.9%" align="right" sortable="custom">
+                        <el-table-column prop="unPublishAdsCount" label="下刊点位" min-width="8.9%" align="right" sortable>
                         </el-table-column>
-                        <el-table-column prop="unPublishPhotoCount" label="下刊张数" min-width="8.9%" align="right" sortable="custom">
+                        <el-table-column prop="unPublishPhotoCount" label="下刊张数" min-width="8.9%" align="right" sortable>
                         </el-table-column>
-                        <el-table-column prop="replaceAdsCount" label="换画点位" min-width="8.9%" align="right" sortable="custom">
+                        <el-table-column prop="replaceAdsCount" label="换画点位" min-width="8.9%" align="right" sortable>
                         </el-table-column>
-                        <el-table-column prop="replacePhotoCount" label="换画张数" min-width="8.9%" align="right" sortable="custom">
+                        <el-table-column prop="replacePhotoCount" label="换画张数" min-width="8.9%" align="right" sortable>
                         </el-table-column>
-                        <el-table-column prop="patrolCount" label="巡点次数" min-width="8.9%" align="right" sortable="custom">
+                        <el-table-column prop="patrolCount" label="巡点次数" min-width="8.9%" align="right" sortable>
                         </el-table-column>
                         <div slot="empty">
                             <no-search-result></no-search-result>

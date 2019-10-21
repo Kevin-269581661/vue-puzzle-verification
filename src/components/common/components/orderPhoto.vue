@@ -206,7 +206,7 @@
         methods:{
             getSessionData(){
                 this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
-                if(this.sessionData.uType === 'MD'){
+                if(this.sessionData.uType === 'MD' || this.sessionData.uType === 'BD'){
                     this.isShowBtn = true
                 }else{
                     this.isShowBtn = false

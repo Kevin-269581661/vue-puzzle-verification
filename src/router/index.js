@@ -107,6 +107,9 @@ export default new Router({
         {path: '/progressDown', name: 'progressDown', component: progressDown},
         {path: '/shareADList', name: 'shareADList', component: shareADList},
         {path: '/emptyPoint', name: 'emptyPoint', component: emptyPoint},
+        // 亲邻地图
+        {path: '/mapResource/chooseRes',name:'qinLinMap',component: qinLinMap_},
+        {path: '/mapResource/shareRes',name:'qinLinMap',component: qinLinMap_},
         //上下刊报告h5页面
         {path: '/Report', name: 'Report', component: Report},
         //admin
@@ -249,9 +252,10 @@ export default new Router({
                 {path: '/sale/myInfo', component: myInfo},
                 {path: '/sale/compact', component: compact},
                 {path: '/sale/communityPortrait',component: communityPortrait},
+                {path: '/sale/adsDialPlate', component: adsDialPlate},
                 // 亲邻地图
                 {path: '/sale/qinlinMap',component: qinlinMap},
-                {path: '/sale/qinLinMap_',component: qinLinMap_}
+                // {path: '/sale/qinLinMap_',component: qinLinMap_}
             ]
         },
         //广告主

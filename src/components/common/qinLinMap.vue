@@ -241,8 +241,8 @@
                 </li>
             </ul>
             <div class="active_bottom_btn">
-                <span><i class="el-icon-share"></i>分享</span>
-                <span><i class="el-icon-download" @click="exportExcel"></i>下载</span>
+                <span @click="resShare"><i class="el-icon-share"></i>分享</span>
+                <span @click="exportExcel"><i class="el-icon-download"></i>下载</span>
                 <span @click="deleteAll"><i class="el-icon-delete"></i>清空</span>
                 <el-button type="primary" size="small" @click="pushMapRes">选定</el-button>
             </div>
@@ -264,7 +264,7 @@
             </ul>
             <!--鼠标绘制-->
             <ul class="mouse_control">
-                <li class="mouse_control_li" @click="">
+                <li class="mouse_control_li" @click="drawingMouse('polyline')">
                     <img src="../../assets/images/map/scale.png" alt="">
                 </li>
                 <li class="mouse_control_li" @click="drawingMouse('circle')">
@@ -333,6 +333,19 @@
                 <el-button size="small" type="primary" @click="searchAround">确 定</el-button>
             </div>
         </el-dialog>
+        <!--小区提交成功-->
+        <el-dialog
+            title="提示"
+            width="30%"
+            :close-on-click-modal="false"
+            :close-on-press-escape="false"
+            :show-close="false"
+            :visible.sync="mapDialogVisible">
+            <span>点位选择成功，请在购物车模块点击相应的位置获取地图选择的点位数据！</span>
+            <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="closeWin">确 定</el-button>
+      </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -346,6 +359,7 @@
         name: "qinLinMap",
         data() {
             return{
+                adListParams: {},
                 sessionData: sessFun.getSess(),
                 resMap: '',
                 markerIcon: require('../../assets/images/map/markerIcon.png'),
@@ -454,28 +468,59 @@
                 selectMediaType: '',
                 // 媒体等级
                 selectMediaLevel: '',
+                // 标识鼠标画线状态
+                isMouseLine: false,
+                // 标识画线时点击的次数
+                mouseLineStep: 0,
+                // 点击时到点坐标arr
+                LinePoints:[],
+                // 鼠标移动时到label
+                mapLabel: null,
+                // 记录上一段线的距离
+                twoPointsLength: 0,
+                // 小区资源提交成功
+                mapDialogVisible: false
             }
         },
         mounted() {
-            let starTime, endTime
-            starTime = timeFormat.returnDayCount(1,'/')
-            endTime = timeFormat.returnDayCount(14,'/')
-            this.dateTime = [starTime, endTime]                // 设置默认时间
-            this.getAreaList();
+            console.log('----',this.$route.query)
+            this.adListParams = JSON.parse(localStorage.getItem('mapParams'))
             window.onload = this.initMap()
-            // 获取小区数据
-            this.getResList()
-            // 获取商圈list
-            this.getTradingArea()
-            // 获取媒体类型(门类型)
-            this.getDoorType()
-            // 获取广告限制列表
-            this.getADLimit();
+            if(this.$route.path.includes('shareRes')) {
+                this.getShareResList()
+            } else {
+                // 获取小区数据
+                this.getResList();
+                // 获取商圈list
+                this.getTradingArea();
+                // 获取媒体类型(门类型)
+                this.getDoorType();
+                // 获取广告限制列表
+                this.getADLimit();
+            }
+            this.getAreaList();
         },
         methods:{
+            // 获取分享资源
+            getShareResList() {
+                let params = {
+                    shareCode: this.$route.query.code
+                }
+                api.getApi(this.apiVar.mapApi + '/shareAdsInfo',params).then(res=>{
+                    console.log('分享list',res)
+                    if(res.data.SysCode === 200200) {
+                        this.resInfo = res.data.data
+                        this.creatMarker()
+                    } else {
+                        sessFun.messageFun('warning','数据获取异常')
+                    }
+                    // 城市边界
+                    this.displayBoundary()
+                })
+            },
             // 城市区域
             getAreaList() {
-                this.areaList = areaPackage.findArea('440100')
+                this.areaList = areaPackage.findArea(this.adListParams.rid)
             },
             // 获取广告限制列表
             getADLimit() {
@@ -542,9 +587,10 @@
                 this.resMap = new BMap.Map("qinlinMap", {enableMapClick:false});
                 console.log('resMap',this.resMap)
                 // 设置地图显示的城市 此项是必须设置的
-                this.resMap.setCurrentCity("广州市");
+                this.resMap.setCurrentCity(this.$route.query.city);
                 // 初始化地图,设置中心点坐标和地图级别
-                this.resMap.centerAndZoom(new BMap.Point(113.36133,23.13129), 12);//11
+                // this.resMap.setCenter(this.$route.query.city)
+                this.resMap.centerAndZoom(this.$route.query.city, 10);
                 //开启鼠标滚轮缩放
                 this.resMap.enableScrollWheelZoom(true);
                 let mapStyleJson = [
@@ -571,10 +617,19 @@
                     },
                 ]
                 this.resMap.setMapStyle({styleJson: mapStyleJson })
+                let that = this
                 // 监听点击地图
-                this.resMap.addEventListener("click", () => {
-                    console.log('监听点击地图---')
+                this.resMap.addEventListener("click", (e) => {
+                    console.log('监听点击地图---',e.point)
                     this.isShowMediaInfo = false
+                    if(this.isMouseLine) {
+                        if(!this.mouseLineStep) {
+                            this.resMap.addEventListener("mousemove",that.mapMouseMove,false)
+                        }
+                        this.LinePoints.push(e.point)
+                        this.drawingLine(e.point)
+                        this.mouseLineStep++
+                    }
                 });
                 // 初始化鼠标绘制
                 this.initMouseDrawing()
@@ -609,10 +664,10 @@
             // 获取小区数据
             getResList() {
                 let params = {
-                    startTime: this.dateTime[0],
-                    endTime: this.dateTime[1],
-                    cityId: '440100',
-                    suID: this.sessionData.uID,             // 销售uid
+                    startTime: this.adListParams.ls,
+                    endTime: this.adListParams.le,
+                    cityId: this.adListParams.rid,
+                    suID: this.adListParams.suID,             // 销售uid
                     resName: '',
                     districtId: this.selectArea.join(','),  // 区域
                     cType: this.bType,                      // 楼盘类型
@@ -643,6 +698,8 @@
                     } else {
                         sessFun.messageFun('warning',res.data.MSG)
                     }
+                    // 城市边界
+                    this.displayBoundary()
                 }).catch(err=>{
                     console.log('err',err)
                     sessFun.messageFun('warning','小区数据接口异常')
@@ -671,31 +728,32 @@
                 });
                 for(let key of this.resInfo) {
                     this.$set(key, "isSelect", false);
-                    if(i < 1000) {
-                        let point = new BMap.Point(key.lng, key.lat);
-                        let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
-                        let label = new BMap.Label(key.resName,{offset:new BMap.Size(-20,-16)});
-                        label.setStyle({
-                            borderRadius: "3px",
-                            boxShadow: '0px 0px 6px 0px rgba(0,0,0,0.15)',
-                            border: 'none',
-                            background: 'rgba(255,255,255,1)',
-                            color: 'rgba(0,0,0,0.85)',
-                            padding: '2px 4px'
-                        });
-                        marker.setLabel(label);
-                        marker.setTop(true);
-                        this.resMap.addOverlay(marker);              // 将标注添加到地图中
-                        label.addEventListener("click",()=>{
-                            this.showInfo(key,point)
-                        });
-                    } else {
-                        break
-                    }
+                    let point = new BMap.Point(key.lng, key.lat);
+                    let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
+                    let label = new BMap.Label(key.resName,{offset:new BMap.Size(-20,-16)});
+                    label.setStyle({
+                        borderRadius: "3px",
+                        boxShadow: '0px 0px 6px 0px rgba(0,0,0,0.15)',
+                        border: 'none',
+                        background: 'rgba(255,255,255,1)',
+                        color: 'rgba(0,0,0,0.85)',
+                        padding: '2px 4px'
+                    });
+                    marker.setLabel(label);
+                    marker.setTop(true);
+                    this.resMap.addOverlay(marker);              // 将标注添加到地图中
+                    label.addEventListener("click",()=>{
+                        this.showInfo(key,point)
+                    });
+                    // if(i < 1000) {
+                    //     marker.show()
+                    // } else {
+                    //     marker.hide()
+                    // }
                     i++
                 }
                 // 城市边界
-                this.displayBoundary()
+                // this.displayBoundary()
             },
             // 显示详情
             showInfo(info,point){
@@ -739,9 +797,9 @@
                             anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
                             offset: new BMap.Size(5, 5), //偏离值
                             drawingModes : [
-                                // BMAP_DRAWING_MARKER,        // 画点
+                                // BMAP_DRAWING_MARKER,     // 画点
                                 BMAP_DRAWING_CIRCLE,        // 画圆
-                                // BMAP_DRAWING_POLYLINE,      // 画线
+                                BMAP_DRAWING_POLYLINE,      // 画线
                                 BMAP_DRAWING_POLYGON,       // 画多边形
                                 BMAP_DRAWING_RECTANGLE      // 画矩形
                             ]
@@ -765,6 +823,13 @@
                             console.log('画多边形',overlay,e.overlay.getPath());
                             that.polygonPoint = e.overlay.getPath()
                             that.showResInPolygon('polygon',e.overlay)
+                        } else if(e.drawingMode === 'polyline') {
+                            that.isMouseLine = false
+                            that.resMap.removeEventListener('mousemove',that.mapMouseMove,false)
+                            that.mouseLineStep = 0
+                            that.resMap.removeOverlay(that.mapLabel)
+                            console.log('解除监听！')
+                            console.log('画直线',overlay);
                         }
                     });
                 }
@@ -780,7 +845,60 @@
                     this.drawingManager.open()
                     this.drawingManager.setDrawingMode(BMAP_DRAWING_POLYGON);
                 } else {
-
+                    this.drawingManager.open()
+                    this.drawingManager.enableCalculate()
+                    this.drawingManager.setDrawingMode(BMAP_DRAWING_POLYLINE);
+                    this.isMouseLine = true
+                }
+            },
+            // 画线时打点
+            drawingLine(point) {
+                console.log('画线时打点----')
+                let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(16,16),{
+                    anchor: new BMap.Size(8, 8)
+                });
+                let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
+                let labelText = ''
+                if(this.mouseLineStep < 1) {
+                    labelText = '起点'
+                    this.twoPointsLength = 0
+                } else {
+                    let beginPoint = this.LinePoints[this.mouseLineStep - 1] //
+                    let radius= this.resMap.getDistance(beginPoint,point)/1000
+                    labelText = (Number(this.twoPointsLength) + radius).toFixed(2) + '公里'
+                    this.twoPointsLength += radius
+                }
+                console.log('twoPointsLength----',this.twoPointsLength)
+                let label = new BMap.Label(labelText,{offset:new BMap.Size(-20,-16)});
+                label.setStyle({
+                    borderRadius: "3px",
+                    boxShadow: '0px 0px 6px 0px rgba(0,0,0,0.15)',
+                    border: "1px solid #ccc",
+                    background: 'rgba(255,255,255,1)',
+                    color: 'rgba(0,0,0,0.85)',
+                    padding: '2px 4px'
+                });
+                marker.setLabel(label);
+                this.resMap.addOverlay(marker);              // 将标注添加到地图中
+            },
+            mapMouseMove(ev) {
+                if(this.isMouseLine && this.mouseLineStep) {
+                    console.log('鼠标移动----e',ev.point)
+                    this.resMap.removeOverlay(this.mapLabel)
+                    let radius= this.resMap.getDistance(this.LinePoints[0], ev.point) /1000 + this.twoPointsLength;
+                    //添加文字标签
+                    let opts = {
+                        position: ev.point,                 // 指定文本标注所在的地理位置（当前鼠标的位置）
+                        offset: new BMap.Size(0, 0)         //设置文本偏移量
+                    }
+                    this.mapLabel = new BMap.Label("当前距离："+ radius.toFixed(2) +"公里", opts);  // 创建文本标注对象
+                    this.mapLabel.setStyle({
+                        border:"1px solid #ccc",
+                        maxWidth: "none ",
+                    });
+                    this.resMap.addOverlay(this.mapLabel);//添加label
+                } else {
+                    console.log('-----e')
                 }
             },
             // 匹配多边形内的点位
@@ -1309,22 +1427,30 @@
                     }
                 })
                 let params = {
-                    startTime: this.dateTime[0],
-                    endTime: this.dateTime[1],
+                    startTime: this.adListParams.ls, //this.dateTime[0],
+                    endTime: this.adListParams.le,  //
                     resIDList: arr,
                 }
                 console.log('选定提交小区资源IDparams',params)
                 api.postApi_json(this.apiVar.mapApi + '/adsList',params).then(res=>{
                     console.log('res',res)
                     if(res.data.SysCode === 200200) {
-                        this.$emit('childFun',res.data.data)
-                        sessFun.messageFun('success', '提交成功')
+                        // this.$emit('childFun',res.data.data)
+                        localStorage.setItem('qinlinMapCode',res.data.data)
+                        this.mapDialogVisible = true
                     } else {
                         sessFun.messageFun('warning', res.data.MSG || '小区提交失败')
                     }
                 }).catch(err=>{
                     sessFun.messageFun('warning','小区提交异常')
                 })
+            },
+            // 关闭窗口
+            closeWin() {
+                this.mapDialogVisible = false
+                window.opener = null;
+                window.open('', '_self');
+                window.close();
             },
             // 导出exc
             exportExcel(){
@@ -1363,6 +1489,25 @@
             },
             formatJson(filterVal, jsonData) {
                 return jsonData.map(v => filterVal.map(j => v[j]))
+            },
+            // 分享
+            resShare() {
+                let arr = this.selectResList.map(item=>{
+                    return item.resID
+                })
+                let params = {
+                    resInfo: arr
+                }
+                console.log('分享arr',arr)
+                api.postApi(this.apiVar.mapApi + '/shareCode',params).then(res=>{
+                    console.log('res分享',res)
+                    if(res.data.SysCode === 200200) {
+                        this.shareUrl = this.apiVar.qadnUrl + '/mapResource/shareRes?code=' + res.data.data
+                        console.log('shareUrl',this.shareUrl)
+                    } else {
+                        sessFun.messageFun('warning',res.data.MSG || '分享异常')
+                    }
+                })
             },
         },
     }

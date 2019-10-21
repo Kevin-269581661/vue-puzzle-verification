@@ -1,1114 +1,1120 @@
 <template>
     <div class="ad_mediaMana_wrap createPlan">
-        <div class="ad_mediaMana_nav clearfix">
-            <p><a href="#">方案管理</a><em> / </em><a href="#">创建方案</a></p>
-        </div>
-        <div class="mediaMana_content_top">
-            <div class="content_top_wrap">
-                <!--填写客户信息-->
-                <div class="step1" v-if="active==0">
-                    <div class="createPlan">
-                        <el-form :model="planForm" status-icon :rules="planRules" ref="planForm" label-width="100px"
-                                 class="demo-ruleForm">
-                            <el-form-item label="方案名称：" prop="planName">
-                                <el-input v-model="planForm.planName" placeholder="请输入方案名称"></el-input>
-                            </el-form-item>
-                            <el-form-item label="所属销售：" prop="ownerSales">
-                                <el-input v-if="isBD" v-model="planForm.ownerSales" disabled></el-input>
-                                <el-select v-model="planForm.ownerSales" v-else
-                                           filterable
-                                           remote
-                                           clearable
-                                           placeholder="请输入关键词"
-                                           :remote-method="querySearchAsync"
-                                           :loading="salerListLoading"
-                                           :highlight-first-item="true"
-                                           @change="changeSaler">
-                                    <el-option
-                                        v-for="item in salerList"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item label="公司名称：" prop="companyName">
-                                <el-select v-model="planForm.companyName" @change="GetBrandByCid" placeholder="请选择公司名称" filterable>
-                                    <el-option
-                                        v-for="item in companyName"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value"
-                                    >
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item label="公司品牌：" prop="companyBrand">
-                                <el-select v-model="planForm.companyBrand" placeholder="请选择公司品牌" filterable>
-                                    <el-option
-                                        v-for="item in companyBrand"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item label="联系人：" prop="ownerBU">
-                                <el-select v-model="planForm.ownerBU" placeholder="请选择所属联系人" filterable>
-                                    <el-option
-                                        v-for="item in ownerBU"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item label="投放城市：" prop="throwCity" ref="planThrowCity">
-                                <div v-if="cityOther" v-model="planForm.throwCity">
-                                    <el-tag
-                                        :key="tag"
-                                        v-for="tag in dynamicTags"
-                                        closable
-                                        :disable-transitions="false"
-                                        @close="spliceCity(tag)">
-                                        {{tag}}
-                                    </el-tag>
-                                    <el-cascader
-                                        style="width: 140px"
-                                        class="inputNewTag"
-                                        v-if="inputVisible"
-                                        v-model="selectedOptions"
-                                        :options="cityOptions"
-                                        ref="saveTagInput"
-                                        :show-all-levels="false"
-                                        size="small"
-                                        @change="handleInputConfirm"
-                                    >
-                                    </el-cascader>
-                                    <el-button v-else class="button-new-tag" size="small" @mouseover.native="showInput">
-                                        +
-                                    </el-button>
-                                </div>
-                                <el-select v-else v-model="planForm.throwCity" size="small" filterable multiple placeholder="请选择" @remove-tag="removeCity">
-                                    <el-option
-                                        v-for="item in throwCity"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-form>
-                    </div>
-                </div>
-                <!--选择点位-->
-                <div class="step2" v-if="active==1">
-                    <div>
-                        <div class="search-nav">
-                            <div class="search-wrap">
-                                <div style="margin-right: 0" v-show="isOccupied">
-                                    <el-select v-model="activeSelect" placeholder="请选择" class="type-select">
-                                        <el-option label="方案排斥" value="1"></el-option>
-                                    </el-select>
-                                    <el-select v-model="activeAdPlan" placeholder="请选择排斥方案" class="reject_select"
-                                               @change="selectRejectPlan" filterable :clearable="true">
-                                        <el-option v-for="item in rejectAdPlan" :key="item.value" :label="item.label"
-                                                   v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt053_ck01'}"
-                                                   :value="item.value"></el-option>
-                                    </el-select>
-                                </div>
-                                <div>
-                                    <el-input placeholder="请输入要搜索的内容" v-model="searchInput" class="input-with-select" @change="initData">
-                                        <el-select v-model="selectValue" slot="prepend" class="type-select" @change="initData">
-                                            <el-option v-for="item in typeSelect" :key="item.value" :label="item.value"
-                                                       :value="item.value"></el-option>
-                                        </el-select>
-                                    </el-input>
-                                </div>
-                                <div>
-                                    <el-date-picker
-                                        v-model="dateInput"
-                                        type="daterange"
-                                        start-placeholder="开始日期"
-                                        end-placeholder="结束日期"
-                                        value-format="yyyy/MM/dd"
-                                        format="yyyy/MM/dd"
-                                        class="date-select input-with-select"
-                                    >
-                                    </el-date-picker>
-                                </div>
-                                <div>
-                                    <el-button type="primary" style="background: #1890FF" icon="el-icon-search"
-                                               class="searchBtn" @click="searchFun"
-                                               :disabled="searchBtnAbled"
-                                               v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt049_ck01'}">搜索
-                                    </el-button>
-                                </div>
-                                <div class="shopcar" @click="dialogVisible()">
-                                    <el-badge :value="nowPointNum" class="item">
-                                        <img src="../../assets/images/shopCar.png" alt="">
-                                    </el-badge>
-                                </div>
-                            </div>
-                            <el-row class="button_row">
-                                <el-col>
-                                    <el-button type="primary" class="map" icon="el-icon-location-outline" @click="mapAD"
-                                               v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt050_ck03'}">地图</el-button>
-                                    <el-dropdown>
-                                        <el-button type="success" class="importXle">
-                                            导入<i class="el-icon-arrow-down el-icon--right"></i>
-                                        </el-button>
-                                        <el-dropdown-menu slot="dropdown">
-                                            <el-dropdown-item @click.native.prevent="importFanan('res')"
-                                                              v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt051_ck04'}">
-                                                导入小区
-                                            </el-dropdown-item>
-                                            <el-dropdown-item @click.native.prevent="importFanan('ads')"
-                                                              v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt052_ck04'}">
-                                                导入点位
-                                            </el-dropdown-item>
-                                        </el-dropdown-menu>
-                                    </el-dropdown>
-                                    <el-button type="primary" @click="importFanan('copy')"
-                                               v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt054_ck04'}">复制方案</el-button>
-                                    <el-button plain @click="dialogOneKeyPoint = true"
-                                               v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt055_ck04'}">一键选点</el-button>
-                                </el-col>
-                            </el-row>
-                        </div>
-                        <!--类型区域选择面板-->
-                        <div class="dw-panel" v-show="isOccupied">
-                            <dl>
-                                <dt>资源类型：</dt>
-                                <dd :class="recType === 1?'active': ''" @click="activeRecType(1)">社区</dd>
-                                <dd :class="recType === 2?'active': ''" @click="activeRecType(2)">写字楼</dd>
-                            </dl>
-                            <dl>
-                                <dt>媒体类型：</dt>
-                                <dd :class="mediaType === '广告门'?'active': ''" @click="activeMediaType('广告门')">广告门</dd>
-                                <dd :class="mediaType === '道闸'?'active': ''" @click="activeMediaType('道闸')">道闸</dd>
-                            </dl>
-                            <dl style="border: none">
-                                <dt>城市区域：</dt>
-                                <dd v-for="(item, index) in city" :index="index"
-                                    :class=" index == activeIndex ? 'active' : ''"
-                                    @click="activeCity(item,index)">{{item.rName}}
-                                </dd>
-                            </dl>
-                            <dl class="city-proper" v-for="(list, index) of area" :index="index"
-                                v-show=" index == activeIndex">
-                                <dd v-for="item of list" :class="item.rName == areaName ? 'active' : ''"
-                                    @click="activeArea(item)">{{item.rName}}
-                                </dd>
-                            </dl>
-                            <dl style="border: none">
-                                <dt>其它条件：</dt>
-                                <dd class="other-dd">
-                                    <el-select v-model="mState" placeholder="媒体状态" class="otherSelect" :class="mState !== '' ? 'otherSelectActive' :'' "
-                                               @change="mStateChange">
-                                        <el-option label="正常" value="1"></el-option>
-                                        <el-option label="待安装" value="2"></el-option>
-                                    </el-select>
-                                    <el-select v-model="limitList" placeholder="广告限制" class="otherSelect adLimitSelect"
-                                               :class="limitList.length !== 0 ? 'otherSelectActive' :'' " multiple collapse-tags
-                                               @change="activeADLimit"> <!--visible-change-->
+        <div v-if="!openMap">
+            <div class="ad_mediaMana_nav clearfix">
+                <p><a href="#">方案管理</a><em> / </em><a href="#">创建方案</a></p>
+            </div>
+            <div class="mediaMana_content_top">
+                <div class="content_top_wrap">
+                    <!--填写客户信息-->
+                    <div class="step1" v-if="active==0">
+                        <div class="createPlan">
+                            <el-form :model="planForm" status-icon :rules="planRules" ref="planForm" label-width="100px"
+                                     class="demo-ruleForm">
+                                <el-form-item label="方案名称：" prop="planName">
+                                    <el-input v-model="planForm.planName" placeholder="请输入方案名称"></el-input>
+                                </el-form-item>
+                                <el-form-item label="所属销售：" prop="ownerSales">
+                                    <el-input v-if="isBD" v-model="planForm.ownerSales" disabled></el-input>
+                                    <el-select v-model="planForm.ownerSales" v-else
+                                               filterable
+                                               remote
+                                               clearable
+                                               placeholder="请输入关键词"
+                                               :remote-method="querySearchAsync"
+                                               :loading="salerListLoading"
+                                               :highlight-first-item="true"
+                                               @change="changeSaler">
                                         <el-option
-                                            v-for="item in ADLimit"
+                                            v-for="item in salerList"
                                             :key="item.value"
                                             :label="item.label"
                                             :value="item.value">
                                         </el-option>
                                     </el-select>
-                                    <el-select v-model="buildValue" :placeholder="recType == '1' ? '楼盘类型' : '写字楼类型'"
-                                               :class="buildValue !== '' ? 'otherSelectActive' :'' "
-                                               class="otherSelect" @change="tableHeaderFilter_cType">
-                                        <el-option v-for="item in buildType" :key="item.buildValue"
-                                                   :label="item.buildValue"
-                                                   :value="item.buildValue">
+                                </el-form-item>
+                                <el-form-item label="公司名称：" prop="companyName">
+                                    <el-select v-model="planForm.companyName" @change="GetBrandByCid" placeholder="请选择公司名称" filterable>
+                                        <el-option
+                                            v-for="item in companyName"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value"
+                                        >
                                         </el-option>
                                     </el-select>
-                                    <el-select v-model="activeGrade" placeholder="媒体等级" class="otherSelect"
-                                               @change="gradeChange" :class=" activeGrade !== '' ? 'otherSelectActive' :''">
-                                        <el-option label="A级" value="A"></el-option>
-                                        <el-option label="B级" value="B"></el-option>
-                                        <el-option label="C级" value="C"></el-option>
+                                </el-form-item>
+                                <el-form-item label="公司品牌：" prop="companyBrand">
+                                    <el-select v-model="planForm.companyBrand" placeholder="请选择公司品牌" filterable>
+                                        <el-option
+                                            v-for="item in companyBrand"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                        </el-option>
                                     </el-select>
-                                    <el-popover
-                                        placement="bottom-start"
-                                        width="155"
-                                        trigger="click"
-                                        popper-class="other-dd-popper">
-                                        <div class="input-wrap" :class="HSearch === 'h'? 'focus': ''">
-                                            <input type="text" class="input"
-                                                   v-model="houseNum[0]">
-                                            -
-                                            <input type="text" class="input"
-                                                   v-model="houseNum[1]">
-                                            <el-button @click="emptyFun('H')" class="input-wrap-Btn">清 除 </el-button>
-                                            <el-button type="primary" class="input-wrap-Btn"
-                                                       @click="tableHeaderFilter_h()" >确 定
-                                            </el-button>
-                                        </div>
-                                        <el-button slot="reference" class="otherBtn"
-                                                   :class=" filterData.hNum ? 'otherBtnActive' : '' ">
-                                            住户数量
+                                </el-form-item>
+                                <el-form-item label="联系人：" prop="ownerBU">
+                                    <el-select v-model="planForm.ownerBU" placeholder="请选择所属联系人" filterable>
+                                        <el-option
+                                            v-for="item in ownerBU"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="投放城市：" prop="throwCity" ref="planThrowCity">
+                                    <div v-if="cityOther" v-model="planForm.throwCity">
+                                        <el-tag
+                                            :key="tag"
+                                            v-for="tag in dynamicTags"
+                                            closable
+                                            :disable-transitions="false"
+                                            @close="spliceCity(tag)">
+                                            {{tag}}
+                                        </el-tag>
+                                        <el-cascader
+                                            style="width: 140px"
+                                            class="inputNewTag"
+                                            v-if="inputVisible"
+                                            v-model="selectedOptions"
+                                            :options="cityOptions"
+                                            ref="saveTagInput"
+                                            :show-all-levels="false"
+                                            size="small"
+                                            @change="handleInputConfirm"
+                                        >
+                                        </el-cascader>
+                                        <el-button v-else class="button-new-tag" size="small" @mouseover.native="showInput">
+                                            +
                                         </el-button>
-                                    </el-popover>
-                                    <el-popover
-                                        placement="bottom-start"
-                                        width="155"
-                                        trigger="click"
-                                        popper-class="other-dd-popper">
-                                        <div class="input-wrap" :class="HSearch === 'p'? 'focus': ''">
-                                            <input type="text" class="input"
-                                                   v-model="buildPrice[0]">
-                                            -
-                                            <input type="text" class="input"
-                                                   v-model="buildPrice[1]">
-                                            <el-button @click="emptyFun('P')" class="input-wrap-Btn">清 除 </el-button>
-                                            <el-button type="primary" class="input-wrap-Btn"
-                                                       @click="tableHeaderFilter_p()" >确 定
-                                            </el-button>
-                                        </div>
-                                        <el-button slot="reference" class="otherBtn"
-                                                   :class=" filterData.bPrice ? 'otherBtnActive' : '' ">
-                                            楼盘价格
-                                        </el-button>
-                                    </el-popover>
-                                    <el-popover
-                                        placement="bottom-start"
-                                        width="155"
-                                        trigger="click"
-                                        popper-class="other-dd-popper">
-                                        <div class="input-wrap" :class="HSearch === 'p'? 'focus': ''">
-                                            <input type="text" class="input"
-                                                   v-model="liveYear[0]">
-                                            -
-                                            <input type="text" class="input"
-                                                   v-model="liveYear[1]">
-                                            <el-button @click="emptyFun('Y')" class="input-wrap-Btn">清 除 </el-button>
-                                            <el-button type="primary" class="input-wrap-Btn"
-                                                       @click="tableHeaderFilterByLiveYear()" >确 定
-                                            </el-button>
-                                        </div>
-                                        <el-button slot="reference" class="otherBtn"
-                                                   :class="filterData.lYear ? 'otherBtnActive' : '' ">
-                                            入住年份
-                                        </el-button>
-                                    </el-popover>
-                                    <el-popover
-                                        placement="bottom-start"
-                                        width="155"
-                                        trigger="click"
-                                        popper-class="other-dd-popper">
-                                        <div class="input-wrap" :class="HSearch === 'PF'? 'focus': ''">
-                                            <input type="text" class="input"
-                                                   v-model="peopleFlow[0]">
-                                            -
-                                            <input type="text" class="input"
-                                                   v-model="peopleFlow[1]">
-                                            <el-button @click="emptyFun('PF')" class="input-wrap-Btn">清 除 </el-button>
-                                            <el-button type="primary" class="input-wrap-Btn"
-                                                       @click="tableHeaderFilterByPeopleFlow()" >确 定
-                                            </el-button>
-                                        </div>
-                                        <el-button slot="reference" class="otherBtn"
-                                                   :class=" filterData.pFlow ? 'otherBtnActive' : '' ">
-                                            人流量
-                                        </el-button>
-                                    </el-popover>
-                                    <el-popover
-                                        placement="bottom-start"
-                                        width="155"
-                                        trigger="click"
-                                        popper-class="other-dd-popper">
-                                        <div class="input-wrap" :class="HSearch === 'PSN'? 'focus': ''">
-                                            <input type="text" class="input" v-model="carFlow[0]">
-                                            -
-                                            <input type="text" class="input" v-model="carFlow[1]">
-                                            <el-button @click="emptyFun('PSN')" class="input-wrap-Btn">清 除 </el-button>
-                                            <el-button type="primary" class="input-wrap-Btn"
-                                                       @click="tableHeaderFilterByCarFlow()" >确 定
-                                            </el-button>
-                                        </div>
-                                        <el-button slot="reference" class="otherBtn"
-                                                   :class="filterData.cFlow ? 'otherBtnActive' : '' ">
-                                            车流量
-                                        </el-button>
-                                    </el-popover>
-                                    <el-popover
-                                        placement="bottom-start"
-                                        width="155"
-                                        trigger="click"
-                                        popper-class="other-dd-popper">
-                                        <div class="input-wrap" :class="HSearch === 'CF'? 'focus': ''">
-                                            <input type="text" class="input" v-model="parkSpaceNum[0]">
-                                            -
-                                            <input type="text" class="input" v-model="parkSpaceNum[1]">
-                                            <el-button @click="emptyFun('CF')" class="input-wrap-Btn">清 除 </el-button>
-                                            <el-button type="primary" class="input-wrap-Btn"
-                                                       @click="tableHeaderFilterByParkSpaceNum()" >确 定
-                                            </el-button>
-                                        </div>
-                                        <el-button slot="reference" class="otherBtn"
-                                                   :class="filterData.pSNum ? 'otherBtnActive' : '' ">
-                                            车位数
-                                        </el-button>
-                                    </el-popover>
-                                </dd>
-                            </dl>
+                                    </div>
+                                    <el-select v-else v-model="planForm.throwCity" size="small" filterable multiple placeholder="请选择" @remove-tag="removeCity">
+                                        <el-option
+                                            v-for="item in throwCity"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-form>
                         </div>
-                        <div class="filter-condition" v-show="isOccupied">
-                            <el-tag
-                                v-for="(tag, index) in filterCondition"
-                                :key="index"
-                                closable
-                                :disable-transitions="false"
-                                @close="filterTagCloseFun(tag,index)"
-                                :type="tag.type"
-                                size="medium">
-                                {{tag.name}}
-                            </el-tag>
-                        </div>
-                        <!--表格-->
-                        <div class="table_wrap adsTable">
-                            <div class="myCheckbox" v-if="isOccupied">
-                                <el-checkbox v-model="IsAll" @change="allCheckboxAds"></el-checkbox>
+                    </div>
+                    <!--选择点位-->
+                    <div class="step2" v-if="active==1">
+                        <div>
+                            <div class="search-nav">
+                                <div class="search-wrap">
+                                    <div style="margin-right: 0" v-show="isOccupied">
+                                        <el-select v-model="activeSelect" placeholder="请选择" class="type-select">
+                                            <el-option label="方案排斥" value="1"></el-option>
+                                        </el-select>
+                                        <el-select v-model="activeAdPlan" placeholder="请选择排斥方案" class="reject_select"
+                                                   @change="selectRejectPlan" filterable :clearable="true">
+                                            <el-option v-for="item in rejectAdPlan" :key="item.value" :label="item.label"
+                                                       v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt053_ck01'}"
+                                                       :value="item.value"></el-option>
+                                        </el-select>
+                                    </div>
+                                    <div>
+                                        <el-input placeholder="请输入要搜索的内容" v-model="searchInput" class="input-with-select" @change="initData">
+                                            <el-select v-model="selectValue" slot="prepend" class="type-select" @change="initData">
+                                                <el-option v-for="item in typeSelect" :key="item.value" :label="item.value"
+                                                           :value="item.value"></el-option>
+                                            </el-select>
+                                        </el-input>
+                                    </div>
+                                    <div>
+                                        <el-date-picker
+                                            v-model="dateInput"
+                                            type="daterange"
+                                            start-placeholder="开始日期"
+                                            end-placeholder="结束日期"
+                                            value-format="yyyy/MM/dd"
+                                            format="yyyy/MM/dd"
+                                            class="date-select input-with-select"
+                                        >
+                                        </el-date-picker>
+                                    </div>
+                                    <div>
+                                        <el-button type="primary" style="background: #1890FF" icon="el-icon-search"
+                                                   class="searchBtn" @click="searchFun"
+                                                   :disabled="searchBtnAbled"
+                                                   v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt049_ck01'}">搜索
+                                        </el-button>
+                                    </div>
+                                    <div class="shopcar" @click="dialogVisible()">
+                                        <el-badge :value="nowPointNum" class="item">
+                                            <img src="../../assets/images/shopCar.png" alt="">
+                                        </el-badge>
+                                    </div>
+                                </div>
+                                <el-row class="button_row">
+                                    <el-col>
+<!--                                        <el-button type="primary" class="map" icon="el-icon-location-outline" @click="mapAD"-->
+                                        <el-button type="primary" class="map" icon="el-icon-location-outline" @click="setMapParams"
+                                                   v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt050_ck03'}">地图</el-button>
+                                        <el-dropdown>
+                                            <el-button type="success" class="importXle">
+                                                导入<i class="el-icon-arrow-down el-icon--right"></i>
+                                            </el-button>
+                                            <el-dropdown-menu slot="dropdown">
+                                                <el-dropdown-item @click.native.prevent="importFanan('res')"
+                                                                  v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt051_ck04'}">
+                                                    导入小区
+                                                </el-dropdown-item>
+                                                <el-dropdown-item @click.native.prevent="importFanan('ads')"
+                                                                  v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt052_ck04'}">
+                                                    导入点位
+                                                </el-dropdown-item>
+                                            </el-dropdown-menu>
+                                        </el-dropdown>
+                                        <el-button type="primary" @click="importFanan('copy')"
+                                                   v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt054_ck04'}">复制方案</el-button>
+                                        <el-button plain @click="dialogOneKeyPoint = true"
+                                                   v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt055_ck04'}">一键选点</el-button>
+                                    </el-col>
+                                </el-row>
                             </div>
-                            <el-table
-                                v-loading="loading"
-                                element-loading-text="玩命加载中.."
-                                element-loading-spinner="el-icon-loading"
-                                v-loadmore="loadMore"
-                                border
-                                :data="planList"
-                                :default-sort="{prop: 'mID', order: 'descending'}"
-                                @cell-mouse-enter="mouseEnter"
-                                @row-click="rowClick"
-                                style="width: 100%"
-                                class="selectAdsTable"
-                                height="480">
-                                <el-table-column
-                                    fixed
-                                    class-name="el-table-column-checkbox"
-                                    width="110px"><!-- :render-header="customFieldColumn"-->
-                                    <template slot-scope="scope">
-                                        <div v-if="isOccupied">
-                                            <div class="adDoor" v-if="mediaType === '广告门'">
-                                                <el-popover
-                                                    v-if="scope.row.box.A"
-                                                    placement="top-start"
-                                                    width="310"
-                                                    trigger="hover">
-                                                    <span v-if="scope.row.adlInfo === ''">暂无被禁用的信息</span>
-                                                    <ul v-else>
-                                                        <li v-for="(item,index) in scope.row.adlInfo" :key="index">
-                                                            <div v-if="item.asState">
-                                                                <p style="margin-bottom: 5px">
-                                                                    <span style="color: #333">该点位：{{item.asState}}中</span>
-                                                                </p>
-                                                            </div>
-                                                            <div v-else>
-                                                                <p style="margin-bottom: 5px">
-                                                                    <span style="color: #333">占点方案：</span>
-                                                                    <span>
+                            <!--类型区域选择面板-->
+                            <div class="dw-panel" v-show="isOccupied">
+                                <dl>
+                                    <dt>资源类型：</dt>
+                                    <dd :class="recType === 1?'active': ''" @click="activeRecType(1)">社区</dd>
+                                    <dd :class="recType === 2?'active': ''" @click="activeRecType(2)">写字楼</dd>
+                                </dl>
+                                <dl>
+                                    <dt>媒体类型：</dt>
+                                    <dd :class="mediaType === '广告门'?'active': ''" @click="activeMediaType('广告门')">广告门</dd>
+                                    <dd :class="mediaType === '道闸'?'active': ''" @click="activeMediaType('道闸')">道闸</dd>
+                                </dl>
+                                <dl style="border: none">
+                                    <dt>城市区域：</dt>
+                                    <dd v-for="(item, index) in city" :index="index"
+                                        :class=" index == activeIndex ? 'active' : ''"
+                                        @click="activeCity(item,index)">{{item.rName}}
+                                    </dd>
+                                </dl>
+                                <dl class="city-proper" v-for="(list, index) of area" :index="index"
+                                    v-show=" index == activeIndex">
+                                    <dd v-for="item of list" :class="item.rName == areaName ? 'active' : ''"
+                                        @click="activeArea(item)">{{item.rName}}
+                                    </dd>
+                                </dl>
+                                <dl style="border: none">
+                                    <dt>其它条件：</dt>
+                                    <dd class="other-dd">
+                                        <el-select v-model="mState" placeholder="媒体状态" class="otherSelect" :class="mState !== '' ? 'otherSelectActive' :'' "
+                                                   @change="mStateChange">
+                                            <el-option label="正常" value="1"></el-option>
+                                            <el-option label="待安装" value="2"></el-option>
+                                        </el-select>
+                                        <el-select v-model="limitList" placeholder="广告限制" class="otherSelect adLimitSelect"
+                                                   :class="limitList.length !== 0 ? 'otherSelectActive' :'' " multiple collapse-tags
+                                                   @change="activeADLimit"> <!--visible-change-->
+                                            <el-option
+                                                v-for="item in ADLimit"
+                                                :key="item.value"
+                                                :label="item.label"
+                                                :value="item.value">
+                                            </el-option>
+                                        </el-select>
+                                        <el-select v-model="buildValue" :placeholder="recType == '1' ? '楼盘类型' : '写字楼类型'"
+                                                   :class="buildValue !== '' ? 'otherSelectActive' :'' "
+                                                   class="otherSelect" @change="tableHeaderFilter_cType">
+                                            <el-option v-for="item in buildType" :key="item.buildValue"
+                                                       :label="item.buildValue"
+                                                       :value="item.buildValue">
+                                            </el-option>
+                                        </el-select>
+                                        <el-select v-model="activeGrade" placeholder="媒体等级" class="otherSelect"
+                                                   @change="gradeChange" :class=" activeGrade !== '' ? 'otherSelectActive' :''">
+                                            <el-option label="A级" value="A"></el-option>
+                                            <el-option label="B级" value="B"></el-option>
+                                            <el-option label="C级" value="C"></el-option>
+                                        </el-select>
+                                        <el-popover
+                                            placement="bottom-start"
+                                            width="155"
+                                            trigger="click"
+                                            popper-class="other-dd-popper">
+                                            <div class="input-wrap" :class="HSearch === 'h'? 'focus': ''">
+                                                <input type="text" class="input"
+                                                       v-model="houseNum[0]">
+                                                -
+                                                <input type="text" class="input"
+                                                       v-model="houseNum[1]">
+                                                <el-button @click="emptyFun('H')" class="input-wrap-Btn">清 除 </el-button>
+                                                <el-button type="primary" class="input-wrap-Btn"
+                                                           @click="tableHeaderFilter_h()" >确 定
+                                                </el-button>
+                                            </div>
+                                            <el-button slot="reference" class="otherBtn"
+                                                       :class=" filterData.hNum ? 'otherBtnActive' : '' ">
+                                                住户数量
+                                            </el-button>
+                                        </el-popover>
+                                        <el-popover
+                                            placement="bottom-start"
+                                            width="155"
+                                            trigger="click"
+                                            popper-class="other-dd-popper">
+                                            <div class="input-wrap" :class="HSearch === 'p'? 'focus': ''">
+                                                <input type="text" class="input"
+                                                       v-model="buildPrice[0]">
+                                                -
+                                                <input type="text" class="input"
+                                                       v-model="buildPrice[1]">
+                                                <el-button @click="emptyFun('P')" class="input-wrap-Btn">清 除 </el-button>
+                                                <el-button type="primary" class="input-wrap-Btn"
+                                                           @click="tableHeaderFilter_p()" >确 定
+                                                </el-button>
+                                            </div>
+                                            <el-button slot="reference" class="otherBtn"
+                                                       :class=" filterData.bPrice ? 'otherBtnActive' : '' ">
+                                                楼盘价格
+                                            </el-button>
+                                        </el-popover>
+                                        <el-popover
+                                            placement="bottom-start"
+                                            width="155"
+                                            trigger="click"
+                                            popper-class="other-dd-popper">
+                                            <div class="input-wrap" :class="HSearch === 'p'? 'focus': ''">
+                                                <input type="text" class="input"
+                                                       v-model="liveYear[0]">
+                                                -
+                                                <input type="text" class="input"
+                                                       v-model="liveYear[1]">
+                                                <el-button @click="emptyFun('Y')" class="input-wrap-Btn">清 除 </el-button>
+                                                <el-button type="primary" class="input-wrap-Btn"
+                                                           @click="tableHeaderFilterByLiveYear()" >确 定
+                                                </el-button>
+                                            </div>
+                                            <el-button slot="reference" class="otherBtn"
+                                                       :class="filterData.lYear ? 'otherBtnActive' : '' ">
+                                                入住年份
+                                            </el-button>
+                                        </el-popover>
+                                        <el-popover
+                                            placement="bottom-start"
+                                            width="155"
+                                            trigger="click"
+                                            popper-class="other-dd-popper">
+                                            <div class="input-wrap" :class="HSearch === 'PF'? 'focus': ''">
+                                                <input type="text" class="input"
+                                                       v-model="peopleFlow[0]">
+                                                -
+                                                <input type="text" class="input"
+                                                       v-model="peopleFlow[1]">
+                                                <el-button @click="emptyFun('PF')" class="input-wrap-Btn">清 除 </el-button>
+                                                <el-button type="primary" class="input-wrap-Btn"
+                                                           @click="tableHeaderFilterByPeopleFlow()" >确 定
+                                                </el-button>
+                                            </div>
+                                            <el-button slot="reference" class="otherBtn"
+                                                       :class=" filterData.pFlow ? 'otherBtnActive' : '' ">
+                                                人流量
+                                            </el-button>
+                                        </el-popover>
+                                        <el-popover
+                                            placement="bottom-start"
+                                            width="155"
+                                            trigger="click"
+                                            popper-class="other-dd-popper">
+                                            <div class="input-wrap" :class="HSearch === 'PSN'? 'focus': ''">
+                                                <input type="text" class="input" v-model="carFlow[0]">
+                                                -
+                                                <input type="text" class="input" v-model="carFlow[1]">
+                                                <el-button @click="emptyFun('PSN')" class="input-wrap-Btn">清 除 </el-button>
+                                                <el-button type="primary" class="input-wrap-Btn"
+                                                           @click="tableHeaderFilterByCarFlow()" >确 定
+                                                </el-button>
+                                            </div>
+                                            <el-button slot="reference" class="otherBtn"
+                                                       :class="filterData.cFlow ? 'otherBtnActive' : '' ">
+                                                车流量
+                                            </el-button>
+                                        </el-popover>
+                                        <el-popover
+                                            placement="bottom-start"
+                                            width="155"
+                                            trigger="click"
+                                            popper-class="other-dd-popper">
+                                            <div class="input-wrap" :class="HSearch === 'CF'? 'focus': ''">
+                                                <input type="text" class="input" v-model="parkSpaceNum[0]">
+                                                -
+                                                <input type="text" class="input" v-model="parkSpaceNum[1]">
+                                                <el-button @click="emptyFun('CF')" class="input-wrap-Btn">清 除 </el-button>
+                                                <el-button type="primary" class="input-wrap-Btn"
+                                                           @click="tableHeaderFilterByParkSpaceNum()" >确 定
+                                                </el-button>
+                                            </div>
+                                            <el-button slot="reference" class="otherBtn"
+                                                       :class="filterData.pSNum ? 'otherBtnActive' : '' ">
+                                                车位数
+                                            </el-button>
+                                        </el-popover>
+                                    </dd>
+                                </dl>
+                            </div>
+                            <div class="filter-condition" v-show="isOccupied">
+                                <el-tag
+                                    v-for="(tag, index) in filterCondition"
+                                    :key="index"
+                                    closable
+                                    :disable-transitions="false"
+                                    @close="filterTagCloseFun(tag,index)"
+                                    :type="tag.type"
+                                    size="medium">
+                                    {{tag.name}}
+                                </el-tag>
+                            </div>
+                            <!--表格-->
+                            <div class="table_wrap adsTable">
+                                <div class="myCheckbox" v-if="isOccupied">
+                                    <el-checkbox v-model="IsAll" @change="allCheckboxAds"></el-checkbox>
+                                </div>
+                                <el-table
+                                    v-loading="loading"
+                                    element-loading-text="玩命加载中.."
+                                    element-loading-spinner="el-icon-loading"
+                                    v-loadmore="loadMore"
+                                    border
+                                    :data="planList"
+                                    :default-sort="{prop: 'mID', order: 'descending'}"
+                                    @cell-mouse-enter="mouseEnter"
+                                    @row-click="rowClick"
+                                    style="width: 100%"
+                                    class="selectAdsTable"
+                                    height="480">
+                                    <el-table-column
+                                        fixed
+                                        class-name="el-table-column-checkbox"
+                                        width="110px"><!-- :render-header="customFieldColumn"-->
+                                        <template slot-scope="scope">
+                                            <div v-if="isOccupied">
+                                                <div class="adDoor" v-if="mediaType === '广告门'">
+                                                    <el-popover
+                                                        v-if="scope.row.box.A"
+                                                        placement="top-start"
+                                                        width="310"
+                                                        trigger="hover">
+                                                        <span v-if="scope.row.adlInfo === ''">暂无被禁用的信息</span>
+                                                        <ul v-else>
+                                                            <li v-for="(item,index) in scope.row.adlInfo" :key="index">
+                                                                <div v-if="item.asState">
+                                                                    <p style="margin-bottom: 5px">
+                                                                        <span style="color: #333">该点位：{{item.asState}}中</span>
+                                                                    </p>
+                                                                </div>
+                                                                <div v-else>
+                                                                    <p style="margin-bottom: 5px">
+                                                                        <span style="color: #333">占点方案：</span>
+                                                                        <span>
                                                                         <span  style="font-weight: bold">{{sessionData.uType === 'MD' ? item.beOccupieApName : '******'}}</span>
                                                                         方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
                                                                     </span>
-                                                                </p>
-                                                                <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                    <el-checkbox slot="reference" v-model="scope.row.checkBox.A" label="A面"
+                                                                    </p>
+                                                                    <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
+                                                                </div>
+                                                            </li>
+                                                        </ul>
+                                                        <el-checkbox slot="reference" v-model="scope.row.checkBox.A" label="A面"
+                                                                     @change="changeA(scope.row)"
+                                                                     :disabled="scope.row.box.A">
+                                                        </el-checkbox>
+                                                    </el-popover>
+                                                    <el-checkbox v-else v-model="scope.row.checkBox.A" label="A面"
                                                                  @change="changeA(scope.row)"
                                                                  :disabled="scope.row.box.A">
                                                     </el-checkbox>
-                                                </el-popover>
-                                                <el-checkbox v-else v-model="scope.row.checkBox.A" label="A面"
-                                                             @change="changeA(scope.row)"
-                                                             :disabled="scope.row.box.A">
-                                                </el-checkbox>
-                                                <el-popover
-                                                    v-if="scope.row.box.B"
-                                                    placement="top-start"
-                                                    width="310"
-                                                    trigger="hover">
-                                                    <span v-if="scope.row.adlInfo === ''">暂无被禁用的信息</span>
-                                                    <ul v-else>
-                                                        <li v-for="(item,index) in scope.row.adlInfo" :key="index">
-                                                            <div v-if="item.asState">
-                                                                <p style="margin-bottom: 5px">
-                                                                    <span style="color: #333">该点位：{{item.asState}}中</span>
-                                                                </p>
-                                                            </div>
-                                                            <div v-else>
-                                                                <p style="margin-bottom: 5px">
-                                                                    <span style="color: #333">占点方案：</span>
-                                                                    <span>
+                                                    <el-popover
+                                                        v-if="scope.row.box.B"
+                                                        placement="top-start"
+                                                        width="310"
+                                                        trigger="hover">
+                                                        <span v-if="scope.row.adlInfo === ''">暂无被禁用的信息</span>
+                                                        <ul v-else>
+                                                            <li v-for="(item,index) in scope.row.adlInfo" :key="index">
+                                                                <div v-if="item.asState">
+                                                                    <p style="margin-bottom: 5px">
+                                                                        <span style="color: #333">该点位：{{item.asState}}中</span>
+                                                                    </p>
+                                                                </div>
+                                                                <div v-else>
+                                                                    <p style="margin-bottom: 5px">
+                                                                        <span style="color: #333">占点方案：</span>
+                                                                        <span>
                                                                         <span  style="font-weight: bold">{{sessionData.uType === 'MD' ? item.beOccupieApName : '******'}}</span>
                                                                         方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
                                                                     </span>
-                                                                </p>
-                                                                <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                    <el-checkbox slot="reference" v-model="scope.row.checkBox.B" label="B面"
+                                                                    </p>
+                                                                    <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
+                                                                </div>
+                                                            </li>
+                                                        </ul>
+                                                        <el-checkbox slot="reference" v-model="scope.row.checkBox.B" label="B面"
+                                                                     @change="changeB(scope.row)"
+                                                                     :disabled="scope.row.box.B">
+                                                        </el-checkbox>
+                                                    </el-popover>
+                                                    <el-checkbox v-else v-model="scope.row.checkBox.B" label="B面"
                                                                  @change="changeB(scope.row)"
                                                                  :disabled="scope.row.box.B">
                                                     </el-checkbox>
-                                                </el-popover>
-                                                <el-checkbox v-else v-model="scope.row.checkBox.B" label="B面"
-                                                             @change="changeB(scope.row)"
-                                                             :disabled="scope.row.box.B">
-                                                </el-checkbox>
+                                                </div>
+                                                <div class="roadGate" v-else>
+                                                    <el-checkbox v-model="scope.row.checkBox.ABC" label="ABC面"
+                                                                 @change="changeABC(scope.row)">
+                                                    </el-checkbox>
+                                                </div>
                                             </div>
-                                            <div class="roadGate" v-else>
-                                                <el-checkbox v-model="scope.row.checkBox.ABC" label="ABC面"
-                                                             @change="changeABC(scope.row)">
-                                                </el-checkbox>
+                                            <div v-else>
+                                                {{scope.row.asLabs}}面
                                             </div>
-                                        </div>
-                                        <div v-else>
-                                            {{scope.row.asLabs}}面
-                                        </div>
-                                    </template>
-                                </el-table-column>
-                                <el-table-column
-                                    fixed
-                                    class-name="el-table-column-resName"
-                                    label="资源名称"
-                                    width="200"
-                                    prop="resName"
-                                >
-                                </el-table-column>
-                                <el-table-column
-                                    fixed
-                                    class-name="el-table-column-mediaName"
-                                    prop="mediaName"
-                                    label="媒体名称"
-                                    width="140"
-                                    :show-overflow-tooltip="true">
-                                </el-table-column>
-                                <el-table-column
-                                    prop="city"
-                                    label="城市"
-                                    min-width="110"
-                                >
-                                </el-table-column>
-                                <el-table-column
-                                    prop="origin"
-                                    label="区域"
-                                    min-width="110"
-                                >
-                                </el-table-column>
-                                <el-table-column
-                                    label="商圈"
-                                    min-width="130">
-                                    <template slot-scope="scope">
-                                        {{scope.row.tradingArea || '--' }}
-                                    </template>
-                                </el-table-column>
-                                <el-table-column
-                                    label="媒体备注"
-                                    min-width="140"
-                                    prop="mediaRemark"
-                                    class-name="el-table-column-mediaRemark"
-                                    :show-overflow-tooltip="true">
-                                    <template slot-scope="scope">
-                                        <span>{{scope.row.mediaRemark || '--' }}</span>
-                                    </template>
-                                </el-table-column>
-                                <el-table-column
-                                    label="资产编号"
-                                    min-width="160"
-                                    prop="assetTag"
-                                    :show-overflow-tooltip="true">
-                                    <template slot-scope="scope">
-                                        <span>{{scope.row.assetTag || '--' }}</span>
-                                    </template>
-                                </el-table-column>
-                                <el-table-column
-                                    label="媒体等级"
-                                    min-width="120"
-                                    prop="mediaLevel">
-                                    <template slot-scope="scope">
-                                        {{scope.row.mediaLevel !== '' ? scope.row.mediaLevel + '级' : '--'}}
-                                    </template>
-                                </el-table-column>
-                                <el-table-column
-                                    label="广告限制"
-                                    min-width="130"
-                                    prop="adLimit"
-                                    :show-overflow-tooltip="true">
-                                    <template slot-scope="scope">
-                                        <span>{{scope.row.adLimit || '--' }}</span>
-                                    </template>
-                                </el-table-column>
-                                <el-table-column
-                                    :label="recType == 1? '楼盘类型':'写字楼类型'"
-                                    min-width="100"
-                                    prop="buildType"
-                                    :show-overflow-tooltip="true">
-                                    <template slot-scope="scope">
-                                        <span>{{scope.row.buildType || '--' }}</span>
-                                    </template>
-                                </el-table-column>
-                                <el-table-column
-                                    prop="mState"
-                                    label="媒体状态"
-                                    min-width="90"
-                                    class="tar">
-                                </el-table-column>
-                                <el-table-column
-                                    label="楼盘价格"
-                                    min-width="110">
-                                    <template slot-scope="scope">
-                                        <span>&yen;{{scope.row.buildPrice}}</span>
-                                    </template>
-                                </el-table-column>
-                                <el-table-column
-                                    prop="buildNum"
-                                    label="楼栋数量"
-                                    min-width="100">
-                                </el-table-column>
-                                <el-table-column
-                                    label="广告尺寸"
-                                    min-width="110">
-                                    <template slot-scope="scope">
-                                        {{ scope.row.adSize || '--' }}
-                                    </template>
-                                </el-table-column>
-                                <el-table-column
-                                    label="画面尺寸"
-                                    min-width="110">
-                                    <template slot-scope="scope">
-                                        {{ scope.row.picSize || '--' }}
-                                    </template>
-                                </el-table-column>
-                                <el-table-column
-                                    prop="liveYear"
-                                    :label="recType === 1? '入住年份' : '建成年份'"
-                                    min-width="90">
-                                </el-table-column>
-                                <el-table-column
-                                    prop="houseNum"
-                                    :label="recType === 1? '小区户数' : '办公室数量'"
-                                    min-width="90">
-                                </el-table-column>
-                                <el-table-column
-                                    label="人流量"
-                                    min-width="110">
-                                    <template slot-scope="scope">
-                                        {{ scope.row.peopleFlow || '--' }}
-                                    </template>
-                                </el-table-column>
-                                <el-table-column
-                                    label="车位数"
-                                    min-width="110">
-                                    <template slot-scope="scope">
-                                        {{ scope.row.parkSpaceNum || '--' }}
-                                    </template>
-                                </el-table-column>
-                                <el-table-column
-                                    label="车流量"
-                                    min-width="110">
-                                    <template slot-scope="scope">
-                                        {{ scope.row.carFlow || '--' }}
-                                    </template>
-                                </el-table-column>
-                                <el-table-column
-                                    fixed="right"
-                                    prop="schedules"
-                                    label="排期"
-                                    min-width="190">
-                                </el-table-column>
-                            </el-table>
-                        </div>
-                        <!--购物车-->
-                        <el-dialog title="已选点位" :visible.sync="dialogTableVisible">
-                            <template slot-scope="scope">
-                                <div class="table_wrap car-list" style="margin-top: 60px">
-                                    <el-row style="margin-bottom:10px;">
-                                        <el-col :span="8">
-                                            <el-radio-group v-model="activeName" size="small" @change="handleClick">
-                                                <el-radio-button :label="item.type.toString()" v-for="item of typeShopList" :key="item.type">{{item.mVehicle}}</el-radio-button>
-                                            </el-radio-group>
-                                        </el-col>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                        fixed
+                                        class-name="el-table-column-resName"
+                                        label="资源名称"
+                                        width="200"
+                                        prop="resName"
+                                    >
+                                    </el-table-column>
+                                    <el-table-column
+                                        fixed
+                                        class-name="el-table-column-mediaName"
+                                        prop="mediaName"
+                                        label="媒体名称"
+                                        width="140"
+                                        :show-overflow-tooltip="true">
+                                    </el-table-column>
+                                    <el-table-column
+                                        prop="city"
+                                        label="城市"
+                                        min-width="110"
+                                    >
+                                    </el-table-column>
+                                    <el-table-column
+                                        prop="origin"
+                                        label="区域"
+                                        min-width="110"
+                                    >
+                                    </el-table-column>
+                                    <el-table-column
+                                        label="商圈"
+                                        min-width="130">
+                                        <template slot-scope="scope">
+                                            {{scope.row.tradingArea || '--' }}
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                        label="媒体备注"
+                                        min-width="140"
+                                        prop="mediaRemark"
+                                        class-name="el-table-column-mediaRemark"
+                                        :show-overflow-tooltip="true">
+                                        <template slot-scope="scope">
+                                            <span>{{scope.row.mediaRemark || '--' }}</span>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                        label="资产编号"
+                                        min-width="160"
+                                        prop="assetTag"
+                                        :show-overflow-tooltip="true">
+                                        <template slot-scope="scope">
+                                            <span>{{scope.row.assetTag || '--' }}</span>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                        label="媒体等级"
+                                        min-width="120"
+                                        prop="mediaLevel">
+                                        <template slot-scope="scope">
+                                            {{scope.row.mediaLevel !== '' ? scope.row.mediaLevel + '级' : '--'}}
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                        label="广告限制"
+                                        min-width="130"
+                                        prop="adLimit"
+                                        :show-overflow-tooltip="true">
+                                        <template slot-scope="scope">
+                                            <span>{{scope.row.adLimit || '--' }}</span>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                        :label="recType == 1? '楼盘类型':'写字楼类型'"
+                                        min-width="100"
+                                        prop="buildType"
+                                        :show-overflow-tooltip="true">
+                                        <template slot-scope="scope">
+                                            <span>{{scope.row.buildType || '--' }}</span>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                        prop="mState"
+                                        label="媒体状态"
+                                        min-width="90"
+                                        class="tar">
+                                    </el-table-column>
+                                    <el-table-column
+                                        label="楼盘价格"
+                                        min-width="110">
+                                        <template slot-scope="scope">
+                                            <span>&yen;{{scope.row.buildPrice}}</span>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                        prop="buildNum"
+                                        label="楼栋数量"
+                                        min-width="100">
+                                    </el-table-column>
+                                    <el-table-column
+                                        label="广告尺寸"
+                                        min-width="110">
+                                        <template slot-scope="scope">
+                                            {{ scope.row.adSize || '--' }}
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                        label="画面尺寸"
+                                        min-width="110">
+                                        <template slot-scope="scope">
+                                            {{ scope.row.picSize || '--' }}
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                        prop="liveYear"
+                                        :label="recType === 1? '入住年份' : '建成年份'"
+                                        min-width="90">
+                                    </el-table-column>
+                                    <el-table-column
+                                        prop="houseNum"
+                                        :label="recType === 1? '小区户数' : '办公室数量'"
+                                        min-width="90">
+                                    </el-table-column>
+                                    <el-table-column
+                                        label="人流量"
+                                        min-width="110">
+                                        <template slot-scope="scope">
+                                            {{ scope.row.peopleFlow || '--' }}
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                        label="车位数"
+                                        min-width="110">
+                                        <template slot-scope="scope">
+                                            {{ scope.row.parkSpaceNum || '--' }}
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                        label="车流量"
+                                        min-width="110">
+                                        <template slot-scope="scope">
+                                            {{ scope.row.carFlow || '--' }}
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                        fixed="right"
+                                        prop="schedules"
+                                        label="排期"
+                                        min-width="190">
+                                    </el-table-column>
+                                </el-table>
+                            </div>
+                            <!--购物车-->
+                            <el-dialog title="已选点位" :visible.sync="dialogTableVisible">
+                                <template slot-scope="scope">
+                                    <div class="table_wrap car-list" style="margin-top: 60px">
+                                        <el-row style="margin-bottom:10px;">
+                                            <el-col :span="8">
+                                                <el-radio-group v-model="activeName" size="small" @change="handleClick">
+                                                    <el-radio-button :label="item.type.toString()" v-for="item of typeShopList" :key="item.type">{{item.mVehicle}}</el-radio-button>
+                                                </el-radio-group>
+                                            </el-col>
 
-                                        <el-col :span="16" style="text-align:right;">
+                                            <el-col :span="16" style="text-align:right;">
                                             <span class="button_point">
                                                 <el-button plain @click="getMapADList" size="small" class="mapBtn" :disabled="mapBtn"
                                                            v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt061_ck05'}">获取地图选点</el-button>
                                             </span>
-                                            <el-select v-model="eventType" placeholder="快捷配点" filterable @change="changeEvent">
-                                                <el-option v-for="item of eventList" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                                            </el-select>
-                                        </el-col>
-                                    </el-row>
-                                    <el-row class="car-title">
-                                        <el-col :span="10">
-                                            <img src="../../assets/images/statistics.png" alt="" style="vertical-align: text-top;">
-                                            社区:<span>{{shopMedia_ADNum.resNum}}</span>
-                                            (选1面:<span>{{shopMedia_ADNum.oneNum}}</span>&nbsp;&nbsp;
-                                            选2面:<span>{{shopMedia_ADNum.twoNum}}</span>&nbsp;&nbsp;
-                                            选3面:<span>{{shopMedia_ADNum.threeNum}}</span>&nbsp;&nbsp;
-                                            选更多:<span>{{shopMedia_ADNum.moreNum}}</span>)
-                                        </el-col>
-                                        <el-col :span="2">
-                                            媒体:<span>{{shopMedia_ADNum.mediaNum}}</span>
-                                        </el-col>
-                                        <el-col :span="5">
-                                            点位:<span>{{shopMedia_ADNum.ADNum}}</span>
-                                            <template v-if="activeName == '1'">
-                                                (A面:<span>{{mediaLevelNum.ANum}}</span>
-                                                B面:<span>{{mediaLevelNum.BNum}}</span>)
-                                            </template>
-                                        </el-col>
-                                        <el-col :span="5">
-                                            A级:<span>{{mediaLevelNum.ALevel}}</span>
-                                            B级:<span>{{mediaLevelNum.BLevel}}</span>
-                                            C级:<span>{{mediaLevelNum.CLevel}}</span>
-                                        </el-col>
-                                    </el-row>
+                                                <el-select v-model="eventType" placeholder="快捷配点" filterable @change="changeEvent">
+                                                    <el-option v-for="item of eventList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                                                </el-select>
+                                            </el-col>
+                                        </el-row>
+                                        <el-row class="car-title">
+                                            <el-col :span="10">
+                                                <img src="../../assets/images/statistics.png" alt="" style="vertical-align: text-top;">
+                                                社区:<span>{{shopMedia_ADNum.resNum}}</span>
+                                                (选1面:<span>{{shopMedia_ADNum.oneNum}}</span>&nbsp;&nbsp;
+                                                选2面:<span>{{shopMedia_ADNum.twoNum}}</span>&nbsp;&nbsp;
+                                                选3面:<span>{{shopMedia_ADNum.threeNum}}</span>&nbsp;&nbsp;
+                                                选更多:<span>{{shopMedia_ADNum.moreNum}}</span>)
+                                            </el-col>
+                                            <el-col :span="2">
+                                                媒体:<span>{{shopMedia_ADNum.mediaNum}}</span>
+                                            </el-col>
+                                            <el-col :span="5">
+                                                点位:<span>{{shopMedia_ADNum.ADNum}}</span>
+                                                <template v-if="activeName == '1'">
+                                                    (A面:<span>{{mediaLevelNum.ANum}}</span>
+                                                    B面:<span>{{mediaLevelNum.BNum}}</span>)
+                                                </template>
+                                            </el-col>
+                                            <el-col :span="5">
+                                                A级:<span>{{mediaLevelNum.ALevel}}</span>
+                                                B级:<span>{{mediaLevelNum.BLevel}}</span>
+                                                C级:<span>{{mediaLevelNum.CLevel}}</span>
+                                            </el-col>
+                                        </el-row>
 
-                                    <el-table
-                                        border
-                                        :data="shopShowList"
-                                        :default-sort="{prop: 'mID', order: 'descending'}"
-                                        :row-class-name="tableRowClassName"
-                                        @row-click="shopRowClick"
-                                        style="width: 100%">
-                                        <el-table-column type="expand">
-                                            <template slot-scope="props">
-                                                <el-form label-position="left" inline class="demo-table-expand">
-                                                    <el-form-item label="商圈：">
-                                                        <span>{{ props.row.tradingArea}}</span>
-                                                    </el-form-item>
-                                                    <el-form-item label="小区户数：">
-                                                        <span>{{ props.row.houseNum }}</span>
-                                                    </el-form-item>
-                                                    <el-form-item label="楼盘价格：">
-                                                        <span>&yen;{{ props.row.buildPrice}}</span>
-                                                    </el-form-item>
-                                                    <el-form-item label="资产编号：">
-                                                        <span>{{ props.row.assetTag }}</span>
-                                                    </el-form-item>
-                                                    <el-form-item label="入住年份：">
-                                                        <span>{{ props.row.liveYear }}</span>
-                                                    </el-form-item>
-                                                    <el-form-item label="广告限制：">
-                                                        <div class="shopList_adLimit">
-                                                            <span>{{ props.row.adLimit }}</span>
-                                                        </div>
-                                                    </el-form-item>
-                                                </el-form>
-                                            </template>
-                                        </el-table-column>
-                                        <el-table-column
-                                            label="资源名称"
-                                            min-width="140"
-                                            prop="resName">
-                                        </el-table-column>
-                                        <el-table-column
-                                            label="媒体名称"
-                                            min-width="130">
-                                            <template slot-scope="scope">
-                                                <el-tooltip class="item" effect="dark" :content="scope.row.mediaName"
-                                                            placement="bottom">
-                                                    <span>{{ scope.row.mediaName}}</span>
-                                                </el-tooltip>
-                                            </template>
-                                        </el-table-column>
-                                        <el-table-column
-                                            prop="city"
-                                            label="城市"
-                                            min-width="80">
-                                        </el-table-column>
-                                        <el-table-column
-                                            prop="origin"
-                                            label="区域"
-                                            min-width="80">
-                                        </el-table-column>
-                                        <el-table-column
-                                            prop="scope"
-                                            label="地图中心点"
-                                            min-width="105">
-                                            <template slot-scope="scope">
-                                                <el-tooltip v-if="scope.row.mapCenter"
-                                                            :content="scope.row.mapCenter"
-                                                            placement="bottom-start"
-                                                            :visible-arrow="false">
-                                                    <span>{{scope.row.mapCenter || '--' }}</span>
-                                                </el-tooltip>
-                                                <span v-else> {{ scope.row.mapCenter || '--' }} </span>
-                                            </template>
-                                        </el-table-column>
-                                        <el-table-column
-                                            label="楼盘类型"
-                                            min-width="85">
-                                            <template slot-scope="scope">
-                                                {{ scope.row.buildType || '--' }}
-                                            </template>
-                                        </el-table-column>
-                                        <el-table-column
-                                            prop="mediaLevel"
-                                            label="媒体等级"
-                                            min-width="85">
-                                            <template slot-scope="scope">
-                                                {{scope.row.mediaLevel !== '' ? scope.row.mediaLevel + '级' : '--'}}
-                                            </template>
-                                        </el-table-column>
-                                        <el-table-column
-                                            prop="schedules"
-                                            label="排期"
-                                            min-width="185">
-                                            <template slot-scope="scope">
-                                                <span>{{scope.row.schedules}}</span>
-                                            </template>
-                                        </el-table-column>
-                                        <el-table-column min-width="65">
-                                            <template slot-scope="scope">
-                                                <span>{{scope.row.A_B}}面</span>
-                                            </template>
-                                        </el-table-column>
-                                        <el-table-column min-width="50" :render-header="renderHeader">
-                                            <template slot-scope="scope">
+                                        <el-table
+                                            border
+                                            :data="shopShowList"
+                                            :default-sort="{prop: 'mID', order: 'descending'}"
+                                            :row-class-name="tableRowClassName"
+                                            @row-click="shopRowClick"
+                                            style="width: 100%">
+                                            <el-table-column type="expand">
+                                                <template slot-scope="props">
+                                                    <el-form label-position="left" inline class="demo-table-expand">
+                                                        <el-form-item label="商圈：">
+                                                            <span>{{ props.row.tradingArea}}</span>
+                                                        </el-form-item>
+                                                        <el-form-item label="小区户数：">
+                                                            <span>{{ props.row.houseNum }}</span>
+                                                        </el-form-item>
+                                                        <el-form-item label="楼盘价格：">
+                                                            <span>&yen;{{ props.row.buildPrice}}</span>
+                                                        </el-form-item>
+                                                        <el-form-item label="资产编号：">
+                                                            <span>{{ props.row.assetTag }}</span>
+                                                        </el-form-item>
+                                                        <el-form-item label="入住年份：">
+                                                            <span>{{ props.row.liveYear }}</span>
+                                                        </el-form-item>
+                                                        <el-form-item label="广告限制：">
+                                                            <div class="shopList_adLimit">
+                                                                <span>{{ props.row.adLimit }}</span>
+                                                            </div>
+                                                        </el-form-item>
+                                                    </el-form>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="资源名称"
+                                                min-width="140"
+                                                prop="resName">
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="媒体名称"
+                                                min-width="130">
+                                                <template slot-scope="scope">
+                                                    <el-tooltip class="item" effect="dark" :content="scope.row.mediaName"
+                                                                placement="bottom">
+                                                        <span>{{ scope.row.mediaName}}</span>
+                                                    </el-tooltip>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                prop="city"
+                                                label="城市"
+                                                min-width="80">
+                                            </el-table-column>
+                                            <el-table-column
+                                                prop="origin"
+                                                label="区域"
+                                                min-width="80">
+                                            </el-table-column>
+                                            <el-table-column
+                                                prop="scope"
+                                                label="地图中心点"
+                                                min-width="105">
+                                                <template slot-scope="scope">
+                                                    <el-tooltip v-if="scope.row.mapCenter"
+                                                                :content="scope.row.mapCenter"
+                                                                placement="bottom-start"
+                                                                :visible-arrow="false">
+                                                        <span>{{scope.row.mapCenter || '--' }}</span>
+                                                    </el-tooltip>
+                                                    <span v-else> {{ scope.row.mapCenter || '--' }} </span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                label="楼盘类型"
+                                                min-width="85">
+                                                <template slot-scope="scope">
+                                                    {{ scope.row.buildType || '--' }}
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                prop="mediaLevel"
+                                                label="媒体等级"
+                                                min-width="85">
+                                                <template slot-scope="scope">
+                                                    {{scope.row.mediaLevel !== '' ? scope.row.mediaLevel + '级' : '--'}}
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                prop="schedules"
+                                                label="排期"
+                                                min-width="185">
+                                                <template slot-scope="scope">
+                                                    <span>{{scope.row.schedules}}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column min-width="65">
+                                                <template slot-scope="scope">
+                                                    <span>{{scope.row.A_B}}面</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column min-width="50" :render-header="renderHeader">
+                                                <template slot-scope="scope">
                                                 <span style="cursor: pointer;color: #1890ff"
                                                       @click="deleteRow(scope.row)"
                                                       v-qadn-mta-h5="{id: activeName == 1 ? 'a004_b008_c001_d001_bt058_ck04' : 'a004_b008_c001_d002_bt073_ck04'}">
                                                     <i class="el-icon-delete" style="color: #108DE7;font-size: 20px;margin-left: 6px"></i>
                                                 </span>
-                                            </template>
-                                        </el-table-column>
-                                    </el-table>
-                                    <p class="warningInfo">
-                                        <span style="background: rgba(255,0,0,0.08)" class="warningInfoColor"></span>
-                                        <span class="warningInfoName">被占点位</span>
-                                        <span style="background: rgba(255,199,0,0.10)" class="warningInfoColor"></span>
-                                        <span class="warningInfoName">连排门、同行资源回避、同行媒体回避</span>
-                                    </p>
+                                                </template>
+                                            </el-table-column>
+                                        </el-table>
+                                        <p class="warningInfo">
+                                            <span style="background: rgba(255,0,0,0.08)" class="warningInfoColor"></span>
+                                            <span class="warningInfoName">被占点位</span>
+                                            <span style="background: rgba(255,199,0,0.10)" class="warningInfoColor"></span>
+                                            <span class="warningInfoName">连排门、同行资源回避、同行媒体回避</span>
+                                        </p>
 
-                                    <div style="text-align: center;margin-bottom: 10px">
-                                        <el-button style="margin-top: 12px;" @click="next" type="primary"
-                                                   v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt072_ck03'}">下一步
-                                        </el-button>
+                                        <div style="text-align: center;margin-bottom: 10px">
+                                            <el-button style="margin-top: 12px;" @click="next" type="primary"
+                                                       v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt072_ck03'}">下一步
+                                            </el-button>
+                                        </div>
                                     </div>
-                                </div>
-                            </template>
-                        </el-dialog>
+                                </template>
+                            </el-dialog>
+                        </div>
                     </div>
-                </div>
-                <div class="step3" v-if="active==2">
-                    <div class="confirmBox">
-                        <div class="bill-title">
-                            <div class="bill-title-left">
-                                <h4>{{planForm.planName}}</h4>
-                                <p>{{cName}}</p>
-                                <p>{{cBand}}</p>
+                    <div class="step3" v-if="active==2">
+                        <div class="confirmBox">
+                            <div class="bill-title">
+                                <div class="bill-title-left">
+                                    <h4>{{planForm.planName}}</h4>
+                                    <p>{{cName}}</p>
+                                    <p>{{cBand}}</p>
+                                </div>
+                                <div class="bill-title-right">
+                                    <ul>
+                                        <li><p><em>现金结算：</em><span>￥{{priceFormat(cash)}}</span></p></li>
+                                        <li><p><em>资源置换：</em><span>￥{{priceFormat(zyzh)}}</span></p></li>
+                                        <li><p><em>其他费用：</em><span>￥{{priceFormat(other)}}</span></p></li>
+                                        <li><p><em style="top: 5px">总计：</em><span class="totalPrice">￥{{priceFormat(totalPrice)}}</span>
+                                        </p>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
-                            <div class="bill-title-right">
+                            <div class="panel">
+                                <ap-quotation :quotationData="quotationObj" :shopingList="shopingList" @APQuotationArr="APQuotationArr" :copydata="[]"></ap-quotation>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step4" v-if="active==3">
+                        <div class="createSuccess">
+                            <div class="successIcon">
+                                <img src="../../assets/images/createSuccess.png" alt="">
+                                <!--<i class="fa fa-check-circle fa-4x" style="color:#67C23A;"></i>-->
+                                <h2>创建成功</h2>
+                                <p>创建时间：{{dateTime}}</p>
+                            </div>
+                            <div class="planPanel noShareUl">
                                 <ul>
-                                    <li><p><em>现金结算：</em><span>￥{{priceFormat(cash)}}</span></p></li>
-                                    <li><p><em>资源置换：</em><span>￥{{priceFormat(zyzh)}}</span></p></li>
-                                    <li><p><em>其他费用：</em><span>￥{{priceFormat(other)}}</span></p></li>
-                                    <li><p><em style="top: 5px">总计：</em><span class="totalPrice">￥{{priceFormat(totalPrice)}}</span>
-                                    </p>
+                                    <li><em>方案名称：</em>{{planForm.planName}}</li>
+                                    <li><em>所属客户：</em>{{cName}}</li>
+                                    <li><em>所属品牌：</em>{{cBand || '--'}}</li>
+                                    <li class="money"><em>订单金额：</em>￥{{priceFormat(totalPrice)}}</li>
+                                    <li style="overflow: hidden;text-overflow:ellipsis">
+                                        <em>协同选点：</em><span id="shareUrl">{{shareADUrl}}</span>
+                                        <el-button plain @click="copyUrl" class="urlBtn">复制</el-button>
+                                        <el-button @click="downLoadFanan()" type="success" class="urlBtn">导出方案</el-button>
                                     </li>
                                 </ul>
                             </div>
                         </div>
-                        <div class="panel">
-                            <ap-quotation :quotationData="quotationObj" :shopingList="shopingList" @APQuotationArr="APQuotationArr" :copydata="[]"></ap-quotation>
-                        </div>
-                    </div>
-                </div>
-                <div class="step4" v-if="active==3">
-                    <div class="createSuccess">
-                        <div class="successIcon">
-                            <img src="../../assets/images/createSuccess.png" alt="">
-                            <!--<i class="fa fa-check-circle fa-4x" style="color:#67C23A;"></i>-->
-                            <h2>创建成功</h2>
-                            <p>创建时间：{{dateTime}}</p>
-                        </div>
-                        <div class="planPanel noShareUl">
-                            <ul>
-                                <li><em>方案名称：</em>{{planForm.planName}}</li>
-                                <li><em>所属客户：</em>{{cName}}</li>
-                                <li><em>所属品牌：</em>{{cBand || '--'}}</li>
-                                <li class="money"><em>订单金额：</em>￥{{priceFormat(totalPrice)}}</li>
-                                <li style="overflow: hidden;text-overflow:ellipsis">
-                                    <em>协同选点：</em><span id="shareUrl">{{shareADUrl}}</span>
-                                    <el-button plain @click="copyUrl" class="urlBtn">复制</el-button>
-                                    <el-button @click="downLoadFanan()" type="success" class="urlBtn">导出方案</el-button>
-                                </li>
-                            </ul>
-                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="content_bottom_btn">
-            <el-button plain @click="prev" v-if="active == 1 || active == 2" type="default"
-                       v-qadn-mta-h5="{id: 'a004_b009_c000_d000_bt088_ck03'}">上一步</el-button>
-            <el-button plain @click="clearData" v-if="active === 0" type="default"
-                       v-qadn-mta-h5="{id: 'a004_b007_c000_d000_bt047_ck03'}">取消</el-button>
-            <!-- 空点导出 -->
-            <el-button plain v-if="active === 0" type="default" @click="exportEmpty()"
-                       v-qadn-mta-h5="{id: 'a004_b007_c000_d000_bt048_ck04'}">导空点</el-button>
+            <div class="content_bottom_btn">
+                <el-button plain @click="prev" v-if="active == 1 || active == 2" type="default"
+                           v-qadn-mta-h5="{id: 'a004_b009_c000_d000_bt088_ck03'}">上一步</el-button>
+                <el-button plain @click="clearData" v-if="active === 0" type="default"
+                           v-qadn-mta-h5="{id: 'a004_b007_c000_d000_bt047_ck03'}">取消</el-button>
+                <!-- 空点导出 -->
+                <el-button plain v-if="active === 0" type="default" @click="exportEmpty()"
+                           v-qadn-mta-h5="{id: 'a004_b007_c000_d000_bt048_ck04'}">导空点</el-button>
 
-            <el-button @click="next" v-if="active == 0 || active == 1" type="primary"
-                       v-qadn-mta-h5="{id: active == 0 ? 'a004_b007_c000_d000_bt046_ck03' : 'a004_b008_c000_d000_bt057_ck03'}">下一步</el-button>
-            <el-button @click="next" v-if="active == 2" type="primary"
-                       v-qadn-mta-h5="{id: 'a004_b009_c000_d000_bt089_ck03'}">创建方案 </el-button>
+                <el-button @click="next" v-if="active == 0 || active == 1" type="primary"
+                           v-qadn-mta-h5="{id: active == 0 ? 'a004_b007_c000_d000_bt046_ck03' : 'a004_b008_c000_d000_bt057_ck03'}">下一步</el-button>
+                <el-button @click="next" v-if="active == 2" type="primary"
+                           v-qadn-mta-h5="{id: 'a004_b009_c000_d000_bt089_ck03'}">创建方案 </el-button>
 
-            <!-- <p v-if="active === 0" style="color: #666;font-size: 14px;margin-top:10px;">备注：导空点功能目前导出的为最近一年的空点</p> -->
+                <!-- <p v-if="active === 0" style="color: #666;font-size: 14px;margin-top:10px;">备注：导空点功能目前导出的为最近一年的空点</p> -->
 
-            <div class="finishBtn" v-if="active == 3">
-                <el-button type="primary" @click="continueCreate">继续创建</el-button>
-                <el-button plain type="default" @click="ToDetail">
-                    查看方案
-                </el-button>
+                <div class="finishBtn" v-if="active == 3">
+                    <el-button type="primary" @click="continueCreate">继续创建</el-button>
+                    <el-button plain type="default" @click="ToDetail">
+                        查看方案
+                    </el-button>
+                </div>
             </div>
-        </div>
-        <!--添加商品到购物车的动画效果-->
-        <div class="shopAnimate" v-show="shoppingShow">
-            <img src="../../assets/images/select.png" alt="">
-        </div>
-        <div class="shopAnimateAll" v-show="selectAll">
-            <img src="../../assets/images/allselect.png" alt="">
-        </div>
-        <!--查询被占模态框-->
-        <el-dialog
-            title="被占信息"
-            :visible.sync="beOccupiedDialogVisible"
-            :modal="false"
-            top="30vh"
-            width="30%">
-            <ul>
-                <li v-for="item in beOccupiedAdsData">
-                    <p>
-                        <span style="color: #333">占点方案：</span>
-                        <span v-if="sessionData.uType === 'MD'"><span style="font-weight: bold">{{item.beOccupieApName}}</span> 方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）</span>
-                        <span v-else>******</span>
-                    </p>
-                    <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
-                </li>
-            </ul>
-        </el-dialog>
-        <!--连排门信息模态框-->
-        <el-dialog
-            title="信息提示"
-            :visible.sync="connectAdDialogVisible"
-            :modal="false"
-            top="30vh"
-            width="30%">
-            <ul>
-                <li v-show="ActiveConnectADList.connectResName !== ''">
-                    <p>
-                        <span style="color: #333">资源名称：</span>
-                        <span  style="font-weight: bold">{{ActiveConnectADList.connectResName}}</span>
-                    </p>
-                    <p>
-                        <span style="color: #333">媒体名称（连排门）：</span>
-                        <span  style="font-weight: bold">{{ActiveConnectADList.connectMedia}}为连排门</span>
-                    </p>
-                </li>
-                <li v-show="ActiveConnectADList.commentWorkRes !== ''">
-                    <p>
-                        <span>同行资源回避：该社区已有同行广告主投放</span>
-                        <span  style="font-weight: bold">({{ActiveConnectADList.commentWorkRes}})</span>
-                    </p>
-                </li>
-                <li v-show="ActiveConnectADList.commentworkMedia !== ''">
-                    <p>
-                        <span>同行媒体回避：{{ActiveConnectADList.asLab}}点已有同行广告主投放</span>
-                        <span  style="font-weight: bold">({{ActiveConnectADList.commentworkMedia}})</span>
-                    </p>
-                </li>
-            </ul>
-        </el-dialog>
-        <!--一键选点模态框-->
-        <el-dialog
-            title="一键选点"
-            :visible.sync="dialogOneKeyPoint"
-            width="410px"
-            style="margin-top: 20vh;">
-            <div class="onKeyPointFrom">
-                <el-form
-                    ref="oneKeyPointData"
-                    :model="oneKeyPointData"
-                    label-width="85px"
-                    :rules="oneKeyPointDataRules">
-                    <el-form-item label="点位总量: "  prop="TotalPoint">
-                        <el-input v-model="oneKeyPointData.TotalPoint"></el-input>
-                    </el-form-item>
-                    <el-form-item label="每小区选: "  prop="pointNumByRes">
-                        <el-input v-model="oneKeyPointData.pointNumByRes"></el-input>
-                    </el-form-item>
-                    <el-form-item label="A面占比: " prop="A_cale" class="ABcaleItem">
-                        <div class="ABcalePercent">
-                            <el-input v-model="oneKeyPointData.A_cale"></el-input>
-                            <span class="percent">%</span>
-                        </div>
-                    </el-form-item>
-                </el-form>
+            <!--添加商品到购物车的动画效果-->
+            <div class="shopAnimate" v-show="shoppingShow">
+                <img src="../../assets/images/select.png" alt="">
             </div>
-            <span slot="footer" class="OneKeyPoint_footer">
+            <div class="shopAnimateAll" v-show="selectAll">
+                <img src="../../assets/images/allselect.png" alt="">
+            </div>
+            <!--查询被占模态框-->
+            <el-dialog
+                title="被占信息"
+                :visible.sync="beOccupiedDialogVisible"
+                :modal="false"
+                top="30vh"
+                width="30%">
+                <ul>
+                    <li v-for="item in beOccupiedAdsData">
+                        <p>
+                            <span style="color: #333">占点方案：</span>
+                            <span v-if="sessionData.uType === 'MD'"><span style="font-weight: bold">{{item.beOccupieApName}}</span> 方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）</span>
+                            <span v-else>******</span>
+                        </p>
+                        <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
+                    </li>
+                </ul>
+            </el-dialog>
+            <!--连排门信息模态框-->
+            <el-dialog
+                title="信息提示"
+                :visible.sync="connectAdDialogVisible"
+                :modal="false"
+                top="30vh"
+                width="30%">
+                <ul>
+                    <li v-show="ActiveConnectADList.connectResName !== ''">
+                        <p>
+                            <span style="color: #333">资源名称：</span>
+                            <span  style="font-weight: bold">{{ActiveConnectADList.connectResName}}</span>
+                        </p>
+                        <p>
+                            <span style="color: #333">媒体名称（连排门）：</span>
+                            <span  style="font-weight: bold">{{ActiveConnectADList.connectMedia}}为连排门</span>
+                        </p>
+                    </li>
+                    <li v-show="ActiveConnectADList.commentWorkRes !== ''">
+                        <p>
+                            <span>同行资源回避：该社区已有同行广告主投放</span>
+                            <span  style="font-weight: bold">({{ActiveConnectADList.commentWorkRes}})</span>
+                        </p>
+                    </li>
+                    <li v-show="ActiveConnectADList.commentworkMedia !== ''">
+                        <p>
+                            <span>同行媒体回避：{{ActiveConnectADList.asLab}}点已有同行广告主投放</span>
+                            <span  style="font-weight: bold">({{ActiveConnectADList.commentworkMedia}})</span>
+                        </p>
+                    </li>
+                </ul>
+            </el-dialog>
+            <!--一键选点模态框-->
+            <el-dialog
+                title="一键选点"
+                :visible.sync="dialogOneKeyPoint"
+                width="410px"
+                style="margin-top: 20vh;">
+                <div class="onKeyPointFrom">
+                    <el-form
+                        ref="oneKeyPointData"
+                        :model="oneKeyPointData"
+                        label-width="85px"
+                        :rules="oneKeyPointDataRules">
+                        <el-form-item label="点位总量: "  prop="TotalPoint">
+                            <el-input v-model="oneKeyPointData.TotalPoint"></el-input>
+                        </el-form-item>
+                        <el-form-item label="每小区选: "  prop="pointNumByRes">
+                            <el-input v-model="oneKeyPointData.pointNumByRes"></el-input>
+                        </el-form-item>
+                        <el-form-item label="A面占比: " prop="A_cale" class="ABcaleItem">
+                            <div class="ABcalePercent">
+                                <el-input v-model="oneKeyPointData.A_cale"></el-input>
+                                <span class="percent">%</span>
+                            </div>
+                        </el-form-item>
+                    </el-form>
+                </div>
+                <span slot="footer" class="OneKeyPoint_footer">
                 <el-button plain @click="dialogOneKeyPoint = false">取 消</el-button>
                 <el-button type="primary" @click="oneKeyPointBtn('oneKeyPointData')">一键选点</el-button>
             </span>
-        </el-dialog>
-        <!-- 导出空位时间弹出框 -->
-        <el-dialog
-            :visible.sync="showEmptyPoint"
-            :modal="false"
-            top="35vh"
-            width="40%">
-            <p>
-                <el-radio-group v-model="dateType" >
-                    <el-radio label="1" v-if="isShowHalfYear">默认半年日期</el-radio>
-                    <el-radio label="2">自定义日期</el-radio>
-                </el-radio-group>
-            </p>
-            <p v-if="dateType == '2'" style="margin-top:10px;">
-                <el-date-picker
-                    v-model="emptyRange"
-                    type="daterange"
-                    size="mini"
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期"
-                    value-format="yyyy/MM/dd"
-                    format="yyyy/MM/dd"
-                    class="date-select input-with-select"
-                >
-                </el-date-picker>
-            </p>
-            <span slot="footer">
+            </el-dialog>
+            <!-- 导出空位时间弹出框 -->
+            <el-dialog
+                :visible.sync="showEmptyPoint"
+                :modal="false"
+                top="35vh"
+                width="40%">
+                <p>
+                    <el-radio-group v-model="dateType" >
+                        <el-radio label="1" v-if="isShowHalfYear">默认半年日期</el-radio>
+                        <el-radio label="2">自定义日期</el-radio>
+                    </el-radio-group>
+                </p>
+                <p v-if="dateType == '2'" style="margin-top:10px;">
+                    <el-date-picker
+                        v-model="emptyRange"
+                        type="daterange"
+                        size="mini"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        value-format="yyyy/MM/dd"
+                        format="yyyy/MM/dd"
+                        class="date-select input-with-select"
+                    >
+                    </el-date-picker>
+                </p>
+                <span slot="footer">
                 <el-button  size="small" type="primary" @click="downEmptyPoint()">确认</el-button>
             </span>
-        </el-dialog>
-        <!-- 导出空位弹出框 -->
-        <el-dialog
-            title="链接地址："
-            :visible.sync="showEmpty"
-            :modal="false"
-            top="35vh"
-            width="40%">
-            <p id="shareDownUrl">{{downUrl}}</p>
-            <p style="text-align:center;margin-top:25px;">
-                <el-button type="primary" @click="copyUrlDown()" size='small' style="width: 80px;height: 34px;outline: none;cursor: pointer;">复制链接</el-button>
-            </p>
-        </el-dialog>
-        <!-- 导入方案弹出框 -->
-        <el-dialog
-            class="import_fanan"
-            :title="importType=='1'?'小区导入':'点位导入'"
-            :visible.sync="isImport"
-            top="30vh"
-            width="360px">
-            <el-row>
-                <el-col>
-                    <el-upload
-                        class="upload_file"
-                        ref="upload"
-                        accept=".xlsx,.xls"
-                        :action="doUpload"
-                        :show-file-list="true"
-                        :file-list="fileData"
-                        :http-request="uploadFile"
-                        :on-remove="fileRemove"
-                        :multiple="false">
-                        <a v-if="importType=='1'" :href ='this.apiVar.qadnUrl + "/importTemplate/resTemplate.xlsx"' download="小区导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
-                        <a v-if="importType=='2'" :href ='this.apiVar.qadnUrl + "/importTemplate/adsTemplate.xlsx"' download="点位导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
-                        <el-button plain icon="el-icon-upload2" size="small" class="fileButton">上传文件</el-button>
-                    </el-upload>
-                </el-col>
-            </el-row>
-            <el-row v-if="importType=='2' && isShowTag" class="warning_box">
-                <el-col :span="2">
-                    <i class="el-icon-warning" style="color:#FAAD14"></i>
-                </el-col>
-                <el-col :span="20" >
-                    若需导入钼媒人群包进行选点，请在表格中填入正确的钼媒点位ID
-                </el-col>
-                <el-col :span="2">
-                    <i class="el-icon-close" @click="hideTag()"></i>
-                </el-col>
-            </el-row>
-            <span slot="footer" class="dialog-footer">
+            </el-dialog>
+            <!-- 导出空位弹出框 -->
+            <el-dialog
+                title="链接地址："
+                :visible.sync="showEmpty"
+                :modal="false"
+                top="35vh"
+                width="40%">
+                <p id="shareDownUrl">{{downUrl}}</p>
+                <p style="text-align:center;margin-top:25px;">
+                    <el-button type="primary" @click="copyUrlDown()" size='small' style="width: 80px;height: 34px;outline: none;cursor: pointer;">复制链接</el-button>
+                </p>
+            </el-dialog>
+            <!-- 导入方案弹出框 -->
+            <el-dialog
+                class="import_fanan"
+                :title="importType=='1'?'小区导入':'点位导入'"
+                :visible.sync="isImport"
+                top="30vh"
+                width="360px">
+                <el-row>
+                    <el-col>
+                        <el-upload
+                            class="upload_file"
+                            ref="upload"
+                            accept=".xlsx,.xls"
+                            :action="doUpload"
+                            :show-file-list="true"
+                            :file-list="fileData"
+                            :http-request="uploadFile"
+                            :on-remove="fileRemove"
+                            :multiple="false">
+                            <a v-if="importType=='1'" :href ='this.apiVar.qadnUrl + "/importTemplate/resTemplate.xlsx"' download="小区导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
+                            <a v-if="importType=='2'" :href ='this.apiVar.qadnUrl + "/importTemplate/adsTemplate.xlsx"' download="点位导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
+                            <el-button plain icon="el-icon-upload2" size="small" class="fileButton">上传文件</el-button>
+                        </el-upload>
+                    </el-col>
+                </el-row>
+                <el-row v-if="importType=='2' && isShowTag" class="warning_box">
+                    <el-col :span="2">
+                        <i class="el-icon-warning" style="color:#FAAD14"></i>
+                    </el-col>
+                    <el-col :span="20" >
+                        若需导入钼媒人群包进行选点，请在表格中填入正确的钼媒点位ID
+                    </el-col>
+                    <el-col :span="2">
+                        <i class="el-icon-close" @click="hideTag()"></i>
+                    </el-col>
+                </el-row>
+                <span slot="footer" class="dialog-footer">
                 <el-button plain size="small" @click="isImport = false">取 消</el-button>
                 <el-button size="small" type="primary" @click="submitUpload()">导 入</el-button>
             </span>
-        </el-dialog>
-        <!-- 导入excel点位部分失败弹框 -->
-        <el-dialog
-            :visible.sync="showUploadFail"
-            title="导入excel的点位信息"
-            top="20vh"
-            width="80%">
-            <template v-if="importType =='1'">
-                <import-result :importData="importInfoData" :name="planForm.planName" @cancel="cancelImport" @confirmImport="confirmImport"></import-result>
-            </template>
-            <template v-if="importType == '2'">
-                <div class="car-title">
-                    <i class="el-icon-info" style="color: #1890FF;"></i>
-                    <h4>已成功导入点位<span>{{excelObj.successNum}}</span>个,问题点位<span>{{excelObj.failNum}}</span>个
-                        <span @click="downLoadExcel()">下载表格<i class="el-icon-download"></i></span>
-                    </h4>
-                </div>
-                <el-table
-                    border
-                    :data="excelDataUpload"
-                    style="width: 100%"
-                >
-                    <el-table-column label="资源名称" min-width="140" prop="resName" >
-                    </el-table-column>
-                    <el-table-column prop="city" label="市" min-width="85" >
-                    </el-table-column>
-                    <el-table-column prop="origin" label="区" min-width="85" >
-                    </el-table-column>
-                    <el-table-column prop="mediaName" label="媒体名称" min-width="130" >
-                    </el-table-column>
-                    <el-table-column min-width="70" label="投放面">
-                        <template slot-scope="scope">
-                            <span>{{scope.row.asLab}}面</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="assetTag" label="资产编号" min-width="130" >
-                    </el-table-column>
-                    <el-table-column prop="schedules" label="排期" min-width="190">
-                        <template slot-scope="scope">
-                            <el-tooltip class="item" effect="dark" :content="scope.row.schedules" placement="bottom">
-                                <span>{{scope.row.schedules}}</span>
-                            </el-tooltip>
-                        </template>
-                    </el-table-column>
-                </el-table>
-            </template>
-        </el-dialog>
-        <!-- 复制方案弹出框 -->
-        <el-dialog
-            :visible.sync="isCopy"
-            title="复制方案"
-            width="450px"
-        >
-            <el-select v-model="orderName" size="small"
-                       filterable
-                       remote
-                       reserve-keyword
-                       placeholder="请输入关键词"
-                       :remote-method="remoteGetOrder"
-                       :loading="loadingOrder"
+            </el-dialog>
+            <!-- 导入excel点位部分失败弹框 -->
+            <el-dialog
+                :visible.sync="showUploadFail"
+                title="导入excel的点位信息"
+                top="20vh"
+                width="80%">
+                <template v-if="importType =='1'">
+                    <import-result :importData="importInfoData" :name="planForm.planName" @cancel="cancelImport" @confirmImport="confirmImport"></import-result>
+                </template>
+                <template v-if="importType == '2'">
+                    <div class="car-title">
+                        <i class="el-icon-info" style="color: #1890FF;"></i>
+                        <h4>已成功导入点位<span>{{excelObj.successNum}}</span>个,问题点位<span>{{excelObj.failNum}}</span>个
+                            <span @click="downLoadExcel()">下载表格<i class="el-icon-download"></i></span>
+                        </h4>
+                    </div>
+                    <el-table
+                        border
+                        :data="excelDataUpload"
+                        style="width: 100%"
+                    >
+                        <el-table-column label="资源名称" min-width="140" prop="resName" >
+                        </el-table-column>
+                        <el-table-column prop="city" label="市" min-width="85" >
+                        </el-table-column>
+                        <el-table-column prop="origin" label="区" min-width="85" >
+                        </el-table-column>
+                        <el-table-column prop="mediaName" label="媒体名称" min-width="130" >
+                        </el-table-column>
+                        <el-table-column min-width="70" label="投放面">
+                            <template slot-scope="scope">
+                                <span>{{scope.row.asLab}}面</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="assetTag" label="资产编号" min-width="130" >
+                        </el-table-column>
+                        <el-table-column prop="schedules" label="排期" min-width="190">
+                            <template slot-scope="scope">
+                                <el-tooltip class="item" effect="dark" :content="scope.row.schedules" placement="bottom">
+                                    <span>{{scope.row.schedules}}</span>
+                                </el-tooltip>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </template>
+            </el-dialog>
+            <!-- 复制方案弹出框 -->
+            <el-dialog
+                :visible.sync="isCopy"
+                title="复制方案"
+                width="450px"
             >
-                <el-option v-for="item of orderArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
-            </el-select>
-            <span slot="footer" class="dialog-footer">
+                <el-select v-model="orderName" size="small"
+                           filterable
+                           remote
+                           reserve-keyword
+                           placeholder="请输入关键词"
+                           :remote-method="remoteGetOrder"
+                           :loading="loadingOrder"
+                >
+                    <el-option v-for="item of orderArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                </el-select>
+                <span slot="footer" class="dialog-footer">
                 <el-button plain size="small" @click="isCopy = false">取 消</el-button>
                 <el-button size="small" type="primary" @click="confirmCopy()">确 定</el-button>
             </span>
-        </el-dialog>
+            </el-dialog>
+        </div>
+        <div v-if="openMap">
+            <qinlin-map @childFun="getMapAdsList"></qinlin-map>
+        </div>
     </div>
 </template>
 
@@ -1131,7 +1137,8 @@
     import cacheAdPlan from "../../commonFun/cacheAdPlan"
     // 方案导入结果
     import importResult from './components/importResult.vue'
-
+    // 地图组件
+    import qinlinMap from './qinLinMap'
 
     export default {
         name: "createPlan",
@@ -1156,6 +1163,7 @@
             elInputNumber: InputNumber,
             apQuotation,
             importResult,
+            qinlinMap
         },
         data() {
             let validateSales = (rule, value, callback) => {
@@ -1205,6 +1213,8 @@
                 }
             }
             return {
+                openMap: false,
+                mapAdsList: [],
                 // 导空点是否展示半年json下载(全国媒介或全国销售有权限下载)
                 isShowHalfYear: false,
                 // doUpload: 'https://beta.qinlinad.com/Advertisement/AnalysisExcelAdBaseInfo',
@@ -1521,6 +1531,11 @@
             },
         },
         methods: {
+            getMapAdsList(...data) {
+                console.log('地图点位data',data)
+                this.openMap = false
+                this.mapAdsList = data[0]
+            },
             //监听table滚动
             loadMore() {
                 if (this.loadScroll) {
@@ -3174,6 +3189,25 @@
                     this.searchBtnAbled = false
                 })
             },
+            setMapParams() {
+                this.mapParams = {
+                    rid: this.activeCityData.rid,
+                    city: this.activeCityData.rName,
+                    ls: this.dateInput[0],
+                    le: this.dateInput[1],
+                }
+                 localStorage.setItem('mapParams',JSON.stringify({
+                     rid: this.activeCityData.rid,
+                     ls: this.dateInput[0],
+                     le: this.dateInput[1],
+                     suID: this.BDData.uid,
+                 }))
+                // let url = this.apiVar.qadnUrl + '/qinLinMap?city=' + this.mapParams.city
+                let url = 'http://localhost:8088/mapResource/chooseRes?city=' + this.mapParams.city
+                window.open(url)
+                this.mapBtn = false
+                this.dialogVisible()
+            },
             //step2地图选点
             mapAD() {
                 console.log('地图选点提交的rid', this.activeCityData)
@@ -3205,7 +3239,6 @@
                         let mapid = res.data.MapID
                         this.mapBtn = false
                         this.dialogVisible()
-                        // tempwindow.location = 'https://www.dituwuyou.com/qinlin/embed?mid=FPcrNHyq3xXFZDbqlTyHKA&token=fp3nxsKCYZzOSnU0KosEq0GA1o1qcKh5XLA&mapid=' + mapid
                         tempwindow.location = this.apiVar.wuYouMap+ mapid + '&city=' + this.activeRName + '&flag=' + true
                     } else {
                         tempwindow.close()
@@ -3894,17 +3927,14 @@
                     spinner: 'el-icon-loading',
                     background: 'rgba(0, 0, 0, 0.7)'
                 })
-                this.mapBtn = true
-                api.getApi(this.apiVar.Map + '/SendMap', {uid: this.sessionData.uID,token: this.sessionData.token}).then(res => {
-                    console.log('地图选点', res)
-                    if(res.data.code == '500200'){
-                        this.mapADList = res.data.data
-                        if(this.mapADList.length > 0){
-                            this.setShopDataByMapAD()
-                        } else {
-                            sessFun.messageFun('warning','数据为空')
-                            this.getMapLoading.close()
-                        }
+                let params = {
+                    code: localStorage.getItem(`qinlinMapCode`)
+                }
+                api.getApi(this.apiVar.mapApi + '/adsListByCode',params).then(res=>{
+                    console.log('res-----',res)
+                    if(res.data.SysCode === 200200) {
+                        this.mapAdsList = res.data.data
+                        this.setMapAdsListInShopCar()
                     } else {
                         this.getMapLoading.close()
                         sessFun.messageFun('warning','数据获取异常')
@@ -3912,90 +3942,53 @@
                 })
             },
             // 根据地图选点返回的数据，设置成购物车所需的数据格式
-            setShopDataByMapAD() {
-                console.log('执行了setShopDataByMapAD', this.mapADList)
-                let mapADList_ = this.mapADList // tempData
+            setMapAdsListInShopCar() {
                 let tempArr = []
-                let j = 0
-                for (let data of mapADList_) {
-                    for (let i = 0; i < 2; i++) {
-                        let ADInfo = {
-                            mID: data.mID,
-                            resType: data.resType,
-                            resID: data.resID,
-                            asID: '',
-                            asIDs: data.asIDs,
-                            asLabs: data.asLabs,
-                            resName: data.resName,
-                            city: this.mapParams.city,
-                            rid: this.mapParams.rid,
-                            origin: data.rName,
-                            buildType: data.cType,
-                            houseNum: data.hNum,
-                            buildPrice: (data.hPrice / 100),
-                            mediaName: data.mTitle || '',
-                            mVehicle: data.mVehicle,
-                            buildNum: data.fNum,
-                            schedules: this.mapParams.ls + '-' + this.mapParams.le,
-                            tradingArea: data.tradingArea,
-                            assetTag: data.assetTag,
-                            liveYear: data.chDay,
-                            mapCenter: '',
-                            // mapCenter: data.reference.name ? data.reference.name +'-'+  data.reference.address :'' ,      // 地图中心点名称
-                            reference: data.reference ||'',
-                            address: data.resAddress || '',
-                            dNum: data.dNum || '',              // 出入口数
-                            adLimit: data.notPush || '',
-                            checkBox: {A: false, B: false,ABC: false},
-                            connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
-                            connID: data.connID || '',        // 连排门id
-                            industryInfos: data.industryInfos || [],   // 同行业资源回避
-                            mediaLevel: data.grade || '',
-                            adPrice: data.mVehicle === '道闸' ? data.asPrice / 100 || 0 : data.asPrice / 700 || 0,
-                            asName: data.asName || '',         // 点位所属公司名称
-                            asrID: data.asrID,                 // 所属公司id
-                        }
-                        // 地图中心点名称
-                        if (data.reference !== '-' && data.reference !== '' && data.reference !== undefined && data.reference !== null) {
-                            for (let key of data.reference) {
-                                ADInfo.mapCenter += key.name + '-' + key.address + ','
-                            }
-                        } else {
-                            ADInfo.mapCenter = ''
-                        }
-                        if(data.mVehicle === '广告门'){
-                            let asLabsArr = ADInfo.asLabs.split(',')
-                            let asIDArr = ADInfo.asIDs.split(',')
-                            for (let n = 0; n < asLabsArr.length; n++) {
-                                if (i === 0 && asLabsArr[n] === 'A') {
-                                    ADInfo.checkBox.A = true
-                                    ADInfo.A_B = 'A'
-                                    ADInfo.asID = asIDArr[n]
-                                    if (this.judgeHaveDiffAD(ADInfo,'mapAds')) {
-                                        tempArr.push(ADInfo)
-                                        break
-                                    }
-                                } else if (i === 1 && asLabsArr[n] === 'B') {
-                                    ADInfo.checkBox.B = true
-                                    ADInfo.A_B = 'B'
-                                    ADInfo.asID = asIDArr[n]
-                                    if (this.judgeHaveDiffAD(ADInfo,'mapAds')) {
-                                        tempArr.push(ADInfo)
-                                        break
-                                    }
-                                }
-                            }
-                        } else if(data.mVehicle === '道闸') {
-                            ADInfo.checkBox.ABC = true
-                            ADInfo.A_B = 'ABC'
-                            ADInfo.asID = data.asIDs//data.asIDs.split(',')
-                            if (this.judgeHaveDiffAD(ADInfo,'mapAds')) {
-                                tempArr.push(ADInfo)
-                                break
-                            }
+                for(let key of this.mapAdsList) {
+                    let adInfo = {
+                        mID: key.mID,
+                        resType: key.resType,
+                        resID: key.resID,
+                        asID: '',
+                        asIDs: key.asIDs,
+                        asLabs: key.asLab,
+                        A_B: key.asLab,
+                        resName: key.resName,
+                        city:  this.activeCityData.rName,
+                        rid:  this.activeCityData.rid,
+                        origin: key.rName,
+                        buildType: key.cType,
+                        houseNum: key.hNum,
+                        buildPrice: (key.hPrice / 100),
+                        mediaName: key.mTitle || '',
+                        mVehicle: key.mVehicle,
+                        buildNum: key.fNum,
+                        schedules: this.dateInput[0] + '-' + this.dateInput[1],
+                        tradingArea: key.tradingArea,
+                        assetTag: key.assetTag,
+                        liveYear: key.chDay,
+                        mapCenter: '',  // 地图中心点名称
+                        reference: key.centerInfos,
+                        address: key.resAddress || '',
+                        dNum: key.dNum || '',              // 出入口数
+                        adLimit: key.notPush || '',
+                        checkBox: {A: false, B: false,ABC: false},
+                        connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
+                        connID: key.connID || '',        // 连排门id
+                        industryInfos: key.industryInfos || [],   // 同行业资源回避
+                        mediaLevel: key.grade || '',
+                        adPrice: key.mVehicle === '道闸' ? key.asPrice / 100 || 0 : key.asPrice / 700 || 0,
+                        asName: key.asName || '',         // 点位所属公司名称
+                        asrID: key.asrID,                 // 所属公司id
+                    }
+                    if(key.centerInfos && key.centerInfos.length) {
+                        for(let item of key.centerInfos) {
+                            adInfo.mapCenter += item.centerName + '-' + item.centerAddress + ','
                         }
                     }
-                    j++
+                    if(this.judgeHaveDiffAD(adInfo,'mapAds')) {
+                        tempArr.push(adInfo)
+                    }
                 }
                 console.log('根据地图选点返回的数据，设置成购物车所需的数据格式', tempArr)
                 if (this.shopingList.length !== 0) {
@@ -4003,16 +3996,13 @@
                         this.shopingList.push(key)
                     }
                 } else {
-                    this.shopingList = tempArr
+                    this.shopingList = JSON.parse(JSON.parse(stringify(tempArr)))
                 }
-                if(this.getMapLoading){
-                    this.getMapLoading.close()
-                }
+                this.getMapLoading.close()
                 sessFun.messageFun('success','成功获取到' + tempArr.length + '条数据')
-
+                this.mapBtn = true
                 this.typeShopList = this.getTypeList();
                 this.getShowList();
-
                 this.computeMedia_AD('mapAD')
                 this.judgeByselect()
             },
@@ -4030,20 +4020,23 @@
                             // 全等
                             if (ADScheArr[0] == shopScheArr[0] && ADScheArr[1] == shopScheArr[1]) {
                                 if(SourceType === 'mapAds'){
+                                    console.log('----1',ADData)
                                     let centerName = ''
-                                    if (ADData.reference !== '-' && ADData.reference !== '' && ADData.reference !== undefined
-                                        && ADData.reference !== null) {
+                                    if(ADData.reference && ADData.reference.length) {
                                         for (let key of ADData.reference) {
-                                            let keyCenter = key.name + '-' + key.address
+                                            let keyCenter = key.centerName + '-' + key.centerAddress
                                             if(!shopArr[i].mapCenter.includes(keyCenter)){
+                                                console.log('----2',keyCenter)
                                                 centerName += keyCenter + ','
+                                            } else {
+                                                console.log('----2.5',shopArr[i].mapCenter)
                                             }
                                         }
                                     }
+                                    console.log('----3',centerName)
                                     if (shopArr[i].mapCenter !== '') {
                                         shopArr[i].mapCenter = shopArr[i].mapCenter + centerName
                                     } else {
-                                        console.log('mapCenter为空')
                                         shopArr[i].mapCenter = centerName
                                     }
                                 }
@@ -5251,33 +5244,20 @@
                     MtaH5.clickStat(mtaStatIdRoadGate)
                 }
             },
-            // 离开页面前
-            beforeunloadHandler(){
-                this._beforeUnload_time = new Date().getTime();
-            },
-            // 离开页面时
-            unloadHandler(e) {
-                this._gap_time = new Date().getTime() - this._beforeUnload_time;
-                debugger
-                // 判断是窗口关闭还是刷新
-                if (this._gap_time <= 5) {
-                    let params = {
-                        uid: this.sessionData.UID,
-                        token: this.sessionData.token
-                    }
-                    api.postApi(this.apiVar.Advertisement + '/AddCreatePlanLog',params).then(res => {
-                        console.log('上报成功-----',res)
-                    }).catch(err => {
-                        console.log('上报失败-----',err)
-                    })
-                }
-            }
         },
         // 页面销毁
         destroyed() {
             if(this.active == 1 || this.active == 2) {
-                window.removeEventListener('beforeunload', e => this.beforeunloadHandler(e))
-                window.removeEventListener('unload', e => this.unloadHandler(e))
+                console.log('页面销毁----')
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token
+                }
+                api.postApi(this.apiVar.Advertisement + '/AddCreatePlanLog',params).then(res => {
+                    console.log('上报成功-----',res)
+                }).catch(err => {
+                    console.log('上报失败-----',err)
+                })
             }
         },
     }

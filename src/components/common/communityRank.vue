@@ -37,14 +37,13 @@
                                         v-for="(firstTag,index) in hobbyTags"
                                         :key="index"
                                         :width="width"
-                                        trigger="manual"
+                                        trigger="click"
                                         :visible-arrow="false"
                                         :value="firstTag.hovered"
                                         popper-class="tag-popover"
                                     >
                                         <span class="first-tag-btn" :class="firstTag.checked?'active':''"
-                                              slot="reference" @click="chooseHobbyTag(firstTag)"
-                                              @mouseenter="showPopver(firstTag)" @mouseleave="hidePopver(firstTag)">
+                                              slot="reference">
                                             {{firstTag.label}}
                                         </span>
                                         <div class="ul-wrap" @mouseenter="enterPopver(firstTag)"
@@ -58,7 +57,7 @@
                                                                      @change="tagChecked($event,2,firstTag,secondTag)">
                                                             {{secondTag.label}}
                                                         </el-checkbox>
-                                                        <i class="el-icon-arrow-right"></i>
+                                                        <i class="el-icon-arrow-right" v-if="secondTag.childer"></i>
                                                     </div>
 
                                                 </li>
@@ -234,21 +233,21 @@
                                     <span>{{scope.row.asCount}}</span>
                                 </template>
                             </el-table-column>
-                            <el-table-column
-                                prop="action"
-                                label="操作"
-                                min-width="80"
-                            >
-                                <template slot-scope="scope">
-                                    <el-button type="text" @click="gotoDetail(scope.row)">画像详情</el-button>
-                                </template>
-                            </el-table-column>
+                            <!--<el-table-column-->
+                                <!--prop="action"-->
+                                <!--label="操作"-->
+                                <!--min-width="80"-->
+                            <!--&gt;-->
+                                <!--<template slot-scope="scope">-->
+                                    <!--<el-button type="text" @click="gotoDetail(scope.row)">画像详情</el-button>-->
+                                <!--</template>-->
+                            <!--</el-table-column>-->
                             <div slot="empty">
                                 <no-search-result></no-search-result>
                             </div>
                         </el-table>
                     </div>
-                    <div class="ad_pagination" v-if="totalSize">
+                    <div class="ad_pagination" v-if="total">
                         <el-pagination
                             background
                             layout="total, sizes, prev, pager, next, jumper"
@@ -257,7 +256,7 @@
                             :page-sizes="[10, 20, 50]"
                             :current-page.sync="currPage"
                             :page-size="pageSize"
-                            :total="totalSize">
+                            :total="total">
                         </el-pagination>
                     </div>
 
@@ -293,8 +292,8 @@
             return {
                 tabHeight: '252px',
                 showhideText: '展开',
-                width: 132,//面板宽度
-                activeName: 'first',
+                width: 144,//面板宽度
+                activeName: 'second',
                 thirdShow: false,
                 forthShow: false,
                 currSecondTag: '',//当前选中的二级标签
@@ -443,7 +442,8 @@
                 loading: false,
                 currPage: 1,
                 pageSize: 10,
-                totalSize: 10,
+                total: 0,
+
             };
         },
         methods: {
@@ -463,118 +463,97 @@
             },
             handleClick(tab, event) {
                 // console.log(tab, event);
+                this.getTags()
+
             },
             //人群标签-选中和取消标签
             chooseTags(first, second) {
                 console.log(first, second, this.chooseTagsArr);
-
+                let obj = {
+                    label: first.label + '：' + second.label,
+                    value: second.value
+                };
                 if (second.checked) {
                     //取消选中当前二级
-                    second.checked = false
+                    second.checked = false;
                     //一级被选中
                     if (first.checked) {
                         //取消选中
-                        first.checked = false
-                        let item = {
-                            value:first.value,
-                            label:first.label
-                        }
-                        this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(item), 1);
-                        for (let data of first.childer) {
-                            if(data.checked){
-                                let obj = {
-                                    value:data.value,
-                                    label:first.label+'：'+data.label
+                        first.checked = false;
+                        if (this.chooseTagsArr.length < 4) {
+                            for (let data of this.chooseTagsArr) {
+                                if (data.value == first.value) {
+                                    this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
                                 }
-                                this.chooseTagsArr.push(obj)
                             }
+                            for (let data of first.childer) {
+                                if (data.checked) {
+                                    let a = {
+                                        value: data.value,
+                                        label: first.label + '：' + data.label
+                                    }
 
+                                    this.chooseTagsArr.push(a)
+
+                                }
+                            }
+                        }
+                    } else {
+                        for (let data of this.chooseTagsArr) {
+                            if (data.value == second.value) {
+                                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(obj), 1);
+                            }
                         }
                     }
-                    // this.showPersonTags()
+
                 } else {
                     //选中
-                    // second.checked = true
+                    second.checked = true
+                    // this.chooseTagsArr.push(obj)
                     this.filterArr(first, second)
                 }
 
 
             },
-            //人群标签-展示
-            showPersonTags() {
-                console.log(this.personTags);
-                this.chooseTagsArr = []
-                //   for(let data of this.personTags){
-                //       let obj = ''
-                //       if(data.checked){
-                //            obj = {
-                //               value:data.value,
-                //               label:data.label
-                //           }
-                //           this.chooseTagsArr.push(obj)
-                //       }else{
-                //           for(let data2 of data.childer){
-                //               if(data2.checked){
-                //                   obj = {
-                //                       value:data2.value,
-                //                       label:data.label+'：'+data2.label
-                //                   }
-                //                   this.chooseTagsArr.push(obj)
-                //               }
-                //           }
-                //       }
-                // }
-
-            },
             //选中的标签数组 取交集
             filterArr(arr, second) {
+                // console.log(arr);
                 let a = [...this.chooseTagsArr]//展示的标签数组
                 let b = [...arr.childer]//该标签的下级标签数组
-                let obj = ''
                 //交集
                 let intersect = a.filter(x => [...b].some(y => y.label === x.label.split('：')[1]))
                 console.log('交集--', intersect);
                 if (intersect.length == b.length - 1) {
                     //可合并部分标签。取差集
-                    // console.log('合并部分标签前',this.chooseTagsArr);
+                    this.$message({showClose: true, message: arr.label + '不限，不占用所选标签数', type: 'info'})
                     this.chooseTagsArr = a.filter(x => [...b].every(y => y.label !== x.label.split('：')[1]))
-                    //加上一个新的一级标签
-                    obj = {
-                        value: arr.value,
-                        label: arr.label
-                    }
-                    // this.chooseTagsArr.push(obj)
                     for (let data of this.personTags) {
                         if (data.value == arr.value) {
                             data.checked = true
                         }
                     }
-                    console.log('合并部分标签后', this.chooseTagsArr);
-                } else {
-                    obj = {
-                        value: second.value,
-                        label: arr.label + '：' + second.label
-                    }
 
+                } else {
+                    let obj = {
+                        label: arr.label + '：' + second.label,
+                        value: second.value
+                    };
+                    this.pushArr(obj, second)
                 }
-                this.pushArr(obj,second)
+
+
+                console.log('合并部分标签后', this.chooseTagsArr);
             },
+
             //删除单个的标签
             cancelChooseTag(item) {
                 console.log(item);
                 this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(item), 1);
                 for (let data of this.personTags) {
-                    if (item.label.includes('：')) {
-                        let tag = item.label.split('：')[1]
+                    let tag = item.label.split('：')[1]
+                    if (data.childer) {
                         for (let data2 of data.childer) {
                             if (data2.label == tag) {
-                                data2.checked = false
-                            }
-                        }
-                    } else {
-                        //选中一级
-                        if (data.label == item.label) {
-                            for (let data2 of data.childer) {
                                 data2.checked = false
                             }
                         }
@@ -593,8 +572,20 @@
                         }
                     }
                 }
+
                 fn(this.hobbyTags)
 
+
+                //判断一级是否仍然选中
+                let firstTag = item.label.split('：')[0].split('/')[0]
+                for (let data of this.hobbyTags) {
+                    if (firstTag == data.label && data.childer) {
+                        let flag = data.childer.some(a=>a.checked == true)
+                        if (!flag) {
+                            data.checked = false
+                        }
+                    }
+                }
 
             },
             //清空所有标签
@@ -651,13 +642,13 @@
             changePage(val) {
                 // console.log('当前页',val)
                 this.currPage = val
-                this.searchFun();
+                this.getRankList();
             },
             // 每页条数切换
             sizeChange(val) {
                 this.pageSize = val;
                 this.currPage = 1;
-                this.searchFun();
+                this.getRankList();
             },
             //移入移出一级标签
             showPopver(firstTag) {
@@ -682,40 +673,42 @@
                 // console.log('从面板离开');
                 firstTag.hovered = false;
                 //重置数据
-                this.width = 132;
+                this.width = 144;
                 this.thirdShow = false;
                 this.forthShow = false;
                 this.currentThirdList = [];
                 this.currentForthList = [];
             },
             //偏好标签-选中一级标签
-            chooseHobbyTag(item) {
-                // console.log(item);
-                // console.log(this.chooseTagsArr);
-                if (item.checked) {
-                    item.checked = false
-                    this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(item), 1);
-                } else {
-                    let obj = {
-                        value: item.value,
-                        label: item.label
-                    }
-                    item.hovered = false
-                    //清空下级
-                    this.clear(item, 'split')
-                    this.pushArr(obj, item)
-                }
-
-            },
+            // chooseHobbyTag(item) {
+            //     // console.log(item);
+            //     console.log(this.chooseTagsArr);
+            //     if (item.checked) {
+            //         item.checked = false
+            //         this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(item), 1);
+            //     } else {
+            //         let obj = {
+            //             value: item.value,
+            //             label: item.label
+            //         }
+            //         item.hovered = false
+            //         //清空下级
+            //         this.clear(item, 'split')
+            //         this.pushArr(obj, item)
+            //     }
+            //
+            // },
             //偏好标签-选中二三四级
             tagChecked(e, level, tag1, tag2) {
                 console.log(e, level, tag1, tag2);
+
                 let obj = {
                     label: '',
                     value: ''
                 }
                 if (e) {
                     //选中
+                    tag1.checked = true
                     if (level == 2) {
                         obj.label = tag1.label + '：' + tag2.label
                         obj.value = tag2.value;
@@ -816,6 +809,13 @@
                             this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
                         }
                     }
+                    //此一级标签下是否没有选中的标签 有为true 无为false
+                    let flag = tag1.childer.some(item => item.checked == true)
+                    console.log(flag);
+                    if (!flag) {
+                        tag1.checked = false
+                    }
+
                 }
             },
             pushArr(obj, item) {
@@ -835,16 +835,17 @@
                 arr = tag.childer;
                 if (tag.childer) {
                     if (level == 2) {
-                        this.width = 264
-                        this.thirdShow = true
+                        this.width = 288
                         this.forthShow = false
                         this.currSecondTag = tag
                         this.currentThirdList = arr
+                        tag.childer ? this.thirdShow = true : this.thirdShow = false
+
                     } else {
-                        this.width = 396
-                        this.forthShow = true
+                        this.width = 432
                         this.currThirdTag = tag
                         this.currentForthList = arr
+                        tag.childer ? this.forthShow = true : this.forthShow = false
                     }
 
                 }
@@ -853,31 +854,26 @@
             //排名列表
             getRankList() {
                 console.log(this.chooseTagsArr);
+                let info = {
+                    pageNum: this.currPage,
+                    pageSize: this.pageSize
+                }
                 if (this.chooseTagsArr.length > 0) {
                     let ids = ''
                     for (let data of this.chooseTagsArr) {
                         ids += data.value + ','
                     }
-                    ids = ids.substring(0, ids.length - 1);
-                    api.getApi(this.apiVar.portrait + 'label/search', {ids: ids}).then(res => {
-                        console.log(res.data);
-                        if (res.data.SysCode == 200200) {
-                            this.currentPlan = res.data.data
-                        } else {
-                            this.$message.warning(res.data.MSG)
-                        }
-                    })
-                } else {
-                    api.getApi(this.apiVar.portrait + 'label/search').then(res => {
-                        console.log(res.data);
-                        if (res.data.SysCode == 200200) {
-                            this.currentPlan = res.data.data
-                        } else {
-                            this.$message.warning(res.data.MSG)
-                        }
-                    })
+                    info.ids = ids.substring(0, ids.length - 1);
                 }
-
+                api.getApi(this.apiVar.portrait + 'label/search', info).then(res => {
+                    console.log(res.data);
+                    if (res.data.SysCode == 200200) {
+                        this.total = res.data.data.total
+                        this.currentPlan = res.data.data.list
+                    } else {
+                        this.$message.warning(res.data.MSG)
+                    }
+                })
             },
             //导出表格
             exportTable() {
@@ -887,11 +883,18 @@
                 this.$router.push('./portraitDetail')
             },
             //获取标签数据
-            getTags() {
-                api.getApi(this.apiVar.portrait + 'label/getLabels').then(res => {
+            getTags(parentId) {
+                let info = ''
+                info = {
+                    type: this.activeName == 'first' ? 0 : 1,
+                    loadChilder: 1,
+                    parentId: parentId ? parentId : 0,
+                }
+                api.getApi(this.apiVar.portrait + 'label/getLabels', info).then(res => {
                     console.log(res.data);
                     if (res.data.SysCode == 200200) {
-                        this.personTags = res.data.data
+
+                        this.activeName == 'first' ? this.personTags = res.data.data : this.hobbyTags = res.data.data
                     } else {
                         this.$message.warning(res.data.MSG)
                     }
@@ -1085,7 +1088,7 @@
     }
 
     .hobby-tags-li {
-        padding: 12px 24px;
+        padding: 12px 24px 0;
         border-bottom: 1px dashed rgba(0, 0, 0, 0.12);
     }
 
@@ -1093,12 +1096,16 @@
         border-bottom: none;
     }
 
+    .hobby-tags-li span {
+        margin-bottom: 12px;
+    }
+
     /deep/ .el-table__body-wrapper {
         overflow-y: hidden;
     }
 
     .tag-ul {
-        width: 132px;
+        width: 144px;
         padding: 5px 0;
         border-right: 1px solid #ebeef5;
         box-sizing: border-box;
@@ -1115,7 +1122,7 @@
 
     .third-tag-ul {
         position: absolute;
-        left: 132px;
+        left: 144px;
         top: 0px;
     }
 
@@ -1124,7 +1131,7 @@
         height: 140px;
         padding: 5px 0;
         position: absolute;
-        left: 264px;
+        left: 288px;
         top: 0px;
 
     }
@@ -1150,8 +1157,10 @@
         display: inline-block;
         text-align: center;
         font-size: 14px;
-        width: 76px;
+        min-width: 76px;
         height: 26px;
+        padding: 0 8px;
+        box-sizing: border-box;
         line-height: 26px;
         border-radius: 0;
         margin-right: 8px;

@@ -1,12 +1,11 @@
 <template>
-    <div>
-        <header class="share_index_header">
-            <div class="logo_img">
-                <img src="../../assets/images/logo.png" alt="qinlink">
-            </div>
-        </header>
+    <div class="map_index">
         <!--地图标签-->
-        <div id="qinlinMap" ref="qinlinMap" style=""></div>
+        <div v-loading="mapLoading"
+             element-loading-text="玩命加载中.."
+             element-loading-spinner="el-icon-loading"
+             id="qinlinMap" ref="qinlinMap">
+        </div>
         <!--左侧搜索-->
         <div class="left_search_box">
             <el-input placeholder="请输入内容" v-model="selectName" v-show="!isOnlineSearch"
@@ -92,7 +91,7 @@
                 </el-option>
             </el-select>
             <!--楼盘类型-->
-            <el-select v-model="bType" size="small" placeholder="楼盘类型" @change="filterBuildType">
+            <el-select v-model="bType" size="small" placeholder="楼盘类型" clearable @change="filterBuildType">
                 <el-option v-for="item in buildTypeList" :key="item.buildValue"
                            :label="item.buildValue"
                            :value="item.buildValue">
@@ -241,10 +240,10 @@
                 </li>
             </ul>
             <div class="active_bottom_btn">
-                <span @click="resShare"><i class="el-icon-share"></i>分享</span>
+                <span @click="resShare" v-if="isCommit"><i class="el-icon-share"></i>分享</span>
                 <span @click="exportExcel"><i class="el-icon-download"></i>下载</span>
                 <span @click="deleteAll"><i class="el-icon-delete"></i>清空</span>
-                <el-button type="primary" size="small" @click="pushMapRes">选定</el-button>
+                <el-button type="primary" size="small" @click="pushMapRes" v-if="isCommit">选定</el-button>
             </div>
         </div>
         <!--底部右侧鼠标绘制-->
@@ -359,11 +358,23 @@
         name: "qinLinMap",
         data() {
             return{
+                // 路由参数
+                routeQuery:{},
+                // 获取资源到参数
                 adListParams: {},
+                // 登录信息
                 sessionData: sessFun.getSess(),
+                // 判断来源
+                isShare: false,
+                // 当前地图资源是否可提交
+                isCommit: false,
+                // 地图实例
                 resMap: '',
                 markerIcon: require('../../assets/images/map/markerIcon.png'),
+                // 时间排期
                 dateTime:[],
+                // 地图loading
+                mapLoading: true,
                 //比例尺
                 scale: '5公里',
                 // 当前显示到小区数据
@@ -483,12 +494,13 @@
             }
         },
         mounted() {
-            console.log('----',this.$route.query)
-            this.adListParams = JSON.parse(localStorage.getItem('mapParams'))
+            this.getSessionData()
             window.onload = this.initMap()
             if(this.$route.path.includes('shareRes')) {
+                this.isShare = true
                 this.getShareResList()
             } else {
+                this.isShare = false
                 // 获取小区数据
                 this.getResList();
                 // 获取商圈list
@@ -501,12 +513,42 @@
             this.getAreaList();
         },
         methods:{
+            // 获取缓存数据
+            getSessionData() {
+                console.log('----',this.$route.query)
+                this.adListParams = JSON.parse(localStorage.getItem('mapParams'))
+                this.routeQuery = this.$route.query
+                // 判断是否是超管访问，超管无提交资源权限
+                if(this.routeQuery.flag === 'true') {
+                    this.isCommit = true
+                } else {
+                    this.isCommit = false
+                }
+            },
             // 获取分享资源
             getShareResList() {
                 let params = {
-                    shareCode: this.$route.query.code
+                    shareCode: this.routeQuery.code,
+                    districtId: this.selectArea.join(','),    // 区域
+                    cType: this.bType,                        // 楼盘类型
+                    minhPrice: this.buildPrice[0] * 100,
+                    maxhPrice: this.buildPrice[1] * 100,
+                    minhNum: this.houseNum[0],
+                    maxhNum: this.houseNum[1],
+                    minchDay: this.liveYear[0],
+                    maxchDay: this.liveYear[1],
+                    tradingArea: this.tradingArea,
+                    adLimit: this.selectLimits.join(','),
+                    mType: this.selectDoorType,
+                    mVehicle: this.selectMediaType,
+                    grade: this.selectMediaLevel
                 }
-                api.getApi(this.apiVar.mapApi + '/shareAdsInfo',params).then(res=>{
+                for(let i in params) {
+                    if(!params[i]) {
+                        delete params[i]
+                    }
+                }
+                api.postApi(this.apiVar.mapApi + '/shareAdsInfo',params).then(res=>{
                     console.log('分享list',res)
                     if(res.data.SysCode === 200200) {
                         this.resInfo = res.data.data
@@ -593,30 +635,74 @@
                 this.resMap.centerAndZoom(this.$route.query.city, 10);
                 //开启鼠标滚轮缩放
                 this.resMap.enableScrollWheelZoom(true);
-                let mapStyleJson = [
+                // let mapStyleJson = [
+                //     {
+                //         "featureType": "land",
+                //         "elementType": "geometry.stroke",
+                //         "stylers": {
+                //             "visibility": "off"
+                //         }
+                //     },
+                //     {
+                //         "featureType": "point",
+                //         "elementType": "geometry.stroke",
+                //         "stylers": {
+                //             "visibility": "off"
+                //         }
+                //     },
+                //     {
+                //         "featureType": "building",
+                //         "elementType": "geometry.stroke",
+                //         "stylers": {
+                //             "visibility": "off"
+                //         }
+                //     },
+                // ]
+                let styleJson = [
                     {
-                        "featureType": "land",
-                        "elementType": "geometry.stroke",
+                        "featureType": "road",
+                        "elementType": "all",
+                        "stylers": {
+                            "lightness": 20
+                        }
+                    },
+                    {
+                        "featureType": "highway",
+                        "elementType": "geometry",
+                        "stylers": {
+                            "color": "#f49935"
+                        }
+                    },
+                    {
+                        "featureType": "railway",
+                        "elementType": "all",
                         "stylers": {
                             "visibility": "off"
                         }
                     },
                     {
-                        "featureType": "point",
-                        "elementType": "geometry.stroke",
+                        "featureType": "local",
+                        "elementType": "labels",
                         "stylers": {
                             "visibility": "off"
                         }
                     },
                     {
-                        "featureType": "building",
-                        "elementType": "geometry.stroke",
+                        "featureType": "water",
+                        "elementType": "all",
+                        "stylers": {
+                            "color": "#d1e5ff"
+                        }
+                    },
+                    {
+                        "featureType": "poi",
+                        "elementType": "labels",
                         "stylers": {
                             "visibility": "off"
                         }
-                    },
+                    }
                 ]
-                this.resMap.setMapStyle({styleJson: mapStyleJson })
+                this.resMap.setMapStyle({styleJson: styleJson })
                 let that = this
                 // 监听点击地图
                 this.resMap.addEventListener("click", (e) => {
@@ -631,6 +717,10 @@
                         this.mouseLineStep++
                     }
                 });
+                // 监听地图缩放
+                this.resMap.addEventListener('zoomend',(e) => {
+                    this.setMapZoom()
+                })
                 // 初始化鼠标绘制
                 this.initMouseDrawing()
             },
@@ -663,14 +753,15 @@
             },
             // 获取小区数据
             getResList() {
+                this.mapLoading = true
                 let params = {
                     startTime: this.adListParams.ls,
                     endTime: this.adListParams.le,
                     cityId: this.adListParams.rid,
                     suID: this.adListParams.suID,             // 销售uid
                     resName: '',
-                    districtId: this.selectArea.join(','),  // 区域
-                    cType: this.bType,                      // 楼盘类型
+                    districtId: this.selectArea.join(','),    // 区域
+                    cType: this.bType,                        // 楼盘类型
                     minhPrice: this.buildPrice[0] * 100,
                     maxhPrice: this.buildPrice[1] * 100,
                     minhNum: this.houseNum[0],
@@ -682,6 +773,9 @@
                     mType: this.selectDoorType,
                     mVehicle: this.selectMediaType,
                     grade: this.selectMediaLevel
+                }
+                if(this.sessionData.uType === 'SM') {
+                    delete params.suID
                 }
                 for(let i in params) {
                     if(!params[i]) {
@@ -700,8 +794,10 @@
                     }
                     // 城市边界
                     this.displayBoundary()
+                    this.mapLoading = false
                 }).catch(err=>{
                     console.log('err',err)
+                    this.mapLoading = false
                     sessFun.messageFun('warning','小区数据接口异常')
                 })
             },
@@ -1265,6 +1361,9 @@
                 let allOverlay = this.resMap.getOverlays();
                 for (let akey of allOverlay) {
                     akey.show()
+                    if (akey.toString() == "[object Circle]" || akey.toString() == "[object Polygon]") {
+                        this.resMap.removeOverlay(akey);
+                    }
                 }
                 // 移除
                 for (let key of this.selectOnlineList) {
@@ -1274,6 +1373,14 @@
             /**
              *  顶部过滤条件
              * */
+            // 中转判断
+            transfersFun() {
+                if(this.isShare) {
+                    this.getShareResList()
+                } else {
+                    this.getResList()
+                }
+            },
             selectNum(item,temp) {
                 console.log('item,temp',item,temp)
                 let datas = item.split('-')
@@ -1285,27 +1392,28 @@
                 } else if (temp === 'year') {
                     this.liveYear = datas
                 }
-                this.getResList()
+                this.transfersFun()
             },
             // 区域
             filterArea() {
                 console.log('区域',this.selectArea)
                 if (this.selectArea && this.selectArea.length) {
                     // this.filterResFun()
-                    this.getResList()
+                    this.transfersFun()
                 }
             },
             // 楼盘类型
             filterBuildType() {
-                if(this.bType) {
-                    this.getResList()
-                }
+                console.log('楼盘类型---',this.bType)
+                // if(this.bType) {
+                    this.transfersFun()
+                // }
             },
             // 广告限制
             filterADLimit(limit) {
                 console.log('广告限制limit', limit) //
                 if (limit && limit.length) {
-                    this.getResList()
+                    this.transfersFun()
                 }
             },
             // 住户数量过滤
@@ -1318,7 +1426,7 @@
                         this.houseNum[i] = Number(this.houseNum[i])
                     }
                     // this.filterResFun()
-                    this.getResList()
+                    this.transfersFun()
                 }
             },
             // 楼盘价格过滤
@@ -1330,7 +1438,7 @@
                         Number(this.buildPrice[i])
                     }
                     this.filterData.bPrice = true
-                    this.getResList()
+                    this.transfersFun()
                     // this.filterResFun()
                 }
             },
@@ -1340,32 +1448,32 @@
                     sessFun.messageFun('warning','数据区间填写有误')
                 } else {
                     this.filterData.lYear = true
-                    this.getResList()
+                    this.transfersFun()
                     // this.filterResFun()
                 }
             },
             // 所在商圈
             filterTradingArea() {
                 if(this.selectTradingArea) {
-                    this.getResList()
+                    this.transfersFun()
                 }
             },
             // 媒体类型（消防门、钣金门等）
             filterDoorType() {
                 if(this.selectDoorType) {
-                    this.getResList()
+                    this.transfersFun()
                 }
             },
             // 媒介载体
             filterMediaType () {
                 if(this.selectMediaType) {
-                    this.getResList()
+                    this.transfersFun()
                 }
             },
             // 媒体等级
             filterMediaLevel () {
                 if(this.selectMediaLevel) {
-                    this.getResList()
+                    this.transfersFun()
                 }
             },
             // 清空
@@ -1389,7 +1497,7 @@
                 this.selectMediaLevel = ''
                 this.selectLimits = []
                 this.selectArea = []
-                this.getResList()
+                this.transfersFun()
             },
             /**
              *  左下选中框
@@ -1427,15 +1535,14 @@
                     }
                 })
                 let params = {
-                    startTime: this.adListParams.ls, //this.dateTime[0],
-                    endTime: this.adListParams.le,  //
+                    startTime: this.adListParams.ls,
+                    endTime: this.adListParams.le,
                     resIDList: arr,
                 }
                 console.log('选定提交小区资源IDparams',params)
                 api.postApi_json(this.apiVar.mapApi + '/adsList',params).then(res=>{
                     console.log('res',res)
                     if(res.data.SysCode === 200200) {
-                        // this.$emit('childFun',res.data.data)
                         localStorage.setItem('qinlinMapCode',res.data.data)
                         this.mapDialogVisible = true
                     } else {
@@ -1447,10 +1554,16 @@
             },
             // 关闭窗口
             closeWin() {
-                this.mapDialogVisible = false
-                window.opener = null;
-                window.open('', '_self');
-                window.close();
+                try {
+                    this.mapDialogVisible = false
+                    window.opener = window;
+                    let win = window.open("","_self");
+                    win.close();
+                    //frame的时候
+                    top.close();
+                } catch (e) {
+                    sessFun.messageFun('warning', '自动关闭窗口异常，请手动关闭当前窗口')
+                }
             },
             // 导出exc
             exportExcel(){
@@ -1496,13 +1609,13 @@
                     return item.resID
                 })
                 let params = {
-                    resInfo: arr
+                    resIDs: arr.join(',')
                 }
                 console.log('分享arr',arr)
                 api.postApi(this.apiVar.mapApi + '/shareCode',params).then(res=>{
                     console.log('res分享',res)
                     if(res.data.SysCode === 200200) {
-                        this.shareUrl = this.apiVar.qadnUrl + '/mapResource/shareRes?code=' + res.data.data
+                        this.shareUrl = this.apiVar.qadnUrl + '/mapADResource/shareRes?city='+ this.$route.query.city +'code=' + res.data.data
                         console.log('shareUrl',this.shareUrl)
                     } else {
                         sessFun.messageFun('warning',res.data.MSG || '分享异常')
@@ -1514,19 +1627,14 @@
 </script>
 
 <style scoped>
-    .share_index_header {
-        width: 100%;
-        background: #444;
-        height: 60px;
-    }
-
-    .logo_img {
-        padding: 14px 0 0 38px;
+    .map_index{
+        /*width: 100%;*/
+        /*height: 100%;*/
     }
 
     #qinlinMap {
         position: fixed !important;
-        top: 60px;
+        top: 0;
         left: 0;
         bottom: 0;
         width: 100%;
@@ -1537,7 +1645,7 @@
     .left_search_box {
         position: fixed;
         width: 288px;
-        top: 80px;
+        top: 20px;
         left: 32px;
     }
 
@@ -1706,7 +1814,7 @@
     /*顶部过滤条件*/
     .top_filter_box{
         position: fixed;
-        top:80px;
+        top:20px;
         right: 16px;
         height: 42px;
         max-width: 905px;

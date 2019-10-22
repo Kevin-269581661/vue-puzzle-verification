@@ -104,7 +104,10 @@
             }
         },
         mounted: function () {
+            // 移除社区画像信息
             sessionStorage.removeItem("portraitInfo");
+            // 移除地图参数
+            localStorage.removeItem('mapParams');
             //页面加载调用获取cookie值
             this.username = utils.getCookie('username');
             this.password = utils.getCookie('password');

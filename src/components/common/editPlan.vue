@@ -56,7 +56,7 @@
                             </div>
                             <el-row class="button_row">
                                 <el-col>
-                                    <el-button type="primary" class="map" icon="el-icon-location-outline" @click="mapAD"
+                                    <el-button type="primary" class="map" icon="el-icon-location-outline" @click="setMapParams"
                                                v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt050_ck03'}">地图</el-button>
                                     <el-dropdown>
                                         <el-button type="success" class="importXle">
@@ -2240,6 +2240,27 @@
                     this.getAdList()
                 }
             },
+            // 设置地图选点参数
+            setMapParams() {
+                this.mapParams = {
+                    rid: this.activeCityData.rid,
+                    city: this.activeCityData.rName,
+                    ls: this.dateInput[0],
+                    le: this.dateInput[1],
+                }
+                localStorage.setItem('mapParams',JSON.stringify({
+                    rid: this.activeCityData.rid,
+                    ls: this.dateInput[0],
+                    le: this.dateInput[1],
+                    suID: this.BDData.uid,
+                }))
+                // let url = this.apiVar.qadnUrl + '/mapResource/chooseRes?city=' + this.mapParams.city  + '&flag=' + true
+                let url = 'http://192.168.1.239/ADResourceMap/chooseRes?city=' + this.mapParams.city  + '&flag=' + true
+                // let url = 'http://localhost:8088/ADResourceMap/chooseRes?city=' + this.mapParams.city  + '&flag=' + true
+                window.open(url)
+                this.mapBtn = false
+                this.dialogVisible()
+            },
             //step2地图选点
             mapAD() {
                 console.log('地图选点提交的rid', this.activeCityData)
@@ -4059,17 +4080,14 @@
                     spinner: 'el-icon-loading',
                     background: 'rgba(0, 0, 0, 0.7)'
                 })
-                this.mapBtn = true
-                api.getApi(this.apiVar.Map+'/SendMap', {uid: this.sessionData.uID,token: this.sessionData.token}).then(res => {
-                    console.log('地图选点', res)
-                    if(res.data.code == '500200'){
-                        this.mapADList = res.data.data
-                        if(this.mapADList.length > 0){
-                            this.setShopDataByMapAD()
-                        } else {
-                            sessFun.messageFun('warning','数据为空')
-                            this.getMapLoading.close()
-                        }
+                let params = {
+                    code: localStorage.getItem(`qinlinMapCode`)
+                }
+                api.getApi(this.apiVar.mapApi + '/adsListByCode',params).then(res=>{
+                    console.log('res-----',res)
+                    if(res.data.SysCode === 200200) {
+                        this.mapAdsList = res.data.data
+                        this.setMapAdsListInShopCar()
                     } else {
                         this.getMapLoading.close()
                         sessFun.messageFun('warning','数据获取异常')
@@ -4077,86 +4095,52 @@
                 })
             },
             // 根据地图选点返回的数据，设置成购物车所需的数据格式
-            setShopDataByMapAD() {
-                console.log('执行了setShopDataByMapAD', this.mapADList)
-                let mapADList_ = this.mapADList
+            setMapAdsListInShopCar() {
                 let tempArr = []
-                for (let data of mapADList_) {
-                    for (let i = 0; i < 2; i++) {
-                        let ADInfo = {
-                            resID: data.resID,
-                            mID: data.mID,
-                            resType: data.resType,
-                            asID: '',
-                            asIDs: data.asIDs,
-                            asLabs: data.asLabs,
-                            resName: data.resName,
-                            city: this.mapParams.city,
-                            rid: this.mapParams.rid,
-                            origin: data.rName,
-                            buildType: data.cType,
-                            houseNum: data.hNum,
-                            buildPrice: (data.hPrice / 100),
-                            mediaName: data.mTitle || '',
-                            mVehicle: data.mVehicle,
-                            buildNum: data.fNum,
-                            schedules: this.mapParams.ls + '-' + this.mapParams.le,
-                            tradingArea: data.tradingArea,
-                            assetTag: data.assetTag,
-                            liveYear: data.chDay,
-                            mapCenter: '',
-                            // mapCenter: data.reference.name ? data.reference.name +'-'+  data.reference.address :'' ,      // 地图中心点名称
-                            reference: data.reference ||'',
-                            address: data.resAddress || '',
-                            dNum: data.dNum || '',              // 出入口数
-                            adLimit: data.notPush || '',
-                            checkBox: {A: false, B: false},
-                            connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
-                            connID: data.connID || '',        // 连排门id
-                            industryInfos: data.industryInfos || [],   // 同行业资源回避
-                            mediaLevel: data.grade || '',
-                            adPrice: data.mVehicle === '道闸' ? data.asPrice / 100 || 0 : data.asPrice / 700 || 0,
-                            asName: data.asName || '',         // 点位所属公司名称
-                            asrID: data.asrID,                 // 所属公司id
+                for(let key of this.mapAdsList) {
+                    let adInfo = {
+                        mID: key.mID,
+                        resType: key.resType,
+                        resID: key.resID,
+                        asID: '',
+                        asIDs: key.asIDs,
+                        asLabs: key.asLab,
+                        A_B: key.asLab,
+                        resName: key.resName,
+                        city:  this.activeCityData.rName,
+                        rid:  this.activeCityData.rid,
+                        origin: key.rName,
+                        buildType: key.cType,
+                        houseNum: key.hNum,
+                        buildPrice: (key.hPrice / 100),
+                        mediaName: key.mTitle || '',
+                        mVehicle: key.mVehicle,
+                        buildNum: key.fNum,
+                        schedules: this.dateInput[0] + '-' + this.dateInput[1],
+                        tradingArea: key.tradingArea,
+                        assetTag: key.assetTag,
+                        liveYear: key.chDay,
+                        mapCenter: '',  // 地图中心点名称
+                        reference: key.centerInfos,
+                        address: key.resAddress || '',
+                        dNum: key.dNum || '',              // 出入口数
+                        adLimit: key.notPush || '',
+                        checkBox: {A: false, B: false,ABC: false},
+                        connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
+                        connID: key.connID || '',        // 连排门id
+                        industryInfos: key.industryInfos || [],   // 同行业资源回避
+                        mediaLevel: key.grade || '',
+                        adPrice: key.mVehicle === '道闸' ? key.asPrice / 100 || 0 : key.asPrice / 700 || 0,
+                        asName: key.asName || '',         // 点位所属公司名称
+                        asrID: key.asrID,                 // 所属公司id
+                    }
+                    if(key.centerInfos && key.centerInfos.length) {
+                        for(let item of key.centerInfos) {
+                            adInfo.mapCenter += item.centerName + '-' + item.centerAddress + ','
                         }
-                        if (data.reference !== '-' && data.reference !== '' && data.reference !== undefined && data.reference !== null) {
-                            for (let key of data.reference) {
-                                ADInfo.mapCenter += key.name + '-' + key.address + ','
-                            }
-                        } else {
-                            ADInfo.mapCenter = ''
-                        }
-                        if(data.mVehicle === '广告门'){
-                            let asLabsArr = ADInfo.asLabs.split(',')
-                            let asIDArr = ADInfo.asIDs.split(',')
-                            for (let n = 0; n < asLabsArr.length; n++) {
-                                if (i === 0 && asLabsArr[n] === 'A') {
-                                    ADInfo.checkBox.A = true
-                                    ADInfo.A_B = 'A'
-                                    ADInfo.asID = asIDArr[n]
-                                    if (this.judgeHaveDiffAD(ADInfo,'mapAds')) {
-                                        tempArr.push(ADInfo)
-                                        break
-                                    }
-                                } else if (i === 1 && asLabsArr[n] === 'B') {
-                                    ADInfo.checkBox.B = true
-                                    ADInfo.A_B = 'B'
-                                    ADInfo.asID = asIDArr[n]
-                                    if (this.judgeHaveDiffAD(ADInfo,'mapAds')) {
-                                        tempArr.push(ADInfo)
-                                        break
-                                    }
-                                }
-                            }
-                        } else if(data.mVehicle === '道闸') {
-                            ADInfo.checkBox.ABC = true
-                            ADInfo.A_B = 'ABC'
-                            ADInfo.asID = data.asIDs //data.asIDs.split(',')
-                            if (this.judgeHaveDiffAD(ADInfo,'mapAds')) {
-                                tempArr.push(ADInfo)
-                                break
-                            }
-                        }
+                    }
+                    if(this.judgeHaveDiffAD(adInfo,'mapAds')) {
+                        tempArr.push(adInfo)
                     }
                 }
                 console.log('根据地图选点返回的数据，设置成购物车所需的数据格式', tempArr)
@@ -4165,14 +4149,13 @@
                         this.shopingList.push(key)
                     }
                 } else {
-                    this.shopingList = tempArr
+                    this.shopingList = JSON.parse(JSON.stringify(tempArr))
                 }
                 this.getMapLoading.close()
                 sessFun.messageFun('success','成功获取到' + tempArr.length + '条数据')
-
+                this.mapBtn = true
                 this.typeShopList = this.getTypeList();
                 this.getShowList();
-
                 this.computeMedia_AD('mapAD')
                 this.judgeByselect()
             },
@@ -4192,10 +4175,9 @@
                             if (ADScheArr[0] == shopScheArr[0] && ADScheArr[1] == shopScheArr[1]) {
                                 if(SourceType === 'mapAds'){
                                     let centerName = ''
-                                    if (ADData.reference !== '-' && ADData.reference !== '' && ADData.reference !== undefined
-                                        && ADData.reference !== null) {
+                                    if(ADData.reference && ADData.reference.length) {
                                         for (let key of ADData.reference) {
-                                            let keyCenter = key.name + '-' + key.address
+                                            let keyCenter = key.centerName + '-' + key.centerAddress
                                             if(!shopArr[i].mapCenter.includes(keyCenter)){
                                                 centerName += keyCenter + ','
                                             }
@@ -4204,7 +4186,6 @@
                                     if (shopArr[i].mapCenter !== '') {
                                         shopArr[i].mapCenter = shopArr[i].mapCenter + centerName
                                     } else {
-                                        console.log('mapCenter为空')
                                         shopArr[i].mapCenter = centerName
                                     }
                                 }

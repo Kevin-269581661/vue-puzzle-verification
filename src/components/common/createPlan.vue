@@ -3189,6 +3189,7 @@
                     this.searchBtnAbled = false
                 })
             },
+            // 设置地图选点参数
             setMapParams() {
                 this.mapParams = {
                     rid: this.activeCityData.rid,
@@ -3202,8 +3203,9 @@
                      le: this.dateInput[1],
                      suID: this.BDData.uid,
                  }))
-                // let url = this.apiVar.qadnUrl + '/qinLinMap?city=' + this.mapParams.city
-                let url = 'http://localhost:8088/mapResource/chooseRes?city=' + this.mapParams.city
+                // let tempWindow = window.open()
+                let url = 'http://localhost:8088/ADResourceMap/chooseRes?city=' + this.mapParams.city  + '&flag=' + true
+                // tempWindow.location = this.apiVar.qadnUrl + '/mapResource/chooseRes?city=' + this.mapParams.city  + '&flag=' + true
                 window.open(url)
                 this.mapBtn = false
                 this.dialogVisible()
@@ -3935,6 +3937,7 @@
                     if(res.data.SysCode === 200200) {
                         this.mapAdsList = res.data.data
                         this.setMapAdsListInShopCar()
+                        localStorage.removeItem('qinlinMapCode')
                     } else {
                         this.getMapLoading.close()
                         sessFun.messageFun('warning','数据获取异常')
@@ -3996,7 +3999,7 @@
                         this.shopingList.push(key)
                     }
                 } else {
-                    this.shopingList = JSON.parse(JSON.parse(stringify(tempArr)))
+                    this.shopingList = JSON.parse(JSON.stringify(tempArr))
                 }
                 this.getMapLoading.close()
                 sessFun.messageFun('success','成功获取到' + tempArr.length + '条数据')
@@ -4020,20 +4023,15 @@
                             // 全等
                             if (ADScheArr[0] == shopScheArr[0] && ADScheArr[1] == shopScheArr[1]) {
                                 if(SourceType === 'mapAds'){
-                                    console.log('----1',ADData)
                                     let centerName = ''
                                     if(ADData.reference && ADData.reference.length) {
                                         for (let key of ADData.reference) {
                                             let keyCenter = key.centerName + '-' + key.centerAddress
                                             if(!shopArr[i].mapCenter.includes(keyCenter)){
-                                                console.log('----2',keyCenter)
                                                 centerName += keyCenter + ','
-                                            } else {
-                                                console.log('----2.5',shopArr[i].mapCenter)
                                             }
                                         }
                                     }
-                                    console.log('----3',centerName)
                                     if (shopArr[i].mapCenter !== '') {
                                         shopArr[i].mapCenter = shopArr[i].mapCenter + centerName
                                     } else {

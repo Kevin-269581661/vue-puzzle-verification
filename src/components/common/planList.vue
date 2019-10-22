@@ -106,15 +106,15 @@
                                     </span>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item @click.native.prevent="preload(scope.row)"
-                                                          :disabled="isDisable ||(scope.row.apState!=1) || scope.row.isKA"
+                                                          :disabled="isDisable ||(scope.row.apState!=1)"
                                                           v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt043_ck04'}">预锁
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="release(scope.row)"
-                                                          :disabled="isDisable ||(scope.row.apState!=1) || scope.row.isKA"
+                                                          :disabled="isDisable ||(scope.row.apState!=1)"
                                                           v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt044_ck04'}">发布
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="clearLock(scope.row)"
-                                                          :disabled="isDisable ||(scope.row.apState!=1) || scope.row.isKA"
+                                                          :disabled="isDisable ||(scope.row.apState!=1)"
                                                           v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt045_ck04'}">解除预锁
                                         </el-dropdown-item>
                                         <!-- <el-dropdown-item @click="deleteOne(scope.row)" :disabled="scope.row.apState!=1">删除
@@ -1033,7 +1033,7 @@
                     cName: item.cName || '',
                     realName: item.realName || '',
                     cityArea: [],
-                    isKA: item.isKA     // 1：ka销售方案，不可发布及预锁
+                    // isKA: item.isKA     // 1：ka销售方案，不可发布及预锁
                 };
                 item.details.sort((a, b)=>{
                     return a.asrID - b.asrID;

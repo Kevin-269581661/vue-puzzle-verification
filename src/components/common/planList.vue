@@ -118,7 +118,7 @@
                                                           v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt045_ck04'}">解除预锁
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="splitAdPlan(scope.row)"
-                                                          v-if="scope.row.apControlLevel === 2 && this.sessionData.uType === 'BD'">拆单
+                                                          v-if="scope.row.apControlLevel === 2 && sessionData.uType === 'BD'">拆单
                                         </el-dropdown-item>
                                     </el-dropdown-menu>
                                 </el-dropdown>

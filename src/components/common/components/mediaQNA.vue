@@ -180,8 +180,6 @@
     .el-autocomplete .el-input__inner{
         width: 100%;
     }
-</style>
-<style>
     .table-wrap .el-table{
         width: 80%;
     }
@@ -189,3 +187,4 @@
         width: 80%;
     }
 </style>
+

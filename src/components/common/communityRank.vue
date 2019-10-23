@@ -52,6 +52,7 @@
                                         :visible-arrow="false"
                                         :value="firstTag.hovered"
                                         popper-class="tag-popover"
+                                        style="padding: 0"
                                     >
                                         <span class="first-tag-btn" :class="firstTag.checked?'active':''"
                                               slot="reference">
@@ -1077,6 +1078,11 @@
     .check-wrap:hover {
         background: rgba(23, 143, 254, 0.08);
     }
+    .check-wrap /deep/ .el-checkbox{
+        width: 100%;
+        height: 100%;
+        line-height: 30px;
+    }
 
     .first-tag-btn {
         display: inline-block;
@@ -1154,17 +1160,18 @@
 
     }
 
+
 </style>
 <style>
     .el-popper {
-        min-width: 132px;
-        border: none;
-        border-radius: 0;
-        padding: 0;
+        min-width: 132px !important;
+        border: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
         /*height: 140px;*/
     }
 
     .el-popper[x-placement^=bottom] {
-        margin-top: 4px;
+        margin-top: 4px !important;;
     }
 </style>

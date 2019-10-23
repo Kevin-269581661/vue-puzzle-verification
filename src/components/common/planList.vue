@@ -106,19 +106,20 @@
                                     </span>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item @click.native.prevent="preload(scope.row)"
-                                                          :disabled="isDisable ||(scope.row.apState!=1)"
+                                                          :disabled="isDisable || scope.row.apState!=1 || scope.row.apControlLevel !== 1"
                                                           v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt043_ck04'}">预锁
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="release(scope.row)"
-                                                          :disabled="isDisable ||(scope.row.apState!=1)"
+                                                          :disabled="isDisable || scope.row.apState!=1 || scope.row.apControlLevel !== 1"
                                                           v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt044_ck04'}">发布
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="clearLock(scope.row)"
-                                                          :disabled="isDisable ||(scope.row.apState!=1)"
+                                                          :disabled="isDisable || scope.row.apState!=1 || scope.row.apControlLevel !== 1"
                                                           v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt045_ck04'}">解除预锁
                                         </el-dropdown-item>
-                                        <!-- <el-dropdown-item @click="deleteOne(scope.row)" :disabled="scope.row.apState!=1">删除
-                                        </el-dropdown-item>-->
+                                        <el-dropdown-item @click.native.prevent="splitAdPlan(scope.row)"
+                                                          v-if="scope.row.apControlLevel === 2 && this.sessionData.uType === 'BD'">拆单
+                                        </el-dropdown-item>
                                     </el-dropdown-menu>
                                 </el-dropdown>
                             </template>
@@ -814,6 +815,21 @@
                 this.currentItem = row;
                 this.cityList = this.getCityList(row.cityArea);
             },
+            // KA方案拆分
+            splitAdPlan(row) {
+                let params = {
+                    apID: row.apID
+                }
+                api.getApi(this.apiVar.Advertisement + '/SplitAdPlan',params).then(res=>{
+                    console.log('方案拆分res',res)
+                    if(res.data.SysCode === 200200) {
+                        sessFun.messageFun('success','拆分成功')
+                        this.searchFun()
+                    } else {
+                        sessFun.messageFun('warning',res.data.MSG || '方案异常')
+                    }
+                })
+            },
             cancelLock() {
                 this.dialogVisible = false;
                 Message.info("已取消操作");
@@ -1033,7 +1049,8 @@
                     cName: item.cName || '',
                     realName: item.realName || '',
                     cityArea: [],
-                    // isKA: item.isKA     // 1：ka销售方案，不可发布及预锁
+                    // isKA: item.isKA,     // 1：ka销售方案，不可发布及预锁
+                    apControlLevel: item.apControlLevel   // 1:可预锁、发布 2：可拆单、不可预锁和发布 3.表示KA销售单已拆，不可（拆单、预锁、发布）
                 };
                 item.details.sort((a, b)=>{
                     return a.asrID - b.asrID;

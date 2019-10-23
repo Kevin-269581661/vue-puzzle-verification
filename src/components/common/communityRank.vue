@@ -2,6 +2,17 @@
     <div class="community-rank">
         <div class="ad_mediaDetail_nav ">
             <p><a href="#" style="color: #999">社区排名</a></p>
+            <div class="portrait_header_select">
+                <el-dropdown @command="selectAsrIdFun">
+                    <p class="el-dropdown-link">
+                        {{currCompany.asrName}}<i class="el-icon-arrow-down el-icon--right"></i>
+                    </p>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item v-for="(item,index) in companyList" :key="index" :command="item">{{item.asrName}}
+                        </el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+            </div>
         </div>
         <div class="content-wrap">
             <div class="top">
@@ -234,13 +245,13 @@
                                 </template>
                             </el-table-column>
                             <!--<el-table-column-->
-                                <!--prop="action"-->
-                                <!--label="操作"-->
-                                <!--min-width="80"-->
+                            <!--prop="action"-->
+                            <!--label="操作"-->
+                            <!--min-width="80"-->
                             <!--&gt;-->
-                                <!--<template slot-scope="scope">-->
-                                    <!--<el-button type="text" @click="gotoDetail(scope.row)">画像详情</el-button>-->
-                                <!--</template>-->
+                            <!--<template slot-scope="scope">-->
+                            <!--<el-button type="text" @click="gotoDetail(scope.row)">画像详情</el-button>-->
+                            <!--</template>-->
                             <!--</el-table-column>-->
                             <div slot="empty">
                                 <no-search-result></no-search-result>
@@ -275,7 +286,6 @@
         Message
     } from "element-ui";
     import noSearchResult from "./components/noSearchResult.vue";
-    import personTags from "../../commonFun/json/personTags.json"
     import commaFormat from "../../commonFun/commaFormat.js"
     import api from "../../api/api.js";
 
@@ -290,10 +300,13 @@
         },
         data() {
             return {
+                // 默认选择的公司
+                currCompany: '',
+                companyList: [],
                 tabHeight: '252px',
                 showhideText: '展开',
                 width: 144,//面板宽度
-                activeName: 'second',
+                activeName: 'first',
                 thirdShow: false,
                 forthShow: false,
                 currSecondTag: '',//当前选中的二级标签
@@ -301,140 +314,7 @@
                 currentThirdList: [],//当前展示的三级标签列表
                 currentForthList: [],//当前展示的四级标签列表
                 personTags: [],
-                hobbyTags: [
-                    {
-                        "value": "1",
-                        "label": "一级1",
-                        "checked": false,
-                        "hovered": false,
-                        "childer": [
-                            {
-                                "value": "121",
-                                "label": "1二级1",
-                                "checked": false,
-                                "childer": [{
-                                    "value": "12131",
-                                    "label": "1三级1",
-                                    "childer": [{
-                                        "value": "12141",
-                                        "label": "1四级1",
-                                    }]
-                                }]
-                            },
-                            {
-                                "value": "122",
-                                "label": "1二级2",
-                                "checked": false,
-                                "childer": [{
-                                    "value": "12231",
-                                    "label": "1三级2",
-                                    "checked": false,
-                                    "childer": [{
-                                        "value": "12241",
-                                        "label": "1四级2",
-                                    }]
-                                }]
-                            },
-                            {
-                                "value": "123",
-                                "label": "1二级1",
-                                "checked": false,
-                                "childer": [{
-                                    "value": "12331",
-                                    "label": "1三级1",
-                                    "checked": false,
-                                    "childer": [{
-                                        "value": "12341",
-                                        "label": "1四级1",
-                                        "checked": false,
-                                    }]
-                                }]
-                            },
-                            {
-                                "value": "124",
-                                "label": "1二级2",
-                                "checked": false,
-                                "childer": [{
-                                    "value": "12431",
-                                    "label": "1三级2",
-                                    "checked": false,
-                                    "childer": [{
-                                        "value": "12441",
-                                        "label": "1四级2",
-                                        "checked": false,
-                                    }]
-                                }]
-                            },
-                            {
-                                "value": "125",
-                                "label": "1二级1",
-                                "checked": false,
-                                "childer": [{
-                                    "value": "12531",
-                                    "label": "1三级1",
-                                    "checked": false,
-                                    "childer": [{
-                                        "value": "12541",
-                                        "label": "1四级1",
-                                        "checked": false,
-                                    }]
-                                }]
-                            },
-                            {
-                                "value": "126",
-                                "label": "1二级2",
-                                "checked": false,
-                                "childer": [{
-                                    "value": "12631",
-                                    "label": "1三级2",
-                                    "checked": false,
-                                    "childer": [{
-                                        "value": "12641",
-                                        "label": "1四级2",
-                                        "checked": false,
-                                    }]
-                                }]
-                            }
-                        ]
-                    },
-                    {
-                        "value": "2",
-                        "label": "一级2",
-                        "checked": false,
-                        "hovered": false,
-                        "childer": [
-                            {
-                                "value": "221",
-                                "label": "2二级",
-                                "checked": false,
-                                "childer": [{
-                                    "value": "22131",
-                                    "label": "2三级",
-                                    "checked": false,
-                                }]
-                            }
-                        ]
-                    },
-                    {
-                        "value": "3",
-                        "label": "一级3",
-                        "checked": false,
-                        "hovered": false,
-                        "childer": [
-                            {
-                                "value": "321",
-                                "label": "3二级",
-                                "checked": false,
-                                "childer": [{
-                                    "value": "32131",
-                                    "label": "3三级",
-                                    "checked": false,
-                                }]
-                            }
-                        ]
-                    },
-
-                ],
+                hobbyTags: [],
                 chooseTagsArr: [],
                 // 表格数据
                 currentPlan: [],
@@ -443,10 +323,31 @@
                 currPage: 1,
                 pageSize: 10,
                 total: 0,
+                ids:'',
 
             };
         },
         methods: {
+            // 平台商公司列表
+            getCompanyList() {
+                this.portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo'))
+                console.log(this.portraitInfo);
+                // 选中的公司
+                this.currCompany = this.portraitInfo[0]
+                let arr = []
+                for (let key of this.portraitInfo) {
+                    arr.push({
+                        asrId: key.asrId,
+                        asrName: key.asrName,
+                    })
+                }
+                this.companyList = arr
+                console.log('companyList', this.companyList)
+            },
+            // 选择公司
+            selectAsrIdFun(item) {
+                this.currCompany = item
+            },
             // 价格加上逗号
             priceFormat(price) {
                 return commaFormat.format(price);
@@ -580,7 +481,7 @@
                 let firstTag = item.label.split('：')[0].split('/')[0]
                 for (let data of this.hobbyTags) {
                     if (firstTag == data.label && data.childer) {
-                        let flag = data.childer.some(a=>a.checked == true)
+                        let flag = data.childer.some(a => a.checked == true)
                         if (!flag) {
                             data.checked = false
                         }
@@ -679,25 +580,6 @@
                 this.currentThirdList = [];
                 this.currentForthList = [];
             },
-            //偏好标签-选中一级标签
-            // chooseHobbyTag(item) {
-            //     // console.log(item);
-            //     console.log(this.chooseTagsArr);
-            //     if (item.checked) {
-            //         item.checked = false
-            //         this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(item), 1);
-            //     } else {
-            //         let obj = {
-            //             value: item.value,
-            //             label: item.label
-            //         }
-            //         item.hovered = false
-            //         //清空下级
-            //         this.clear(item, 'split')
-            //         this.pushArr(obj, item)
-            //     }
-            //
-            // },
             //偏好标签-选中二三四级
             tagChecked(e, level, tag1, tag2) {
                 console.log(e, level, tag1, tag2);
@@ -856,14 +738,16 @@
                 console.log(this.chooseTagsArr);
                 let info = {
                     pageNum: this.currPage,
-                    pageSize: this.pageSize
+                    pageSize: this.pageSize,
+                    asrId:this.currCompany.asrId
                 }
                 if (this.chooseTagsArr.length > 0) {
                     let ids = ''
                     for (let data of this.chooseTagsArr) {
                         ids += data.value + ','
                     }
-                    info.ids = ids.substring(0, ids.length - 1);
+                    this.ids = ids.substring(0, ids.length - 1);
+                    info.ids = this.ids
                 }
                 api.getApi(this.apiVar.portrait + 'label/search', info).then(res => {
                     console.log(res.data);
@@ -877,6 +761,23 @@
             },
             //导出表格
             exportTable() {
+                let info = {
+                    ids:this.ids,
+                    asrId:this.currCompany.asrId,
+                    // responseType: 'arraybuffer',
+                }
+                api.getApi_file(this.apiVar.portrait+'label/export',info).then(res=>{
+                    let blob = new Blob([res.data], {type: 'application/ms-download;charset=utf-8'});
+                    let downloadElement = document.createElement('a');
+                    let href = window.URL.createObjectURL(blob);    //创建下载的链接
+                    downloadElement.href = href;
+                    downloadElement.download = '社区排名-'+ new Date().getFullYear() + (new Date().getMonth() + 1)  + new Date().getDate() + new Date().getHours() + new Date().getMinutes() + new Date().getSeconds()+'.xls'; //下载后文件名
+                    document.body.appendChild(downloadElement);
+                    downloadElement.click();                        //点击下载
+                    document.body.removeChild(downloadElement);     //下载完成移除元素
+                    window.URL.revokeObjectURL(href);               //释放掉blob对象
+
+                })
             },
             //跳转画像详情
             gotoDetail() {
@@ -903,6 +804,7 @@
 
         },
         mounted() {
+            this.getCompanyList()
             this.getTags()
             this.getRankList()
         }
@@ -910,6 +812,29 @@
 </script>
 
 <style scoped>
+    .ad_mediaDetail_nav {
+        position: relative;
+    }
+
+    .portrait_header_select {
+        position: absolute;
+        right: 0;
+        top: 0;
+        cursor: pointer;
+    }
+
+    .portrait_header_select /deep/ .el-dropdown-link {
+        /*border-bottom-right-radius: unset;*/
+        /*border-top-right-radius: unset;*/
+        /*padding-left: 4px;*/
+        background: rgba(0, 0, 0, 0);
+        color: #999;
+        border: none;
+        text-align: center;
+        padding-left: 0;
+        font-size: 14px;
+    }
+
     .content-wrap {
         margin: 0 64px;
     }

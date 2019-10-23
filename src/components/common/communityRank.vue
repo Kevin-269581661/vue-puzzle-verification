@@ -364,7 +364,7 @@
             },
             handleClick(tab, event) {
                 // console.log(tab, event);
-                this.getTags()
+                // this.getTags()
 
             },
             //人群标签-选中和取消标签
@@ -735,7 +735,7 @@
             },
             //排名列表
             getRankList() {
-                console.log(this.chooseTagsArr);
+                // console.log(this.chooseTagsArr);
                 let info = {
                     pageNum: this.currPage,
                     pageSize: this.pageSize,
@@ -784,18 +784,17 @@
                 this.$router.push('./portraitDetail')
             },
             //获取标签数据
-            getTags(parentId) {
+            getTags(type,parentId) {
                 let info = ''
                 info = {
-                    type: this.activeName == 'first' ? 0 : 1,
+                    type: type == 'first' ? 0 : 1,
                     loadChilder: 1,
                     parentId: parentId ? parentId : 0,
                 }
                 api.getApi(this.apiVar.portrait + 'label/getLabels', info).then(res => {
                     console.log(res.data);
                     if (res.data.SysCode == 200200) {
-
-                        this.activeName == 'first' ? this.personTags = res.data.data : this.hobbyTags = res.data.data
+                        type == 'first' ? this.personTags = res.data.data : this.hobbyTags = res.data.data
                     } else {
                         this.$message.warning(res.data.MSG)
                     }
@@ -805,7 +804,8 @@
         },
         mounted() {
             this.getCompanyList()
-            this.getTags()
+            this.getTags('first')
+            this.getTags('second')
             this.getRankList()
         }
     }

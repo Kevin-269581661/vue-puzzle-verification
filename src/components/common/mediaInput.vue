@@ -2787,7 +2787,7 @@
                         mediaName: roadGateList[i].mTitle,
                         usableNum: roadGateList[i].pNum,
                         mstate: roadGateList[i].mState.toString() + i,
-                        mediaState: mediaObj[i].mState,
+                        mediaState: roadGateList[i].mState,
                         assetId: roadGateList[i].assetTag,
                         LBSizeW: LBoxSizeArr.w,
                         LBSizeH: LBoxSizeArr.h,

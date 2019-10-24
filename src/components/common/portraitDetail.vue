@@ -121,6 +121,16 @@
                             </div>
                         </div>
                     </div>
+                    <div class="part part1">
+                        <div class="flex1">
+                            <h6>资产状况</h6>
+                            <div class="sex-chart" ref="assetsChart" style="width: 400px;height: 352px"></div>
+                        </div>
+                        <div class="flex2">
+                            <h6>人生阶段</h6>
+                            <div class="age-chart" ref="lifeChart" style="width: 822px;height: 352px"></div>
+                        </div>
+                    </div>
                 </el-tab-pane>
                 <el-tab-pane label="偏好画像"></el-tab-pane>
             </el-tabs>
@@ -477,6 +487,9 @@
     }
      /deep/ .table-wrap .el-table th{
         background-color: #fff;
+    }
+    .table-wrap /deep/ .el-progress.el-progress--line{
+        line-height: 32px;
     }
 
 

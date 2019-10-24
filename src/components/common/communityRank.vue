@@ -65,7 +65,7 @@
                                                 <li class="second-tag-li tag-li"
                                                     v-for="(secondTag,index) in firstTag.childer" :key="index"
                                                     @mouseenter="showUl(2,secondTag)">
-                                                    <div class="check-wrap">
+                                                    <div class="check-wrap" :class="secondTag.hovered?'hover':''">
                                                         <el-checkbox v-model="secondTag.checked"
                                                                      @change="tagChecked($event,2,firstTag,secondTag)">
                                                             {{secondTag.label}}
@@ -80,7 +80,7 @@
                                                 <li class="third-tag-li tag-li"
                                                     v-for="(thirdTag,index) in currentThirdList" :key="index"
                                                     @mouseenter="showUl(3,thirdTag)">
-                                                    <div class="check-wrap">
+                                                    <div class="check-wrap" :class="thirdTag.hovered?'hover':''">
                                                         <el-checkbox v-model="thirdTag.checked"
                                                                      @change="tagChecked($event,3,firstTag,thirdTag)">
                                                             {{thirdTag.label}}
@@ -581,6 +581,15 @@
                 this.forthShow = false;
                 this.currentThirdList = [];
                 this.currentForthList = [];
+                let fn = function (arr) {
+                    for(let data of arr){
+                        data.hovered = false
+                        if(data.childer){
+                            fn(data.childer)
+                        }
+                    }
+                }
+                fn(this.hobbyTags)
             },
             //偏好标签-选中二三四级
             tagChecked(e, level, tag1, tag2) {
@@ -726,16 +735,29 @@
                 // console.log(level,tag);
                 let arr = [];
                 arr = tag.childer;
+
                 if (level == 2) {
                     this.width = 288
                     this.forthShow = false
                     this.currSecondTag = tag
+
                     if (tag.childer) {
                         this.currentThirdList = arr
                         this.thirdShow = true
                     } else {
                         this.width = 144
                         this.thirdShow = false
+                    }
+                    for(let data of this.hobbyTags){
+                        if(data.childer){
+                            for(let data2 of data.childer){
+                                if(data2.value == tag.value){
+                                    data2.hovered = true
+                                }else{
+                                    data2.hovered = false
+                                }
+                            }
+                        }
                     }
 
                 } else {
@@ -748,10 +770,20 @@
                         this.width = 288
                         this.forthShow = false
                     }
+
+                    for(let data of this.currentThirdList){
+                        if(data.value == tag.value){
+                            data.hovered = true
+                        }else{
+                            data.hovered = false
+                        }
+                    }
+
                 }
 
 
             },
+
             //排名列表
             getRankList() {
                 // console.log(this.chooseTagsArr);
@@ -1071,7 +1103,7 @@
     }
 
     .forth-tag-ul {
-        width: 132px;
+        width: 144px;
         height: 140px;
         padding: 5px 0;
         position: absolute;
@@ -1093,7 +1125,7 @@
         padding: 0 12px;
     }
 
-    .check-wrap:hover {
+    .check-wrap:hover ,.check-wrap.hover{
         background: rgba(23, 143, 254, 0.08);
     }
 

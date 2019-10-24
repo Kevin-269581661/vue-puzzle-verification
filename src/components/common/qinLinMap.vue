@@ -102,6 +102,7 @@
                 placement="bottom-start"
                 width="150"
                 trigger="click"
+                v-model="popoverShow.bPrice"
                 popper-class="filter-popper">
                 <div class="popover_body">
                     <ul class="filter_ul">
@@ -113,12 +114,14 @@
                         <input type="text" class="filter_input" v-model="buildPrice[1]">
                     </div>
                     <div class="popover_footer_btn">
-                        <el-button @click="emptyFun('price')" class="popover_btn">清 除</el-button>
+                        <el-button plain @click="emptyFun('bPrice')" class="popover_btn">清 除</el-button>
                         <el-button type="primary" class="popover_btn" @click="filterBuildPrice()" >确 定</el-button>
                     </div>
                 </div>
-                <el-button plain slot="reference" class="otherBtn">
+                <el-button plain slot="reference" class="otherBtn top_btn" :class="filterData.bPrice ? 'filter_btn' : ''">
                     {{filterData.bPrice ? ('¥' + buildPrice[0] + '-¥' + buildPrice[1]) : '楼盘价格'}}
+                    <i class="el-icon-arrow-down" v-show="!popoverShow.bPrice"></i>
+                    <i class="el-icon-arrow-up" v-show="popoverShow.bPrice"></i>
                 </el-button>
             </el-popover>
             <!--住户数量-->
@@ -126,6 +129,7 @@
                 placement="bottom-start"
                 width="150"
                 trigger="click"
+                v-model="popoverShow.hNum"
                 popper-class="filter-popper">
                 <div class="popover_body">
                     <ul class="filter_ul">
@@ -137,12 +141,14 @@
                         <input type="text" class="filter_input" v-model="houseNum[1]">
                     </div>
                     <div class="popover_footer_btn">
-                        <el-button @click="emptyFun('house')" class="popover_btn">清 除</el-button>
+                        <el-button plain @click="emptyFun('house')" class="popover_btn">清 除</el-button>
                         <el-button type="primary" class="popover_btn" @click="filterHouseNum()" >确 定</el-button>
                     </div>
                 </div>
-                <el-button plain slot="reference" class="otherBtn">
+                <el-button plain slot="reference" class="otherBtn top_btn" :class="filterData.hNum ? 'filter_btn' : ''">
                     {{filterData.hNum ? (houseNum[0] + '户-' + houseNum[1]) + '户' : '住户数量'}}
+                    <i class="el-icon-arrow-down" v-show="!popoverShow.hNum"></i>
+                    <i class="el-icon-arrow-up" v-show="popoverShow.hNum"></i>
                 </el-button>
             </el-popover>
             <!--入住年份-->
@@ -150,6 +156,7 @@
                 placement="bottom-start"
                 width="150"
                 trigger="click"
+                v-model="popoverShow.lYear"
                 popper-class="filter-popper">
                 <div class="popover_body">
                     <ul class="filter_ul">
@@ -161,14 +168,16 @@
                         <input type="text" class="filter_input" v-model="liveYear[1]">
                     </div>
                     <div class="popover_footer_btn">
-                        <el-button @click="emptyFun('liveYear')" class="popover_btn">清 除 </el-button>
+                        <el-button plain @click="emptyFun('liveYear')" class="popover_btn">清 除 </el-button>
                         <el-button type="primary" class="popover_btn" @click="filterLiveYear()" >
                             确 定
                         </el-button>
                     </div>
                 </div>
-                <el-button plain slot="reference" class="otherBtn">
-                    入住年份
+                <el-button plain slot="reference" class="otherBtn top_btn" :class="filterData.lYear ? 'filter_btn' : ''">
+                    {{filterData.lYear ? (liveYear[0] + '-' + liveYear[1]) : '入住年份'}}
+                    <i class="el-icon-arrow-down" v-show="!popoverShow.lYear"></i>
+                    <i class="el-icon-arrow-up" v-show="popoverShow.lYear"></i>
                 </el-button>
             </el-popover>
             <!--广告限制-->
@@ -284,27 +293,53 @@
                 <p>{{ showResInfo.address || '宝安区后端利达路3号'}}</p>
             </div>
             <ul class="res_info_content">
-                <li class="res_info_content_li">商圈:<span>{{showResInfo.tradingArea || '--'}}</span></li>
-                <li class="res_info_content_li">楼栋数量:<span>{{showResInfo.buildingNum || '--'}}</span></li>
-                <li class="res_info_content_li">住户数量:<span>{{showResInfo.hNum || '--'}}</span></li>
-                <li class="res_info_content_li">楼盘价格:<span>¥{{showResInfo.hPrice / 100 || '--'}}/㎡</span></li>
-                <li class="res_info_content_li">楼盘类型:<span>{{showResInfo.hType || '--'}}</span></li>
-                <li class="res_info_content_li">入住时间:<span>{{showResInfo.chDay || '--'}}年</span></li>
-                <li class="res_info_content_li">人流量:<span>{{showResInfo.peopleFlow || 0}}/人次/天</span></li>
-                <li class="res_info_content_li">广告限制:<span>{{showResInfo.notPush || '--'}}</span></li>
-                <li class="res_info_content_li">点位备注:<span>{{showResInfo.notPush || '--'}}</span></li>
-                <li class="res_info_content_li">车流量:<span>{{showResInfo.carFlowrate || 0}}</span></li>
-                <li class="res_info_content_li">车位数:<span>{{showResInfo.carNumber || 0}}</span></li>
-                <li class="res_info_content_li">出入口数:<span>{{showResInfo.EntryExitNum || '--'}}</span></li>
+                <li class="res_info_content_li">
+                    <span class="content_li_title">商圈:</span>
+                    <span>{{showResInfo.tradingArea || '--'}}</span></li>
+                <li class="res_info_content_li">
+                    <span class="content_li_title">楼栋数量:</span>
+                    <span>{{showResInfo.buildingNum || '--'}}</span></li>
+                <li class="res_info_content_li">
+                    <span class="content_li_title">住户数量:</span>
+                    <span>{{showResInfo.hNum || '--'}}</span></li>
+                <li class="res_info_content_li">
+                    <span class="content_li_title">楼盘价格:</span>
+                    <span>¥{{showResInfo.hPrice / 100 || '--'}}/㎡</span></li>
+                <li class="res_info_content_li">
+                    <span class="content_li_title">楼盘类型:</span>
+                    <span>{{showResInfo.hType || '--'}}</span></li>
+                <li class="res_info_content_li">
+                    <span class="content_li_title">入住时间:</span>
+                    <span>{{showResInfo.chDay || '--'}}年</span></li>
+                <li class="res_info_content_li">
+                    <span class="content_li_title">人流量:</span>
+                    <span>{{showResInfo.peopleFlow || 0}}/人次/天</span></li>
+                <li class="res_info_content_li">
+                    <span class="content_li_title">广告限制:</span>
+                    <span>{{showResInfo.notPush || '--'}}</span></li>
+                <li class="res_info_content_li">
+                    <span class="content_li_title">点位备注:</span>
+                    <span>{{showResInfo.notPush || '--'}}</span></li>
+                <li class="res_info_content_li">
+                    <span class="content_li_title">车流量:</span>
+                    <span>{{showResInfo.carFlowrate || 0}}</span></li>
+                <li class="res_info_content_li">
+                    <span class="content_li_title">车位数:</span>
+                    <span>{{showResInfo.carNumber || 0}}</span></li>
+                <li class="res_info_content_li">
+                    <span class="content_li_title">出入口数:</span>
+                    <span>{{showResInfo.EntryExitNum || '--'}}</span></li>
             </ul>
             <div class="res_info_footer">
-                <el-button type="primary" @click="addResFun(showResInfo)">
+<!--                <el-button plain size="small" @click="getMediaListByResID">广告门</el-button>-->
+                <img src="../../assets/images/map/adDoor.png" alt="" @click="getMediaListByResID">
+                <el-button size="small" type="primary" @click="addResFun(showResInfo)">
                     {{showResInfo.isSelect ? '取消待选' : '加入待选'}}
                 </el-button>
             </div>
-            <div class="info_window_left">
+            <!--<div class="info_window_left">
                 左侧广告门
-            </div>
+            </div>-->
         </div>
         <!--框选条件-->
         <el-dialog
@@ -341,9 +376,46 @@
             :show-close="false"
             :visible.sync="mapDialogVisible">
             <span>点位选择成功，请在购物车模块点击相应的位置获取地图选择的点位数据！</span>
-            <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="closeWin">确 定</el-button>
-      </span>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="closeWin">确 定</el-button>
+            </div>
+        </el-dialog>
+        <!--资源的媒体数据-->
+        <el-dialog
+            :title="showResInfo.resName"
+            width="270px"
+            :visible.sync="medieDialogVisible"
+            custom-class="media_list_dialog">
+            <div>
+                <ul class="media_list_body">
+                    <li class="list_li" v-for="key of mediaList">
+                        <div class="li_header">
+                            <h4>{{key.mTitle}}</h4>
+                            <img src="../../assets/images/map/mstate_1.png" alt="">
+                            <i class="el-icon-picture-outline" @click=""></i>
+                        </div>
+                        <p class="li_p">{{key.assetTag}}</p>
+                        <p class="li_p">
+                            <span>{{key.grade || '--'}}级</span>
+                            <span>{{key.mType || '--'}}</span>
+                            <span>{{key.adSize || key.picSize}}</span>
+                        </p>
+                    </li>
+                </ul>
+            </div>
+        </el-dialog>
+        <!--复制分享链接-->
+        <el-dialog
+            title="分享地图"
+            width="320px"
+            :visible.sync="copyDialogVisible"
+            custom-class="copy_dialog">
+            <div>
+                <p class="copy_url" style="word-wrap:break-word">{{shareUrl}}</p>
+            </div>
+            <div slot="footer" class="dialog-footer">
+                <el-button size="small" type="primary" @click="copyUrl">复制</el-button>
+            </div>
         </el-dialog>
     </div>
 </template>
@@ -421,6 +493,11 @@
                 // 被点击的资源标注信息
                 showResInfo:{},
                 /*顶部过滤条件*/
+                popoverShow:{
+                    hNum: false,
+                    bPrice: false,
+                    lYear: false
+                },
                 // 记录判断含有哪些表头的过滤条件
                 filterData: {
                     hNum:false,
@@ -490,7 +567,14 @@
                 // 记录上一段线的距离
                 twoPointsLength: 0,
                 // 小区资源提交成功
-                mapDialogVisible: false
+                mapDialogVisible: false,
+                // 小区媒体列表弹出框
+                medieDialogVisible: false,
+                // 媒体list(门)
+                mediaList: [],
+                // 复制分享链接
+                copyDialogVisible: false,
+                shareUrl: 'https://beta.qinlinad.com/shareADList?apid=649&aicode=0DDD2685D9D3842ECB0DDC45D79D2131'
             }
         },
         mounted() {
@@ -524,41 +608,6 @@
                 } else {
                     this.isCommit = false
                 }
-            },
-            // 获取分享资源
-            getShareResList() {
-                let params = {
-                    shareCode: this.routeQuery.code,
-                    districtId: this.selectArea.join(','),    // 区域
-                    cType: this.bType,                        // 楼盘类型
-                    minhPrice: this.buildPrice[0] * 100,
-                    maxhPrice: this.buildPrice[1] * 100,
-                    minhNum: this.houseNum[0],
-                    maxhNum: this.houseNum[1],
-                    minchDay: this.liveYear[0],
-                    maxchDay: this.liveYear[1],
-                    tradingArea: this.tradingArea,
-                    adLimit: this.selectLimits.join(','),
-                    mType: this.selectDoorType,
-                    mVehicle: this.selectMediaType,
-                    grade: this.selectMediaLevel
-                }
-                for(let i in params) {
-                    if(!params[i]) {
-                        delete params[i]
-                    }
-                }
-                api.postApi(this.apiVar.mapApi + '/shareAdsInfo',params).then(res=>{
-                    console.log('分享list',res)
-                    if(res.data.SysCode === 200200) {
-                        this.resInfo = res.data.data
-                        this.creatMarker()
-                    } else {
-                        sessFun.messageFun('warning','数据获取异常')
-                    }
-                    // 城市边界
-                    this.displayBoundary()
-                })
             },
             // 城市区域
             getAreaList() {
@@ -631,78 +680,77 @@
                 // 设置地图显示的城市 此项是必须设置的
                 this.resMap.setCurrentCity(this.$route.query.city);
                 // 初始化地图,设置中心点坐标和地图级别
-                // this.resMap.setCenter(this.$route.query.city)
                 this.resMap.centerAndZoom(this.$route.query.city, 10);
                 //开启鼠标滚轮缩放
                 this.resMap.enableScrollWheelZoom(true);
-                // let mapStyleJson = [
-                //     {
-                //         "featureType": "land",
-                //         "elementType": "geometry.stroke",
-                //         "stylers": {
-                //             "visibility": "off"
-                //         }
-                //     },
-                //     {
-                //         "featureType": "point",
-                //         "elementType": "geometry.stroke",
-                //         "stylers": {
-                //             "visibility": "off"
-                //         }
-                //     },
-                //     {
-                //         "featureType": "building",
-                //         "elementType": "geometry.stroke",
-                //         "stylers": {
-                //             "visibility": "off"
-                //         }
-                //     },
-                // ]
-                let styleJson = [
+                let mapStyleJson = [
                     {
-                        "featureType": "road",
-                        "elementType": "all",
-                        "stylers": {
-                            "lightness": 20
-                        }
-                    },
-                    {
-                        "featureType": "highway",
-                        "elementType": "geometry",
-                        "stylers": {
-                            "color": "#f49935"
-                        }
-                    },
-                    {
-                        "featureType": "railway",
-                        "elementType": "all",
+                        "featureType": "land",
+                        "elementType": "geometry.stroke",
                         "stylers": {
                             "visibility": "off"
                         }
                     },
                     {
-                        "featureType": "local",
-                        "elementType": "labels",
+                        "featureType": "point",
+                        "elementType": "geometry.stroke",
                         "stylers": {
                             "visibility": "off"
                         }
                     },
                     {
-                        "featureType": "water",
-                        "elementType": "all",
-                        "stylers": {
-                            "color": "#d1e5ff"
-                        }
-                    },
-                    {
-                        "featureType": "poi",
-                        "elementType": "labels",
+                        "featureType": "building",
+                        "elementType": "geometry.stroke",
                         "stylers": {
                             "visibility": "off"
                         }
-                    }
+                    },
                 ]
-                this.resMap.setMapStyle({styleJson: styleJson })
+                // let styleJson = [
+                //     {
+                //         "featureType": "road",
+                //         "elementType": "all",
+                //         "stylers": {
+                //             "lightness": 20
+                //         }
+                //     },
+                //     {
+                //         "featureType": "highway",
+                //         "elementType": "geometry",
+                //         "stylers": {
+                //             "color": "#f49935"
+                //         }
+                //     },
+                //     {
+                //         "featureType": "railway",
+                //         "elementType": "all",
+                //         "stylers": {
+                //             "visibility": "off"
+                //         }
+                //     },
+                //     {
+                //         "featureType": "local",
+                //         "elementType": "labels",
+                //         "stylers": {
+                //             "visibility": "off"
+                //         }
+                //     },
+                //     {
+                //         "featureType": "water",
+                //         "elementType": "all",
+                //         "stylers": {
+                //             "color": "#d1e5ff"
+                //         }
+                //     },
+                //     {
+                //         "featureType": "poi",
+                //         "elementType": "labels",
+                //         "stylers": {
+                //             "visibility": "off"
+                //         }
+                //     }
+                // ]
+                this.resMap.setMapStyle({styleJson: mapStyleJson })
                 let that = this
                 // 监听点击地图
                 this.resMap.addEventListener("click", (e) => {
@@ -826,14 +874,14 @@
                     this.$set(key, "isSelect", false);
                     let point = new BMap.Point(key.lng, key.lat);
                     let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
-                    let label = new BMap.Label(key.resName,{offset:new BMap.Size(-20,-16)});
+                    let label = new BMap.Label(key.resName,{offset:new BMap.Size(4,-18)});
                     label.setStyle({
                         borderRadius: "3px",
                         boxShadow: '0px 0px 6px 0px rgba(0,0,0,0.15)',
                         border: 'none',
                         background: 'rgba(255,255,255,1)',
                         color: 'rgba(0,0,0,0.85)',
-                        padding: '2px 4px'
+                        padding: '3px 8px',
                     });
                     marker.setLabel(label);
                     marker.setTop(true);
@@ -841,11 +889,11 @@
                     label.addEventListener("click",()=>{
                         this.showInfo(key,point)
                     });
-                    // if(i < 1000) {
-                    //     marker.show()
-                    // } else {
-                    //     marker.hide()
-                    // }
+                    if(i < 1000) {
+                        marker.show()
+                    } else {
+                        marker.hide()
+                    }
                     i++
                 }
                 // 城市边界
@@ -869,6 +917,45 @@
             // 详情里选定按钮
             addResFun(item) {
                 this.checkBoxFun(this.showResInfo)
+            },
+            // 获取指定资源到媒体列表
+            getMediaListByResID() {
+                console.log('获取指定资源到媒体列表-----')
+                this.medieDialogVisible = true
+                let params = {
+                    "uid": this.sessionData.uID,
+                    "token": this.sessionData.token,
+                    "service": "GetMediaList",
+                    "data": {
+                        "resid": this.showResInfo.resID
+                    }
+                }
+                api.postApi_new(this.apiVar.Media, params).then(res => {
+                    console.log('媒体信息', res.data)
+                    if (res.data.SysCode == 200200) {
+                        if (res.data.data.length === 0 || res.data.data === '') {
+                            sessFun.messageFun('warning', '媒体资源信息为空!')
+                        } else {
+                            // classified--是否执行媒体分层 1启用 2关闭
+                            this.mediaList = res.data.data.map(item=>{
+                                if(item.mState === 1) {
+                                    item.stateUrl = require('../../assets/images/map/mstate_1.png')
+                                } else if (item.mState === 2) {
+                                    item.stateUrl = require('../../assets/images/map/mstate_2.png')
+                                } else if (item.mState === 2) {
+                                    item.stateUrl = require('../../assets/images/map/mstate_3.png')
+                                } else {
+                                    item.stateUrl = require('../../assets/images/map/mstate_3.png')
+                                }
+                                return item
+                            })
+                        }
+                    } else {
+                        sessFun.messageFun('warning', '媒体详情获取异常!')
+                    }
+                }).catch(err => {
+                    console.log(err);
+                })
             },
             /**
              * 鼠标绘制
@@ -937,12 +1024,12 @@
                     this.drawingManager.open()
                     this.drawingManager.enableCalculate()
                     this.drawingManager.setDrawingMode(BMAP_DRAWING_CIRCLE);
-                } else if(temp === 'polygon'){
+                } else if(temp === 'polygon') {
                     this.drawingManager.open()
                     this.drawingManager.setDrawingMode(BMAP_DRAWING_POLYGON);
                 } else {
                     this.drawingManager.open()
-                    this.drawingManager.enableCalculate()
+                    // this.drawingManager.enableCalculate()
                     this.drawingManager.setDrawingMode(BMAP_DRAWING_POLYLINE);
                     this.isMouseLine = true
                 }
@@ -1387,10 +1474,16 @@
                 console.log(datas)
                 if(temp === 'price') {
                     this.buildPrice = datas
+                    this.filterData.bPrice = true
+                    this.popoverShow.bPrice = false
                 } else if (temp === 'house') {
                     this.houseNum = datas
+                    this.filterData.hNum = true
+                    this.popoverShow.hNum = false
                 } else if (temp === 'year') {
                     this.liveYear = datas
+                    this.filterData.lYear = true
+                    this.popoverShow.lYear = false
                 }
                 this.transfersFun()
             },
@@ -1425,12 +1518,12 @@
                     for(let i in this.houseNum){
                         this.houseNum[i] = Number(this.houseNum[i])
                     }
-                    // this.filterResFun()
                     this.transfersFun()
+                    this.popoverShow.hNum = false
                 }
             },
             // 楼盘价格过滤
-            filterBuildPrice(){
+            filterBuildPrice() {
                 if (this.buildPrice[0] == '' || this.buildPrice[1] == '') {
                     sessFun.messageFun('warning','数据区间填写有误')
                 } else {
@@ -1439,7 +1532,7 @@
                     }
                     this.filterData.bPrice = true
                     this.transfersFun()
-                    // this.filterResFun()
+                    this.popoverShow.bPrice = false
                 }
             },
             // 年份过滤
@@ -1449,7 +1542,7 @@
                 } else {
                     this.filterData.lYear = true
                     this.transfersFun()
-                    // this.filterResFun()
+                    this.popoverShow.lYear = false
                 }
             },
             // 所在商圈
@@ -1480,10 +1573,13 @@
             emptyFun(letter) {
                 if (letter === 'house') {
                     this.houseNum = ['', '']
-                } else if (letter === 'price') {
+                    this.filterData.hNum = false
+                } else if (letter === 'bPrice') {
                     this.buildPrice = ['', '']
+                    this.filterData.bPrice = false
                 } else if (letter === 'liveYear') {
                     this.liveYear = ['', '']
+                    this.filterData.lYear = false
                 }
             },
             // 清空条件
@@ -1568,20 +1664,23 @@
             // 导出exc
             exportExcel(){
                 if(this.selectResList.length) {
+                    let time = timeFormat.toDateTime(new Date(), '').split(' ')
+                    let timeString = time[0] + time[1].split(':').join('')
+                    let name = '资源列表' + timeString
                     let resultArr = [];
                     for(let data of this.selectResList) {
                         let obj = {
                             resName: data.resName,
-                            city: data.city,
-                            rName: data.rName,
-                            resAddress: data.resAddress,
+                            city: this.routeQuery.city,
+                            rName: data.districtName,
+                            resAddress: data.address,
                             tradingArea: data.tradingArea,
                             fNum: data.fNum == '0' ? '#' : data.fNum,
                             hNum: data.hNum == '0' ? '#' : data.hNum,
                             cType: data.cType,
                             hPrice: data.hPrice / 100,
                             chDay: data.chDay || '',
-                            notPush: data.notPush || '',
+                            notPush: data.adLimit || '',
                             mRemark: data.mRemark || '',
                             mediaNum: data.mediaNum || '',
                         };
@@ -1603,8 +1702,70 @@
             formatJson(filterVal, jsonData) {
                 return jsonData.map(v => filterVal.map(j => v[j]))
             },
+            // 获取分享资源
+            getShareResList() {
+                let params = {
+                    shareCode: this.routeQuery.code,
+                    districtId: this.selectArea.join(','),    // 区域
+                    cType: this.bType,                        // 楼盘类型
+                    minhPrice: this.buildPrice[0] * 100,
+                    maxhPrice: this.buildPrice[1] * 100,
+                    minhNum: this.houseNum[0],
+                    maxhNum: this.houseNum[1],
+                    minchDay: this.liveYear[0],
+                    maxchDay: this.liveYear[1],
+                    tradingArea: this.tradingArea,
+                    adLimit: this.selectLimits.join(','),
+                    mType: this.selectDoorType,
+                    mVehicle: this.selectMediaType,
+                    grade: this.selectMediaLevel
+                }
+                for(let i in params) {
+                    if(!params[i]) {
+                        delete params[i]
+                    }
+                }
+                api.postApi(this.apiVar.mapApi + '/shareAdsInfo',params).then(res=>{
+                    console.log('分享list',res)
+                    if(res.data.SysCode === 200200) {
+                        this.resInfo = res.data.data.resList
+                        this.creatMarker()
+                        this.setLimitsDoorTypeAndTradingArea(res.data.data)
+                    } else {
+                        sessFun.messageFun('warning','数据获取异常')
+                    }
+                    // 城市边界
+                    this.displayBoundary()
+                    this.mapLoading = false
+                })
+            },
+            // 分享时设置广告限制、商圈、门体类型
+            setLimitsDoorTypeAndTradingArea(data) {
+                this.ADLimit = data.adLimits.map((item)=>{
+                    return {
+                        value: item,
+                        label: item
+                    }
+                })
+                this.tradingAreaList = data.tradingAreas.map((item)=>{
+                    return {
+                        value: item,
+                        label: item
+                    }
+                })
+                this.doorTypeList = data.mTypes.map((item)=>{
+                    return {
+                        value: item,
+                        label: item
+                    }
+                })
+            },
             // 分享
             resShare() {
+                if(!this.selectResList.length) {
+                    sessFun.messageFun('warning','请选择小区')
+                    return
+                }
                 let arr = this.selectResList.map(item=>{
                     return item.resID
                 })
@@ -1615,23 +1776,30 @@
                 api.postApi(this.apiVar.mapApi + '/shareCode',params).then(res=>{
                     console.log('res分享',res)
                     if(res.data.SysCode === 200200) {
-                        this.shareUrl = this.apiVar.qadnUrl + '/mapADResource/shareRes?city='+ this.$route.query.city +'code=' + res.data.data
+                        this.shareUrl = this.apiVar.qadnUrl + '/mapADResource/shareRes?city='+ this.routeQuery.city +'&code=' + res.data.data
+                        this.copyDialogVisible = true
                         console.log('shareUrl',this.shareUrl)
                     } else {
                         sessFun.messageFun('warning',res.data.MSG || '分享异常')
                     }
                 })
             },
+            // 复制分享链接
+            copyUrl() {
+                let oInput = document.createElement('input');
+                oInput.value = this.shareUrl;
+                document.body.appendChild(oInput);
+                oInput.select();                    // 选择对象
+                document.execCommand("Copy");       // 执行浏览器复制命令
+                oInput.style.display = 'none';
+                sessFun.messageFun('success','复制成功')
+                this.copyDialogVisible = false
+            },
         },
     }
 </script>
 
 <style scoped>
-    .map_index{
-        /*width: 100%;*/
-        /*height: 100%;*/
-    }
-
     #qinlinMap {
         position: fixed !important;
         top: 0;
@@ -1657,6 +1825,8 @@
     .search_body {
         background: #fff;
         margin-top: 8px;
+        box-shadow:0 0 8px 0 rgba(0,0,0,0.12);
+        padding: 3px;
     }
 
     .search_result_btn{
@@ -1689,7 +1859,7 @@
     }
 
     .search_ul {
-        height: 384px;
+        height: 408px;
         overflow-y: auto;
     }
 
@@ -1739,11 +1909,12 @@
         color: rgba(0, 0, 0, 0.65);
         font-size: 14px;
         line-height: 26px;
+        margin-bottom: 2px;
     }
 
     .li_p_span {
         display: inline-block;
-        padding: 4px;
+        padding: 2px 6px;
         background:rgba(0,0,0,0.06);
         border-radius: 2px;
         margin-right: 6px;
@@ -1753,7 +1924,12 @@
 
     .search_bottom_btn {
         text-align: center;
-        padding: 10px 0;
+        padding: 8px 0;
+        border-top:1px solid rgba(232,232,232,1)
+    }
+
+    .search_bottom_btn /deep/ .el-button{
+        min-width: 72px;
     }
 
     /*在线搜索*/
@@ -1827,6 +2003,13 @@
     .top_filter_box /deep/ .el-select{
         width: 145px;
         margin-bottom: 8px;
+        box-shadow:0px 0px 8px 0px rgba(0,0,0,0.12)
+    }
+
+    .top_filter_box /deep/ .el-input__inner{
+        color: rgba(0,0,0,0.85);
+        border: 1px solid #fff;
+        font-size: 14px;
     }
 
     .input_wrap{
@@ -1869,11 +2052,29 @@
         min-width: 110px;
         width: 145px;
         margin-bottom: 8px;
+        box-shadow:0px 0px 8px 0px rgba(0,0,0,0.12)
     }
 
     /deep/ .otherBtn.el-button:hover{
-        border-color: #1890FF;
-        color: #1890FF;
+        border-color: #c0c4cc;
+        /*color: #1890FF;*/
+    }
+
+    .top_btn{
+        position: relative;
+        text-align: left;
+        padding: 0 30px 0 15px;
+    }
+
+    .top_btn /deep/ .el-icon-arrow-down{
+        position: absolute;
+        right: 12px;
+        top: 8px;
+    }
+
+    /deep/ .filter_btn span{
+        color:rgba(0,0,0,0.85);
+        font-size: 14px;
     }
 
     .filter_ul li{
@@ -1912,14 +2113,15 @@
         font-size: 14px;
         color: #333;
         z-index: 99;
+        box-shadow:0px 0px 8px 0px rgba(0,0,0,0.12);
     }
 
     .bottom_left_header {
         line-height: 32px;
         display: flex;
-        padding: 0 8px;
+        padding: 0 16px;
         color:rgba(0,0,0,0.85);
-        border-bottom: 1px solid #D9D9D9;
+        border-bottom: 1px solid rgba(232,232,232,1);
         font-weight: 600;
     }
 
@@ -1946,13 +2148,14 @@
     .active_ul {
         height: 140px;
         overflow-y: auto;
-
+        padding-top: 4px;
     }
 
     .active_li {
         display: flex;
-        line-height: 24px;
-        padding: 0 8px;
+        line-height: 28px;
+        padding: 0 16px;
+        color:rgba(0,0,0,0.85)
     }
 
     .active_li_resName {
@@ -1965,21 +2168,36 @@
         font-size: 16px;
         text-align: center;
         cursor: pointer;
+        color: rgba(0,0,0,0.45);
     }
 
-    .active_bottom_btn{
+    .active_bottom_btn {
         padding: 0 8px;
         font-weight:400;
         color:rgba(0,0,0,0.65);
         font-size: 14px;
-        height: 40px;
-        line-height: 40px;
-        border-top:1px solid rgba(216,216,216,1);
+        height: 48px;
+        line-height: 48px;
+        border-top:1px solid rgba(232,232,232,1);
+    }
+
+    .active_bottom_btn /deep/ .el-button{
+        margin-left: 32px;
+        min-width: 64px;
     }
 
     .active_bottom_btn span{
         margin-left: 8px;
         cursor:pointer;
+    }
+
+    .active_bottom_btn i{
+        color:rgba(0,0,0,0.45)
+    }
+
+    /*分享复制*/
+    /deep/ .copy_dialog .el-dialog__body{
+        padding: 8px 18px;
     }
 
     /* 标注info框 */
@@ -1990,7 +2208,7 @@
     }
 
     .res_info_header h3{
-        font-weight:500;
+        font-weight:600;
         color:rgba(0,0,0,0.85);
         font-size: 18px;
         line-height: 24px;
@@ -2003,14 +2221,14 @@
         font-weight:400;
         color:rgba(0,0,0,0.65);
         font-size: 12px;
-        line-height: 20px;
+        line-height: 24px;
     }
 
     .res_info_content{
-        max-height: 218px;
+        max-height: 213px;
         overflow-y: auto;
         margin-bottom: 8px;
-        /*overflow-x: hidden;*/
+        border-bottom: 1px solid rgba(232,232,232,1);
     }
 
     .res_info_content_li{
@@ -2024,11 +2242,27 @@
     .res_info_content_li span{
         color:rgba(0,0,0,0.65);
         display: inline-block;
-        margin-left: 16px;
+        /*margin-left: 16px;*/
+    }
+
+    .res_info_content_li .content_li_title{
+        display: inline-block;
+        width: 72px;
+        color:rgba(0,0,0,0.85);
     }
 
     .res_info_footer {
         text-align: right;
+        position: relative;
+    }
+
+    .res_info_footer img{
+        width: 18px;
+        height: 21px;
+        position: absolute;
+        left: 0;
+        top:6px;
+        cursor: pointer;
     }
 
     .info_window_left{
@@ -2131,6 +2365,79 @@
     .mouse_control_li img {
         width: 16px;
         height: 16px;
+    }
+
+    /*媒体列表*/
+    /deep/ .media_list_dialog .el-dialog__title{
+        font-weight: 600;
+    }
+    /deep/ .media_list_dialog .el-dialog__body {
+        padding: 0;
+    }
+
+    /deep/ .media_list_dialog .el-dialog__header{
+        padding: 12px 20px;
+    }
+
+    /deep/ .media_list_dialog .el-dialog__headerbtn{
+        top: 12px
+    }
+
+    .media_list_body {
+        height: auto;
+        overflow-y: auto;
+        max-height: 340px;
+        border-top: 1px solid rgba(232,232,232,1);
+    }
+
+    .list_li {
+        border-bottom: 1px solid rgba(232,232,232,1);
+        line-height: 24px;
+        padding: 6px 18px;
+    }
+
+    .li_header {
+        position: relative;
+    }
+
+    .li_header h4 {
+        display: inline-block;
+        font-size: 16px;
+        font-weight: 600;
+        color:rgba(0,0,0,0.85);
+        margin-right: 4px;
+    }
+
+    .li_header img {
+        width: 28px;
+        height: 14px;
+        position: absolute;
+        top: 5px;
+        /*vertical-align: middle;*/
+    }
+
+    .li_header /deep/ .el-icon-picture-outline {
+        float: right;
+        margin-top: 6px;
+        font-size: 16px;
+        cursor:pointer;
+        color: rgba(0,0,0,0.45);
+    }
+
+    .li_p{
+        font-size: 14px;
+        color:rgba(0,0,0,0.85);
+        margin-bottom: 4px;
+    }
+
+    .li_p span {
+        display: inline-block;
+        padding: 0 6px;
+        background:rgba(0,0,0,0.06);
+        border-radius:2px;
+        font-size: 12px;
+        color:rgba(0,0,0,0.35);
+        margin: 0 4px 0 0;
     }
 
     ::-webkit-scrollbar {

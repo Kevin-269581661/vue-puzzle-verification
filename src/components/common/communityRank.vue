@@ -8,7 +8,8 @@
                         {{currCompany.asrName}}<i class="el-icon-arrow-down el-icon--right"></i>
                     </p>
                     <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item v-for="(item,index) in companyList" :key="index" :command="item">{{item.asrName}}
+                        <el-dropdown-item v-for="(item,index) in companyList" :key="index" :command="item">
+                            {{item.asrName}}
                         </el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
@@ -245,15 +246,15 @@
                                     <span>{{scope.row.asCount}}</span>
                                 </template>
                             </el-table-column>
-                            <!--<el-table-column-->
-                            <!--prop="action"-->
-                            <!--label="操作"-->
-                            <!--min-width="80"-->
-                            <!--&gt;-->
-                            <!--<template slot-scope="scope">-->
-                            <!--<el-button type="text" @click="gotoDetail(scope.row)">画像详情</el-button>-->
-                            <!--</template>-->
-                            <!--</el-table-column>-->
+                            <el-table-column
+                                prop="action"
+                                label="操作"
+                                min-width="80"
+                            >
+                                <template slot-scope="scope">
+                                    <el-button type="text" @click="gotoDetail(scope.row)">画像详情</el-button>
+                                </template>
+                            </el-table-column>
                             <div slot="empty">
                                 <no-search-result></no-search-result>
                             </div>
@@ -324,7 +325,7 @@
                 currPage: 1,
                 pageSize: 10,
                 total: 0,
-                ids:'',
+                ids: '',
 
             };
         },
@@ -613,12 +614,15 @@
 
                     } else if (level == 3) {
                         for (let data of tag1.childer) {
-                            for (let data2 of data.childer) {
-                                if (data2.value == tag2.value) {
-                                    obj.label = tag1.label + '/' + data.label + '：' + data2.label
-                                    obj.value = data2.value
+                            if (data.childer) {
+                                for (let data2 of data.childer) {
+                                    if (data2.value == tag2.value) {
+                                        obj.label = tag1.label + '/' + data.label + '：' + data2.label
+                                        obj.value = data2.value
+                                    }
                                 }
                             }
+
                         }
                         //判断是否选中上级，去掉选中
                         for (let data of this.chooseTagsArr) {
@@ -644,14 +648,20 @@
                         }
                     } else {
                         for (let data of tag1.childer) {
-                            for (let data2 of data.childer) {
-                                for (let data3 of data2.childer) {
-                                    if (data3.value == tag2.value) {
-                                        obj.label = tag1.label + '/' + data.label + '/' + data2.label + '：' + data3.label
-                                        obj.value = data3.value
+                            if (data.childer) {
+                                for (let data2 of data.childer) {
+                                    if (data2.childer) {
+                                        for (let data3 of data2.childer) {
+                                            if (data3.value == tag2.value) {
+                                                obj.label = tag1.label + '/' + data.label + '/' + data2.label + '：' + data3.label
+                                                obj.value = data3.value
+                                            }
+                                        }
                                     }
+
                                 }
                             }
+
                         }
                         //判断是否选中上级，去掉选中
                         //三级
@@ -716,22 +726,30 @@
                 // console.log(level,tag);
                 let arr = [];
                 arr = tag.childer;
-                if (tag.childer) {
-                    if (level == 2) {
-                        this.width = 288
-                        this.forthShow = false
-                        this.currSecondTag = tag
+                if (level == 2) {
+                    this.width = 288
+                    this.forthShow = false
+                    this.currSecondTag = tag
+                    if (tag.childer) {
                         this.currentThirdList = arr
-                        tag.childer ? this.thirdShow = true : this.thirdShow = false
-
+                        this.thirdShow = true
                     } else {
-                        this.width = 432
-                        this.currThirdTag = tag
-                        this.currentForthList = arr
-                        tag.childer ? this.forthShow = true : this.forthShow = false
+                        this.width = 144
+                        this.thirdShow = false
                     }
 
+                } else {
+                    this.width = 432
+                    this.currThirdTag = tag
+                    if (tag.childer) {
+                        this.currentForthList = arr
+                        this.forthShow = true
+                    } else {
+                        this.width = 288
+                        this.forthShow = false
+                    }
                 }
+
 
             },
             //排名列表
@@ -740,7 +758,7 @@
                 let info = {
                     pageNum: this.currPage,
                     pageSize: this.pageSize,
-                    asrId:this.currCompany.asrId
+                    asrId: this.currCompany.asrId
                 }
                 if (this.chooseTagsArr.length > 0) {
                     let ids = ''
@@ -763,16 +781,16 @@
             //导出表格
             exportTable() {
                 let info = {
-                    ids:this.ids,
-                    asrId:this.currCompany.asrId,
+                    ids: this.ids,
+                    asrId: this.currCompany.asrId,
                     // responseType: 'arraybuffer',
                 }
-                api.getApi_file(this.apiVar.portrait+'label/export',info).then(res=>{
+                api.getApi_file(this.apiVar.portrait + 'label/export', info).then(res => {
                     let blob = new Blob([res.data], {type: 'application/ms-download;charset=utf-8'});
                     let downloadElement = document.createElement('a');
                     let href = window.URL.createObjectURL(blob);    //创建下载的链接
                     downloadElement.href = href;
-                    downloadElement.download = '社区排名-'+ new Date().getFullYear() + (new Date().getMonth() + 1)  + new Date().getDate() + new Date().getHours() + new Date().getMinutes() + new Date().getSeconds()+'.xls'; //下载后文件名
+                    downloadElement.download = '社区排名-' + new Date().getFullYear() + (new Date().getMonth() + 1) + new Date().getDate() + new Date().getHours() + new Date().getMinutes() + new Date().getSeconds() + '.xls'; //下载后文件名
                     document.body.appendChild(downloadElement);
                     downloadElement.click();                        //点击下载
                     document.body.removeChild(downloadElement);     //下载完成移除元素
@@ -785,7 +803,7 @@
                 this.$router.push('./portraitDetail')
             },
             //获取标签数据
-            getTags(type,parentId) {
+            getTags(type, parentId) {
                 let info = ''
                 info = {
                     type: type == 'first' ? 0 : 1,
@@ -1078,7 +1096,8 @@
     .check-wrap:hover {
         background: rgba(23, 143, 254, 0.08);
     }
-    .check-wrap /deep/ .el-checkbox{
+
+    .check-wrap /deep/ .el-checkbox {
         width: 100%;
         height: 100%;
         line-height: 30px;

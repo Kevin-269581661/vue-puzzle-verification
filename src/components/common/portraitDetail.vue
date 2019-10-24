@@ -105,13 +105,17 @@
                             <h6>月收入水平</h6>
                             <div class="table-wrap">
                                 <el-table
+                                    max-height="352"
                                     :data="incomeList"
                                     style="width: 100%" >
-                                    <el-table-column  prop="rank" label="排名" min-width="20" >
+                                    <el-table-column  prop="rank" label="排名" min-width="50" >
                                     </el-table-column>
                                     <el-table-column prop="income" label="月收入" min-width="80" >
                                     </el-table-column>
                                     <el-table-column prop="percent" label="占比" min-width="80" >
+                                        <template slot-scope="scope">
+                                            <el-progress :percentage="scope.row.percent" ></el-progress>
+                                        </template>
                                     </el-table-column>
                                 </el-table>
                             </div>
@@ -145,7 +149,7 @@
                     mediaNum: 0,
                     adsNum: 0
                 },
-                incomeList:[{rank:1,income:'2499元及以下',percent:'28%'}],//月收入排行
+                incomeList:[{rank:1,income:'2499元及以下',percent:28}],//月收入排行
                 sexChart:'',//性别情况
                 ageChart:'',//年龄情况
                 eduChart:'',//教育水平
@@ -443,6 +447,7 @@
         margin-right: 24px;
         width: 400px;
         height: 400px;
+        overflow: hidden;
     }
     .part .last-flex{
         margin-right: 0;
@@ -467,8 +472,13 @@
     .part .part1 .table-wrap{
         padding: 0 24px;
     }
-
-
+    .table-wrap{
+        padding: 0 16px;
+    }
+     /deep/ .table-wrap .el-table th{
+        background-color: #fff;
+    }
 
 
 </style>
+

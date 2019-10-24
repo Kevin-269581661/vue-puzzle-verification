@@ -164,6 +164,8 @@
                 ageChart:'',//年龄情况
                 eduChart:'',//教育水平
                 spendChart:'',//消费水平
+                assetsChart:'',//资产状况
+                lifeChart:'',//人生阶段
             }
         },
         methods: {
@@ -352,6 +354,114 @@
                     ]
                 })
             },
+            //资产状况
+            assetsChartFn() {
+                this.assetsChart = this.$echarts.init(this.$refs.assetsChart)
+                this.assetsChart.setOption({
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        left: 'center',
+                        bottom: 10,
+                        data: ['有车', '无车'],
+                        icon:'circle',
+                        itemWidth:9,
+                        itemHeight:9
+                    },
+                    series: [
+                        {
+                            name: '资产状况',
+                            type: 'pie',
+                            radius: ['40%', '60%'],
+                            center: ['50%', '45%'],
+                            color: ['#1890FF', '#F1627A'],
+                            label: {
+                                formatter: '{d}%'
+                            },
+                            data: [
+                                {value: 335, name: '有车'},
+                                {value: 310, name: '无车'},
+                            ],
+                            itemStyle: {
+                                emphasis: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        }
+                    ]
+                })
+            },
+            //人生阶段
+            lifeChartFn(){
+                this.lifeChart = this.$echarts.init(this.$refs.lifeChart)
+                this.lifeChart.setOption({
+                    color: ['#1890FF'],
+                    tooltip : {
+                        trigger: 'axis',
+                        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                        }
+                    },
+                    grad:{
+                        x:25,
+                        y:45,
+                        x2:5,
+                        y2:20,
+                    },
+                    xAxis: {
+                        type: 'category',
+                        axisLine: {
+                            //坐标轴线条相关设置(颜色等)
+                            lineStyle: {
+                                color: "#E8E8E8"
+                            }
+                        },
+                        axisLabel: {
+                            //坐标轴刻度标签
+                            margin: 7, //刻度标签与轴线之间的距离
+                            interval: 0,    //强制文字产生间隔
+                            textStyle: {
+                                fontFamily: "DINPro-Regular",
+                                color: "#2C313C" //坐标轴刻度文字的颜色
+                            },
+                            rotate:30
+                        },
+                        data: ['初中生', '高中生', '大学生', '研究生', '孕期', '育儿阶段', '家有孕妇','家有0-1岁小孩', '家有1-3岁小孩', '家有3-6岁小孩', '家有小学生', '家有初中生', '家有高中生']
+                    },
+                    yAxis: {
+                        type: 'value',
+                        axisLine: {
+                            //坐标轴线条相关设置(颜色等)
+                            lineStyle: {
+                                color: "#E8E8E8"
+                            }
+                        },
+                        axisLabel: {
+                            //坐标轴刻度标签
+                            margin: 7, //刻度标签与轴线之间的距离
+                            textStyle: {
+                                fontFamily: "DINPro-Regular",
+                                color: "#2C313C" //坐标轴刻度文字的颜色
+                            }
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: "#E8E8E8",
+                                type: "dashed"
+                            }
+                        }
+                    },
+                    series: [{
+                        data: [120, 200, 150, 80, 70, 110, 130,120, 200, 150, 80, 70, 110],
+                        type: 'bar',
+                        barWidth: '18%',
+                    }]
+                })
+            },
             // 统一监听
             echartsListener(){
                 window.addEventListener("resize", ()=> {
@@ -359,6 +469,8 @@
                     this.ageChart.resize();
                     this.eduChart.resize();
                     this.spendChart.resize();
+                    this.assetagChartFn.resize();
+                    this.lifeChartFn.resize();
                 });
             },
         },
@@ -367,6 +479,8 @@
             this.ageChartFn()
             this.eduChartFn()
             this.spendChartFn()
+            this.assetsChartFn()
+            this.lifeChartFn()
             this.echartsListener();
         }
     }
@@ -457,7 +571,6 @@
         margin-right: 24px;
         width: 400px;
         height: 400px;
-        overflow: hidden;
     }
     .part .last-flex{
         margin-right: 0;

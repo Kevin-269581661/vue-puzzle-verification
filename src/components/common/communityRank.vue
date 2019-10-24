@@ -119,8 +119,8 @@
                             </el-button>
                         </div>
                         <p>
-                            <span>已选{{chooseTagsArr.length}}个标签，默认交集组合查询</span>
-                            <span @click="clearAllTag">清空条件</span>
+                            <span class="txt">已选{{chooseTagsArr.length}}个标签，默认交集组合查询</span>
+                            <span class="btn" @click="clearAllTag" v-if="chooseTagsArr.length>0">清空条件</span>
                         </p>
                     </div>
                 </div>
@@ -356,8 +356,10 @@
             },
             //展开收起面板
             toggleShowTags() {
+                //482
+                console.log(document.body.clientWidth);
                 if (this.tabHeight == '252px') {
-                    this.tabHeight = '452px'
+                    this.tabHeight = document.body.clientWidth < 1370 ? '482px' : '452px'
                     this.showhideText = '收起'
                 } else {
                     this.tabHeight = '252px'
@@ -582,9 +584,9 @@
                 this.currentThirdList = [];
                 this.currentForthList = [];
                 let fn = function (arr) {
-                    for(let data of arr){
+                    for (let data of arr) {
                         data.hovered = false
-                        if(data.childer){
+                        if (data.childer) {
                             fn(data.childer)
                         }
                     }
@@ -748,12 +750,12 @@
                         this.width = 144
                         this.thirdShow = false
                     }
-                    for(let data of this.hobbyTags){
-                        if(data.childer){
-                            for(let data2 of data.childer){
-                                if(data2.value == tag.value){
+                    for (let data of this.hobbyTags) {
+                        if (data.childer) {
+                            for (let data2 of data.childer) {
+                                if (data2.value == tag.value) {
                                     data2.hovered = true
-                                }else{
+                                } else {
                                     data2.hovered = false
                                 }
                             }
@@ -771,10 +773,10 @@
                         this.forthShow = false
                     }
 
-                    for(let data of this.currentThirdList){
-                        if(data.value == tag.value){
+                    for (let data of this.currentThirdList) {
+                        if (data.value == tag.value) {
                             data.hovered = true
-                        }else{
+                        } else {
                             data.hovered = false
                         }
                     }
@@ -907,6 +909,14 @@
         color: #1890FF;
     }
 
+    .top /deep/ .el-tabs__header {
+        margin-bottom: 0;
+    }
+
+    .top /deep/ .el-tabs__nav-wrap::after {
+        height: 1px;
+    }
+
     .tab-content-wrap {
         padding: 24px 32px 0;
     }
@@ -1003,15 +1013,16 @@
         margin-top: 8px;
     }
 
-    .checked-panel p span:first-child {
+    .checked-panel p .txt {
         font-size: 14px;
         color: rgba(0, 0, 0, 0.35);
     }
 
-    .checked-panel p span:last-child {
+    .checked-panel p .btn {
         color: #1890ff;
         cursor: pointer;
         font-size: 14px;
+        margin-left: 14px;
     }
 
     .checked-panel .el-icon-close {
@@ -1125,7 +1136,7 @@
         padding: 0 12px;
     }
 
-    .check-wrap:hover ,.check-wrap.hover{
+    .check-wrap:hover, .check-wrap.hover {
         background: rgba(23, 143, 254, 0.08);
     }
 

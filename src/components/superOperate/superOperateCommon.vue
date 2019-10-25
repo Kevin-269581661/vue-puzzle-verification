@@ -16,7 +16,7 @@
                 </div>
             </el-menu-item>
             <el-menu-item index="/superOperate">首页</el-menu-item>
-            <el-submenu index="2" show-timeout="80">
+            <el-submenu index="2" :show-timeout="80">
                 <template slot="title">常用模块</template>
                 <el-menu-item index="/superOperate/mediaList">媒体管理</el-menu-item>
                 <el-menu-item index="/superOperate/clientList">客户管理</el-menu-item>
@@ -39,12 +39,12 @@
                 <el-menu-item index="/superOperate/compact">文件下载</el-menu-item>
             </el-submenu>
             <el-menu-item index="/superOperate/tvOrderList">电视广告</el-menu-item>
-            <!--<el-submenu index="8" show-timeout="80">-->
-                <!--<template slot="title">亲邻智邻</template>-->
-                <!--<el-menu-item index="/superOperate/communityPortrait">社区画像</el-menu-item>-->
-                <!--<el-menu-item index="/superOperate/communityRank">社区排名</el-menu-item>-->
-            <!--</el-submenu>-->
-            <el-menu-item index="/superOperate/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>
+            <el-submenu index="8" :show-timeout="80" v-show="showQinlin">
+                <template slot="title">亲邻智邻</template>
+                <el-menu-item index="/superOperate/communityPortrait">社区画像</el-menu-item>
+                <el-menu-item index="/superOperate/communityRank">社区排名</el-menu-item>
+            </el-submenu>
+            <!--<el-menu-item index="/superOperate/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>-->
             <el-submenu index="9" class="user_center" popper-class="user_center_item" :show-timeout="80">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">
@@ -135,31 +135,27 @@
             // 是否显示亲邻
             getIsShowQinlin(){
                 let portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo'))
-                if(this.sessionData.uType=='SM'&&this.sessionData.rela== '直营'){
+                if (portraitInfo && portraitInfo.length) {
                     this.showQinlin = true;
-                }else{
-                    if (portraitInfo && portraitInfo.length) {
-                        this.showQinlin = true;
-                    } else {
-                        let params = {
-                            uid: this.sessionData.uID,
-                            token: this.sessionData.token
-                        }
-                        api.getApi(this.apiVar.portrait + '/api/v1/ascrInfo/getAscrList', params).then(res => {
-                            console.log('用户权限城市和默认小区res', res)
-                            if (res.data.SysCode === 200200) {
-                                let portraitInfo = res.data.data
-                                sessionStorage.setItem("portraitInfo", JSON.stringify(portraitInfo));
-                                if (portraitInfo.length) {
-                                    this.showQinlin = true;
-                                } else {
-                                    this.showQinlin = false;
-                                }
+                } else {
+                    let params = {
+                        uid: this.sessionData.uID,
+                        token: this.sessionData.token
+                    }
+                    api.getApi(this.apiVar.portrait + 'ascrInfo/getAscrList', params).then(res => {
+                        console.log('用户权限城市和默认小区res', res)
+                        if (res.data.SysCode === 200200) {
+                            let portraitInfo = res.data.data
+                            sessionStorage.setItem("portraitInfo", JSON.stringify(portraitInfo));
+                            if (portraitInfo.length) {
+                                this.showQinlin = true;
                             } else {
                                 this.showQinlin = false;
                             }
-                        })
-                    }
+                        } else {
+                            this.showQinlin = false;
+                        }
+                    })
                 }
 
             },

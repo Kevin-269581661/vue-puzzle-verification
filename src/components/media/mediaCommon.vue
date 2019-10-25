@@ -77,13 +77,14 @@
     import uTypeToText from "../../commonFun/uTypeToText.js";
     import api from "../../api/api"
     import messageNotice from '../common/components/messageNotice.vue';
+
     export default {
         name: "mediaCommon",
-        components:{
+        components: {
             messageNotice
         },
-        data(){
-            return{
+        data() {
+            return {
                 newDate: new Date().getFullYear(),
                 userName: "",
                 openWxBox: false,
@@ -96,43 +97,40 @@
                 showQinlin: false,
             }
         },
-        created(){
+        created() {
             this.getUserName()
         },
-        mounted(){
+        mounted() {
             // 是否显示社区画像
             this.getIsShowQinlin();
         },
-        methods:{
+        methods: {
             // 是否显示亲邻
-            getIsShowQinlin(){
+            getIsShowQinlin() {
                 let portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo'))
-                if (this.sessionData.uType=='SM'&&this.sessionData.rela== '直营') {
+                if (portraitInfo && portraitInfo.length) {
                     this.showQinlin = true;
                 } else {
-                    if (portraitInfo && portraitInfo.length) {
-                        this.showQinlin = true;
-                    } else {
-                        let params = {
-                            uid: this.sessionData.uID,
-                            token: this.sessionData.token
-                        }
-                        api.getApi(this.apiVar.portrait + '/api/v1/ascrInfo/getAscrList', params).then(res => {
-                            console.log('用户权限城市和默认小区res', res)
-                            if (res.data.SysCode === 200200) {
-                                let portraitInfo = res.data.data
-                                sessionStorage.setItem("portraitInfo", JSON.stringify(portraitInfo));
-                                if (portraitInfo.length) {
-                                    this.showQinlin = true;
-                                } else {
-                                    this.showQinlin = false;
-                                }
+                    let params = {
+                        uid: this.sessionData.uID,
+                        token: this.sessionData.token
+                    }
+                    api.getApi(this.apiVar.portrait + 'ascrInfo/getAscrList', params).then(res => {
+                        console.log('用户权限城市和默认小区res', res)
+                        if (res.data.SysCode === 200200) {
+                            let portraitInfo = res.data.data
+                            sessionStorage.setItem("portraitInfo", JSON.stringify(portraitInfo));
+                            if (portraitInfo.length) {
+                                this.showQinlin = true;
                             } else {
                                 this.showQinlin = false;
                             }
-                        })
-                    }
+                        } else {
+                            this.showQinlin = false;
+                        }
+                    })
                 }
+
 
             },
             // 获取用户名称和角色
@@ -146,7 +144,7 @@
                         });
                         this.$router.push("/login");
                     }
-                    if(this.sessionData.mediaManageLevel == 1){
+                    if (this.sessionData.mediaManageLevel == 1) {
                         this.isNation = true
                     }
                 } else {
@@ -161,13 +159,13 @@
             handleSelect(key, keyPath) {
                 console.log(key, keyPath);
                 // 退出登录
-                if(key === '/login'){
+                if (key === '/login') {
                     sessionStorage.clear();
                 }
             },
 
         },
-        computed:{
+        computed: {
             isActive(val) {
                 console.log(val, 'isActive', this.$route.path)
                 let path = this.$route.path
@@ -185,28 +183,31 @@
                 } else if (path.includes('/projectDetail') || path.includes('/paintedCount')) {
                     // 工程管理
                     routePath = '/media/projectList'
-                }  else {
+                } else {
                     routePath = path
                 }
-                return  routePath
+                return routePath
             },
         }
     }
 </script>
 
 <style scoped>
-    .logo_box{
+    .logo_box {
         margin: 0 16px 0 32px;
     }
+
     /*用户中心*/
-    /deep/.el-menu--horizontal>.el-submenu.user_center{
+    /deep/ .el-menu--horizontal > .el-submenu.user_center {
         float: right;
     }
-    .user_center /deep/ .el-submenu__title{
+
+    .user_center /deep/ .el-submenu__title {
         font-size: 14px;
     }
+
     /*头像*/
-    .user_avator{
+    .user_avator {
         width: 34px;
         height: 34px;
         border-radius: 50%;

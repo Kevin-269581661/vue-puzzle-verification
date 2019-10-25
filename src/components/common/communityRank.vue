@@ -309,7 +309,7 @@
                 tabHeight: '252px',
                 showhideText: '展开',
                 width: 144,//面板宽度
-                activeName: 'second',
+                activeName: 'first',
                 thirdShow: false,
                 forthShow: false,
                 currSecondTag: '',//当前选中的二级标签

@@ -246,15 +246,15 @@
                                     <span>{{scope.row.asCount}}</span>
                                 </template>
                             </el-table-column>
-                            <el-table-column
-                                prop="action"
-                                label="操作"
-                                min-width="80"
-                            >
-                                <template slot-scope="scope">
-                                    <el-button type="text" @click="gotoDetail(scope.row)">画像详情</el-button>
-                                </template>
-                            </el-table-column>
+                            <!--<el-table-column-->
+                                <!--prop="action"-->
+                                <!--label="操作"-->
+                                <!--min-width="80"-->
+                            <!--&gt;-->
+                                <!--<template slot-scope="scope">-->
+                                    <!--<el-button type="text" @click="gotoDetail(scope.row)">画像详情</el-button>-->
+                                <!--</template>-->
+                            <!--</el-table-column>-->
                             <div slot="empty">
                                 <no-search-result></no-search-result>
                             </div>

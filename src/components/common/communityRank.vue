@@ -49,14 +49,15 @@
                                         v-for="(firstTag,index) in hobbyTags"
                                         :key="index"
                                         :width="width"
-                                        trigger="click"
+                                        trigger="manual"
                                         :visible-arrow="false"
                                         :value="firstTag.hovered"
                                         popper-class="tag-popover"
                                         style="padding: 0"
                                     >
                                         <span class="first-tag-btn" :class="firstTag.checked?'active':''"
-                                              slot="reference">
+                                              slot="reference" @click="chooseHobbyTag(firstTag)"
+                                              @mouseenter="showPopver(firstTag)" @mouseleave="hidePopver(firstTag)">
                                             {{firstTag.label}}
                                         </span>
                                         <div class="ul-wrap" @mouseenter="enterPopver(firstTag)"
@@ -247,13 +248,13 @@
                                 </template>
                             </el-table-column>
                             <!--<el-table-column-->
-                                <!--prop="action"-->
-                                <!--label="操作"-->
-                                <!--min-width="80"-->
+                            <!--prop="action"-->
+                            <!--label="操作"-->
+                            <!--min-width="80"-->
                             <!--&gt;-->
-                                <!--<template slot-scope="scope">-->
-                                    <!--<el-button type="text" @click="gotoDetail(scope.row)">画像详情</el-button>-->
-                                <!--</template>-->
+                            <!--<template slot-scope="scope">-->
+                            <!--<el-button type="text" @click="gotoDetail(scope.row)">画像详情</el-button>-->
+                            <!--</template>-->
                             <!--</el-table-column>-->
                             <div slot="empty">
                                 <no-search-result></no-search-result>
@@ -308,7 +309,7 @@
                 tabHeight: '252px',
                 showhideText: '展开',
                 width: 144,//面板宽度
-                activeName: 'first',
+                activeName: 'second',
                 thirdShow: false,
                 forthShow: false,
                 currSecondTag: '',//当前选中的二级标签
@@ -512,23 +513,26 @@
                 if (obj.childer) {
                     //偏好
                     if (type == 'split') {
+                        let arr = [...this.chooseTagsArr]
                         for (let data of this.chooseTagsArr) {
                             let a = data.label.split('：')[0]
                             if (data.label.includes('：') && a.includes(obj.label)) {
-                                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                                console.log(data.label);
+                                arr.splice(arr.indexOf(data), 1);
+                                // console.log(this.chooseTagsArr);
                                 if (data.childer) {
                                     this.clear(data, 'split')
                                 }
                             }
 
                         }
+                        this.chooseTagsArr = arr
 
-                    } else {
-                        for (let data of obj.childer) {
-                            data.checked = false
-                            if (data.childer) {
-                                this.clear(data.childer)
-                            }
+                    }
+                    for (let data of obj.childer) {
+                        data.checked = false
+                        if (data.childer) {
+                            this.clear(data.childer)
                         }
                     }
 
@@ -563,15 +567,21 @@
                 // console.log(this.thirdShow);
                 let that = this
                 setTimeout(() => {
-                    if (!that.thirdShow == true) {
+                    //此一级标签下有没有hover的标签 有为true 无为false
+                    let flag = firstTag.childer.some(item => item.hovered == true)
+                    // console.log(flag);
+                    if(!flag){
                         //直接离开 面板消失
                         firstTag.hovered = false
                     }
+
                 }, 100)
+
 
             },
             //进入和离开面板
             enterPopver(firstTag) {
+                // console.log('进入');
                 firstTag.hovered = true
             },
             leavePopver(firstTag) {
@@ -593,35 +603,54 @@
                 }
                 fn(this.hobbyTags)
             },
+            //偏好标签-选中一级标签
+            chooseHobbyTag(item) {
+                // console.log(item);
+                // console.log(this.chooseTagsArr);
+                if (item.checked) {
+                    item.checked = false
+                    this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(item), 1);
+                } else {
+                    let obj = {
+                        value: item.value,
+                        label: item.label
+                    }
+                    item.hovered = false
+                    //清空下级
+                    this.clear(item, 'split')
+                    this.pushArr(obj, item)
+                }
+
+            },
             //偏好标签-选中二三四级
             tagChecked(e, level, tag1, tag2) {
                 console.log(e, level, tag1, tag2);
-
                 let obj = {
                     label: '',
                     value: ''
                 }
                 if (e) {
                     //选中
-                    tag1.checked = true
+                    // tag1.checked = true
                     if (level == 2) {
                         obj.label = tag1.label + '：' + tag2.label
                         obj.value = tag2.value;
                         //判断是否选中上级，去掉选中
+                        let arr = [...this.chooseTagsArr]
                         for (let data of this.chooseTagsArr) {
                             if (data.label == tag1.label) {
                                 tag1.checked = false
-                                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                                arr.splice(arr.indexOf(data), 1);
                             }
                             //是否选中下级
                             let a = data.label.split('：')[0].split('/')[1];
                             if (a == tag2.label) {
-                                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                                arr.splice(arr.indexOf(data), 1);
                                 //清空所有下级
                                 this.clear(tag2.childer)
-
                             }
                         }
+                        this.chooseTagsArr = arr
 
                     } else if (level == 3) {
                         for (let data of tag1.childer) {
@@ -636,10 +665,11 @@
 
                         }
                         //判断是否选中上级，去掉选中
+                        let arr = [...this.chooseTagsArr]
                         for (let data of this.chooseTagsArr) {
                             if (data.label == tag1.label) {
                                 tag1.checked = false
-                                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                                arr.splice(arr.indexOf(data), 1);
                             }
                         }
                         for (let data of this.chooseTagsArr) {
@@ -647,16 +677,17 @@
                             let a = this.currSecondTag.label
                             if (str == a) {
                                 this.currSecondTag.checked = false
-                                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                                arr.splice(arr.indexOf(data), 1);
                             }
                             //是否选中下级
                             let b = data.label.split('：')[0].split('/')[2];
                             if (b == tag2.label) {
-                                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                                arr.splice(arr.indexOf(data), 1);
                                 //清空所有下级
                                 this.clear(tag2.childer)
                             }
                         }
+                        this.chooseTagsArr = arr
                     } else {
                         for (let data of tag1.childer) {
                             if (data.childer) {
@@ -675,13 +706,14 @@
 
                         }
                         //判断是否选中上级，去掉选中
+                        let arr = [...this.chooseTagsArr]
                         //三级
                         for (let data of this.chooseTagsArr) {
                             let str = data.label.split('：')[1]
                             let a = this.currThirdTag.label
                             if (str == a) {
                                 this.currThirdTag.checked = false
-                                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                                arr.splice(arr.indexOf(data), 1);
                             }
                         }
                         //二级
@@ -690,22 +722,20 @@
                             let a = this.currSecondTag.label
                             if (str == a) {
                                 this.currSecondTag.checked = false
-                                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                                arr.splice(arr.indexOf(data), 1);
                             }
                         }
                         //一级
                         for (let data of this.chooseTagsArr) {
                             if (data.label == tag1.label) {
                                 tag1.checked = false
-                                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                                arr.splice(arr.indexOf(data), 1);
                             }
                         }
+                        this.chooseTagsArr = arr
                     }
                     // console.log(obj, tag2);
-
                     this.pushArr(obj, tag2);
-
-
                 } else {
                     //取消选中
                     for (let data of this.chooseTagsArr) {
@@ -715,7 +745,7 @@
                     }
                     //此一级标签下是否没有选中的标签 有为true 无为false
                     let flag = tag1.childer.some(item => item.checked == true)
-                    console.log(flag);
+                    // console.log(flag);
                     if (!flag) {
                         tag1.checked = false
                     }
@@ -737,7 +767,7 @@
                 // console.log(level,tag);
                 let arr = [];
                 arr = tag.childer;
-
+                tag.hovered = true
                 if (level == 2) {
                     this.width = 288
                     this.forthShow = false
@@ -847,7 +877,17 @@
                 api.getApi(this.apiVar.portrait + 'label/getLabels', info).then(res => {
                     console.log(res.data);
                     if (res.data.SysCode == 200200) {
-                        type == 'first' ? this.personTags = res.data.data : this.hobbyTags = res.data.data
+                        // type == 'first' ? this.personTags = res.data.data : this.hobbyTags = res.data.data
+                        if (type == 'first') {
+                            this.personTags = res.data.data
+                        } else {
+                            for (let data of res.data.data) {
+                                data.hovered = false
+                            }
+
+                            this.hobbyTags = res.data.data
+                            console.log(this.hobbyTags);
+                        }
                     } else {
                         this.$message.warning(res.data.MSG)
                     }

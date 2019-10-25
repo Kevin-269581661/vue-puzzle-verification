@@ -247,15 +247,15 @@
                                     <span>{{scope.row.asCount}}</span>
                                 </template>
                             </el-table-column>
-                            <!--<el-table-column-->
-                            <!--prop="action"-->
-                            <!--label="操作"-->
-                            <!--min-width="80"-->
-                            <!--&gt;-->
-                            <!--<template slot-scope="scope">-->
-                            <!--<el-button type="text" @click="gotoDetail(scope.row)">画像详情</el-button>-->
-                            <!--</template>-->
-                            <!--</el-table-column>-->
+                            <el-table-column
+                                prop="action"
+                                label="操作"
+                                min-width="80"
+                            >
+                                <template slot-scope="scope">
+                                    <el-button type="text" @click="gotoDetail(scope.row)">画像详情</el-button>
+                                </template>
+                            </el-table-column>
                             <div slot="empty">
                                 <no-search-result></no-search-result>
                             </div>
@@ -570,7 +570,7 @@
                     //此一级标签下有没有hover的标签 有为true 无为false
                     let flag = firstTag.childer.some(item => item.hovered == true)
                     // console.log(flag);
-                    if(!flag){
+                    if (!flag) {
                         //直接离开 面板消失
                         firstTag.hovered = false
                     }

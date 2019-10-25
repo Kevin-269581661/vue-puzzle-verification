@@ -85,21 +85,29 @@
                     <div class="part part1">
                         <div class="flex1">
                             <h6>性别情况</h6>
-                            <div class="sex-chart" ref="sexChart" style="width: 400px;height: 352px"></div>
+                            <div class="chart-wrap">
+                                <div class="sex-chart" ref="sexChart" style="width: 100%;height: 100%"></div>
+                            </div>
                         </div>
                         <div class="flex2">
                             <h6>年龄分布</h6>
-                            <div class="age-chart" ref="ageChart" style="width: 822px;height: 352px"></div>
+                            <div class="chart-wrap">
+                                <div class="age-chart" ref="ageChart" style="width: 100%;height: 100%"></div>
+                            </div>
                         </div>
                     </div>
                     <div class="part part2">
                         <div class="flex1">
                             <h6>教育水平</h6>
-                            <div class="sex-chart" ref="eduChart" style="width: 400px;height: 352px"></div>
+                           <div class="chart-wrap">
+                               <div class="sex-chart" ref="eduChart" style="width: 100%;height: 100%"></div>
+                           </div>
                         </div>
                         <div class="flex1">
                             <h6>消费水平</h6>
-                            <div class="sex-chart" ref="spendChart" style="width: 400px;height: 352px"></div>
+                           <div class="chart-wrap">
+                               <div class="sex-chart" ref="spendChart" style="width: 100%;height: 100%"></div>
+                           </div>
                         </div>
                         <div class="flex1 last-flex">
                             <h6>月收入水平</h6>
@@ -107,14 +115,14 @@
                                 <el-table
                                     max-height="352"
                                     :data="incomeList"
-                                    style="width: 100%" >
-                                    <el-table-column  prop="rank" label="排名" min-width="50" >
+                                    style="width: 100%">
+                                    <el-table-column prop="rank" label="排名" min-width="50">
                                     </el-table-column>
-                                    <el-table-column prop="income" label="月收入" min-width="80" >
+                                    <el-table-column prop="income" label="月收入" min-width="80">
                                     </el-table-column>
-                                    <el-table-column prop="percent" label="占比" min-width="80" >
+                                    <el-table-column prop="percent" label="占比" min-width="80">
                                         <template slot-scope="scope">
-                                            <el-progress :percentage="scope.row.percent" ></el-progress>
+                                            <el-progress :percentage="scope.row.percent"></el-progress>
                                         </template>
                                     </el-table-column>
                                 </el-table>
@@ -124,11 +132,29 @@
                     <div class="part part1">
                         <div class="flex1">
                             <h6>资产状况</h6>
-                            <div class="sex-chart" ref="assetsChart" style="width: 400px;height: 352px"></div>
+                           <div class="chart-wrap">
+                               <div class="sex-chart" ref="assetsChart" style="width: 100%;height: 100%"></div>
+                           </div>
                         </div>
                         <div class="flex2">
                             <h6>人生阶段</h6>
-                            <div class="age-chart" ref="lifeChart" style="width: 822px;height: 352px"></div>
+                           <div class="chart-wrap">
+                               <div class="age-chart" ref="lifeChart" style="width: 100%;height: 100%"></div>
+                           </div>
+                        </div>
+                    </div>
+                    <div class="part part1">
+                        <div class="flex1">
+                            <h6>行业词云</h6>
+                            <div class="chart-wrap">
+                                <div class="sex-chart" style="width: 100%;height: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="flex2">
+                            <h6>工作行业</h6>
+                            <div class="chart-wrap">
+                                <div class="age-chart" ref="jobChart" style="width: 100%;height: 100%"></div>
+                            </div>
                         </div>
                     </div>
                 </el-tab-pane>
@@ -159,13 +185,14 @@
                     mediaNum: 0,
                     adsNum: 0
                 },
-                incomeList:[{rank:1,income:'2499元及以下',percent:28}],//月收入排行
-                sexChart:'',//性别情况
-                ageChart:'',//年龄情况
-                eduChart:'',//教育水平
-                spendChart:'',//消费水平
-                assetsChart:'',//资产状况
-                lifeChart:'',//人生阶段
+                incomeList: [{rank: 1, income: '2499元及以下', percent: 28}],//月收入排行
+                sexChart: '',//性别情况
+                ageChart: '',//年龄情况
+                eduChart: '',//教育水平
+                spendChart: '',//消费水平
+                assetsChart: '',//资产状况
+                lifeChart: '',//人生阶段
+                jobChart: '',//工作行业
             }
         },
         methods: {
@@ -181,9 +208,9 @@
                         left: 'center',
                         bottom: 10,
                         data: ['男', '女'],
-                        icon:'circle',
-                        itemWidth:9,
-                        itemHeight:9
+                        icon: 'circle',
+                        itemWidth: 9,
+                        itemHeight: 9
                     },
                     series: [
                         {
@@ -211,14 +238,14 @@
                 })
             },
             //年龄分布
-            ageChartFn(){
+            ageChartFn() {
                 this.ageChart = this.$echarts.init(this.$refs.ageChart)
                 this.ageChart.setOption({
                     color: ['#1890FF'],
-                    tooltip : {
+                    tooltip: {
                         trigger: 'axis',
-                        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
-                            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                        axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                            type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
                         }
                     },
                     xAxis: {
@@ -281,10 +308,10 @@
                     legend: {
                         left: 'center',
                         bottom: 10,
-                        data: ['本科及以上', '大专','高中及以下'],
-                        icon:'circle',
-                        itemWidth:9,
-                        itemHeight:9
+                        data: ['本科及以上', '大专', '高中及以下'],
+                        icon: 'circle',
+                        itemWidth: 9,
+                        itemHeight: 9
                     },
                     series: [
                         {
@@ -292,7 +319,7 @@
                             type: 'pie',
                             radius: ['40%', '60%'],
                             center: ['50%', '45%'],
-                            color: ['#1890FF', '#F1627A','#4DCB73'],
+                            color: ['#1890FF', '#F1627A', '#4DCB73'],
                             label: {
                                 formatter: '{d}%'
                             },
@@ -323,10 +350,10 @@
                     legend: {
                         left: 'center',
                         bottom: 10,
-                        data: ['高', '中','低'],
-                        icon:'circle',
-                        itemWidth:9,
-                        itemHeight:9
+                        data: ['高', '中', '低'],
+                        icon: 'circle',
+                        itemWidth: 9,
+                        itemHeight: 9
                     },
                     series: [
                         {
@@ -334,7 +361,7 @@
                             type: 'pie',
                             radius: ['40%', '60%'],
                             center: ['50%', '45%'],
-                            color: ['#1890FF', '#F1627A','#4DCB73'],
+                            color: ['#1890FF', '#F1627A', '#4DCB73'],
                             label: {
                                 formatter: '{d}%'
                             },
@@ -366,9 +393,9 @@
                         left: 'center',
                         bottom: 10,
                         data: ['有车', '无车'],
-                        icon:'circle',
-                        itemWidth:9,
-                        itemHeight:9
+                        icon: 'circle',
+                        itemWidth: 9,
+                        itemHeight: 9
                     },
                     series: [
                         {
@@ -396,21 +423,21 @@
                 })
             },
             //人生阶段
-            lifeChartFn(){
+            lifeChartFn() {
                 this.lifeChart = this.$echarts.init(this.$refs.lifeChart)
                 this.lifeChart.setOption({
                     color: ['#1890FF'],
-                    tooltip : {
+                    tooltip: {
                         trigger: 'axis',
-                        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
-                            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                        axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                            type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
                         }
                     },
-                    grad:{
-                        x:25,
-                        y:45,
-                        x2:5,
-                        y2:20,
+                    grad: {
+                        x: 25,
+                        y: 45,
+                        x2: 5,
+                        y2: 20,
                     },
                     xAxis: {
                         type: 'category',
@@ -428,9 +455,9 @@
                                 fontFamily: "DINPro-Regular",
                                 color: "#2C313C" //坐标轴刻度文字的颜色
                             },
-                            rotate:30
+                            rotate: 30
                         },
-                        data: ['初中生', '高中生', '大学生', '研究生', '孕期', '育儿阶段', '家有孕妇','家有0-1岁小孩', '家有1-3岁小孩', '家有3-6岁小孩', '家有小学生', '家有初中生', '家有高中生']
+                        data: ['初中生', '高中生', '大学生', '研究生', '孕期', '育儿阶段', '家有孕妇', '家有0-1岁小孩', '家有1-3岁小孩', '家有3-6岁小孩', '家有小学生', '家有初中生', '家有高中生']
                     },
                     yAxis: {
                         type: 'value',
@@ -456,32 +483,97 @@
                         }
                     },
                     series: [{
-                        data: [120, 200, 150, 80, 70, 110, 130,120, 200, 150, 80, 70, 110],
+                        data: [120, 200, 150, 80, 70, 110, 130, 120, 200, 150, 80, 70, 110],
+                        type: 'bar',
+                        barWidth: '18%',
+                    }]
+                })
+            },
+            //工作行业
+            jobChartFn() {
+                this.jobChart = this.$echarts.init(this.$refs.jobChart)
+                this.jobChart.setOption({
+                    color: ['#1890FF'],
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                            type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                        }
+                    },
+                    xAxis: {
+                        type: 'category',
+                        axisLine: {
+                            //坐标轴线条相关设置(颜色等)
+                            lineStyle: {
+                                color: "#E8E8E8"
+                            }
+                        },
+                        axisLabel: {
+                            //坐标轴刻度标签
+                            margin: 7, //刻度标签与轴线之间的距离
+                            interval: 0,    //强制文字产生间隔
+                            textStyle: {
+                                fontFamily: "DINPro-Regular",
+                                color: "#2C313C" //坐标轴刻度文字的颜色
+                            }
+                        },
+                        data: ['服务人员', '个体经营者', '管理者和企业主', '专业技术人员', '文职人员', '生产操作人员']
+                    },
+                    yAxis: {
+                        type: 'value',
+                        axisLine: {
+                            //坐标轴线条相关设置(颜色等)
+                            lineStyle: {
+                                color: "#E8E8E8"
+                            }
+                        },
+                        axisLabel: {
+                            //坐标轴刻度标签
+                            margin: 7, //刻度标签与轴线之间的距离
+                            textStyle: {
+                                fontFamily: "DINPro-Regular",
+                                color: "#2C313C" //坐标轴刻度文字的颜色
+                            }
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: "#E8E8E8",
+                                type: "dashed"
+                            }
+                        }
+                    },
+                    series: [{
+                        data: [120, 200, 150, 80, 70, 110],
                         type: 'bar',
                         barWidth: '18%',
                     }]
                 })
             },
             // 统一监听
-            echartsListener(){
-                window.addEventListener("resize", ()=> {
+            echartsListener() {
+                window.addEventListener("resize", () => {
+                    console.log('----')
                     this.sexChart.resize();
                     this.ageChart.resize();
                     this.eduChart.resize();
                     this.spendChart.resize();
-                    this.assetagChartFn.resize();
-                    this.lifeChartFn.resize();
+                    this.assetsChart.resize();
+                    this.lifeChart.resize();
+                    this.jobChart.resize();
                 });
             },
         },
         mounted() {
-            this.sexChartFn()
-            this.ageChartFn()
-            this.eduChartFn()
-            this.spendChartFn()
-            this.assetsChartFn()
-            this.lifeChartFn()
-            this.echartsListener();
+            setTimeout(()=>{
+                this.sexChartFn()
+                this.ageChartFn()
+                this.eduChartFn()
+                this.spendChartFn()
+                this.assetsChartFn()
+                this.lifeChartFn()
+                this.jobChartFn()
+                this.echartsListener();
+            },20)
         }
     }
 </script>
@@ -563,24 +655,34 @@
     .community_info_row .community_info_label {
         color: #333333;
     }
-    .part .flex2{
+
+    .part .flex2 {
         flex: 2;
     }
-    .part .flex1{
-        flex: 1;
+
+    .part .flex1 {
+        /*flex: 1;*/
         margin-right: 24px;
         width: 400px;
         height: 400px;
     }
-    .part .last-flex{
-        margin-right: 0;
+
+    .chart-wrap,.table-wrap{
+        height: 352px;
     }
-    .part{
+
+    .part .last-flex {
+        margin-right: 0;
+        flex: 1;
+    }
+
+    .part {
         margin-bottom: 24px;
         display: flex;
         justify-content: space-between;
     }
-    .part>div h6 {
+
+    .part > div h6 {
         color: rgba(44, 49, 60, 1);
         font-size: 16px;
         line-height: 48px;
@@ -588,20 +690,25 @@
         border-bottom: 1px solid rgba(230, 231, 233, 1);
         box-sizing: border-box;
     }
-    .part>div{
-        border:1px solid rgba(230,231,233,1);
+
+    .part > div {
+        border: 1px solid rgba(230, 231, 233, 1);
         background: #fff;
     }
-    .part .part1 .table-wrap{
+
+    .part .part1 .table-wrap {
         padding: 0 24px;
     }
-    .table-wrap{
+
+    .table-wrap {
         padding: 0 16px;
     }
-     /deep/ .table-wrap .el-table th{
+
+    /deep/ .table-wrap .el-table th {
         background-color: #fff;
     }
-    .table-wrap /deep/ .el-progress.el-progress--line{
+
+    .table-wrap /deep/ .el-progress.el-progress--line {
         line-height: 32px;
     }
 

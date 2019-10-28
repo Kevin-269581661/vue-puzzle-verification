@@ -99,15 +99,15 @@
                     <div class="part part2">
                         <div class="flex1">
                             <h6>教育水平</h6>
-                           <div class="chart-wrap">
-                               <div class="sex-chart" ref="eduChart" style="width: 100%;height: 100%"></div>
-                           </div>
+                            <div class="chart-wrap">
+                                <div class="sex-chart" ref="eduChart" style="width: 100%;height: 100%"></div>
+                            </div>
                         </div>
                         <div class="flex1">
                             <h6>消费水平</h6>
-                           <div class="chart-wrap">
-                               <div class="sex-chart" ref="spendChart" style="width: 100%;height: 100%"></div>
-                           </div>
+                            <div class="chart-wrap">
+                                <div class="sex-chart" ref="spendChart" style="width: 100%;height: 100%"></div>
+                            </div>
                         </div>
                         <div class="flex1 last-flex">
                             <h6>月收入水平</h6>
@@ -132,22 +132,22 @@
                     <div class="part part1">
                         <div class="flex1">
                             <h6>资产状况</h6>
-                           <div class="chart-wrap">
-                               <div class="sex-chart" ref="assetsChart" style="width: 100%;height: 100%"></div>
-                           </div>
+                            <div class="chart-wrap">
+                                <div class="sex-chart" ref="assetsChart" style="width: 100%;height: 100%"></div>
+                            </div>
                         </div>
                         <div class="flex2">
                             <h6>人生阶段</h6>
-                           <div class="chart-wrap">
-                               <div class="age-chart" ref="lifeChart" style="width: 100%;height: 100%"></div>
-                           </div>
+                            <div class="chart-wrap">
+                                <div class="age-chart" ref="lifeChart" style="width: 100%;height: 100%"></div>
+                            </div>
                         </div>
                     </div>
                     <div class="part part1">
                         <div class="flex1">
                             <h6>行业词云</h6>
                             <div class="chart-wrap">
-                                <div class="sex-chart" style="width: 100%;height: 100%"></div>
+                                <div class="word-cloud-box" ref='wordCloudBox'></div>
                             </div>
                         </div>
                         <div class="flex2">
@@ -166,6 +166,8 @@
 </template>
 
 <script>
+    import myCloud from '../../commonFun/myCloud.js'
+
     export default {
         name: "portraitDetail",
         data() {
@@ -549,10 +551,51 @@
                     }]
                 })
             },
+            //行业词云
+            getWordCloud() {
+                let wordList = [
+                    {text:'vue',size:20},
+                    {text:'html',size:25},
+                    {text:'js',size:30},
+                    {text:'vue',size:20},
+                    {text:'html',size:25},
+                    {text:'js',size:30},
+                    {text:'vue',size:20},
+                    {text:'html',size:25},
+                    {text:'js',size:30}, {text:'vue',size:20},
+                    {text:'html',size:25},
+                    {text:'js',size:30},
+                    {text:'vue',size:20},
+                    {text:'html',size:25},
+                    {text:'js',size:30},
+                    {text:'vue',size:20},
+                    {text:'html',size:25},
+                    {text:'js',size:30},
+                    {text:'vue',size:20},
+                    {text:'html',size:25},
+                    {text:'js',size:30},
+                    {text:'vue',size:20},
+                    {text:'html',size:25},
+                    {text:'js',size:30},
+                    {text:'vue',size:20},
+                    {text:'html',size:25},
+                    {text:'js',size:30},
+
+                ];
+                let wordOption = {
+                    wordList,
+                    size: [324, 240],  // 盒子的宽高
+                    svgElement: this.$refs.wordCloudBox  //使用ref选择节点
+                };
+                myCloud(wordOption, this.getArticleList)
+            },
+            //点击词云回调
+            getArticleList(){
+                console.log('窝窝头，一块钱四个，嘿嘿！');
+            },
             // 统一监听
             echartsListener() {
                 window.addEventListener("resize", () => {
-                    console.log('----')
                     this.sexChart.resize();
                     this.ageChart.resize();
                     this.eduChart.resize();
@@ -562,9 +605,10 @@
                     this.jobChart.resize();
                 });
             },
-        },
+        }
+        ,
         mounted() {
-            setTimeout(()=>{
+            setTimeout(() => {
                 this.sexChartFn()
                 this.ageChartFn()
                 this.eduChartFn()
@@ -573,7 +617,8 @@
                 this.lifeChartFn()
                 this.jobChartFn()
                 this.echartsListener();
-            },20)
+                this.getWordCloud()
+            }, 20)
         }
     }
 </script>
@@ -667,7 +712,7 @@
         height: 400px;
     }
 
-    .chart-wrap,.table-wrap{
+    .chart-wrap, .table-wrap {
         height: 352px;
     }
 
@@ -712,6 +757,13 @@
         line-height: 32px;
     }
 
+    .word-cloud-box{
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
 </style>
 

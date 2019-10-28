@@ -14,6 +14,8 @@
   },
   "dependencies": {
     "axios": "0.18.0",
+    "d3": "^5.12.0",
+    "d3-dispatch": "^1.0.5",
     "element-ui": "^2.3.9",
     "jquery": "3.2.1",
     "mint-ui": "^2.2.13",

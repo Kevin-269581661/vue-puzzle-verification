@@ -195,6 +195,41 @@
                 assetsChart: '',//资产状况
                 lifeChart: '',//人生阶段
                 jobChart: '',//工作行业
+                //词云
+                width:400,//svg宽度
+                height:352,//svg高度
+                tagsNum:20,//标签数量
+                RADIUS:150,//球的半径
+                speedX:Math.PI/360,//球一帧绕x轴旋转的角度
+                speedY:Math.PI/360,//球-帧绕y轴旋转的角度
+                tags: [
+                    {text:'vue',size:14},
+                    {text:'html',size:24},
+                    {text:'js',size:34},
+                    {text:'vue',size:24},
+                    {text:'html',size:15},
+                    {text:'js',size:26},
+                    {text:'vue',size:17},
+                    {text:'html',size:28},
+                    {text:'js',size:19}, {text:'vue',size:20},
+                    {text:'html',size:30},
+                    {text:'js',size:21},
+                    {text:'vue',size:12},
+                    {text:'html',size:13},
+                    {text:'js',size:14},
+                    {text:'vue',size:15},
+                    {text:'html',size:16},
+                    {text:'js',size:17},
+                    {text:'vue',size:18},
+                    {text:'html',size:19},
+                    {text:'js',size:20},
+                    {text:'vue',size:21},
+                    {text:'html',size:22},
+                    {text:'js',size:23},
+                    {text:'vue',size:24},
+                    {text:'html',size:25},
+                    {text:'js',size:26},
+                ]
             }
         },
         methods: {
@@ -553,35 +588,7 @@
             },
             //行业词云
             getWordCloud() {
-                let wordList = [
-                    {text:'vue',size:20},
-                    {text:'html',size:25},
-                    {text:'js',size:30},
-                    {text:'vue',size:20},
-                    {text:'html',size:25},
-                    {text:'js',size:30},
-                    {text:'vue',size:20},
-                    {text:'html',size:25},
-                    {text:'js',size:30}, {text:'vue',size:20},
-                    {text:'html',size:25},
-                    {text:'js',size:30},
-                    {text:'vue',size:20},
-                    {text:'html',size:25},
-                    {text:'js',size:30},
-                    {text:'vue',size:20},
-                    {text:'html',size:25},
-                    {text:'js',size:30},
-                    {text:'vue',size:20},
-                    {text:'html',size:25},
-                    {text:'js',size:30},
-                    {text:'vue',size:20},
-                    {text:'html',size:25},
-                    {text:'js',size:30},
-                    {text:'vue',size:20},
-                    {text:'html',size:25},
-                    {text:'js',size:30},
-
-                ];
+                let wordList =this.tags;
                 let wordOption = {
                     wordList,
                     size: [324, 240],  // 盒子的宽高
@@ -605,8 +612,7 @@
                     this.jobChart.resize();
                 });
             },
-        }
-        ,
+        },
         mounted() {
             setTimeout(() => {
                 this.sexChartFn()
@@ -619,6 +625,7 @@
                 this.echartsListener();
                 this.getWordCloud()
             }, 20)
+
         }
     }
 </script>

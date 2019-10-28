@@ -3,7 +3,7 @@
 // import * as d3 from 'd3'
 // import cloud from '@/assets/js/d3.layout.cloud.js'
 var d3 = require('d3'),
-    cloud = require('@/commonFun/d3.js').default
+    cloud = require('@/commonFun/d3.layout.cloud.js').default
 
 export default function (option,callback) {
     //传入的option参数对象和回调函数

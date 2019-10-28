@@ -309,7 +309,7 @@
                 tabHeight: '252px',
                 showhideText: '展开',
                 width: 144,//面板宽度
-                activeName: 'second',
+                activeName: 'first',
                 thirdShow: false,
                 forthShow: false,
                 currSecondTag: '',//当前选中的二级标签
@@ -819,6 +819,7 @@
             //排名列表
             getRankList() {
                 // console.log(this.chooseTagsArr);
+                this.loading = true
                 let info = {
                     pageNum: this.currPage,
                     pageSize: this.pageSize,
@@ -836,7 +837,8 @@
                     console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         this.total = res.data.data.total
-                        this.currentPlan = res.data.data.list
+                        this.currentPlan = res.data.data.list;
+                        this.loading = false
                     } else {
                         this.$message.warning(res.data.MSG)
                     }

@@ -1,0 +1,302 @@
+[
+    {
+        "label": "性别",
+        "value": "0",
+        "children": [
+            {
+                "label": "男",
+                "value": "1",
+                "checked": false
+            },
+            {
+                "label": "女",
+                "value": "2",
+                "checked": false
+            }
+        ]
+    },
+    {
+        "label": "年龄",
+        "value": "3",
+        "children": [
+            {
+                "label": "18岁以下",
+                "value": "4",
+                "checked": false
+            },
+            {
+                "label": "18~24岁",
+                "value": "5",
+                "checked": false
+            },
+            {
+                "label": "25~34岁",
+                "value": "6",
+                "checked": false
+            },
+            {
+                "label": "35-44岁",
+                "checked": false
+            },
+            {
+                "label": "45~54岁",
+                "checked": false
+            },
+            {
+                "label": "55~64岁",
+                "checked": false
+            },
+            {
+                "label": "65岁及以上",
+                "checked": false
+            }
+        ]
+    },
+    {
+        "label": "教育水平",
+        "children": [
+            {
+                "label": "高中及以下",
+                "checked": false
+            },
+            {
+                "label": "大专",
+                "checked": false
+            },
+            {
+                "label": "本科及以上",
+                "checked": false
+            }
+        ]
+    },
+    {
+        "label": "收入水平",
+        "children": [
+            {
+                "label": "2,499元及以下",
+                "checked": false
+            },
+            {
+                "label": "2,500~3,999元",
+                "checked": false
+            },
+            {
+                "label": "4,000~7,999元",
+                "checked": false
+            },
+            {
+                "label": "8,000~19,999元",
+                "checked": false
+            },
+            {
+                "label": "20,000元及以上",
+                "checked": false
+            }
+        ]
+    },
+    {
+        "label": "消费水平",
+        "children": [
+            {
+                "label": "高",
+                "checked": false
+            },
+            {
+                "label": "中",
+                "checked": false
+            },
+            {
+                "label": "低",
+                "checked": false
+            }
+        ]
+    },
+    {
+        "label": "资产情况",
+        "children": [
+            {
+                "label": "有车",
+                "checked": false
+            },
+            {
+                "label": "无车",
+                "checked": false
+            }
+        ]
+    },
+    {
+        "label": "人生阶段",
+        "children": [
+            {
+                "label": "初中生",
+                "checked": false
+            },
+            {
+                "label": "高中生",
+                "checked": false
+            },
+            {
+                "label": "大学生",
+                "checked": false
+            },
+            {
+                "label": "研究生",
+                "checked": false
+            },
+            {
+                "label": "孕期",
+                "checked": false
+            },
+            {
+                "label": "育儿阶段",
+                "checked": false
+            },
+            {
+                "label": "家有孕妇",
+                "checked": false
+            },
+            {
+                "label": "家有0-1岁小孩",
+                "checked": false
+            },
+            {
+                "label": "家有1-3岁小孩",
+                "checked": false
+            },
+            {
+                "label": "家有3-6岁小孩",
+                "checked": false
+            },
+            {
+                "label": "家有小学生",
+                "checked": false
+            },
+            {
+                "label": "家有初中生",
+                "checked": false
+            },
+            {
+                "label": "家有高中生",
+                "checked": false
+            }
+        ]
+    },
+    {
+        "label": "工作分布",
+        "children": [
+            {
+                "label": "生产操作人员",
+                "checked": false
+            },
+            {
+                "label": "文职人员",
+                "checked": false
+            },
+            {
+                "label": "专业技术人员",
+                "checked": false
+            },
+            {
+                "label": "管理者和企业主",
+                "checked": false
+            },
+            {
+                "label": "个体经营者",
+                "checked": false
+            },
+            {
+                "label": "服务人员",
+                "checked": false
+            }
+        ]
+    },
+    {
+        "label": "行业分布",
+        "children": [
+            {
+                "label": "农林牧渔",
+                "checked": false
+            },
+            {
+                "label": "能源采矿化工",
+                "checked": false
+            },
+            {
+                "label": "食品加工",
+                "checked": false
+            },
+            {
+                "label": "纺织服装",
+                "checked": false
+            },
+            {
+                "label": "建材家居",
+                "checked": false
+            },
+            {
+                "label": "医药卫生",
+                "checked": false
+            },
+            {
+                "label": "机械制造",
+                "checked": false
+            },
+            {
+                "label": "IT通信电子",
+                "checked": false
+            },
+            {
+                "label": "建筑房地产",
+                "checked": false
+            },
+            {
+                "label": "交通运输和仓储邮政",
+                "checked": false
+            },
+            {
+                "label": "餐饮",
+                "checked": false
+            },
+            {
+                "label": "日化百货",
+                "checked": false
+            },
+            {
+                "label": "金融保险",
+                "checked": false
+            },
+            {
+                "label": "生活服务",
+                "checked": false
+            },
+            {
+                "label": "住宿旅游",
+                "checked": false
+            },
+            {
+                "label": "广告营销",
+                "checked": false
+            },
+            {
+                "label": "法律商务人力外贸",
+                "checked": false
+            },
+            {
+                "label": "科学研究",
+                "checked": false
+            },
+            {
+                "label": "教育",
+                "checked": false
+            },
+            {
+                "label": "文化体育娱乐",
+                "checked": false
+            },
+            {
+                "label": "社会公共管理",
+                "checked": false
+            }
+        ]
+    }
+]

@@ -17,7 +17,7 @@ if(process.env.NODE_ENV == 'development'){
 }
 const apiRoot = {
     devURL: '"http://192.168.1.239"',
-    // testURL: '"http://192.168.1.239/"',
+    // testURL: '"http://192.168.1.239"',
     testURL: '"https://test-qadn.qinlindmp.com/"',
     grayURL: '"https://beta-qadn.qinlindmp.com/"',
     prodURL: '"https://www.qinlinad.com/"',
@@ -43,7 +43,7 @@ const apiVar = {
     // 换画报告
     replace: '/replace/v1',
     // 社区画像
-    portrait: '/portrait',
+    portrait: '/portrait/api/v1/',
     // 图片相关
     image: '/image',
     wuYouMap: wuYouMap,

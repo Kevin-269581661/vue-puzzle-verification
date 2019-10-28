@@ -110,7 +110,7 @@ export default new Router({
         // 亲邻地图
         {path: '/ADResourceMap/chooseRes',name:'qinLinMap',component: qinLinMap},
         // 地图分享
-        {path: '/mapADResource/shareRes',name:'qinLinMap',component: qinLinMap},
+        {path: '/ADResourcesMap/shareRes',name:'qinLinMap',component: qinLinMap},
         //上下刊报告h5页面
         {path: '/Report', name: 'Report', component: Report},
         //admin

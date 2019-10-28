@@ -12,6 +12,7 @@
                       @keydown.native="searchDown($event)"
                       class="input-with-select"
                       clearable
+                      @clear="clearInputSearch"
                       size="small">
                 <el-select v-model="activeSearchKind" slot="prepend" placeholder="请选择">
                     <el-option
@@ -41,7 +42,7 @@
                                 {{item.isSelect ? '取消' : '添加'}}
                             </span>
                         </p>
-                        <p class="li_address">{{item.address || '宝安区后端利达路3号'}}</p>
+                        <p class="li_address">{{item.resAddress || '--'}}</p>
                         <p>
                             <span class="li_p_span">{{item.districtName}}</span>
                             <span class="li_p_span">{{item.hNum}}</span>
@@ -54,7 +55,7 @@
                     <el-button plain size="small" @click="selectAllFun">添加全部</el-button>
                 </div>
             </div>
-            <div class="search_body" v-show="activeSearchKind == '2' && !isOnlineSearch"
+            <div class="search_body" v-show="(activeSearchKind == '2' && !isOnlineSearch) && (searchOnlineLoading || searchOnlineList.length)"
                  v-loading="searchOnlineLoading"
                  element-loading-text="玩命加载中.."
                  element-loading-spinner="el-icon-loading">
@@ -120,8 +121,8 @@
                 </div>
                 <el-button plain slot="reference" class="otherBtn top_btn" :class="filterData.bPrice ? 'filter_btn' : ''">
                     {{filterData.bPrice ? ('¥' + buildPrice[0] + '-¥' + buildPrice[1]) : '楼盘价格'}}
-                    <i class="el-icon-arrow-down" v-show="!popoverShow.bPrice"></i>
-                    <i class="el-icon-arrow-up" v-show="popoverShow.bPrice"></i>
+                    <i class="el-icon-arrow-down icon_arrow" v-show="!popoverShow.bPrice"></i>
+                    <i class="el-icon-arrow-up icon_arrow" v-show="popoverShow.bPrice"></i>
                 </el-button>
             </el-popover>
             <!--住户数量-->
@@ -147,8 +148,8 @@
                 </div>
                 <el-button plain slot="reference" class="otherBtn top_btn" :class="filterData.hNum ? 'filter_btn' : ''">
                     {{filterData.hNum ? (houseNum[0] + '户-' + houseNum[1]) + '户' : '住户数量'}}
-                    <i class="el-icon-arrow-down" v-show="!popoverShow.hNum"></i>
-                    <i class="el-icon-arrow-up" v-show="popoverShow.hNum"></i>
+                    <i class="el-icon-arrow-down icon_arrow" v-show="!popoverShow.hNum"></i>
+                    <i class="el-icon-arrow-up icon_arrow" v-show="popoverShow.hNum"></i>
                 </el-button>
             </el-popover>
             <!--入住年份-->
@@ -176,8 +177,8 @@
                 </div>
                 <el-button plain slot="reference" class="otherBtn top_btn" :class="filterData.lYear ? 'filter_btn' : ''">
                     {{filterData.lYear ? (liveYear[0] + '-' + liveYear[1]) : '入住年份'}}
-                    <i class="el-icon-arrow-down" v-show="!popoverShow.lYear"></i>
-                    <i class="el-icon-arrow-up" v-show="popoverShow.lYear"></i>
+                    <i class="el-icon-arrow-down icon_arrow" v-show="!popoverShow.lYear"></i>
+                    <i class="el-icon-arrow-up icon_arrow" v-show="popoverShow.lYear"></i>
                 </el-button>
             </el-popover>
             <!--广告限制-->
@@ -281,7 +282,7 @@
                 <li class="mouse_control_li" @click="drawingMouse('polygon')">
                     <img src="../../assets/images/map/polygon.png" alt="">
                 </li>
-                <li class="mouse_control_li" @click="">
+                <li class="mouse_control_li" @click="drawingMouse('')">
                     <img src="../../assets/images/map/overlay.png" alt="">
                 </li>
             </ul>
@@ -290,7 +291,7 @@
         <div class="res_info_window" ref="resInfoWindow" v-show="isShowInfo">
             <div class="res_info_header">
                 <h3>{{ showResInfo.resName}}</h3>
-                <p>{{ showResInfo.address || '宝安区后端利达路3号'}}</p>
+                <p>{{ showResInfo.resAddress || '--'}}</p>
             </div>
             <ul class="res_info_content">
                 <li class="res_info_content_li">
@@ -298,7 +299,7 @@
                     <span>{{showResInfo.tradingArea || '--'}}</span></li>
                 <li class="res_info_content_li">
                     <span class="content_li_title">楼栋数量:</span>
-                    <span>{{showResInfo.buildingNum || '--'}}</span></li>
+                    <span>{{showResInfo.fNum || '--'}}</span></li>
                 <li class="res_info_content_li">
                     <span class="content_li_title">住户数量:</span>
                     <span>{{showResInfo.hNum || '--'}}</span></li>
@@ -307,7 +308,7 @@
                     <span>¥{{showResInfo.hPrice / 100 || '--'}}/㎡</span></li>
                 <li class="res_info_content_li">
                     <span class="content_li_title">楼盘类型:</span>
-                    <span>{{showResInfo.hType || '--'}}</span></li>
+                    <span>{{showResInfo.cType || '--'}}</span></li>
                 <li class="res_info_content_li">
                     <span class="content_li_title">入住时间:</span>
                     <span>{{showResInfo.chDay || '--'}}年</span></li>
@@ -316,30 +317,26 @@
                     <span>{{showResInfo.peopleFlow || 0}}/人次/天</span></li>
                 <li class="res_info_content_li">
                     <span class="content_li_title">广告限制:</span>
-                    <span>{{showResInfo.notPush || '--'}}</span></li>
+                    <span>{{showResInfo.adLimit || '--'}}</span></li>
                 <li class="res_info_content_li">
                     <span class="content_li_title">点位备注:</span>
-                    <span>{{showResInfo.notPush || '--'}}</span></li>
+                    <span>{{showResInfo.mRemark || '--'}}</span></li>
                 <li class="res_info_content_li">
                     <span class="content_li_title">车流量:</span>
                     <span>{{showResInfo.carFlowrate || 0}}</span></li>
                 <li class="res_info_content_li">
                     <span class="content_li_title">车位数:</span>
-                    <span>{{showResInfo.carNumber || 0}}</span></li>
+                    <span>{{showResInfo.parkSpaceNum || 0}}</span></li>
                 <li class="res_info_content_li">
                     <span class="content_li_title">出入口数:</span>
-                    <span>{{showResInfo.EntryExitNum || '--'}}</span></li>
+                    <span>{{showResInfo.dNum || '--'}}</span></li>
             </ul>
             <div class="res_info_footer">
-<!--                <el-button plain size="small" @click="getMediaListByResID">广告门</el-button>-->
                 <img src="../../assets/images/map/adDoor.png" alt="" @click="getMediaListByResID">
                 <el-button size="small" type="primary" @click="addResFun(showResInfo)">
                     {{showResInfo.isSelect ? '取消待选' : '加入待选'}}
                 </el-button>
             </div>
-            <!--<div class="info_window_left">
-                左侧广告门
-            </div>-->
         </div>
         <!--框选条件-->
         <el-dialog
@@ -392,7 +389,7 @@
                         <div class="li_header">
                             <h4>{{key.mTitle}}</h4>
                             <img src="../../assets/images/map/mstate_1.png" alt="">
-                            <i class="el-icon-picture-outline" @click=""></i>
+                            <i class="el-icon-picture-outline" @click="showMediaImg(key)"></i>
                         </div>
                         <p class="li_p">{{key.assetTag}}</p>
                         <p class="li_p">
@@ -402,6 +399,19 @@
                         </p>
                     </li>
                 </ul>
+            </div>
+        </el-dialog>
+        <!--媒体门禁图片-->
+        <el-dialog
+            title="门禁图片"
+            width="340px"
+            :visible.sync="medieImgDialogVisible">
+            <div>
+                <el-carousel height="370px">
+                    <el-carousel-item v-for="(key,index) in activeMediaPhotos" :key="index">
+                        <img :src="key" alt="">
+                    </el-carousel-item>
+                </el-carousel>
             </div>
         </el-dialog>
         <!--复制分享链接-->
@@ -421,7 +431,6 @@
 </template>
 
 <script>
-    import resData from "../../commonFun/json/guangzhouAds"
     import areaPackage from "../../commonFun/areaPackage_new";
     import sessFun from "../../commonFun/sessFun";
     import timeFormat from "../../commonFun/timeFormat"
@@ -471,6 +480,7 @@
                 /* 在线搜索 */
                 // 在线搜索到list
                 searchOnlineList:[],
+                onlineMarkers:[],
                 // 在线搜索是否全选状态
                 isAllSelectOnline: false,
                 // 在线搜索输入范围
@@ -504,9 +514,6 @@
                     bNum:false,
                     bPrice:false,
                     lYear: false,
-                    pFlow: false,
-                    cFlow: false,
-                    pSNum: false,
                 },
                 // 显示更多过滤条件
                 showMore: false,
@@ -572,12 +579,16 @@
                 medieDialogVisible: false,
                 // 媒体list(门)
                 mediaList: [],
+                // 媒体图片
+                activeMediaPhotos: [],
+                medieImgDialogVisible: false,
                 // 复制分享链接
                 copyDialogVisible: false,
                 shareUrl: 'https://beta.qinlinad.com/shareADList?apid=649&aicode=0DDD2685D9D3842ECB0DDC45D79D2131'
             }
         },
         mounted() {
+            // alert(new Date())
             this.getSessionData()
             window.onload = this.initMap()
             if(this.$route.path.includes('shareRes')) {
@@ -755,7 +766,6 @@
                 // 监听点击地图
                 this.resMap.addEventListener("click", (e) => {
                     console.log('监听点击地图---',e.point)
-                    this.isShowMediaInfo = false
                     if(this.isMouseLine) {
                         if(!this.mouseLineStep) {
                             this.resMap.addEventListener("mousemove",that.mapMouseMove,false)
@@ -784,7 +794,6 @@
             // 边界覆盖物
             getBoundary(json) {
                 let _Boundary = new BMap.Boundary();
-                // let that = this
                 _Boundary.get(json.name, (rs)=> {               // 获取行政区域
                     let count = rs.boundaries.length;           // 行政区域的点有多少个
                     for (let i = 0; i < count; i++) {
@@ -896,8 +905,6 @@
                     }
                     i++
                 }
-                // 城市边界
-                // this.displayBoundary()
             },
             // 显示详情
             showInfo(info,point){
@@ -911,7 +918,7 @@
                 }
                 let infoWindow = new BMap.InfoWindow(content,opts);  // 创建信息窗口对象
                 this.resMap.openInfoWindow(infoWindow,point);        //开启信息窗口
-                console.log('-----',content.parentNode)
+                console.log('显示详情-----',info)
                 this.isShowInfo = true
             },
             // 详情里选定按钮
@@ -923,39 +930,35 @@
                 console.log('获取指定资源到媒体列表-----')
                 this.medieDialogVisible = true
                 let params = {
-                    "uid": this.sessionData.uID,
-                    "token": this.sessionData.token,
-                    "service": "GetMediaList",
-                    "data": {
-                        "resid": this.showResInfo.resID
-                    }
+                    "resID": this.showResInfo.resID
                 }
-                api.postApi_new(this.apiVar.Media, params).then(res => {
-                    console.log('媒体信息', res.data)
+                if(this.isShare) {
+                    params.shareCode = this.routeQuery.code
+                }
+                api.getApi(this.apiVar.mapApi + '/mediaByResID',params).then(res=>{
                     if (res.data.SysCode == 200200) {
-                        if (res.data.data.length === 0 || res.data.data === '') {
-                            sessFun.messageFun('warning', '媒体资源信息为空!')
-                        } else {
-                            // classified--是否执行媒体分层 1启用 2关闭
-                            this.mediaList = res.data.data.map(item=>{
-                                if(item.mState === 1) {
-                                    item.stateUrl = require('../../assets/images/map/mstate_1.png')
-                                } else if (item.mState === 2) {
-                                    item.stateUrl = require('../../assets/images/map/mstate_2.png')
-                                } else if (item.mState === 2) {
-                                    item.stateUrl = require('../../assets/images/map/mstate_3.png')
-                                } else {
-                                    item.stateUrl = require('../../assets/images/map/mstate_3.png')
-                                }
-                                return item
-                            })
-                        }
+                        this.mediaList = res.data.data.map(item=>{
+                            if (item.mState === 1) {
+                                item.stateUrl = require('../../assets/images/map/mstate_1.png')
+                            } else if (item.mState === 2) {
+                                item.stateUrl = require('../../assets/images/map/mstate_2.png')
+                            } else if (item.mState === 3) {
+                                item.stateUrl = require('../../assets/images/map/mstate_3.png')
+                            }
+                            return item
+                        })
                     } else {
                         sessFun.messageFun('warning', '媒体详情获取异常!')
                     }
-                }).catch(err => {
-                    console.log(err);
+                }).catch(err=>{
+                    sessFun.messageFun('warning', '接口异常!')
                 })
+            },
+            // 媒体图片
+            showMediaImg(item) {
+                console.log('媒体图片item----',item)
+                this.activeMediaPhotos = item.photoList || []
+                this.medieImgDialogVisible = true
             },
             /**
              * 鼠标绘制
@@ -1027,11 +1030,13 @@
                 } else if(temp === 'polygon') {
                     this.drawingManager.open()
                     this.drawingManager.setDrawingMode(BMAP_DRAWING_POLYGON);
-                } else {
+                } else if(temp === 'polyline'){
                     this.drawingManager.open()
                     // this.drawingManager.enableCalculate()
                     this.drawingManager.setDrawingMode(BMAP_DRAWING_POLYLINE);
                     this.isMouseLine = true
+                } else {
+                    sessFun.messageFun('warning','功能暂未开放！')
                 }
             },
             // 画线时打点
@@ -1170,6 +1175,18 @@
                     this.searchFun()
                 }
             },
+            // 清空搜索
+            clearInputSearch() {
+                console.log('清空搜索',this.activeSearchKind)
+                if(this.activeSearchKind == '1') {
+                    this.searchResList = []
+                } else if (this.activeSearchKind == '2') {
+                    for(let key of this.onlineMarkers) {
+                        this.resMap.removeOverlay(key)
+                    }
+                    this.searchOnlineList = []
+                }
+            },
             // 搜索
             searchFun() {
                 console.log('在线搜索----',this.activeSearchKind)
@@ -1229,6 +1246,7 @@
             },
             // 在线结果打点
             onlineResultsMarker() {
+                this.onlineMarkers = []
                 let i = 0
                 for (let key of this.searchOnlineList) {
                     if (i < 100) {
@@ -1237,6 +1255,7 @@
                         });
                         let marker = new BMap.Marker(key.point,{icon:myIcon});  // 创建标注
                         marker.setTop(true);
+                        this.onlineMarkers.push(marker)
                         this.resMap.addOverlay(marker);            // 将标注添加到地图中
                         marker.addEventListener("click", () => {
                             let content =
@@ -1287,7 +1306,10 @@
             // 取消在线选择
             canceAllOnline() {
                 for(let key of this.searchOnlineList) {
-                    key.isSelect = false
+                    if(key.isSelect) {
+                        key.isSelect = false
+                        this.onlineCheckBox(key)
+                    }
                 }
             },
             // 勾选/取消
@@ -1313,28 +1335,46 @@
             // 在线勾选/取消
             onlineCheckBox(item) {
                 console.log('在线item', item)
-                if(item.isSelect) {
-                    // 圈起标识
-                    this.createCircle(item.id,item.point)
-                } else {
-                    this.deleteCircle(item.id)
+                for(let key of this.onlineMarkers) {
+                    if(key.point === item.point) {
+                        console.log('----')
+                        this.resMap.removeOverlay(key)
+                    }
                 }
+                let onlineIcon =  ''
+                if(item.isSelect) {
+                    // 选中更换红色图标
+                    onlineIcon = require('../../assets/images/map/isActiveIcon.png')
+                } else {
+                    onlineIcon = require('../../assets/images/map/onlineIcon.png')
+                }
+                let myIcon = new BMap.Icon(
+                    onlineIcon,
+                    new BMap.Size(32,32),
+                    {
+                        anchor: new BMap.Size(16, 16),
+                        imageSize: new BMap.Size(32,32),    // 引用图片实际大小
+                    });
+                let marker = new BMap.Marker(item.point,{icon:myIcon});
+                marker.setTop(true);
+                this.resMap.addOverlay(marker);             // 将标注添加到地图中
             },
             // 画圆标识选中状态
             createCircle(id,point){
                 console.log('id,point',id,point)
                 let opts = {
                     position : point,    // 指定文本标注所在的地理位置
-                    offset   : new BMap.Size(-28, -32)    //设置文本偏移量
+                    // offset   : new BMap.Size(-28, -32)    //设置文本偏移量
+                    offset   : new BMap.Size(-12, -9)    //设置文本偏移量
                 }
                 let label = new BMap.Label(id, opts);  // 创建文本标注对象
                 label.setStyle({
                     color : "rgba(0,0,0,0)",
                     fontSize : "12px",
-                    height : "48px",
-                    width: "48px",
+                    height : "12px",
+                    width: "20px",
                     background: 'rgba(0,0,0,0)',
-                    border: "3px solid #1890FF",
+                    border: "1px solid rgba(255,0,0,0.85)",
                     borderRadius: "50%"
                 });
                 this.resMap.addOverlay(label);
@@ -1682,7 +1722,7 @@
                             chDay: data.chDay || '',
                             notPush: data.adLimit || '',
                             mRemark: data.mRemark || '',
-                            mediaNum: data.mediaNum || '',
+                            mediaNum: data.mediaCount || '',
                         };
                         resultArr.push(obj);
                     }
@@ -1775,8 +1815,9 @@
                 console.log('分享arr',arr)
                 api.postApi(this.apiVar.mapApi + '/shareCode',params).then(res=>{
                     console.log('res分享',res)
-                    if(res.data.SysCode === 200200) {
-                        this.shareUrl = this.apiVar.qadnUrl + '/mapADResource/shareRes?city='+ this.routeQuery.city +'&code=' + res.data.data
+                    if(res.data.SysCode === 200200) { // ADResourcesMap/shareRes
+                        // this.shareUrl = this.apiVar.qadnUrl + '/test/shareRes?city='+ this.routeQuery.city +'&code=' + res.data.data
+                        this.shareUrl = this.apiVar.qadnUrl + '/ADResourcesMap/shareRes?city='+ this.routeQuery.city +'&code=' + res.data.data
                         this.copyDialogVisible = true
                         console.log('shareUrl',this.shareUrl)
                     } else {
@@ -1815,11 +1856,18 @@
         width: 288px;
         top: 20px;
         left: 32px;
+        box-shadow:0px 0px 8px 0px rgba(0,0,0,0.12);
+    }
+
+    /deep/ .el-input__inner{
+        border: none;
+        border-left: 1px solid rgba(232,232,232,1);
     }
 
     /deep/ .el-input-group__prepend {
         width: 64px;
         background: #fff;
+        border: none;
     }
 
     .search_body {
@@ -1827,6 +1875,7 @@
         margin-top: 8px;
         box-shadow:0 0 8px 0 rgba(0,0,0,0.12);
         padding: 3px;
+        border-radius: 4px;
     }
 
     .search_result_btn{
@@ -1928,8 +1977,9 @@
         border-top:1px solid rgba(232,232,232,1)
     }
 
-    .search_bottom_btn /deep/ .el-button{
+    .search_bottom_btn /deep/ .el-button.online_search_btn{
         min-width: 72px;
+        margin-left: 0;
     }
 
     /*在线搜索*/
@@ -1984,6 +2034,7 @@
         height: 28px;
         line-height: 28px;
         padding: 0 6px;
+        border: 1px solid rgba(232,232,232,1);
     }
 
 
@@ -2013,7 +2064,7 @@
     }
 
     .input_wrap{
-        padding: 0 8px 8px;
+        padding: 8px 8px 8px;
         border-bottom: 1px solid #E8E8E8;
     }
 
@@ -2023,6 +2074,7 @@
         background:rgba(255,255,255,1);
         border-radius:4px;
         border:1px solid rgba(194,194,194,1);
+        text-align: center;
     }
 
     .popover_footer_btn{
@@ -2032,13 +2084,13 @@
     .el-button.popover_btn{
         width: 43%;
         min-width: 40px;
-        height: 24px;
-        margin-top: 6px;
+        height: 26px;
+        margin-top: 8px;
         padding: 0;
         font-size: 12px;
         text-align: center;
         line-height: 22px;
-        border-radius: 0;
+        border-radius: 4px;
     }
 
     .el-button.popover_btn + .el-button{
@@ -2047,12 +2099,13 @@
     }
 
     /deep/ .otherBtn.el-button{
-        border-radius: 0;
+        border-radius: 4px;
         color:rgba(0,0,0,0.35);
         min-width: 110px;
         width: 145px;
         margin-bottom: 8px;
-        box-shadow:0px 0px 8px 0px rgba(0,0,0,0.12)
+        box-shadow:0px 0px 8px 0px rgba(0,0,0,0.12);
+        border: none;
     }
 
     /deep/ .otherBtn.el-button:hover{
@@ -2066,7 +2119,7 @@
         padding: 0 30px 0 15px;
     }
 
-    .top_btn /deep/ .el-icon-arrow-down{
+    .top_btn /deep/ .icon_arrow{
         position: absolute;
         right: 12px;
         top: 8px;
@@ -2075,6 +2128,10 @@
     /deep/ .filter_btn span{
         color:rgba(0,0,0,0.85);
         font-size: 14px;
+    }
+
+    .filter_ul{
+        padding-top: 8px;
     }
 
     .filter_ul li{
@@ -2097,9 +2154,11 @@
         max-width: 110px !important;
     }
 
-    .top_filter_box /deep/ .el-button.top_filter_btn,/deep/ .el-button.online_search_btn{
-        min-width: 74px;
+    .top_filter_box /deep/ .el-button.top_filter_btn{
+        min-width: 72px;
         margin-left: 0;
+        border: none;
+        box-shadow:0px 0px 8px 0px rgba(0,0,0,0.12);
     }
 
     /*  底部选中 */
@@ -2222,6 +2281,9 @@
         color:rgba(0,0,0,0.65);
         font-size: 12px;
         line-height: 24px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .res_info_content{
@@ -2438,6 +2500,11 @@
         font-size: 12px;
         color:rgba(0,0,0,0.35);
         margin: 0 4px 0 0;
+    }
+
+    /*媒体图片*/
+    /deep/.el-dialog__body{
+        padding: 16px;
     }
 
     ::-webkit-scrollbar {

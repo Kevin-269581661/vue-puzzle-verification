@@ -185,10 +185,11 @@ export default {
             localStorage.removeItem('qinlinMapCode')
             let tempWindow = window.open()
             if (uType === 'BD') {
-                tempWindow.location = 'http://localhost:8088/ADResourceMap/chooseRes?city=' + this.mapCityName + '&flag=' + true
+                tempWindow.location = this.apiVar.qadnUrl + '/ADResourceMap/chooseRes?city=' + this.mapCityName + '&flag=' + true
+                // let url = this.apiVar.qadnUrl + '/ADResourceMap/chooseRes?city=' + this.mapParams.city  + '&flag=' + true
                 this.confirmVisible = true
             } else if (uType === 'SM') {
-                tempWindow.location = 'http://localhost:8088/ADResourceMap/chooseRes?city=' + this.mapCityName + '&flag=' + false
+                tempWindow.location = this.apiVar.qadnUrl +  '/ADResourceMap/chooseRes?city=' + this.mapCityName + '&flag=' + false
             }
         },
         // 判断是否已提交地图选择点位,并跳转到创建方案页面

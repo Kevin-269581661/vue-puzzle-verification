@@ -2389,7 +2389,6 @@
                     mID: info.mID,
                     resType: info.resType,
                     resID: info.resID,
-                    // asID: '',
                     asID: info.asID,
                     asIDs: info.asID,
                     asLabs: info.asLab,
@@ -2423,11 +2422,6 @@
                     asrID: info.asrID,                 // 所属公司id,
                     lState: info.adlInfo ? info.adlInfo : '',   // 是否被占
                 };
-                // if(info.mVehicle === '道闸'){
-                //     importInfo.asID = info.asIDs.split(',')
-                // }else if(info.mVehicle === '广告门'){
-                //     importInfo.asID = info.asID
-                // }
                 return importInfo;
             },
             // 第四步的导出方案
@@ -3204,8 +3198,8 @@
                      suID: this.BDData.uid,
                  }))
                 // let tempWindow = window.open()
-                let url = 'http://localhost:8088/ADResourceMap/chooseRes?city=' + this.mapParams.city  + '&flag=' + true
-                // tempWindow.location = this.apiVar.qadnUrl + '/mapResource/chooseRes?city=' + this.mapParams.city  + '&flag=' + true
+                // let url = 'http://localhost:8088/ADResourceMap/chooseRes?city=' + this.mapParams.city  + '&flag=' + true
+                let url = this.apiVar.qadnUrl + '/ADResourceMap/chooseRes?city=' + this.mapParams.city  + '&flag=' + true
                 window.open(url)
                 this.mapBtn = false
                 this.dialogVisible()
@@ -3952,8 +3946,8 @@
                         mID: key.mID,
                         resType: key.resType,
                         resID: key.resID,
-                        asID: '',
-                        asIDs: key.asIDs,
+                        asID: key.asID,
+                        asIDs: key.asID,
                         asLabs: key.asLab,
                         A_B: key.asLab,
                         resName: key.resName,
@@ -4958,7 +4952,7 @@
             },
             // 创建方案基本信息及投放城市详情(报价单数据提交)
             creatAdPlan(){
-                console.log('creatAdPlan',this.quotation)
+                console.log('creatAdPlan----',this.quotation)
                 let arr = []
                 let cityArea = []
                 for(let key of this.quotation){
@@ -5033,7 +5027,7 @@
                     }
                 })
             },
-            // 提交方案选点信息 7700 6700
+            // 提交方案选点信息
             PushADBFun(data) {
                 let ADBData = data
                 console.log('shopingList', this.shopingList)
@@ -5046,19 +5040,19 @@
                 let pbSetTime = this.timestampToTime(Date.parse(new Date()))
                 console.log('当前日期时间', pbSetTime)
                 let arr = []
-                for(let key of this.shopingList) {
+                for (let key of this.shopingList) {
                     for (let cKey of cityArr) {
-                        if(key.city == cKey.city && key.asrID == cKey.asrID) {
+                        if (key.city == cKey.city && key.asrID == cKey.asrID) {
                             let adsInfo = {
                                 uID: this.sessionData.uID,
                                 asID: key.asID,
-                                pdID:cKey.pdID,
+                                pdID: cKey.pdID,
                                 pbStar: key.schedules.split('-')[0],
                                 pbEnd: key.schedules.split('-')[1],
                                 mapCenterName: key.mapCenter,
                                 pbSetTime: pbSetTime,
                             }
-                            if(cKey.pdType == 0 && key.mVehicle === '广告门') {
+                            if (cKey.pdType == 0 && key.mVehicle === '广告门') {
                                 arr.push(adsInfo)
                             } else if (cKey.pdType == 1 && key.mVehicle === '道闸') {
                                 arr.push(adsInfo)
@@ -5072,37 +5066,34 @@
                     token: this.sessionData.token,
                     abList: arr
                 }
-                api.postApi_json(this.apiVar.Advertisement + '/PushADB?uid='+this.sessionData.uID+'&token='+this.sessionData.token,postData).then(res => {
+                api.postApi_json(this.apiVar.Advertisement + '/PushADB?uid=' + this.sessionData.uID + '&token=' + this.sessionData.token, postData).then(res => {
                     console.log('PushADB提交选点', res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
+                    if (res.data.asIDCount) {
                         this.ADloading.close()
-                    } else {
-                        if (res.data === '' || res.data === null) {
-                            sessFun.messageFun('warning','提交选点失败')
+                        if (this.apMinTime <= this.dateTime) {
+                            sessFun.messageFun('warning', '该方案的投放期已经开始，建议立即发布该方案！')
                         } else {
-                            this.ADloading.close()
-                            this.active = 3
-                            if(this.apMinTime <= this.dateTime){
-                                sessFun.messageFun('warning','该方案的投放期已经开始，建议立即发布该方案！')
-                            }else{
-                                sessFun.messageFun('success','方案创建成功')
-                            }
-                            // 清除后台缓存
-                            let params = {
-                                uid: this.sessionData.uID,
-                                token: this.sessionData.token
-                            }
-                            api.postApi(this.apiVar.Advertisement + '/clearAdPlanBackups', params).then(res => {
-                                console.log('清空缓存的方案', res)
-                                if (res.data.SysCode === 200200) {
-                                    console.log('缓存方案清除成功')
-                                } else {
-
-                                }
-                            })
-                            // 清除前台缓存
-                            cacheAdPlan.removeData(this.sessionData.uID)
+                            sessFun.messageFun('success', '方案创建成功')
                         }
+                        this.active = 3
+                        // 清除后台缓存
+                        let params = {
+                            uid: this.sessionData.uID,
+                            token: this.sessionData.token
+                        }
+                        api.postApi(this.apiVar.Advertisement + '/clearAdPlanBackups', params).then(res => {
+                            console.log('清空缓存的方案', res)
+                            if (res.data.SysCode === 200200) {
+                                console.log('缓存方案清除成功')
+                            } else {
+
+                            }
+                        })
+                        // 清除前台缓存
+                        cacheAdPlan.removeData(this.sessionData.uID)
+                    } else {
+                        this.ADloading.close()
+                        sessFun.messageFun('warning', res.data.MSG || '提交选点失败')
                     }
                 })
             },

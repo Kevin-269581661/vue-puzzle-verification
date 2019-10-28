@@ -2254,8 +2254,7 @@
                     le: this.dateInput[1],
                     suID: this.BDData.uid,
                 }))
-                // let url = this.apiVar.qadnUrl + '/mapResource/chooseRes?city=' + this.mapParams.city  + '&flag=' + true
-                let url = 'http://192.168.1.239/ADResourceMap/chooseRes?city=' + this.mapParams.city  + '&flag=' + true
+                let url = this.apiVar.qadnUrl + '/ADResourceMap/chooseRes?city=' + this.mapParams.city  + '&flag=' + true
                 // let url = 'http://localhost:8088/ADResourceMap/chooseRes?city=' + this.mapParams.city  + '&flag=' + true
                 window.open(url)
                 this.mapBtn = false
@@ -4102,8 +4101,8 @@
                         mID: key.mID,
                         resType: key.resType,
                         resID: key.resID,
-                        asID: '',
-                        asIDs: key.asIDs,
+                        asID: key.asID,
+                        asIDs: key.asID,
                         asLabs: key.asLab,
                         A_B: key.asLab,
                         resName: key.resName,

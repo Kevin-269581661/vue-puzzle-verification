@@ -227,12 +227,23 @@
                     {value: 335, name: '男'},
                     {value: 310, name: '女'},
                 ],
-                ageData:['15岁以下', '16-25岁', '26-35岁', '36-45岁', '46-55岁', '56岁以上', '未知'],
+                ageData:{x:['15岁以下', '16-25岁', '26-35岁', '36-45岁', '46-55岁', '56岁以上', '未知'],y:[120, 200, 150, 80, 70, 110, 130]},
                 eduData:[
                     {value: 335, name: '本科及以上'},
                     {value: 310, name: '大专'},
                     {value: 310, name: '高中及以下'},
-                ]
+                ],
+                spendData: [
+                    {value: 335, name: '高'},
+                    {value: 310, name: '中'},
+                    {value: 310, name: '低'},
+                ],
+                assetsData: [
+                    {value: 335, name: '有车'},
+                    {value: 310, name: '无车'},
+                ],
+                lifeData: {x:['初中生', '高中生', '大学生', '研究生', '孕期', '育儿阶段', '家有孕妇', '家有0-1岁小孩', '家有1-3岁小孩', '家有3-6岁小孩', '家有小学生', '家有初中生', '家有高中生'],y: [120, 200, 150, 80, 70, 110, 130, 120, 200, 150, 80, 70, 110]},
+                jobData:{x:['服务人员', '个体经营者', '管理者和企业主', '专业技术人员', '文职人员', '生产操作人员'],y:[120, 200, 150, 80, 70, 110]}
             }
         },
         methods: {
@@ -302,7 +313,7 @@
                                 color: "#2C313C" //坐标轴刻度文字的颜色
                             }
                         },
-                        data: this.ageData
+                        data: this.ageData.x
                     },
                     yAxis: {
                         type: 'value',
@@ -328,7 +339,7 @@
                         }
                     },
                     series: [{
-                        data: [120, 200, 150, 80, 70, 110, 130],
+                        data: this.ageData.y,
                         type: 'bar',
                         barWidth: '18%',
                     }]
@@ -398,11 +409,7 @@
                             label: {
                                 formatter: '{d}%'
                             },
-                            data: [
-                                {value: 335, name: '高'},
-                                {value: 310, name: '中'},
-                                {value: 310, name: '低'},
-                            ],
+                            data:this.spendData,
                             itemStyle: {
                                 emphasis: {
                                     shadowBlur: 10,
@@ -440,10 +447,7 @@
                             label: {
                                 formatter: '{d}%'
                             },
-                            data: [
-                                {value: 335, name: '有车'},
-                                {value: 310, name: '无车'},
-                            ],
+                            data:this.assetsData,
                             itemStyle: {
                                 emphasis: {
                                     shadowBlur: 10,
@@ -490,7 +494,7 @@
                             },
                             rotate: 30
                         },
-                        data: ['初中生', '高中生', '大学生', '研究生', '孕期', '育儿阶段', '家有孕妇', '家有0-1岁小孩', '家有1-3岁小孩', '家有3-6岁小孩', '家有小学生', '家有初中生', '家有高中生']
+                        data:this.lifeData.x
                     },
                     yAxis: {
                         type: 'value',
@@ -516,7 +520,7 @@
                         }
                     },
                     series: [{
-                        data: [120, 200, 150, 80, 70, 110, 130, 120, 200, 150, 80, 70, 110],
+                        data:this.lifeData.y,
                         type: 'bar',
                         barWidth: '18%',
                     }]
@@ -550,7 +554,7 @@
                                 color: "#2C313C" //坐标轴刻度文字的颜色
                             }
                         },
-                        data: ['服务人员', '个体经营者', '管理者和企业主', '专业技术人员', '文职人员', '生产操作人员']
+                        data: this.jobData.x
                     },
                     yAxis: {
                         type: 'value',
@@ -576,7 +580,7 @@
                         }
                     },
                     series: [{
-                        data: [120, 200, 150, 80, 70, 110],
+                        data: this.jobData.y,
                         type: 'bar',
                         barWidth: '18%',
                     }]

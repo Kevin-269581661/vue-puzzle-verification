@@ -195,13 +195,6 @@
                 assetsChart: '',//资产状况
                 lifeChart: '',//人生阶段
                 jobChart: '',//工作行业
-                //词云
-                width:400,//svg宽度
-                height:352,//svg高度
-                tagsNum:20,//标签数量
-                RADIUS:150,//球的半径
-                speedX:Math.PI/360,//球一帧绕x轴旋转的角度
-                speedY:Math.PI/360,//球-帧绕y轴旋转的角度
                 tags: [
                     {text:'vue',size:14},
                     {text:'html',size:24},
@@ -229,6 +222,16 @@
                     {text:'vue',size:24},
                     {text:'html',size:25},
                     {text:'js',size:26},
+                ],//词云
+                sexData:[
+                    {value: 335, name: '男'},
+                    {value: 310, name: '女'},
+                ],
+                ageData:['15岁以下', '16-25岁', '26-35岁', '36-45岁', '46-55岁', '56岁以上', '未知'],
+                eduData:[
+                    {value: 335, name: '本科及以上'},
+                    {value: 310, name: '大专'},
+                    {value: 310, name: '高中及以下'},
                 ]
             }
         },
@@ -259,10 +262,7 @@
                             label: {
                                 formatter: '{d}%'
                             },
-                            data: [
-                                {value: 335, name: '男'},
-                                {value: 310, name: '女'},
-                            ],
+                            data: this.sexData,
                             itemStyle: {
                                 emphasis: {
                                     shadowBlur: 10,
@@ -302,7 +302,7 @@
                                 color: "#2C313C" //坐标轴刻度文字的颜色
                             }
                         },
-                        data: ['15岁以下', '16-25岁', '26-35岁', '36-45岁', '46-55岁', '56岁以上', '未知']
+                        data: this.ageData
                     },
                     yAxis: {
                         type: 'value',
@@ -360,11 +360,7 @@
                             label: {
                                 formatter: '{d}%'
                             },
-                            data: [
-                                {value: 335, name: '本科及以上'},
-                                {value: 310, name: '大专'},
-                                {value: 310, name: '高中及以下'},
-                            ],
+                            data: this.eduData,
                             itemStyle: {
                                 emphasis: {
                                     shadowBlur: 10,

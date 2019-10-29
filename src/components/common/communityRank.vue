@@ -244,7 +244,7 @@
                                 min-width="80"
                             >
                                 <template slot-scope="scope">
-                                    <span>{{scope.row.asCount}}</span>
+                                    <span>{{scope.row.asCount || '--'}}</span>
                                 </template>
                             </el-table-column>
                             <el-table-column
@@ -374,7 +374,7 @@
             },
             //人群标签-选中和取消标签
             chooseTags(first, second) {
-                console.log(first, second, this.chooseTagsArr);
+                console.log(second, this.chooseTagsArr);
                 let obj = {
                     label: first.label + '：' + second.label,
                     value: second.value
@@ -407,7 +407,7 @@
                     } else {
                         for (let data of this.chooseTagsArr) {
                             if (data.value == second.value) {
-                                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(obj), 1);
+                                this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
                             }
                         }
                     }

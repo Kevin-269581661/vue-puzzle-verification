@@ -146,8 +146,10 @@
                             style="width: 100%">
                             <el-table-column
                                 label="排名"
-                                width="50"
-                                type="index">
+                                width="50">
+                                <template slot-scope="scope">
+                                    <span>{{scope.row.rank || '--'}}</span>
+                                </template>
                             </el-table-column>
                             <el-table-column
                                 label="资源"

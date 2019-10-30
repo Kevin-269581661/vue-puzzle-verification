@@ -612,7 +612,12 @@
                 // console.log(this.chooseTagsArr);
                 if (item.checked) {
                     item.checked = false
-                    this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(item), 1);
+                    for(let data of this.chooseTagsArr){
+                        if(data.value == item.value){
+                            this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                        }
+                    }
+
                 } else {
                     let obj = {
                         value: item.value,

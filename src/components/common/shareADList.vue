@@ -225,7 +225,7 @@
                         </el-tab-pane>
                         <el-tab-pane label="地图模式" name="second">
                             <share-ad-map :mapADList="showADList" :mapCity="activeCity" :tableSelects="tableSelects"
-                                          :activeName="activeName" @mapSelectRes="getMapSelect"></share-ad-map>
+                                          :activeName="activeName" :reading="reading" @mapSelectRes="getMapSelect"></share-ad-map>
                         </el-tab-pane>
                     </el-tabs>
                 </div>

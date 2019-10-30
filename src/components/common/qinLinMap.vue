@@ -1,5 +1,8 @@
 <template>
     <div class="map_index">
+<!--        <remote-js src="https://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js"></remote-js>-->
+        <remote-js src="https://api.map.baidu.com/library/GeoUtils/1.2/src/GeoUtils_min.js"></remote-js>
+        <remote-js src="https://api.map.baidu.com/library/TextIconOverlay/1.2/src/TextIconOverlay_min.js"></remote-js>
         <!--地图标签-->
         <div v-loading="mapLoading"
              element-loading-text="玩命加载中.."
@@ -45,7 +48,7 @@
                         <p class="li_address">{{item.resAddress || '--'}}</p>
                         <p>
                             <span class="li_p_span">{{item.districtName}}</span>
-                            <span class="li_p_span">{{item.hNum}}</span>
+                            <span class="li_p_span">{{item.hNum || '--'}}户</span>
                             <span class="li_p_span">&yen;{{item.hPrice / 100}}/m<sup>2</sup></span>
                             <span class="li_p_span" style="margin-right: 0">{{item.chDay}}年</span>
                         </p>
@@ -437,6 +440,16 @@
     import api from "../../api/api"
     export default {
         name: "qinLinMap",
+        components:{
+            'remote-js': {
+                render(createElement) {
+                    return createElement('script', { attrs: { type: 'text/javascript', src: this.src }});
+                },
+                props: {
+                    src: { type: String, required: true },
+                },
+            },
+        },
         data() {
             return{
                 // 路由参数
@@ -452,6 +465,7 @@
                 // 地图实例
                 resMap: '',
                 markerIcon: require('../../assets/images/map/markerIcon.png'),
+                markers: [],
                 // 时间排期
                 dateTime:[],
                 // 地图loading
@@ -584,11 +598,10 @@
                 medieImgDialogVisible: false,
                 // 复制分享链接
                 copyDialogVisible: false,
-                shareUrl: 'https://beta.qinlinad.com/shareADList?apid=649&aicode=0DDD2685D9D3842ECB0DDC45D79D2131'
+                shareUrl: '',
             }
         },
         mounted() {
-            // alert(new Date())
             this.getSessionData()
             window.onload = this.initMap()
             if(this.$route.path.includes('shareRes')) {
@@ -691,7 +704,7 @@
                 // 设置地图显示的城市 此项是必须设置的
                 this.resMap.setCurrentCity(this.$route.query.city);
                 // 初始化地图,设置中心点坐标和地图级别
-                this.resMap.centerAndZoom(this.$route.query.city, 10);
+                this.resMap.centerAndZoom(this.$route.query.city, 11);
                 //开启鼠标滚轮缩放
                 this.resMap.enableScrollWheelZoom(true);
                 let mapStyleJson = [
@@ -717,50 +730,6 @@
                         }
                     },
                 ]
-                // let styleJson = [
-                //     {
-                //         "featureType": "road",
-                //         "elementType": "all",
-                //         "stylers": {
-                //             "lightness": 20
-                //         }
-                //     },
-                //     {
-                //         "featureType": "highway",
-                //         "elementType": "geometry",
-                //         "stylers": {
-                //             "color": "#f49935"
-                //         }
-                //     },
-                //     {
-                //         "featureType": "railway",
-                //         "elementType": "all",
-                //         "stylers": {
-                //             "visibility": "off"
-                //         }
-                //     },
-                //     {
-                //         "featureType": "local",
-                //         "elementType": "labels",
-                //         "stylers": {
-                //             "visibility": "off"
-                //         }
-                //     },
-                //     {
-                //         "featureType": "water",
-                //         "elementType": "all",
-                //         "stylers": {
-                //             "color": "#d1e5ff"
-                //         }
-                //     },
-                //     {
-                //         "featureType": "poi",
-                //         "elementType": "labels",
-                //         "stylers": {
-                //             "visibility": "off"
-                //         }
-                //     }
-                // ]
                 this.resMap.setMapStyle({styleJson: mapStyleJson })
                 let that = this
                 // 监听点击地图
@@ -779,8 +748,6 @@
                 this.resMap.addEventListener('zoomend',(e) => {
                     this.setMapZoom()
                 })
-                // 初始化鼠标绘制
-                this.initMouseDrawing()
             },
             // 城市边界
             displayBoundary() {
@@ -851,6 +818,8 @@
                     }
                     // 城市边界
                     this.displayBoundary()
+                    // 初始化鼠标绘制
+                    this.initMouseDrawing()
                     this.mapLoading = false
                 }).catch(err=>{
                     console.log('err',err)
@@ -875,15 +844,14 @@
             },
             // 创建标注
             creatMarker() {
-                let i = 0
+                let markerList = [];
                 let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(16,16),{
                     anchor: new BMap.Size(8, 8)
                 });
-                for(let key of this.resInfo) {
-                    this.$set(key, "isSelect", false);
+                for (let key of this.resInfo) {
                     let point = new BMap.Point(key.lng, key.lat);
-                    let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
-                    let label = new BMap.Label(key.resName,{offset:new BMap.Size(4,-18)});
+                    let marker = new BMap.Marker(point, {icon: myIcon});  // 创建标注
+                    let label = new BMap.Label(key.resName, {offset: new BMap.Size(4,-18)});
                     label.setStyle({
                         borderRadius: "3px",
                         boxShadow: '0px 0px 6px 0px rgba(0,0,0,0.15)',
@@ -894,17 +862,55 @@
                     });
                     marker.setLabel(label);
                     marker.setTop(true);
-                    this.resMap.addOverlay(marker);              // 将标注添加到地图中
                     label.addEventListener("click",()=>{
                         this.showInfo(key,point)
                     });
-                    if(i < 1000) {
-                        marker.show()
-                    } else {
-                        marker.hide()
-                    }
-                    i++
+                    markerList.push(marker);
                 }
+                // 点位聚合
+                let markerClusterer = new BMapLib.MarkerClusterer(this.resMap, {markers:markerList})
+                // 聚合计算时网格的像素大小，默认60
+                markerClusterer.setGridSize(60)
+                // 获取单个聚合的最小数量
+                markerClusterer.setMinClusterSize(5)
+                // 设置聚合的最大缩放级别
+                markerClusterer.setMaxZoom(17)
+                this.markers = markerList
+                console.log('markerClusterer',markerClusterer, markerClusterer.getMarkers())
+
+                // let i = 0
+                // let markerList = [];
+                // let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(16,16),{
+                //     anchor: new BMap.Size(8, 8)
+                // });
+                // for(let key of this.resInfo) {
+                //     this.$set(key, "isSelect", false);
+                //     let point = new BMap.Point(key.lng, key.lat);
+                //     let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
+                //     let label = new BMap.Label(key.resName,{offset:new BMap.Size(4,-18)});
+                //     label.setStyle({
+                //         borderRadius: "3px",
+                //         boxShadow: '0px 0px 6px 0px rgba(0,0,0,0.15)',
+                //         border: 'none',
+                //         background: 'rgba(255,255,255,1)',
+                //         color: 'rgba(0,0,0,0.85)',
+                //         padding: '3px 8px',
+                //     });
+                //     marker.setLabel(label);
+                //     marker.setTop(true);
+                //     this.resMap.addOverlay(marker);              // 将标注添加到地图中
+                //     label.addEventListener("click",()=>{
+                //         this.showInfo(key,point)
+                //     });
+                //     if(i < 1000) {
+                //         marker.show()
+                //     } else {
+                //         marker.hide()
+                //     }
+                //     this.markerList.push(marker)
+                //     i++
+                // }
+                // this.marker = this.markerList
             },
             // 显示详情
             showInfo(info,point){
@@ -1025,7 +1031,7 @@
                 this.deleteDrawingOverlay()
                 if(temp === 'circle') {
                     this.drawingManager.open()
-                    this.drawingManager.enableCalculate()
+                    // this.drawingManager.enableCalculate()
                     this.drawingManager.setDrawingMode(BMAP_DRAWING_CIRCLE);
                 } else if(temp === 'polygon') {
                     this.drawingManager.open()
@@ -1099,11 +1105,14 @@
             },
             // 显示多边形内的点位
             showResInPolygon(temp,overlay) {
-                let date1 = new Date();
+               console.time('显示多边形')
                 let allOverlay = this.resMap.getOverlays();
+               console.log('allOverlay',allOverlay)
                 for(let key of this.resInfo) {
-                    for (let akey of allOverlay) {
-                        if( akey.isVisible() &&
+                    // for (let akey of allOverlay) {
+                    for(let akey of this.markers) {
+                        if(
+                            // akey.isVisible() &&
                             akey.toString() == "[object Marker]" &&
                             akey.getLabel() &&
                             akey.getLabel().content === key.resName) {
@@ -1132,9 +1141,7 @@
                         }
                     }
                 }
-                let date2 = new Date();
-                let haomiao = date2.getTime() - date1.getTime();
-                console.log('用时',haomiao/(1000*60))
+                console.timeEnd('显示多边形')
             },
             // 清除上一次的绘制
             deleteDrawingOverlay() {
@@ -1288,9 +1295,21 @@
                     if(!key.isSelect) {
                         key.isSelect = true
                         this.selectResList.push(key)
+                        this.createCircle(key.resID, new BMap.Point(key.lng, key.lat))
+                        this.judgeMarkerShow(key.lng,key.lat)
                     }
                 }
-                console.log('全选',this.selectResList)
+                console.log('全选',this.selectResList,this.markers[0].point.lng)
+            },
+            // 判断marker是否隐藏
+            judgeMarkerShow(lng,lat) {
+                // console.log('lng,lat',lng,lat)
+                for(let key of this.markers) {
+                    if(key.point.lng == lng && key.point.lat == lat) {
+                        key.show()
+                        break
+                    }
+                }
             },
             // 在线全选
             onlineSelectAll() {
@@ -1323,6 +1342,7 @@
                     let point = new BMap.Point(item.lng, item.lat);
                     // 圈起标识
                     this.createCircle(item.resID, point)
+                    this.judgeMarkerShow(item.lng, item.lat)
                     item.isSelect = true
                     // 添加到选中列表
                     this.pushSelectList(item)
@@ -1361,7 +1381,7 @@
             },
             // 画圆标识选中状态
             createCircle(id,point){
-                console.log('id,point',id,point)
+                // console.log('id,point',id,point)
                 let opts = {
                     position : point,    // 指定文本标注所在的地理位置
                     // offset   : new BMap.Size(-28, -32)    //设置文本偏移量
@@ -1378,7 +1398,7 @@
                     borderRadius: "50%"
                 });
                 this.resMap.addOverlay(label);
-                console.log('label',label,label.content)
+                // console.log('label',label,label.content)
             },
             // 删除覆盖物
             deleteCircle(id) {
@@ -1922,6 +1942,7 @@
         font-weight: 600;
         color: rgba(0, 0, 0, 0.85);
         position: relative;
+        padding-right: 48px;
     }
 
     .li_name_span{
@@ -1959,6 +1980,9 @@
         font-size: 14px;
         line-height: 26px;
         margin-bottom: 2px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .li_p_span {
@@ -2219,6 +2243,9 @@
 
     .active_li_resName {
         flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .active_li .el-icon-delete {
@@ -2248,6 +2275,10 @@
     .active_bottom_btn span{
         margin-left: 8px;
         cursor:pointer;
+    }
+
+    .active_bottom_btn span:hover{
+        color:rgba(24,144,255,1);
     }
 
     .active_bottom_btn i{

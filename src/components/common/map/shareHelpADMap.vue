@@ -36,7 +36,7 @@
                     <li class="search_li" v-for="(item,index) in searchResList" :key="index">
                         <p class="li_name">
                             {{item.resName}}
-                            <span class="li_name_span" :class="item.isSelect ? 'li_name_span_active' : ''" @click="checkBoxFun(item)">
+                            <span class="li_name_span" :class="item.isSelect ? 'li_name_span_active' : ''" @click="checkBoxFun(item)" v-show="reading">
                                 <i v-show="item.isSelect" class="el-icon-minus"></i>
                                 <i v-show="!item.isSelect" class="el-icon-plus"></i>
                                 {{item.isSelect ? '取消' : '添加'}}
@@ -45,14 +45,14 @@
                         <p class="li_address">{{item.resAddress || '--'}}</p>
                         <p>
                             <span class="li_p_span">{{item.districtName}}</span>
-                            <span class="li_p_span">{{item.hNum}}</span>
-                            <span class="li_p_span">&yen;{{item.hPrice / 100}}/m<sup>2</sup></span>
+                            <span class="li_p_span">{{item.houseNum || '--'}}户</span>
+                            <span class="li_p_span">&yen;{{item.buildPrice / 100}}/m<sup>2</sup></span>
                             <span class="li_p_span" style="margin-right: 0">{{item.chDay}}年</span>
                         </p>
                     </li>
                 </ul>
                 <div class="search_bottom_btn">
-                    <el-button plain size="small" @click="selectAllFun">添加全部</el-button>
+                    <el-button plain size="small" @click="selectAllFun" v-show="reading">添加全部</el-button>
                 </div>
             </div>
             <div class="search_body" v-show="(activeSearchKind == '2' && !isOnlineSearch) && (searchOnlineLoading || searchOnlineList.length)"
@@ -233,7 +233,7 @@
             <el-button size="small" plain @click="clearFilter" class="top_filter_btn">清空条件</el-button>
         </div>
         <!--底部左侧选中-->
-        <div class="bottom_left_active">
+        <div class="bottom_left_active" v-show="reading">
             <div class="bottom_left_header">
                 <span class="active_num">
                     已添加<span style="color:rgba(24, 144, 255, 1)"> {{selectResList.length}} </span>个资源
@@ -327,7 +327,7 @@
             </ul>
             <div class="res_info_footer">
                 <img src="../../../assets/images/map/adDoor.png" alt="" @click="getMediaListByResID">
-                <el-button size="small" type="primary" @click="addResFun(showResInfo)">
+                <el-button size="small" type="primary" @click="addResFun(showResInfo)" v-show="reading">
                     {{showResInfo.isSelect ? '取消待选' : '加入待选'}}
                 </el-button>
             </div>
@@ -568,6 +568,10 @@
             tableSelects:{
                 type:Array,
                 required: true
+            },
+            reading:{
+                type:Boolean,
+                required: true
             }
         },
         watch:  {
@@ -791,7 +795,7 @@
             },
             // 获取指定资源到媒体列表
             getMediaListByResID() {
-                console.log('获取指定资源到媒体列表-----')//this.isShare
+                console.log('获取指定资源到媒体列表-----')
                 this.medieDialogVisible = true
                 let params = {
                     "resID": this.showResInfo.resID,
@@ -962,6 +966,7 @@
                     if(!key.isSelect) {
                         key.isSelect = true
                         this.selectResList.push(key)
+                        this.createCircle(key.resID, new BMap.Point(key.lng, key.lat))
                     }
                 }
                 console.log('全选',this.selectResList)
@@ -1675,6 +1680,7 @@
         font-weight: 600;
         color: rgba(0, 0, 0, 0.85);
         position: relative;
+        padding-right: 48px;
     }
 
     .li_name_span{
@@ -1712,6 +1718,9 @@
         font-size: 14px;
         line-height: 26px;
         margin-bottom: 2px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .li_p_span {
@@ -2024,6 +2033,9 @@
         color:rgba(0,0,0,0.65);
         font-size: 12px;
         line-height: 24px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .res_info_content{

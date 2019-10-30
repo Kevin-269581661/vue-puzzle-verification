@@ -54,6 +54,7 @@
                                         :value="firstTag.hovered"
                                         popper-class="tag-popover"
                                         style="padding: 0"
+
                                     >
                                         <span class="first-tag-btn" :class="firstTag.checked?'active':''"
                                               slot="reference" @click="chooseHobbyTag(firstTag)"
@@ -1269,7 +1270,7 @@
 
 </style>
 <style>
-    .el-popper {
+    .tag-popover {
         min-width: 132px !important;
         border: none !important;
         border-radius: 0 !important;
@@ -1277,7 +1278,7 @@
         /*height: 140px;*/
     }
 
-    .el-popper[x-placement^=bottom] {
+    .tag-popover[x-placement^=bottom] {
         margin-top: 4px !important;;
     }
 </style>

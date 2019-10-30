@@ -169,19 +169,16 @@ timeFormat.compareTime = function (arr, sField, eField) {
 
 //时间戳转化为刚刚/N分钟前/今天几点几分/昨天几点几分等
 timeFormat.timestampFormat = function (timestamp) {
-	function zeroize(num) {
+    function zeroize(num) {
 		return (String(num).length == 1 ? '0' : '') + num;
 	}
-
 	let curTimestamp = new Date().getTime(); //当前时间戳
 	let timestampDiff = curTimestamp - timestamp; // 参数时间戳与当前时间戳相差秒数
 	let curDate = new Date(); // 当前时间日期对象
 	let tmDate = new Date(timestamp);  // 参数时间戳转换成的日期对象
 	let Y = tmDate.getFullYear(), m = tmDate.getMonth() + 1, d = tmDate.getDate();
 	let H = tmDate.getHours(), i = tmDate.getMinutes(), s = tmDate.getSeconds();
-
-
-	if (timestampDiff < 60) { // 一分钟以内
+    if (timestampDiff < 60) { // 一分钟以内
 		return "刚刚";
 	} else if (timestampDiff < 3600) { // 一小时前之内
 		return Math.floor(timestampDiff / 60) + "分钟前";
@@ -192,9 +189,9 @@ timeFormat.timestampFormat = function (timestamp) {
 		if (newDate.getFullYear() == Y && newDate.getMonth() + 1 == m && newDate.getDate() == d) {
 			return '昨天' + zeroize(H) + ':' + zeroize(i);
 		} else if (curDate.getFullYear() == Y) {
-			return zeroize(m) + '月' + zeroize(d) + '日 ' + zeroize(H) + ':' + zeroize(i);
+			return zeroize(m) + '月' + zeroize(d) + '日 ' + zeroize(H) + ':' + zeroize(i)+ ':' + zeroize(s);
 		} else {
-			return Y + '年' + zeroize(m) + '月' + zeroize(d) + '日 ' + zeroize(H) + ':' + zeroize(i);
+			return Y + '年' + zeroize(m) + '月' + zeroize(d) + '日 ' + zeroize(H) + ':' + zeroize(i)+ ':' + zeroize(s);
 		}
 	}
 };

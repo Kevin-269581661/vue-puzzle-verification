@@ -355,7 +355,7 @@
                                             <el-col :span="6">
                                                 <el-form-item label="媒体状态" prop="mstate">
                                                     <el-select v-model="item.mediaForm.mstate" placeholder="请选择媒体状态"
-                                                               :disabled="item.mediaForm.mstate.includes('4') && (key + 1) <= editMediaLength && PathHaveEdit"
+                                                               :disabled="item.mediaForm.mediaState == 4 && (key + 1) <= editMediaLength && PathHaveEdit"
                                                                @blur="adDoorBlur('mstate',key)"
                                                                @change="selectMstate(item.mediaForm)">
                                                         <el-option label="禁用" :value="'0' + key"></el-option>
@@ -545,7 +545,7 @@
                                             <el-col :span="6">
                                                 <el-form-item label="媒体状态" prop="mstate">
                                                     <el-select v-model="item.roadGateForm.mstate" placeholder="请选择媒体状态"
-                                                               :disabled="item.roadGateForm.mstate.includes('4') && (key + 1) <= editRoadGateLength && PathHaveEdit"
+                                                               :disabled="item.roadGateForm.mediaState == 4 && (key + 1) <= editRoadGateLength && PathHaveEdit"
                                                                @blur="roadGateBlur('mstate',key)"
                                                                @change="selectMstate(item.roadGateForm)">
                                                         <el-option label="禁用" :value="'0' + key"></el-option>
@@ -2025,6 +2025,7 @@
                     if (res.data.SysCode === 200200) {
                         this.dismantleVisible = false
                         sessFun.messageFun('success', '拆除成功!')
+                        this.rowData.mediaState = 4
                     } else {
                         sessFun.messageFun('warning', res.data.MSG)
                     }
@@ -2693,6 +2694,7 @@
                                 mediaName: mediaObj[i].mTitle,
                                 usableNum: mediaObj[i].pNum,
                                 mstate: mediaObj[i].mState.toString() + i,   // 媒体状态
+                                mediaState: mediaObj[i].mState,
                                 assetId: mediaObj[i].assetTag,
                                 doorType: mediaObj[i].mType,
                                 adSizeW: adSize.w,
@@ -2785,6 +2787,7 @@
                         mediaName: roadGateList[i].mTitle,
                         usableNum: roadGateList[i].pNum,
                         mstate: roadGateList[i].mState.toString() + i,
+                        mediaState: roadGateList[i].mState,
                         assetId: roadGateList[i].assetTag,
                         LBSizeW: LBoxSizeArr.w,
                         LBSizeH: LBoxSizeArr.h,
@@ -3310,7 +3313,7 @@
     }
 
     /deep/ .el-form-item.is-required .el-form-item__label:before{
-        margin-right: -6px;
+        margin-right: -6px !important;
         position: relative;
         left: 60px;
     }

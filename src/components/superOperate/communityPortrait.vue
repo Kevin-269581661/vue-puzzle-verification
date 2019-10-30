@@ -504,7 +504,7 @@
                         asrId: this.selectAsrId,// this.sessionData.asrID,
                         resName: val
                     }
-                    api.getApi(this.apiVar.portrait + '/api/v1/resInfo/getResList',params).then(res=>{
+                    api.getApi(this.apiVar.portrait + 'resInfo/getResList',params).then(res=>{
                         console.log('小区列表res',res)
                         if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                             sessFun.loginTimeout()
@@ -541,7 +541,7 @@
                     token: this.sessionData.token,
                     resId: this.activeResID
                 }
-                api.getApi(this.apiVar.portrait + '/api/v1/resInfo/getResInfoByResId',params).then(res=>{
+                api.getApi(this.apiVar.portrait + 'resInfo/getResInfoByResId',params).then(res=>{
                     console.log('小区详情res',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         sessFun.loginTimeout()
@@ -576,7 +576,7 @@
                     token: this.sessionData.token,
                     resId: this.activeResID//40730//this.activeResID
                 }
-                api.getApi(this.apiVar.portrait + '/api/v1/resInfo/getByComId',params).then(res=>{
+                api.getApi(this.apiVar.portrait + 'resInfo/getByComId',params).then(res=>{
                     console.log('小区详情res',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         sessFun.loginTimeout()

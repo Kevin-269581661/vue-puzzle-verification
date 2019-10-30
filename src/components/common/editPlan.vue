@@ -3316,8 +3316,10 @@
                             sessFun.messageFun('success', '方案编辑成功')
                         }
                     } else {
-                        sessFun.messageFun('warning', res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG || '方案异常')
                     }
+                }).catch(err=>{
+                    sessFun.messageFun('warning','接口异常')
                 })
             },
             // 根据城市和公司id返回pdid
@@ -4306,23 +4308,12 @@
                 let arr = []
                 for (let key of this.cityAdsScheduled) {
                     for (let aKey of key.adsArr) {
-                        if (aKey.mVehicle === '道闸') {
-                            for (let tKey of aKey.asID) {
-                                arr.push({
-                                    asID: tKey,
-                                    st: key.newTime.split('-')[0],
-                                    et: key.newTime.split('-')[1],
-                                    schedules: key.oldTime
-                                })
-                            }
-                        } else {
-                            arr.push({
-                                asID: aKey.asID,
-                                st: key.newTime.split('-')[0],
-                                et: key.newTime.split('-')[1],
-                                schedules: key.oldTime                  // 原排期
-                            })
-                        }
+                        arr.push({
+                            asID: aKey.asID,
+                            st: key.newTime.split('-')[0],
+                            et: key.newTime.split('-')[1],
+                            schedules: key.oldTime                  // 原排期
+                        })
                     }
                 }
                 console.log('arr',arr)
@@ -4783,7 +4774,7 @@
                                     LockNum += 1
                                 }
                                 let selectInfo = {
-                                    asID: '',
+                                    // asID: '',
                                     pbStar: data.pbStar,
                                     pbEnd: data.pbEnd,
                                     rid: data.rID.toString().substring(0, 4) + '00', //
@@ -4884,7 +4875,7 @@
                         this.industryID = this.FAInfo.piID
                         this.BDData.uid = this.FAInfo.suID || ''
                         this.FAInfo.cityList = this.delCommentCity(this.FAInfo.rIDs.split(','))
-                        if ((this.sessionData.uType === 'BD' && this.sessionData.saleManageLevel == '1')
+                        if ((this.sessionData.uType === 'BD' && (this.sessionData.saleManageLevel == '1' || this.sessionData.saleManageLevel == '2'))
                             ||(this.sessionData.uType === 'MD' && this.sessionData.mediaManageLevel == '1')) {
                             this.setAllCityAndArea(this.FAInfo.cityList)
                         } else {

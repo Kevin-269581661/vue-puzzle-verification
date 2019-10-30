@@ -39,6 +39,9 @@
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
                 <el-menu-item index="/login">退出登陆</el-menu-item>
             </el-submenu>
+            <el-menu-item index="" style="cursor: default;float: right;padding: 0 0 0 4px">
+                <messageNotice></messageNotice>
+            </el-menu-item>
         </el-menu>
         <!--body-->
         <router-view></router-view>
@@ -68,8 +71,12 @@
 <script>
     import uTypeToText from "../../commonFun/uTypeToText.js";
     import api from "../../api/api"
+    import messageNotice from '../common/components/messageNotice.vue';
     export default {
         name: "saleCommon",
+        components:{
+            messageNotice
+        },
         data(){
             return{
                 newDate: new Date().getFullYear(),
@@ -116,6 +123,7 @@
             // 是否显示亲邻
             getIsShowQinlin(){
                 let portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo'))
+
                 if (portraitInfo && portraitInfo.length) {
                     this.showQinlin = true;
                 } else {
@@ -123,7 +131,7 @@
                         uid: this.sessionData.uID,
                         token: this.sessionData.token
                     }
-                    api.getApi(this.apiVar.portrait + '/api/v1/ascrInfo/getAscrList', params).then(res => {
+                    api.getApi(this.apiVar.portrait + 'ascrInfo/getAscrList', params).then(res => {
                         console.log('用户权限城市和默认小区res', res)
                         if (res.data.SysCode === 200200) {
                             let portraitInfo = res.data.data
@@ -138,6 +146,7 @@
                         }
                     })
                 }
+
             },
             // 路由切换
             handleSelect(key, keyPath) {

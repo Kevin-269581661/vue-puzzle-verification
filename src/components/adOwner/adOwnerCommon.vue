@@ -121,7 +121,7 @@
                         uid: this.sessionData.uID,
                         token: this.sessionData.token
                     }
-                    api.getApi(this.apiVar.portrait + '/api/v1/ascrInfo/getAscrList', params).then(res => {
+                    api.getApi(this.apiVar.portrait + 'ascrInfo/getAscrList', params).then(res => {
                         console.log('用户权限城市和默认小区res', res)
                         if (res.data.SysCode === 200200) {
                             let portraitInfo = res.data.data
@@ -136,6 +136,7 @@
                         }
                     })
                 }
+
             },
             // 获取用户名称和角色
             getUserName() {

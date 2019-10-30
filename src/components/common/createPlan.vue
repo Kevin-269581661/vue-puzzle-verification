@@ -1373,7 +1373,7 @@
                 sessionData: '',            // 登录用户的数据
                 FAData: {apID:''},          // 创建方后台返回的数据
                 timeout: null,
-                BDData: {uid: '0', realName: ''},
+                BDData: {uid: '0', realName: '',saleManageLevel: 0},
                 HSearch: '',                // 获取传值显示‘清除’、‘确定’按钮
                 houseNum: ['', ''],         // 表头搜索住户数量
                 buildNum: ['', ''],         // 表头搜索楼栋数量
@@ -1557,10 +1557,11 @@
                 }
                 console.log('sessionData', this.sessionData)
                 if (this.sessionData.uType === 'BD') {
-                    this.BDData.realName = this.sessionData.realName // username
+                    this.BDData.realName = sess.realName // username
                     this.planForm.ownerSales = this.BDData.realName
-                    this.BDData.uid = this.sessionData.uID
-                    this.saleManageLevel = this.sessionData.saleManageLevel
+                    this.BDData.uid = sess.uID
+                    this.BDData.saleManageLevel = sess.saleManageLevel
+                    this.saleManageLevel = sess.saleManageLevel
                     this.isBD = true
                     this.getCityList()      // 获取权限下的城市列表
                     this.Get_cName()
@@ -2607,6 +2608,7 @@
                     for (let key of this.salerList) {
                         if (key.value == val) {
                             this.planForm.realNamesName = key.label
+                            this.BDData.saleManageLevel = key.saleManageLevel
                             break
                         }
                     }
@@ -5007,6 +5009,7 @@
                     bid: this.planForm.companyBrand,
                     // rid: this.planForm.throwCity.join(','),
                     suid: this.BDData.uid,
+                    saleManageLevel: this.BDData.saleManageLevel,
                     detail: JSON.stringify(arr),
                 }
                 if (this.sessionData.uType === 'BD') {
@@ -5146,6 +5149,7 @@
                     setTime: this.timestampToTime(Date.parse(new Date())),
                     planData: {
                         suid: this.BDData.uid,          // 销售uid,如果是销售自己创建方案则uid与suid相同
+                        saleManageLevel: this.BDData.saleManageLevel,   // 销售权限
                         baseInfo: this.planForm,
                         adsList: this.shopingList,
                         throwCity:this.throwCity,
@@ -5176,6 +5180,7 @@
                     this.unfinishedData = returnData
                     this.planForm = returnData.planData.baseInfo
                     this.BDData.uid = returnData.planData.suid
+                    this.BDData.saleManageLevel = returnData.planData.saleManageLevel || 0
                     this.throwCity = returnData.planData.throwCity
                     this.shopingList = returnData.planData.adsList
                     this.companyBrand = returnData.planData.companyBrand

@@ -39,7 +39,12 @@
                 <el-menu-item index="/superOperate/compact">文件下载</el-menu-item>
             </el-submenu>
             <el-menu-item index="/superOperate/tvOrderList">电视广告</el-menu-item>
-            <el-menu-item index="/superOperate/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>
+            <el-submenu index="8" :show-timeout="80" v-show="showQinlin">
+                <template slot="title">亲邻智邻</template>
+                <el-menu-item index="/superOperate/communityPortrait">社区画像</el-menu-item>
+                <el-menu-item index="/superOperate/communityRank">社区排名</el-menu-item>
+            </el-submenu>
+            <!--<el-menu-item index="/superOperate/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>-->
             <el-submenu index="9" class="user_center" popper-class="user_center_item" :show-timeout="80">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">
@@ -49,6 +54,8 @@
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
                 <el-menu-item index="/login">退出登陆</el-menu-item>
             </el-submenu>
+
+
         </el-menu>
 
         <!--body-->
@@ -79,8 +86,10 @@
 <script>
     import uTypeToText from "../../commonFun/uTypeToText.js";
     import api from "../../api/api"
+
     export default {
         name: "superOpertaeCommon",
+
         data(){
             return{
                 newDate: new Date().getFullYear(),
@@ -133,7 +142,7 @@
                         uid: this.sessionData.uID,
                         token: this.sessionData.token
                     }
-                    api.getApi(this.apiVar.portrait + '/api/v1/ascrInfo/getAscrList', params).then(res => {
+                    api.getApi(this.apiVar.portrait + 'ascrInfo/getAscrList', params).then(res => {
                         console.log('用户权限城市和默认小区res', res)
                         if (res.data.SysCode === 200200) {
                             let portraitInfo = res.data.data
@@ -148,6 +157,7 @@
                         }
                     })
                 }
+
             },
             // 是否显示公司管理
             getIsShowCom(){

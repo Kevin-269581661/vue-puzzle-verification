@@ -1271,14 +1271,14 @@
 </style>
 <style>
     .tag-popover {
-        min-width: 132px !important;
-        border: none !important;
-        border-radius: 0 !important;
-        padding: 0 !important;
+        min-width: 132px ;
+        border: none ;
+        border-radius: 0 ;
+        padding: 0 ;
         /*height: 140px;*/
     }
 
     .tag-popover[x-placement^=bottom] {
-        margin-top: 4px !important;;
+        margin-top: 4px ;
     }
 </style>

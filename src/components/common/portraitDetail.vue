@@ -80,8 +80,8 @@
             </div>
         </div>
         <div class="tab-wrap">
-            <el-tabs>
-                <el-tab-pane label="人群画像">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="人群画像" name="first">
                     <div class="part part1">
                         <div class="flex1">
                             <h6>性别情况</h6>
@@ -158,10 +158,15 @@
                         </div>
                     </div>
                 </el-tab-pane>
-                <el-tab-pane label="偏好画像">
-                    <ul>
-                        <li v-for="item in hobbyTags">{{item.label}}</li>
-                    </ul>
+                <el-tab-pane label="偏好画像" name="second">
+                   <div class="tags">
+                       <ul class="tags-ul">
+                           <li v-for="item in hobbyTags" @click="chooseFirstTag(item)" class="tags-li" :class="currTag1 == item.value?'active':''" >{{item.label}}</li>
+                       </ul>
+                   </div>
+                    <div class="part1">
+
+                    </div>
                 </el-tab-pane>
             </el-tabs>
         </div>
@@ -171,11 +176,13 @@
 
 <script>
     import myCloud from '../../commonFun/myCloud.js'
-
+    import api from "../../api/api.js";
     export default {
         name: "portraitDetail",
         data() {
             return {
+                activeName:'second',
+                currTag1:'',
                 resData: {
                     resName: '中信西关海花苑',
                     resType: '1',
@@ -247,10 +254,17 @@
                     {value: 310, name: '无车'},
                 ],
                 lifeData: {x:['初中生', '高中生', '大学生', '研究生', '孕期', '育儿阶段', '家有孕妇', '家有0-1岁小孩', '家有1-3岁小孩', '家有3-6岁小孩', '家有小学生', '家有初中生', '家有高中生'],y: [120, 200, 150, 80, 70, 110, 130, 120, 200, 150, 80, 70, 110]},
-                jobData:{x:['服务人员', '个体经营者', '管理者和企业主', '专业技术人员', '文职人员', '生产操作人员'],y:[120, 200, 150, 80, 70, 110]}
+                jobData:{x:['服务人员', '个体经营者', '管理者和企业主', '专业技术人员', '文职人员', '生产操作人员'],y:[120, 200, 150, 80, 70, 110]},
+                hobbyTags:'',
+
             }
         },
         methods: {
+            handleClick(tab, event) {
+                // console.log(tab, event);
+                // this.getTags()
+
+            },
             //性别情况
             sexChartFn() {
                 this.sexChart = this.$echarts.init(this.$refs.sexChart)
@@ -616,6 +630,29 @@
                     this.jobChart.resize();
                 });
             },
+            //获取偏好画像标签
+            //获取标签数据
+            getTags(parentId) {
+                let info = ''
+                info = {
+                    type: 1,
+                    loadChilder: 1,
+                    parentId: parentId ? parentId : 0,
+                }
+                api.getApi(this.apiVar.portrait + 'label/getLabels', info).then(res => {
+                    console.log(res.data);
+                    if (res.data.SysCode == 200200) {
+                        this.hobbyTags = res.data.data
+                        this.currTag1 = res.data.data[0].value
+                    } else {
+                        this.$message.warning(res.data.MSG)
+                    }
+                })
+            },
+            //选择一级标签
+            chooseFirstTag(item){
+                this.currTag1 = item.value
+            }
         },
         mounted() {
             setTimeout(() => {
@@ -629,6 +666,7 @@
                 this.echartsListener();
                 this.getWordCloud()
             }, 20)
+            this.getTags()
 
         }
     }
@@ -775,6 +813,32 @@
         align-items: center;
         justify-content: center;
     }
-
+    .tags{
+        background: #fff;
+        padding: 16px 24px 4px;
+    }
+    .tags-ul{
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .tags-li{
+        font-size: 14px;
+        min-width: 76px;
+        height: 26px;
+        line-height: 26px;
+        color:rgba(0,0,0,0.35);
+        text-align: center;
+        background:rgba(255,255,255,1);
+        border:1px solid rgba(194,194,194,1);
+        margin-right: 8px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        padding: 0 10px;
+        box-sizing: border-box;
+    }
+    .tags-li.active{
+        border:1px solid #1890FF;
+        color: #1890FF;
+    }
 </style>
 

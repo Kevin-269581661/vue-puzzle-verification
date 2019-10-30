@@ -159,13 +159,18 @@
                     </div>
                 </el-tab-pane>
                 <el-tab-pane label="偏好画像" name="second">
-                   <div class="tags">
-                       <ul class="tags-ul">
-                           <li v-for="item in hobbyTags" @click="chooseFirstTag(item)" class="tags-li" :class="currTag1 == item.value?'active':''" >{{item.label}}</li>
-                       </ul>
-                   </div>
-                    <div class="part1">
-
+                    <div class="tags">
+                        <ul class="tags-ul">
+                            <li v-for="item in hobbyTags" @click="chooseFirstTag(item)" class="tags-li"
+                                :class="currTag1.value == item.value?'active':''">{{item.label}}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="charts-wrap">
+                        <h5>{{currTag1.label}}消费偏好</h5>
+                        <div class="tag1-chart">
+                            <div ref="tag1chart" style="width: 100%;height: 394px"></div>
+                        </div>
                     </div>
                 </el-tab-pane>
             </el-tabs>
@@ -177,12 +182,13 @@
 <script>
     import myCloud from '../../commonFun/myCloud.js'
     import api from "../../api/api.js";
+
     export default {
         name: "portraitDetail",
         data() {
             return {
-                activeName:'second',
-                currTag1:'',
+                activeName: 'second',
+                currTag1: '',
                 resData: {
                     resName: '中信西关海花苑',
                     resType: '1',
@@ -207,39 +213,42 @@
                 lifeChart: '',//人生阶段
                 jobChart: '',//工作行业
                 tags: [
-                    {text:'vue',size:14},
-                    {text:'html',size:24},
-                    {text:'js',size:34},
-                    {text:'vue',size:24},
-                    {text:'html',size:15},
-                    {text:'js',size:26},
-                    {text:'vue',size:17},
-                    {text:'html',size:28},
-                    {text:'js',size:19}, {text:'vue',size:20},
-                    {text:'html',size:30},
-                    {text:'js',size:21},
-                    {text:'vue',size:12},
-                    {text:'html',size:13},
-                    {text:'js',size:14},
-                    {text:'vue',size:15},
-                    {text:'html',size:16},
-                    {text:'js',size:17},
-                    {text:'vue',size:18},
-                    {text:'html',size:19},
-                    {text:'js',size:20},
-                    {text:'vue',size:21},
-                    {text:'html',size:22},
-                    {text:'js',size:23},
-                    {text:'vue',size:24},
-                    {text:'html',size:25},
-                    {text:'js',size:26},
+                    {text: 'vue', size: 14},
+                    {text: 'html', size: 24},
+                    {text: 'js', size: 34},
+                    {text: 'vue', size: 24},
+                    {text: 'html', size: 15},
+                    {text: 'js', size: 26},
+                    {text: 'vue', size: 17},
+                    {text: 'html', size: 28},
+                    {text: 'js', size: 19}, {text: 'vue', size: 20},
+                    {text: 'html', size: 30},
+                    {text: 'js', size: 21},
+                    {text: 'vue', size: 12},
+                    {text: 'html', size: 13},
+                    {text: 'js', size: 14},
+                    {text: 'vue', size: 15},
+                    {text: 'html', size: 16},
+                    {text: 'js', size: 17},
+                    {text: 'vue', size: 18},
+                    {text: 'html', size: 19},
+                    {text: 'js', size: 20},
+                    {text: 'vue', size: 21},
+                    {text: 'html', size: 22},
+                    {text: 'js', size: 23},
+                    {text: 'vue', size: 24},
+                    {text: 'html', size: 25},
+                    {text: 'js', size: 26},
                 ],//词云
-                sexData:[
+                sexData: [
                     {value: 335, name: '男'},
                     {value: 310, name: '女'},
                 ],
-                ageData:{x:['15岁以下', '16-25岁', '26-35岁', '36-45岁', '46-55岁', '56岁以上', '未知'],y:[120, 200, 150, 80, 70, 110, 130]},
-                eduData:[
+                ageData: {
+                    x: ['15岁以下', '16-25岁', '26-35岁', '36-45岁', '46-55岁', '56岁以上', '未知'],
+                    y: [120, 200, 150, 80, 70, 110, 130]
+                },
+                eduData: [
                     {value: 335, name: '本科及以上'},
                     {value: 310, name: '大专'},
                     {value: 310, name: '高中及以下'},
@@ -253,9 +262,12 @@
                     {value: 335, name: '有车'},
                     {value: 310, name: '无车'},
                 ],
-                lifeData: {x:['初中生', '高中生', '大学生', '研究生', '孕期', '育儿阶段', '家有孕妇', '家有0-1岁小孩', '家有1-3岁小孩', '家有3-6岁小孩', '家有小学生', '家有初中生', '家有高中生'],y: [120, 200, 150, 80, 70, 110, 130, 120, 200, 150, 80, 70, 110]},
-                jobData:{x:['服务人员', '个体经营者', '管理者和企业主', '专业技术人员', '文职人员', '生产操作人员'],y:[120, 200, 150, 80, 70, 110]},
-                hobbyTags:'',
+                lifeData: {
+                    x: ['初中生', '高中生', '大学生', '研究生', '孕期', '育儿阶段', '家有孕妇', '家有0-1岁小孩', '家有1-3岁小孩', '家有3-6岁小孩', '家有小学生', '家有初中生', '家有高中生'],
+                    y: [120, 200, 150, 80, 70, 110, 130, 120, 200, 150, 80, 70, 110]
+                },
+                jobData: {x: ['服务人员', '个体经营者', '管理者和企业主', '专业技术人员', '文职人员', '生产操作人员'], y: [120, 200, 150, 80, 70, 110]},
+                hobbyTags: '',
 
             }
         },
@@ -427,7 +439,7 @@
                             label: {
                                 formatter: '{d}%'
                             },
-                            data:this.spendData,
+                            data: this.spendData,
                             itemStyle: {
                                 emphasis: {
                                     shadowBlur: 10,
@@ -465,7 +477,7 @@
                             label: {
                                 formatter: '{d}%'
                             },
-                            data:this.assetsData,
+                            data: this.assetsData,
                             itemStyle: {
                                 emphasis: {
                                     shadowBlur: 10,
@@ -512,7 +524,7 @@
                             },
                             rotate: 30
                         },
-                        data:this.lifeData.x
+                        data: this.lifeData.x
                     },
                     yAxis: {
                         type: 'value',
@@ -538,7 +550,7 @@
                         }
                     },
                     series: [{
-                        data:this.lifeData.y,
+                        data: this.lifeData.y,
                         type: 'bar',
                         barWidth: '18%',
                     }]
@@ -606,7 +618,7 @@
             },
             //行业词云
             getWordCloud() {
-                let wordList =this.tags;
+                let wordList = this.tags;
                 let wordOption = {
                     wordList,
                     size: [324, 240],  // 盒子的宽高
@@ -615,7 +627,7 @@
                 myCloud(wordOption, this.getArticleList)
             },
             //点击词云回调
-            getArticleList(){
+            getArticleList() {
                 console.log('窝窝头，一块钱四个，嘿嘿！');
             },
             // 统一监听
@@ -643,15 +655,82 @@
                     console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         this.hobbyTags = res.data.data
-                        this.currTag1 = res.data.data[0].value
+                        this.currTag1 = res.data.data[0]
                     } else {
                         this.$message.warning(res.data.MSG)
                     }
                 })
             },
             //选择一级标签
-            chooseFirstTag(item){
-                this.currTag1 = item.value
+            chooseFirstTag(item) {
+                this.currTag1 = item
+            },
+            //一级标签柱状图
+            tag1chartFn() {
+                let tag1chart = this.$echarts.init(this.$refs.tag1chart)
+                tag1chart.setOption({
+                    legend: {
+                        left: 'center',
+                        bottom: 20,
+                        itemWidth: 10,
+                        itemHeight: 10,
+                        data: ['单小区人群', '同区域人群']
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                            type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                        },
+                        formatter: params => {
+                            return '<p class="echarts_tooltip_title">' +
+                                '<span>' + params[0].name + '</span>' +
+                                '</p>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>' + params[0].seriesName + '</span>：' + params[0].value + '%' +'<br/>' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>' + params[1].seriesName + '</span>：' + params[1].value + '%' +'</p>'
+                        }
+                    },
+                    grid: {x: 80, y: 40, x2: 80, y2: 80,},
+                    xAxis: {
+                        type: 'category',
+                        axisLine: {
+                            //坐标轴线条相关设置(颜色等)
+                            lineStyle: {
+                                color: "#E8E8E8"
+                            }
+                        },
+                        axisLabel: {
+                            color: '#2C313C'
+                        },
+                        data: ['购车阶段', '汽车档次', '新能源汽车', '汽车车型']
+                    },
+                    yAxis: {
+                        type: 'value',
+                        axisLabel: {
+                            show: true,
+                            interval: 'auto',
+                            formatter: '{value} %',
+                            color: '#A0A4AA'
+                        },
+                        axisLine: {
+                            //坐标轴线条相关设置(颜色等)
+                            lineStyle: {
+                                color: "#fff"
+                            }
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: "#E8E8E8",
+                                type: "dashed"
+                            }
+                        },
+                        show: true
+                    },
+                    series: [
+                        {type: 'bar', barWidth: '18%', color: '#1890FF', name: '单小区人群', data: [43.3, 83.1, 86.4, 72.4]},
+                        {type: 'bar', barWidth: '18%', color: '#4DCB73', name: '同区域人群', data: [83.1, 73.4, 65.2, 53.9]},
+                    ]
+                })
             }
         },
         mounted() {
@@ -665,6 +744,7 @@
                 this.jobChartFn()
                 this.echartsListener();
                 this.getWordCloud()
+                this.tag1chartFn()
             }, 20)
             this.getTags()
 
@@ -806,39 +886,67 @@
         line-height: 32px;
     }
 
-    .word-cloud-box{
+    .word-cloud-box {
         width: 100%;
         height: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
     }
-    .tags{
+
+    .tags {
         background: #fff;
         padding: 16px 24px 4px;
     }
-    .tags-ul{
+
+    .tags-ul {
         display: flex;
         flex-wrap: wrap;
     }
-    .tags-li{
+
+    .tags-li {
         font-size: 14px;
         min-width: 76px;
         height: 26px;
         line-height: 26px;
-        color:rgba(0,0,0,0.35);
+        color: rgba(0, 0, 0, 0.35);
         text-align: center;
-        background:rgba(255,255,255,1);
-        border:1px solid rgba(194,194,194,1);
+        background: rgba(255, 255, 255, 1);
+        border: 1px solid rgba(194, 194, 194, 1);
         margin-right: 8px;
         margin-bottom: 12px;
         cursor: pointer;
         padding: 0 10px;
         box-sizing: border-box;
     }
-    .tags-li.active{
-        border:1px solid #1890FF;
+
+    .tags-li.active {
+        border: 1px solid #1890FF;
         color: #1890FF;
+    }
+
+    .charts-wrap {
+        background: #fff;
+        border: 1px solid #E6E7E9;
+        margin-top: 24px;
+    }
+
+    .charts-wrap h5 {
+        font-size: 16px;
+        color: #2C313C;
+        border-bottom: 1px solid #E6E7E9;
+        height: 48px;
+        line-height: 48px;
+        padding-left: 16px;
+        box-sizing: border-box;
+        font-weight: 600;
+    }
+    /deep/ .echarts_tooltip_i {
+        display: inline-block;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        margin-right: 5px;
     }
 </style>
 

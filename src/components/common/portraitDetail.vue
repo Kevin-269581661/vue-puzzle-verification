@@ -158,7 +158,11 @@
                         </div>
                     </div>
                 </el-tab-pane>
-                <el-tab-pane label="偏好画像"></el-tab-pane>
+                <el-tab-pane label="偏好画像">
+                    <ul>
+                        <li v-for="item in hobbyTags">{{item.label}}</li>
+                    </ul>
+                </el-tab-pane>
             </el-tabs>
         </div>
 

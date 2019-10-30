@@ -44,10 +44,14 @@ export default function (option,callback) {
             // .attr("transform", function (d) {return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";})
             .attr("transform", function (d) {return "translate(" + [d.x, d.y] + ")";})
             .text(function (d) {return d.text;})
-            // 添加点击的回调方法
-            .on("click", function (d) {
-                callback(d.text)
-            });
+            // 添加回调方法
+            .on("mouseenter", function (d) {
+                // callback(d.text)
+
+            })
+            .on("mouseleave",function (d) {
+
+            })
     }
 }
 

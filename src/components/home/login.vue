@@ -31,8 +31,9 @@
                         <button id="login" @click="doLogin()">登&nbsp;录</button>
                     </div>
                 </div>
-                <div class="weixinLogin" v-if="!isActive">
-                    <div class="weixinCode" v-show="step === 1">
+                <div class="weixinLogin" v-show="!isActive">
+                    <div id="login_container"></div>
+                  <!--  <div class="weixinCode" v-show="step === 1">
                         <div class="ws_waiting" v-loading="imgLoading"
                              element-loading-text="正在获取二维码..."
                              element-loading-background="rgba(0, 0, 0, 0.1)">
@@ -45,7 +46,7 @@
                             <i class="el-icon-success" style="font-size: 48px;color: #409EFF"></i>
                             <div style="margin-top: 16px">扫码成功，等待确认！</div>
                         </div>
-                    </div>
+                    </div>-->
                 </div>
                 <div class="tip">
                     <p>温馨提示：加盟城市请(<a href="/ApplicationForm.doc" download="申请表">点击并下载申请表</a>)，申请平台账号</p>
@@ -211,18 +212,30 @@
             // 判断是否使用扫码登录
             loginType() {
                 this.isActive = !this.isActive;
-                console.log('isActive', this.isActive, 'this.isWs', this.isWs)
-                if (this.isActive === false && this.isWs === false) {
-                    console.log('扫码登录')
-                    this.isWs = true
-                    this.isLogin = false
-                    this.initWebsocket()
-                } else {
-                    this.isWs = false
-                    this.isLogin = true
-                    this.websock.close();
-                    clearInterval(this.timer)
-                }
+                let obj = new WxLogin({
+                    self_redirect:false,
+                    id:"login_container",
+                    appid: "wx8fd14a2e14e7a6cf",
+                    scope: "snsapi_login",
+                    redirect_uri: encodeURI("https://test-qadn.qinlindmp.com"),
+                    state: "",
+                    style: "",
+                    href: ""
+                });
+                console.log('obj',obj)
+                // this.isActive = !this.isActive;
+                // console.log('isActive', this.isActive, 'this.isWs', this.isWs)
+                // if (this.isActive === false && this.isWs === false) {
+                //     console.log('扫码登录')
+                //     this.isWs = true
+                //     this.isLogin = false
+                //     this.initWebsocket()
+                // } else {
+                //     this.isWs = false
+                //     this.isLogin = true
+                //     this.websock.close();
+                //     clearInterval(this.timer)
+                // }
             },
             // 扫码登录，初始化websocket
             initWebsocket() {

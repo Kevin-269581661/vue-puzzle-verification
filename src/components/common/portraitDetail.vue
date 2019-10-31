@@ -80,7 +80,7 @@
             </div>
         </div>
         <div class="tab-wrap">
-            <el-tabs v-model="activeName" @tab-click="handleClick">
+            <el-tabs v-model="activeName" @tab-click="callChartsFn">
                 <el-tab-pane label="人群画像" name="first">
                     <div class="part part1">
                         <div class="flex1">
@@ -172,8 +172,8 @@
                             <div ref="tag1chart" style="width: 100%;height: 394px"></div>
                         </div>
                     </div>
-                    <div class="charts-wrap" v-if="currTag1.childer!=null">
-                        <el-tabs v-model="currTag2.label" @tab-click="handleClick">
+                    <div class="charts-wrap" v-show="currTag1.childer!=null">
+                        <el-tabs v-model="currTag2.label" @tab-click="changeSecondTag">
                             <el-tab-pane v-for="(item,index) in currTag1.childer" :key="index" :label="item.label" :name="item.label"></el-tab-pane>
                         </el-tabs>
                         <div class="tag2-chart">
@@ -196,9 +196,9 @@
         data() {
             return {
                 activeName: 'second',
-                currTag1: '',
-                currTag2: '',
-                currTag3: '',
+                currTag1: {childer:''},
+                currTag2:{childer:''},
+                currTag3: {childer:''},
                 currTag4: '',
                 resData: {
                     resName: '中信西关海花苑',
@@ -223,6 +223,10 @@
                 assetsChart: '',//资产状况
                 lifeChart: '',//人生阶段
                 jobChart: '',//工作行业
+                tag1chart: '',//一级标签
+                tag2chart: '',//二级标签
+                tag3chart: '',//三级标签
+                tag4chart: '',//四级标签
                 tags: [
                     {text: 'vue', size: 14},
                     {text: 'html', size: 24},
@@ -287,11 +291,6 @@
             }
         },
         methods: {
-            handleClick(tab, event) {
-                // console.log(tab, event);
-                // this.getTags()
-
-            },
             //性别情况
             sexChartFn() {
                 this.sexChart = this.$echarts.init(this.$refs.sexChart)
@@ -655,6 +654,8 @@
                     this.assetsChart.resize();
                     this.lifeChart.resize();
                     this.jobChart.resize();
+                    this.tag1chart.resize();
+                    this.tag2chart.resize();
                 });
             },
             //获取偏好画像标签
@@ -672,10 +673,13 @@
                         this.hobbyTags = res.data.data
                         this.currTag1 = this.hobbyTags[0]
                         if(this.currTag1.childer){
+                            this.sliceArr(this.currTag1)
                             this.currTag2 = this.currTag1.childer[0]
                             if(this.currTag2.childer){
+                                this.sliceArr(this.currTag2)
                                 this.currTag3 = this.currTag2.childer[0]
                                 if(this.currTag3.childer){
+                                    this.sliceArr(this.currTag3)
                                     this.currTag4 = this.currTag3.childer[0]
                                 }
                             }
@@ -691,10 +695,18 @@
             chooseFirstTag(item) {
                 this.currTag1 = item
             },
+            //截取前12个
+            sliceArr(obj){
+                if(obj.childer.length>0){
+                    let temp = obj.childer.slice(0,6)
+                    obj.childer = temp
+                }
+                return obj
+            },
             //一级标签柱状图
             tag1chartFn() {
-                let tag1chart = this.$echarts.init(this.$refs.tag1chart)
-                tag1chart.setOption({
+                this.tag1chart = this.$echarts.init(this.$refs.tag1chart)
+                this.tag1chart.setOption({
                     legend: {
                         left: 'center',
                         bottom: 20,
@@ -760,8 +772,8 @@
             },
             //二级标签柱状图
             tag2chartFn(){
-                let tag2chart = this.$echarts.init(this.$refs.tag2chart)
-                tag2chart.setOption({
+                this.tag2chart = this.$echarts.init(this.$refs.tag2chart)
+                this.tag2chart.setOption({
                     legend: {
                         left: 'center',
                         bottom: 20,
@@ -827,26 +839,37 @@
             },
             //调用
             callChartsFn(){
-                setTimeout(() => {
-                    //人群
-                    this.sexChartFn()
-                    this.ageChartFn()
-                    this.eduChartFn()
-                    this.spendChartFn()
-                    this.assetsChartFn()
-                    this.lifeChartFn()
-                    this.jobChartFn()
-                    this.echartsListener();
-                    this.getWordCloud()
-                    //偏好
-                    this.tag1chartFn()
-                    this.tag2chartFn()
-                }, 20)
+                if(this.activeName == 'first'){
+                    this.$nextTick(function(){
+                        //人群
+                        this.sexChartFn()
+                        this.ageChartFn()
+                        this.eduChartFn()
+                        this.spendChartFn()
+                        this.assetsChartFn()
+                        this.lifeChartFn()
+                        this.jobChartFn()
+                        this.echartsListener();
+                        this.getWordCloud()
+                    })
+                }else{
+                    this.$nextTick(function(){
+                        //偏好
+                        this.tag1chartFn()
+                        this.tag2chartFn()
+                    })
+                }
+
+            },
+            changeSecondTag(tab,event){
+                console.log(tab);
+                console.log(this.currTag1);
             }
         },
         mounted() {
-            this.callChartsFn()
             this.getTags()
+            this.callChartsFn()
+
 
         }
     }

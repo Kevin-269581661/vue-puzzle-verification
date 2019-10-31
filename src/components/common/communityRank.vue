@@ -565,7 +565,13 @@
             //移入移出一级标签
             showPopver(firstTag) {
                 if(firstTag.childer){
-                    firstTag.hovered = true
+                    for(let data of this.hobbyTags){
+                        if(data.value == firstTag.value){
+                            data.hovered = true
+                        }else{
+                            data.hovered = false
+                        }
+                    }
                 }else{
                     firstTag.hovered = false
                 }

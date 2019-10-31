@@ -1051,10 +1051,10 @@
 
     .content_head {
         margin-top: 25px;
-        /*width: 100%;*/
         height: 90px;
         background: #fff;
         padding: 17px 15px;
+        border: 1px solid rgba(232,232,232,1);
     }
 
     .content_head h2 {
@@ -1074,12 +1074,22 @@
     }
 
     .content_main {
-        margin-top: 25px;
+        margin-top: 24px;
         background: #fff;
-        padding: 0 15px 15px 15px;
+        padding: 0;
+        border: 1px solid rgba(232,232,232,1);
     }
     .content_main /deep/ .el-tabs__content{
-        padding: 0 12px;
+        padding: 0 24px 24px;
+    }
+
+    .content_main /deep/ .el-tabs__nav-wrap{
+        padding: 0 24px;
+    }
+
+    .content_main /deep/ .el-tabs__nav{
+        height: 48px;
+        line-height: 48px;
     }
 
     .car-title {
@@ -1092,7 +1102,6 @@
 
     .car-title h4 {
         font-size: 14px;
-        /*font-weight: bold;*/
         display: inline-block;
         color: #444;
     }
@@ -1111,40 +1120,50 @@
         cursor: pointer;
         color: #1890ff;
     }
+
     /deep/ .el-tabs__item{
         font-size: 16px;
     }
+
     /deep/ .el-tabs__item.is-active {
         color: #1890FF;
     }
+
     /deep/ .el-table th{
         background: #f7f7f7;
     }
+
     /deep/ .el-table th > .cell {
         color: #666666;
         line-height: 14px;
         font-weight: bold;
 
     }
+
     /deep/ .el-table__row td{
         line-height: 48px;
         font-size: 14px;
         padding: 8px 0;
     }
+
     /deep/ .el-checkbox + .el-checkbox {
         margin-left: 10px;
     }
+
     /deep/ .el-table__expanded-cell[class*=cell] {
         padding: 0 86px;
         background-color: #F7F7F7;;
     }
+
     .el-table__expanded-cell[class*=cell] .el-form{
         height: 44px;
         line-height: 44px;
     }
+
     /deep/ .el-form-item__content {
         line-height: 46px;
     }
+
     /*滚动条*/
     /deep/ .el-table__body-wrapper {
         height: 440px;
@@ -1163,17 +1182,19 @@
         background: #C1C1C1;
         border-radius: 4px;
     }
+
     /deep/ .el-table td .cell {
-        /*display: flex;*/
         height: 30px;
         line-height: 30px;
         overflow-x: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+
     /deep/ .el-table__row .cell span{
         overflow-x: initial;
     }
+
     .searchBox{
         margin-bottom: 10px;
         font-size: 14px;
@@ -1183,10 +1204,7 @@
         width: 162px;
         margin: 0 10px 0 5px;
     }
-    .cityLevelMedia /deep/ .el-input{
-        /*width: 185px;*/
-        /*margin-right: 8px;*/
-    }
+
     /*城市按钮*/
     .city_radio{
         display: inline-block;
@@ -1205,21 +1223,16 @@
         background: #409EFF;
         color: #fff;
     }
- /*   /deep/ .cityRadio .el-radio-button{
-        margin-right: 15px;
-        margin-bottom: 10px;
-    }
-    /deep/ .cityRadio .el-radio-button__inner{
-        border-radius: 4px;
-        border-left: 1px solid #dcdfe6;
-    }*/
+
     .addMinus{
         position: relative;
     }
+
     .addMinus /deep/ .el-input-number.is-controls-right .el-input__inner{
         padding-left: 5px;
         padding-right: 32px;
     }
+
     .addMinus /deep/ .el-input-number--mini{
         width: 90%;
     }
@@ -1243,7 +1256,7 @@
     .shareTable /deep/ .el-table__row td:nth-child(13){
         text-align: center;
     }
-    /*.el-table__body-wrapper*/
+
     @media all and (min-width: 1900px){
         /deep/ .el-table__body-wrapper{
             overflow-x: hidden;

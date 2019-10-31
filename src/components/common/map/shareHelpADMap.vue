@@ -175,7 +175,7 @@
                         </el-button>
                     </div>
                 </div>
-                <el-button plain slot="reference" class="otherBtn top_btn" :class="filterData.lYear ? 'filter_btn' : ''">
+                <el-button plain slot="reference" class="otherBtn top_btn" :class="filterData.lYear ? 'filter_btn' : ''" v-show="showMore">
                     {{filterData.lYear ? (liveYear[0] + '-' + liveYear[1]) : '入住年份'}}
                     <i class="el-icon-arrow-down icon_arrow" v-show="!popoverShow.lYear"></i>
                     <i class="el-icon-arrow-up icon_arrow" v-show="popoverShow.lYear"></i>
@@ -1601,6 +1601,7 @@
         position: relative;
         height: 662px;
         width: 100%;
+        margin-top: 9px;
     }
     #qinlinMap {
         width: 100%;
@@ -1666,7 +1667,7 @@
     }
 
     .search_ul {
-        height: 408px;
+        height: 328px;
         overflow-y: auto;
     }
 
@@ -1967,7 +1968,7 @@
     }
 
     .active_ul {
-        height: 140px;
+        height: 98px;
         overflow-y: auto;
         padding-top: 4px;
     }

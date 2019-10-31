@@ -11,7 +11,7 @@
         </div>
         <!--左侧搜索-->
         <div class="left_search_box">
-            <el-input placeholder="请输入内容" v-model="selectName" v-show="!isOnlineSearch"
+            <el-input placeholder="请输入内容" v-model="selectName" v-show="!isOnlineSearch && !isMouseSearch"
                       @keydown.native="searchDown($event)"
                       class="input-with-select"
                       clearable
@@ -28,10 +28,10 @@
                 <i slot="suffix" class="el-input__icon el-icon-search" @click="searchFun"></i>
             </el-input>
             <div class="search_body" v-show="(searchResList.length && activeSearchKind == '1') || isOnlineSearch">
-                <div class="search_result_btn" v-show="isOnlineSearch">
+                <div class="search_result_btn" v-show="isOnlineSearch || isMouseSearch">
                     <h4 class="result_title">框选结果</h4>
                     <div class="result_btn_box">
-                        <span @click="setOnlineSearch">设置</span>
+                        <span @click="setOnlineSearch" v-show="!isMouseSearch">设置</span>
                         <span @click="clearSearch">取消</span>
                     </div>
                 </div>
@@ -72,7 +72,7 @@
                     </li>
                 </ul>
                 <div class="search_bottom_btn">
-                    <el-checkbox v-model="isAllSelectOnline" @change="onlineSelectAll()"></el-checkbox>
+                    <el-checkbox v-model="isAllSelectOnline" @change="onlineSelectAll()" :disabled="isActiveASOL"></el-checkbox>
                     <span class="online_search_span"> 全选<span style="color:#1890FF"> {{searchOnlineList.length}}</span> 个</span>
                     <el-button plain size="small" class="online_search_btn" @click="canceAllOnline">取消</el-button>
                     <el-button size="small" type="primary" class="online_search_btn" @click="onlineConfirm">确定</el-button>
@@ -352,7 +352,9 @@
             <div class="around_search_body">
                 <p>
                     <span class="p_span">框选方式：</span>
-                    <el-radio v-model="aroundSearchInfo.searchRadio" :label="1">辐射圈并集</el-radio></p>
+                    <el-radio v-model="aroundSearchInfo.searchRadio" :label="1">辐射圈并集</el-radio>
+                    <el-radio v-model="aroundSearchInfo.searchRadio" :label="2">辐射圈交集</el-radio>
+                </p>
                 <p>
                     <span class="p_span">框选范围：</span>
                     <el-slider class="p_slider" v-model="aroundSearchInfo.searchRadius"></el-slider>
@@ -465,7 +467,7 @@
                 // 地图实例
                 resMap: '',
                 markerIcon: require('../../assets/images/map/markerIcon.png'),
-                markers: [],
+                resMarkers: [],
                 // 时间排期
                 dateTime:[],
                 // 地图loading
@@ -494,9 +496,12 @@
                 /* 在线搜索 */
                 // 在线搜索到list
                 searchOnlineList:[],
+                // 在线搜索点
                 onlineMarkers:[],
                 // 在线搜索是否全选状态
                 isAllSelectOnline: false,
+                // 正在在线全选中
+                isActiveASOL: false,
                 // 在线搜索输入范围
                 searchDialogVisible: false,
                 // 搜索中
@@ -577,6 +582,8 @@
                 selectMediaType: '',
                 // 媒体等级
                 selectMediaLevel: '',
+                /* 鼠标绘制 */
+                drawingManager: '',
                 // 标识鼠标画线状态
                 isMouseLine: false,
                 // 标识画线时点击的次数
@@ -587,6 +594,10 @@
                 mapLabel: null,
                 // 记录上一段线的距离
                 twoPointsLength: 0,
+                // 鼠标绘制到对象
+                mouseoverlay: '',
+                // 鼠标绘制结果状态
+                isMouseSearch: false,
                 // 小区资源提交成功
                 mapDialogVisible: false,
                 // 小区媒体列表弹出框
@@ -844,50 +855,14 @@
             },
             // 创建标注
             creatMarker() {
-                let markerList = [];
-                let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(16,16),{
-                    anchor: new BMap.Size(8, 8)
-                });
-                for (let key of this.resInfo) {
-                    let point = new BMap.Point(key.lng, key.lat);
-                    let marker = new BMap.Marker(point, {icon: myIcon});  // 创建标注
-                    let label = new BMap.Label(key.resName, {offset: new BMap.Size(4,-18)});
-                    label.setStyle({
-                        borderRadius: "3px",
-                        boxShadow: '0px 0px 6px 0px rgba(0,0,0,0.15)',
-                        border: 'none',
-                        background: 'rgba(255,255,255,1)',
-                        color: 'rgba(0,0,0,0.85)',
-                        padding: '3px 8px',
-                    });
-                    marker.setLabel(label);
-                    marker.setTop(true);
-                    label.addEventListener("click",()=>{
-                        this.showInfo(key,point)
-                    });
-                    markerList.push(marker);
-                }
-                // 点位聚合
-                let markerClusterer = new BMapLib.MarkerClusterer(this.resMap, {markers:markerList})
-                // 聚合计算时网格的像素大小，默认60
-                markerClusterer.setGridSize(60)
-                // 获取单个聚合的最小数量
-                markerClusterer.setMinClusterSize(5)
-                // 设置聚合的最大缩放级别
-                markerClusterer.setMaxZoom(17)
-                this.markers = markerList
-                console.log('markerClusterer',markerClusterer, markerClusterer.getMarkers())
-
-                // let i = 0
                 // let markerList = [];
                 // let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(16,16),{
                 //     anchor: new BMap.Size(8, 8)
                 // });
-                // for(let key of this.resInfo) {
-                //     this.$set(key, "isSelect", false);
+                // for (let key of this.resInfo) {
                 //     let point = new BMap.Point(key.lng, key.lat);
-                //     let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
-                //     let label = new BMap.Label(key.resName,{offset:new BMap.Size(4,-18)});
+                //     let marker = new BMap.Marker(point, {icon: myIcon});  // 创建标注
+                //     let label = new BMap.Label(key.resName, {offset: new BMap.Size(4,-18)});
                 //     label.setStyle({
                 //         borderRadius: "3px",
                 //         boxShadow: '0px 0px 6px 0px rgba(0,0,0,0.15)',
@@ -898,21 +873,58 @@
                 //     });
                 //     marker.setLabel(label);
                 //     marker.setTop(true);
-                //     this.resMap.addOverlay(marker);              // 将标注添加到地图中
                 //     label.addEventListener("click",()=>{
                 //         this.showInfo(key,point)
                 //     });
-                //     if(i < 1000) {
-                //         marker.show()
-                //     } else {
-                //         marker.hide()
-                //     }
-                //     this.markerList.push(marker)
-                //     i++
+                //     markerList.push(marker);
                 // }
-                // this.marker = this.markerList
+                // // 点位聚合
+                // let markerClusterer = new BMapLib.MarkerClusterer(this.resMap, {markers:markerList})
+                // // 聚合计算时网格的像素大小，默认60
+                // markerClusterer.setGridSize(60)
+                // // 获取单个聚合的最小数量
+                // markerClusterer.setMinClusterSize(5)
+                // // 设置聚合的最大缩放级别
+                // markerClusterer.setMaxZoom(17)
+                // this.markers = markerList
+                // console.log('markerClusterer',markerClusterer, markerClusterer.getMarkers())
+
+                let i = 0
+                let markerList = [];
+                let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(16,16),{
+                    anchor: new BMap.Size(8, 8)
+                });
+                for(let key of this.resInfo) {
+                    this.$set(key, "isSelect", false);
+                    let point = new BMap.Point(key.lng, key.lat);
+                    let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
+                    let label = new BMap.Label(key.resName,{offset:new BMap.Size(4,-18)});
+                    label.setStyle({
+                        borderRadius: "3px",
+                        boxShadow: '0px 0px 6px 0px rgba(0,0,0,0.15)',
+                        border: 'none',
+                        background: 'rgba(255,255,255,1)',
+                        color: 'rgba(0,0,0,0.85)',
+                        padding: '3px 8px',
+                    });
+                    marker.setLabel(label);
+                    marker.setTop(true);
+                    marker.inCircleNum = 0
+                    this.resMap.addOverlay(marker);              // 将标注添加到地图中
+                    label.addEventListener("click",()=>{
+                        this.showInfo(key,point)
+                    });
+                    if(i < 1000) {
+                        marker.show()
+                    } else {
+                        marker.hide()
+                    }
+                    i++
+                    markerList.push(marker)
+                }
+                this.resMarkers = markerList
             },
-            // 显示详情
+            // 显示详
             showInfo(info,point){
                 this.showResInfo = info
                 let content = this.$refs.resInfoWindow
@@ -1008,6 +1020,7 @@
                         console.log(e.overlay);
                         console.log(e.calculate);
                         console.log(e.label);
+                        that.mouseoverlay =  e.overlay
                         that.drawingManager.close()
                         if(e.drawingMode === 'circle') {
                             that.showResInPolygon('circle',e.overlay)
@@ -1104,43 +1117,35 @@
                 return c;
             },
             // 显示多边形内的点位
-            showResInPolygon(temp,overlay) {
-               console.time('显示多边形')
-                let allOverlay = this.resMap.getOverlays();
-               console.log('allOverlay',allOverlay)
-                for(let key of this.resInfo) {
-                    // for (let akey of allOverlay) {
-                    for(let akey of this.markers) {
-                        if(
-                            // akey.isVisible() &&
-                            akey.toString() == "[object Marker]" &&
-                            akey.getLabel() &&
-                            akey.getLabel().content === key.resName) {
-                            //
-                            let point = new BMap.Point(key.lng, key.lat);
-                            let isShow = ''
-                            if(temp === 'circle') {
-                                isShow = BMapLib.GeoUtils.isPointInCircle(point,overlay)
-                            } else if (temp === 'polygon') {
-                                // isShow = this.isInsidePolygon(point,this.polygonPoint)
-                                isShow = BMapLib.GeoUtils.isPointInPolygon(point,overlay)
-                            }
-                            if(!isShow){
-                                akey.hide()
-                            } else {
-                                let flag = this.searchResList.some((item,index)=>{
-                                    if(key.resID === item.resID) {
+            showResInPolygon(temp, overlay) {
+                console.time('显示多边形')
+                console.log('resMarkers', this.resMarkers)
+                for (let akey of this.resMarkers) {
+                    let isShow = ''
+                    if (temp === 'circle') {
+                        isShow = BMapLib.GeoUtils.isPointInCircle(akey.point, overlay)
+                    } else if (temp === 'polygon') {
+                        isShow = BMapLib.GeoUtils.isPointInPolygon(akey.point, overlay)
+                    }
+                    if (!isShow) {
+                        akey.hide()
+                    } else {
+                        for (let key of this.resInfo) {
+                            if (akey.getLabel().content === key.resName) {
+                                let flag = this.searchResList.some((item, index) => {
+                                    if (key.resID === item.resID) {
                                         return true
                                     }
                                 })
                                 if (!flag) {
                                     this.searchResList.push(key)
                                 }
+                                break
                             }
-                            break
                         }
                     }
                 }
+                this.isMouseSearch = true
                 console.timeEnd('显示多边形')
             },
             // 清除上一次的绘制
@@ -1148,7 +1153,7 @@
                 let allOverlay = this.resMap.getOverlays();
                 for (let akey of allOverlay) {
                     if (akey.toString() == "[object Circle]" || akey.toString() == "[object Polygon]") {
-                        this.resMap.removeOverlay(akey);
+                        // this.resMap.removeOverlay(akey);
                         // break;
                     } else if(!akey.isVisible()){
                         akey.show()
@@ -1156,6 +1161,7 @@
 
                     }
                 }
+                this.resMap.removeOverlay(this.mouseoverlay)
                 this.searchResList = []
             },
             // 地图缩放
@@ -1208,6 +1214,9 @@
                             return item
                         }
                     })
+                    if(this.searchResList.length <= 0) {
+                        sessFun.messageFun('warning','搜索不到相关的亲邻资源，请换一个搜索姿势o')
+                    }
                 } else {
                     // 在线搜索
                     this.onlineSearchFun()
@@ -1299,12 +1308,12 @@
                         this.judgeMarkerShow(key.lng,key.lat)
                     }
                 }
-                console.log('全选',this.selectResList,this.markers[0].point.lng)
+                console.log('全选',this.selectResList,this.resMarkers[0].point.lng)
             },
             // 判断marker是否隐藏
             judgeMarkerShow(lng,lat) {
                 // console.log('lng,lat',lng,lat)
-                for(let key of this.markers) {
+                for(let key of this.resMarkers) {
                     if(key.point.lng == lng && key.point.lat == lat) {
                         key.show()
                         break
@@ -1313,9 +1322,17 @@
             },
             // 在线全选
             onlineSelectAll() {
+                this.isActiveASOL = true
+                let timer = setTimeout(()=>{
+                    this.isActiveASOL = false
+                    clearTimeout(timer)
+                },500)
                 if(this.isAllSelectOnline) {
                     for(let key of this.searchOnlineList) {
-                        key.isSelect = true
+                        if(!key.isSelect) {
+                            key.isSelect = true
+                            this.onlineCheckBox(key)
+                        }
                     }
                 } else {
                     this.canceAllOnline()
@@ -1441,30 +1458,31 @@
                         strokeOpacity: 1
                     });
                     this.resMap.addOverlay(circle);
-                    this.showResInCircle(key, radius)
+                    if(this.aroundSearchInfo.searchRadio == 1) {
+                        this.showResInCircle(key, radius)
+                    } else if (this.aroundSearchInfo.searchRadio == 2) {
+                        this.ShowIntersectionInCircle(key, radius)
+                    }
                     this.searchDialogVisible = false
                     this.isOnlineSearch = true
                 }
             },
-            // 显示圆半径内的小区
+            // 并集显示圆半径内的小区
             showResInCircle(data,radius) {
-                let date1 = new Date();
+                console.time('圆半径内小区')
                 let point = data.point
-                let allOverlay = this.resMap.getOverlays();
-                for(let key of this.resInfo) {
-                    for (let akey of allOverlay) {
-                        if( akey.toString() == "[object Marker]" &&
-                            akey.getLabel() &&
-                            akey.getLabel().content === key.resName) {
-                            let point2 = new BMap.Point(key.lng, key.lat);
-                            let distance = this.resMap.getDistance(point, point2)
-                            // 是否在半径内
-                            if (distance > radius) {
-                                // 多个圆时
-                                key.show ? akey.show() : akey.hide()
-                            } else {
-                                key.show = true
-                                akey.show()
+                for (let rkey of this.resMarkers) {
+                    let distance = this.resMap.getDistance(point, rkey.point)
+                    if (distance > radius) {
+                        // 多个圆时
+                        rkey.inCircleNum ? rkey.show() : rkey.hide()
+                    } else {
+                        rkey.inCircleNum++
+                        rkey.show()
+                        // 标注marker匹配亲邻小区
+                        for(let key of this.resInfo) {
+                            if(rkey.getLabel().content === key.resName) {
+                                // 判断是否已存在左侧结果列表
                                 let flag = this.searchResList.some((item, index) => {
                                     if (key.resID === item.resID) {
                                         return true
@@ -1477,19 +1495,59 @@
                                     centerName: data.title || ''
                                 }
                                 if (flag) {
+                                    // 多中心点保存
                                     key.mapCenter ? key.mapCenter.push(centerInfo) : key.mapCenter = [centerInfo]
                                 } else {
                                     key.mapCenter = [centerInfo]
                                     this.searchResList.push(key)
                                 }
+                                break
                             }
-                            break
                         }
                     }
                 }
-                let date2 = new Date();
-                let haomiao = date2.getTime() - date1.getTime();
-                console.log('用时',haomiao/(1000*60))
+                console.timeEnd('圆半径内小区')
+            },
+            // 交集显示圆半径内的小区 this.onlineMarkers
+            ShowIntersectionInCircle(data,radius) {
+                console.time('交集圆半径内小区')
+                let point = data.point
+                for (let rkey of this.resMarkers) {
+                    let distance = this.resMap.getDistance(point, rkey.point)
+                    if (distance > radius) {
+                        // 多个圆时
+                        rkey.inCircleNum ? rkey.show() : rkey.hide()
+                    } else {
+                        rkey.inCircleNum++
+                        rkey.show()
+                        // 标注marker匹配亲邻小区
+                        for(let key of this.resInfo) {
+                            if(rkey.getLabel().content === key.resName) {
+                                // 判断是否已存在左侧结果列表
+                                let flag = this.searchResList.some((item, index) => {
+                                    if (key.resID === item.resID) {
+                                        return true
+                                    }
+                                })
+                                let centerInfo = {
+                                    centerAddress: data.address || '',
+                                    city: data.city || '',
+                                    point: data.point || '',
+                                    centerName: data.title || ''
+                                }
+                                if (flag) {
+                                    // 多中心点保存
+                                    key.mapCenter ? key.mapCenter.push(centerInfo) : key.mapCenter = [centerInfo]
+                                } else {
+                                    key.mapCenter = [centerInfo]
+                                    this.searchResList.push(key)
+                                }
+                                break
+                            }
+                        }
+                    }
+                }
+                console.timeEnd('交集圆半径内小区')
             },
             // 重新设置在线搜索
             setOnlineSearch() {
@@ -1504,17 +1562,38 @@
             },
             // 取消在线搜索
             clearSearch() {
-                this.isOnlineSearch = false
-                let allOverlay = this.resMap.getOverlays();
-                for (let akey of allOverlay) {
-                    akey.show()
-                    if (akey.toString() == "[object Circle]" || akey.toString() == "[object Polygon]") {
-                        this.resMap.removeOverlay(akey);
+                if(this.isMouseSearch) {
+                    // 取消鼠标画圆
+                    this.deleteDrawingOverlay()
+                } else {
+                    // 周边搜索
+                    this.isOnlineSearch = false
+                    let allOverlay = this.resMap.getOverlays();
+                    for (let akey of allOverlay) {
+                        // akey.show()
+                        if (akey.toString() == "[object Circle]" || akey.toString() == "[object Polygon]") {
+                            this.resMap.removeOverlay(akey);
+                        }
+                    }
+                    this.initResMarkers()
+                    // 移除
+                    for (let key of this.selectOnlineList) {
+                        this.deleteCircle(key.id)
                     }
                 }
-                // 移除
-                for (let key of this.selectOnlineList) {
-                    this.deleteCircle(key.id)
+
+            },
+            // 恢复打点原始状态
+            initResMarkers() {
+                let i = 0
+                for(let key of this.resMarkers) {
+                    if(i < 1000) {
+                        key.show()
+                    } else {
+                        key.hide()
+                    }
+                    key.inCircleNum = 0
+                    i++
                 }
             },
             /**

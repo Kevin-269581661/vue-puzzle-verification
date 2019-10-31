@@ -172,17 +172,19 @@
                             <div ref="tag2chart" style="width: 100%;height: 394px"></div>
                         </div>
                     </div>
-                    <div class="charts-wrap" v-show="currTag1.childer!=null">
+                    <div class="charts-wrap" v-show="tag2List.length>0">
                         <el-tabs v-model="tag2_active_name" @tab-click="changeSecondTag">
-                            <el-tab-pane v-for="(item,index) in currTag1.childer" :key="index" :label="item.label" :name="item.label"></el-tab-pane>
+                            <el-tab-pane v-for="(item,index) in tag2List" :key="index" :label="item.label"
+                                         :name="item.label"></el-tab-pane>
                         </el-tabs>
                         <div class="tag2-chart">
                             <div ref="tag3chart" style="width: 100%;height: 394px"></div>
                         </div>
                     </div>
-                    <div class="charts-wrap" v-show="currTag2.childer!=null">
+                    <div class="charts-wrap" v-show="tag3List.length>0">
                         <el-tabs v-model="tag3_active_name" @tab-click="changeThirdTag">
-                            <el-tab-pane v-for="(item,index) in currTag2.childer" :key="index" :label="item.label" :name="item.label"></el-tab-pane>
+                            <el-tab-pane v-for="(item,index) in tag3List" :key="index" :label="item.label"
+                                         :name="item.label"></el-tab-pane>
                         </el-tabs>
                         <div class="tag2-chart">
                             <div ref="tag4chart" style="width: 100%;height: 394px"></div>
@@ -204,12 +206,14 @@
         data() {
             return {
                 activeName: 'second',
-                tag2_active_name:'',
-                tag3_active_name:'',
+                tag2_active_name: '',
+                tag3_active_name: '',
                 // tag4_active_name:'',
-                currTag1: {childer:''},
-                currTag2:{childer:''},
-                currTag3: {childer:''},
+                currTag1: {childer: ''},
+                currTag2: {childer: ''},
+                currTag3: {childer: ''},
+                tag2List: [],
+                tag3List: [],
                 // currTag4: '',
                 resData: {
                     resName: '中信西关海花苑',
@@ -293,10 +297,22 @@
                 },
                 jobData: {x: ['服务人员', '个体经营者', '管理者和企业主', '专业技术人员', '文职人员', '生产操作人员'], y: [120, 200, 150, 80, 70, 110]},
                 hobbyTags: '',
-                currTagsChartsData:{
-                    tag2_data:{x:['购车阶段', '汽车档次', '新能源汽车', '汽车车型'],y1:[43.3, 83.1, 86.4, 72.4],y2:[83.1, 73.4, 65.2, 53.9]},
-                    tag3_data:{x:['购车阶段2', '汽车档次2', '新能源汽车2', '汽车车型2'],y1:[63.3, 33.1, 86.4, 72.4],y2:[83.1, 43.4, 75.2, 43.9]},
-                    tag4_data:{x:['购车阶段4', '汽车档次4', '新能源汽车4', '汽车车型4'],y1:[63.3, 33.1, 86.4, 72.4],y2:[83.1, 43.4, 75.2, 43.9]}
+                currTagsChartsData: {
+                    tag2_data: {
+                        x: ['购车阶段', '汽车档次', '新能源汽车', '汽车车型'],
+                        y1: [43.3, 83.1, 86.4, 72.4, 86.4, 72.4],
+                        y2: [83.1, 73.4, 65.2, 53.9, 65.2, 53.9]
+                    },
+                    tag3_data: {
+                        x: ['购车阶段2', '汽车档次2', '新能源汽车2', '汽车车型2'],
+                        y1: [63.3, 33.1, 86.4, 72.4, 86.4, 72.4],
+                        y2: [83.1, 43.4, 75.2, 43.9, 65.2, 53.9]
+                    },
+                    tag4_data: {
+                        x: ['购车阶段4', '汽车档次4', '新能源汽车4', '汽车车型4'],
+                        y1: [63.3, 33.1, 86.4, 72.4, 86.4, 72.4],
+                        y2: [83.1, 43.4, 75.2, 43.9, 65.2, 53.9]
+                    }
 
                 }
 
@@ -666,7 +682,6 @@
                     this.assetsChart.resize();
                     this.lifeChart.resize();
                     this.jobChart.resize();
-                    this.tag1chart.resize();
                     this.tag2chart.resize();
                     this.tag3chart.resize();
                     this.tag4chart.resize();
@@ -686,32 +701,33 @@
                         this.hobbyTags = res.data.data
                         this.currTag1 = this.hobbyTags[0]
                         //设置自己菜单的tab和x轴y轴数据
-                        if(this.currTag1.childer){
+                        if (this.currTag1.childer) {
                             this.sliceArr(this.currTag1)
                             this.currTag2 = this.currTag1.childer[0]
+                            this.tag2List = this.getJuniorTabs(this.currTag1.childer)
                             this.tag2_active_name = this.currTag1.childer[0].label;
-                            this.currTagsChartsData.tag2_data.x = this.currTag1.childer.map(item=>{
-                                return item.label
+                            this.currTagsChartsData.tag2_data.x = this.currTag1.childer.map(item => {
+                                return item.label
                             })
-                            if(this.currTag2.childer){
-                                this.sliceArr(this.currTag2)
-                                this.currTag3 = this.currTag2.childer[0]
-                                this.tag3_active_name = this.currTag2.childer[0].label;
-                                // this.currTagsChartsData.tag3_data.x = this.currTag2.childer
-                                this.currTagsChartsData.tag3_data.x = this.currTag2.childer.map(item=>{
-                                    return item.label
-                                })
-                                if(this.currTag3.childer){
-                                    this.sliceArr(this.currTag3)
-                                    // this.currTag4 = this.currTag3.childer[0]
-                                    // this.currTagsChartsData.tag4_data.x = this.currTag3.childer
-                                    this.currTagsChartsData.tag4_data.x = this.currTag3.childer.map(item=>{
-                                        return item.label
-                                    })
-                                }
-                            }
                         }
+                        if (this.currTag2.childer) {
+                            this.sliceArr(this.currTag2)
+                            this.currTag3 = this.currTag2.childer[0]
+                            this.tag3List = this.getJuniorTabs(this.currTag2.childer)
+                            this.tag3_active_name = this.currTag2.childer[0].label;
+                            this.currTagsChartsData.tag3_data.x = this.currTag2.childer.map(item => {
+                                return item.label
+                            })
 
+                        }
+                        if (this.currTag3.childer) {
+                            this.sliceArr(this.currTag3)
+                            // this.currTag4 = this.currTag3.childer[0]
+                            // this.currTagsChartsData.tag4_data.x = this.currTag3.childer
+                            this.currTagsChartsData.tag4_data.x = this.currTag3.childer.map(item => {
+                                return item.label
+                            })
+                        }
 
                     } else {
                         this.$message.warning(res.data.MSG)
@@ -721,18 +737,22 @@
             //选择一级标签
             chooseFirstTag(item) {
                 this.currTag1 = item
-                if(item.childer){
+
+                if (item.childer) {
+                    this.currTag2 = item.childer[0]
                     this.sliceArr(item)
-                    this.currTagsChartsData.tag2_data.x = item.childer.map(item=>{
-                        return item.label
+                    this.tag2List = this.getJuniorTabs(item.childer)
+                    this.currTagsChartsData.tag2_data.x = item.childer.map(item => {
+                        return item.label
                     })
+                    this.tag2_active_name = item.childer[0].label
                 }
                 this.tag2chartFn()
             },
             //截取前12个
-            sliceArr(obj){
-                if(obj.childer.length>0){
-                    let temp = obj.childer.slice(0,6)
+            sliceArr(obj) {
+                if (obj.childer.length > 0) {
+                    let temp = obj.childer.slice(0, 6)
                     obj.childer = temp
                 }
                 return obj
@@ -758,8 +778,8 @@
                                 '<span>' + params[0].name + '</span>' +
                                 '</p>' +
                                 '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>' + params[0].seriesName + '</span>：' + params[0].value + '%' +'<br/>' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>' + params[1].seriesName + '</span>：' + params[1].value + '%' +'</p>'
+                                '<span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>' + params[0].seriesName + '</span>：' + params[0].value + '%' + '<br/>' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>' + params[1].seriesName + '</span>：' + params[1].value + '%' + '</p>'
                         }
                     },
                     grid: {x: 80, y: 40, x2: 80, y2: 80,},//图表位置
@@ -799,13 +819,25 @@
                         show: true
                     },
                     series: [
-                        {type: 'bar', barWidth: '18%', color: '#1890FF', name: '单小区人群', data: this.currTagsChartsData.tag2_data.y1},
-                        {type: 'bar', barWidth: '18%', color: '#4DCB73', name: '同区域人群', data: this.currTagsChartsData.tag2_data.y2},
+                        {
+                            type: 'bar',
+                            barWidth: '18%',
+                            color: '#1890FF',
+                            name: '单小区人群',
+                            data: this.currTagsChartsData.tag2_data.y1
+                        },
+                        {
+                            type: 'bar',
+                            barWidth: '18%',
+                            color: '#4DCB73',
+                            name: '同区域人群',
+                            data: this.currTagsChartsData.tag2_data.y2
+                        },
                     ]
                 })
             },
             //三级标签柱状图
-            tag3chartFn(){
+            tag3chartFn() {
                 this.tag3chart = this.$echarts.init(this.$refs.tag3chart)
                 this.tag3chart.setOption({
                     legend: {
@@ -825,8 +857,8 @@
                                 '<span>' + params[0].name + '</span>' +
                                 '</p>' +
                                 '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>' + params[0].seriesName + '</span>：' + params[0].value + '%' +'<br/>' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>' + params[1].seriesName + '</span>：' + params[1].value + '%' +'</p>'
+                                '<span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>' + params[0].seriesName + '</span>：' + params[0].value + '%' + '<br/>' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>' + params[1].seriesName + '</span>：' + params[1].value + '%' + '</p>'
                         }
                     },
                     grid: {x: 80, y: 40, x2: 80, y2: 80,},//图表位置
@@ -866,13 +898,25 @@
                         show: true
                     },
                     series: [
-                        {type: 'bar', barWidth: '18%', color: '#1890FF', name: '单小区人群', data: this.currTagsChartsData.tag3_data.y1},
-                        {type: 'bar', barWidth: '18%', color: '#4DCB73', name: '同区域人群', data: this.currTagsChartsData.tag3_data.y2},
+                        {
+                            type: 'bar',
+                            barWidth: '18%',
+                            color: '#1890FF',
+                            name: '单小区人群',
+                            data: this.currTagsChartsData.tag3_data.y1
+                        },
+                        {
+                            type: 'bar',
+                            barWidth: '18%',
+                            color: '#4DCB73',
+                            name: '同区域人群',
+                            data: this.currTagsChartsData.tag3_data.y2
+                        },
                     ]
                 })
             },
             //四级标签柱状图
-            tag4chartFn(){
+            tag4chartFn() {
                 this.tag4chart = this.$echarts.init(this.$refs.tag4chart)
                 this.tag4chart.setOption({
                     legend: {
@@ -892,8 +936,8 @@
                                 '<span>' + params[0].name + '</span>' +
                                 '</p>' +
                                 '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>' + params[0].seriesName + '</span>：' + params[0].value + '%' +'<br/>' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>' + params[1].seriesName + '</span>：' + params[1].value + '%' +'</p>'
+                                '<span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>' + params[0].seriesName + '</span>：' + params[0].value + '%' + '<br/>' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>' + params[1].seriesName + '</span>：' + params[1].value + '%' + '</p>'
                         }
                     },
                     grid: {x: 80, y: 40, x2: 80, y2: 80,},//图表位置
@@ -933,15 +977,27 @@
                         show: true
                     },
                     series: [
-                        {type: 'bar', barWidth: '18%', color: '#1890FF', name: '单小区人群', data: this.currTagsChartsData.tag4_data.y1},
-                        {type: 'bar', barWidth: '18%', color: '#4DCB73', name: '同区域人群', data: this.currTagsChartsData.tag4_data.y2},
+                        {
+                            type: 'bar',
+                            barWidth: '18%',
+                            color: '#1890FF',
+                            name: '单小区人群',
+                            data: this.currTagsChartsData.tag4_data.y1
+                        },
+                        {
+                            type: 'bar',
+                            barWidth: '18%',
+                            color: '#4DCB73',
+                            name: '同区域人群',
+                            data: this.currTagsChartsData.tag4_data.y2
+                        },
                     ]
                 })
             },
             //调用
-            callChartsFn(){
-                if(this.activeName == 'first'){
-                    this.$nextTick(function(){
+            callChartsFn() {
+                if (this.activeName == 'first') {
+                    this.$nextTick(function () {
                         //人群
                         this.sexChartFn()
                         this.ageChartFn()
@@ -953,8 +1009,8 @@
                         this.echartsListener();
                         this.getWordCloud()
                     })
-                }else{
-                    this.$nextTick(function(){
+                } else {
+                    this.$nextTick(function () {
                         //偏好
                         this.tag2chartFn()
                         this.tag3chartFn()
@@ -963,37 +1019,55 @@
                 }
 
             },
-            changeSecondTag(tab,event){
-                console.log(tab,this.currTag1);
-                if(this.currTag1.childer){
-                    for(let data of this.currTag1.childer){
-                        // if(data.label == tab.name){
-                        //     this.currTag2 = data
-                        //     if(data.childer){
-                        //         this.currTagsChartsData.tag3_data.x = data.childer.map(item=>{
-                        //             return item.label
-                        //         })
-                        //     }
-                        //
-                        // }
-                    }
-                }
+            changeSecondTag(tab, event) {
+                // console.log(tab,this.currTag1);
+                if (this.currTag1.childer) {
+                    for (let data of this.currTag1.childer) {
+                        if (data.label == tab.name) {
 
-            },
-            changeThirdTag(tab,event){
-                console.log(tab);
-                for(let data of this.currTag2.childer){
-                    if(data.label == tab.name){
-                        this.currTag3 = data
-                        if(data.childer){
-                            this.currTagsChartsData.tag4_data.x = data.childer.map(item=>{
-                                return item.label
-                            })
+                            if (data.childer) {
+                                this.currTag3 = data.childer
+                                this.sliceArr(data)
+                                this.currTagsChartsData.tag3_data.x = data.childer.map(item => {
+                                    return item.label
+                                })
+                                this.tag3_active_name = data.childer[0].label
+                            }
+                            this.tag3chartFn()
                         }
-
                     }
                 }
+
             },
+            changeThirdTag(tab, event) {
+                // console.log(tab);
+                if (this.currTag2.childer) {
+                    for (let data of this.currTag2.childer) {
+                        if (data.label == tab.name) {
+                            // this.currTag3 = data
+                            console.log(data);
+                            if (data.childer) {
+                                this.sliceArr(data)
+                                this.currTagsChartsData.tag4_data.x = data.childer.map(item => {
+                                    return item.label
+                                })
+                            }
+                            this.tag4chartFn()
+                        }
+                    }
+                }
+
+            },
+            //获取有下级的标签tabs
+            getJuniorTabs(arr) {
+                let temp = []
+                for(let data of arr){
+                    if(arr.childer){
+                        temp.push(data)
+                    }
+                }
+                return temp
+            }
         },
         mounted() {
             this.getTags()
@@ -1176,13 +1250,16 @@
         border: 1px solid #1890FF;
         color: #1890FF;
     }
-    .tab-wrap .charts-wrap /deep/ .el-tabs__content{
+
+    .tab-wrap .charts-wrap /deep/ .el-tabs__content {
         padding-top: 0;
     }
-    .tab-wrap .charts-wrap /deep/ .el-tabs__nav-wrap{
+
+    .tab-wrap .charts-wrap /deep/ .el-tabs__nav-wrap {
         border: none;
     }
-    .tab-wrap .charts-wrap /deep/ .el-tabs__nav-wrap::after{
+
+    .tab-wrap .charts-wrap /deep/ .el-tabs__nav-wrap::after {
         height: 1px;
     }
 
@@ -1191,7 +1268,6 @@
         border: 1px solid #E6E7E9;
         margin-top: 24px;
     }
-
 
     .charts-wrap h5 {
         font-size: 16px;
@@ -1203,6 +1279,7 @@
         box-sizing: border-box;
         font-weight: 600;
     }
+
     /deep/ .echarts_tooltip_i {
         display: inline-block;
         width: 9px;

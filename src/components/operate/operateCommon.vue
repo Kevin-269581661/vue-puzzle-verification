@@ -21,13 +21,18 @@
             <el-menu-item index="/operate/orderList">订单管理</el-menu-item>
             <el-menu-item index="/operate/publishPriceList">刊例价</el-menu-item>
             <el-menu-item index="/operate/photoGallery">案例库</el-menu-item>
-            <el-menu-item index="/operate/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>
+            <!--<el-menu-item index="/operate/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>-->
             <el-submenu index="8" show-timeout="80">
                 <template slot="title">
                     辅助资料
                 </template>
                 <el-menu-item index="/operate/questionAndAnswer">操作说明</el-menu-item>
                 <el-menu-item index="/operate/compact">文件下载</el-menu-item>
+            </el-submenu>
+            <el-submenu index="7" :show-timeout="80" v-show="showQinlin">
+                <template slot="title">亲邻智邻</template>
+                <el-menu-item index="/operate/communityPortrait">社区画像</el-menu-item>
+                <el-menu-item index="/operate/communityRank">社区排名</el-menu-item>
             </el-submenu>
             <el-submenu index="9" class="user_center" show-timeout="80">
                 <template slot="title">

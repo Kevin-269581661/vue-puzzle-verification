@@ -564,23 +564,26 @@
             },
             //移入移出一级标签
             showPopver(firstTag) {
-                firstTag.hovered = true
+                if(firstTag.childer){
+                    firstTag.hovered = true
+                }else{
+                    firstTag.hovered = false
+                }
             },
             hidePopver(firstTag) {
                 // console.log(this.thirdShow);
-                let that = this
-                setTimeout(() => {
-                    //此一级标签下有没有hover的标签 有为true 无为false
-                    let flag = firstTag.childer.some(item => item.hovered == true)
-                    // console.log(flag);
-                    if (!flag) {
-                        //直接离开 面板消失
-                        firstTag.hovered = false
-                    }
+                if(firstTag.childer){
+                    setTimeout(() => {
+                        //此一级标签下有没有hover的标签 有为true 无为false
+                        let flag = firstTag.childer.some(item => item.hovered == true)
+                        // console.log(flag);
+                        if (!flag) {
+                            //直接离开 面板消失
+                            firstTag.hovered = false
+                        }
 
-                }, 100)
-
-
+                    }, 100)
+                }
             },
             //进入和离开面板
             enterPopver(firstTag) {
@@ -608,7 +611,7 @@
             },
             //偏好标签-选中一级标签
             chooseHobbyTag(item) {
-                // console.log(item);
+                console.log(item);
                 // console.log(this.chooseTagsArr);
                 if (item.checked) {
                     item.checked = false
@@ -625,7 +628,9 @@
                     }
                     item.hovered = false
                     //清空下级
-                    this.clear(item, 'split')
+                    if(item.childer){
+                        this.clear(item, 'split')
+                    }
                     this.pushArr(obj, item)
                 }
 

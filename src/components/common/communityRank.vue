@@ -612,7 +612,12 @@
                 // console.log(this.chooseTagsArr);
                 if (item.checked) {
                     item.checked = false
-                    this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(item), 1);
+                    for(let data of this.chooseTagsArr){
+                        if(data.value == item.value){
+                            this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                        }
+                    }
+
                 } else {
                     let obj = {
                         value: item.value,
@@ -1271,14 +1276,14 @@
 </style>
 <style>
     .tag-popover {
-        min-width: 132px !important;
-        border: none !important;
-        border-radius: 0 !important;
-        padding: 0 !important;
+        min-width: 132px ;
+        border: none ;
+        border-radius: 0 ;
+        padding: 0 ;
         /*height: 140px;*/
     }
 
     .tag-popover[x-placement^=bottom] {
-        margin-top: 4px !important;;
+        margin-top: 4px ;
     }
 </style>

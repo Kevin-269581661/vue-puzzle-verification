@@ -172,6 +172,14 @@
                             <div ref="tag1chart" style="width: 100%;height: 394px"></div>
                         </div>
                     </div>
+                    <div class="charts-wrap" v-if="currTag1.childer!=null">
+                        <el-tabs v-model="currTag2.label" @tab-click="handleClick">
+                            <el-tab-pane v-for="(item,index) in currTag1.childer" :key="index" :label="item.label" :name="item.label"></el-tab-pane>
+                        </el-tabs>
+                        <div class="tag2-chart">
+                            <div ref="tag2chart" style="width: 100%;height: 394px"></div>
+                        </div>
+                    </div>
                 </el-tab-pane>
             </el-tabs>
         </div>
@@ -189,6 +197,9 @@
             return {
                 activeName: 'second',
                 currTag1: '',
+                currTag2: '',
+                currTag3: '',
+                currTag4: '',
                 resData: {
                     resName: '中信西关海花苑',
                     resType: '1',
@@ -268,6 +279,10 @@
                 },
                 jobData: {x: ['服务人员', '个体经营者', '管理者和企业主', '专业技术人员', '文职人员', '生产操作人员'], y: [120, 200, 150, 80, 70, 110]},
                 hobbyTags: '',
+                currTagsData:{
+                    first_tag_data:{x:['购车阶段', '汽车档次', '新能源汽车', '汽车车型'],y1:[43.3, 83.1, 86.4, 72.4],y2:[83.1, 73.4, 65.2, 53.9]},
+                    second_tag_data:{x:['购车阶段2', '汽车档次2', '新能源汽车2', '汽车车型2'],y1:[63.3, 33.1, 86.4, 72.4],y2:[83.1, 43.4, 75.2, 43.9]}
+                }
 
             }
         },
@@ -655,7 +670,18 @@
                     console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         this.hobbyTags = res.data.data
-                        this.currTag1 = res.data.data[0]
+                        this.currTag1 = this.hobbyTags[0]
+                        if(this.currTag1.childer){
+                            this.currTag2 = this.currTag1.childer[0]
+                            if(this.currTag2.childer){
+                                this.currTag3 = this.currTag2.childer[0]
+                                if(this.currTag3.childer){
+                                    this.currTag4 = this.currTag3.childer[0]
+                                }
+                            }
+                        }
+
+
                     } else {
                         this.$message.warning(res.data.MSG)
                     }
@@ -690,7 +716,7 @@
                                 '<span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>' + params[1].seriesName + '</span>：' + params[1].value + '%' +'</p>'
                         }
                     },
-                    grid: {x: 80, y: 40, x2: 80, y2: 80,},
+                    grid: {x: 80, y: 40, x2: 80, y2: 80,},//图表位置
                     xAxis: {
                         type: 'category',
                         axisLine: {
@@ -702,7 +728,7 @@
                         axisLabel: {
                             color: '#2C313C'
                         },
-                        data: ['购车阶段', '汽车档次', '新能源汽车', '汽车车型']
+                        data: this.currTagsData.first_tag_data.x
                     },
                     yAxis: {
                         type: 'value',
@@ -727,25 +753,99 @@
                         show: true
                     },
                     series: [
-                        {type: 'bar', barWidth: '18%', color: '#1890FF', name: '单小区人群', data: [43.3, 83.1, 86.4, 72.4]},
-                        {type: 'bar', barWidth: '18%', color: '#4DCB73', name: '同区域人群', data: [83.1, 73.4, 65.2, 53.9]},
+                        {type: 'bar', barWidth: '18%', color: '#1890FF', name: '单小区人群', data: this.currTagsData.first_tag_data.y1},
+                        {type: 'bar', barWidth: '18%', color: '#4DCB73', name: '同区域人群', data: this.currTagsData.first_tag_data.y2},
                     ]
                 })
+            },
+            //二级标签柱状图
+            tag2chartFn(){
+                let tag2chart = this.$echarts.init(this.$refs.tag2chart)
+                tag2chart.setOption({
+                    legend: {
+                        left: 'center',
+                        bottom: 20,
+                        itemWidth: 10,
+                        itemHeight: 10,
+                        data: ['单小区人群', '同区域人群']
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                            type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                        },
+                        formatter: params => {
+                            return '<p class="echarts_tooltip_title">' +
+                                '<span>' + params[0].name + '</span>' +
+                                '</p>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>' + params[0].seriesName + '</span>：' + params[0].value + '%' +'<br/>' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>' + params[1].seriesName + '</span>：' + params[1].value + '%' +'</p>'
+                        }
+                    },
+                    grid: {x: 80, y: 40, x2: 80, y2: 80,},//图表位置
+                    xAxis: {
+                        type: 'category',
+                        axisLine: {
+                            //坐标轴线条相关设置(颜色等)
+                            lineStyle: {
+                                color: "#E8E8E8"
+                            }
+                        },
+                        axisLabel: {
+                            color: '#2C313C'
+                        },
+                        data: this.currTagsData.second_tag_data.x
+                    },
+                    yAxis: {
+                        type: 'value',
+                        axisLabel: {
+                            show: true,
+                            interval: 'auto',
+                            formatter: '{value} %',
+                            color: '#A0A4AA'
+                        },
+                        axisLine: {
+                            //坐标轴线条相关设置(颜色等)
+                            lineStyle: {
+                                color: "#fff"
+                            }
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: "#E8E8E8",
+                                type: "dashed"
+                            }
+                        },
+                        show: true
+                    },
+                    series: [
+                        {type: 'bar', barWidth: '18%', color: '#1890FF', name: '单小区人群', data: this.currTagsData.second_tag_data.y1},
+                        {type: 'bar', barWidth: '18%', color: '#4DCB73', name: '同区域人群', data: this.currTagsData.second_tag_data.y2},
+                    ]
+                })
+            },
+            //调用
+            callChartsFn(){
+                setTimeout(() => {
+                    //人群
+                    this.sexChartFn()
+                    this.ageChartFn()
+                    this.eduChartFn()
+                    this.spendChartFn()
+                    this.assetsChartFn()
+                    this.lifeChartFn()
+                    this.jobChartFn()
+                    this.echartsListener();
+                    this.getWordCloud()
+                    //偏好
+                    this.tag1chartFn()
+                    this.tag2chartFn()
+                }, 20)
             }
         },
         mounted() {
-            setTimeout(() => {
-                this.sexChartFn()
-                this.ageChartFn()
-                this.eduChartFn()
-                this.spendChartFn()
-                this.assetsChartFn()
-                this.lifeChartFn()
-                this.jobChartFn()
-                this.echartsListener();
-                this.getWordCloud()
-                this.tag1chartFn()
-            }, 20)
+            this.callChartsFn()
             this.getTags()
 
         }
@@ -924,12 +1024,22 @@
         border: 1px solid #1890FF;
         color: #1890FF;
     }
+    .tab-wrap .charts-wrap /deep/ .el-tabs__content{
+        padding-top: 0;
+    }
+    .tab-wrap .charts-wrap /deep/ .el-tabs__nav-wrap{
+        border: none;
+    }
+    .tab-wrap .charts-wrap /deep/ .el-tabs__nav-wrap::after{
+        height: 1px;
+    }
 
     .charts-wrap {
         background: #fff;
         border: 1px solid #E6E7E9;
         margin-top: 24px;
     }
+
 
     .charts-wrap h5 {
         font-size: 16px;

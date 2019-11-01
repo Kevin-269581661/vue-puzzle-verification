@@ -166,7 +166,7 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="charts-wrap">
+                    <div class="charts-wrap" v-show="currTag1.childer">
                         <h5>{{currTag1.label}}消费偏好</h5>
                         <div class="tag1-chart">
                             <div ref="tag2chart" style="width: 100%;height: 394px"></div>
@@ -177,7 +177,7 @@
                             <el-tab-pane v-for="(item,index) in tag2List" :key="index" :label="item.label"
                                          :name="item.label"></el-tab-pane>
                         </el-tabs>
-                        <div class="tag2-chart">
+                        <div class="tag2-chart" ref="chartWrapWidth">
                             <div ref="tag3chart" style="width: 100%;height: 394px"></div>
                         </div>
                     </div>
@@ -186,8 +186,8 @@
                             <el-tab-pane v-for="(item,index) in tag3List" :key="index" :label="item.label"
                                          :name="item.label"></el-tab-pane>
                         </el-tabs>
-                        <div class="tag2-chart">
-                            <div ref="tag4chart" style="width: 100%;height: 394px"></div>
+                        <div class="tag2-chart"  >
+                            <div id="tag4chart" ref="tag4chart" style="width: 100%;height: 394px"></div>
                         </div>
                     </div>
                 </el-tab-pane>
@@ -205,7 +205,7 @@
         name: "portraitDetail",
         data() {
             return {
-                activeName: 'second',
+                activeName: 'first',
                 tag2_active_name: '',
                 tag3_active_name: '',
                 // tag4_active_name:'',
@@ -675,87 +675,44 @@
             // 统一监听
             echartsListener() {
                 window.addEventListener("resize", () => {
-                    this.sexChart.resize();
-                    this.ageChart.resize();
-                    this.eduChart.resize();
-                    this.spendChart.resize();
-                    this.assetsChart.resize();
-                    this.lifeChart.resize();
-                    this.jobChart.resize();
-                    this.tag2chart.resize();
-                    this.tag3chart.resize();
-                    this.tag4chart.resize();
-                });
-            },
-            //获取偏好画像标签
-            getTags(parentId) {
-                let info = ''
-                info = {
-                    type: 1,
-                    loadChilder: 1,
-                    parentId: parentId ? parentId : 0,
-                }
-                api.getApi(this.apiVar.portrait + 'label/getLabels', info).then(res => {
-                    console.log(res.data);
-                    if (res.data.SysCode == 200200) {
-                        this.hobbyTags = res.data.data
-                        this.currTag1 = this.hobbyTags[0]
-                        //设置自己菜单的tab和x轴y轴数据
-                        if (this.currTag1.childer) {
-                            this.sliceArr(this.currTag1)
-                            this.currTag2 = this.currTag1.childer[0]
-                            this.tag2List = this.getJuniorTabs(this.currTag1.childer)
-                            this.tag2_active_name = this.currTag1.childer[0].label;
-                            this.currTagsChartsData.tag2_data.x = this.currTag1.childer.map(item => {
-                                return item.label
-                            })
-                        }
-                        if (this.currTag2.childer) {
-                            this.sliceArr(this.currTag2)
-                            this.currTag3 = this.currTag2.childer[0]
-                            this.tag3List = this.getJuniorTabs(this.currTag2.childer)
-                            this.tag3_active_name = this.currTag2.childer[0].label;
-                            this.currTagsChartsData.tag3_data.x = this.currTag2.childer.map(item => {
-                                return item.label
-                            })
-
-                        }
-                        if (this.currTag3.childer) {
-                            this.sliceArr(this.currTag3)
-                            // this.currTag4 = this.currTag3.childer[0]
-                            // this.currTagsChartsData.tag4_data.x = this.currTag3.childer
-                            this.currTagsChartsData.tag4_data.x = this.currTag3.childer.map(item => {
-                                return item.label
-                            })
-                        }
-
+                    if (this.activeName == 'first') {
+                        this.$nextTick(function () {
+                            //人群
+                            this.sexChart.resize();
+                            this.ageChart.resize();
+                            this.eduChart.resize();
+                            this.spendChart.resize();
+                            this.assetsChart.resize();
+                            this.lifeChart.resize();
+                            this.jobChart.resize();
+                        })
                     } else {
-                        this.$message.warning(res.data.MSG)
+                        this.$nextTick(function () {
+                            //偏好
+                            this.tag2chart.resize();
+                            this.tag3chart.resize();
+                            this.tag4chart.resize();
+                        })
                     }
-                })
-            },
-            //选择一级标签
-            chooseFirstTag(item) {
-                this.currTag1 = item
-
-                if (item.childer) {
-                    this.currTag2 = item.childer[0]
-                    this.sliceArr(item)
-                    this.tag2List = this.getJuniorTabs(item.childer)
-                    this.currTagsChartsData.tag2_data.x = item.childer.map(item => {
-                        return item.label
-                    })
-                    this.tag2_active_name = item.childer[0].label
-                }
-                this.tag2chartFn()
+                });
             },
             //截取前12个
             sliceArr(obj) {
                 if (obj.childer.length > 0) {
-                    let temp = obj.childer.slice(0, 6)
+                    let temp = obj.childer.slice(0, 12)
                     obj.childer = temp
                 }
                 return obj
+            },
+            //获取有下级的标签tabs
+            getJuniorTabs(arr) {
+                let temp = []
+                for (let data of arr) {
+                    if (data.childer && data.childer.length > 0) {
+                        temp.push(data)
+                    }
+                }
+                return temp
             },
             //二级标签柱状图
             tag2chartFn() {
@@ -900,14 +857,14 @@
                     series: [
                         {
                             type: 'bar',
-                            barWidth: '18%',
+                            barWidth: '10%',
                             color: '#1890FF',
                             name: '单小区人群',
                             data: this.currTagsChartsData.tag3_data.y1
                         },
                         {
                             type: 'bar',
-                            barWidth: '18%',
+                            barWidth: '10%',
                             color: '#4DCB73',
                             name: '同区域人群',
                             data: this.currTagsChartsData.tag3_data.y2
@@ -917,6 +874,8 @@
             },
             //四级标签柱状图
             tag4chartFn() {
+                let tag4chart = document.getElementById("tag4chart")
+                tag4chart.style.width = this.$refs.chartWrapWidth.offsetWidth+"px";
                 this.tag4chart = this.$echarts.init(this.$refs.tag4chart)
                 this.tag4chart.setOption({
                     legend: {
@@ -994,7 +953,7 @@
                     ]
                 })
             },
-            //调用
+            //调用图表方法
             callChartsFn() {
                 if (this.activeName == 'first') {
                     this.$nextTick(function () {
@@ -1006,7 +965,6 @@
                         this.assetsChartFn()
                         this.lifeChartFn()
                         this.jobChartFn()
-                        this.echartsListener();
                         this.getWordCloud()
                     })
                 } else {
@@ -1019,61 +977,133 @@
                 }
 
             },
-            changeSecondTag(tab, event) {
-                // console.log(tab,this.currTag1);
-                if (this.currTag1.childer) {
-                    for (let data of this.currTag1.childer) {
-                        if (data.label == tab.name) {
-
-                            if (data.childer) {
-                                this.currTag3 = data.childer
-                                this.sliceArr(data)
-                                this.currTagsChartsData.tag3_data.x = data.childer.map(item => {
-                                    return item.label
-                                })
-                                this.tag3_active_name = data.childer[0].label
-                            }
-                            this.tag3chartFn()
+            //获取偏好画像标签
+            getTags(parentId) {
+                let info = ''
+                info = {
+                    type: 1,
+                    loadChilder: 1,
+                    parentId: parentId ? parentId : 0,
+                }
+                api.getApi(this.apiVar.portrait + 'label/getLabels', info).then(res => {
+                    console.log(res.data);
+                    if (res.data.SysCode == 200200) {
+                        this.hobbyTags = res.data.data
+                        this.currTag1 = this.hobbyTags[0]
+                        //设置各级菜单的tab和x轴y轴数据
+                        if (this.currTag1.childer) {
+                            //最多12个
+                            this.sliceArr(this.currTag1)
+                            //二级菜单的tabs和二级菜单图表的数据
+                            this.tag2List = this.getJuniorTabs(this.currTag1.childer)
+                            this.currTagsChartsData.tag2_data.x = this.currTag1.childer.map(item => {
+                                return item.label
+                            })
                         }
+                        if (this.tag2List.length>0) {
+                            //当前选中的二级菜单
+                            this.currTag2 = this.tag2List[0];
+                            this.tag2_active_name = this.tag2List[0].label;
+                            this.sliceArr(this.currTag2)
+                            this.tag3List = this.getJuniorTabs(this.currTag2.childer)
+                            this.currTagsChartsData.tag3_data.x = this.currTag2.childer.map(item => {
+                                return item.label
+                            })
+                        }
+                        if (this.tag3List.length > 0) {
+                            this.currTag3 = this.tag3List.childer[0]
+                            this.tag3_active_name = this.tag3List[0].label;
+                            this.sliceArr(this.currTag3)
+                            this.currTagsChartsData.tag4_data.x = this.currTag3.childer.map(item => {
+                                return item.label
+                            })
+                        }
+                        this.callChartsFn()
+
+                    } else {
+                        this.$message.warning(res.data.MSG)
                     }
+                })
+            },
+            //选择一级标签
+            chooseFirstTag(item) {
+                this.currTag1 = item
+                //一级下有二级
+                if (item.childer) {
+                    this.sliceArr(item)
+                    this.tag2List = this.getJuniorTabs(item.childer)
+                    this.currTagsChartsData.tag2_data.x = item.childer.map(item => {
+                        return item.label
+                    });
+                    this.tag2chartFn()
+                    //this.tag2List.length>0 => 二级下有三级
+                    if(this.tag2List.length>0){
+                        this.currTag2 = this.tag2List[0]
+                        this.tag2_active_name = this.tag2List[0].label
+                        this.tag3List = this.getJuniorTabs(this.tag2List[0].childer)
+                        this.sliceArr(this.tag2List[0])
+                        this.currTagsChartsData.tag3_data.x = this.tag2List[0].childer.map(item => {
+                            return item.label
+                        });
+                        this.tag3chartFn()
+                    }
+                    //三级下有四级
+                    if(this.tag3List.length>0){
+                        this.currTag2 = this.tag3List[0]
+                        this.sliceArr(this.tag3List[0])
+                        this.tag3_active_name = this.tag3List[0].label
+                        this.currTagsChartsData.tag4_data.x = this.tag3List[0].childer.map(item => {
+                            return item.label
+                        });
+                        this.tag4chartFn()
+                    }
+                }else{
+                    this.tag2List = []
+                    this.tag3List = []
+                }
+            },
+            changeSecondTag(tab, event) {
+                // console.log(this.currTag1,this.currTag2);
+                for (let data of this.tag2List) {
+                    if (data.label == tab.name) {
+                        this.currTag2 = data
+                        this.sliceArr(data)
+                        this.currTagsChartsData.tag3_data.x = data.childer.map(item => {
+                            return item.label
+                        })
+                        this.tag3List = this.getJuniorTabs(data.childer)
+                        this.tag3chartFn()
+                    }
+                }
+                if(this.tag3List.length>0){
+                    this.currTag3 = this.tag3List[0]
+                    this.tag3_active_name = this.tag3List[0].label
+                    this.currTagsChartsData.tag4_data.x = this.tag3List[0].childer.map(item => {
+                        return item.label
+                    })
+                    this.tag4chartFn()
                 }
 
             },
             changeThirdTag(tab, event) {
-                // console.log(tab);
-                if (this.currTag2.childer) {
-                    for (let data of this.currTag2.childer) {
-                        if (data.label == tab.name) {
-                            // this.currTag3 = data
-                            console.log(data);
-                            if (data.childer) {
-                                this.sliceArr(data)
-                                this.currTagsChartsData.tag4_data.x = data.childer.map(item => {
-                                    return item.label
-                                })
-                            }
-                            this.tag4chartFn()
-                        }
+                console.log(this.tag3List);
+                for (let data of this.tag3List) {
+                    if (data.label == tab.name) {
+                        this.currTag3 = data
+                        this.sliceArr(data)
+                        this.currTagsChartsData.tag4_data.x = data.childer.map(item => {
+                            return item.label
+                        })
+                        this.tag4chartFn()
                     }
                 }
 
             },
-            //获取有下级的标签tabs
-            getJuniorTabs(arr) {
-                let temp = []
-                for(let data of arr){
-                    if(arr.childer){
-                        temp.push(data)
-                    }
-                }
-                return temp
-            }
+
         },
         mounted() {
             this.getTags()
-            this.callChartsFn()
-
-
+            this.echartsListener();
         }
     }
 </script>

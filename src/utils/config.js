@@ -30,6 +30,8 @@ const apiVar = {
     UCAPI: '/UCAPI',
     Media: '/mediaService/media',
     Advertisement: '/advertisement',
+    //消息通知
+    system:'/system/message',
     //经营分析
     Count: '/Count',
     report: '/report',

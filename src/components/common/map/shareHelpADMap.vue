@@ -1,5 +1,7 @@
 <template>
     <div class="map_box">
+        <remote-js src="https://api.map.baidu.com/library/GeoUtils/1.2/src/GeoUtils_min.js"></remote-js>
+        <remote-js src="https://api.map.baidu.com/library/TextIconOverlay/1.2/src/TextIconOverlay_min.js"></remote-js>
         <!--地图标签-->
         <div v-loading="mapLoading"
              element-loading-text="玩命加载中.."
@@ -404,6 +406,16 @@
     import api from "../../../api/api"
     export default {
         name: "shareHelpADMap",
+        components:{
+            'remote-js': {
+                render(createElement) {
+                    return createElement('script', { attrs: { type: 'text/javascript', src: this.src }});
+                },
+                props: {
+                    src: { type: String, required: true },
+                },
+            },
+        },
         data() {
             return{
                 // 路由参数

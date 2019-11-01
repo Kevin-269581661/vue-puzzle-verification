@@ -276,8 +276,20 @@
             </ul>
             <!--鼠标绘制-->
             <ul class="mouse_control">
-                <li class="mouse_control_li" @click="drawingMouse('polyline')">
-                    <img src="../../assets/images/map/scale.png" alt="">
+                <li class="mouse_control_li">
+                    <el-popover
+                        placement="top"
+                        title=""
+                        width="74"
+                        popper-class="mouse_polyline"
+                        trigger="hover">
+                        <div class="mouse_polyline_body">
+                            <p @click="drawingMouse('polyline')">手动测距</p>
+                            <p @click="selfMotionDistance">自动测距</p>
+                        </div>
+                        <img slot="reference" src="../../assets/images/map/scale.png" alt="">
+                    </el-popover>
+
                 </li>
                 <li class="mouse_control_li" @click="drawingMouse('circle')">
                     <img src="../../assets/images/map/circle.png" alt="">
@@ -366,7 +378,9 @@
             </div>
             <div slot="footer" class="dialog-footer">
                 <el-button plain size="small" @click="searchDialogVisible = false">取 消</el-button>
-                <el-button size="small" type="primary" @click="searchAround">确 定</el-button>
+                <el-button size="small" type="primary" @click="searchAround" :loading="searchLoading">
+                    {{searchLoading ? '搜索中' : '确 定'}}
+                </el-button>
             </div>
         </el-dialog>
         <!--小区提交成功-->
@@ -513,6 +527,8 @@
                     searchRadio:  1,
                     searchRadius: 1,
                 },
+                // 周边搜索中
+                searchLoading: false,
                 // 标识在线搜索结果状态
                 isOnlineSearch: false,
                 // 收起/展开
@@ -598,6 +614,8 @@
                 mouseoverlay: '',
                 // 鼠标绘制结果状态
                 isMouseSearch: false,
+                // 自动测距的线条覆盖物
+                selfMotionPolylines: [],
                 // 小区资源提交成功
                 mapDialogVisible: false,
                 // 小区媒体列表弹出框
@@ -898,15 +916,17 @@
                     this.$set(key, "isSelect", false);
                     let point = new BMap.Point(key.lng, key.lat);
                     let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
-                    let label = new BMap.Label(key.resName,{offset:new BMap.Size(4,-18)});
-                    label.setStyle({
-                        borderRadius: "3px",
-                        boxShadow: '0px 0px 6px 0px rgba(0,0,0,0.15)',
-                        border: 'none',
-                        background: 'rgba(255,255,255,1)',
-                        color: 'rgba(0,0,0,0.85)',
-                        padding: '3px 8px',
-                    });
+
+                    // let label = new BMap.Label(key.resName,{offset:new BMap.Size(4,-18)});
+                    // label.setStyle({
+                    //     borderRadius: "3px",
+                    //     boxShadow: '0px 0px 6px 0px rgba(0,0,0,0.15)',
+                    //     border: 'none',
+                    //     background: 'rgba(255,255,255,1)',
+                    //     color: 'rgba(0,0,0,0.85)',
+                    //     padding: '3px 8px',
+                    // });
+                    let label = this.setMarkerLabel(key.resName)
                     marker.setLabel(label);
                     marker.setTop(true);
                     marker.inCircleNum = 0
@@ -923,6 +943,19 @@
                     markerList.push(marker)
                 }
                 this.resMarkers = markerList
+            },
+            // 设置标注到label
+            setMarkerLabel(labelName) {
+                let label = new BMap.Label(labelName,{offset:new BMap.Size(4,-18)});
+                label.setStyle({
+                    borderRadius: "3px",
+                    boxShadow: '0px 0px 6px 0px rgba(0,0,0,0.15)',
+                    border: 'none',
+                    background: 'rgba(255,255,255,1)',
+                    color: 'rgba(0,0,0,0.85)',
+                    padding: '3px 8px',
+                });
+                return label
             },
             // 显示详
             showInfo(info,point){
@@ -1177,6 +1210,37 @@
                 this.scale = scaleArr[index]
                 console.log('当前地图缩放等级---',this.resMap.getZoom(),this.scale)
             },
+            // 自动测距
+            selfMotionDistance() {
+                console.log('自动测距------')
+                console.time('自动测距')
+                for (let key of this.searchResList) {
+                    if (key.mapCenter) {
+                        let point = new BMap.Point(key.lng, key.lat);
+                        for (let mkey of key.mapCenter) {
+                            let distance = Math.floor(this.resMap.getDistance(point, mkey.point))
+                            let polyline = new BMap.Polyline(
+                                [
+                                    point,
+                                    mkey.point
+                                ],
+                                {strokeColor: "#1890FF", strokeWeight: 1, strokeOpacity: 1,strokeStyle:'dashed'}
+                            );
+                            //添加折线
+                            this.resMap.addOverlay(polyline);
+                            this.selfMotionPolylines.push(polyline);
+                            // 更换标注的label
+                            for (let rkey of this.resMarkers) {
+                                if (rkey.point.lng == key.lng && rkey.point.lat == key.lat) {
+                                    let labelName = key.resName + '(' + distance + '米)'
+                                    rkey.getLabel().setContent(labelName)
+                                }
+                            }
+                        }
+                    }
+                }
+                console.timeEnd('自动测距')
+            },
             /**
             *  左侧搜索
             **/
@@ -1322,6 +1386,7 @@
             },
             // 在线全选
             onlineSelectAll() {
+                console.time('在线全选耗时')
                 this.isActiveASOL = true
                 let timer = setTimeout(()=>{
                     this.isActiveASOL = false
@@ -1337,7 +1402,7 @@
                 } else {
                     this.canceAllOnline()
                 }
-
+                console.timeEnd('在线全选耗时')
             },
             // 取消在线选择
             canceAllOnline() {
@@ -1373,35 +1438,29 @@
             onlineCheckBox(item) {
                 console.log('在线item', item)
                 for(let key of this.onlineMarkers) {
-                    if(key.point === item.point) {
-                        console.log('----')
-                        this.resMap.removeOverlay(key)
+                    if(key.point.lat  === item.point.lat && key.point.lng  === item.point.lng) {
+                        let onlineIcon =  ''
+                        if(item.isSelect) {
+                            onlineIcon = require('../../assets/images/map/isActiveIcon.png')
+                        } else {
+                            onlineIcon = require('../../assets/images/map/onlineIcon.png')
+                        }
+                        let myIcon = new BMap.Icon(
+                            onlineIcon,
+                            new BMap.Size(32, 32),
+                            {
+                                anchor: new BMap.Size(16, 16),
+                                imageSize: new BMap.Size(32, 32),    // 引用图片实际大小
+                            });
+                        key.setIcon(myIcon)
                     }
                 }
-                let onlineIcon =  ''
-                if(item.isSelect) {
-                    // 选中更换红色图标
-                    onlineIcon = require('../../assets/images/map/isActiveIcon.png')
-                } else {
-                    onlineIcon = require('../../assets/images/map/onlineIcon.png')
-                }
-                let myIcon = new BMap.Icon(
-                    onlineIcon,
-                    new BMap.Size(32,32),
-                    {
-                        anchor: new BMap.Size(16, 16),
-                        imageSize: new BMap.Size(32,32),    // 引用图片实际大小
-                    });
-                let marker = new BMap.Marker(item.point,{icon:myIcon});
-                marker.setTop(true);
-                this.resMap.addOverlay(marker);             // 将标注添加到地图中
             },
             // 画圆标识选中状态
             createCircle(id,point){
                 // console.log('id,point',id,point)
                 let opts = {
                     position : point,    // 指定文本标注所在的地理位置
-                    // offset   : new BMap.Size(-28, -32)    //设置文本偏移量
                     offset   : new BMap.Size(-12, -9)    //设置文本偏移量
                 }
                 let label = new BMap.Label(id, opts);  // 创建文本标注对象
@@ -1415,7 +1474,6 @@
                     borderRadius: "50%"
                 });
                 this.resMap.addOverlay(label);
-                // console.log('label',label,label.content)
             },
             // 删除覆盖物
             deleteCircle(id) {
@@ -1437,6 +1495,7 @@
                 })
                 if(this.searchOnlineList.length) {
                     this.searchDialogVisible = true
+                    this.searchLoading = false
                 } else {
                     sessFun.messageFun('warning','请勾选信息')
                 }
@@ -1446,26 +1505,37 @@
             },
             // 周边搜索
             searchAround() {
+                console.log('---------周边搜索------开始---------')
                 console.log('this.selectOnlineList',this.selectOnlineList)
-                this.searchResList = []
-                let radius = this.aroundSearchInfo.searchRadius * 1000
-                for (let key of this.selectOnlineList) {
-                    let circle = new BMap.Circle(key.point, radius, {
-                        strokeColor: 'rgba(24,144,255,1)',
-                        fillColor: 'rgba(24,144,255,0.15)',
-                        strokeWeight: 2,
-                        fillOpacity: 1,
-                        strokeOpacity: 1
-                    });
-                    this.resMap.addOverlay(circle);
-                    if(this.aroundSearchInfo.searchRadio == 1) {
-                        this.showResInCircle(key, radius)
-                    } else if (this.aroundSearchInfo.searchRadio == 2) {
-                        this.ShowIntersectionInCircle(key, radius)
+                this.searchLoading = true
+                let timer = setTimeout(()=>{
+                    this.searchResList = []
+                    let radius = this.aroundSearchInfo.searchRadius * 1000
+                    for (let key of this.selectOnlineList) {
+                        let circle = new BMap.Circle(key.point, radius, {
+                            strokeColor: 'rgba(24,144,255,1)',
+                            fillColor: 'rgba(24,144,255,0.15)',
+                            strokeWeight: 2,
+                            fillOpacity: 1,
+                            strokeOpacity: 1
+                        });
+                        this.resMap.addOverlay(circle);
+                        if(this.aroundSearchInfo.searchRadio == 1) {
+                            this.showResInCircle(key, radius)
+                        } else if (this.aroundSearchInfo.searchRadio == 2) {
+                            this.ShowIntersectionInCircle(key, radius)
+                        }
+                        this.searchDialogVisible = false
+                        this.isOnlineSearch = true
                     }
-                    this.searchDialogVisible = false
-                    this.isOnlineSearch = true
-                }
+                    if(this.aroundSearchInfo.searchRadio == 2) {
+                        // 计算交集
+                        this.computeINtersection()
+                    }
+                    console.log('---------周边搜索------结束---------')
+                    this.searchLoading = false
+                    clearTimeout(timer)
+                },10)
             },
             // 并集显示圆半径内的小区
             showResInCircle(data,radius) {
@@ -1481,7 +1551,8 @@
                         rkey.show()
                         // 标注marker匹配亲邻小区
                         for(let key of this.resInfo) {
-                            if(rkey.getLabel().content === key.resName) {
+                            // if(rkey.getLabel().content === key.resName) {
+                            if(rkey.point.lng == key.lng && rkey.point.lat == key.lat) {
                                 // 判断是否已存在左侧结果列表
                                 let flag = this.searchResList.some((item, index) => {
                                     if (key.resID === item.resID) {
@@ -1519,35 +1590,48 @@
                         rkey.inCircleNum ? rkey.show() : rkey.hide()
                     } else {
                         rkey.inCircleNum++
+                        let centerInfo = {
+                            centerAddress: data.address || '',
+                            city: data.city || '',
+                            point: data.point || '',
+                            centerName: data.title || ''
+                        }
+                        rkey.mapCenter ? rkey.mapCenter.push(centerInfo) : rkey.mapCenter = [centerInfo]
+                        rkey.show()
+                    }
+                }
+                //
+                console.timeEnd('交集圆半径内小区')
+            },
+            // 计算交集
+            computeINtersection() {
+                for (let rkey of this.resMarkers) {
+                    if(rkey.inCircleNum >= 2) {
                         rkey.show()
                         // 标注marker匹配亲邻小区
                         for(let key of this.resInfo) {
-                            if(rkey.getLabel().content === key.resName) {
+                            // if(rkey.getLabel().content === key.resName) {
+                            if(rkey.point.lng == key.lng && rkey.point.lat == key.lat) {
                                 // 判断是否已存在左侧结果列表
                                 let flag = this.searchResList.some((item, index) => {
                                     if (key.resID === item.resID) {
                                         return true
                                     }
                                 })
-                                let centerInfo = {
-                                    centerAddress: data.address || '',
-                                    city: data.city || '',
-                                    point: data.point || '',
-                                    centerName: data.title || ''
-                                }
                                 if (flag) {
                                     // 多中心点保存
-                                    key.mapCenter ? key.mapCenter.push(centerInfo) : key.mapCenter = [centerInfo]
+                                    key.mapCenter = JSON.parse(JSON.stringify(rkey.mapCenter))
                                 } else {
-                                    key.mapCenter = [centerInfo]
+                                    key.mapCenter = JSON.parse(JSON.stringify(rkey.mapCenter))
                                     this.searchResList.push(key)
                                 }
                                 break
                             }
                         }
+                    } else {
+                        rkey.hide()
                     }
                 }
-                console.timeEnd('交集圆半径内小区')
             },
             // 重新设置在线搜索
             setOnlineSearch() {
@@ -1555,10 +1639,12 @@
                 // 移除
                 let allOverlay = this.resMap.getOverlays();
                 for (let akey of allOverlay) {
-                    if (akey.toString() == "[object Circle]" || akey.toString() == "[object Polygon]") {
+                    if (akey.toString() == "[object Circle]" || akey.toString() == "[object Polygon]" || akey.toString() == "[object Polyline]") {
                         this.resMap.removeOverlay(akey);
                     }
                 }
+                this.initResMarkers()
+                this.selfMotionPolylines = []
             },
             // 取消在线搜索
             clearSearch() {
@@ -1570,8 +1656,7 @@
                     this.isOnlineSearch = false
                     let allOverlay = this.resMap.getOverlays();
                     for (let akey of allOverlay) {
-                        // akey.show()
-                        if (akey.toString() == "[object Circle]" || akey.toString() == "[object Polygon]") {
+                        if (akey.toString() == "[object Circle]" || akey.toString() == "[object Polygon]" || akey.toString() == "[object Polyline]") {
                             this.resMap.removeOverlay(akey);
                         }
                     }
@@ -1580,22 +1665,38 @@
                     for (let key of this.selectOnlineList) {
                         this.deleteCircle(key.id)
                     }
+                    this.selfMotionPolylines = []
                 }
 
             },
             // 恢复打点原始状态
             initResMarkers() {
+                // console.time('恢复打点原始状态')
                 let i = 0
-                for(let key of this.resMarkers) {
-                    if(i < 1000) {
+                for (let key of this.resMarkers) {
+                    if (i < 1000) {
                         key.show()
                     } else {
                         key.hide()
                     }
-                    key.inCircleNum = 0
+                    // 移除标识marker在圆内到标识
+                    if(key.inCircleNum) {
+                        key.inCircleNum = 0
+                        // 判断是否存在被自动测距修改过到label
+                        let labelName = key.getLabel().content
+                        if(labelName.includes('(') && labelName.includes(')')) {
+                            labelName = labelName.split('(')[0]
+                            key.getLabel().setContent(labelName)
+                        }
+                    }
+                    if (key.mapCenter) {
+                        key.mapCenter = ''
+                    }
                     i++
                 }
+                // console.timeEnd('恢复打点原始状态')
             },
+            //
             /**
              *  顶部过滤条件
              * */
@@ -2408,12 +2509,12 @@
         color:rgba(0,0,0,0.85);
         font-size: 12px;
         line-height: 26px;
-        height: 26px;
+        /*height: 26px;*/
     }
 
     .res_info_content_li span{
         color:rgba(0,0,0,0.65);
-        display: inline-block;
+        /*display: inline-block;*/
         /*margin-left: 16px;*/
     }
 
@@ -2539,6 +2640,20 @@
         height: 16px;
     }
 
+    .mouse_polyline_body p{
+        padding: 0 16px;
+        cursor: pointer;
+        font-size: 14px;
+        line-height: 28px;
+        text-align: center;
+        font-weight:400;
+        color:rgba(0,0,0,0.65);
+    }
+
+    .mouse_polyline_body p:hover{
+        background:rgba(24,144,255,0.1);
+    }
+
     /*媒体列表*/
     /deep/ .media_list_dialog .el-dialog__title{
         font-weight: 600;
@@ -2630,7 +2745,8 @@
     }
 </style>
 <style>
-    .el-popover.filter-popper{
+    .el-popover.filter-popper,
+    .el-popover.mouse_polyline{
         padding: 0;
     }
 </style>

@@ -857,14 +857,14 @@
                     series: [
                         {
                             type: 'bar',
-                            barWidth: '10%',
+                            barWidth: '18%',
                             color: '#1890FF',
                             name: '单小区人群',
                             data: this.currTagsChartsData.tag3_data.y1
                         },
                         {
                             type: 'bar',
-                            barWidth: '10%',
+                            barWidth: '18%',
                             color: '#4DCB73',
                             name: '同区域人群',
                             data: this.currTagsChartsData.tag3_data.y2
@@ -938,14 +938,14 @@
                     series: [
                         {
                             type: 'bar',
-                            barWidth: '18%',
+                            barMaxWidth:'5%',
                             color: '#1890FF',
                             name: '单小区人群',
                             data: this.currTagsChartsData.tag4_data.y1
                         },
                         {
                             type: 'bar',
-                            barWidth: '18%',
+                            barMaxWidth:'5%',
                             color: '#4DCB73',
                             name: '同区域人群',
                             data: this.currTagsChartsData.tag4_data.y2

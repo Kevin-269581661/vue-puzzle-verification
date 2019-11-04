@@ -18,7 +18,12 @@
             <el-menu-item index="/adOwner">首页</el-menu-item>
             <el-menu-item index="/adOwner/orderList">订单管理</el-menu-item>
             <!--<el-menu-item index="/adOwner/ADReport">亲邻智邻</el-menu-item>-->
-            <el-menu-item index="/adOwner/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>
+            <!--<el-menu-item index="/adOwner/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>-->
+            <el-submenu index="8" :show-timeout="80" v-show="showQinlin">
+                <template slot="title">亲邻智邻</template>
+                <el-menu-item index="/adOwner/communityPortrait">社区画像</el-menu-item>
+                <el-menu-item index="/adOwner/communityRank">社区排名</el-menu-item>
+            </el-submenu>
             <el-submenu index="9" class="user_center">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">

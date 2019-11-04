@@ -3276,8 +3276,8 @@
                     suID: this.BDData.uid,
                 }))
                 // let tempWindow = window.open()
-                let url = 'http://localhost:8080/ADResourceMap/chooseRes?city=' + this.mapParams.city  + '&flag=' + true
-                // let url = this.apiVar.qadnUrl + '/ADResourceMap/chooseRes?city=' + this.mapParams.city  + '&flag=' + true
+                // let url = 'http://localhost:8080/ADResourceMap/chooseRes?city=' + this.mapParams.city  + '&flag=' + true
+                let url = this.apiVar.qadnUrl + '/ADResourceMap/chooseRes?city=' + this.mapParams.city  + '&flag=' + true
                 window.open(url)
                 this.mapBtn = false
                 this.dialogVisible()

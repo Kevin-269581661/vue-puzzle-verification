@@ -1,6 +1,6 @@
 <template>
     <div class="map_index">
-<!--        <remote-js src="https://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js"></remote-js>-->
+        <!--        <remote-js src="https://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js"></remote-js>-->
         <remote-js src="https://api.map.baidu.com/library/GeoUtils/1.2/src/GeoUtils_min.js"></remote-js>
         <remote-js src="https://api.map.baidu.com/library/TextIconOverlay/1.2/src/TextIconOverlay_min.js"></remote-js>
         <!--地图标签-->
@@ -110,7 +110,7 @@
                 popper-class="filter-popper">
                 <div class="popover_body">
                     <ul class="filter_ul">
-                       <li v-for="key of priceList" @click="selectNum(key,'price')">{{key}}</li>
+                        <li v-for="key of priceList" @click="selectNum(key,'price')">{{key}}</li>
                     </ul>
                     <div class="input_wrap">
                         <input type="text" class="filter_input" v-model="buildPrice[0]">
@@ -487,7 +487,7 @@
                 // 地图loading
                 mapLoading: true,
                 //比例尺
-                scale: '10公里',
+                scale: '5公里',
                 // 当前显示到小区数据
                 resInfo:[],
                 // 搜索到关键词
@@ -777,6 +777,10 @@
                 this.resMap.addEventListener('zoomend',(e) => {
                     this.setMapZoom()
                 })
+                // 监听地图移动
+                this.resMap.addEventListener('moveend',(e) => {
+                    this.pointInBounds()
+                })
             },
             // 城市边界
             displayBoundary() {
@@ -916,16 +920,6 @@
                     this.$set(key, "isSelect", false);
                     let point = new BMap.Point(key.lng, key.lat);
                     let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
-
-                    // let label = new BMap.Label(key.resName,{offset:new BMap.Size(4,-18)});
-                    // label.setStyle({
-                    //     borderRadius: "3px",
-                    //     boxShadow: '0px 0px 6px 0px rgba(0,0,0,0.15)',
-                    //     border: 'none',
-                    //     background: 'rgba(255,255,255,1)',
-                    //     color: 'rgba(0,0,0,0.85)',
-                    //     padding: '3px 8px',
-                    // });
                     let label = this.setMarkerLabel(key.resName)
                     marker.setLabel(label);
                     marker.setTop(true);
@@ -1199,7 +1193,6 @@
             },
             // 地图缩放
             setMapZoom(temp) {
-                this.resMap.enableContinuousZoom()
                 if(temp === 'add') {
                     this.resMap.zoomIn()
                 } else if(temp === 'minus'){
@@ -1209,14 +1202,31 @@
                 let mapLevel = [19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1]
                 let index = mapLevel.indexOf(this.resMap.getZoom())
                 this.scale = scaleArr[index]
+                if(index <= 6) {
+                    this.pointInBounds()
+                }
                 console.log('当前地图缩放等级---',this.resMap.getZoom(),this.scale)
+            },
+            // 判断点是否在视野内
+            pointInBounds() {
+                console.log('判断点是否在视野内------',this.resMap.getZoom())
+                if(!this.isMouseSearch && !this.isOnlineSearch && this.resMap.getZoom() >= 14) {
+                    let bound = this.resMap.getBounds();// 地图可视区域
+                    for (let key of this.resMarkers) {
+                        if (bound.containsPoint(key.point) == true && !key.isVisible()) {
+                            key.show()
+                        }
+                    }
+                }
             },
             // 自动测距
             selfMotionDistance() {
                 console.log('自动测距------')
                 console.time('自动测距')
+                let isMapCenter = false
                 for (let key of this.searchResList) {
                     if (key.mapCenter) {
+                        isMapCenter = true
                         let point = new BMap.Point(key.lng, key.lat);
                         for (let mkey of key.mapCenter) {
                             let distance = Math.floor(this.resMap.getDistance(point, mkey.point))
@@ -1240,11 +1250,14 @@
                         }
                     }
                 }
+                if(!isMapCenter) {
+                    sessFun.messageFun('warning','请先进行周边选点再进行自动测距！')
+                }
                 console.timeEnd('自动测距')
             },
             /**
-            *  左侧搜索
-            **/
+             *  左侧搜索
+             **/
             // enter键
             searchDown(ev){
                 console.log('回车----')
@@ -1731,16 +1744,13 @@
             // 区域
             filterArea() {
                 console.log('区域',this.selectArea)
-                if (this.selectArea && this.selectArea.length) {
-                    // this.filterResFun()
-                    this.transfersFun()
-                }
+                this.transfersFun()
             },
             // 楼盘类型
             filterBuildType() {
                 console.log('楼盘类型---',this.bType)
                 // if(this.bType) {
-                    this.transfersFun()
+                this.transfersFun()
                 // }
             },
             // 广告限制

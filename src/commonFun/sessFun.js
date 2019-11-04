@@ -10,6 +10,8 @@ sess.getSess = function () {
 sess.loginTimeout = function () {
     console.log('sessVue',sessVue)
     sessVue.$message.warning("登录超时,请重新登录")
+    // 移除地图参数
+    localStorage.removeItem('mapParams');
     router.push("/login")
 }
 // 操作提示统一方法

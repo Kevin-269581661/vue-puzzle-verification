@@ -256,7 +256,7 @@
                                 min-width="80"
                             >
                                 <template slot-scope="scope">
-                                    <el-button type="text" @click="gotoDetail(scope.row)">画像详情</el-button>
+                                    <el-button type="text" @click="gotoDetail(scope.row.resID)">画像详情</el-button>
                                 </template>
                             </el-table-column>
                             <div slot="empty">
@@ -336,12 +336,12 @@
         methods: {
             // 平台商公司列表
             getCompanyList() {
-                this.portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo'))
-                console.log(this.portraitInfo);
+                let portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo'))
+                console.log(portraitInfo);
                 // 选中的公司
-                this.currCompany = this.portraitInfo[0]
+                this.currCompany = portraitInfo[0]
                 let arr = []
-                for (let key of this.portraitInfo) {
+                for (let key of portraitInfo) {
                     arr.push({
                         asrId: key.asrId,
                         asrName: key.asrName,
@@ -884,8 +884,8 @@
                 })
             },
             //跳转画像详情
-            gotoDetail() {
-                this.$router.push('./portraitDetail')
+            gotoDetail(resId) {
+                this.$router.push('./portraitDetail?resId='+resId)
             },
             //获取标签数据
             getTags(type, parentId) {

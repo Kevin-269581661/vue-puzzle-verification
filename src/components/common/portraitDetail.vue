@@ -5,18 +5,18 @@
             <p class="clearfix">
                 <a href="#" style="color: #999">亲邻智邻</a>
             </p>
-            <el-dropdown trigger="click">
-                <p class="el-dropdown-link">
-                    下拉菜单<i class="el-icon-arrow-down el-icon--right"></i>
-                </p>
-                <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item>黄金糕</el-dropdown-item>
-                    <el-dropdown-item>狮子头</el-dropdown-item>
-                    <el-dropdown-item>螺蛳粉</el-dropdown-item>
-                    <el-dropdown-item disabled>双皮奶</el-dropdown-item>
-                    <el-dropdown-item divided>蚵仔煎</el-dropdown-item>
-                </el-dropdown-menu>
-            </el-dropdown>
+            <div class="portrait_header_select">
+                <el-dropdown @command="selectAsrIdFun">
+                    <p class="el-dropdown-link">
+                        {{currCompany.asrName}}<i class="el-icon-arrow-down el-icon--right"></i>
+                    </p>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item v-for="(item,index) in companyList" :key="index" :command="item">
+                            {{item.asrName}}
+                        </el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+            </div>
         </div>
         <div class="top-content-wrap">
             <div class="title">
@@ -28,10 +28,10 @@
                     <h6 class="community_info_h6">位置信息</h6>
                     <el-row>
                         <el-col :span="6">
-                            <label class="community_info_label">城市：</label><span>{{resData.city || '--'}}</span>
+                            <label class="community_info_label">城市：</label><span>{{resData.rname || '--'}}</span>
                         </el-col>
                         <el-col :span="6">
-                            <label class="community_info_label">区域：</label><span>{{resData.cityArea || '--'}}</span>
+                            <label class="community_info_label">区域：</label><span>{{resData.pname || '--'}}</span>
                         </el-col>
                         <el-col :span="6">
                             <label class="community_info_label">商圈：</label><span>{{resData.tradingArea || '--'}}</span>
@@ -45,17 +45,24 @@
                     <h6 class="community_info_h6">社区类型</h6>
                     <el-row>
                         <el-col :span="6">
-                            <label class="community_info_label">资源类型：</label><span>{{resData.resType == 1 ? '社区' : '写字楼'}}</span>
+                            <label class="community_info_label">资源类型：</label>
+                            <span v-if="resData.resType == 1">社区</span>
+                            <span v-if="resData.resType == 2">写字楼</span>
+                            <span v-if="resData.resType == 3">街道</span>
+                            <span v-if="resData.resType == 4">地铁</span>
+                            <span v-if="resData.resType == 5">学校</span>
+                            <span v-if="resData.resType == 6">寺庙</span>
+                            <span v-if="resData.resType == 7">户外路牌</span>
                         </el-col>
                         <el-col :span="6">
-                            <label class="community_info_label">楼盘类型：</label><span>{{resData.houseType || '--'}}</span>
+                            <label class="community_info_label">楼盘类型：</label><span>{{resData.ctype || '--'}}</span>
                         </el-col>
                         <el-col :span="6">
                             <label
-                                class="community_info_label">楼盘价格：</label><span>¥{{resData.floorPrice || '--'}}</span>
+                                class="community_info_label">楼盘价格：</label><span>¥{{resData.hprice/100 || '--'}}</span>
                         </el-col>
                         <el-col :span="6">
-                            <label class="community_info_label">入住年份：</label><span>{{resData.joinTime || '--'}}</span>
+                            <label class="community_info_label">入住年份：</label><span>{{resData.chDay || '--'}}</span>
                         </el-col>
                     </el-row>
                 </div>
@@ -64,16 +71,16 @@
                     <el-row>
                         <el-col :span="6">
                             <label
-                                class="community_info_label">楼栋数量：</label><span>{{resData.buildingNum || '--'}}</span>
+                                class="community_info_label">楼栋数量：</label><span>{{resData.fnum || '--'}}</span>
                         </el-col>
                         <el-col :span="6">
-                            <label class="community_info_label">住户数量：</label><span>{{resData.HouseNum || '--'}}</span>
+                            <label class="community_info_label">住户数量：</label><span>{{resData.hnum || '--'}}</span>
                         </el-col>
                         <el-col :span="6">
-                            <label class="community_info_label">媒体数量：</label><span>{{resData.mediaNum || '--'}}</span>
+                            <label class="community_info_label">媒体数量：</label><span>{{resData.mediaCount || '--'}}</span>
                         </el-col>
                         <el-col :span="6">
-                            <label class="community_info_label">点位数量：</label><span>{{resData.adsNum || '--'}}</span>
+                            <label class="community_info_label">点位数量：</label><span>{{resData.asCount || '--'}}</span>
                         </el-col>
                     </el-row>
                 </div>
@@ -160,6 +167,12 @@
                 </el-tab-pane>
                 <el-tab-pane label="偏好画像" name="second">
                     <div class="tags">
+                        <div class="title">
+                            <el-select v-model="tagSelect" placeholder="请选择" @change = 'changeTagSelect'>
+                                <el-option label="同区对比" value="同区对比"></el-option>
+                                <el-option label="同城对比" value="同城对比"></el-option>
+                            </el-select>
+                        </div>
                         <ul class="tags-ul">
                             <li v-for="item in hobbyTags" @click="chooseFirstTag(item)" class="tags-li"
                                 :class="currTag1.value == item.value?'active':''">{{item.label}}
@@ -167,26 +180,34 @@
                         </ul>
                     </div>
                     <div class="charts-wrap" v-show="currTag1.childer">
-                        <h5>{{currTag1.label}}消费偏好</h5>
+                        <div class="title">
+                            <h5>{{currTag1.label}}消费偏好</h5>
+                        </div>
                         <div class="tag1-chart">
                             <div ref="tag2chart" style="width: 100%;height: 394px"></div>
                         </div>
                     </div>
                     <div class="charts-wrap" v-show="tag2List.length>0">
-                        <el-tabs v-model="tag2_active_name" @tab-click="changeSecondTag">
-                            <el-tab-pane v-for="(item,index) in tag2List" :key="index" :label="item.label"
-                                         :name="item.label"></el-tab-pane>
-                        </el-tabs>
+                        <div class="title">
+                            <el-tabs v-model="tag2_active_name" @tab-click="changeSecondTag">
+                                <el-tab-pane v-for="(item,index) in tag2List" :key="index" :label="item.label"
+                                             :name="item.label"></el-tab-pane>
+                            </el-tabs>
+
+                        </div>
                         <div class="tag2-chart" ref="chartWrapWidth">
                             <div ref="tag3chart" style="width: 100%;height: 394px"></div>
                         </div>
                     </div>
                     <div class="charts-wrap" v-show="tag3List.length>0">
-                        <el-tabs v-model="tag3_active_name" @tab-click="changeThirdTag">
-                            <el-tab-pane v-for="(item,index) in tag3List" :key="index" :label="item.label"
-                                         :name="item.label"></el-tab-pane>
-                        </el-tabs>
-                        <div class="tag2-chart"  >
+                        <div class="title">
+                            <el-tabs v-model="tag3_active_name" @tab-click="changeThirdTag">
+                                <el-tab-pane v-for="(item,index) in tag3List" :key="index" :label="item.label"
+                                             :name="item.label"></el-tab-pane>
+                            </el-tabs>
+                        </div>
+
+                        <div class="tag2-chart">
                             <div id="tag4chart" ref="tag4chart" style="width: 100%;height: 394px"></div>
                         </div>
                     </div>
@@ -205,7 +226,13 @@
         name: "portraitDetail",
         data() {
             return {
+                // 默认选择的公司
+                currCompany: '',
+                companyList: [],
                 activeName: 'first',
+                tagSelect: '同区对比',
+                //图表legend
+                tagLegendData:['单小区人群', '同区人群'],
                 tag2_active_name: '',
                 tag3_active_name: '',
                 // tag4_active_name:'',
@@ -215,21 +242,7 @@
                 tag2List: [],
                 tag3List: [],
                 // currTag4: '',
-                resData: {
-                    resName: '中信西关海花苑',
-                    resType: '1',
-                    city: '',
-                    cityArea: '',
-                    tradingArea: '',
-                    houseType: '',
-                    floorPrice: '',
-                    HouseNum: 0,
-                    buildingNum: 0,
-                    joinTime: '',
-                    resAddress: '',
-                    mediaNum: 0,
-                    adsNum: 0
-                },
+                resData: {},
                 incomeList: [{rank: 1, income: '2499元及以下', percent: 28}],//月收入排行
                 sexChart: '',//性别情况
                 ageChart: '',//年龄情况
@@ -241,34 +254,7 @@
                 tag2chart: '',//二级标签
                 tag3chart: '',//三级标签
                 tag4chart: '',//四级标签
-                tags: [
-                    {text: 'vue', size: 14},
-                    {text: 'html', size: 24},
-                    {text: 'js', size: 34},
-                    {text: 'vue', size: 24},
-                    {text: 'html', size: 15},
-                    {text: 'js', size: 26},
-                    {text: 'vue', size: 17},
-                    {text: 'html', size: 28},
-                    {text: 'js', size: 19}, {text: 'vue', size: 20},
-                    {text: 'html', size: 30},
-                    {text: 'js', size: 21},
-                    {text: 'vue', size: 12},
-                    {text: 'html', size: 13},
-                    {text: 'js', size: 14},
-                    {text: 'vue', size: 15},
-                    {text: 'html', size: 16},
-                    {text: 'js', size: 17},
-                    {text: 'vue', size: 18},
-                    {text: 'html', size: 19},
-                    {text: 'js', size: 20},
-                    {text: 'vue', size: 21},
-                    {text: 'html', size: 22},
-                    {text: 'js', size: 23},
-                    {text: 'vue', size: 24},
-                    {text: 'html', size: 25},
-                    {text: 'js', size: 26},
-                ],//词云
+                tags: [],//词云
                 sexData: [
                     {value: 335, name: '男'},
                     {value: 310, name: '女'},
@@ -314,18 +300,53 @@
                         y2: [83.1, 43.4, 75.2, 43.9, 65.2, 53.9]
                     }
 
-                }
-
+                },
+                resId: '',
             }
         },
         methods: {
+            // 平台商公司列表
+            getCompanyList() {
+                let portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo'))
+                console.log(portraitInfo);
+                // 选中的公司
+                this.currCompany = portraitInfo[0]
+                let arr = []
+                for (let key of portraitInfo) {
+                    arr.push({
+                        asrId: key.asrId,
+                        asrName: key.asrName,
+                    })
+                }
+                this.companyList = arr
+                console.log('companyList', this.companyList)
+            },
+            // 选择公司
+            selectAsrIdFun(item) {
+                this.currCompany = item
+            },
             //性别情况
             sexChartFn() {
                 this.sexChart = this.$echarts.init(this.$refs.sexChart)
                 this.sexChart.setOption({
                     tooltip: {
                         trigger: 'item',
-                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                        backgroundColor: '#FFFFFF',
+                        textStyle: {
+                            color: '#2C313C'
+                        },
+                        borderColor: '#ddd',
+                        borderWidth: 1,
+                        padding: 0,
+                        formatter: (params) => {
+                            return '<p class="echarts_tooltip_title">' +
+                                '<span>' + params.seriesName + '</span>' +
+                                '<span>' + '数据' + '</span>' +
+                                '</p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' +
+                                params.percent + '%' + '</p>'
+                        },
                     },
                     legend: {
                         left: 'center',
@@ -365,8 +386,24 @@
                     tooltip: {
                         trigger: 'axis',
                         axisPointer: {            // 坐标轴指示器，坐标轴触发有效
-                            type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
-                        }
+                            type: 'shadow',        // 默认为直线，可选为：'line' | 'shadow'
+                            shadowStyle: {
+                                shadowColor: '#f5f5f5'
+                            }
+                        },
+                        backgroundColor: '#FFFFFF',
+                        padding: 0,
+                        borderColor: '#dddddd',
+                        borderWidth: 1,
+                        formatter: (params) => {
+                            return '<p class="echarts_tooltip_title">'
+                                + '<span>' + '年龄分布' + '</span>' +
+                                '<span>' + '数据' + '</span>' +
+                                '</p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params[0].name +
+                                '</span>' + params[0].data + '%' + '</p>'
+                        },
                     },
                     xAxis: {
                         type: 'category',
@@ -401,7 +438,8 @@
                             textStyle: {
                                 fontFamily: "DINPro-Regular",
                                 color: "#2C313C" //坐标轴刻度文字的颜色
-                            }
+                            },
+                            formatter: '{value}%',
                         },
                         splitLine: {
                             lineStyle: {
@@ -423,7 +461,22 @@
                 this.eduChart.setOption({
                     tooltip: {
                         trigger: 'item',
-                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                        backgroundColor: '#FFFFFF',
+                        textStyle: {
+                            color: '#2C313C'
+                        },
+                        borderColor: '#ddd',
+                        borderWidth: 1,
+                        padding: 0,
+                        formatter: (params) => {
+                            return '<p class="echarts_tooltip_title">' +
+                                '<span>' + params.seriesName + '</span>' +
+                                '<span>' + '数据' + '</span>' +
+                                '</p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' +
+                                params.percent + '%' + '</p>'
+                        },
                     },
                     legend: {
                         left: 'center',
@@ -461,7 +514,22 @@
                 this.spendChart.setOption({
                     tooltip: {
                         trigger: 'item',
-                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                        backgroundColor: '#FFFFFF',
+                        textStyle: {
+                            color: '#2C313C'
+                        },
+                        borderColor: '#ddd',
+                        borderWidth: 1,
+                        padding: 0,
+                        formatter: (params) => {
+                            return '<p class="echarts_tooltip_title">' +
+                                '<span>' + params.seriesName + '</span>' +
+                                '<span>' + '数据' + '</span>' +
+                                '</p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' +
+                                params.percent + '%' + '</p>'
+                        },
                     },
                     legend: {
                         left: 'center',
@@ -499,7 +567,22 @@
                 this.assetsChart.setOption({
                     tooltip: {
                         trigger: 'item',
-                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                        backgroundColor: '#FFFFFF',
+                        textStyle: {
+                            color: '#2C313C'
+                        },
+                        borderColor: '#ddd',
+                        borderWidth: 1,
+                        padding: 0,
+                        formatter: (params) => {
+                            return '<p class="echarts_tooltip_title">' +
+                                '<span>' + params.seriesName + '</span>' +
+                                '<span>' + '数据' + '</span>' +
+                                '</p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params.name + '</span>' +
+                                params.percent + '%' + '</p>'
+                        },
                     },
                     legend: {
                         left: 'center',
@@ -539,8 +622,24 @@
                     tooltip: {
                         trigger: 'axis',
                         axisPointer: {            // 坐标轴指示器，坐标轴触发有效
-                            type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
-                        }
+                            type: 'shadow',        // 默认为直线，可选为：'line' | 'shadow'
+                            shadowStyle: {
+                                shadowColor: '#f5f5f5'
+                            }
+                        },
+                        backgroundColor: '#FFFFFF',
+                        padding: 0,
+                        borderColor: '#dddddd',
+                        borderWidth: 1,
+                        formatter: (params) => {
+                            return '<p class="echarts_tooltip_title">'
+                                + '<span>' + '人生阶段' + '</span>' +
+                                '<span>' + '数据' + '</span>' +
+                                '</p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params[0].name +
+                                '</span>' + params[0].data + '%' + '</p>'
+                        },
                     },
                     grad: {
                         x: 25,
@@ -582,7 +681,8 @@
                             textStyle: {
                                 fontFamily: "DINPro-Regular",
                                 color: "#2C313C" //坐标轴刻度文字的颜色
-                            }
+                            },
+                            formatter: '{value}%',
                         },
                         splitLine: {
                             lineStyle: {
@@ -606,8 +706,24 @@
                     tooltip: {
                         trigger: 'axis',
                         axisPointer: {            // 坐标轴指示器，坐标轴触发有效
-                            type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
-                        }
+                            type: 'shadow',        // 默认为直线，可选为：'line' | 'shadow'
+                            shadowStyle: {
+                                shadowColor: '#f5f5f5'
+                            }
+                        },
+                        backgroundColor: '#FFFFFF',
+                        padding: 0,
+                        borderColor: '#dddddd',
+                        borderWidth: 1,
+                        formatter: (params) => {
+                            return '<p class="echarts_tooltip_title">'
+                                + '<span>' + '工作行业' + '</span>' +
+                                '<span>' + '数据' + '</span>' +
+                                '</p>' + '<br/>' +
+                                '<p class="echarts_tooltip_content">' +
+                                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC"></i>' + params[0].name +
+                                '</span>' + params[0].data + '%' + '</p>'
+                        },
                     },
                     xAxis: {
                         type: 'category',
@@ -642,7 +758,8 @@
                             textStyle: {
                                 fontFamily: "DINPro-Regular",
                                 color: "#2C313C" //坐标轴刻度文字的颜色
-                            }
+                            },
+                            formatter: '{value}%',
                         },
                         splitLine: {
                             lineStyle: {
@@ -660,7 +777,14 @@
             },
             //行业词云
             getWordCloud() {
-                let wordList = this.tags;
+                let wordList = this.tags.map(item=>{
+                    let obj = {
+                        text:item.tagName,
+                        size:16+Math.ceil(item.rate*100),
+                    }
+                    return obj
+                });
+                console.log(wordList);
                 let wordOption = {
                     wordList,
                     size: [324, 240],  // 盒子的宽高
@@ -696,6 +820,11 @@
                     }
                 });
             },
+            //同区域或同城筛选
+            changeTagSelect(item){
+                this.tagLegendData = item=='同区对比'?['单小区人群', '同区人群']:['单小区人群', '同城人群']
+                this.callChartsFn()
+            },
             //截取前12个
             sliceArr(obj) {
                 if (obj.childer.length > 0) {
@@ -723,20 +852,25 @@
                         bottom: 20,
                         itemWidth: 10,
                         itemHeight: 10,
-                        data: ['单小区人群', '同区域人群']
+                        data: this.tag2LegendData
                     },
                     tooltip: {
                         trigger: 'axis',
                         axisPointer: {            // 坐标轴指示器，坐标轴触发有效
                             type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
                         },
+                        backgroundColor: '#FFFFFF',
+                        padding: 0,
+                        borderColor: '#dddddd',
+                        borderWidth: 1,
                         formatter: params => {
                             return '<p class="echarts_tooltip_title">' +
                                 '<span>' + params[0].name + '</span>' +
+                                '<span>数据</span>' +
                                 '</p>' +
-                                '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>' + params[0].seriesName + '</span>：' + params[0].value + '%' + '<br/>' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>' + params[1].seriesName + '</span>：' + params[1].value + '%' + '</p>'
+                                '<div class="echarts_tooltip_content_style2">' +
+                                '<p><span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>'+params[0].seriesName+'</span>' +'<span>'+params[0].value + '%</span>' + '</p>' +
+                                '<p><span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>'+params[1].seriesName+'</span>' +'<span>'+params[1].value + '%</span>' + '</p>' + '</div>'
                         }
                     },
                     grid: {x: 80, y: 40, x2: 80, y2: 80,},//图表位置
@@ -780,14 +914,14 @@
                             type: 'bar',
                             barWidth: '18%',
                             color: '#1890FF',
-                            name: '单小区人群',
+                            name: this.tagLegendData[0],
                             data: this.currTagsChartsData.tag2_data.y1
                         },
                         {
                             type: 'bar',
                             barWidth: '18%',
                             color: '#4DCB73',
-                            name: '同区域人群',
+                            name: this.tagLegendData[1],
                             data: this.currTagsChartsData.tag2_data.y2
                         },
                     ]
@@ -802,20 +936,25 @@
                         bottom: 20,
                         itemWidth: 10,
                         itemHeight: 10,
-                        data: ['单小区人群', '同区域人群']
+                        data: this.tag3LegendData
                     },
                     tooltip: {
                         trigger: 'axis',
                         axisPointer: {            // 坐标轴指示器，坐标轴触发有效
                             type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
                         },
+                        backgroundColor: '#FFFFFF',
+                        padding: 0,
+                        borderColor: '#dddddd',
+                        borderWidth: 1,
                         formatter: params => {
                             return '<p class="echarts_tooltip_title">' +
                                 '<span>' + params[0].name + '</span>' +
+                                '<span>数据</span>' +
                                 '</p>' +
-                                '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>' + params[0].seriesName + '</span>：' + params[0].value + '%' + '<br/>' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>' + params[1].seriesName + '</span>：' + params[1].value + '%' + '</p>'
+                                '<div class="echarts_tooltip_content_style2">' +
+                                '<p><span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>'+params[0].seriesName+'</span>' +'<span>'+params[0].value + '%</span>' + '</p>' +
+                                '<p><span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>'+params[1].seriesName+'</span>' +'<span>'+params[1].value + '%</span>' + '</p>' + '</div>'
                         }
                     },
                     grid: {x: 80, y: 40, x2: 80, y2: 80,},//图表位置
@@ -859,14 +998,14 @@
                             type: 'bar',
                             barWidth: '18%',
                             color: '#1890FF',
-                            name: '单小区人群',
+                            name: this.tagLegendData[0],
                             data: this.currTagsChartsData.tag3_data.y1
                         },
                         {
                             type: 'bar',
                             barWidth: '18%',
                             color: '#4DCB73',
-                            name: '同区域人群',
+                            name: this.tagLegendData[1],
                             data: this.currTagsChartsData.tag3_data.y2
                         },
                     ]
@@ -875,7 +1014,7 @@
             //四级标签柱状图
             tag4chartFn() {
                 let tag4chart = document.getElementById("tag4chart")
-                tag4chart.style.width = this.$refs.chartWrapWidth.offsetWidth+"px";
+                tag4chart.style.width = this.$refs.chartWrapWidth.offsetWidth + "px";
                 this.tag4chart = this.$echarts.init(this.$refs.tag4chart)
                 this.tag4chart.setOption({
                     legend: {
@@ -883,20 +1022,25 @@
                         bottom: 20,
                         itemWidth: 10,
                         itemHeight: 10,
-                        data: ['单小区人群', '同区域人群']
+                        data: this.tag4LegendData
                     },
                     tooltip: {
                         trigger: 'axis',
                         axisPointer: {            // 坐标轴指示器，坐标轴触发有效
                             type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
                         },
+                        backgroundColor: '#FFFFFF',
+                        padding: 0,
+                        borderColor: '#dddddd',
+                        borderWidth: 1,
                         formatter: params => {
                             return '<p class="echarts_tooltip_title">' +
                                 '<span>' + params[0].name + '</span>' +
+                                '<span>数据</span>' +
                                 '</p>' +
-                                '<p class="echarts_tooltip_content">' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>' + params[0].seriesName + '</span>：' + params[0].value + '%' + '<br/>' +
-                                '<span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>' + params[1].seriesName + '</span>：' + params[1].value + '%' + '</p>'
+                                '<div class="echarts_tooltip_content_style2">' +
+                                '<p><span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>'+params[0].seriesName+'</span>' +'<span>'+params[0].value + '%</span>' + '</p>' +
+                                '<p><span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>'+params[1].seriesName+'</span>' +'<span>'+params[1].value + '%</span>' + '</p>' + '</div>'
                         }
                     },
                     grid: {x: 80, y: 40, x2: 80, y2: 80,},//图表位置
@@ -919,7 +1063,7 @@
                             show: true,
                             interval: 'auto',
                             formatter: '{value} %',
-                            color: '#A0A4AA'
+                            color: '#A0A4AA',
                         },
                         axisLine: {
                             //坐标轴线条相关设置(颜色等)
@@ -938,16 +1082,16 @@
                     series: [
                         {
                             type: 'bar',
-                            barMaxWidth:'5%',
+                            barMaxWidth: '10%',
                             color: '#1890FF',
-                            name: '单小区人群',
+                            name: this.tagLegendData[0],
                             data: this.currTagsChartsData.tag4_data.y1
                         },
                         {
                             type: 'bar',
-                            barMaxWidth:'5%',
+                            barMaxWidth: '10%',
                             color: '#4DCB73',
-                            name: '同区域人群',
+                            name: this.tagLegendData[1],
                             data: this.currTagsChartsData.tag4_data.y2
                         },
                     ]
@@ -1000,7 +1144,7 @@
                                 return item.label
                             })
                         }
-                        if (this.tag2List.length>0) {
+                        if (this.tag2List.length > 0) {
                             //当前选中的二级菜单
                             this.currTag2 = this.tag2List[0];
                             this.tag2_active_name = this.tag2List[0].label;
@@ -1037,7 +1181,7 @@
                     });
                     this.tag2chartFn()
                     //this.tag2List.length>0 => 二级下有三级
-                    if(this.tag2List.length>0){
+                    if (this.tag2List.length > 0) {
                         this.currTag2 = this.tag2List[0]
                         this.tag2_active_name = this.tag2List[0].label
                         this.tag3List = this.getJuniorTabs(this.tag2List[0].childer)
@@ -1048,7 +1192,7 @@
                         this.tag3chartFn()
                     }
                     //三级下有四级
-                    if(this.tag3List.length>0){
+                    if (this.tag3List.length > 0) {
                         this.currTag2 = this.tag3List[0]
                         this.sliceArr(this.tag3List[0])
                         this.tag3_active_name = this.tag3List[0].label
@@ -1057,7 +1201,7 @@
                         });
                         this.tag4chartFn()
                     }
-                }else{
+                } else {
                     this.tag2List = []
                     this.tag3List = []
                 }
@@ -1075,7 +1219,7 @@
                         this.tag3chartFn()
                     }
                 }
-                if(this.tag3List.length>0){
+                if (this.tag3List.length > 0) {
                     this.currTag3 = this.tag3List[0]
                     this.tag3_active_name = this.tag3List[0].label
                     this.currTagsChartsData.tag4_data.x = this.tag3List[0].childer.map(item => {
@@ -1099,16 +1243,136 @@
                 }
 
             },
+            getParams() {
+                this.resId = this.$route.query.resId
+                this.getCommunityInfo()
+                this.getChartsData()
+            },
+            //获取小区信息
+            getCommunityInfo() {
+                api.getApi(this.apiVar.portrait + 'resInfo/getResInfoByResId', {resId: this.resId}).then(res => {
+                    console.log(res.data);
+                    if (res.data.SysCode == 200200) {
+                        this.resData = res.data.data
+                    } else {
+                        this.$message.warning(res.data.MSG)
+                    }
+                })
+            },
+            //获取图表数据
+            getChartsData() {
+                this.sexData = '';
+                this.ageData = {};
+                this.eduData = '';
+                this.spendData = '';
+                this.assetsData = '';
+                this.lifeData = {};
+                this.jobData = {};
+                this.incomeList = [];
+                api.getApi(this.apiVar.portrait + 'portrait/getPortraitInfo', {resId: this.resId}).then(res => {
+                    console.log(res.data);
+                    if (res.data.SysCode == 200200) {
+                        let result = res.data.data
+                        //性别
+                        this.sexData = [...result.sexList].map(item => {
+                            let obj = {
+                                name: item.tagName,
+                                value: item.userCnt
+                            }
+                            return obj
+                        });
+                        //年龄
+                        this.ageData.x = [...result.ageList].map(item => {
+                            return item.tagName
+                        })
+                        this.ageData.y = [...result.ageList].map(item => {
+                            return (item.rate * 100).toFixed(2) * 1
+                        })
+                        //教育水平
+                        this.eduData = [...result.educationList].map(item => {
+                            let obj = {
+                                name: item.tagName,
+                                value: item.userCnt
+                            }
+                            return obj
+                        });
+                        //消费水平
+                        this.spendData = [...result.buyList].map(item => {
+                            let obj = {
+                                name: item.tagName,
+                                value: item.userCnt
+                            }
+                            return obj
+                        });
+                        //月收入
+                        result.inComeList.sort((a, b) => {
+                            return b.userCnt - a.userCnt
+                        })
+                        this.incomeList = [...result.inComeList].map((item, index) => {
+                            let obj = {rank: index + 1, income: item.tagName, percent: (item.rate * 100).toFixed(2) * 1}
+                            return obj
+                        })
+                        //资产情况
+                        this.assetsData = [...result.haveCarList].map(item => {
+                            let obj = {
+                                name: item.tagName,
+                                value: item.userCnt
+                            }
+                            return obj
+                        });
+                        //人生阶段
+                        this.lifeData.x = [...result.liftList].map(item => {
+                            return item.tagName
+                        })
+                        this.lifeData.y = [...result.liftList].map(item => {
+                            return (item.rate * 100).toFixed(2) * 1
+                        })
+                        //工作行业
+                        this.jobData.x = [...result.jobList].map(item => {
+                            return item.tagName
+                        })
+                        this.jobData.y = [...result.jobList].map(item => {
+                            return (item.rate * 100).toFixed(2) * 1
+                        })
+                        //行业词云
+                        this.tags = [...result.industryList]
+                    } else {
+                        this.$message.warning(res.data.MSG);
+                    }
+                })
+            }
 
         },
         mounted() {
-            this.getTags()
+            this.getParams();
+            this.getCompanyList();
+            this.getTags();
             this.echartsListener();
         }
     }
 </script>
 
 <style scoped>
+    .ad_mediaDetail_nav {
+        position: relative;
+    }
+
+    .portrait_header_select {
+        position: absolute;
+        right: 0;
+        top: 0;
+        cursor: pointer;
+    }
+
+    .portrait_header_select /deep/ .el-dropdown-link {
+        background: rgba(0, 0, 0, 0);
+        color: #999;
+        border: none;
+        text-align: center;
+        padding-left: 0;
+        font-size: 14px;
+    }
+
     .el-dropdown-link {
         cursor: pointer;
     }
@@ -1252,12 +1516,21 @@
 
     .tags {
         background: #fff;
-        padding: 16px 24px 4px;
+        border: 1px solid #E6E7E9;
     }
-
+    .tags .title{
+        padding: 8px 16px;
+        border-bottom: 1px solid #E6E7E9;
+    }
+    .tags .title /deep/ .el-input--suffix .el-input__inner {
+        width: 112px;
+        height: 32px;
+        font-size: 14px;
+    }
     .tags-ul {
         display: flex;
         flex-wrap: wrap;
+        padding: 16px 24px 0px;
     }
 
     .tags-li {
@@ -1299,23 +1572,73 @@
         margin-top: 24px;
     }
 
-    .charts-wrap h5 {
+    .charts-wrap .title {
         font-size: 16px;
         color: #2C313C;
         border-bottom: 1px solid #E6E7E9;
         height: 48px;
         line-height: 48px;
-        padding-left: 16px;
+        padding: 0 16px;
         box-sizing: border-box;
+
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .charts-wrap .title h5 {
         font-weight: 600;
+    }
+
+
+
+
+    /* echarts的tooltip样式 */
+    /deep/ .echarts_tooltip_title {
+        min-width: 180px;
+        height: 36px;
+        display: flex;
+        justify-content: space-between;
+        padding: 0px 10px;
+        align-items: center;
+        box-sizing: border-box;
+        margin-bottom: -20px;
+        color: #808080;
+        background-color: #F4F6F6;
+        font-size: 12px;
+    }
+
+    /deep/ .echarts_tooltip_content {
+        display: flex;
+        justify-content: space-between;
+        padding: 0px 10px;
+        box-sizing: border-box;
+        align-items: center;
+        font-size: 12px;
+        color: #2C313C;
+        height: 32px;
+        line-height: 32px;
+    }
+    /deep/ .echarts_tooltip_content_style2{
+        color: #2C313C;
+        font-size: 12px;
+        margin-top: 20px;
+        padding: 0px 10px;
+        box-sizing: border-box;
+    }
+    /deep/ .echarts_tooltip_content_style2 p{
+        width: 100%;
+        line-height: 24px;
+        display: flex;
+        justify-content: space-between;
     }
 
     /deep/ .echarts_tooltip_i {
         display: inline-block;
-        width: 9px;
-        height: 9px;
+        width: 6px;
+        height: 6px;
         border-radius: 50%;
         margin-right: 5px;
     }
+
 </style>
 

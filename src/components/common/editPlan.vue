@@ -56,7 +56,8 @@
                             </div>
                             <el-row class="button_row">
                                 <el-col>
-                                    <el-button type="primary" class="map" icon="el-icon-location-outline" @click="mapAD"
+<!--                                    <el-button type="primary" class="map" icon="el-icon-location-outline" @click="mapAD"-->
+                                    <el-button type="primary" class="map" icon="el-icon-location-outline" @click="judgeMapSelect"
                                                v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt050_ck03'}">地图</el-button>
                                     <el-dropdown>
                                         <el-button type="success" class="importXle">
@@ -448,13 +449,12 @@
                                     prop="mState"
                                     label="媒体状态"
                                     min-width="90"
-                                    class="tar"
-                                >
+                                    class="tar">
                                 </el-table-column>
                                 <el-table-column
                                     label="楼盘价格"
-                                    min-width="110"
-                                >
+                                    align="right"
+                                    min-width="110">
                                     <template slot-scope="scope">
                                         <span>&yen;{{scope.row.buildPrice}}</span>
                                     </template>
@@ -462,6 +462,7 @@
                                 <el-table-column
                                     prop="buildNum"
                                     label="楼栋数量"
+                                    align="right"
                                     min-width="100">
                                 </el-table-column>
                                 <el-table-column
@@ -480,16 +481,19 @@
                                 </el-table-column>
                                 <el-table-column
                                     prop="liveYear"
+                                    align="right"
                                     :label="recType === 1? '入住年份' : '建成年份'"
                                     min-width="90">
                                 </el-table-column>
                                 <el-table-column
                                     prop="houseNum"
+                                    align="right"
                                     :label="recType === 1? '小区户数' : '办公室数量'"
                                     min-width="90">
                                 </el-table-column>
                                 <el-table-column
                                     label="人流量"
+                                    align="right"
                                     min-width="110">
                                     <template slot-scope="scope">
                                         {{ scope.row.peopleFlow || '--' }}
@@ -497,6 +501,7 @@
                                 </el-table-column>
                                 <el-table-column
                                     label="车位数"
+                                    align="right"
                                     min-width="110">
                                     <template slot-scope="scope">
                                         {{ scope.row.parkSpaceNum || '--' }}
@@ -504,6 +509,7 @@
                                 </el-table-column>
                                 <el-table-column
                                     label="车流量"
+                                    align="right"
                                     min-width="110">
                                     <template slot-scope="scope">
                                         {{ scope.row.carFlow || '--' }}
@@ -513,8 +519,7 @@
                                     fixed="right"
                                     prop="schedules"
                                     label="排期"
-                                    min-width="190"
-                                >
+                                    min-width="190">
                                 </el-table-column>
                             </el-table>
                         </div>
@@ -1040,6 +1045,21 @@
                 <el-button size="small" type="primary" @click="confirmCopy()">确 定</el-button>
             </span>
         </el-dialog>
+        <!--地图选择（1无忧地图、2亲邻地图）-->
+        <el-dialog
+            :visible.sync="isMapKind"
+            title="地图选择"
+            width="450px">
+            <p>
+                <span class="p_span">地图类型：</span>
+                <el-radio v-model="selectMapKind" :label="1">旧版地图</el-radio>
+                <el-radio v-model="selectMapKind" :label="2">新版地图</el-radio>
+            </p>
+            <div slot="footer" class="dialog-footer">
+                <el-button plain size="small" @click="isMapKind = false">取 消</el-button>
+                <el-button size="small" type="primary" @click="selectMap" >确 定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -1367,7 +1387,12 @@
                 activeAdPlan: '',                 // 当前选择的方案
                 routePath: '',
                 // 方案是否创建中，防多次点击创建-节流
-                creating: false
+                creating: false,
+                // 地图类型
+                isMapKind: false,
+                selectMapKind: 1,
+                // 亲邻地图
+                mapAdsList:[],
             };
         },
         mounted() {
@@ -1388,7 +1413,6 @@
             let shopAnimate = document.getElementsByClassName('shopAnimate')[0]
             shopAnimate.style.right = this.shopXY.x + 'px'
             console.log('this.cityOptions', this.cityOptions)
-
         },
         directives: {
             loadmore: {
@@ -2240,6 +2264,23 @@
                     this.getAdList()
                 }
             },
+            // 判断地图权限
+            judgeMapSelect() {
+                if(this.sessionData.rela == '直营') {
+                    this.isMapKind = true
+                } else {
+                    this.mapAD()
+                }
+            },
+            // 选择地图类型
+            selectMap() {
+                if(this.selectMapKind == 1) {
+                    this.mapAD()
+                } else if(this.selectMapKind == 2) {
+                    this.setMapParams()
+                }
+                this.isMapKind = false
+            },
             //step2地图选点
             mapAD() {
                 console.log('地图选点提交的rid', this.activeCityData)
@@ -2280,6 +2321,27 @@
                 }).catch(err => {
                     console.log('error', err)
                 })
+            },
+            // 设置地图选点参数
+            setMapParams() {
+                this.mapParams = {
+                    rid: this.activeCityData.rid,
+                    city: this.activeCityData.rName,
+                    ls: this.dateInput[0],
+                    le: this.dateInput[1],
+                }
+                localStorage.setItem('mapParams',JSON.stringify({
+                    rid: this.activeCityData.rid,
+                    ls: this.dateInput[0],
+                    le: this.dateInput[1],
+                    suID: this.BDData.uid,
+                }))
+                // let tempWindow = window.open()
+                // let url = 'http://localhost:8080/ADResourceMap/chooseRes?city=' + this.mapParams.city  + '&flag=' + true
+                let url = this.apiVar.qadnUrl + '/ADResourceMap/chooseRes?city=' + this.mapParams.city  + '&flag=' + true
+                window.open(url)
+                this.mapBtn = false
+                this.dialogVisible()
             },
             // 模态框中的确认按钮
             oneKeyPointBtn(item){
@@ -4055,30 +4117,55 @@
             // 购物车-获取地图选择的点位列表
             getMapADList() {
                 console.log('触发获取地图选点信息click')
-                this.getMapLoading = this.$loading({
-                    lock: true,
-                    text: '数据获取中...',
-                    spinner: 'el-icon-loading',
-                    background: 'rgba(0, 0, 0, 0.7)'
-                })
-                this.mapBtn = true
-                api.getApi(this.apiVar.Map+'/SendMap', {uid: this.sessionData.uID,token: this.sessionData.token}).then(res => {
-                    console.log('地图选点', res)
-                    if(res.data.code == '500200'){
-                        this.mapADList = res.data.data
-                        if(this.mapADList.length > 0){
-                            this.setShopDataByMapAD()
+                if (this.selectMapKind == 1) {
+                    this.getMapLoading = this.$loading({
+                        lock: true,
+                        text: '数据获取中...',
+                        spinner: 'el-icon-loading',
+                        background: 'rgba(0, 0, 0, 0.7)'
+                    })
+                    this.mapBtn = true
+                    api.getApi(this.apiVar.Map+'/SendMap', {uid: this.sessionData.uID,token: this.sessionData.token}).then(res => {
+                        console.log('地图选点', res)
+                        if(res.data.code == '500200'){
+                            this.mapADList = res.data.data
+                            if(this.mapADList.length > 0){
+                                this.setShopDataByMapAD()
+                            } else {
+                                sessFun.messageFun('warning','数据为空')
+                                this.getMapLoading.close()
+                            }
                         } else {
-                            sessFun.messageFun('warning','数据为空')
                             this.getMapLoading.close()
+                            sessFun.messageFun('warning','数据获取异常')
                         }
-                    } else {
-                        this.getMapLoading.close()
-                        sessFun.messageFun('warning','数据获取异常')
+                    })
+                } else if (this.selectMapKind == 2) {
+                    // 亲邻地图
+                    this.getMapLoading = this.$loading({
+                        lock: true,
+                        text: '数据获取中...',
+                        spinner: 'el-icon-loading',
+                        background: 'rgba(0, 0, 0, 0.7)'
+                    })
+                    let params = {
+                        code: localStorage.getItem(`qinlinMapCode`)
                     }
-                })
+                    api.getApi(this.apiVar.mapApi + '/adsListByCode',params).then(res=>{
+                        console.log('res-----',res)
+                        if(res.data.SysCode === 200200) {
+                            this.mapAdsList = res.data.data
+                            this.setMapAdsListInShopCar()
+                            localStorage.removeItem('qinlinMapCode')
+                        } else {
+                            this.getMapLoading.close()
+                            sessFun.messageFun('warning','数据获取异常')
+                        }
+                    })
+                }
+
             },
-            // 根据地图选点返回的数据，设置成购物车所需的数据格式
+            // 根据地图选点返回的数据，设置成购物车所需的数据格式 （无忧地图）
             setShopDataByMapAD() {
                 console.log('执行了setShopDataByMapAD', this.mapADList)
                 let mapADList_ = this.mapADList
@@ -4178,7 +4265,7 @@
                 this.computeMedia_AD('mapAD')
                 this.judgeByselect()
             },
-            // 判断点位是否已存在购物车
+            // 判断点位是否已存在购物车 （无忧地图）
             judgeHaveDiffAD(data,SourceType) {
                 let ADData = data
                 let shopArr = this.shopingList
@@ -4207,6 +4294,129 @@
                                         shopArr[i].mapCenter = shopArr[i].mapCenter + centerName
                                     } else {
                                         console.log('mapCenter为空')
+                                        shopArr[i].mapCenter = centerName
+                                    }
+                                }
+                                ifBoolea = false
+                                break
+                                // 左相交
+                            }else if(ADScheArr[0] < shopScheArr[0] && ADScheArr[1] >=  shopScheArr[0] && ADScheArr[1] <= shopScheArr[1]){
+                                ifBoolea = false
+                                break
+                                // 被包含
+                            }else if(ADScheArr[0] >= shopScheArr[0] && ADScheArr[1] <= shopScheArr[1]){
+                                ifBoolea = false
+                                break
+                                // 右相交
+                            }else if(ADScheArr[0] >= shopScheArr[0] && ADScheArr[0] <= shopScheArr[1] && ADScheArr[1] > shopScheArr[1]){
+                                ifBoolea = false
+                                break
+                                // 包含
+                            }else if(ADScheArr[0] < shopScheArr[0] && ADScheArr[1] > shopScheArr[1]){
+                                ifBoolea = false
+                                break
+                            }else{
+                                console.log('else')
+                                ifBoolea = true
+                            }
+                        }
+                    }
+                } else {
+                    return ifBoolea
+                }
+                return ifBoolea
+            },
+            // 根据地图选点返回的数据，设置成购物车所需的数据格式（亲邻地图）
+            setMapAdsListInShopCar() {
+                let tempArr = []
+                for(let key of this.mapAdsList) {
+                    let adInfo = {
+                        mID: key.mID,
+                        resType: key.resType,
+                        resID: key.resID,
+                        asID: key.asID,
+                        asIDs: key.asID,
+                        asLabs: key.asLab,
+                        A_B: key.asLab,
+                        resName: key.resName,
+                        city:  this.activeCityData.rName,
+                        rid:  this.activeCityData.rid,
+                        origin: key.rName,
+                        buildType: key.cType,
+                        houseNum: key.hNum,
+                        buildPrice: (key.hPrice / 100),
+                        mediaName: key.mTitle || '',
+                        mVehicle: key.mVehicle,
+                        buildNum: key.fNum,
+                        schedules: this.dateInput[0] + '-' + this.dateInput[1],
+                        tradingArea: key.tradingArea,
+                        assetTag: key.assetTag,
+                        liveYear: key.chDay,
+                        mapCenter: '',  // 地图中心点名称
+                        reference: key.centerInfos,
+                        address: key.resAddress || '',
+                        dNum: key.dNum || '',              // 出入口数
+                        adLimit: key.notPush || '',
+                        checkBox: {A: false, B: false,ABC: false},
+                        connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
+                        connID: key.connID || '',        // 连排门id
+                        industryInfos: key.industryInfos || [],   // 同行业资源回避
+                        mediaLevel: key.grade || '',
+                        adPrice: key.mVehicle === '道闸' ? key.asPrice / 100 || 0 : key.asPrice / 700 || 0,
+                        asName: key.asName || '',         // 点位所属公司名称
+                        asrID: key.asrID,                 // 所属公司id
+                    }
+                    if(key.centerInfos && key.centerInfos.length) {
+                        for(let item of key.centerInfos) {
+                            adInfo.mapCenter += item.centerName + '-' + item.centerAddress + ','
+                        }
+                    }
+                    if(this.qinLinJudgeHaveDiffAD(adInfo,'mapAds')) {
+                        tempArr.push(adInfo)
+                    }
+                }
+                console.log('根据地图选点返回的数据，设置成购物车所需的数据格式', tempArr)
+                if (this.shopingList.length !== 0) {
+                    for (let key of tempArr) {
+                        this.shopingList.push(key)
+                    }
+                } else {
+                    this.shopingList = JSON.parse(JSON.stringify(tempArr))
+                }
+                this.getMapLoading.close()
+                sessFun.messageFun('success','成功获取到' + tempArr.length + '条数据')
+                this.mapBtn = true
+                this.typeShopList = this.getTypeList();
+                this.getShowList();
+                this.computeMedia_AD('mapAD')
+                this.judgeByselect()
+            },
+            // 判断点位是否已存在购物车（亲邻地图）
+            qinLinJudgeHaveDiffAD(data,SourceType) {
+                let ADData = data
+                let shopArr = this.shopingList
+                let ifBoolea = true
+                if (shopArr.length !== 0) {
+                    for (let i = 0; i < shopArr.length; i++) {
+                        if (ADData.mID === shopArr[i].mID && ADData.A_B === shopArr[i].A_B) {
+                            console.log('相同mid,相同面', ADData)
+                            let ADScheArr = ADData.schedules.split('-')
+                            let shopScheArr = shopArr[i].schedules.split('-')
+                            // 全等
+                            if (ADScheArr[0] == shopScheArr[0] && ADScheArr[1] == shopScheArr[1]) {
+                                if(SourceType === 'mapAds'){
+                                    let centerName = ''
+                                    if(ADData.reference && ADData.reference.length) {
+                                        for (let key of ADData.reference) {
+                                            let keyCenter = key.centerName + '-' + key.centerAddress
+                                            if(!shopArr[i].mapCenter.includes(keyCenter)){
+                                                centerName += keyCenter + ','
+                                            }
+                                        }
+                                    }
+                                    if (shopArr[i].mapCenter !== '') {
+                                        shopArr[i].mapCenter = shopArr[i].mapCenter + centerName
+                                    } else {
                                         shopArr[i].mapCenter = centerName
                                     }
                                 }
@@ -5748,28 +5958,6 @@
         background-color: #F7F7F7;;
     }
 
-    .table_wrap /deep/ .has-gutter th:nth-child(12),
-    .table_wrap /deep/ .has-gutter th:nth-child(13),
-    .table_wrap /deep/ .has-gutter th:nth-child(17),
-    .table_wrap /deep/ .has-gutter th:nth-child(18),
-    .table_wrap /deep/ .has-gutter th:nth-child(19),
-    .table_wrap /deep/ .has-gutter th:nth-child(20),
-    .table_wrap /deep/ .el-table__row td:nth-child(12),
-    .table_wrap /deep/ .el-table__row td:nth-child(13),
-    .table_wrap /deep/ .el-table__row td:nth-child(17),
-    .table_wrap /deep/ .el-table__row td:nth-child(18),
-    .table_wrap /deep/ .el-table__row td:nth-child(19),
-    .table_wrap /deep/ .el-table__row td:nth-child(20){
-        text-align: right;
-    }
-
-    .el-dialog /deep/ .has-gutter th:nth-child(7),
-    .el-dialog /deep/ .has-gutter th:nth-child(8),
-    .el-dialog /deep/ .el-table__row td:nth-child(7),
-    .el-dialog /deep/ .el-table__row td:nth-child(8) {
-        text-align: right;
-    }
-
     /deep/ .table_wrap.car-list {
         margin-top: 0 !important;
     }
@@ -5907,7 +6095,8 @@
     /deep/ .type-select .el-input__suffix{
         right: 4px;
     }
-    /deep/ .el-input-number.is-controls-right .el-input-number__decrease [class*=el-icon], .el-input-number.is-controls-right .el-input-number__increase [class*=el-icon] {
+    /deep/ .el-input-number.is-controls-right .el-input-number__decrease [class*=el-icon],
+    .el-input-number.is-controls-right .el-input-number__increase [class*=el-icon] {
         position: relative;
         top: 2px;
     }
@@ -6184,125 +6373,6 @@
     }
     /deep/ .el-table .el-table-column-mediaRemark .cell{
         width: 140px;
-    }
-    /*1440*/
-    @media all and (min-width: 1420px) {
-        .filter-input input {
-            border: 1px solid #C2C2C2;
-            border-radius: 4px;
-            width: 75px;
-            height: 26px;
-            outline: none;
-            text-indent: 1em;
-            font-size: 14px;
-            color: #666;
-        }
-        .input-wrap.focus{
-            width: 170px;
-        }
-
-        .tbody .tr li:nth-of-type(1) {
-            width: 3.25%;
-        }
-
-        .tbody .tr li:nth-of-type(2) {
-            width: 14.15%;
-        }
-
-        .tbody .tr li:nth-of-type(3) {
-            width: 7.0%;
-        }
-
-        .tbody .tr li:nth-of-type(4) {
-            width: 7.45%;
-        }
-
-        .tbody .tr li:nth-of-type(5) {
-            width: 8.8%;
-        }
-
-        .tbody .tr li:nth-of-type(6) {
-            width: 8.4%;
-        }
-
-        .tbody .tr li:nth-of-type(7) {
-            width: 8.3%;
-        }
-
-        .tbody .tr li:nth-of-type(8) {
-            width: 8.35%;
-        }
-
-        .tbody .tr li:nth-of-type(9) {
-            width: 16.2%;
-        }
-
-        .tbody .tr li:nth-of-type(10) {
-            width: 227px;
-        }
-    }
-
-    /*1920*/
-    @media all and (min-width: 1900px) {
-        .mediaMana_content_bottom .content_bottom_btn {
-            position: absolute;
-            bottom: -66px;
-            left: 896px;
-        }
-        .input-wrap.focus{
-            width: 234px;
-        }
-
-        .filter-input input {
-            border: 1px solid #C2C2C2;
-            border-radius: 4px;
-            width: 107px;
-            height: 26px;
-            outline: none;
-            text-indent: 1em;
-            font-size: 14px;
-            color: #666;
-        }
-
-        .tbody .tr li:nth-of-type(1) {
-            width: 2.35%;
-        }
-
-        .tbody .tr li:nth-of-type(2) {
-            width: 14.15%;
-        }
-
-        .tbody .tr li:nth-of-type(3) {
-            width: 7.0%;
-        }
-
-        .tbody .tr li:nth-of-type(4) {
-            width: 7.45%;
-        }
-
-        .tbody .tr li:nth-of-type(5) {
-            width: 8.8%;
-        }
-
-        .tbody .tr li:nth-of-type(6) {
-            width: 8.3%;
-        }
-
-        .tbody .tr li:nth-of-type(7) {
-            width: 8.3%;
-        }
-
-        .tbody .tr li:nth-of-type(8) {
-            width: 8.35%;
-        }
-
-        .tbody .tr li:nth-of-type(9) {
-            width: 16.2%;
-        }
-
-        .tbody .tr li:nth-of-type(10) {
-            width: 331px;
-        }
     }
 
     /deep/ .el-badge__content.is-fixed.is-dot {

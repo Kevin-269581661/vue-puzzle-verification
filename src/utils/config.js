@@ -46,6 +46,8 @@ const apiVar = {
     portrait: '/portrait/api/v1/',
     // 图片相关
     image: '/image',
+    // 自研地图相关
+    mapApi: '/map',
     wuYouMap: wuYouMap,
     shareWUYouMap: shareWUYouMap,
     jsonLink: jsonLink,

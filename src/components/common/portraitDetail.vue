@@ -168,7 +168,7 @@
                 <el-tab-pane label="偏好画像" name="second">
                     <div class="tags">
                         <div class="title">
-                            <el-select v-model="tagSelect" placeholder="请选择" @change = 'changeTagSelect'>
+                            <el-select v-model="tagSelect" placeholder="请选择" @change='changeTagSelect'>
                                 <el-option label="同区对比" value="同区对比"></el-option>
                                 <el-option label="同城对比" value="同城对比"></el-option>
                             </el-select>
@@ -219,8 +219,10 @@
 </template>
 
 <script>
-    import myCloud from '../../commonFun/myCloud.js'
+
     import api from "../../api/api.js";
+    import "echarts-wordcloud/dist/echarts-wordcloud";
+    import "echarts-wordcloud/dist/echarts-wordcloud.min";
 
     export default {
         name: "portraitDetail",
@@ -229,10 +231,10 @@
                 // 默认选择的公司
                 currCompany: '',
                 companyList: [],
-                activeName: 'first',
+                activeName: 'second',
                 tagSelect: '同区对比',
                 //图表legend
-                tagLegendData:['单小区人群', '同区人群'],
+                tagLegendData: ['单小区人群', '同区人群'],
                 tag2_active_name: '',
                 tag3_active_name: '',
                 // tag4_active_name:'',
@@ -302,6 +304,7 @@
 
                 },
                 resId: '',
+                wordCloud: '',
             }
         },
         methods: {
@@ -777,24 +780,53 @@
             },
             //行业词云
             getWordCloud() {
-                let wordList = this.tags.map(item=>{
+                let wordList = this.tags.map(item => {
                     let obj = {
-                        text:item.tagName,
-                        size:16+Math.ceil(item.rate*100),
+                        name: item.tagName,
+                        value: 16 + Math.ceil(item.rate * 100),
                     }
                     return obj
                 });
-                console.log(wordList);
-                let wordOption = {
-                    wordList,
-                    size: [324, 240],  // 盒子的宽高
-                    svgElement: this.$refs.wordCloudBox  //使用ref选择节点
-                };
-                myCloud(wordOption, this.getArticleList)
-            },
-            //点击词云回调
-            getArticleList() {
-                console.log('窝窝头，一块钱四个，嘿嘿！');
+                // console.log(wordList);
+                this.wordCloud = this.$echarts.init(this.$refs.wordCloudBox)
+                this.wordCloud.setOption({
+                    series: [{
+                        type: 'wordCloud',
+                        shape: 'circle',//云形状
+                        maskImage: '',//剪影图像，白色区域将被排除在绘图文本之外,形状选项将继续应用为云的形状。
+                        left: 'center',
+                        top: 'center',
+                        width: '100%',//画布宽度
+                        height: '100%',//画布高度
+                        right: null,
+                        bottom: null,
+                        sizeRange: [12, 40],//字体大小范围
+                        rotationRange: [0, 0],//字符倾斜范围
+                        rotationStep: 45,//字符倾斜间隔
+                        gridSize: 8,//字符间距
+                        drawOutOfBound: false,
+                        textStyle: {
+                            normal: {
+                                fontFamily: 'sans-serif',
+                                fontWeight: 'bold',
+                                color: function () {
+                                    // Random color
+                                    return 'rgb(' + [
+                                        Math.round(Math.random() * 160),
+                                        Math.round(Math.random() * 160),
+                                        Math.round(Math.random() * 160)
+                                    ].join(',') + ')';
+                                }
+                            },
+                            //鼠标悬浮阴影
+                            emphasis: {
+                                shadowBlur: 10,
+                                shadowColor: '#d8d8d8'
+                            }
+                        },
+                        data: wordList //词云数据,格式为[{name:'xx',value:20}]
+                    }]
+                });
             },
             // 统一监听
             echartsListener() {
@@ -821,9 +853,9 @@
                 });
             },
             //同区域或同城筛选
-            changeTagSelect(item){
-                this.tagLegendData = item=='同区对比'?['单小区人群', '同区人群']:['单小区人群', '同城人群']
-                this.callChartsFn()
+            changeTagSelect(item) {
+                this.tagLegendData = item == '同区对比' ? ['单小区人群', '同区人群'] : ['单小区人群', '同城人群']
+                this.getPortraitData(this.currTag1.value,'tag2')
             },
             //截取前12个
             sliceArr(obj) {
@@ -869,8 +901,8 @@
                                 '<span>数据</span>' +
                                 '</p>' +
                                 '<div class="echarts_tooltip_content_style2">' +
-                                '<p><span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>'+params[0].seriesName+'</span>' +'<span>'+params[0].value + '%</span>' + '</p>' +
-                                '<p><span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>'+params[1].seriesName+'</span>' +'<span>'+params[1].value + '%</span>' + '</p>' + '</div>'
+                                '<p><span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>' + params[0].seriesName + '</span>' + '<span>' + params[0].value + '%</span>' + '</p>' +
+                                '<p><span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>' + params[1].seriesName + '</span>' + '<span>' + params[1].value + '%</span>' + '</p>' + '</div>'
                         }
                     },
                     grid: {x: 80, y: 40, x2: 80, y2: 80,},//图表位置
@@ -953,8 +985,8 @@
                                 '<span>数据</span>' +
                                 '</p>' +
                                 '<div class="echarts_tooltip_content_style2">' +
-                                '<p><span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>'+params[0].seriesName+'</span>' +'<span>'+params[0].value + '%</span>' + '</p>' +
-                                '<p><span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>'+params[1].seriesName+'</span>' +'<span>'+params[1].value + '%</span>' + '</p>' + '</div>'
+                                '<p><span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>' + params[0].seriesName + '</span>' + '<span>' + params[0].value + '%</span>' + '</p>' +
+                                '<p><span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>' + params[1].seriesName + '</span>' + '<span>' + params[1].value + '%</span>' + '</p>' + '</div>'
                         }
                     },
                     grid: {x: 80, y: 40, x2: 80, y2: 80,},//图表位置
@@ -1039,8 +1071,8 @@
                                 '<span>数据</span>' +
                                 '</p>' +
                                 '<div class="echarts_tooltip_content_style2">' +
-                                '<p><span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>'+params[0].seriesName+'</span>' +'<span>'+params[0].value + '%</span>' + '</p>' +
-                                '<p><span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>'+params[1].seriesName+'</span>' +'<span>'+params[1].value + '%</span>' + '</p>' + '</div>'
+                                '<p><span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>' + params[0].seriesName + '</span>' + '<span>' + params[0].value + '%</span>' + '</p>' +
+                                '<p><span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>' + params[1].seriesName + '</span>' + '<span>' + params[1].value + '%</span>' + '</p>' + '</div>'
                         }
                     },
                     grid: {x: 80, y: 40, x2: 80, y2: 80,},//图表位置
@@ -1130,39 +1162,41 @@
                     parentId: parentId ? parentId : 0,
                 }
                 api.getApi(this.apiVar.portrait + 'label/getLabels', info).then(res => {
-                    console.log(res.data);
+                    // console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         this.hobbyTags = res.data.data
                         this.currTag1 = this.hobbyTags[0]
+                        this.getPortraitData(this.currTag1.value,'tag2')
                         //设置各级菜单的tab和x轴y轴数据
-                        if (this.currTag1.childer) {
-                            //最多12个
-                            this.sliceArr(this.currTag1)
-                            //二级菜单的tabs和二级菜单图表的数据
-                            this.tag2List = this.getJuniorTabs(this.currTag1.childer)
-                            this.currTagsChartsData.tag2_data.x = this.currTag1.childer.map(item => {
-                                return item.label
-                            })
-                        }
-                        if (this.tag2List.length > 0) {
-                            //当前选中的二级菜单
-                            this.currTag2 = this.tag2List[0];
-                            this.tag2_active_name = this.tag2List[0].label;
-                            this.sliceArr(this.currTag2)
-                            this.tag3List = this.getJuniorTabs(this.currTag2.childer)
-                            this.currTagsChartsData.tag3_data.x = this.currTag2.childer.map(item => {
-                                return item.label
-                            })
-                        }
-                        if (this.tag3List.length > 0) {
-                            this.currTag3 = this.tag3List.childer[0]
-                            this.tag3_active_name = this.tag3List[0].label;
-                            this.sliceArr(this.currTag3)
-                            this.currTagsChartsData.tag4_data.x = this.currTag3.childer.map(item => {
-                                return item.label
-                            })
-                        }
-                        this.callChartsFn()
+                    /*     if (this.currTag1.childer) {
+                             //最多12个
+                             // this.sliceArr(this.currTag1)
+                             //二级菜单的tabs和二级菜单图表的数据
+                             this.tag2List = this.getJuniorTabs(this.currTag1.childer)
+                             this.getPortraitData(this.tag2List[0].value,'tag3')
+                             // this.currTagsChartsData.tag2_data.x = this.currTag1.childer.map(item => {
+                             //     return item.label
+                             // })
+                         }
+                         if (this.tag2List.length > 0) {
+                             //当前选中的二级菜单
+                             this.currTag2 = this.tag2List[0];
+                             this.tag2_active_name = this.tag2List[0].label;
+                             this.sliceArr(this.currTag2)
+                             this.tag3List = this.getJuniorTabs(this.currTag2.childer)
+                             // this.currTagsChartsData.tag3_data.x = this.currTag2.childer.map(item => {
+                             //     return item.label
+                             // })
+                         }
+                         if (this.tag3List.length > 0) {
+                             this.currTag3 = this.tag3List.childer[0]
+                             this.tag3_active_name = this.tag3List[0].label;
+                             this.sliceArr(this.currTag3)
+                             // this.currTagsChartsData.tag4_data.x = this.currTag3.childer.map(item => {
+                             //     return item.label
+                             // })
+                         }*/
+
 
                     } else {
                         this.$message.warning(res.data.MSG)
@@ -1172,39 +1206,40 @@
             //选择一级标签
             chooseFirstTag(item) {
                 this.currTag1 = item
+                this.getPortraitData(item.value,'tag2')
                 //一级下有二级
-                if (item.childer) {
-                    this.sliceArr(item)
-                    this.tag2List = this.getJuniorTabs(item.childer)
-                    this.currTagsChartsData.tag2_data.x = item.childer.map(item => {
-                        return item.label
-                    });
-                    this.tag2chartFn()
-                    //this.tag2List.length>0 => 二级下有三级
-                    if (this.tag2List.length > 0) {
-                        this.currTag2 = this.tag2List[0]
-                        this.tag2_active_name = this.tag2List[0].label
-                        this.tag3List = this.getJuniorTabs(this.tag2List[0].childer)
-                        this.sliceArr(this.tag2List[0])
-                        this.currTagsChartsData.tag3_data.x = this.tag2List[0].childer.map(item => {
-                            return item.label
-                        });
-                        this.tag3chartFn()
-                    }
-                    //三级下有四级
-                    if (this.tag3List.length > 0) {
-                        this.currTag2 = this.tag3List[0]
-                        this.sliceArr(this.tag3List[0])
-                        this.tag3_active_name = this.tag3List[0].label
-                        this.currTagsChartsData.tag4_data.x = this.tag3List[0].childer.map(item => {
-                            return item.label
-                        });
-                        this.tag4chartFn()
-                    }
-                } else {
-                    this.tag2List = []
-                    this.tag3List = []
-                }
+                // if (item.childer) {
+                //     this.sliceArr(item)
+                //     this.tag2List = this.getJuniorTabs(item.childer)
+                //     this.currTagsChartsData.tag2_data.x = item.childer.map(item => {
+                //         return item.label
+                //     });
+                //     this.tag2chartFn()
+                //     //this.tag2List.length>0 => 二级下有三级
+                //     if (this.tag2List.length > 0) {
+                //         this.currTag2 = this.tag2List[0]
+                //         this.tag2_active_name = this.tag2List[0].label
+                //         this.tag3List = this.getJuniorTabs(this.tag2List[0].childer)
+                //         this.sliceArr(this.tag2List[0])
+                //         this.currTagsChartsData.tag3_data.x = this.tag2List[0].childer.map(item => {
+                //             return item.label
+                //         });
+                //         this.tag3chartFn()
+                //     }
+                //     //三级下有四级
+                //     if (this.tag3List.length > 0) {
+                //         this.currTag2 = this.tag3List[0]
+                //         this.sliceArr(this.tag3List[0])
+                //         this.tag3_active_name = this.tag3List[0].label
+                //         this.currTagsChartsData.tag4_data.x = this.tag3List[0].childer.map(item => {
+                //             return item.label
+                //         });
+                //         this.tag4chartFn()
+                //     }
+                // } else {
+                //     this.tag2List = []
+                //     this.tag3List = []
+                // }
             },
             changeSecondTag(tab, event) {
                 // console.log(this.currTag1,this.currTag2);
@@ -1338,6 +1373,72 @@
                         this.tags = [...result.industryList]
                     } else {
                         this.$message.warning(res.data.MSG);
+                    }
+                })
+            },
+            //获取偏好标签数据 标签id,图表名称
+            getPortraitData(id,tagNum) {
+                let info = {
+                    resId: this.resId,
+                    tagId: id,
+                    type: this.tagSelect == '同区对比' ? 1 : 0
+                }
+                api.getApi(this.apiVar.portrait + 'portrait/getPreferencePortraitInfo', info).then(res => {
+                    console.log(res.data);
+                    if(res.data.SysCode == 200200){
+                        let result = res.data.data
+                        if(tagNum == 'tag2'){
+                            this.currTagsChartsData.tag2_data.x = result.areaTagInfo.map(item => {
+                                return item.tagName
+                            });
+                            this.tag2List = result.areaTagInfo.map(item => {
+                                let obj = {}
+                                if(item.rate>0){
+                                    obj = {
+                                        label:item.tagName,value:item.value
+                                    }
+                                }
+                                return obj
+                            });
+                            console.log(this.tag2List);
+                            if(this.tag2List.length>0){
+                                this.tag2_active_name = this.tag2List[0].label
+                                // this.getPortraitData(this.tag2List[0].value,'tag3')
+                            }
+
+                            this.currTagsChartsData.tag2_data.y1 = result.areaTagInfo.map(item => {
+                                return (item.rate * 100).toFixed(2) * 1
+                            });
+                            this.currTagsChartsData.tag2_data.y2 = result.resTagInfo.map(item => {
+                                return (item.rate * 100).toFixed(2) * 1
+                            })
+                        }else if(tagNum == 'tag3'){
+                            if(result.areaTagInfo){
+                                this.currTagsChartsData.tag3_data.x = result.areaTagInfo.map(item => {
+                                    return item.tagName
+                                });
+                                this.tag3List = result.areaTagInfo.map(item => {
+                                    return {label:item.tagName,value:item.value}
+                                });
+                                if(this.tag3List.length>0){
+                                    this.tag3_active_name = this.tag3List[0].label
+                                    this.getPortraitData(this.tag3List[0].label.value,'tag4')
+                                }
+
+                                this.currTagsChartsData.tag3_data.y1 = result.areaTagInfo.map(item => {
+                                    return (item.rate * 100).toFixed(2) * 1
+                                });
+                                this.currTagsChartsData.tag3_data.y2 = result.resTagInfo.map(item => {
+                                    return (item.rate * 100).toFixed(2) * 1
+                                })
+                            }
+
+                        }else{
+
+                        }
+                        this.callChartsFn()
+                    }else{
+                        this.$message.warning(res.data.MSG)
                     }
                 })
             }
@@ -1518,15 +1619,18 @@
         background: #fff;
         border: 1px solid #E6E7E9;
     }
-    .tags .title{
+
+    .tags .title {
         padding: 8px 16px;
         border-bottom: 1px solid #E6E7E9;
     }
+
     .tags .title /deep/ .el-input--suffix .el-input__inner {
         width: 112px;
         height: 32px;
         font-size: 14px;
     }
+
     .tags-ul {
         display: flex;
         flex-wrap: wrap;
@@ -1589,9 +1693,6 @@
         font-weight: 600;
     }
 
-
-
-
     /* echarts的tooltip样式 */
     /deep/ .echarts_tooltip_title {
         min-width: 180px;
@@ -1618,14 +1719,16 @@
         height: 32px;
         line-height: 32px;
     }
-    /deep/ .echarts_tooltip_content_style2{
+
+    /deep/ .echarts_tooltip_content_style2 {
         color: #2C313C;
         font-size: 12px;
         margin-top: 20px;
         padding: 0px 10px;
         box-sizing: border-box;
     }
-    /deep/ .echarts_tooltip_content_style2 p{
+
+    /deep/ .echarts_tooltip_content_style2 p {
         width: 100%;
         line-height: 24px;
         display: flex;

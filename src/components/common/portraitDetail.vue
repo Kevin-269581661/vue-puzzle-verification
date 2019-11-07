@@ -1051,6 +1051,7 @@
                     this.getPortraitData(item.value)
                 }else{
                     this.tag2List = []
+                    this.$message.info('该标签下无二级标签数据')
                 }
 
             },
@@ -1166,13 +1167,13 @@
                     // console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         let result = res.data.data
-                        this.currTagsChartsData.tag2_data.x = result.areaTagInfo.map(item => {
+                        this.currTagsChartsData.tag2_data.x = result.resTagInfo.map(item => {
                             return item.tagName
                         });
-                        this.currTagsChartsData.tag2_data.y1 = result.areaTagInfo.map(item => {
+                        this.currTagsChartsData.tag2_data.y1 = result.resTagInfo.map(item => {
                             return (item.rate * 100).toFixed(2) * 1
                         });
-                        this.currTagsChartsData.tag2_data.y2 = result.resTagInfo.map(item => {
+                        this.currTagsChartsData.tag2_data.y2 = result.areaTagInfo.map(item => {
                             return (item.rate * 100).toFixed(2) * 1
                         })
                         //获取二级标签列表
@@ -1219,13 +1220,13 @@
                     // console.log(res.data)
                     if(res.data.SysCode == 200200){
                         let result = res.data.data
-                        this.currTagsChartsData.tag3_data.x = result.areaTagInfo.map(item => {
+                        this.currTagsChartsData.tag3_data.x = result.resTagInfo.map(item => {
                             return item.tagName
                         });
-                        this.currTagsChartsData.tag3_data.y1 = result.areaTagInfo.map(item => {
+                        this.currTagsChartsData.tag3_data.y1 = result.resTagInfo.map(item => {
                             return (item.rate * 100).toFixed(2) * 1
                         });
-                        this.currTagsChartsData.tag3_data.y2 = result.resTagInfo.map(item => {
+                        this.currTagsChartsData.tag3_data.y2 = result.areaTagInfo.map(item => {
                             return (item.rate * 100).toFixed(2) * 1
                         })
                         this.callChartsFn()

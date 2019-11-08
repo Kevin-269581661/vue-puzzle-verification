@@ -259,10 +259,7 @@
                 tag2chart: '',//二级标签
                 tag3chart: '',//三级标签
                 tags: [],//词云
-                sexData: [
-                    {value: 335, name: '男'},
-                    {value: 310, name: '女'},
-                ],
+                sexData: [],
                 ageData: {
                     x: ['15岁以下', '16-25岁', '26-35岁', '36-45岁', '46-55岁', '56岁以上', '未知'],
                     y: [120, 200, 150, 80, 70, 110, 130]
@@ -892,13 +889,24 @@
                         borderColor: '#dddddd',
                         borderWidth: 1,
                         formatter: params => {
-                            return '<p class="echarts_tooltip_title">' +
-                                '<span>' + params[0].name + '</span>' +
-                                '<span>数据</span>' +
-                                '</p>' +
-                                '<div class="echarts_tooltip_content_style2">' +
-                                '<p><span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>' + params[0].seriesName + '</span>' + '<span>' + params[0].value + '%</span>' + '</p>' +
-                                '<p><span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>' + params[1].seriesName + '</span>' + '<span>' + params[1].value + '%</span>' + '</p>' + '</div>'
+                            let htmlStr = ''
+                            if(params.length>1){
+                                htmlStr = '<p class="echarts_tooltip_title">' +
+                                    '<span>' + params[0].name + '</span>' +
+                                    '<span>数据</span>' +
+                                    '</p>' +
+                                    '<div class="echarts_tooltip_content_style2">' +
+                                    '<p><span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>' + params[0].seriesName + '</span>' + '<span>' + params[0].value + '%</span>' + '</p>' +
+                                    '<p><span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>' + params[1].seriesName + '</span>' + '<span>' + params[1].value + '%</span>' + '</p>' + '</div>'
+                            }else{
+                                htmlStr = '<p class="echarts_tooltip_title">' +
+                                    '<span>' + params[0].name + '</span>' +
+                                    '<span>数据</span>' +
+                                    '</p>' +
+                                    '<div class="echarts_tooltip_content_style2">' +
+                                    '<p><span><i class="echarts_tooltip_i" style="background-color: '+params[0].color+'"></i>' + params[0].seriesName + '</span>' + '<span>' + params[0].value + '%</span>' + '</p></div>'
+                            }
+                            return htmlStr
                         }
                     },
                     grid: {x: 80, y: 40, x2: 80, y2: 80,},//图表位置
@@ -977,13 +985,24 @@
                         borderColor: '#dddddd',
                         borderWidth: 1,
                         formatter: params => {
-                            return '<p class="echarts_tooltip_title">' +
-                                '<span>' + params[0].name + '</span>' +
-                                '<span>数据</span>' +
-                                '</p>' +
-                                '<div class="echarts_tooltip_content_style2">' +
-                                '<p><span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>' + params[0].seriesName + '</span>' + '<span>' + params[0].value + '%</span>' + '</p>' +
-                                '<p><span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>' + params[1].seriesName + '</span>' + '<span>' + params[1].value + '%</span>' + '</p>' + '</div>'
+                            let htmlStr = ''
+                            if(params.length>1){
+                                htmlStr = '<p class="echarts_tooltip_title">' +
+                                    '<span>' + params[0].name + '</span>' +
+                                    '<span>数据</span>' +
+                                    '</p>' +
+                                    '<div class="echarts_tooltip_content_style2">' +
+                                    '<p><span><i class="echarts_tooltip_i" style="background-color: #1890FF"></i>' + params[0].seriesName + '</span>' + '<span>' + params[0].value + '%</span>' + '</p>' +
+                                    '<p><span><i class="echarts_tooltip_i" style="background-color: #4DCB73"></i>' + params[1].seriesName + '</span>' + '<span>' + params[1].value + '%</span>' + '</p>' + '</div>'
+                            }else{
+                                htmlStr = '<p class="echarts_tooltip_title">' +
+                                    '<span>' + params[0].name + '</span>' +
+                                    '<span>数据</span>' +
+                                    '</p>' +
+                                    '<div class="echarts_tooltip_content_style2">' +
+                                    '<p><span><i class="echarts_tooltip_i" style="background-color: '+params[0].color+'"></i>' + params[0].seriesName + '</span>' + '<span>' + params[0].value + '%</span>' + '</p></div>'
+                            }
+                            return htmlStr
                         }
                     },
                     grid: {x: 80, y: 40, x2: 80, y2: 80,},//图表位置
@@ -1206,8 +1225,8 @@
                     tagId: id,
                     type: this.tagSelect == '同区对比' ? 1 : 0
                 }
-                // api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'portrait/getPreferencePortraitInfo', info).then(res => {
-                api.getApi(this.apiVar.portrait + 'portrait/getPreferencePortraitInfo', info).then(res => {
+                api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'portrait/getPreferencePortraitInfo', info).then(res => {
+                // api.getApi(this.apiVar.portrait + 'portrait/getPreferencePortraitInfo', info).then(res => {
                     // console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         let result = res.data.data
@@ -1265,8 +1284,8 @@
                     type: this.tagSelect == '同区对比' ? 1 : 0,
                     tagSecondName: tagSecondName,
                 }
-                // api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'portrait/getSecondPreferencePortraitInfo', info).then(res => {
-                api.getApi(this.apiVar.portrait + 'portrait/getSecondPreferencePortraitInfo', info).then(res => {
+                api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'portrait/getSecondPreferencePortraitInfo', info).then(res => {
+                // api.getApi(this.apiVar.portrait + 'portrait/getSecondPreferencePortraitInfo', info).then(res => {
                     // console.log(res.data)
                     if (res.data.SysCode == 200200) {
                         let result = res.data.data

@@ -246,7 +246,7 @@
                 tag2_active_name: '',
                 currTag1: {childer: ''},
                 currTag2: {childer: ''},
-                tag2List: [],
+                tag2List: [''],
                 resData: {},
                 incomeList: [],//月收入排行
                 sexChart: '',//性别情况
@@ -1070,7 +1070,8 @@
                     loadChilder: 1,
                     parentId: parentId ? parentId : 0,
                 }
-                api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'label/getLabels', info).then(res => {
+                // api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'label/getLabels', info).then(res => {
+                api.getApi(this.apiVar.portrait + 'label/getLabels', info).then(res => {
                     // console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         this.hobbyTags = res.data.data
@@ -1104,7 +1105,8 @@
             },
             //获取小区信息
             getCommunityInfo() {
-                api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'resInfo/getResInfoByResId', {resId: this.resId}).then(res => {
+                // api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'resInfo/getResInfoByResId', {resId: this.resId}).then(res => {
+                api.getApi(this.apiVar.portrait + 'resInfo/getResInfoByResId', {resId: this.resId}).then(res => {
                     // console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         this.resData = res.data.data
@@ -1123,7 +1125,8 @@
                 this.lifeData = {};
                 this.jobData = {};
                 this.incomeList = [];
-                api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'portrait/getPortraitInfo', {resId: this.resId}).then(res => {
+                // api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'portrait/getPortraitInfo', {resId: this.resId}).then(res => {
+                api.getApi(this.apiVar.portrait + 'portrait/getPortraitInfo', {resId: this.resId}).then(res => {
                     // console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         let result = res.data.data
@@ -1203,7 +1206,8 @@
                     tagId: id,
                     type: this.tagSelect == '同区对比' ? 1 : 0
                 }
-                api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'portrait/getPreferencePortraitInfo', info).then(res => {
+                // api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'portrait/getPreferencePortraitInfo', info).then(res => {
+                api.getApi(this.apiVar.portrait + 'portrait/getPreferencePortraitInfo', info).then(res => {
                     // console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         let result = res.data.data
@@ -1237,7 +1241,8 @@
                     tagId: id,
                     type: this.tagSelect == '同区对比' ? 1 : 0
                 }
-                api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'portrait/getSecondTagByFirstTagName', info).then(res => {
+                // api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'portrait/getSecondTagByFirstTagName', info).then(res => {
+                api.getApi(this.apiVar.portrait + 'portrait/getSecondTagByFirstTagName', info).then(res => {
                     // console.log(res.data)
                     if (res.data.SysCode == 200200) {
                         this.tag2List = res.data.data;
@@ -1260,7 +1265,8 @@
                     type: this.tagSelect == '同区对比' ? 1 : 0,
                     tagSecondName: tagSecondName,
                 }
-                api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'portrait/getSecondPreferencePortraitInfo', info).then(res => {
+                // api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'portrait/getSecondPreferencePortraitInfo', info).then(res => {
+                api.getApi(this.apiVar.portrait + 'portrait/getSecondPreferencePortraitInfo', info).then(res => {
                     // console.log(res.data)
                     if (res.data.SysCode == 200200) {
                         let result = res.data.data

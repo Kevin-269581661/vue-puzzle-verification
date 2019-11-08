@@ -1225,8 +1225,8 @@
                     tagId: id,
                     type: this.tagSelect == '同区对比' ? 1 : 0
                 }
-                api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'portrait/getPreferencePortraitInfo', info).then(res => {
-                // api.getApi(this.apiVar.portrait + 'portrait/getPreferencePortraitInfo', info).then(res => {
+                // api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'portrait/getPreferencePortraitInfo', info).then(res => {
+                api.getApi(this.apiVar.portrait + 'portrait/getPreferencePortraitInfo', info).then(res => {
                     // console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         let result = res.data.data
@@ -1284,8 +1284,8 @@
                     type: this.tagSelect == '同区对比' ? 1 : 0,
                     tagSecondName: tagSecondName,
                 }
-                api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'portrait/getSecondPreferencePortraitInfo', info).then(res => {
-                // api.getApi(this.apiVar.portrait + 'portrait/getSecondPreferencePortraitInfo', info).then(res => {
+                // api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'portrait/getSecondPreferencePortraitInfo', info).then(res => {
+                api.getApi(this.apiVar.portrait + 'portrait/getSecondPreferencePortraitInfo', info).then(res => {
                     // console.log(res.data)
                     if (res.data.SysCode == 200200) {
                         let result = res.data.data

@@ -92,13 +92,17 @@
                     <div class="part part1">
                         <div class="flex1">
                             <h6>性别情况</h6>
-                            <div class="chart-wrap">
+                            <div class="chart-wrap" v-loading="sexChartLoading"
+                                 element-loading-text="玩命加载中..."
+                                 element-loading-background="rgba(255, 255, 255)">
                                 <div class="sex-chart" ref="sexChart" style="width: 100%;height: 100%"></div>
                             </div>
                         </div>
                         <div class="flex2">
                             <h6>年龄分布</h6>
-                            <div class="chart-wrap">
+                            <div class="chart-wrap" v-loading="ageChartLoading"
+                                 element-loading-text="玩命加载中..."
+                                 element-loading-background="rgba(255, 255, 255)">
                                 <div class="age-chart" ref="ageChart" style="width: 100%;height: 100%"></div>
                             </div>
                         </div>
@@ -106,13 +110,17 @@
                     <div class="part part2">
                         <div class="flex1">
                             <h6>教育水平</h6>
-                            <div class="chart-wrap">
+                            <div class="chart-wrap" v-loading="eduChartLoading"
+                                 element-loading-text="玩命加载中..."
+                                 element-loading-background="rgba(255, 255, 255)">
                                 <div class="sex-chart" ref="eduChart" style="width: 100%;height: 100%"></div>
                             </div>
                         </div>
                         <div class="flex1">
                             <h6>消费水平</h6>
-                            <div class="chart-wrap">
+                            <div class="chart-wrap" v-loading="spendChartLoading"
+                                 element-loading-text="玩命加载中..."
+                                 element-loading-background="rgba(255, 255, 255)">
                                 <div class="sex-chart" ref="spendChart" style="width: 100%;height: 100%"></div>
                             </div>
                         </div>
@@ -139,13 +147,17 @@
                     <div class="part part1">
                         <div class="flex1">
                             <h6>资产状况</h6>
-                            <div class="chart-wrap">
+                            <div class="chart-wrap" v-loading="assetsChartLoading"
+                                 element-loading-text="玩命加载中..."
+                                 element-loading-background="rgba(255, 255, 255)">
                                 <div class="sex-chart" ref="assetsChart" style="width: 100%;height: 100%"></div>
                             </div>
                         </div>
                         <div class="flex2">
                             <h6>人生阶段</h6>
-                            <div class="chart-wrap">
+                            <div class="chart-wrap" v-loading="lifeChartLoading"
+                                 element-loading-text="玩命加载中..."
+                                 element-loading-background="rgba(255, 255, 255)">
                                 <div class="age-chart" ref="lifeChart" style="width: 100%;height: 100%"></div>
                             </div>
                         </div>
@@ -153,13 +165,17 @@
                     <div class="part part1">
                         <div class="flex1">
                             <h6>行业词云</h6>
-                            <div class="chart-wrap">
+                            <div class="chart-wrap" v-loading="wordCloudLoading"
+                                 element-loading-text="玩命加载中..."
+                                 element-loading-background="rgba(255, 255, 255)">
                                 <div class="word-cloud-box" ref='wordCloudBox'></div>
                             </div>
                         </div>
                         <div class="flex2">
                             <h6>工作行业</h6>
-                            <div class="chart-wrap">
+                            <div class="chart-wrap" v-loading="jobChartLoading"
+                                 element-loading-text="玩命加载中..."
+                                 element-loading-background="rgba(255, 255, 255)">
                                 <div class="age-chart" ref="jobChart" style="width: 100%;height: 100%"></div>
                             </div>
                         </div>
@@ -179,7 +195,9 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="charts-wrap" v-show="currTag1.childer">
+                    <div class="charts-wrap" v-show="currTag1.childer" v-loading="tag2ChartLoading"
+                         element-loading-text="玩命加载中..."
+                         element-loading-background="rgba(255, 255, 255)">
                         <div class="title">
                             <h5>{{currTag1.label}}消费偏好</h5>
                         </div>
@@ -187,7 +205,9 @@
                             <div ref="tag2chart" style="width: 100%;height: 394px"></div>
                         </div>
                     </div>
-                    <div class="charts-wrap" v-show="tag2List.length>0">
+                    <div class="charts-wrap" v-show="tag2List.length>0" v-loading="tag3ChartLoading"
+                         element-loading-text="玩命加载中..."
+                         element-loading-background="rgba(255, 255, 255)">
                         <div class="title">
                             <el-tabs v-model="tag2_active_name" @tab-click="changeSecondTag">
                                 <el-tab-pane v-for="(item,index) in tag2List" :key="index" :label="item"
@@ -228,7 +248,7 @@
                 currTag2: {childer: ''},
                 tag2List: [],
                 resData: {},
-                incomeList: [{rank: 1, income: '2499元及以下', percent: 28}],//月收入排行
+                incomeList: [],//月收入排行
                 sexChart: '',//性别情况
                 ageChart: '',//年龄情况
                 eduChart: '',//教育水平
@@ -282,6 +302,16 @@
                 },
                 resId: '',
                 wordCloud: '',
+                sexChartLoading: true,
+                ageChartLoading: true,
+                eduChartLoading: true,
+                spendChartLoading: true,
+                assetsChartLoading: true,
+                lifeChartLoading: true,
+                jobChartLoading: true,
+                tag2ChartLoading: false,
+                tag3ChartLoading: false,
+                wordCloudLoading: true,
             }
         },
         methods: {
@@ -357,6 +387,7 @@
                         }
                     ]
                 })
+                this.sexChartLoading = false
             },
             //年龄分布
             ageChartFn() {
@@ -434,6 +465,7 @@
                         barWidth: '18%',
                     }]
                 })
+                this.ageChartLoading = false
             },
             //教育水平
             eduChartFn() {
@@ -487,6 +519,7 @@
                         }
                     ]
                 })
+                this.eduChartLoading = false
             },
             //消费水平
             spendChartFn() {
@@ -540,6 +573,7 @@
                         }
                     ]
                 })
+                this.spendChartLoading = false
             },
             //资产状况
             assetsChartFn() {
@@ -593,6 +627,7 @@
                         }
                     ]
                 })
+                this.assetsChartLoading = false
             },
             //人生阶段
             lifeChartFn() {
@@ -677,6 +712,7 @@
                         barWidth: '18%',
                     }]
                 })
+                this.lifeChartLoading = false
             },
             //工作行业
             jobChartFn() {
@@ -754,6 +790,7 @@
                         barWidth: '18%',
                     }]
                 })
+                this.jobChartLoading = false
             },
             //行业词云
             getWordCloud() {
@@ -804,6 +841,7 @@
                         data: wordList //词云数据,格式为[{name:'xx',value:20}]
                     }]
                 });
+                this.wordCloudLoading = false
             },
             // 统一监听
             echartsListener() {
@@ -842,7 +880,7 @@
                         bottom: 20,
                         itemWidth: 10,
                         itemHeight: 10,
-                        data: this.tag2LegendData
+                        data: this.tagLegendData
                     },
                     tooltip: {
                         trigger: 'axis',
@@ -916,6 +954,7 @@
                         },
                     ]
                 })
+                this.tag2ChartLoading = false
             },
             //三级标签柱状图
             tag3chartFn() {
@@ -926,7 +965,7 @@
                         bottom: 20,
                         itemWidth: 10,
                         itemHeight: 10,
-                        data: this.tag3LegendData
+                        data: this.tagLegendData
                     },
                     tooltip: {
                         trigger: 'axis',
@@ -1000,6 +1039,7 @@
                         },
                     ]
                 })
+                this.tag3ChartLoading = false
             },
             //调用图表方法
             callChartsFn() {
@@ -1016,12 +1056,9 @@
                         this.getWordCloud()
                     })
                 } else {
-                    this.$nextTick(function () {
-                        //偏好
-                        this.tag2chartFn()
-                        this.tag3chartFn()
-                        // this.tag4chartFn()
-                    })
+                    this.tag2ChartLoading = true
+                    this.tag3ChartLoading = true
+                    this.getPortraitData(this.currTag1.value)
                 }
 
             },
@@ -1033,12 +1070,11 @@
                     loadChilder: 1,
                     parentId: parentId ? parentId : 0,
                 }
-                api.getApi(this.apiVar.portrait + 'label/getLabels', info).then(res => {
+                api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'label/getLabels', info).then(res => {
                     // console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         this.hobbyTags = res.data.data
                         this.currTag1 = this.hobbyTags[0]
-                        this.getPortraitData(this.currTag1.value)
                     } else {
                         this.$message.warning(res.data.MSG)
                     }
@@ -1047,16 +1083,19 @@
             //选择一级标签
             chooseFirstTag(item) {
                 this.currTag1 = item
-                if(item.childer){
+                this.tag2ChartLoading = true
+                this.tag3ChartLoading = true
+                if (item.childer) {
                     this.getPortraitData(item.value)
-                }else{
+                } else {
                     this.tag2List = []
                     this.$message.info('该标签下无二级标签数据')
                 }
 
             },
             changeSecondTag(tab, event) {
-                this.getTag2ChartData(this.currTag1.value,tab.label)
+                this.tag3ChartLoading = true
+                this.getTag2ChartData(this.currTag1.value, tab.label)
             },
             getParams() {
                 this.resId = this.$route.query.resId
@@ -1065,7 +1104,7 @@
             },
             //获取小区信息
             getCommunityInfo() {
-                api.getApi(this.apiVar.portrait + 'resInfo/getResInfoByResId', {resId: this.resId}).then(res => {
+                api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'resInfo/getResInfoByResId', {resId: this.resId}).then(res => {
                     // console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         this.resData = res.data.data
@@ -1084,7 +1123,7 @@
                 this.lifeData = {};
                 this.jobData = {};
                 this.incomeList = [];
-                api.getApi(this.apiVar.portrait + 'portrait/getPortraitInfo', {resId: this.resId}).then(res => {
+                api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'portrait/getPortraitInfo', {resId: this.resId}).then(res => {
                     // console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         let result = res.data.data
@@ -1151,6 +1190,7 @@
                         })
                         //行业词云
                         this.tags = [...result.industryList]
+                        this.callChartsFn()
                     } else {
                         this.$message.warning(res.data.MSG);
                     }
@@ -1163,7 +1203,7 @@
                     tagId: id,
                     type: this.tagSelect == '同区对比' ? 1 : 0
                 }
-                api.getApi(this.apiVar.portrait + 'portrait/getPreferencePortraitInfo', info).then(res => {
+                api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'portrait/getPreferencePortraitInfo', info).then(res => {
                     // console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         let result = res.data.data
@@ -1176,8 +1216,12 @@
                         this.currTagsChartsData.tag2_data.y2 = result.areaTagInfo.map(item => {
                             return (item.rate * 100).toFixed(2) * 1
                         })
+                        this.$nextTick(function () {
+                            this.tag2chartFn()
+                        })
+
                         //获取二级标签列表
-                        if(this.currTag1.childer){
+                        if (this.currTag1.childer) {
                             this.getTag2List(id)
                         }
 
@@ -1193,32 +1237,32 @@
                     tagId: id,
                     type: this.tagSelect == '同区对比' ? 1 : 0
                 }
-                api.getApi(this.apiVar.portrait + 'portrait/getSecondTagByFirstTagName', info).then(res => {
+                api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'portrait/getSecondTagByFirstTagName', info).then(res => {
                     // console.log(res.data)
-                    if(res.data.SysCode == 200200){
+                    if (res.data.SysCode == 200200) {
                         this.tag2List = res.data.data;
 
-                        if(this.tag2List.length>0){
+                        if (this.tag2List.length > 0) {
                             this.tag2_active_name = this.tag2List[0];
-                            this.getTag2ChartData(id,this.tag2List[0])
+                            this.getTag2ChartData(id, this.tag2List[0])
                         }
 
-                    }else{
+                    } else {
                         this.$message.warning(res.data.MSG)
                     }
                 })
             },
             //获取二级标签的图表数据
-            getTag2ChartData(id,tagSecondName){
+            getTag2ChartData(id, tagSecondName) {
                 let info = {
                     resId: this.resId,
                     tagId: id,
                     type: this.tagSelect == '同区对比' ? 1 : 0,
-                    tagSecondName:tagSecondName,
+                    tagSecondName: tagSecondName,
                 }
-                api.getApi(this.apiVar.portrait + 'portrait/getSecondPreferencePortraitInfo', info).then(res => {
+                api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'portrait/getSecondPreferencePortraitInfo', info).then(res => {
                     // console.log(res.data)
-                    if(res.data.SysCode == 200200){
+                    if (res.data.SysCode == 200200) {
                         let result = res.data.data
                         this.currTagsChartsData.tag3_data.x = result.resTagInfo.map(item => {
                             return item.tagName
@@ -1229,8 +1273,11 @@
                         this.currTagsChartsData.tag3_data.y2 = result.areaTagInfo.map(item => {
                             return (item.rate * 100).toFixed(2) * 1
                         })
-                        this.callChartsFn()
-                    }else{
+                        this.$nextTick(function () {
+                            this.tag3chartFn()
+                        })
+
+                    } else {
                         this.$message.warning(res.data.MSG)
                     }
                 })

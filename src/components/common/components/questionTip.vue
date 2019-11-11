@@ -104,9 +104,9 @@
             },
             goQuestionPage(id){
                 if (!this.$route.path.includes('questionAndAnswer')) {
-                    //已是消息列表页
-                    console.log(this.$route.path);
-                    let str = this.$route.path.substring(0,this.$route.path.lastIndexOf('/')+1)+'questionAndAnswer'
+                    //不是消息列表页
+                    // console.log(this.$route.path.split('/'));
+                    let str = this.$route.path.split('/').length>2?this.$route.path.substring(0,this.$route.path.lastIndexOf('/')+1)+'questionAndAnswer':this.$route.path+'/questionAndAnswer'
                     // console.log(str);
                     this.$router.push(str)
                 }

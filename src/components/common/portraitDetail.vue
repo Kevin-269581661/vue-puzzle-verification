@@ -222,6 +222,9 @@
                 </el-tab-pane>
             </el-tabs>
         </div>
+        <div class="btn-wrap">
+            <el-button @click="goBack">返 回</el-button>
+        </div>
 
     </div>
 </template>
@@ -1307,6 +1310,9 @@
                     }
                 })
             },
+            goBack(){
+                this.$router.back(-1)
+            }
         },
 
         mounted() {
@@ -1357,7 +1363,7 @@
     }
 
     .tab-wrap {
-        margin: 24px 64px;
+        margin: 24px 64px 0px;
         background: #fff;
     }
 
@@ -1606,6 +1612,14 @@
         height: 6px;
         border-radius: 50%;
         margin-right: 5px;
+    }
+    .tab-wrap /deep/ .el-tabs__nav-wrap::after {
+        height: 1px;
+    }
+    .btn-wrap{
+        display: flex;
+        justify-content: center;
+        margin-bottom: 24px;
     }
 
 </style>

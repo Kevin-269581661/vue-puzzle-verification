@@ -1545,6 +1545,7 @@
         background: #fff;
         border: 1px solid #E6E7E9;
         margin-top: 24px;
+        margin-bottom: 24px;
     }
 
     .charts-wrap .title {
@@ -1621,6 +1622,5 @@
         justify-content: center;
         margin-bottom: 24px;
     }
-
 </style>
 

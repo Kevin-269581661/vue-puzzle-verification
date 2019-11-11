@@ -26,7 +26,7 @@
                 <template slot="title">
                     辅助资料
                 </template>
-                <el-menu-item index="/operate/questionAndAnswer">操作说明</el-menu-item>
+                <el-menu-item index="/operate/questionAndAnswer">常见问题</el-menu-item>
                 <el-menu-item index="/operate/compact">文件下载</el-menu-item>
             </el-submenu>
             <el-submenu index="7" :show-timeout="80" v-show="showQinlin">

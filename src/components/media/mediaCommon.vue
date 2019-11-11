@@ -30,7 +30,7 @@
                 <template slot="title">
                     辅助资料
                 </template>
-                <el-menu-item index="/media/questionAndAnswer">操作说明</el-menu-item>
+                <el-menu-item index="/media/questionAndAnswer">常见问题</el-menu-item>
                 <el-menu-item index="/media/compact">文件下载</el-menu-item>
             </el-submenu>
             <!--<el-menu-item index="/media/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>-->
@@ -50,6 +50,9 @@
             </el-submenu>
             <el-menu-item index="" style="cursor: default;float: right;padding: 0 0 0 4px">
                 <messageNotice></messageNotice>
+            </el-menu-item>
+            <el-menu-item index="" style="cursor: default;float: right;padding: 0 0 0 4px">
+                <questionTip></questionTip>
             </el-menu-item>
         </el-menu>
 
@@ -82,11 +85,13 @@
     import uTypeToText from "../../commonFun/uTypeToText.js";
     import api from "../../api/api"
     import messageNotice from '../common/components/messageNotice.vue';
+    import questionTip from '../common/components/questionTip.vue';
 
     export default {
         name: "mediaCommon",
         components: {
-            messageNotice
+            messageNotice,
+            questionTip
         },
         data() {
             return {

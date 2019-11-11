@@ -35,7 +35,7 @@
             <!--<el-menu-item index="/superOperate/ADqinlinzk" v-if="showQinlin">智邻数图</el-menu-item>-->
             <el-submenu index="7" :show-timeout="80">
                 <template slot="title">辅助资料</template>
-                <el-menu-item index="/superOperate/questionAndAnswer">操作说明</el-menu-item>
+                <el-menu-item index="/superOperate/questionAndAnswer">常见问题</el-menu-item>
                 <el-menu-item index="/superOperate/compact">文件下载</el-menu-item>
             </el-submenu>
             <el-menu-item index="/superOperate/tvOrderList">电视广告</el-menu-item>

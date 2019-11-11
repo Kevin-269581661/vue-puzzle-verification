@@ -43,7 +43,6 @@
                     消息列表
                 </div>
             </div>
-            <!--<i v-if="messageList.unread==0" class="el-icon-bell" slot="reference"  style="color: #fff;font-size: 20px"></i>-->
             <el-badge slot="reference" :value="messageList.unread" :max="99">
                 <i class="el-icon-bell" style="color: #fff;font-size: 20px"></i>
             </el-badge>

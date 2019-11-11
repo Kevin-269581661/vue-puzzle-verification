@@ -2,12 +2,12 @@
     <div class="ad_mediaDetail_wrap clearfix">
         <div class="ad_mediaDetail_nav">
             <p>
-                <a href="#" style="color: #999">Q&A</a>
+                <a href="#" style="color: #999">常见问题</a>
             </p>
         </div>
         <el-container>
-            <el-aside width="200px">
-                <el-menu
+            <el-aside class="qna-aside" width="280px">
+              <!--  <el-menu
                     default-active="1"
                     class="el-menu-vertical-demo QNAmenu"
                     @open="handleOpen"
@@ -42,12 +42,35 @@
                             合同下载
                         </span>
                     </el-menu-item>
+                </el-menu>-->
+                <el-input
+                    placeholder="请输入问题关键词"
+                    suffix-icon="el-icon-search"
+                    v-model="keyword">
+                </el-input>
+                <el-menu
+                    default-active="1"
+                    class="el-menu-vertical-demo"
+                    @open="handleOpen"
+                    @close="handleClose">
+                    <el-menu-item index="1">
+                        <span slot="title">QADN概述</span>
+                    </el-menu-item>
+                    <el-submenu index="2">
+                        <template slot="title">
+                            <span>导航一</span>
+                        </template>
+                        <el-menu-item-group>
+                            <el-menu-item index="2-1">选项1</el-menu-item>
+                            <el-menu-item index="2-2">选项2</el-menu-item>
+                        </el-menu-item-group>
+                    </el-submenu>
                 </el-menu>
             </el-aside>
             <el-main>
-                <keep-alive>
-                    <component :is="comName"></component>
-                </keep-alive>
+                <!--<keep-alive>-->
+                    <!--<component :is="comName"></component>-->
+                <!--</keep-alive>-->
             </el-main>
         </el-container>
     </div>
@@ -75,6 +98,7 @@
             return {
                 activeNames: '1',
                 comName: '',
+                keyword:'',
             }
         },
         mounted() {
@@ -109,11 +133,65 @@
     }
 
     .el-aside {
-        background-color: #D3DCE6;
+        background: #ffffff;
         color: #333;
         text-align: left;
+        padding: 16px;
+        box-sizing: border-box;
     }
 
+
+    /*!*滚动条*!*/
+    .qna-aside::-webkit-scrollbar {
+        /*滚动条整体样式*/
+        width: 4px; /*高宽分别对应横竖滚动条的尺寸*/
+    }
+
+    .qna-aside::-webkit-scrollbar-thumb {
+        /*滚动条里面小方块*/
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 0 0px rgba(0, 0, 0, 0.2);
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    .qna-aside::-webkit-scrollbar-track {
+        /*滚动条里面轨道*/
+        -webkit-box-shadow: inset 0 0 0px rgba(0, 0, 0, 0);
+        border-radius: 0;
+        background: #fafafa;
+    }
+    .qna-aside /deep/ .el-input{
+        margin-bottom: 10px;
+    }
+
+
+    .el-menu {
+        height: 100%;
+        border-right: none;
+        font-size: 14px;
+        color:rgba(0,0,0,0.65);
+    }
+    .qna-aside /deep/ .el-menu-item.is-active{
+        background-color: #e9f7fe;
+        border-right: 2px solid #1890ff;
+    }
+    /deep/ .el-menu-item, .el-submenu__title{
+        height: 40px;
+        line-height: 40px;
+        font-size: 14px;
+    }
+    .qna-aside /deep/ .el-submenu__title{
+        font-size: 14px;
+        height: 40px;
+        line-height: 40px;
+    }
+    .qna-aside /deep/ .el-menu-item:focus, .el-menu-item:hover{
+        background: #fff;
+        color: #409EFF;
+    }
+    .qna-aside /deep/ .el-submenu.is-active .el-submenu__title i{
+        color: rgba(0,0,0,0.5);
+    }
     .el-main {
         background-color: #fff;
         color: #333;
@@ -121,37 +199,10 @@
         padding: 0 20px 20px 20px;
     }
 
-    .QNAmenu span {
-        color: #303133;
-    }
-
-    .QNAmenu .is-active span {
-        color: #108aff;
-        width: 100%;
-        height: 100%;
-        display: inline-block;
-    }
-
-    .el-aside {
-        background: #ffffff;
-    }
-
     .ad_mediaDetail_wrap .el-container {
         width: 100%;
         height: 100%;
         padding: 0 60px 42px 60px;
-    }
-
-    .el-menu {
-        height: 100%;
-    }
-    .ad_mediaDetail_wrap /deep/ .el-menu-item.is-active{
-        background-color: #e9f7fe;
-        border-right: 2px solid #1890ff;
-    }
-    /deep/ .el-menu-item, .el-submenu__title{
-        height: 48px;
-        line-height: 48px;
     }
 </style>
 <style>

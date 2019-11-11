@@ -172,7 +172,7 @@
                             </div>
                         </div>
                         <div class="flex2">
-                            <h6>工作行业</h6>
+                            <h6>工作分类</h6>
                             <div class="chart-wrap" v-loading="jobChartLoading"
                                  element-loading-text="玩命加载中..."
                                  element-loading-background="rgba(255, 255, 255)">
@@ -258,7 +258,7 @@
                 spendChart: '',//消费水平
                 assetsChart: '',//资产状况
                 lifeChart: '',//人生阶段
-                jobChart: '',//工作行业
+                jobChart: '',//工作分类
                 tag2chart: '',//二级标签
                 tag3chart: '',//三级标签
                 tags: [],//词云
@@ -714,7 +714,7 @@
                 })
                 this.lifeChartLoading = false
             },
-            //工作行业
+            //工作分类
             jobChartFn() {
                 this.jobChart = this.$echarts.init(this.$refs.jobChart)
                 this.jobChart.setOption({
@@ -733,7 +733,7 @@
                         borderWidth: 1,
                         formatter: (params) => {
                             return '<p class="echarts_tooltip_title">'
-                                + '<span>' + '工作行业' + '</span>' +
+                                + '<span>' + '工作分类' + '</span>' +
                                 '<span>' + '数据' + '</span>' +
                                 '</p>' + '<br/>' +
                                 '<p class="echarts_tooltip_content">' +
@@ -1206,7 +1206,7 @@
                         this.lifeData.y = [...result.liftList].map(item => {
                             return (item.rate * 100).toFixed(2) * 1
                         })
-                        //工作行业
+                        //工作分类
                         this.jobData.x = [...result.jobList].map(item => {
                             return item.tagName
                         })

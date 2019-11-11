@@ -134,7 +134,7 @@
             <div class="bottom">
                 <h5>
                     <span>排名TOP200</span>
-                    <span @click="exportTable"><i class="el-icon-upload2"></i>导出</span>
+                    <span @click="exportTable"><i class="el-icon-upload2"></i>导出全部</span>
                 </h5>
                 <div class="table-wrap">
                     <div class="table_dt">
@@ -863,7 +863,7 @@
                     }
                 })
             },
-            //导出表格
+            //导出全部表格
             exportTable() {
                 let info = {
                     ids: this.ids,

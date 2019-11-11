@@ -53,18 +53,19 @@
                     class="el-menu-vertical-demo"
                     @open="handleOpen"
                     @close="handleClose">
-                    <el-menu-item index="1">
-                        <span slot="title">QADN概述</span>
-                    </el-menu-item>
-                    <el-submenu index="2">
-                        <template slot="title">
-                            <span>导航一</span>
-                        </template>
-                        <el-menu-item-group>
-                            <el-menu-item index="2-1">选项1</el-menu-item>
-                            <el-menu-item index="2-2">选项2</el-menu-item>
-                        </el-menu-item-group>
-                    </el-submenu>
+                    <label v-for="(item,index) in qnaData" :key="index">
+                        <el-menu-item   v-if="!item.children" :index="item.index">
+                            <span slot="title">{{item.menuName}}</span>
+                        </el-menu-item>
+                        <el-submenu   v-else :index="item.index">
+                            <template slot="title">
+                                <span>{{item.menuName}}</span>
+                            </template>
+                            <el-menu-item-group>
+                                <el-menu-item v-for="(q,i) in item.children" :key="i" :index="q.index">{{q.menuName}}</el-menu-item>
+                            </el-menu-item-group>
+                        </el-submenu>
+                    </label>
                 </el-menu>
             </el-aside>
             <el-main>
@@ -83,6 +84,7 @@
     import orderQNA from './components/orderQNA'
     import tvQNA from './components/tvQNA'
     import wordQNA from './components/wordQNA'
+    import qnaData from '../../commonFun/json/qnaData.json'
 
     export default {
         name: "questionAndAnswer",
@@ -99,10 +101,13 @@
                 activeNames: '1',
                 comName: '',
                 keyword:'',
+                qnaData:''
             }
         },
         mounted() {
-            this.showCom('mediaQNA')
+            // this.showCom('mediaQNA')
+            this.qnaData = qnaData
+            console.log(this.qnaData);
         },
         methods: {
             showCom(name) {
@@ -185,13 +190,14 @@
         height: 40px;
         line-height: 40px;
     }
-    .qna-aside /deep/ .el-menu-item:focus, .el-menu-item:hover{
-        background: #fff;
-        color: #409EFF;
+    .qna-aside /deep/ .el-menu-item:focus, .el-menu-item:hover, .qna-aside /deep/ .el-submenu__title:hover{
+        background-color: #e9f7fe;
     }
+
     .qna-aside /deep/ .el-submenu.is-active .el-submenu__title i{
         color: rgba(0,0,0,0.5);
     }
+
     .el-main {
         background-color: #fff;
         color: #333;

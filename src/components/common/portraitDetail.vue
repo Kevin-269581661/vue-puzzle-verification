@@ -427,7 +427,7 @@
                         axisLabel: {
                             //坐标轴刻度标签
                             margin: 7, //刻度标签与轴线之间的距离
-                            interval: 0,    //强制文字产生间隔
+                            interval: 0,    //强制文字全部显示
                             textStyle: {
                                 fontFamily: "DINPro-Regular",
                                 color: "#2C313C" //坐标轴刻度文字的颜色
@@ -922,7 +922,8 @@
                             }
                         },
                         axisLabel: {
-                            color: '#2C313C'
+                            color: '#2C313C',
+                            interval: 0,
                         },
                         data: this.currTagsChartsData.tag2_data.x
                     },
@@ -1018,7 +1019,8 @@
                             }
                         },
                         axisLabel: {
-                            color: '#2C313C'
+                            color: '#2C313C',
+                            interval: 0,
                         },
                         data: this.currTagsChartsData.tag3_data.x
                     },

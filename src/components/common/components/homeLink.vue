@@ -133,11 +133,11 @@ export default {
                     service: "GetRMCity",
                     token: this.sessionData.token
                 }
-                api.postApi_new(this.apiVar.Media, params).then(res=>{
-                    console.log('res',res)
+                api.postApi_new(this.apiVar.Media, params).then(res => {
+                    console.log('res', res)
                     if (res.data.SysCode === 200200) {
                         let resData = []
-                        for(let key of res.data.data){
+                        for (let key of res.data.data) {
                             resData.push({
                                 value: key.rID,
                                 label: key.cityName
@@ -145,8 +145,8 @@ export default {
                         }
                         this.cityList = resData
                         this.citySelectLoading = false
-                    }else {
-                        this.$message.warning(res.data.MSG)
+                    } else {
+                        sessFun.messageFun('warning', res.data.MSG)
                     }
                 })
             } else {
@@ -165,82 +165,48 @@ export default {
             }
         },
         // 获取mapid并打开地图选点新窗口
-        getMapInfo(){
-            console.log('选择的城市',this.mapCity,'选择的时间段',this.dateInput)
-            if(!this.dateInput.length){
-                this.messageFun('warning','请选择时间')
+        getMapInfo() {
+            console.log('选择的城市', this.mapCity, '选择的时间段', this.dateInput)
+            if (!this.dateInput.length) {
+                sessFun.messageFun('warning', '请选择时间')
                 return
             }
-            if(this.mapCity === ''){
-                this.messageFun('warning','请选择城市')
+            if (this.mapCity === '') {
+                sessFun.messageFun('warning', '请选择城市')
                 return
             }
-            let params = {
-                token: this.sessionData.token,
-                uid: this.sessionData.uID,
+            let {uType, uID} = this.sessionData
+            localStorage.setItem('mapParams', JSON.stringify({
                 rid: this.mapCity,
-                act: 1,
                 ls: this.dateInput[0],
                 le: this.dateInput[1],
+                suID: uType === 'BD' ? uID : '',
+            }))
+            localStorage.removeItem('qinlinMapCode')
+            let tempWindow = window.open()
+            if (uType === 'BD') {
+                tempWindow.location = this.apiVar.qadnUrl + '/ADResourceMap/chooseRes?city=' + this.mapCityName + '&flag=' + true
+                // let url = this.apiVar.qadnUrl + '/ADResourceMap/chooseRes?city=' + this.mapParams.city  + '&flag=' + true
+                this.confirmVisible = true
+            } else if (uType === 'SM') {
+                tempWindow.location = this.apiVar.qadnUrl +  '/ADResourceMap/chooseRes?city=' + this.mapCityName + '&flag=' + false
             }
-            let tempwindow = window.open()
-            if (this.sessionData.uType === 'BD') {
-                params.suID = this.sessionData.uID
-            }
-            api.getApi(this.apiVar.Map + '/GetMapInfo', params).then(res=>{
-                console.log(this.apiVar.wuYouMap,'GetMapInfo地图mapid返回的信息', res)
-                if (!res.data.SysCode) {
-                    let mapid = res.data.MapID
-                    if (this.sessionData.uType === 'BD') {
-                        tempwindow.location = this.apiVar.wuYouMap + mapid + '&city=' + this.mapCityName + '&flag=' + true
-                        this.confirmVisible = true
-                    } else if (this.sessionData.uType === 'SM') {
-                        tempwindow.location = this.apiVar.wuYouMap + mapid + '&city=' + this.mapCityName + '&flag=' + false
-                    } else {
-                        console.log('1**************1')
-                    }
-                    this.mapDialogVisible = false
-                } else {
-                    tempwindow.close()
-                    this.$message({
-                        message: res.data.MSG + ',请尝试重新点击',
-                        type: 'warning'
-                    })
-                }
-            }).catch(err => {
-                console.log('error', err)
-            })
         },
         // 判断是否已提交地图选择点位,并跳转到创建方案页面
-        getMapAdsAndGotoPlan(){
-            api.getApi(this.apiVar.Map + '/checkMapSelect',{uid: this.sessionData.uID,token: this.sessionData.token}).then(res =>{
-                console.log('用户是否选点的接口', res)
-                if(res.data.SysCode == '200200'){
-                    let resData = res.data.data
-                    if (resData.isSelect) {
-                        this.confirmVisible = false
-                        let indexData = {
-                            dateInput: this.dateInput,
-                            rid: this.mapCity.toString(),
-                            city: this.mapCityName,
-                        }
-                        sessionStorage.setItem('indexData', JSON.stringify(indexData));
-                        this.$router.push('./sale/createPlan?from=index');
-                    }else{
-                        this.messageFun('warning','您在地图未提交点位')
-                    }
-                }else{
-                    this.messageFun('warning',res.data.MSG)
+        getMapAdsAndGotoPlan() {
+            let isCommit = localStorage.getItem(`qinlinMapCode`)
+            if (isCommit) {
+                this.confirmVisible = false
+                let indexData = {
+                    dateInput: this.dateInput,
+                    rid: this.mapCity.toString(),
+                    city: this.mapCityName,
                 }
-            })
-        },
-        // 操作提示统一方法
-        messageFun(mesType,mes){
-            this.$message({
-                message: mes,
-                type: mesType,
-                showClose: true,
-            })
+                sessionStorage.setItem('indexData', JSON.stringify(indexData));
+                this.$router.push('./sale/createPlan?from=index');
+            } else {
+                sessFun.messageFun('warning', '您在地图未提交点位')
+            }
         },
     },
 }

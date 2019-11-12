@@ -49,10 +49,10 @@
                     v-model="keyword">
                 </el-input>
                 <el-menu
-                    default-active="1"
+                    :default-active="activeName"
                     class="el-menu-vertical-demo"
-                    @open="handleOpen"
-                    @close="handleClose">
+                    @select="handleSelect"
+                 >
                     <label v-for="(item,index) in qnaData" :key="index">
                         <el-menu-item   v-if="!item.children" :index="item.index">
                             <span slot="title">{{item.menuName}}</span>
@@ -69,9 +69,10 @@
                 </el-menu>
             </el-aside>
             <el-main>
-                <!--<keep-alive>-->
-                    <!--<component :is="comName"></component>-->
-                <!--</keep-alive>-->
+                <keep-alive>
+                    <component :is="comName"></component>
+                </keep-alive>
+
             </el-main>
         </el-container>
     </div>
@@ -84,6 +85,7 @@
     import orderQNA from './components/orderQNA'
     import tvQNA from './components/tvQNA'
     import wordQNA from './components/wordQNA'
+    import questionList from './components/questionList'
     import qnaData from '../../commonFun/json/qnaData.json'
 
     export default {
@@ -98,31 +100,45 @@
         },
         data() {
             return {
-                activeNames: '1',
+                activeName:'1',
                 comName: '',
                 keyword:'',
-                qnaData:''
+                qnaData:'',
+                mainInfo:'',
             }
         },
         mounted() {
             // this.showCom('mediaQNA')
             this.qnaData = qnaData
-            console.log(this.qnaData);
+            this.mainInfo = qnaData[0]
+            // console.log(this.qnaData);
         },
         methods: {
             showCom(name) {
                 console.log('name-------------', name);
                 this.comName = name;
             },
-            handleChange() {
+
+            handleSelect(index) {
+                // console.log(index);
+                this.activeName = index;
+                this.qnaData.forEach((value,key)=>{
+                    if(value.children){
+                        value.children.forEach((v,k)=>{
+                            if(v.index == index){
+                                this.mainInfo = v
+                            }
+                        })
+                    }else{
+                        if(value.index == index){
+                            this.mainInfo = value
+                        }
+                    }
+                })
+                console.log(this.mainInfo);
 
             },
-            handleOpen(){
 
-            },
-            handleClose(){
-
-            }
         }
 
     }

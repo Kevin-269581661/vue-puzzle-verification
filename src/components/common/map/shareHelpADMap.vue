@@ -371,7 +371,7 @@
                     <li class="list_li" v-for="key of mediaList">
                         <div class="li_header">
                             <h4>{{key.mTitle}}</h4>
-                            <img src="../../../assets/images/map/mstate_1.png" alt="">
+                            <img :src="key.stateUrl" alt="">
                             <i class="el-icon-picture-outline" @click="showMediaImg(key)"></i>
                         </div>
                         <p class="li_p">{{key.assetTag}}</p>
@@ -817,11 +817,11 @@
                     if (res.data.SysCode == 200200) {
                         this.mediaList = res.data.data.map(item=>{
                             if (item.mState === 1) {
-                                item.stateUrl = require('../../../assets/images/map/mstate_1.png')
+                                item.stateUrl = require('../../../assets/images/map/mstate1.png')
                             } else if (item.mState === 2) {
-                                item.stateUrl = require('../../../assets/images/map/mstate_2.png')
+                                item.stateUrl = require('../../../assets/images/map/mstate2.png')
                             } else if (item.mState === 3) {
-                                item.stateUrl = require('../../../assets/images/map/mstate_3.png')
+                                item.stateUrl = require('../../../assets/images/map/mstate3.png')
                             }
                             return item
                         })

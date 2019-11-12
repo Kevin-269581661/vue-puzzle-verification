@@ -416,6 +416,7 @@
                                 '</span>' + params[0].data + '%' + '</p>'
                         },
                     },
+                    grid: {x: 80, y: 40, x2: 80, y2: 80,},//图表位置
                     xAxis: {
                         type: 'category',
                         axisLine: {
@@ -462,7 +463,7 @@
                     series: [{
                         data: this.ageData.y,
                         type: 'bar',
-                        barWidth: '18%',
+                        barWidth: 16,
                     }]
                 })
                 this.ageChartLoading = false
@@ -656,12 +657,7 @@
                                 '</span>' + params[0].data + '%' + '</p>'
                         },
                     },
-                    grad: {
-                        x: 25,
-                        y: 45,
-                        x2: 5,
-                        y2: 20,
-                    },
+                    grid: {x: 80, y: 40, x2: 80, y2: 80,},//图表位置
                     xAxis: {
                         type: 'category',
                         axisLine: {
@@ -709,7 +705,7 @@
                     series: [{
                         data: this.lifeData.y,
                         type: 'bar',
-                        barWidth: '18%',
+                        barWidth: 16,
                     }]
                 })
                 this.lifeChartLoading = false
@@ -741,6 +737,7 @@
                                 '</span>' + params[0].data + '%' + '</p>'
                         },
                     },
+                    grid: {x: 80, y: 40, x2: 80, y2: 80,},//图表位置
                     xAxis: {
                         type: 'category',
                         axisLine: {
@@ -787,7 +784,7 @@
                     series: [{
                         data: this.jobData.y,
                         type: 'bar',
-                        barWidth: '18%',
+                        barWidth: 16,
                     }]
                 })
                 this.jobChartLoading = false
@@ -826,9 +823,9 @@
                                 color: function () {
                                     // Random color
                                     return 'rgb(' + [
-                                        Math.round(Math.random() * 160),
-                                        Math.round(Math.random() * 160),
-                                        Math.round(Math.random() * 160)
+                                        Math.round(Math.random() * 215),
+                                        Math.round(Math.random() * 215),
+                                        Math.round(Math.random() * 215)
                                     ].join(',') + ')';
                                 }
                             },
@@ -952,14 +949,14 @@
                     series: [
                         {
                             type: 'bar',
-                            barWidth: '18%',
+                            barWidth: 16,
                             color: '#1890FF',
                             name: this.tagLegendData[0],
                             data: this.currTagsChartsData.tag2_data.y1
                         },
                         {
                             type: 'bar',
-                            barWidth: '18%',
+                            barWidth: 16,
                             color: '#4DCB73',
                             name: this.tagLegendData[1],
                             data: this.currTagsChartsData.tag2_data.y2
@@ -1049,14 +1046,14 @@
                     series: [
                         {
                             type: 'bar',
-                            barWidth: '18%',
+                            barWidth: 16,
                             color: '#1890FF',
                             name: this.tagLegendData[0],
                             data: this.currTagsChartsData.tag3_data.y1
                         },
                         {
                             type: 'bar',
-                            barWidth: '18%',
+                            barWidth: 16,
                             color: '#4DCB73',
                             name: this.tagLegendData[1],
                             data: this.currTagsChartsData.tag3_data.y2

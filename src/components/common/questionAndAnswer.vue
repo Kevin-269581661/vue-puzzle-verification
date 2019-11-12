@@ -49,7 +49,7 @@
                     <!--v-model="keyword">-->
                 <!--</el-input>-->
                 <div class="input">
-                    <el-input v-model="keyword" placeholder="请输入问题关键词" @keyup.enter.native="enterFun($event)" clearable></el-input>
+                    <el-input v-model="keyword" placeholder="请输入问题关键词" @keyup.enter.native="enterFun($event)" clearable @clear="clearSearch"></el-input>
                    <div class="icon" @click="searchFun"> <i class="el-icon-search"></i></div>
                 </div>
                 <el-menu
@@ -76,8 +76,8 @@
                 <keep-alive>
                     <!--<component :is="comName" ></component>-->
                     <question-list :mainInfo="mainInfo" @callbackAnswer="handleAnswer" v-if="componentType==1"></question-list>
-                    <answer-panel :answerData="answerData" v-if="componentType==2" @callbackComponentType="handleBack" ></answer-panel>
-                    <search-result :searchData="searchData" v-if="componentType==3"></search-result>
+                    <answer-panel :answerData="answerData" v-if="componentType==2" @callbackComponentType="handleBack"></answer-panel>
+                    <search-result :searchData="searchData" v-if="componentType==3" @callbackResult="handleResult"></search-result>
                 </keep-alive>
 
             </el-main>
@@ -117,15 +117,24 @@
                 keyword:'',
                 qnaData:'',
                 mainInfo:{},
-                answerData:"",
+                answerData:{},
                 searchData:[],
                 componentType:1,//显示的组件类型 1.问题列表 2.答案面板 3.搜索结果
             }
         },
         mounted() {
             // this.showCom('questionList')
-            this.qnaData = qnaData
-            this.mainInfo = qnaData[0]
+            let questionInfo = JSON.parse(sessionStorage.getItem('questionInfo'))
+            if(questionInfo&&questionInfo.fromPage=='fastMenu'){
+                this.componentType = 2
+                this.answerData = questionInfo.question
+                this.activeName = questionInfo.question.index
+            }else{
+                this.componentType = 1
+            }
+
+            this.qnaData = qnaData;
+            this.mainInfo = qnaData[0];
             // console.log(this.qnaData);
         },
         methods: {
@@ -138,6 +147,7 @@
                 // console.log(index);
                 this.activeName = index;
                 this.componentType = 1
+
                 this.qnaData.forEach((value,key)=>{
                     if(value.children){
                         value.children.forEach((v,k)=>{
@@ -157,6 +167,7 @@
             //问题列表点击问题
             handleAnswer(data){
                 this.answerData = data
+                sessionStorage.setItem('questionInfo',JSON.stringify({'fromPage':'answer'}))
                 this.componentType = 2
             },
             //答案面板点击返回
@@ -165,18 +176,25 @@
             },
             //搜索
             searchFun(){
-                console.log(this.keyword);
+                // console.log(this.keyword);
+                this.searchData = []
                 this.componentType = 3
                 let keyword = this.keyword;
                 let result = []
-                this.qnaData.forEach((item,index)=>{
+                let arr = [...this.qnaData]
+                // console.log(arr);
+                arr.forEach((item,index)=>{
                     if(item.question){
                         for(let data of item.question){
                             if(data.title.includes(keyword)||data.answer.includes(keyword)){
                                 // console.log(data);
-                                data.title = data.title.split(keyword).join("<em class='f-color'>"+keyword+"</em>")
-                                data.answer = data.answer.split(keyword).join("<em class='f-color'>"+keyword+"</em>")
-                                result.push(data)
+                                let obj = {
+                                    id:data.id,
+                                    path:data.path,
+                                    title:data.title.split(keyword).join("<em class='f-color'>"+keyword+"</em>"),
+                                    answer:data.answer.split(keyword).join("<em class='f-color'>"+keyword+"</em>"),
+                                }
+                                result.push(obj)
                             }
                         }
                     }else{
@@ -184,9 +202,13 @@
                             for(let data of value.question){
                                 if(data.title.includes(keyword)||data.answer.includes(keyword)){
                                     // console.log(data);
-                                    data.title = data.title.split(keyword).join("<em class='f-color'>"+keyword+"</em>")
-                                    data.answer = data.answer.split(keyword).join("<em class='f-color'>"+keyword+"</em>")
-                                    result.push(data)
+                                    let obj = {
+                                        id:data.id,
+                                        path:data.path,
+                                        title:data.title.split(keyword).join("<em class='f-color'>"+keyword+"</em>"),
+                                        answer:data.answer.split(keyword).join("<em class='f-color'>"+keyword+"</em>"),
+                                    }
+                                    result.push(obj)
                                 }
                             }
                         })
@@ -194,7 +216,16 @@
                 });
                 this.searchData = result;
                 console.log(this.searchData);
-                this.componentType = 3
+            },
+            //清空搜索框
+            clearSearch(){
+                this.componentType = 1
+            },
+            //点击搜到的问题
+            handleResult(data){
+                this.answerData = data
+                sessionStorage.setItem('questionInfo',JSON.stringify({'fromPage':'search'}))
+                this.componentType = 2
             },
             //键盘回车
             enterFun(ev){
@@ -259,6 +290,7 @@
     .qna-aside /deep/ .el-menu-item.is-active{
         background-color: #e9f7fe;
         border-right: 2px solid #1890ff;
+        color: #1890ff;
     }
     /deep/ .el-menu-item, .el-submenu__title{
         height: 40px;
@@ -271,7 +303,8 @@
         line-height: 40px;
     }
     .qna-aside /deep/ .el-menu-item:focus, .el-menu-item:hover, .qna-aside /deep/ .el-submenu__title:hover{
-        background-color: #e9f7fe;
+        background-color: #fff;
+        color: #1890ff;
     }
 
     .qna-aside /deep/ .el-submenu.is-active .el-submenu__title i{
@@ -297,7 +330,7 @@
         position: relative;
     }
     .input .icon{
-        width: 40px;
+        width: 30px;
         height: 40px;
         text-align: center;
         line-height: 40px;
@@ -307,8 +340,8 @@
         top: 0;
         cursor: pointer;
     }
-    .input .el-input__suffix{
-        right: 45px;
+    .input /deep/ .el-input__suffix{
+        right: 30px;
     }
 
 

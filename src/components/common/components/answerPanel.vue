@@ -1,7 +1,7 @@
 <template>
     <div class="answer-panel">
         <div class="title">
-            <h5>{{answerData.title}}</h5>
+            <h5 v-html="answerData.title"></h5>
             <el-button @click="backToList">返回</el-button>
         </div>
         <div class="answer" v-html="answerData.answer"></div>
@@ -15,12 +15,20 @@
             answerData: {
                 type: Object,
                 default: {}
-            }
-        },
+            },
 
+        },
+        data(){
+            return{
+                componentType:0
+            }
+
+        },
         methods: {
             backToList() {
-                this.$emit("callbackComponentType", 1)
+                let type = JSON.parse(sessionStorage.getItem('questionInfo')).fromPage
+                this.componentType = type=='search'?3:1
+                this.$emit("callbackComponentType", this.componentType)
             }
         },
         mounted() {

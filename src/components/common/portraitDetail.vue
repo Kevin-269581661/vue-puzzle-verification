@@ -822,6 +822,7 @@
                                 fontWeight: 'bold',
                                 color: function () {
                                     // Random color
+
                                     return 'rgb(' + [
                                         Math.round(Math.random() * 215),
                                         Math.round(Math.random() * 215),

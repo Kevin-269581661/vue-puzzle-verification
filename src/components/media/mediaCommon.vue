@@ -177,7 +177,7 @@
         },
         computed: {
             isActive(val) {
-                console.log(val, 'isActive', this.$route.path)
+                // console.log(val, 'isActive', this.$route.path)
                 let path = this.$route.path
                 let routePath = ''
                 if (path.includes('/mediaDetail') || path.includes('/mediaEdit') || path.includes('/mediaInput')) {

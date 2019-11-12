@@ -162,6 +162,24 @@
             //搜索
             searchFun(){
                 console.log(this.keyword);
+                let keyword = this.keyword
+                this.qnaData.forEach((item,index)=>{
+                    if(item.question){
+                        for(let data of item.question){
+                            if(data.title.includes(keyword)||data.answer.includes(keyword)){
+                                console.log(data);
+                            }
+                        }
+                    }else{
+                        item.children.forEach((value,key)=>{
+                            for(let data of value.question){
+                                if(data.title.includes(keyword)||data.answer.includes(keyword)){
+                                    console.log(data);
+                                }
+                            }
+                        })
+                    }
+                })
             },
             //键盘回车
             enterFun(ev){

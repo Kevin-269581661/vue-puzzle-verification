@@ -24,7 +24,6 @@
                     </li>
                     <li class="handel_ul_li handel_ul_li_city">
                         <el-cascader
-                            v-if="cityOther"
                             :options="cityOptions"
                             v-model="selectedOptions"
                             separator="-"
@@ -57,6 +56,7 @@
                         <el-button plain @click="importMedia" v-if="showImportBtn">导入媒体</el-button>
                         <el-button plain @click="maintain" v-if="!showImportBtn"
                                    v-qadn-mta-h5="{id: 'a002_b000_c000_d000_bt018_ck03'}">维护管理</el-button>
+                        <el-button plain @click="exportRes" v-if="!showImportBtn">资源导出</el-button>
                     </li>
                     <li class="handel_ul_li push_map_btn">
                         <el-button plain @click="showPushMap" v-if="showImportBtn">推送地图</el-button>
@@ -343,7 +343,7 @@
                             :http-request="uploadFile"
                             :on-remove="fileRemove"
                             :multiple="false">
-                            <a :href ='this.apiVar.qadnUrl + "/importTemplate/mediaTemplate.xlsx"'
+                            <a :href ='apiVar.qadnUrl + "/importTemplate/mediaTemplate.xlsx"'
                                class="el-icon-download aButton" download="媒体导入模板.xlsx" @click="dowmLoadFun">下载模板</a>
                             <el-button plain icon="el-icon-upload2" class="el_upload_btn">上传文件</el-button>
                         </el-upload>
@@ -426,6 +426,89 @@
                     <el-button type="primary"  @click="submitPushMap">确 认</el-button>
                 </div>
             </el-dialog>
+            <!--周边小区导出-->
+            <el-dialog
+                :title="`资源导出(`+ exportResStep +`/3)` "
+                :visible.sync="isResExport"
+                :close-on-click-modal="false"
+                custom-class="Import_dialog"
+                :show-close="false"
+                width="472px">
+                <p class="info_box" v-show="isShowExportTag">
+                    <i class="el-icon-warning" style="color:#1890FF"></i>
+                    {{exportResStep === 1 ? '第一步：填写导出的基本参数' : exportResStep === 2 ?
+                    '第二步：下载模板，指定周边越多，需要导出时间越长' : '第三步：上传填写好的表格，并点击提交'}}
+<!--                    <i class="el-icon-close" @click="isShowExportTag = false"></i>-->
+                </p>
+                <ul class="export_ul" v-show="exportResStep === 1">
+                    <li>
+                        <span>匹配城市：</span>
+                        <!---->
+                        <el-select size="small" v-model="exportInfo.citys" filterable placeholder="请选择城市" @change="exportCityFun">
+                           <el-option v-for="(key,index) in cityList"
+                                      :key="index"
+                                      :label="key.label"
+                                      :value="key.value">
+                           </el-option>
+                        </el-select>
+                     <!--   <el-cascader
+                            :options="cityOptions"
+                            v-model="exportInfo.citys"
+                            separator="-"
+                            :show-all-levels="false"
+                            placeholder="请选择城市"
+                            filterable
+                            size="small"
+                            style="width: 82%"
+                            clearable
+                            @change="exportCityFun">
+                        </el-cascader>-->
+                    </li>
+                    <li>
+                        <span>匹配范围：</span>
+                        <el-input size="small" class="radius_input" placeholder="请输入半径距离"
+                                  v-model="exportInfo.radius">
+                            <template slot="append">米</template>
+                        </el-input>
+                    </li>
+                    <li>
+                        <span>导出模板：</span>
+                        <el-select v-model="exportInfo.type" size="small" filterable placeholder="请选择导出类型">
+                            <el-option label="模板A：1小区/1门店(有距离)" value="1"></el-option>
+                            <el-option label="模板B：1小区/多门店(无距离)" value="2"></el-option>
+                        </el-select>
+                    </li>
+                </ul>
+                <div class="export_step_box" v-show="exportResStep === 2">
+                    <img src="../../assets/images/export.png" alt="">
+                    《QADN-数据导入-模板》
+                    <a :href ='apiVar.qadnUrl + "/importTemplate/broundData.xlsx"'
+                       download="数据导入模板.xlsx" class="downloag_btn">点击下载<i class="el-icon-download"></i></a>
+                </div>
+                <div v-show="exportResStep === 3">
+                    <el-upload
+                        ref="exportRes"
+                        class="upload-demo"
+                        drag
+                        :action="exportAction"
+                        :file-list="exportFileData"
+                        :show-file-list="true"
+                        :http-request="exportUploadFile"
+                        :on-remove="exportFileRemove"
+                        :multiple="false">
+                        <img src="../../assets/images/export.png" alt="">
+                        <div class="el-upload__text">点击或将文件拖拽到这里上传</div>
+                    </el-upload>
+                </div>
+                <div slot="footer">
+                    <el-button size="small" plain @click="isResExport = false">取 消</el-button>
+                    <el-button size="small" plain v-show="exportResStep > 1"
+                               @click="exportResStep > 1 ? exportResStep-- : exportResStep = 1">上一步</el-button>
+                    <el-button size="small" type="primary"  @click="nextExportRes" :loading="isBroundImport">
+                        {{isBroundImport ? '导出中..' : exportResStep >= 3 ? '确定' : '下一步'}}
+                    </el-button>
+                </div>
+            </el-dialog>
         </div>
     </div>
 </template>
@@ -506,7 +589,6 @@
                 mState: '',                     // 搜索的媒体状态
                 planList: [],                   //  table的所有数据
                 currentPlan: [],                // 显示在table中的数据
-                cityOther: true,                // 默认显示全国省份城市
                 cityOptions: [],                //城市数组
                 selectedOptions: [],            // 当前选择的城市rid数组
                 regionOpt: [],                  // 地区
@@ -574,7 +656,27 @@
                 waitRepair: {
                     time:'',
                     msg: ''
-                }
+                },
+                // 资源导出
+                cityList: [],
+                isResExport: false,
+                // 当前步骤
+                exportAction: '/advertisement/GetCenterPointRes',
+                exportResStep: 1,
+                exportInfo:{
+                    citys: [],
+                    cityName: '',
+                    radius: '',
+                    type: '',
+                },
+                // 导出时到提示标签
+                isShowExportTag: true,
+                // 请求参数
+                exportParams: {cityId: '',asrId:'',type:'',radius:''},
+                // 上传的文件
+                exportFileData: [],
+                // 导出中
+                isBroundImport: false
             }
         },
         mounted: function () {
@@ -587,7 +689,8 @@
             let endTime = timeFormat.returnDayCount(0,'/');
             let startTime = timeFormat.returnDayCount(-180,'/');
             this.canSelectDayTime = [startTime,endTime]
-            console.log('canSelectDayTime',this.canSelectDayTime)
+            this.getCity()
+            // console.log('canSelectDayTime',this.canSelectDayTime)
         },
         methods: {
             // 状态转换
@@ -757,7 +860,6 @@
             },
             // 设置可搜索的区域
             setCityAreaByUWho(){
-                this.cityOther = true
                 this.cityOptions = areaPackageNew.province()
             },
             // 根据市级城市rid，获取它的下属区、县
@@ -1225,7 +1327,7 @@
                 this.cityArea = {cName:'',rName:''}
                 this.getData()
             },
-            // 导入媒体 companyList
+            // 导入媒体
             importMedia(){
                 if(!this.companyList.length){
                     let params = {
@@ -1365,9 +1467,144 @@
             formatJson(filterVal, jsonData) {
                 return jsonData.map(v => filterVal.map(j => v[j]))
             },
+            /**
+             * 周边小区导出
+             * */
+            // 获取权限城市
+            getCity() {
+                let info = {
+                    "token": this.sessionData.token,
+                    "uid": this.sessionData.uID
+                };
+                api.postApi(this.apiVar.Advertisement + '/GetAuthorCity', {}).then(res => {
+                    console.log(res.data);
+                    if (res.data.SysCode == 300200) {
+                        this.cityList = res.data.data.map(item=>{
+                            return {
+                                label: item.rName,
+                                value: item.rID.toString()
+                            }
+                        })
+                    } else {
+                        sessFun.messageFun('warning',res.data.MSG || '城市下拉获取异常')
+                    }
+                });
+            },
+            exportRes() {
+                // 数据初始化
+                this.exportResStep = 1
+                this.exportInfo = {
+                    citys: [],
+                    cityName: '',
+                    radius: '',
+                    type: '',
+                }
+                this.exportFileData = []
+                this.isResExport = true
+            },
+            exportCityFun(val) {
+                console.log('val',val)
+                if (val.length) {
+                    for(let key of this.cityList) {
+                        if(key.value == val) {
+                            this.exportInfo.cityName = key.label
+                        }
+                    }
+                }
+            },
+            exportUploadFile(params) {
+                this.exportFileData = [];
+                let fileObj = params.file;
+                this.exportFileData.push(fileObj);
+                console.log('上传周边',params);
+            },
+            // 文件删除
+            exportFileRemove(file, fileList){
+                console.log(file, fileList);
+                this.exportFileData = fileList
+            },
+            //周边小区导出下一步
+            nextExportRes() {
+                if (this.exportResStep === 1) {
+                    if (!this.exportInfo.citys.length) {
+                        sessFun.messageFun('warning', '请选择城市')
+                        return
+                    }
+                    if (!this.exportInfo.radius) {
+                        sessFun.messageFun('warning', '请填写半径范围')
+                        return
+                    } else {
+                        if (!(/(^[1-9]\d*$)/.test(this.exportInfo.radius)) || this.exportInfo.radius > 3000) {
+                            sessFun.messageFun('warning','请输入1~3000的整数')
+                            return;
+                        }
+                    }
+                    if(!this.exportInfo.type) {
+                        sessFun.messageFun('warning', '请选择类型')
+                        return
+                    }
+                    this.exportResStep += 1
+                    console.log('exportInfo',this.exportInfo)
+                } else if (this.exportResStep < 3) {
+                    this.exportResStep += 1
+                } else {
+                    console.log('exportFileData',this.exportFileData)
+                    this.isBroundImport = true
+                    if(this.exportFileData.length) {
+                        sessFun.messageFun('warning','导出excel可能需要一分钟甚至更长时间!')
+                        this.exportParams = {
+                            radius: this.exportInfo.radius,
+                            cityId: this.exportInfo.citys,
+                            asrId: this.sessionData.asrID,
+                            type: this.exportInfo.type
+                        }
+                        console.log(this.exportParams)
+                        this.importBroundRes()
+                    } else {
+                        sessFun.messageFun('warning', '请先上传文件！')
+                        this.isBroundImport = false
+                    }
+                }
+            },
+            // 导出周边小区
+            importBroundRes() {
+                let formData = new FormData();
+                formData.append('file', this.exportFileData[0]);
+                formData.append('radius', this.exportInfo.radius);
+                formData.append('cityId', this.exportInfo.citys);
+                formData.append('asrId', this.sessionData.asrID);
+                formData.append('type', this.exportInfo.type);
+                // 上传文件
+                api.postExportFile(this.exportAction, formData, 'blob').then(res => {
+                    console.log('导出周边小区',res,res.data.type)
+                    if(res.data.type === 'text/html') {
+                        let reader = new FileReader();
+                        reader.readAsText(res.data, 'utf-8');
+                        reader.onload =  ()=> {
+                            let resData = JSON.parse(reader.result);
+                            console.log('data',resData)
+                            sessFun.messageFun('warning', resData.MSG || '导出异常！')
+                        }
+                    } else {
+                        let blob = new Blob([res.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
+                        let downloadElement = document.createElement('a');
+                        let href = window.URL.createObjectURL(blob); //创建下载的链接
+                        downloadElement.href = href;
+                        downloadElement.download = this.exportInfo.cityName + '.xlsx'  //下载后文件名
+                        document.body.appendChild(downloadElement);
+                        downloadElement.click();
+                        document.body.removeChild(downloadElement);         //下载完成移除元素
+                        window.URL.revokeObjectURL(href);                   //释放掉blob对象
+                        this.isResExport = false
+                        sessFun.messageFun('success','导出成功')
+                    }
+                    this.isBroundImport = false
+                }).catch(res => {
+                    console.log(res);
+                });
+            },
         }
     }
-
 </script>
 
 <style scoped>
@@ -1404,25 +1641,30 @@
         list-style:none;
         overflow: hidden;
     }
+
     .handel_ul_li{
         float: left;
         margin-right: 8px;
     }
+
     .handel_ul_li_select{
-        width: 23.5%;
+        width: 23%;
     }
+
     .handel_ul_li_city{
         width: 15%;
     }
+
     .handel_ul_li_area{
         width: 15%;
     }
+
     .handel_ul_li_btn{
-        width: 32%;
+        /*width: 37.5%;*/
     }
     .push_map_btn{
-        width: 10%;
-        float: right;
+        width: 6.5%;
+        float: left;
         text-align: right;
         margin-right: 0
     }
@@ -1620,6 +1862,84 @@
         position: absolute;
         top: 9px;
         right: 8px;
+    }
+
+    /*资源导出*/
+    .export_step_box{
+        border: 1px solid rgba(218,218,218,1);
+        padding: 12px 18px;
+        color: rgba(102,102,102,1);
+        font-size: 15px;
+        position: relative;
+    }
+
+    .export_ul .el-select{
+        width: 82%;
+    }
+
+    .radius_input.el-input-group{
+        width: 82%;
+    }
+
+    .export_ul li{
+        margin-bottom: 16px;
+    }
+
+    .export_ul li>span{
+        width: 70px;
+        text-align: right;
+        display: inline-block;
+    }
+
+    .info_box {
+        height:32px;
+        background:rgba(230, 247, 255, 1);
+        border-radius:4px;
+        border:1px solid rgba(145,213,255,1);
+        line-height: 32px;
+        padding:  0 16px;
+        position: relative;
+        font-weight:400;
+        font-size: 14px;
+        color:rgba(0,0,0,0.65);
+        margin-bottom: 16px;
+    }
+
+    .info_box /deep/ .el-icon-close{
+        cursor: pointer;
+        margin-left: 24px;
+        position: absolute;
+        top: 9px;
+        right: 8px;
+    }
+
+    .export_step_box img{
+        width: 24px;
+        height: 27px;
+        vertical-align: middle;
+    }
+
+    .downloag_btn{
+        position: absolute;
+        right: 18px;
+        top: 14px;
+        cursor: pointer;
+        color:rgba(102,102,102,1);
+    }
+
+    /deep/ .Import_dialog .el-upload-list__item{
+        width: 100%;
+    }
+
+    /deep/ .Import_dialog .el-upload-dragger{
+        padding-top: 9%;
+        width: 431px;
+        height: 135px;
+    }
+
+    /deep/ .Import_dialog .el-upload-dragger img{
+        width: 28px;
+        height: 30px;
     }
 </style>
 

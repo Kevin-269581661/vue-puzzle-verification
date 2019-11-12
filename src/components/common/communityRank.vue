@@ -134,7 +134,7 @@
             <div class="bottom">
                 <h5>
                     <span>排名TOP200</span>
-                    <span @click="exportTable"><i class="el-icon-upload2"></i>导出</span>
+                    <span @click="exportTable"><i class="el-icon-upload2"></i>导出全部</span>
                 </h5>
                 <div class="table-wrap">
                     <div class="table_dt">
@@ -250,15 +250,15 @@
                                     <span>{{scope.row.asCount || '--'}}</span>
                                 </template>
                             </el-table-column>
-                            <!--<el-table-column-->
-                                <!--prop="action"-->
-                                <!--label="操作"-->
-                                <!--min-width="80"-->
-                            <!--&gt;-->
-                                <!--<template slot-scope="scope">-->
-                                    <!--<el-button type="text" @click="gotoDetail(scope.row)">画像详情</el-button>-->
-                                <!--</template>-->
-                            <!--</el-table-column>-->
+                            <el-table-column
+                                prop="action"
+                                label="操作"
+                                min-width="80"
+                            >
+                                <template slot-scope="scope">
+                                    <el-button type="text" @click="gotoDetail(scope.row.resID)">画像详情</el-button>
+                                </template>
+                            </el-table-column>
                             <div slot="empty">
                                 <no-search-result></no-search-result>
                             </div>
@@ -336,12 +336,12 @@
         methods: {
             // 平台商公司列表
             getCompanyList() {
-                this.portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo'))
-                console.log(this.portraitInfo);
+                let portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo'))
+                console.log(portraitInfo);
                 // 选中的公司
-                this.currCompany = this.portraitInfo[0]
+                this.currCompany = portraitInfo[0]
                 let arr = []
-                for (let key of this.portraitInfo) {
+                for (let key of portraitInfo) {
                     arr.push({
                         asrId: key.asrId,
                         asrName: key.asrName,
@@ -863,7 +863,7 @@
                     }
                 })
             },
-            //导出表格
+            //导出全部表格
             exportTable() {
                 let info = {
                     ids: this.ids,
@@ -884,8 +884,8 @@
                 })
             },
             //跳转画像详情
-            gotoDetail() {
-                this.$router.push('./portraitDetail')
+            gotoDetail(resId) {
+                this.$router.push('./portraitDetail?resId='+resId)
             },
             //获取标签数据
             getTags(type, parentId) {

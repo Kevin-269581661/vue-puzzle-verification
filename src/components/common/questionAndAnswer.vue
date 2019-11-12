@@ -49,7 +49,7 @@
                     <!--v-model="keyword">-->
                 <!--</el-input>-->
                 <div class="input">
-                    <el-input v-model="keyword" placeholder="请输入问题关键词" @keyup.enter.native="enterFun($event)"></el-input>
+                    <el-input v-model="keyword" placeholder="请输入问题关键词" @keyup.enter.native="enterFun($event)" clearable></el-input>
                    <div class="icon" @click="searchFun"> <i class="el-icon-search"></i></div>
                 </div>
                 <el-menu
@@ -77,7 +77,7 @@
                     <!--<component :is="comName" ></component>-->
                     <question-list :mainInfo="mainInfo" @callbackAnswer="handleAnswer" v-if="componentType==1"></question-list>
                     <answer-panel :answerData="answerData" v-if="componentType==2" @callbackComponentType="handleBack" ></answer-panel>
-                    <answer-panel :searchData="searchData" v-if="componentType==3"></answer-panel>
+                    <search-result :searchData="searchData" v-if="componentType==3"></search-result>
                 </keep-alive>
 
             </el-main>
@@ -166,13 +166,16 @@
             //搜索
             searchFun(){
                 console.log(this.keyword);
+                this.componentType = 3
                 let keyword = this.keyword;
                 let result = []
                 this.qnaData.forEach((item,index)=>{
                     if(item.question){
                         for(let data of item.question){
                             if(data.title.includes(keyword)||data.answer.includes(keyword)){
-                                console.log(data);
+                                // console.log(data);
+                                data.title = data.title.split(keyword).join("<em class='f-color'>"+keyword+"</em>")
+                                data.answer = data.answer.split(keyword).join("<em class='f-color'>"+keyword+"</em>")
                                 result.push(data)
                             }
                         }
@@ -180,14 +183,18 @@
                         item.children.forEach((value,key)=>{
                             for(let data of value.question){
                                 if(data.title.includes(keyword)||data.answer.includes(keyword)){
-                                    console.log(data);
+                                    // console.log(data);
+                                    data.title = data.title.split(keyword).join("<em class='f-color'>"+keyword+"</em>")
+                                    data.answer = data.answer.split(keyword).join("<em class='f-color'>"+keyword+"</em>")
                                     result.push(data)
                                 }
                             }
                         })
                     }
-                })
-                this.searchData = result
+                });
+                this.searchData = result;
+                console.log(this.searchData);
+                this.componentType = 3
             },
             //键盘回车
             enterFun(ev){
@@ -300,6 +307,10 @@
         top: 0;
         cursor: pointer;
     }
+    .input .el-input__suffix{
+        right: 45px;
+    }
+
 
 </style>
 <style>

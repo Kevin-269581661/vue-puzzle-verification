@@ -689,8 +689,9 @@
             let endTime = timeFormat.returnDayCount(0,'/');
             let startTime = timeFormat.returnDayCount(-180,'/');
             this.canSelectDayTime = [startTime,endTime]
-            this.getCity()
-            // console.log('canSelectDayTime',this.canSelectDayTime)
+            if(this.sessionData.uType === 'MD' || this.sessionData.uType === 'SM') {
+                this.getCity()
+            }
         },
         methods: {
             // 状态转换
@@ -1803,8 +1804,16 @@
         color: #409EFF;
     }
 
+    /deep/ .Import_dialog .el-dialog__header{
+        padding: 16px 24px 0;
+    }
+
     /deep/ .Import_dialog .el-dialog__body{
-        padding: 15px 20px 10px;
+        padding: 16px 24px 16px;
+    }
+
+    /deep/ .Import_dialog .el-dialog__footer{
+        padding: 8px 24px 24px;
     }
 
     /deep/ .el-upload-list__item{
@@ -1885,6 +1894,10 @@
         margin-bottom: 16px;
     }
 
+    .export_ul li:last-child{
+        margin-bottom: 0;
+    }
+
     .export_ul li>span{
         width: 70px;
         text-align: right;
@@ -1933,8 +1946,9 @@
 
     /deep/ .Import_dialog .el-upload-dragger{
         padding-top: 9%;
-        width: 431px;
+        width: 424px;
         height: 135px;
+        background: rgba(0, 0, 0, 0.06);
     }
 
     /deep/ .Import_dialog .el-upload-dragger img{

@@ -43,11 +43,15 @@
                         </span>
                     </el-menu-item>
                 </el-menu>-->
-                <el-input
-                    placeholder="请输入问题关键词"
-                    suffix-icon="el-icon-search"
-                    v-model="keyword">
-                </el-input>
+                <!--<el-input-->
+                    <!--placeholder="请输入问题关键词"-->
+                    <!--suffix-icon="el-icon-search"-->
+                    <!--v-model="keyword">-->
+                <!--</el-input>-->
+                <div class="input">
+                    <el-input v-model="keyword" placeholder="请输入问题关键词" @keyup.enter.native="enterFun($event)"></el-input>
+                   <div class="icon" @click="searchFun"> <i class="el-icon-search"></i></div>
+                </div>
                 <el-menu
                     :default-active="activeName"
                     class="el-menu-vertical-demo"
@@ -154,6 +158,17 @@
             //答案面板点击返回
             handleBack(type){
                 this.componentType = type
+            },
+            //搜索
+            searchFun(){
+                console.log(this.keyword);
+            },
+            //键盘回车
+            enterFun(ev){
+                let e = ev || window.ev;
+                if (e.keyCode === 13) {
+                    this.searchFun()
+                }
             }
         }
 
@@ -245,6 +260,21 @@
         height: 100%;
         padding: 0 60px 42px 60px;
     }
+    .input{
+        position: relative;
+    }
+    .input .icon{
+        width: 40px;
+        height: 40px;
+        text-align: center;
+        line-height: 40px;
+        color: #d9d9d9;
+        position: absolute;
+        right: 0;
+        top: 0;
+        cursor: pointer;
+    }
+
 </style>
 <style>
     .ad_mediaDetail_wrap .el-collapse{

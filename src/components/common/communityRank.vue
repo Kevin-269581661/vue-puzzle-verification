@@ -134,7 +134,7 @@
             <div class="bottom">
                 <h5>
                     <span>排名TOP200</span>
-                    <span @click="exportTable"><i class="el-icon-upload2"></i>导出</span>
+                    <span @click="exportTable"><i class="el-icon-upload2"></i>导出全部</span>
                 </h5>
                 <div class="table-wrap">
                     <div class="table_dt">
@@ -250,15 +250,15 @@
                                     <span>{{scope.row.asCount || '--'}}</span>
                                 </template>
                             </el-table-column>
-                            <!--<el-table-column-->
-                                <!--prop="action"-->
-                                <!--label="操作"-->
-                                <!--min-width="80"-->
-                            <!--&gt;-->
-                                <!--<template slot-scope="scope">-->
-                                    <!--<el-button type="text" @click="gotoDetail(scope.row)">画像详情</el-button>-->
-                                <!--</template>-->
-                            <!--</el-table-column>-->
+                            <el-table-column
+                                prop="action"
+                                label="操作"
+                                min-width="80"
+                            >
+                                <template slot-scope="scope">
+                                    <el-button type="text" @click="gotoDetail(scope.row.resID)">画像详情</el-button>
+                                </template>
+                            </el-table-column>
                             <div slot="empty">
                                 <no-search-result></no-search-result>
                             </div>
@@ -336,12 +336,12 @@
         methods: {
             // 平台商公司列表
             getCompanyList() {
-                this.portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo'))
-                console.log(this.portraitInfo);
+                let portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo'))
+                console.log(portraitInfo);
                 // 选中的公司
-                this.currCompany = this.portraitInfo[0]
+                this.currCompany = portraitInfo[0]
                 let arr = []
-                for (let key of this.portraitInfo) {
+                for (let key of portraitInfo) {
                     arr.push({
                         asrId: key.asrId,
                         asrName: key.asrName,
@@ -564,23 +564,32 @@
             },
             //移入移出一级标签
             showPopver(firstTag) {
-                firstTag.hovered = true
+                if(firstTag.childer){
+                    for(let data of this.hobbyTags){
+                        if(data.value == firstTag.value){
+                            data.hovered = true
+                        }else{
+                            data.hovered = false
+                        }
+                    }
+                }else{
+                    firstTag.hovered = false
+                }
             },
             hidePopver(firstTag) {
                 // console.log(this.thirdShow);
-                let that = this
-                setTimeout(() => {
-                    //此一级标签下有没有hover的标签 有为true 无为false
-                    let flag = firstTag.childer.some(item => item.hovered == true)
-                    // console.log(flag);
-                    if (!flag) {
-                        //直接离开 面板消失
-                        firstTag.hovered = false
-                    }
+                if(firstTag.childer){
+                    setTimeout(() => {
+                        //此一级标签下有没有hover的标签 有为true 无为false
+                        let flag = firstTag.childer.some(item => item.hovered == true)
+                        // console.log(flag);
+                        if (!flag) {
+                            //直接离开 面板消失
+                            firstTag.hovered = false
+                        }
 
-                }, 100)
-
-
+                    }, 100)
+                }
             },
             //进入和离开面板
             enterPopver(firstTag) {
@@ -608,11 +617,16 @@
             },
             //偏好标签-选中一级标签
             chooseHobbyTag(item) {
-                // console.log(item);
+                console.log(item);
                 // console.log(this.chooseTagsArr);
                 if (item.checked) {
                     item.checked = false
-                    this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(item), 1);
+                    for(let data of this.chooseTagsArr){
+                        if(data.value == item.value){
+                            this.chooseTagsArr.splice(this.chooseTagsArr.indexOf(data), 1);
+                        }
+                    }
+
                 } else {
                     let obj = {
                         value: item.value,
@@ -620,7 +634,9 @@
                     }
                     item.hovered = false
                     //清空下级
-                    this.clear(item, 'split')
+                    if(item.childer){
+                        this.clear(item, 'split')
+                    }
                     this.pushArr(obj, item)
                 }
 
@@ -847,7 +863,7 @@
                     }
                 })
             },
-            //导出表格
+            //导出全部表格
             exportTable() {
                 let info = {
                     ids: this.ids,
@@ -868,8 +884,8 @@
                 })
             },
             //跳转画像详情
-            gotoDetail() {
-                this.$router.push('./portraitDetail')
+            gotoDetail(resId) {
+                this.$router.push('./portraitDetail?resId='+resId)
             },
             //获取标签数据
             getTags(type, parentId) {

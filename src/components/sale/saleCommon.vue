@@ -28,8 +28,13 @@
                 <el-menu-item index="/sale/questionAndAnswer">操作说明</el-menu-item>
                 <el-menu-item index="/sale/compact">文件下载</el-menu-item>
             </el-submenu>
-            <el-menu-item index="/sale/tvOrderList" v-show="!isKA">电视广告</el-menu-item>
-            <el-menu-item index="/sale/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>
+            <el-menu-item index="/sale/tvOrderList">电视广告</el-menu-item>
+            <!--<el-menu-item index="/sale/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>-->
+            <el-submenu index="10" :show-timeout="80" v-show="showQinlin">
+                <template slot="title">亲邻智邻</template>
+                <el-menu-item index="/sale/communityPortrait">社区画像</el-menu-item>
+                <el-menu-item index="/sale/communityRank">社区排名</el-menu-item>
+            </el-submenu>
             <el-submenu index="9" class="user_center" popper-class="user_center_item" :show-timeout="80">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">
@@ -88,7 +93,6 @@
                 // 是否为全国权限
                 isNation: false,
                 showQinlin: false,
-                isKA: false
             }
         },
         created(){
@@ -117,8 +121,6 @@
                 let utype = this.sessionData.uType;
                 this.userName = uTypeToText.toText(utype) + '-' + this.sessionData.realName;
                 console.log(this.userName)
-                // 0-地方销售、1-全国销售、2-KA销售
-                this.isKA = this.sessionData.saleManageLevel === 2 ? true : false
             },
             // 是否显示亲邻
             getIsShowQinlin(){

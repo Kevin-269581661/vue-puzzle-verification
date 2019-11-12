@@ -44,10 +44,10 @@ const companyList = () => import('../components/common/companyList.vue')
 const compact = () => import('../components/common/compact.vue')
 const paintedPath = () => import('../components/common/paintedPath.vue')
 const adsDialPlate = () => import('../components/common/adsDialPlate.vue')
-const qinLinMap = () => import('../components/common/qinLinMap.vue')
 const messageList = () => import('../components/common/messageList.vue')
 const communityRank = () => import('../components/common/communityRank.vue')
 const portraitDetail = () => import('../components/common/portraitDetail.vue')
+const qinLinMap = () => import('../components/common/qinLinMap.vue')
 
 // 下载进度页面
 const progressDown = () => import('../components/common/progressDown.vue')
@@ -263,7 +263,6 @@ export default new Router({
                 {path: '/sale/portraitDetail',component: portraitDetail},
                 {path: '/sale/messageList', name: 'messageList', component: messageList},
                 {path: '/sale/adsDialPlate', component: adsDialPlate},
-                {path: '/sale/adsDialPlate', component: adsDialPlate},
             ]
         },
         //广告主
@@ -291,6 +290,8 @@ export default new Router({
                 {path: '/adOwner/compact', component: compact},
                 {path: '/adOwner/myInfo', component: myInfo},
                 {path: '/adOwner/communityPortrait',component: communityPortrait},
+                {path: '/adOwner/communityRank',component: communityRank},
+                {path: '/adOwner/portraitDetail',component: portraitDetail},
             ]
         },
         //404

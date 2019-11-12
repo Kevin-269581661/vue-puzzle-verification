@@ -165,10 +165,10 @@
                     <div class="part part1">
                         <div class="flex1">
                             <h6>行业词云</h6>
-                            <div class="chart-wrap" v-loading="wordCloudLoading"
+                            <div class="chart-wrap" style="padding: 20px;box-sizing: border-box" v-loading="wordCloudLoading"
                                  element-loading-text="玩命加载中..."
                                  element-loading-background="rgba(255, 255, 255)">
-                                <div class="word-cloud-box" ref='wordCloudBox'></div>
+                                <div class="word-cloud-box" ref='wordCloudBox' style="width: 100%;height: 100%"></div>
                             </div>
                         </div>
                         <div class="flex2">
@@ -320,20 +320,22 @@
                 let portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo'))
                 console.log(portraitInfo);
                 // 选中的公司
-                this.currCompany = portraitInfo[0]
-                let arr = []
-                for (let key of portraitInfo) {
-                    arr.push({
-                        asrId: key.asrId,
-                        asrName: key.asrName,
-                    })
-                }
-                this.companyList = arr
-                console.log('companyList', this.companyList)
+                this.currCompany = JSON.parse(sessionStorage.getItem('currCompany'))
+                // let arr = []
+                // for (let key of portraitInfo) {
+                //     arr.push({
+                //         asrId: key.asrId,
+                //         asrName: key.asrName,
+                //     })
+                // }
+                this.companyList.push(this.currCompany)
+                // console.log('companyList', this.companyList)
             },
             // 选择公司
             selectAsrIdFun(item) {
                 this.currCompany = item
+                sessionStorage.setItem('currCompany',JSON.stringify(this.currCompany))
+
             },
             //性别情况
             sexChartFn() {
@@ -822,12 +824,10 @@
                                 fontWeight: 'bold',
                                 color: function () {
                                     // Random color
-
-                                    return 'rgb(' + [
-                                        Math.round(Math.random() * 215),
-                                        Math.round(Math.random() * 215),
-                                        Math.round(Math.random() * 215)
-                                    ].join(',') + ')';
+                                    let arr = ['#9AE65C','#41D9C7','#1890FF','#FACC14','#2FC25B']
+                                    let rgb = arr[Math.round(Math.random() * 4)]
+                                    // console.log(rgb);
+                                    return rgb;
                                 }
                             },
                             //鼠标悬浮阴影
@@ -1127,7 +1127,7 @@
             },
             //获取小区信息
             getCommunityInfo() {
-                // api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'resInfo/getResInfoByResId', {resId: this.resId}).then(res => {
+
                 api.getApi(this.apiVar.portrait + 'resInfo/getResInfoByResId', {resId: this.resId}).then(res => {
                     // console.log(res.data);
                     if (res.data.SysCode == 200200) {

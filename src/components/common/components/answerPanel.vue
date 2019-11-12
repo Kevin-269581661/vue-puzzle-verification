@@ -5,8 +5,6 @@
             <el-button @click="backToList">返回</el-button>
         </div>
         <div class="answer" v-html="answerData.answer"></div>
-
-
     </div>
 </template>
 

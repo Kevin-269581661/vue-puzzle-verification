@@ -77,6 +77,7 @@
                     <!--<component :is="comName" ></component>-->
                     <question-list :mainInfo="mainInfo" @callbackAnswer="handleAnswer" v-if="componentType==1"></question-list>
                     <answer-panel :answerData="answerData" v-if="componentType==2" @callbackComponentType="handleBack" ></answer-panel>
+                    <answer-panel :searchData="searchData" v-if="componentType==3"></answer-panel>
                 </keep-alive>
 
             </el-main>
@@ -93,6 +94,7 @@
     // import wordQNA from './components/wordQNA'
     import questionList from './components/questionList'
     import answerPanel from './components/answerPanel'
+    import searchResult from './components/searchResult'
     import qnaData from '../../commonFun/json/qnaData.json'
 
     export default {
@@ -105,7 +107,8 @@
             // tvQNA,
             // wordQNA,
             questionList,
-            answerPanel
+            answerPanel,
+            searchResult
         },
         data() {
             return {
@@ -115,6 +118,7 @@
                 qnaData:'',
                 mainInfo:{},
                 answerData:"",
+                searchData:[],
                 componentType:1,//显示的组件类型 1.问题列表 2.答案面板 3.搜索结果
             }
         },
@@ -162,12 +166,14 @@
             //搜索
             searchFun(){
                 console.log(this.keyword);
-                let keyword = this.keyword
+                let keyword = this.keyword;
+                let result = []
                 this.qnaData.forEach((item,index)=>{
                     if(item.question){
                         for(let data of item.question){
                             if(data.title.includes(keyword)||data.answer.includes(keyword)){
                                 console.log(data);
+                                result.push(data)
                             }
                         }
                     }else{
@@ -175,11 +181,13 @@
                             for(let data of value.question){
                                 if(data.title.includes(keyword)||data.answer.includes(keyword)){
                                     console.log(data);
+                                    result.push(data)
                                 }
                             }
                         })
                     }
                 })
+                this.searchData = result
             },
             //键盘回车
             enterFun(ev){

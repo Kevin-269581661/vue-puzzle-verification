@@ -340,6 +340,7 @@
                 console.log(portraitInfo);
                 // 选中的公司
                 this.currCompany = portraitInfo[0]
+                sessionStorage.setItem('currCompany',JSON.stringify(this.currCompany))
                 let arr = []
                 for (let key of portraitInfo) {
                     arr.push({
@@ -353,6 +354,8 @@
             // 选择公司
             selectAsrIdFun(item) {
                 this.currCompany = item
+                sessionStorage.setItem('currCompany',JSON.stringify(this.currCompany))
+                this.getRankList()
             },
             // 价格加上逗号
             priceFormat(price) {
@@ -509,7 +512,7 @@
                 }
 
                 this.clear(this.hobbyTags)
-
+                this.getRankList();
                 // console.log(this.chooseTagsArr);
             },
             clear(obj, type) {
@@ -1287,14 +1290,14 @@
 </style>
 <style>
     .tag-popover {
-        min-width: 132px ;
-        border: none ;
-        border-radius: 0 ;
-        padding: 0 ;
+        min-width: 132px !important;
+        border: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
         /*height: 140px;*/
     }
 
     .tag-popover[x-placement^=bottom] {
-        margin-top: 4px ;
+        margin-top: 4px !important;
     }
 </style>

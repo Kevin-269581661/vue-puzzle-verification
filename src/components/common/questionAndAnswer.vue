@@ -70,7 +70,9 @@
             </el-aside>
             <el-main>
                 <keep-alive>
-                    <component :is="comName"></component>
+                    <!--<component :is="comName" ></component>-->
+                    <question-list :mainInfo="mainInfo" @callbackAnswer="handleAnswer" v-if="componentType==1"></question-list>
+                    <answer-panel :answerData="answerData" v-if="componentType==2" @callbackComponentType="handleBack" ></answer-panel>
                 </keep-alive>
 
             </el-main>
@@ -79,36 +81,41 @@
 </template>
 
 <script>
-    import mediaQNA from './components/mediaQNA'
-    import clientQNA from './components/clientQNA'
-    import planQNA from './components/planQNA'
-    import orderQNA from './components/orderQNA'
-    import tvQNA from './components/tvQNA'
-    import wordQNA from './components/wordQNA'
+    // import mediaQNA from './components/mediaQNA'
+    // import clientQNA from './components/clientQNA'
+    // import planQNA from './components/planQNA'
+    // import orderQNA from './components/orderQNA'
+    // import tvQNA from './components/tvQNA'
+    // import wordQNA from './components/wordQNA'
     import questionList from './components/questionList'
+    import answerPanel from './components/answerPanel'
     import qnaData from '../../commonFun/json/qnaData.json'
 
     export default {
         name: "questionAndAnswer",
         components: {
-            mediaQNA,
-            clientQNA,
-            planQNA,
-            orderQNA,
-            tvQNA,
-            wordQNA,
+            // mediaQNA,
+            // clientQNA,
+            // planQNA,
+            // orderQNA,
+            // tvQNA,
+            // wordQNA,
+            questionList,
+            answerPanel
         },
         data() {
             return {
                 activeName:'1',
-                comName: '',
+                // comName: '',
                 keyword:'',
                 qnaData:'',
-                mainInfo:'',
+                mainInfo:{},
+                answerData:"",
+                componentType:1,//显示的组件类型 1.问题列表 2.答案面板 3.搜索结果
             }
         },
         mounted() {
-            // this.showCom('mediaQNA')
+            // this.showCom('questionList')
             this.qnaData = qnaData
             this.mainInfo = qnaData[0]
             // console.log(this.qnaData);
@@ -118,10 +125,11 @@
                 console.log('name-------------', name);
                 this.comName = name;
             },
-
+            //点击菜单
             handleSelect(index) {
                 // console.log(index);
                 this.activeName = index;
+                this.componentType = 1
                 this.qnaData.forEach((value,key)=>{
                     if(value.children){
                         value.children.forEach((v,k)=>{
@@ -138,7 +146,15 @@
                 console.log(this.mainInfo);
 
             },
-
+            //问题列表点击问题
+            handleAnswer(data){
+                this.answerData = data
+                this.componentType = 2
+            },
+            //答案面板点击返回
+            handleBack(type){
+                this.componentType = type
+            }
         }
 
     }
@@ -187,7 +203,7 @@
 
 
     .el-menu {
-        height: 100%;
+        /*height: 100%;*/
         border-right: none;
         font-size: 14px;
         color:rgba(0,0,0,0.65);
@@ -213,12 +229,15 @@
     .qna-aside /deep/ .el-submenu.is-active .el-submenu__title i{
         color: rgba(0,0,0,0.5);
     }
+    .qna-aside /deep/ .el-menu-item-group__title{
+        padding: 0;
+    }
 
     .el-main {
         background-color: #fff;
         color: #333;
-        text-align: center;
         padding: 0 20px 20px 20px;
+        /*height: 740px;*/
     }
 
     .ad_mediaDetail_wrap .el-container {

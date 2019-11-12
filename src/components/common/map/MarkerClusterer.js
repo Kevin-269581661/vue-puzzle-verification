@@ -333,12 +333,41 @@ var BMapLib = window.BMapLib = BMapLib || {};
         var bounds = new BMap.Bounds(this._center, this._center);
         this._gridBounds = getExtendedBounds(this._map, bounds, this._markerClusterer.getGridSize())
     };
+    /**
+     * 修改4
+     * addLabel替代 updateClusterMarker里的addOverlay
+     * 进行dom操作
+     * @return 无返回值
+     */
+    Cluster.prototype.addLabel = function (marker) {
+        //获取marker的坐标
+        var position = marker.getPosition();
+        //创建label
+        var label = new BMap.Label({position : position});
+        console.log('this._styles',this._styles)
+        label.setStyle({
+            height : '25px',
+            color : "#fff",
+            backgroundColor : this._styles[0].backgroundColor,
+            border : 'none',
+            borderRadius : "25px",
+            fontWeight : 'bold',
+            opacity : 0.9
+        });
+        var content = '<span style="color: #ffffff"><i class="fa fa-map-marker"></i></span>'
+            + '<p style="padding:0px 13px;text-align:center;margin-top:5px;cursor:pointer;">'+marker.getTitle()+'</p>';
+        label.setContent(content)
+        label.setPosition(position);
+        this._labels.push(label);
+        this._map.addOverlay(label);
+    }
     Cluster.prototype.updateClusterMarker = function() {
         if (this._map.getZoom() > this._markerClusterer.getMaxZoom()) {
             this._clusterMarker && this._map.removeOverlay(this._clusterMarker);
             for (var i = 0,
                      marker; marker = this._markers[i]; i++) {
-                this._map.addOverlay(marker)
+                this._map.addOverlay(marker);
+                // this._map.addLabel(marker)
             }
             return
         }

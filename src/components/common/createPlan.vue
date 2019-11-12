@@ -1112,9 +1112,6 @@
             </span>
             </el-dialog>
         </div>
-        <div v-if="openMap">
-            <qinlin-map @childFun="getMapAdsList"></qinlin-map>
-        </div>
     </div>
 </template>
 
@@ -1531,11 +1528,6 @@
             },
         },
         methods: {
-            getMapAdsList(...data) {
-                console.log('地图点位data',data)
-                this.openMap = false
-                this.mapAdsList = data[0]
-            },
             //监听table滚动
             loadMore() {
                 if (this.loadScroll) {

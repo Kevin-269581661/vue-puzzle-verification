@@ -2,7 +2,7 @@
     <div class="map_index">
 <!--        <remote-js src="https://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js"></remote-js>-->
         <remote-js src="https://api.map.baidu.com/library/GeoUtils/1.2/src/GeoUtils_min.js"></remote-js>
-        <remote-js src="https://api.map.baidu.com/library/TextIconOverlay/1.2/src/TextIconOverlay_min.js"></remote-js>
+<!--        <remote-js src="https://api.map.baidu.com/library/TextIconOverlay/1.2/src/TextIconOverlay_min.js"></remote-js>-->
         <!--地图标签-->
         <div v-loading="mapLoading"
              element-loading-text="玩命加载中.."
@@ -31,7 +31,7 @@
                 <div class="search_result_btn" v-show="isOnlineSearch || isMouseSearch || isMultiPoint">
                     <h4 class="result_title">框选结果</h4>
                     <div class="result_btn_box">
-                        <span @click="setOnlineSearch" v-show="!isMouseSearch">设置</span>
+                        <span @click="setOnlineSearch" v-show="!isMouseSearch && !isMultiPoint">设置</span>
                         <span @click="clearSearch">取消</span>
                     </div>
                 </div>
@@ -531,6 +531,8 @@
                 isCommit: false,
                 // 地图实例
                 resMap: '',
+                // 聚合实例
+                markerClusterer: '',
                 markerIcon: require('../../assets/images/map/markerIcon.png'),
                 resMarkers: [],
                 // 时间排期
@@ -925,7 +927,7 @@
                 }).catch(err=>{
                     console.log('err',err)
                     this.mapLoading = false
-                    sessFun.messageFun('warning','小区数据接口异常')
+                    // sessFun.messageFun('warning','小区数据接口异常')
                 })
             },
             // 根据购物车已有的resID判断勾选
@@ -945,66 +947,74 @@
             },
             // 创建标注
             creatMarker() {
-                // let markerList = [];
-                // let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(16,16),{
-                //     anchor: new BMap.Size(8, 8)
-                // });
-                // for (let key of this.resInfo) {
-                //     let point = new BMap.Point(key.lng, key.lat);
-                //     let marker = new BMap.Marker(point, {icon: myIcon});  // 创建标注
-                //     let label = new BMap.Label(key.resName, {offset: new BMap.Size(4,-18)});
-                //     label.setStyle({
-                //         borderRadius: "3px",
-                //         boxShadow: '0px 0px 6px 0px rgba(0,0,0,0.15)',
-                //         border: 'none',
-                //         background: 'rgba(255,255,255,1)',
-                //         color: 'rgba(0,0,0,0.85)',
-                //         padding: '3px 8px',
-                //     });
-                //     marker.setLabel(label);
-                //     marker.setTop(true);
-                //     label.addEventListener("click",()=>{
-                //         this.showInfo(key,point)
-                //     });
-                //     markerList.push(marker);
-                // }
-                // // 点位聚合
-                // let markerClusterer = new BMapLib.MarkerClusterer(this.resMap, {markers:markerList})
-                // // 聚合计算时网格的像素大小，默认60
-                // markerClusterer.setGridSize(60)
-                // // 获取单个聚合的最小数量
-                // markerClusterer.setMinClusterSize(5)
-                // // 设置聚合的最大缩放级别
-                // markerClusterer.setMaxZoom(17)
-                // this.markers = markerList
-                // console.log('markerClusterer',markerClusterer, markerClusterer.getMarkers())
-
-                let i = 0
-                let markerList = [];
-                let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(16,16),{
-                    anchor: new BMap.Size(8, 8)
-                });
-                for(let key of this.resInfo) {
-                    this.$set(key, "isSelect", false);
-                    let point = new BMap.Point(key.lng, key.lat);
-                    let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
-                    let label = this.setMarkerLabel(key.resName)
-                    marker.setLabel(label);
-                    marker.setTop(true);
-                    marker.inCircleNum = 0
-                    this.resMap.addOverlay(marker);              // 将标注添加到地图中
-                    label.addEventListener("click",()=>{
-                        this.showInfo(key,point)
+                console.log('在线搜索、鼠标绘制、多点辐射',this.isOnlineSearch,this.isMouseSearch,this.isMultiPoint)
+                if(this.isMultiPoint) {
+                    this.markerClusterer.clearMarkers()
+                    let i = 0
+                    let markerList = [];
+                    let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(16,16),{
+                        anchor: new BMap.Size(8, 8)
                     });
-                    if(i < 1000) {
-                        marker.show()
-                    } else {
-                        marker.hide()
+                    for(let key of this.resInfo) {
+                        this.$set(key, "isSelect", false);
+                        let point = new BMap.Point(key.lng, key.lat);
+                        let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
+                        let label = this.setMarkerLabel(key.resName)
+                        marker.setLabel(label);
+                        marker.setTop(true);
+                        marker.inCircleNum = 0
+                        this.resMap.addOverlay(marker);              // 将标注添加到地图中
+                        label.addEventListener("click",()=>{
+                            this.showInfo(key,point)
+                        });
+                        if(i < 1000) {
+                            marker.show()
+                        } else {
+                            marker.hide()
+                        }
+                        i++
+                        markerList.push(marker)
                     }
-                    i++
-                    markerList.push(marker)
+                    this.resMarkers = markerList
+                } else {
+                    console.log('----------聚--合---------')
+                    // 设置聚合的最大缩放级别
+                    let markerList = [];
+                    let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(16,16),{
+                        anchor: new BMap.Size(8, 8)
+                    });
+                    for (let key of this.resInfo) {
+                        let point = new BMap.Point(key.lng, key.lat);
+                        let marker = new BMap.Marker(point, {icon: myIcon});  // 创建标注
+                        let label = this.setMarkerLabel(key.resName)
+                        marker.setLabel(label);
+                        marker.setTop(true);
+                        marker.inCircleNum = 0;
+                        label.addEventListener("click",()=>{
+                            this.showInfo(key,point)
+                        });
+                        markerList.push(marker);
+                    }
+                    // 点位聚合
+                    this.markerClusterer = new BMapLib.MarkerClusterer(this.resMap,
+                        {
+                            markers:markerList,
+                            styles : [{
+                                url:require('../../assets/images/map/mapblue.png'),
+                                "size": new BMap.Size(80, 80),
+                                "textColor": '#FFFFFF',
+                                "textSize": '14px'
+                            }],
+                        })
+                    // 聚合计算时网格的像素大小，默认60
+                    this.markerClusterer.setGridSize(60)
+                    // 获取单个聚合的最小数量
+                    this.markerClusterer.setMinClusterSize(5)
+                    // 设置聚合的最大缩放级别
+                    this.markerClusterer.setMaxZoom(15)
+                    this.resMarkers = markerList
+                    console.log('markerClusterer',this.markerClusterer, this.markerClusterer.getMarkers())
                 }
-                this.resMarkers = markerList
             },
             // 设置标注到label
             setMarkerLabel(labelName) {
@@ -1167,7 +1177,7 @@
                     labelText = '起点'
                     this.twoPointsLength = 0
                 } else {
-                    let beginPoint = this.LinePoints[this.mouseLineStep - 1] //
+                    let beginPoint = this.LinePoints[this.mouseLineStep - 1]
                     let radius= this.resMap.getDistance(beginPoint,point)/1000
                     labelText = (Number(this.twoPointsLength) + radius).toFixed(2) + '公里'
                     this.twoPointsLength += radius
@@ -1206,16 +1216,17 @@
                 }
             },
             // 匹配多边形内的点位
-            isInsidePolygon(pt, poly) {
-                for (var c = false, i = -1, l = poly.length, j = l - 1; ++i < l; j = i)
-                    ((poly[i].lat <= pt.lat && pt.lat < poly[j].lat) || (poly[j].lat <= pt.lat && pt.lat < poly[i].lat)) &&
-                    (pt.lng < (poly[j].lng - poly[i].lng) * (pt.lat - poly[i].lat) / (poly[j].lat - poly[i].lat) + poly[i].lng) &&
-                    (c = !c);
-                return c;
-            },
+            // isInsidePolygon(pt, poly) {
+            //     for (var c = false, i = -1, l = poly.length, j = l - 1; ++i < l; j = i)
+            //         ((poly[i].lat <= pt.lat && pt.lat < poly[j].lat) || (poly[j].lat <= pt.lat && pt.lat < poly[i].lat)) &&
+            //         (pt.lng < (poly[j].lng - poly[i].lng) * (pt.lat - poly[i].lat) / (poly[j].lat - poly[i].lat) + poly[i].lng) &&
+            //         (c = !c);
+            //     return c;
+            // },
             // 显示多边形内的点位
             showResInPolygon(temp, overlay) {
                 console.time('显示多边形')
+                this.markerClusterer.clearMarkers()
                 console.log('resMarkers', this.resMarkers)
                 for (let akey of this.resMarkers) {
                     let isShow = ''
@@ -1227,6 +1238,7 @@
                     if (!isShow) {
                         akey.hide()
                     } else {
+                        this.resMap.addOverlay(akey);              // 将标注添加到地图中
                         for (let key of this.resInfo) {
                             if (akey.getLabel().content === key.resName) {
                                 let flag = this.searchResList.some((item, index) => {
@@ -1249,10 +1261,7 @@
             deleteDrawingOverlay() {
                 let allOverlay = this.resMap.getOverlays();
                 for (let akey of allOverlay) {
-                    if (akey.toString() == "[object Circle]" || akey.toString() == "[object Polygon]") {
-                        // this.resMap.removeOverlay(akey);
-                        // break;
-                    } else if(!akey.isVisible()){
+                    if(!akey.isVisible()){
                         akey.show()
                     } else {
 
@@ -1272,7 +1281,7 @@
                 let mapLevel = [19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1]
                 let index = mapLevel.indexOf(this.resMap.getZoom())
                 this.scale = scaleArr[index]
-                if(index <= 6) {
+                if(index <= 4) {
                     this.pointInBounds()
                 }
                 console.log('当前地图缩放等级---',this.resMap.getZoom(),this.scale)
@@ -1280,7 +1289,7 @@
             // 判断点是否在视野内
             pointInBounds() {
                 console.log('判断点是否在视野内------',this.resMap.getZoom())
-                if(!this.isMouseSearch && !this.isOnlineSearch && this.resMap.getZoom() >= 14) {
+                if(!this.isMouseSearch && !this.isOnlineSearch && !this.isMultiPoint&& this.resMap.getZoom() >= 16) {
                     let bound = this.resMap.getBounds();// 地图可视区域
                     for (let key of this.resMarkers) {
                         if (bound.containsPoint(key.point) == true && !key.isVisible()) {
@@ -1410,6 +1419,7 @@
                 api.postApi_json(this.apiVar.mapApi + '/multiPointAnalyze',params).then(res=>{
                     console.log('多点辐射res',res)
                     if(res.data.SysCode === 200200) {
+                        this.isMultiPoint = true
                         this.searchResList = []
                         this.resMap.clearOverlays()
                         this.resInfo = res.data.data.map(item =>{
@@ -1426,8 +1436,6 @@
                             return item
                         })
                         this.creatMarker()
-                        // this.searchResList = JSON.parse(JSON.stringify(this.resInfo))
-                        this.isMultiPoint = true
                         this.activeSearchKind = '1'
                         console.log('resInfo',this.resInfo)
                         // 辐射点打点、画圆
@@ -1676,31 +1684,8 @@
             pushSelectList(item) {
                 this.selectResList.push(item)
             },
-            // 在线勾选/取消
-            onlineCheckBox(item) {
-                console.log('在线item', item)
-                for(let key of this.onlineMarkers) {
-                    if(key.point.lat  === item.point.lat && key.point.lng  === item.point.lng) {
-                        let onlineIcon =  ''
-                        if(item.isSelect) {
-                            onlineIcon = require('../../assets/images/map/isActiveIcon.png')
-                        } else {
-                            onlineIcon = require('../../assets/images/map/onlineIcon.png')
-                        }
-                        let myIcon = new BMap.Icon(
-                            onlineIcon,
-                            new BMap.Size(32, 32),
-                            {
-                                anchor: new BMap.Size(16, 16),
-                                imageSize: new BMap.Size(32, 32),    // 引用图片实际大小
-                            });
-                        key.setIcon(myIcon)
-                    }
-                }
-            },
             // 画圆标识选中状态
             createCircle(id,point){
-                // console.log('id,point',id,point)
                 let opts = {
                     position : point,    // 指定文本标注所在的地理位置
                     offset   : new BMap.Size(-12, -9)    //设置文本偏移量
@@ -1728,6 +1713,28 @@
                     }
                 }
             },
+            // 在线勾选/取消
+            onlineCheckBox(item) {
+                console.log('在线item', item)
+                for(let key of this.onlineMarkers) {
+                    if(key.point.lat  === item.point.lat && key.point.lng  === item.point.lng) {
+                        let onlineIcon =  ''
+                        if(item.isSelect) {
+                            onlineIcon = require('../../assets/images/map/isActiveIcon.png')
+                        } else {
+                            onlineIcon = require('../../assets/images/map/onlineIcon.png')
+                        }
+                        let myIcon = new BMap.Icon(
+                            onlineIcon,
+                            new BMap.Size(32, 32),
+                            {
+                                anchor: new BMap.Size(16, 16),
+                                imageSize: new BMap.Size(32, 32),    // 引用图片实际大小
+                            });
+                        key.setIcon(myIcon)
+                    }
+                }
+            },
             // 在线搜索确定
             onlineConfirm() {
                 this.selectOnlineList = this.searchOnlineList.filter(item=>{
@@ -1751,6 +1758,7 @@
                 console.log('this.selectOnlineList',this.selectOnlineList)
                 this.searchLoading = true
                 let timer = setTimeout(()=>{
+                    this.markerClusterer.clearMarkers()
                     this.searchResList = []
                     let radius = this.aroundSearchInfo.searchRadius * 1000
                     for (let key of this.selectOnlineList) {
@@ -1789,6 +1797,7 @@
                         // 多个圆时
                         rkey.inCircleNum ? rkey.show() : rkey.hide()
                     } else {
+                        this.resMap.addOverlay(rkey)
                         rkey.inCircleNum++
                         rkey.show()
                         // 标注marker匹配亲邻小区
@@ -1892,8 +1901,12 @@
             clearSearch() {
                 if(this.isMouseSearch) {
                     // 取消鼠标画圆
-                    this.deleteDrawingOverlay()
-                } else if(this.isMultiPoint){
+                    // this.deleteDrawingOverlay()
+                    this.resMap.removeOverlay(this.mouseoverlay)
+                    this.searchResList = []
+                    this.isMouseSearch = false
+                    this.markerClusterer.addMarkers(this.resMarkers)
+                } else if(this.isMultiPoint) {
                     this.isMultiPoint = false
                     this.transfersFun()
                     this.searchResList = []
@@ -1906,6 +1919,7 @@
                             this.resMap.removeOverlay(akey);
                         }
                     }
+                    this.markerClusterer.addMarkers(this.resMarkers)
                     this.initResMarkers()
                     // 移除
                     for (let key of this.selectOnlineList) {
@@ -1918,13 +1932,9 @@
             // 恢复打点原始状态
             initResMarkers() {
                 // console.time('恢复打点原始状态')
-                let i = 0
+                // let i = 0
                 for (let key of this.resMarkers) {
-                    if (i < 1000) {
-                        key.show()
-                    } else {
-                        key.hide()
-                    }
+                    key.show()
                     // 移除标识marker在圆内到标识
                     if(key.inCircleNum) {
                         key.inCircleNum = 0
@@ -1938,7 +1948,6 @@
                     if (key.mapCenter) {
                         key.mapCenter = ''
                     }
-                    i++
                 }
                 // console.timeEnd('恢复打点原始状态')
             },

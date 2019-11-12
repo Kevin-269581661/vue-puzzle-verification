@@ -172,7 +172,7 @@
                             </div>
                         </div>
                         <div class="flex2">
-                            <h6>工作行业</h6>
+                            <h6>工作分类</h6>
                             <div class="chart-wrap" v-loading="jobChartLoading"
                                  element-loading-text="玩命加载中..."
                                  element-loading-background="rgba(255, 255, 255)">
@@ -258,7 +258,7 @@
                 spendChart: '',//消费水平
                 assetsChart: '',//资产状况
                 lifeChart: '',//人生阶段
-                jobChart: '',//工作行业
+                jobChart: '',//工作分类
                 tag2chart: '',//二级标签
                 tag3chart: '',//三级标签
                 tags: [],//词云
@@ -427,7 +427,7 @@
                         axisLabel: {
                             //坐标轴刻度标签
                             margin: 7, //刻度标签与轴线之间的距离
-                            interval: 0,    //强制文字产生间隔
+                            interval: 0,    //强制文字全部显示
                             textStyle: {
                                 fontFamily: "DINPro-Regular",
                                 color: "#2C313C" //坐标轴刻度文字的颜色
@@ -714,7 +714,7 @@
                 })
                 this.lifeChartLoading = false
             },
-            //工作行业
+            //工作分类
             jobChartFn() {
                 this.jobChart = this.$echarts.init(this.$refs.jobChart)
                 this.jobChart.setOption({
@@ -733,7 +733,7 @@
                         borderWidth: 1,
                         formatter: (params) => {
                             return '<p class="echarts_tooltip_title">'
-                                + '<span>' + '工作行业' + '</span>' +
+                                + '<span>' + '工作分类' + '</span>' +
                                 '<span>' + '数据' + '</span>' +
                                 '</p>' + '<br/>' +
                                 '<p class="echarts_tooltip_content">' +
@@ -922,7 +922,8 @@
                             }
                         },
                         axisLabel: {
-                            color: '#2C313C'
+                            color: '#2C313C',
+                            interval: 0,
                         },
                         data: this.currTagsChartsData.tag2_data.x
                     },
@@ -1018,7 +1019,8 @@
                             }
                         },
                         axisLabel: {
-                            color: '#2C313C'
+                            color: '#2C313C',
+                            interval: 0,
                         },
                         data: this.currTagsChartsData.tag3_data.x
                     },
@@ -1206,7 +1208,7 @@
                         this.lifeData.y = [...result.liftList].map(item => {
                             return (item.rate * 100).toFixed(2) * 1
                         })
-                        //工作行业
+                        //工作分类
                         this.jobData.x = [...result.jobList].map(item => {
                             return item.tagName
                         })
@@ -1545,6 +1547,7 @@
         background: #fff;
         border: 1px solid #E6E7E9;
         margin-top: 24px;
+        margin-bottom: 24px;
     }
 
     .charts-wrap .title {
@@ -1621,6 +1624,5 @@
         justify-content: center;
         margin-bottom: 24px;
     }
-
 </style>
 

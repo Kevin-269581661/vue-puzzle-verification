@@ -56,8 +56,8 @@
                             </div>
                             <el-row class="button_row">
                                 <el-col>
-<!--                                    <el-button type="primary" class="map" icon="el-icon-location-outline" @click="mapAD"-->
-                                    <el-button type="primary" class="map" icon="el-icon-location-outline" @click="judgeMapSelect"
+<!--                                    <el-button type="primary" class="map" icon="el-icon-location-outline" @click="judgeMapSelect"-->
+                                    <el-button type="primary" class="map" icon="el-icon-location-outline" @click="mapAD"
                                                v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt050_ck03'}">地图</el-button>
                                     <el-dropdown>
                                         <el-button type="success" class="importXle">

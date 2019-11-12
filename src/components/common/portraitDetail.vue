@@ -824,7 +824,7 @@
                                 fontWeight: 'bold',
                                 color: function () {
                                     // Random color
-                                    let arr = ['#1890FF','#41D9C7','#FACC14','#2FC25B','#9AE65C']
+                                    let arr = ['#9AE65C','#41D9C7','#1890FF','#FACC14','#2FC25B']
                                     let rgb = arr[Math.round(Math.random() * 4)]
                                     // console.log(rgb);
                                     return rgb;

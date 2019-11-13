@@ -327,7 +327,7 @@
                     <span>{{showResInfo.chDay || '--'}}年</span></li>
                 <li class="res_info_content_li">
                     <span class="content_li_title">人流量:</span>
-                    <span>{{showResInfo.peopleFlow || 0}}/人次/天</span></li>
+                    <span>{{showResInfo.peopleFlow || '--'}}/人次/天</span></li>
                 <li class="res_info_content_li">
                     <span class="content_li_title">广告限制:</span>
                     <span>{{showResInfo.adLimit || '--'}}</span></li>
@@ -336,10 +336,10 @@
                     <span>{{showResInfo.mRemark || '--'}}</span></li>
                 <li class="res_info_content_li">
                     <span class="content_li_title">车流量:</span>
-                    <span>{{showResInfo.carFlowrate || 0}}</span></li>
+                    <span>{{showResInfo.carFlowrate || '--'}}</span></li>
                 <li class="res_info_content_li">
                     <span class="content_li_title">车位数:</span>
-                    <span>{{showResInfo.parkSpaceNum || 0}}</span></li>
+                    <span>{{showResInfo.parkSpaceNum || '--'}}</span></li>
                 <li class="res_info_content_li">
                     <span class="content_li_title">出入口数:</span>
                     <span>{{showResInfo.dNum || '--'}}</span></li>

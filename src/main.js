@@ -66,6 +66,10 @@ router.beforeEach((to, from, next) => {
 		var s = document.getElementsByTagName("script")[0];
 		s.parentNode.insertBefore(mta, s);
 	})();
+    // 路由发生变化修改页面title
+    if (to.meta.title) {
+        document.title = to.meta.title
+    }
 	next();
 });
 

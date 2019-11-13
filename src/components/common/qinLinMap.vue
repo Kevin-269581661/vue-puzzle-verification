@@ -1,8 +1,6 @@
 <template>
     <div class="map_index">
-<!--        <remote-js src="https://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js"></remote-js>-->
         <remote-js src="https://api.map.baidu.com/library/GeoUtils/1.2/src/GeoUtils_min.js"></remote-js>
-<!--        <remote-js src="https://api.map.baidu.com/library/TextIconOverlay/1.2/src/TextIconOverlay_min.js"></remote-js>-->
         <!--地图标签-->
         <div v-loading="mapLoading"
              element-loading-text="玩命加载中.."
@@ -276,11 +274,12 @@
             </ul>
             <!--鼠标绘制-->
             <ul class="mouse_control">
-                <li class="mouse_control_li">
+                <li class="mouse_control_li" :class="mouseType.polyline ? 'mouse_active' : ''">
                     <el-popover
                         placement="top"
                         title=""
                         width="74"
+                        v-model="mousePopover"
                         popper-class="mouse_polyline"
                         trigger="hover">
                         <div class="mouse_polyline_body">
@@ -289,15 +288,14 @@
                         </div>
                         <img slot="reference" src="../../assets/images/map/scale.png" alt="">
                     </el-popover>
-
                 </li>
-                <li class="mouse_control_li" @click="drawingMouse('circle')">
+                <li class="mouse_control_li" :class="mouseType.circle ? 'mouse_active' : ''" @click="drawingMouse('circle')">
                     <img src="../../assets/images/map/circle.png" alt="">
                 </li>
-                <li class="mouse_control_li" @click="drawingMouse('polygon')">
+                <li class="mouse_control_li" :class="mouseType.polygon ? 'mouse_active' : ''" @click="drawingMouse('polygon')">
                     <img src="../../assets/images/map/polygon.png" alt="">
                 </li>
-                <li class="mouse_control_li" @click="drawingMouse('morePoint')">
+                <li class="mouse_control_li" :class="mouseType.morePoint ? 'mouse_active' : ''" @click="drawingMouse('morePoint')">
                     <img src="../../assets/images/map/overlay.png" alt="">
                 </li>
             </ul>
@@ -535,6 +533,8 @@
                 markerClusterer: '',
                 markerIcon: require('../../assets/images/map/markerIcon.png'),
                 resMarkers: [],
+                // 非多点辐射时的markers
+                beforeResMarkes: [],
                 // 时间排期
                 dateTime:[],
                 // 地图loading
@@ -652,7 +652,16 @@
                 // 媒体等级
                 selectMediaLevel: '',
                 /* 鼠标绘制 */
+                mouseType:{
+                    polyline: false,
+                    circle: false,
+                    polygon: false,
+                    morePoint: false,
+                },
+                // 鼠标绘制实例化
                 drawingManager: '',
+                // 测距弹出框
+                mousePopover: false,
                 // 标识鼠标画线状态
                 isMouseLine: false,
                 // 标识画线时点击的次数
@@ -1051,7 +1060,6 @@
             // 获取指定资源到媒体列表
             getMediaListByResID() {
                 console.log('获取指定资源到媒体列表-----')
-                this.medieDialogVisible = true
                 let params = {
                     "resID": this.showResInfo.resID
                 }
@@ -1070,6 +1078,11 @@
                             }
                             return item
                         })
+                        if (this.mediaList.length) {
+                            this.medieDialogVisible = true
+                        } else {
+                            sessFun.messageFun('warning', '暂无可用媒体数据!')
+                        }
                     } else {
                         sessFun.messageFun('warning', '媒体详情获取异常!')
                     }
@@ -1146,24 +1159,41 @@
             },
             // 打开绘制类型
             drawingMouse(temp) {
-                this.deleteDrawingOverlay()
-                if (temp === 'circle') {
+                if(this.isMultiPoint && temp !== 'polyline') {
+                    sessFun.messageFun('waning','当前为多点辐射状态，请取消后再进行其它绘制操作！')
+                    return
+                }
+                if (temp === 'polyline') {
+                    // 线-测距
                     this.drawingManager.open()
-                    // this.drawingManager.enableCalculate()
-                    this.drawingManager.setDrawingMode(BMAP_DRAWING_CIRCLE);
-                } else if (temp === 'polygon') {
-                    this.drawingManager.open()
-                    this.drawingManager.setDrawingMode(BMAP_DRAWING_POLYGON);
-                } else if (temp === 'polyline') {
-                    this.drawingManager.open()
-                    // this.drawingManager.enableCalculate()
                     this.drawingManager.setDrawingMode(BMAP_DRAWING_POLYLINE);
                     this.isMouseLine = true
+                    this.mousePopover = false
+                    this.initMouseActive(temp)
+                } else if (temp === 'circle') {
+                    // 圆
+                    this.drawingManager.open()
+                    this.drawingManager.setDrawingMode(BMAP_DRAWING_CIRCLE);
+                    this.initMouseActive(temp)
+                } else if (temp === 'polygon') {
+                    // 多边形
+                    this.drawingManager.open()
+                    this.drawingManager.setDrawingMode(BMAP_DRAWING_POLYGON);
+                    this.initMouseActive(temp)
                 } else if (temp === 'morePoint') {
+                    // 多点辐射
                     this.isMoreCenterPointVisible = true
+                    this.initMouseActive(temp)
                 } else {
                     sessFun.messageFun('warning', '点击异常！')
                 }
+            },
+            // 初始化鼠标绘制选中状态
+            initMouseActive(temp) {
+                for(let i in this.mouseType) {
+                    this.mouseType[i] = false
+                }
+                temp ? this.mouseType[temp] = true : ''
             },
             // 画线时打点
             drawingLine(point) {
@@ -1239,6 +1269,7 @@
                         akey.hide()
                     } else {
                         this.resMap.addOverlay(akey);              // 将标注添加到地图中
+                        akey.show()
                         for (let key of this.resInfo) {
                             if (akey.getLabel().content === key.resName) {
                                 let flag = this.searchResList.some((item, index) => {
@@ -1255,20 +1286,20 @@
                     }
                 }
                 this.isMouseSearch = true
+                this.activeSearchKind = '1'
+                // console.log('isMouseSearch',this.isMouseSearch)
                 console.timeEnd('显示多边形')
             },
             // 清除上一次的绘制
             deleteDrawingOverlay() {
-                let allOverlay = this.resMap.getOverlays();
-                for (let akey of allOverlay) {
-                    if(!akey.isVisible()){
-                        akey.show()
-                    } else {
-
+                for (let akey of this.resMarkers) {
+                    if(akey.isVisible()){
+                        akey.hide()
                     }
                 }
                 this.resMap.removeOverlay(this.mouseoverlay)
                 this.searchResList = []
+                this.markerClusterer.addMarkers(this.resMarkers)
             },
             // 地图缩放
             setMapZoom(temp) {
@@ -1302,6 +1333,7 @@
             selfMotionDistance() {
                 console.log('自动测距------')
                 console.time('自动测距')
+                this.mousePopover = false
                 let isMapCenter = false
                 for (let key of this.searchResList) {
                     if (key.mapCenter) {
@@ -1901,11 +1933,9 @@
             clearSearch() {
                 if(this.isMouseSearch) {
                     // 取消鼠标画圆
-                    // this.deleteDrawingOverlay()
-                    this.resMap.removeOverlay(this.mouseoverlay)
-                    this.searchResList = []
+                    this.deleteDrawingOverlay()
                     this.isMouseSearch = false
-                    this.markerClusterer.addMarkers(this.resMarkers)
+                    this.initMouseActive()
                 } else if(this.isMultiPoint) {
                     this.isMultiPoint = false
                     this.transfersFun()
@@ -2076,6 +2106,7 @@
             },
             // 清空条件
             clearFilter() {
+                this.bType = []
                 this.houseNum = ['', '']
                 this.buildNum = ['', '']
                 this.buildPrice = ['', '']
@@ -2422,7 +2453,7 @@
         padding: 2px 6px;
         background:rgba(0,0,0,0.06);
         border-radius: 2px;
-        margin-right: 6px;
+        margin-right: 2px;
         color:rgba(0,0,0,0.35);
         font-size: 12px;
     }
@@ -2874,6 +2905,10 @@
         background:rgba(24,144,255,0.1);
     }
 
+    .mouse_control_li.mouse_active{
+        background:rgba(24,144,255,0.1);
+    }
+
     .mouse_control_li:after{
         content: "";
         color: #d9d9d9;
@@ -3054,6 +3089,16 @@
 
     .add_row_btn:hover{
         border:1px dashed rgba(24,144,255,1);
+    }
+
+    /*门禁图片*/
+    /deep/.el-carousel__item img{
+        width: auto;
+        height: 100%;
+    }
+
+    /deep/.el-carousel__item{
+        text-align: center;
     }
 
     ::-webkit-scrollbar {

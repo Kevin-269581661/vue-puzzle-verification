@@ -47,6 +47,9 @@
             <el-menu-item index="" style="cursor: default;float: right;padding: 0 0 0 4px">
                 <messageNotice></messageNotice>
             </el-menu-item>
+            <el-menu-item index="" style="cursor: default;float: right;padding: 0 0 0 4px">
+                <questionTip></questionTip>
+            </el-menu-item>
         </el-menu>
         <!--body-->
         <router-view></router-view>
@@ -77,10 +80,12 @@
     import uTypeToText from "../../commonFun/uTypeToText.js";
     import api from "../../api/api"
     import messageNotice from '../common/components/messageNotice.vue';
+    import questionTip from '../common/components/questionTip.vue';
     export default {
         name: "saleCommon",
         components:{
-            messageNotice
+            messageNotice,
+            questionTip
         },
         data(){
             return{

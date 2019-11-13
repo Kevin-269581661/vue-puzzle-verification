@@ -54,7 +54,9 @@
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
                 <el-menu-item index="/login">退出登陆</el-menu-item>
             </el-submenu>
-
+            <el-menu-item index="" style="cursor: default;float: right;padding: 0 0 0 4px">
+                <questionTip></questionTip>
+            </el-menu-item>
 
         </el-menu>
 
@@ -86,10 +88,13 @@
 <script>
     import uTypeToText from "../../commonFun/uTypeToText.js";
     import api from "../../api/api"
+    import questionTip from '../common/components/questionTip.vue';
 
     export default {
         name: "superOpertaeCommon",
-
+        components: {
+            questionTip
+        },
         data(){
             return{
                 newDate: new Date().getFullYear(),

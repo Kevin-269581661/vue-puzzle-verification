@@ -1282,7 +1282,6 @@
 
         mounted() {
             this.getParams();
-            this.getCompanyList();
             this.getTags();
             this.echartsListener();
         }

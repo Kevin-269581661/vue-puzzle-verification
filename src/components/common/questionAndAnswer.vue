@@ -7,47 +7,6 @@
         </div>
         <el-container>
             <el-aside class="qna-aside" width="280px">
-              <!--  <el-menu
-                    default-active="1"
-                    class="el-menu-vertical-demo QNAmenu"
-                    @open="handleOpen"
-                    @close="handleClose">
-                    <el-menu-item index="1" @click="showCom('mediaQNA')">
-                        <span slot="title">
-                            媒体模块
-                        </span>
-                    </el-menu-item>
-                    <el-menu-item index="2" @click="showCom('clientQNA')">
-                        <span slot="title">
-                             客户模块
-                        </span>
-                    </el-menu-item>
-                    <el-menu-item index="3" @click="showCom('planQNA')">
-                        <span slot="title">
-                            方案模块
-                        </span>
-                    </el-menu-item>
-                    <el-menu-item index="4" @click="showCom('orderQNA')">
-                        <span slot="title">
-                             订单模块
-                        </span>
-                    </el-menu-item>
-                    <el-menu-item index="5" @click="showCom('tvQNA')">
-                        <span slot="title">
-                             电视广告
-                        </span>
-                    </el-menu-item>
-                    <el-menu-item index="6" @click="showCom('wordQNA')">
-                        <span slot="title">
-                            合同下载
-                        </span>
-                    </el-menu-item>
-                </el-menu>-->
-                <!--<el-input-->
-                    <!--placeholder="请输入问题关键词"-->
-                    <!--suffix-icon="el-icon-search"-->
-                    <!--v-model="keyword">-->
-                <!--</el-input>-->
                 <div class="input">
                     <el-input v-model="keyword" placeholder="请输入问题关键词" @keyup.enter.native="enterFun($event)" clearable @clear="clearSearch"></el-input>
                    <div class="icon" @click="searchFun"> <i class="el-icon-search"></i></div>
@@ -100,12 +59,7 @@
     export default {
         name: "questionAndAnswer",
         components: {
-            // mediaQNA,
-            // clientQNA,
-            // planQNA,
-            // orderQNA,
-            // tvQNA,
-            // wordQNA,
+
             questionList,
             answerPanel,
             searchResult
@@ -118,12 +72,11 @@
                 qnaData:'',
                 mainInfo:{},
                 answerData:{},
-                searchData:[],
+                searchData:{},
                 componentType:1,//显示的组件类型 1.问题列表 2.答案面板 3.搜索结果
             }
         },
         mounted() {
-            // this.showCom('questionList')
             let questionInfo = JSON.parse(sessionStorage.getItem('questionInfo'))
             if(questionInfo&&questionInfo.fromPage=='fastMenu'){
                 this.componentType = 2
@@ -132,16 +85,11 @@
             }else{
                 this.componentType = 1
             }
-
             this.qnaData = qnaData;
             this.mainInfo = qnaData[0];
             // console.log(this.qnaData);
         },
         methods: {
-            showCom(name) {
-                console.log('name-------------', name);
-                this.comName = name;
-            },
             //点击菜单
             handleSelect(index) {
                 // console.log(index);
@@ -161,7 +109,7 @@
                         }
                     }
                 })
-                console.log(this.mainInfo);
+                // console.log(this.mainInfo);
 
             },
             //问题列表点击问题
@@ -177,7 +125,7 @@
             //搜索
             searchFun(){
                 // console.log(this.keyword);
-                this.searchData = []
+                this.searchData = {}
                 this.componentType = 3
                 let keyword = this.keyword;
                 let result = []
@@ -188,6 +136,7 @@
                         for(let data of item.question){
                             if(data.title.includes(keyword)||data.answer.includes(keyword)){
                                 // console.log(data);
+
                                 let obj = {
                                     id:data.id,
                                     path:data.path,
@@ -214,16 +163,32 @@
                         })
                     }
                 });
-                this.searchData = result;
+                this.searchData = {
+                    list:result,
+                    keyword:keyword
+                };
                 console.log(this.searchData);
             },
             //清空搜索框
             clearSearch(){
+                this.qnaData.forEach((value,key)=>{
+                    if(value.children){
+                        value.children.forEach((v,k)=>{
+                            if(v.index == this.activeName){
+                                this.mainInfo = v
+                            }
+                        })
+                    }else{
+                        if(value.index == this.activeName){
+                            this.mainInfo = value
+                        }
+                    }
+                })
                 this.componentType = 1
             },
             //点击搜到的问题
             handleResult(data){
-                this.answerData = data
+                this.answerData = data;
                 sessionStorage.setItem('questionInfo',JSON.stringify({'fromPage':'search'}))
                 this.componentType = 2
             },
@@ -287,7 +252,7 @@
         font-size: 14px;
         color:rgba(0,0,0,0.65);
     }
-    .qna-aside /deep/ .el-menu-item.is-active{
+    .qna-aside /deep/ .el-menu-item.is-active,.qna-aside /deep/ .el-menu-item.is-active:focus, .el-menu-item.is-active:hover{
         background-color: #e9f7fe;
         border-right: 2px solid #1890ff;
         color: #1890ff;

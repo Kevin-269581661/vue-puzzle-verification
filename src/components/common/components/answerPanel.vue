@@ -74,6 +74,15 @@
     .answer /deep/ img{
         max-width: 100%;
     }
+    .answer /deep/ table{
+        width: 100%;
+    }
+    .answer /deep/ tr{
+        height: 40px;
+    }
+    .answer /deep/ a{
+        color: #1890ff;
+    }
 
 
     /*!*滚动条*!*/

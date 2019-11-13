@@ -48,6 +48,7 @@ const messageList = () => import('../components/common/messageList.vue')
 const communityRank = () => import('../components/common/communityRank.vue')
 const portraitDetail = () => import('../components/common/portraitDetail.vue')
 const qinLinMap = () => import('../components/common/qinLinMap.vue')
+const resContrastMap = () => import('../components/common/resContrastMap.vue')
 
 // 下载进度页面
 const progressDown = () => import('../components/common/progressDown.vue')
@@ -115,6 +116,8 @@ export default new Router({
         {path: '/ADResourceMap/chooseRes',name:'qinLinMap',component: qinLinMap, meta:{title: '亲邻科技，智慧选点'}},
         // 地图分享
         {path: '/ADResourcesMap/shareRes',name:'qinLinMap',component: qinLinMap, meta:{title: '亲邻科技，智慧分享'}},
+        //资源对比可视化
+        {path: '/resContrastMap',name:'resContrastMap',component: resContrastMap, meta:{title: '亲邻科技，智慧地图'}},
         //消息列表
         //上下刊报告h5页面
         {path: '/Report', name: 'Report', component: Report},

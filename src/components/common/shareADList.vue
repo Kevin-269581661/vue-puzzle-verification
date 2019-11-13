@@ -224,9 +224,8 @@
                             </el-table>
                         </el-tab-pane>
                         <el-tab-pane label="地图模式" name="second">
-                            <!--该功能暂未开放-->
-                            <iframe :src='iframeSrc'
-                                      frameborder="0" style="height: 528px;width: 100%" id="wuyouMap"></iframe>
+                            <share-ad-map :mapADList="showADList" :mapCity="activeCity" :tableSelects="tableSelects"
+                                          :activeName="activeName" :reading="reading" @mapSelectRes="getMapSelect"></share-ad-map>
                         </el-tab-pane>
                     </el-tabs>
                 </div>
@@ -242,7 +241,6 @@
                     </p>
                 </div>
             </div>
-
         </div>
         <div v-else>
             <share-mobile></share-mobile>
@@ -255,6 +253,7 @@
     // 时间格式化
     import dateFormat from "../../commonFun/timeFormat.js";
     import shareMobile from "./shareADList_mobile"
+    import shareAdMap from "./map/shareHelpADMap"
 
     export default {
         name: "shareADList",
@@ -278,7 +277,7 @@
                 key: 1,
                 webLoading: '',
                 iframeSrc: '',          // 无忧地图地址
-                activeCity:'',      // 当前城市
+                activeCity: {},      // 当前城市
                 activeIsLevel: true, // 当前城市是否执行媒体分层
                 selectNum: 1,       // 所选吗，面数
                 selectLevelNum: {A: 0, B: 0, C: 0},
@@ -286,12 +285,17 @@
                 activeRadio: {asName:'北京公司',rName:'北京市'},
                 cityAsNameList: [
                     {asName: '北京公司',rName: '北京市'},
-                    {asName: '广州公司',rName: '广州市'}
-                ],     //
+                ],
+                // 地图选中的资源
+                mapResList: [],
+                // 是否变动
+                isChangeMapSelect: false,
+                tableSelects: []
             }
         },
         components: {
             shareMobile: shareMobile,
+            shareAdMap: shareAdMap
         },
         created() {
             console.log('创建Create:', this.shopMedia_ADNum)
@@ -333,12 +337,15 @@
             },
             // 切换tabs
             switchTabs(tab, event) {
-                console.log(tab,event)
+                console.log(tab, event)
                 if (tab.name === 'second') {
-                    this.putAdsToWuYouMap()
-                }else{
+                    this.listToMap()
+                } else {
                     // 无忧地图选择点位同步到列表
-                    this.wuYouMapToList()
+                    if (this.isChangeMapSelect) {
+                        this.resetPlanList()
+                        this.mapToList()
+                    }
                 }
             },
             getFAInfo() {
@@ -423,7 +430,6 @@
                                     }
                                     let time = this.formatTime(rKey.pbStar) + "-" + this.formatTime(rKey.pbEnd);
                                     arr.push({
-                                        // classified: key.classified,
                                         rID: rKey.rID,
                                         asName: rKey.asName,                // 点位所属公司名称
                                         city: rKey.city,
@@ -444,12 +450,20 @@
                                         levelNum: {A: rKey.A || 0, B: rKey.B || 0, C: rKey.C || 0},
                                         selectedNum:  {A: 0, B: 0, C: 0},
                                         noLevelSelectedNum: 0,
-                                        selectedRoadGateNum: 0
+                                        selectedRoadGateNum: 0,
+                                        lat: rKey.lat,
+                                        lng: rKey.lng,
+                                        districtName: rKey.districtName,
+                                        notPush: rKey.notPush,
+                                        resAddress: rKey.resAddress,
+                                        tradingArea: rKey.tradingArea,
+                                        cType: rKey.cType
                                     })
                                 }
                                 tableArr.push({
                                     asName: key.asName,
                                     rName: key.city,
+                                    cityId: key.cityId,
                                     maxSelectNum: maxSelectNum,
                                     isLevel: key.classified == 1 ? true : false,
                                     adsArr: arr
@@ -463,7 +477,10 @@
                             this.cityAsNameList = cityAsNameList
                             this.activeRadio = this.cityAsNameList[0]
                             this.ADList = tableArr
-                            // this.activeCity = tableArr[0].rName
+                            this.activeCity = {
+                                value: this.ADList[0].cityId,
+                                label: this.cityAsNameList[0].rName
+                            }
                             this.activeIsLevel =  tableArr[0].isLevel
                             this.showADList = tableArr[0].adsArr
                             this.computeNumber()
@@ -718,7 +735,7 @@
             // 全选中
             handleSelectAll(selection) {
                 console.log('全选中selection', selection)
-                if (selection.length >= 0) {
+                if (selection.length) {
                     for (let key of selection) {
                         if (this.activeIsLevel) {
                             key.selectedNum.A = key.levelNum.A
@@ -737,17 +754,18 @@
             },
             // 重置ADList的勾选
             resetPlanList() {
-                console.log('重置ADList的勾选开始')
-                for(let key of this.showADList){
-                    if (this.activeIsLevel){
-                        for(let i in key.selectedNum){
+                console.log('重置ADList的勾选开始',this.activeIsLevel)
+                for (let key of this.showADList) {
+                    if (this.activeIsLevel) {
+                        for (let i in key.selectedNum) {
                             key.selectedNum[i] = 0
                         }
                         key.selectedRoadGateNum = 0
-                    }else{
+                    } else {
                         key.noLevelSelectedNum = 0
                         key.selectedRoadGateNum = 0
                     }
+                    this.$refs.multipleTable.toggleRowSelection(key, false)
                 }
                 console.log('重置ADList的勾选结束')
             },
@@ -802,10 +820,48 @@
                 this.resMediaAdsNum.resNum = resArr.length
                 this.resMediaAdsNum.ADNum = adsNum
             },
+            // 地图选择到资源
+            getMapSelect(...data) {
+                  console.log('地图选择到资源---',data)
+                this.mapResList = data[0]
+                this.isChangeMapSelect = true
+            },
+            // 地图同步到列表
+            mapToList() {
+                console.log('地图同步到列表---',this.mapResList,this.ADList)
+                for (let mapKey of this.mapResList) {
+                    for (let adkey of this.ADList) {
+                        for (let keyArr of adkey.adsArr) {
+                            if (mapKey.resID == keyArr.resID) {
+                                if (this.activeIsLevel) {
+                                    console.log('----',keyArr)
+                                    if (keyArr.selectedNum.A <= 0 && keyArr.selectedNum.B <= 0 && keyArr.selectedNum.C <= 0) {
+                                        if (keyArr.selectedNum.A < keyArr.levelNum.A) {
+                                            keyArr.selectedNum.A++
+                                            this.$refs.multipleTable.toggleRowSelection(keyArr, true)
+                                        } else if (keyArr.selectedNum.B < keyArr.levelNum.B) {
+                                            keyArr.selectedNum.B++
+                                            this.$refs.multipleTable.toggleRowSelection(keyArr, true)
+                                        } else if (keyArr.selectedNum.C < keyArr.levelNum.C) {
+                                            keyArr.selectedNum.C++
+                                            this.$refs.multipleTable.toggleRowSelection(keyArr, true)
+                                        }
+                                    }
+                                } else {
+                                    if (keyArr.noLevelSelectedNum <= 0) {
+                                        keyArr.noLevelSelectedNum++
+                                        this.$refs.multipleTable.toggleRowSelection(keyArr, true)
+                                        break
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             // 提交列表选择的点位给无忧地图 activeRadio
-            putAdsToWuYouMap() {
+            listToMap() {
                 console.log('this.ADList',this.ADList)
-                let urlPath = location.href
                 let arr = []
                 let AllADData = this.ADList
                 for(let cityADList of AllADData){
@@ -814,17 +870,17 @@
                             if(this.activeIsLevel){
                                 if(ckey.selectedNum.A > 0 || ckey.selectedNum.B > 0 || ckey.selectedNum.C > 0){
                                     if (!arr.length){
-                                        arr.push(ckey.resMapID)
+                                        arr.push(ckey.resID)
                                     }else{
                                         let isHad = false
                                         for (let pkey of arr){
-                                            if (pkey === ckey.resMapID){
+                                            if (pkey === ckey.resID){
                                                 isHad = true
                                                 break
                                             }
                                         }
                                         if (!isHad){
-                                            arr.push(ckey.resMapID)
+                                            arr.push(ckey.resID)
                                         }else{
                                             console.log('重复的资源1', ckey)
                                         }
@@ -833,17 +889,17 @@
                             } else {
                                 if (ckey.noLevelSelectedNum > 0) {
                                     if (!arr.length) {
-                                        arr.push(ckey.resMapID)
+                                        arr.push(ckey.resID)
                                     } else {
                                         let isHad = false
                                         for (let pkey of arr) {
-                                            if (pkey === ckey.resMapID) {
+                                            if (pkey === ckey.resID) {
                                                 isHad = true
                                                 break
                                             }
                                         }
                                         if (!isHad) {
-                                            arr.push(ckey.resMapID)
+                                            arr.push(ckey.resID)
                                         } else {
                                             console.log('重复的资源2', ckey)
                                         }
@@ -853,80 +909,8 @@
                         }
                     }
                 }
-                let params = {apID: this.apid, data: arr}
-                console.log('提交列表to无忧地图',params)
-                api.postApi_new(this.apiVar.Map + '/PushListData',params).then(res=>{
-                    console.log('提交列表模式临时数据到无忧地图',res)
-                    this.iframeSrc = this.apiVar.shareWUYouMap + this.apid + '&city=' + this.activeRadio.rName
-                    // if (urlPath.indexOf('www') !== -1) {
-                    //     生产环境
-                    //     this.iframeSrc = 'https://www.dituwuyou.com/qinlin/embed?mid=FPcrNHyq3xXFZDbqlTyHKA&token=fp3nxsKCYZzOSnU0KosEq0GA1o1qcKh5XLA&myid='
-                    //         + this.apid + '&city=' + this.activeRadio.rName
-                    // } else {
-                    //     // 开发环境
-                    //     this.iframeSrc = 'https://wsopbodv.dituwuyou.com/qinlin/embed?mid=_J6aWeV128gkhVn54AfWIw&token=SvcvtTqpktwPUb8dbu_jx0602nj_4tF-is8&myid='
-                    //         + this.apid + '&city=' + this.activeRadio.rName
-                    // }
-                })
-            },
-            // 无忧同步到列表
-            wuYouMapToList(){
-                let params = {apID: this.apid}
-                api.getApi(this.apiVar.Map + '/GetListData',params).then(res=>{
-                    console.log('无忧同步到列表',res)
-                    let dataArr = res.data
-                    if(dataArr.code == '300200'){
-                        // this.ADList
-                        // this.resetPlanList()
-                        console.log('this.ADList',this.ADList,dataArr.data)
-                        for(let rkey of dataArr.data){
-                            for(let adkey of this.ADList){
-                                for(let keyArr of adkey.adsArr){
-                                    if(rkey.resMapID == keyArr.resMapID){ // && rkey.selected
-                                        if(rkey.selected){
-                                            if (this.activeIsLevel) {       // 该公司城市执行媒体分层
-                                                if(keyArr.selectedNum.A <= 0 && keyArr.selectedNum.B <= 0 && keyArr.selectedNum.C <= 0){
-                                                    if(keyArr.selectedNum.A < keyArr.levelNum.A){
-                                                        keyArr.selectedNum.A++
-                                                        this.$refs.multipleTable.toggleRowSelection(keyArr, true)
-                                                    }else if(keyArr.selectedNum.B < keyArr.levelNum.B){
-                                                        keyArr.selectedNum.B++
-                                                        this.$refs.multipleTable.toggleRowSelection(keyArr, true)
-                                                    }else if(keyArr.selectedNum.C < keyArr.levelNum.C){
-                                                        keyArr.selectedNum.C++
-                                                        this.$refs.multipleTable.toggleRowSelection(keyArr, true)
-                                                    }
-                                                }
-                                            } else { // adDoorTotal
-                                                if(keyArr.noLevelSelectedNum <= 0){
-                                                    keyArr.noLevelSelectedNum++
-                                                    this.$refs.multipleTable.toggleRowSelection(keyArr, true)
-                                                    break
-                                                }
-                                            }
-                                        }else{
-                                            if (this.activeIsLevel){
-                                                keyArr.selectedNum.A = 0
-                                                keyArr.selectedNum.B = 0
-                                                keyArr.selectedNum.C = 0
-                                            }else{
-                                                keyArr.noLevelSelectedNum = 0
-                                            }
-                                            this.$refs.multipleTable.toggleRowSelection(keyArr, false)
-                                        }
-
-                                    }
-                                }
-                            }
-                        }
-                        // this.resetPlanList()
-                        console.log('this.ADList',this.ADList)
-                        this.iframeSrc = ''
-
-                    }else{
-                        this.$message.error('地图选点同步到列表失败！')
-                    }
-                })
+                console.log('提交列表到地图',arr)
+                this.tableSelects = arr
             },
             // 提交前判断是否有勾选
             returnIsSelect(){
@@ -1067,10 +1051,10 @@
 
     .content_head {
         margin-top: 25px;
-        /*width: 100%;*/
         height: 90px;
         background: #fff;
         padding: 17px 15px;
+        border: 1px solid rgba(232,232,232,1);
     }
 
     .content_head h2 {
@@ -1090,12 +1074,22 @@
     }
 
     .content_main {
-        margin-top: 25px;
+        margin-top: 24px;
         background: #fff;
-        padding: 0 15px 15px 15px;
+        padding: 0;
+        border: 1px solid rgba(232,232,232,1);
     }
     .content_main /deep/ .el-tabs__content{
-        padding: 0 12px;
+        padding: 0 24px 24px;
+    }
+
+    .content_main /deep/ .el-tabs__nav-wrap{
+        padding: 0 24px;
+    }
+
+    .content_main /deep/ .el-tabs__nav{
+        height: 48px;
+        line-height: 48px;
     }
 
     .car-title {
@@ -1108,7 +1102,6 @@
 
     .car-title h4 {
         font-size: 14px;
-        /*font-weight: bold;*/
         display: inline-block;
         color: #444;
     }
@@ -1127,40 +1120,50 @@
         cursor: pointer;
         color: #1890ff;
     }
+
     /deep/ .el-tabs__item{
         font-size: 16px;
     }
+
     /deep/ .el-tabs__item.is-active {
         color: #1890FF;
     }
+
     /deep/ .el-table th{
         background: #f7f7f7;
     }
+
     /deep/ .el-table th > .cell {
         color: #666666;
         line-height: 14px;
         font-weight: bold;
 
     }
+
     /deep/ .el-table__row td{
         line-height: 48px;
         font-size: 14px;
         padding: 8px 0;
     }
+
     /deep/ .el-checkbox + .el-checkbox {
         margin-left: 10px;
     }
+
     /deep/ .el-table__expanded-cell[class*=cell] {
         padding: 0 86px;
         background-color: #F7F7F7;;
     }
+
     .el-table__expanded-cell[class*=cell] .el-form{
         height: 44px;
         line-height: 44px;
     }
+
     /deep/ .el-form-item__content {
         line-height: 46px;
     }
+
     /*滚动条*/
     /deep/ .el-table__body-wrapper {
         height: 440px;
@@ -1179,17 +1182,19 @@
         background: #C1C1C1;
         border-radius: 4px;
     }
+
     /deep/ .el-table td .cell {
-        /*display: flex;*/
         height: 30px;
         line-height: 30px;
         overflow-x: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+
     /deep/ .el-table__row .cell span{
         overflow-x: initial;
     }
+
     .searchBox{
         margin-bottom: 10px;
         font-size: 14px;
@@ -1199,10 +1204,7 @@
         width: 162px;
         margin: 0 10px 0 5px;
     }
-    .cityLevelMedia /deep/ .el-input{
-        /*width: 185px;*/
-        /*margin-right: 8px;*/
-    }
+
     /*城市按钮*/
     .city_radio{
         display: inline-block;
@@ -1221,21 +1223,16 @@
         background: #409EFF;
         color: #fff;
     }
- /*   /deep/ .cityRadio .el-radio-button{
-        margin-right: 15px;
-        margin-bottom: 10px;
-    }
-    /deep/ .cityRadio .el-radio-button__inner{
-        border-radius: 4px;
-        border-left: 1px solid #dcdfe6;
-    }*/
+
     .addMinus{
         position: relative;
     }
+
     .addMinus /deep/ .el-input-number.is-controls-right .el-input__inner{
         padding-left: 5px;
         padding-right: 32px;
     }
+
     .addMinus /deep/ .el-input-number--mini{
         width: 90%;
     }
@@ -1259,7 +1256,7 @@
     .shareTable /deep/ .el-table__row td:nth-child(13){
         text-align: center;
     }
-    /*.el-table__body-wrapper*/
+
     @media all and (min-width: 1900px){
         /deep/ .el-table__body-wrapper{
             overflow-x: hidden;

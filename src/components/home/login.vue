@@ -104,6 +104,7 @@
             }
         },
         mounted: function () {
+            // 移除社区画像信息
             sessionStorage.removeItem("portraitInfo");
             //页面加载调用获取cookie值
             this.username = utils.getCookie('username');

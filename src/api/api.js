@@ -67,9 +67,23 @@ export const api = {
             headers:{
                 'Content-Type': 'multipart/form-data'
             },
-        }).then(res => res).catch(err =>{
+    }).then(res => res).catch(err =>{
             console.log('upload--error', err);
         });
     },
+    // post请求获取数据流文件
+    postExportFile(url, postParams,resType) {
+        return axios({
+            method: 'post',
+            url: url,
+            data: postParams,
+            headers:{
+                'Content-Type': 'multipart/form-data'
+            },
+            responseType: resType ? resType : 'json',
+        }).then(res => res).catch(err =>{
+            console.log('Export--error', err);
+        });
+    }
 }
 export default api

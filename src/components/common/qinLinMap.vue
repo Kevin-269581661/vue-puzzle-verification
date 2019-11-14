@@ -907,6 +907,7 @@
                     tradingArea: this.tradingArea,
                     adLimit: this.selectLimits.join(','),
                     mType: this.selectDoorType,
+                    mType: this.selectDoorType,
                     mVehicle: this.selectMediaType,
                     grade: this.selectMediaLevel
                 }
@@ -983,8 +984,10 @@
                         }
                         i++
                         markerList.push(marker)
+
                     }
                     this.resMarkers = markerList
+
                 } else {
                     console.log('----------聚--合---------')
                     // 设置聚合的最大缩放级别

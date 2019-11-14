@@ -1,17 +1,16 @@
 <template>
-    <div class="res-contrast-map">
+    <div class="res-contrast-map" v-loading="mapLoading"
+         element-loading-text="玩命加载中.."
+         element-loading-spinner="el-icon-loading">
         <!--引入远程JS-->
         <remote-js src="https://api.map.baidu.com/library/GeoUtils/1.2/src/GeoUtils_min.js"></remote-js>
         <!--地图标签-->
-        <div v-loading="mapLoading"
-             element-loading-text="玩命加载中.."
-             element-loading-spinner="el-icon-loading"
-             id="resMap" ref="resMap">
+        <div id="resMap" ref="resMap">
         </div>
         <!--左上角下拉框-->
         <div class="select-group">
             <!--城市-->
-            <el-select v-model="selectCity" size="small" placeholder="请选择城市" @change="filterCity">
+            <el-select v-model="selectCity" size="small" placeholder="请选择城市" @change="filterCity" filterable>
                 <el-option v-for="item in cityList" :key="item.value" :label="item.label"
                            :value="item.value"></el-option>
             </el-select>
@@ -28,9 +27,10 @@
         </div>
         <!--右上角选择-->
         <div class="radio-group">
-            <el-checkbox-group v-model="companyCheckbox" @change="chooseCompany">
-                <el-checkbox v-for="item in companyList" :label="item.value" :key="item.value" :class="item.class">
-                    {{item.name}}({{item.num}})
+            <el-checkbox-group v-model="companyCheckbox">
+                <el-checkbox v-for="item in companyList" :label="item.value" :key="item.value" :class="item.color"
+                             @change="chooseCompany($event,item.value)" :disabled='item.count==0'>
+                    {{item.name}}({{item.count}})
                 </el-checkbox>
             </el-checkbox-group>
         </div>
@@ -80,7 +80,14 @@
                 // 标识当前模式为多点辐射
                 isMultiPoint: false,
                 //浮标
-                resMarkers: [],
+                QLpointCollection: [],
+                FZpointCollection: [],
+                XCpointCollection: [],
+                XYMpointCollection: [],
+                QLResData: [],
+                FZResData: [],
+                XCResData: [],
+                XYMResData: [],
                 //比例
                 scale: '5公里',
                 cityList: '',
@@ -91,15 +98,16 @@
                     {label: '写字楼', value: 2}
                 ],
                 selectCity: '',
-                selectArea: '',
+                selectArea: [],
                 selectResType: 0,
                 companyList: [
-                    {value: 1, name: '亲邻', num: 2809, class: 'red'},
-                    {value: 2, name: '分众', num: 2809, class: 'blue'},
-                    {value: 3, name: '新潮', num: 2809, class: 'orange'},
-                    {value: 4, name: '祥云门', num: 2809, class: 'green'},
+                    {value: 1, name: '亲邻', count: 0, color: 'red'},
+                    {value: 2, name: '分众', count: 0, color: 'blue'},
+                    {value: 3, name: '新潮', count: 0, color: 'orange'},
+                    {value: 4, name: '祥云门', count: 0, color: 'green'},
                 ],
-                companyCheckbox: [1]
+                companyCheckbox: [1],
+
             }
         },
         methods: {
@@ -108,14 +116,13 @@
                 let that = this
                 console.log('初始化地图----')
                 // 创建Map实例
-                this.resMap = new BMap.Map("resMap", {enableMapClick: false});
+                this.resMap = new window.BMap.Map("resMap", {enableMapClick: false});
                 console.log('resMap', this.resMap)
                 // 设置地图显示的城市 此项是必须设置的
-                // this.resMap.setCurrentCity(this.$route.query.city);
-                this.resMap.setCurrentCity('广州市');
+                let city = areaPackage.CodeToText(this.selectCity)
+                this.resMap.setCurrentCity(city);
                 // 初始化地图,设置中心点坐标和地图级别
-                // this.resMap.centerAndZoom(this.$route.query.city, 11);
-                this.resMap.centerAndZoom('广州市', 11);
+                this.resMap.centerAndZoom(city, 11);
                 //开启鼠标滚轮缩放
                 this.resMap.enableScrollWheelZoom(true);
                 let mapStyleJson = [
@@ -145,7 +152,7 @@
 
                 // 监听点击地图
                 this.resMap.addEventListener("click", (e) => {
-                    console.log('监听点击地图---', e.point)
+                    // console.log('监听点击地图---', e.point)
                     if (this.isMouseLine) {
                         if (!this.mouseLineStep) {
                             this.resMap.addEventListener("mousemove", that.mapMouseMove, false)
@@ -163,7 +170,7 @@
                 this.resMap.addEventListener('moveend', (e) => {
                     this.pointInBounds()
                 })
-                this.mapLoading = false
+                this.getData(1)
             },
             // 判断点是否在视野内
             pointInBounds() {
@@ -195,29 +202,206 @@
             },
             // 选择城市
             filterCity() {
-                console.log('城市', this.selectCity)
+                // console.log('城市', this.selectCity)
+                let city = areaPackage.CodeToText(this.selectCity)
+                this.resMap.setCurrentCity(city);
+                // 初始化地图,设置中心点坐标和地图级别
+                this.resMap.centerAndZoom(city, 11);
+                this.resMap.removeOverlay(this.QLpointCollection)
+                this.resMap.removeOverlay(this.FZpointCollection)
+                this.resMap.removeOverlay(this.XCpointCollection)
+                this.resMap.removeOverlay(this.XYMpointCollection)
+                this.selectArea = [];
+                this.getArea(this.selectCity)
+                console.log(this.companyCheckbox);
+                if (this.companyCheckbox.length > 0) {
+                    for (let data of this.companyCheckbox) {
+                        // 设置地图显示的城市 此项是必须设置的
+                        this.getData(data)
+                    }
+                }
             },
             // 选择区域
             filterArea() {
                 console.log('区域', this.selectArea)
-
+                // this.resMap.removeOverlay(that.mapLabel)
+                this.resMap.removeOverlay(this.QLpointCollection)
+                this.resMap.removeOverlay(this.FZpointCollection)
+                this.resMap.removeOverlay(this.XCpointCollection)
+                this.resMap.removeOverlay(this.XYMpointCollection)
+                // this.getData()
+                if (this.companyCheckbox.length > 0) {
+                    for (let data of this.companyCheckbox) {
+                        this.getData(data)
+                    }
+                }
             },
             //选择资源类型
             filterResType() {
                 console.log('类型', this.selectResType)
             },
             //选择公司
-            chooseCompany() {
-                console.log(this.companyCheckbox);
+            chooseCompany(e, id) {
+                // console.log(e,id);
+                if (e) {
+                    this.getData(id)
+                } else {
+                    if(id == 1){
+                        this.resMap.removeOverlay(this.QLpointCollection)
+                    }else if(id == 2){
+                        this.resMap.removeOverlay(this.FZpointCollection)
+                    }else if(id == 3){
+                        this.resMap.removeOverlay(this.XCpointCollection)
+                    }else{
+                        this.resMap.removeOverlay(this.XYMpointCollection)
+                    }
+                }
+            },
+            //获取点位数据
+            getData(companyId) {
+                this.mapLoading = true
+                let info = {
+                    cityCode: this.selectCity,
+                    company: companyId
+                }
+                if (this.selectArea.length > 0) {
+                    info.districtCodes = this.selectArea.join(',')
+                }
+                if (this.selectResType != 0) {
+                    info.resType = this.selectResType
+                }
+                api.getApi(this.apiVar.mapApi + '/resCompare/list', info).then(res => {
+                    console.log('数据', res.data.data)
+                    if (res.data.SysCode == 200200) {
+                        let result = res.data.data.resList
+                        if (companyId == 1) {
+                            this.QLResData = result
+                            this.addMarker(result, '#FF3131', companyId)
+                        } else if (companyId == 2) {
+                            this.FZResData = result
+                            this.addMarker(result, '#318FFF', companyId)
+                        } else if (companyId == 3) {
+                            this.XCResData = result
+                            this.addMarker(result, '#ffa940', companyId)
+                        } else {
+                            this.XYMResData = result
+                            this.addMarker(result, '#52c41a', companyId)
+                        }
+                    } else {
+                        this.$message.warning(res.data.MSG)
+                    }
+                })
+                this.getCommunityCount(companyId)
+            },
+            //获取点位数量数据
+            getCommunityCount(companyId){
+                let info = {
+                    cityCode: this.selectCity,
+                }
+                if (this.selectArea.length > 0) {
+                    info.districtCodes = this.selectArea.join(',')
+                }
+                if (this.selectResType != 0) {
+                    info.resType = this.selectResType
+                }
+                api.getApi(this.apiVar.mapApi + '/resCompare/resCount', info).then(res => {
+                    // console.log('数据', res.data)
+                    if (res.data.SysCode == 200200) {
+                        this.companyList = res.data.data
+                    } else {
+                        this.$message.warning(res.data.MSG)
+                    }
+                })
+            },
+            //添加标注
+            addMarker(arr, color,companyId) {
+                // for (let data of arr) {
+                //     let point = new window.BMap.Point(data.lng, data.lat); //将标注点转化成地图上的点
+                //     let myIcon = new window.BMap.Icon(iconUrl, new window.BMap.Size(22, 22), {
+                //         anchor: new BMap.Size(-22, -11),//图标的定位点相对于图标左上角的偏移值
+                //         imageSize: new BMap.Size(22, 22),//图标大小
+                //     });
+                //     let marker = new window.BMap.Marker(point, {icon: myIcon}); //将点转化成标注点
+                //     Markers.push(marker)
+                //     this.resMap.addOverlay(marker);  //将标注点添加到地图上
+                //     // setTimeout(()=>{
+                //     this.mapLoading = false
+                //     // },5000)
+                // }
+                if (document.createElement('canvas').getContext) {  // 判断当前浏览器是否支持绘制海量点
+                    var points = [];  // 添加海量点数据
+                    for (let data of arr) {
+                        points.push(new window.BMap.Point(data.lng, data.lat));
+                    }
+                    var options = {
+                        size: BMAP_POINT_SIZE_SMALL,
+                        shape: BMAP_POINT_SHAPE_CIRCLE,
+                        color: color
+                    }
+                    if (companyId == 1) {
+                        this.QLpointCollection = new BMap.PointCollection(points, options);  // 初始化PointCollection
+                        this.QLpointCollection.addEventListener('click', function (e) {
+                            // 监听点击事件
+                        });
+                        this.resMap.addOverlay(this.QLpointCollection);  // 添加Overlay
+                    } else if (companyId == 2) {
+                        this.FZpointCollection = new BMap.PointCollection(points, options);  // 初始化PointCollection
+                        this.resMap.addOverlay(this.FZpointCollection);  // 添加Overlay
+                    } else if (companyId == 3) {
+                        this.XCpointCollection = new BMap.PointCollection(points, options);  // 初始化PointCollection
+                        this.resMap.addOverlay(this.XCpointCollection);  // 添加Overlay
+                    } else {
+                        this.XYMpointCollection = new BMap.PointCollection(points, options);  // 初始化PointCollection
+                        this.resMap.addOverlay(this.XYMpointCollection);  // 添加Overlay
+                    }
+
+                    this.mapLoading = false
+                } else {
+                    alert('请在chrome、safari、IE8+以上浏览器查看本示例');
+                }
+
+            },
+            // 获取城市
+            getCity() {
+                api.postApi(this.apiVar.Advertisement + '/GetAuthorCity').then(res => {
+                    console.log(res.data);
+                    if (res.data.SysCode == 300200) {
+                        let resinfo = res.data.data;
+                        let result = [];
+                        for (let data of resinfo) {
+                            let obj = {
+                                label: data.rName,
+                                value: data.rID.toString()
+                            };
+                            result.push(obj);
+                        }
+                        this.cityList = result;
+                        this.selectCity = this.cityList[0].value
+                        this.getArea(this.selectCity)
+                        this.initMap()
+                    } else {
+                        Message.warning(res.data.MSG);
+                    }
+                });
+            },
+            //区域列表
+            getArea(id) {
+                this.areaList = areaPackage.findArea(id)
             }
         },
         mounted() {
-            window.onload = this.initMap()
+            this.getCity()
+
         }
     }
 </script>
 
 <style scoped>
+    .res-contrast-map {
+        width: 100%;
+        height: 100vh;
+    }
+
     #resMap {
         position: fixed !important;
         top: 0;
@@ -279,30 +463,50 @@
         border: none;
     }
 
-    .red /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner{
-        background-color: #FF3131;
-        border-color: #FF3131;
+    .red /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+        background-color: rgba(255,49,49,0.8);
+        border-color: rgba(255,49,49,0.8);
     }
-
     .blue /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner {
-        background-color: #318FFF;
-        border-color: #318FFF;
+        background-color: rgba(49,143,255,0.8);
+        border-color: rgba(49,143,255,0.8);
     }
 
-    .orange /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner  {
-        background-color: #ffa940;
-        border-color: #ffa940;
+
+    .orange /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+        background-color: rgba(255,169,64,0.8);
+        border-color: rgba(255,169,64,0.8);
     }
+
 
     .green /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner {
-        background-color: #13c2c2;
-        border-color: #13c2c2;
+        background-color: rgba(82,196,26,0.8);
+        border-color: rgba(82,196,26,0.8);
     }
-    .red /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .blue /deep/ .el-checkbox__input.is-focus .el-checkbox__inner ,.orange /deep/ .el-checkbox__input.is-focus .el-checkbox__inner,.green /deep/ .el-checkbox__input.is-focus .el-checkbox__inner{
+    .red /deep/ .el-checkbox__inner {
+        background-color: rgba(255,49,49,0.2);
+        border-color: rgba(255,49,49,0.2);
+    }
+    .blue /deep/ .el-checkbox__inner {
+        background-color: rgba(49,143,255,0.2);
+        border-color: rgba(49,143,255,0.2);
+    }
+    .orange /deep/ .el-checkbox__inner {
+        background-color: rgba(255,169,64,0.2);
+        border-color: rgba(255,169,64,0.2);
+    }
+    .green /deep/ .el-checkbox__inner {
+        background-color: rgba(82,196,26,0.2);
+        border-color: rgba(82,196,26,0.2);
+    }
+
+    .red /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .blue /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .orange /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .green /deep/ .el-checkbox__input.is-focus .el-checkbox__inner {
+        border-color: transparent;
+    }
+    .red /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner, .blue /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner, .orange /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner, .green /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner {
+        background-color: #edf2fc;
         border-color: #dcdfe6;
     }
-
-
     /*底部右侧控件*/
     .bottom_right_control {
         position: fixed;

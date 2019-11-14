@@ -2137,6 +2137,7 @@
                     this.liveYear = ['', '']
                     this.filterData.lYear = false
                 }
+                this.transfersFun()
             },
             // 清空条件
             clearFilter() {
@@ -2150,6 +2151,10 @@
                 this.selectMediaLevel = ''
                 this.selectLimits = []
                 this.selectArea = []
+                this.selectTradingArea = ''
+                for(let key in this.filterData) {
+                    this.filterData[key] = false
+                }
                 this.transfersFun()
             },
             /**

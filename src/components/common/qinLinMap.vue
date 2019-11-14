@@ -960,8 +960,9 @@
             // 创建标注
             creatMarker() {
                 console.log('在线搜索、鼠标绘制、多点辐射',this.isOnlineSearch,this.isMouseSearch,this.isMultiPoint)
-                if(this.isMultiPoint) {
-                    this.markerClusterer.clearMarkers()
+                this.markerClusterer ? this.markerClusterer.clearMarkers() : ''
+                if(this.isMultiPoint || (this.resInfo.length < 50 && this.isShare)) {
+                    // this.markerClusterer ? this.markerClusterer.clearMarkers() : ''
                     let i = 0
                     let markerList = [];
                     let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(16,16),{
@@ -969,7 +970,7 @@
                     });
                     for(let key of this.resInfo) {
                         this.$set(key, "isSelect", false);
-                        let point = new BMap.Point(key.lng, key.lat);
+                        let point = new BMap.Point(Number(key.lng), Number(key.lat));
                         let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
                         let label = this.setMarkerLabel(key.resName)
                         marker.setLabel(label);
@@ -989,14 +990,14 @@
                     }
                     this.resMarkers = markerList
                 } else {
-                    console.log('----------聚--合---------')
+                    console.log('----------聚--合---------',this.resInfo)
                     // 设置聚合的最大缩放级别
                     let markerList = [];
                     let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(16,16),{
                         anchor: new BMap.Size(8, 8)
                     });
                     for (let key of this.resInfo) {
-                        let point = new BMap.Point(key.lng, key.lat);
+                        let point = new BMap.Point(Number(key.lng), Number(key.lat));
                         let marker = new BMap.Marker(point, {icon: myIcon});  // 创建标注
                         let label = this.setMarkerLabel(key.resName)
                         marker.setLabel(label);
@@ -1288,7 +1289,7 @@
             // 显示多边形内的点位
             showResInPolygon(temp, overlay) {
                 console.time('显示多边形')
-                this.markerClusterer.clearMarkers()
+                this.markerClusterer ? this.markerClusterer.clearMarkers() : ''
                 // console.log('resMarkers', this.resMarkers)
                 for (let akey of this.resMarkers) {
                     let isShow = ''
@@ -1331,7 +1332,7 @@
                 }
                 this.resMap.removeOverlay(this.mouseoverlay)
                 this.searchResList = []
-                this.markerClusterer.addMarkers(this.resMarkers)
+                this.markerClusterer ? this.markerClusterer.addMarkers(this.resMarkers) : ''
             },
             // 地图缩放
             setMapZoom(temp) {
@@ -1824,7 +1825,7 @@
                 // console.log('this.selectOnlineList',this.selectOnlineList)
                 this.searchLoading = true
                 let timer = setTimeout(()=>{
-                    this.markerClusterer.clearMarkers()
+                    this.markerClusterer ? this.markerClusterer.clearMarkers() : ''
                     this.searchResList = []
                     let radius = this.aroundSearchInfo.searchRadius * 1000
                     for (let key of this.selectOnlineList) {
@@ -1983,7 +1984,7 @@
                             this.resMap.removeOverlay(akey);
                         }
                     }
-                    this.markerClusterer.addMarkers(this.resMarkers)
+                    this.markerClusterer ? this.markerClusterer.addMarkers(this.resMarkers) : ''
                     this.initResMarkers()
                     // 移除
                     for (let key of this.selectOnlineList) {

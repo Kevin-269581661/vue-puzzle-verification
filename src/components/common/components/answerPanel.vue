@@ -83,6 +83,12 @@
     .answer /deep/ a{
         color: #1890ff;
     }
+    .answer /deep/ video{
+        width: 100%;
+    }
+    .answer /deep/ video:focus{
+        outline: none;
+    }
 
 
     /*!*滚动条*!*/

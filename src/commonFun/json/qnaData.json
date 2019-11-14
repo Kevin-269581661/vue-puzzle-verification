@@ -44,7 +44,7 @@
                         "id": "5",
                         "path": "媒体模块 > 媒体操作",
                         "title": "多录的、重复的、录错的媒体资源能否进行删除？",
-                        "answer": "<p>可以删除。可通过【媒体管理】→【操作】→【删除】的步骤对媒体资源进行删除。</br>注意事项：</p><ul><li>目前的删除功能暂不支持删除已被方案或订单使用的点位；</li><li>若是被方案使用的点位，可以从方案中将点位移除，再进行删除操作；</li><li>订单中的点位，即使点位被终止了，也无法对该点位进行删除；</li><ul><img src='../../../../static/images/qna_2.1.1.png' alt=''>"
+                        "answer": "<p>可以删除。可通过【媒体管理】→【操作】→【删除】的步骤对媒体资源进行删除。</br>注意事项：</p><ul><li>目前的删除功能暂不支持删除已被方案或订单使用的点位；</li><li>若是被方案使用的点位，可以从方案中将点位移除，再进行删除操作；</li><li>订单中的点位，即使点位被终止了，也无法对该点位进行删除；</li><ul><img src='../../../../static/images/qna_2.1.1.png' alt=''><div>&nbsp;</div> <p>以下是媒体状态修改相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E5%AA%92%E4%BD%93%E7%AE%A1%E7%90%86%EF%BC%88%E4%BA%8C%EF%BC%89.mp4'></video>"
                     },
                     {
                         "id": "6",
@@ -56,13 +56,13 @@
                         "id": "7",
                         "path": "媒体模块 > 媒体操作",
                         "title": "如何禁用门体的其中一个面？",
-                        "answer": "<p>可通过【媒体管理】→【操作】→【禁用】→【选择禁用面】的步骤进行禁用门体。</br>注意事项：</p><ul><li>当点位的某一面被订单占用时，点位的该面无法进行禁用操作；</li><li>禁用了点位某一面后，若该面之前已经在其他方案中使用，则该方案将无法进行预锁或发布；</li><ul><img src='../../../../static/images/qna_2.1.3_1.png' alt=''><br/><img src='../../../../static/images/qna_2.1.3_2.png' alt=''>"
+                        "answer": "<p>可通过【媒体管理】→【操作】→【禁用】→【选择禁用面】的步骤进行禁用门体。</br>注意事项：</p><ul><li>当点位的某一面被订单占用时，点位的该面无法进行禁用操作；</li><li>禁用了点位某一面后，若该面之前已经在其他方案中使用，则该方案将无法进行预锁或发布；</li><ul><img src='../../../../static/images/qna_2.1.3_1.png' alt=''><br/><img src='../../../../static/images/qna_2.1.3_2.png' alt=''><div>&nbsp;</div> <p>以下是媒体状态修改相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E5%AA%92%E4%BD%93%E7%AE%A1%E7%90%86%EF%BC%88%E4%BA%8C%EF%BC%89.mp4'></video>"
                     },
                     {
                         "id": "8",
                         "path": "媒体模块 > 媒体操作",
                         "title": "如何快速按状态筛选媒体资源？",
-                        "answer": "<p>可通过【媒体管理】→【媒体状态】的步骤对媒体资源按状态快速筛选。</p></br><img src='../../../../static/images/qna_2.1.4.png' alt=''>"
+                        "answer": "<p>可通过【媒体管理】→【媒体状态】的步骤对媒体资源按状态快速筛选。</p></br><img src='../../../../static/images/qna_2.1.4.png' alt=''><div>&nbsp;</div> <p>以下是媒体状态修改相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E5%AA%92%E4%BD%93%E7%AE%A1%E7%90%86%EF%BC%88%E4%BA%8C%EF%BC%89.mp4'></video>"
                     }
                 ]
             },
@@ -75,7 +75,7 @@
                         "id": "9",
                         "path": "媒体模块 > 新建媒体",
                         "title": "创建好的媒体还能不能修改可投放面数？",
-                        "answer": "<p>创建好的媒体无法再对可投放面数进行修改，因此创建时需按实际填写。</p></br><img src='../../../../static/images/qna_2.2.1.png' alt=''>"
+                        "answer": "<p>创建好的媒体无法再对可投放面数进行修改，因此创建时需按实际填写。</p></br><img src='../../../../static/images/qna_2.2.1.png' alt=''><div>&nbsp;</div><p>以下是媒体新建/编辑相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E5%AA%92%E4%BD%93%E7%AE%A1%E7%90%86%EF%BC%88%E4%B8%80%EF%BC%89.mp4'></video>"
                     },
                     {
                         "id": "10",
@@ -87,7 +87,7 @@
                         "id": "11",
                         "path": "媒体模块 > 新建媒体",
                         "title": "新建媒体时，媒体信息能否重复？",
-                        "answer": "<p>媒体信息中的【媒体名称】与【资产编号】与【资源名称】不能重复，相关规则如下：</p><ul><li>【媒体名称】在同一个小区里不能重复；</li><li>【资产编号】在所属公司的所有资源中不能有重复，若有重复，可触碰下面的提示感叹号，获取重复小区的信息；</li><li>【资源名称】在所属公司的所有资源中不能有重复，若有重复，可触碰下面的提示感叹号，获取重复小区的信息；</li><ul><img src='../../../../static/images/qna_2.2.3_1.png' alt=''><br/><img src='../../../../static/images/qna_2.2.3_2.png' alt=''>"
+                        "answer": "<p>媒体信息中的【媒体名称】与【资产编号】与【资源名称】不能重复，相关规则如下：</p><ul><li>【媒体名称】在同一个小区里不能重复；</li><li>【资产编号】在所属公司的所有资源中不能有重复，若有重复，可触碰下面的提示感叹号，获取重复小区的信息；</li><li>【资源名称】在所属公司的所有资源中不能有重复，若有重复，可触碰下面的提示感叹号，获取重复小区的信息；</li><ul><img src='../../../../static/images/qna_2.2.3_1.png' alt=''><br/><img src='../../../../static/images/qna_2.2.3_2.png' alt=''><div>&nbsp;</div><p>以下是媒体新建/编辑相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E5%AA%92%E4%BD%93%E7%AE%A1%E7%90%86%EF%BC%88%E4%B8%80%EF%BC%89.mp4'></video>"
                     },
                     {
                         "id": "12",
@@ -129,7 +129,7 @@
                         "id": "18",
                         "path": "新建媒体 > 新建媒体",
                         "title": "为何提示媒体创建失败？",
-                        "answer": "<p>请先检查资源及媒体的必填字段（每个必填字段左侧会有红色“*”号提示）是否已经填写及各个字段是否超过字数限制，具体字段限制如下图：</p></br><table border='1' bordercolor='#000' cellpadding='10px' style='border-collapse:collapse;text-align:center'><tr><td>资源类型</td><td>必填</td></tr><tr><td>资源名称</td><td>限制40个字符，同一所属公司的所有小区里不能有重复</td></tr><tr><td>所属城市</td><td>必填</td></tr><tr><td>所属区域</td><td>必填</td></tr><tr><td>所属商圈</td><td>限制40个字符</td></tr><tr><td>具体地址</td><td>限制70个字符</td></tr><tr><td>楼盘类型</td><td>必填</td></tr><tr><td>出入口数</td><td>限制字数1~20</td></tr><tr><td>楼栋数量</td><td>必填，限制数字1~9999999</td></tr><tr><td>楼栋数量</td><td>必填，限制数字1~9999999</td></tr><tr><td>楼盘价格</td><td>必填，限制数字1~9999999</td></tr><tr><td>入住年份</td><td>必填</td></tr><tr><td>经纬度</td><td>必填，经度只能输入1-180，纬度只能输入0-90</td></tr><tr><td>所属物业</td><td>限制20个字符</td></tr><tr><td>媒介载体</td><td>必填</td></tr><tr><td>媒体名称</td><td>必填，限制40个字符，同一小区里不能有重复</td></tr><tr><td>可投数面</td><td>必填，1-26，但前端只显示A面和B面</td></tr><tr><td>媒体状态</td><td>必填</td></tr><tr><td>资产编号</td><td>必填，限制40个字符，若状态为待安装，则资产编号不填，同一所属公司的所有小区里不能有重复</td></tr><tr><td>媒体类型</td><td>必填，限制20个字符</td></tr><tr><td>广告尺寸</td><td>必填，宽度1~9999999，高度1~9999999</td></tr><tr><td>可视画面</td><td>必填，宽度1~9999999，高度1~9999999</td></tr><tr><td>备注</td><td>限制200个字符</td></tr></table>"
+                        "answer": "<p>请先检查资源及媒体的必填字段（每个必填字段左侧会有红色“*”号提示）是否已经填写及各个字段是否超过字数限制，具体字段限制如下图：</p></br><table border='1' bordercolor='#000' cellpadding='10px' style='border-collapse:collapse;text-align:center'><tr><td>资源类型</td><td>必填</td></tr><tr><td>资源名称</td><td>限制40个字符，同一所属公司的所有小区里不能有重复</td></tr><tr><td>所属城市</td><td>必填</td></tr><tr><td>所属区域</td><td>必填</td></tr><tr><td>所属商圈</td><td>限制40个字符</td></tr><tr><td>具体地址</td><td>限制70个字符</td></tr><tr><td>楼盘类型</td><td>必填</td></tr><tr><td>出入口数</td><td>限制字数1~20</td></tr><tr><td>楼栋数量</td><td>必填，限制数字1~9999999</td></tr><tr><td>楼栋数量</td><td>必填，限制数字1~9999999</td></tr><tr><td>楼盘价格</td><td>必填，限制数字1~9999999</td></tr><tr><td>入住年份</td><td>必填</td></tr><tr><td>经纬度</td><td>必填，经度只能输入1-180，纬度只能输入0-90</td></tr><tr><td>所属物业</td><td>限制20个字符</td></tr><tr><td>媒介载体</td><td>必填</td></tr><tr><td>媒体名称</td><td>必填，限制40个字符，同一小区里不能有重复</td></tr><tr><td>可投数面</td><td>必填，1-26，但前端只显示A面和B面</td></tr><tr><td>媒体状态</td><td>必填</td></tr><tr><td>资产编号</td><td>必填，限制40个字符，若状态为待安装，则资产编号不填，同一所属公司的所有小区里不能有重复</td></tr><tr><td>媒体类型</td><td>必填，限制20个字符</td></tr><tr><td>广告尺寸</td><td>必填，宽度1~9999999，高度1~9999999</td></tr><tr><td>可视画面</td><td>必填，宽度1~9999999，高度1~9999999</td></tr><tr><td>备注</td><td>限制200个字符</td></tr></table><div>&nbsp;</div><p>以下是媒体新建/编辑相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E5%AA%92%E4%BD%93%E7%AE%A1%E7%90%86%EF%BC%88%E4%B8%80%EF%BC%89.mp4'></video>"
                     }
                 ]
             }
@@ -157,7 +157,7 @@
                 "id": "21",
                 "path": "客户模块",
                 "title": "创建完客户信息后，联系人与账户名是否还能进行修改？",
-                "answer": "<p>不可以，这两项在创建之后将无法再进行修改，因此创建时需确定无差错。</p></br><img src='../../../../static/images/qna_3.3.png'>"
+                "answer": "<p>不可以，这两项在创建之后将无法再进行修改，因此创建时需确定无差错。</p></br><img src='../../../../static/images/qna_3.3.png'><div>&nbsp;</div><p>以下是客户新建/编辑相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E5%AE%A2%E6%88%B7%E7%AE%A1%E7%90%86.mp4'></video>"
             }
         ]
     },
@@ -174,19 +174,19 @@
                         "id": "22",
                         "path": "方案模块 > 编辑/创建方案",
                         "title": " 创建/编辑方案时，为什么通过导入小区/点位的方式进行选点会失败？",
-                        "answer": "<p>在使用导入小区/点位的方式进行选点时，提示导入失败的原因主要如下：</p><ul><li>表格内信息输入错误；</li><li>投放排期内点位被占用；</li><li>录入的点位已被禁用；</li><li>excel表里有重复的小区信息</li><li>表格的数据是引用格式，并非实际数值；</li><ul><img src='../../../../static/images/qna_4.1.1.png' alt=''>"
+                        "answer": "<p>在使用导入小区/点位的方式进行选点时，提示导入失败的原因主要如下：</p><ul><li>表格内信息输入错误；</li><li>投放排期内点位被占用；</li><li>录入的点位已被禁用；</li><li>excel表里有重复的小区信息</li><li>表格的数据是引用格式，并非实际数值；</li><ul><img src='../../../../static/images/qna_4.1.1.png' alt=''><div>&nbsp;</div><p>以下是方案新建/编辑相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E6%96%B9%E6%A1%88%E7%AE%A1%E7%90%86%EF%BC%88%E4%BA%8C%EF%BC%89.mp4'></video>"
                     },
                     {
                         "id": "23",
                         "path": "方案模块 > 编辑/创建方案",
                         "title": " 创建/编辑方案时，搜索不到点位是什么原因？",
-                        "answer": "<p>当搜索不到点位时，可能是以下原因造成：</p><ul><li>在所选排期内，被预锁的方案或订单占用；</li><li>点位状态非正常；</li><li>筛选条件选错，将点位过滤掉了；</li><ul>"
+                        "answer": "<p>当搜索不到点位时，可能是以下原因造成：</p><ul><li>在所选排期内，被预锁的方案或订单占用；</li><li>点位状态非正常；</li><li>筛选条件选错，将点位过滤掉了；</li><ul><div>&nbsp;</div><p>以下是被占查询相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E8%A2%AB%E5%8D%A0%E6%9F%A5%E8%AF%A2.mp4'></video>"
                     },
                     {
                         "id": "24",
                         "path": "方案模块 > 编辑/创建方案",
                         "title": "如何了解点位被占情况？",
-                        "answer": "<p>了解点位被占情况可通过以下方式进行查询：</p><ul><li><p>被占查询</br>操作步骤：【方案管理】→【新建】→设置排期→输入需要搜索的小区名称→【被占查询】→【搜索】</p></br><img src='../../../../static/images/qna_4.1.3_1.png' alt=''><p>查询结果中，点击被占用的点位，弹出被占信息。</p></br><img src='../../../../static/images/qna_4.1.3_2.png' alt=''></li><li><p>创建方案的点位列表中进行查询</br>当媒体只有一面被占用，另一面空闲正常的情况下才能使用该方法。</br>操作步骤：【方案管理】→【新建】→设置排期→输入需要搜索的小区名称→【搜索】→触碰灰显的面得到被占信息。</p><br><img src='../../../../static/images/qna_4.1.3_3.png' alt=''></li><li><p>点位表盘</br>操作步骤：【方案管理】→【点位表盘】→搜索资源→触碰色块，可获得点位被占的相关信息。</p></br><img src='../../../../static/images/qna_4.1.3_4.png' alt=''></br><img src='../../../../static/images/qna_4.1.3_5.png' alt=''></li><ul>"
+                        "answer": "<p>了解点位被占情况可通过以下方式进行查询：</p><ul><li><p>被占查询</br>操作步骤：【方案管理】→【新建】→设置排期→输入需要搜索的小区名称→【被占查询】→【搜索】</p></br><img src='../../../../static/images/qna_4.1.3_1.png' alt=''><p>查询结果中，点击被占用的点位，弹出被占信息。</p></br><img src='../../../../static/images/qna_4.1.3_2.png' alt=''></li><li><p>创建方案的点位列表中进行查询</br>当媒体只有一面被占用，另一面空闲正常的情况下才能使用该方法。</br>操作步骤：【方案管理】→【新建】→设置排期→输入需要搜索的小区名称→【搜索】→触碰灰显的面得到被占信息。</p><br><img src='../../../../static/images/qna_4.1.3_3.png' alt=''></li><li><p>点位表盘</br>操作步骤：【方案管理】→【点位表盘】→搜索资源→触碰色块，可获得点位被占的相关信息。</p></br><img src='../../../../static/images/qna_4.1.3_4.png' alt=''></br><img src='../../../../static/images/qna_4.1.3_5.png' alt=''></li><ul><div>&nbsp;</div><p>以下是被占查询相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E8%A2%AB%E5%8D%A0%E6%9F%A5%E8%AF%A2.mp4'></video>"
                     },
                     {
                         "id": "25",
@@ -211,7 +211,7 @@
                         "id": "27",
                         "path": "方案模块 > 方案操作",
                         "title": " 方案预锁规则",
-                        "answer": "<p>操作步骤：【方案管理】→【操作】→【预锁】。</p></br><img src='../../../../static/images/qna_4.2.1_1.png' alt=''></br><img src='../../../../static/images/qna_4.2.1_2.png' alt=''></br><img src='../../../../static/images/qna_4.2.1_3.png' alt=''><p>预锁规则</p><ul><li>默认预锁天数为设置预锁当日起至投放排期第一天之间的天数；</li><li>预锁方案的最大预锁期为7天; </li><li>预锁方案到了投放期，但是不投放，也会自动解锁；</li><li>预锁后，预锁方案中的点位将不能被其他方案选用；</li></ul>"
+                        "answer": "<p>操作步骤：【方案管理】→【操作】→【预锁】。</p></br><img src='../../../../static/images/qna_4.2.1_1.png' alt=''></br><img src='../../../../static/images/qna_4.2.1_2.png' alt=''></br><img src='../../../../static/images/qna_4.2.1_3.png' alt=''><p>预锁规则</p><ul><li>默认预锁天数为设置预锁当日起至投放排期第一天之间的天数；</li><li>预锁方案的最大预锁期为7天; </li><li>预锁方案到了投放期，但是不投放，也会自动解锁；</li><li>预锁后，预锁方案中的点位将不能被其他方案选用；</li></ul><div>&nbsp;</div><p>以下是方案新建/编辑相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E6%96%B9%E6%A1%88%E7%AE%A1%E7%90%86%EF%BC%88%E4%B8%80%EF%BC%89.mp4'></video>"
                     },
                     {
                         "id": "28",
@@ -243,7 +243,7 @@
                         "id": "31",
                         "path": "方案模块 > 地图选点",
                         "title": "是否可以导出地图给客户，在地图中显示所需要的点位？",
-                        "answer": "<p>当前将所选点位按地图形式发给客户的方式有三种。</p><ul><li><p>使用地图选点功能中的【分享】功能，将生成的链接复制发给客户，客户便可打开获得地图（只有电脑打开才会以地图显示）</p><img src='../../../../static/images/qna_4.3.2_1.png' alt=''></br><img src='../../../../static/images/qna_4.3.2_2.png' alt=''></li><li><p>使用协同选点功能</p><p>通过协同选点得到的链接复制给客户，同样也可以打开获得地图（只有电脑打开才会以地图显示）。</p><img src='../../../../static/images/qna_4.3.2_3.png' alt=''></br><img src='../../../../static/images/qna_4.3.2_4.png' alt=''></li><li><p>使用“小亲快选”微信小程序</p><p>当与客户面对面谈方案时，销售人员可以通过自己的销售账号登入“小亲快选”微信小程序，现场展示地图点位。</p></li>><li><p>截图</p><p>可在地图界面直接截图，将图片发给客户。</p></li></ul>"
+                        "answer": "<p>当前将所选点位按地图形式发给客户的方式有三种。</p><ul><li><p>使用地图选点功能中的【分享】功能，将生成的链接复制发给客户，客户便可打开获得地图（只有电脑打开才会以地图显示）</p><img src='../../../../static/images/qna_4.3.2_1.png' alt=''></br><img src='../../../../static/images/qna_4.3.2_2.png' alt=''></li><li><p>使用协同选点功能</p><p>通过协同选点得到的链接复制给客户，同样也可以打开获得地图（只有电脑打开才会以地图显示）。</p><img src='../../../../static/images/qna_4.3.2_3.png' alt=''></br><img src='../../../../static/images/qna_4.3.2_4.png' alt=''></li><li><p>使用“小亲快选”微信小程序</p><p>当与客户面对面谈方案时，销售人员可以通过自己的销售账号登入“小亲快选”微信小程序，现场展示地图点位。</p></li>><li><p>截图</p><p>可在地图界面直接截图，将图片发给客户。</p></li></ul><div>&nbsp;</div><p>以下是方案地图选点相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E6%96%B9%E6%A1%88%E7%AE%A1%E7%90%86%EF%BC%88%E4%B8%89%EF%BC%89.mp4'></video>"
                     },
                     {
                         "id": "32",
@@ -263,7 +263,7 @@
                         "id": "33",
                         "path": "方案模块 > 地图选点",
                         "title": " 协同选点是否可以提交多次？",
-                        "answer": "<p>同一条协同选点链接，无论在手机端还是电脑端打开，最多只能提交一次，之后将无法再进行提交操作。若客户需要重新选择，可不更新客户选点信息，通过【编辑方案】→【下一步】→【协同选点】，获得新的协同选点链接，进行新的选点提交。</p>"
+                        "answer": "<p>同一条协同选点链接，无论在手机端还是电脑端打开，最多只能提交一次，之后将无法再进行提交操作。若客户需要重新选择，可不更新客户选点信息，通过【编辑方案】→【下一步】→【协同选点】，获得新的协同选点链接，进行新的选点提交。</p><div>&nbsp;</div><p>以下是方案协同选点相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E6%96%B9%E6%A1%88%E7%AE%A1%E7%90%86%EF%BC%88%E5%9B%9B%EF%BC%89.mp4'></video>"
                     }
                 ]
             }
@@ -283,19 +283,19 @@
                         "id": "34",
                         "path": "订单模块 > 订单操作",
                         "title": "订单发布之后想要修改排期或者点位该怎么操作？",
-                        "answer": "<p>修改点位操作步骤：【订单管理】→【订单详情】→【换点】→终止/新增点位。</p></br><img src='../../../../static/images/qna_5.1.1_1.png' alt=''></br><img src='../../../../static/images/qna_5.1.1_2.png' alt=''><p>修改排期：目前无法直接对订单里的点位排期进行变更，只能间接的通过终止原有点位，再新增改变排期后的点位进订单中。</p>"
+                        "answer": "<p>修改点位操作步骤：【订单管理】→【订单详情】→【换点】→终止/新增点位。</p></br><img src='../../../../static/images/qna_5.1.1_1.png' alt=''></br><img src='../../../../static/images/qna_5.1.1_2.png' alt=''><p>修改排期：目前无法直接对订单里的点位排期进行变更，只能间接的通过终止原有点位，再新增改变排期后的点位进订单中。</p><div>&nbsp;</div><p>以下是订单编辑相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E8%AE%A2%E5%8D%95%E7%AE%A1%E7%90%86%EF%BC%88%E4%B8%80%EF%BC%89.mp4'></video>"
                     },
                     {
                         "id": "35",
                         "path": "订单模块 > 订单操作",
                         "title": "订单金额能否修改？",
-                        "answer": "不能，目前的订单金额无法进行修改，因此在发布订单时，建议确定好订单金额数。"
+                        "answer": "<p>不能，目前的订单金额无法进行修改，因此在发布订单时，建议确定好订单金额数。</p><div>&nbsp;</div><p>以下是订单编辑相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E8%AE%A2%E5%8D%95%E7%AE%A1%E7%90%86%EF%BC%88%E4%B8%80%EF%BC%89.mp4'></video>"
                     },
                     {
                         "id": "36",
                         "path": "订单模块 > 订单操作",
                         "title": "订单如何进行终止？",
-                        "answer": "<p>订单需要由超级管理员权限的账号进行终止。</br>操作步骤：【常用模块】→【订单管理】→【操作】→【结束订单】。</p></br><img src='../../../../static/images/qna_5.1.3.png' alt=''>"
+                        "answer": "<p>订单需要由超级管理员权限的账号进行终止。</br>操作步骤：【常用模块】→【订单管理】→【操作】→【结束订单】。</p></br><img src='../../../../static/images/qna_5.1.3.png' alt=''><div>&nbsp;</div><p>以下是订单编辑相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E8%AE%A2%E5%8D%95%E7%AE%A1%E7%90%86%EF%BC%88%E4%B8%80%EF%BC%89.mp4'></video>"
                     },
                     {
                         "id": "37",
@@ -314,7 +314,7 @@
                         "id": "38",
                         "path": "订单模块 > 监播报告",
                         "title": "上/下/换刊报告导出的PPTX为什么打不开或打开是乱码？",
-                        "answer": "目前由于PPT格式的数据问题，系统暂时只支持PPTX格式的监播报告导出，而PPTX针对一些版本的Office会显示数据异常，若点击自动修复处理可能还会出现图片丢失的情况。建议使用WPS软件打开PPTX文件，WPS软件可无损打开PPTX，若客户需要PPT格式的文件，媒介可用WPS打开PPTX文件后，再通过“导出”功能，导出成PPT格式。"
+                        "answer": "<p>目前由于PPT格式的数据问题，系统暂时只支持PPTX格式的监播报告导出，而PPTX针对一些版本的Office会显示数据异常，若点击自动修复处理可能还会出现图片丢失的情况。建议使用WPS软件打开PPTX文件，WPS软件可无损打开PPTX，若客户需要PPT格式的文件，媒介可用WPS打开PPTX文件后，再通过“导出”功能，导出成PPT格式。</p><div>&nbsp;</div><p>以下是监播报告相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E8%AE%A2%E5%8D%95%E7%AE%A1%E7%90%86%EF%BC%88%E4%BA%8C%EF%BC%89.mp4'></video>"
                     },
                     {
                         "id": "39",
@@ -336,13 +336,13 @@
                 "id": "40",
                 "path": "工程管理模块",
                 "title": "如何对上/下/换刊任务的分画情况进行查询？",
-                "answer": "<p>监播任务可以按所属线路、订单、归属的工程人员以及上画时间四种形式进行筛选，查看分画情况。</p></br><img src='../../../../static/images/qna_6.1.png' alt=''>"
+                "answer": "<p>监播任务可以按所属线路、订单、归属的工程人员以及上画时间四种形式进行筛选，查看分画情况。</p></br><img src='../../../../static/images/qna_6.1.png' alt=''><div>&nbsp;</div><p>以下是线路与工程管理相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E7%BA%BF%E8%B7%AF%E4%B8%8E%E5%B7%A5%E7%A8%8B%E7%AE%A1%E7%90%86.mp4'></video>"
             },
             {
                 "id": "41",
                 "path": "工程管理模块",
                 "title": "可不可以对工程人员进行绩效统计？",
-                "answer": "不可以，系统暂时无这方面的功能。"
+                "answer": "<p>可以，在工程管理模块中，点击【上画统计】即可对工程人员进行绩效统计。</p><div>&nbsp;</div><p>以下是线路与工程管理相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E7%BA%BF%E8%B7%AF%E4%B8%8E%E5%B7%A5%E7%A8%8B%E7%AE%A1%E7%90%86.mp4'></video>"
             },
             {
                 "id": "42",
@@ -367,7 +367,7 @@
                 "id": "43",
                 "path": "账号相关",
                 "title": "如何创建账号",
-                "answer": "<p>操作步骤：超级管理员登入→【其他模块】→【账号管理】→【新建】→填写信息→【开通】</p></br><img src='../../../../static/images/qna_7.2_1.png' alt=''></br><img src='../../../../static/images/qna_7.2_2.png' alt=''>"
+                "answer": "<p>操作步骤：超级管理员登入→【其他模块】→【账号管理】→【新建】→填写信息→【开通】</p></br><img src='../../../../static/images/qna_7.2_1.png' alt=''></br><img src='../../../../static/images/qna_7.2_2.png' alt=''><div>&nbsp;</div><p>以下是创建账号相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E8%B6%85%E7%AE%A1%E5%8A%9F%E8%83%BD%E4%BB%8B%E7%BB%8D.mp4'></video>"
             },
             {
                 "id": "44",
@@ -398,7 +398,7 @@
                 "id": "47",
                 "path": "亲邻小助手",
                 "title": "强制结束的订单，小助手里还会看得见吗？",
-                "answer": "<p>强制结束的订单，在强制结束前</p><ul><li>若处于未投放状态，则在亲邻小助手中不会看到该订单；</li><li>若处于投放中状态，则在亲邻小助手中依旧会看到该订单；</li></ul>"
+                "answer": "<p>强制结束的订单，在强制结束前</p><ul><li>若处于未投放状态，则在亲邻小助手中不会看到该订单；</li><li>若处于投放中状态，则在亲邻小助手中依旧会看到该订单；</li></ul><div>&nbsp;</div><p>以下是小助手相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E4%BA%B2%E9%82%BB%E5%B0%8F%E5%8A%A9%E6%89%8B.mp4'></video>"
             },
             {
                 "id": "48",
@@ -428,7 +428,7 @@
                 "id": "52",
                 "path": "亲邻小助手",
                 "title": "巡点记录去哪儿可以查看得到？",
-                "answer": "<p>巡点之后上传的记录可在两处查看。</p><ul><li>在小助手相应点位的【巡点记录】中查看；</br><img style='width:50%' src='../../../../static/images/qna_8.7_1.png' alt=''></br><img style='width:50%' src='../../../../static/images/qna_8.7_2.png' alt=''></li><li>在电脑系统里的维护管理中查看；</br>操作步骤：【媒体管理】→【维护管理】→【操作】→【历史记录】</br><img src='../../../../static/images/qna_8.7_3.png' alt=''></br><img src='../../../../static/images/qna_8.7_4.png' alt=''></li></ul>"
+                "answer": "<p>巡点之后上传的记录可在两处查看。</p><ul><li>在小助手相应点位的【巡点记录】中查看；</br><img style='width:50%' src='../../../../static/images/qna_8.7_1.png' alt=''></br><img style='width:50%' src='../../../../static/images/qna_8.7_2.png' alt=''></li><li>在电脑系统里的维护管理中查看；</br>操作步骤：【媒体管理】→【维护管理】→【操作】→【历史记录】</br><img src='../../../../static/images/qna_8.7_3.png' alt=''></br><img src='../../../../static/images/qna_8.7_4.png' alt=''></li></ul><div>&nbsp;</div><p>以下是巡点相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E4%BA%B2%E9%82%BB%E5%B0%8F%E5%8A%A9%E6%89%8B.mp4'></video>"
             }
         ]
     },
@@ -447,7 +447,7 @@
                 "id": "54",
                 "path": "小亲快选",
                 "title": "小亲快选如何设置范围，寻找特定位置附近的点位？",
-                "answer": "<img src='../../../../static/images/qna_9.2.png' alt=''>"
+                "answer": "<img src='../../../../static/images/qna_9.2.png' alt=''><div>&nbsp;</div><p>以下是小亲快选相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E5%B0%8F%E4%BA%B2%E5%BF%AB%E9%80%89.mp4'></video>"
             },
             {
                 "id": "55",
@@ -491,6 +491,109 @@
                 "path": "合同下载",
                 "title": "合同5.《未签署合同时情形下广告发布确认单及验收单2019.3.12》下载",
                 "answer": "<p><a href='https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/contract/%E6%9C%AA%E7%AD%BE%E7%BD%B2%E5%90%88%E5%90%8C%E6%97%B6%E6%83%85%E5%BD%A2%E4%B8%8B%E5%B9%BF%E5%91%8A%E5%8F%91%E5%B8%83%E7%A1%AE%E8%AE%A4%E5%8D%95%E5%8F%8A%E9%AA%8C%E6%94%B6%E5%8D%952019.3.12.doc' download='未签署合同时情形下广告发布确认单及验收单2019.3.12.doc'>点击下载 《未签署合同时情形下广告发布确认单及验收单2019.3.12》</a></p>"
+            }
+        ]
+    },
+    {
+        "menuName": " 操作视频查看",
+        "index": "11",
+        "children": null,
+        "question":  [
+            {
+                "id": "61",
+                "path": "操作视频查看",
+                "title": "媒体管理（一）",
+                "answer": "<video controls src='https://img.qinlinad.com/UserHelper/%E5%AA%92%E4%BD%93%E7%AE%A1%E7%90%86%EF%BC%88%E4%B8%80%EF%BC%89.mp4'></video>"
+            },
+            {
+                "id": "62",
+                "path": "操作视频查看",
+                "title": "媒体管理（二）",
+                "answer": "<video controls src='https://img.qinlinad.com/UserHelper/%E5%AA%92%E4%BD%93%E7%AE%A1%E7%90%86%EF%BC%88%E4%BA%8C%EF%BC%89.mp4'></video>"
+            },
+            {
+                "id": "63",
+                "path": "操作视频查看",
+                "title": "客户管理",
+                "answer": "<video controls src='https://img.qinlinad.com/UserHelper/%E5%AE%A2%E6%88%B7%E7%AE%A1%E7%90%86.mp4'></video>"
+            },
+            {
+                "id": "64",
+                "path": "操作视频查看",
+                "title": "方案管理（一）",
+                "answer": "<video controls src='https://img.qinlinad.com/UserHelper/%E6%96%B9%E6%A1%88%E7%AE%A1%E7%90%86%EF%BC%88%E4%B8%80%EF%BC%89.mp4'></video>"
+            },
+            {
+                "id": "65",
+                "path": "操作视频查看",
+                "title": "方案管理（二）",
+                "answer": "<video controls src='https://img.qinlinad.com/UserHelper/%E6%96%B9%E6%A1%88%E7%AE%A1%E7%90%86%EF%BC%88%E4%BA%8C%EF%BC%89.mp4'></video>"
+            },
+            {
+                "id": "66",
+                "path": "操作视频查看",
+                "title": "方案管理（三）",
+                "answer": "<video controls src='https://img.qinlinad.com/UserHelper/%E6%96%B9%E6%A1%88%E7%AE%A1%E7%90%86%EF%BC%88%E4%B8%89%EF%BC%89.mp4'></video>"
+            },
+            {
+                "id": "67",
+                "path": "操作视频查看",
+                "title": "方案管理（四）",
+                "answer": "<video controls src='https://img.qinlinad.com/UserHelper/%E6%96%B9%E6%A1%88%E7%AE%A1%E7%90%86%EF%BC%88%E5%9B%9B%EF%BC%89.mp4'></video>"
+            },
+            {
+                "id": "68",
+                "path": "操作视频查看",
+                "title": "案例库操作",
+                "answer": "<video controls src='https://img.qinlinad.com/UserHelper/%E6%A1%88%E4%BE%8B%E5%BA%93%E6%93%8D%E4%BD%9C.mp4'></video>"
+            },
+            {
+                "id": "69",
+                "path": "操作视频查看",
+                "title": "线路与工程管理",
+                "answer": "<video controls src='https://img.qinlinad.com/UserHelper/%E7%BA%BF%E8%B7%AF%E4%B8%8E%E5%B7%A5%E7%A8%8B%E7%AE%A1%E7%90%86.mp4'></video>"
+            },
+            {
+                "id": "70",
+                "path": "操作视频查看",
+                "title": "被占查询",
+                "answer": "<video controls src='https://img.qinlinad.com/UserHelper/%E8%A2%AB%E5%8D%A0%E6%9F%A5%E8%AF%A2.mp4'></video>"
+            },
+            {
+                "id": "71",
+                "path": "操作视频查看",
+                "title": "订单管理（一）",
+                "answer": "<video controls src='https://img.qinlinad.com/UserHelper/%E8%AE%A2%E5%8D%95%E7%AE%A1%E7%90%86%EF%BC%88%E4%B8%80%EF%BC%89.mp4'></video>"
+            },
+            {
+                "id": "72",
+                "path": "操作视频查看",
+                "title": "订单管理（二）",
+                "answer": "<video controls src='https://img.qinlinad.com/UserHelper/%E8%AE%A2%E5%8D%95%E7%AE%A1%E7%90%86%EF%BC%88%E4%BA%8C%EF%BC%89.mp4'></video>"
+            },
+            {
+                "id": "73",
+                "path": "操作视频查看",
+                "title": "订单管理（三）",
+                "answer": "<video controls src='https://img.qinlinad.com/UserHelper/%E8%AE%A2%E5%8D%95%E7%AE%A1%E7%90%86%EF%BC%88%E4%B8%89%EF%BC%89.mp4'></video>"
+            },
+            {
+                "id": "74",
+                "path": "操作视频查看",
+                "title": "超管功能介绍",
+                "answer": "<video controls src='https://img.qinlinad.com/UserHelper/%E8%B6%85%E7%AE%A1%E5%8A%9F%E8%83%BD%E4%BB%8B%E7%BB%8D.mp4'></video>"
+            },
+            {
+                "id": "75",
+                "path": "操作视频查看",
+                "title": "亲邻小助手",
+                "answer": "<video controls src='https://img.qinlinad.com/UserHelper/%E4%BA%B2%E9%82%BB%E5%B0%8F%E5%8A%A9%E6%89%8B.mp4'></video>"
+            },
+            {
+                "id": "76",
+                "path": "操作视频查看",
+                "title": "小亲快选",
+                "answer": "<video controls src='https://img.qinlinad.com/UserHelper/%E5%B0%8F%E4%BA%B2%E5%BF%AB%E9%80%89.mp4'></video>"
             }
         ]
     }

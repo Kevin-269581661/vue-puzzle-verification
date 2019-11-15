@@ -25,18 +25,18 @@
                 </el-select>
                 <i slot="suffix" class="el-input__icon el-icon-search" @click="searchFun"></i>
             </el-input>
-            <div class="search_body" v-show="(searchResList.length && activeSearchKind == '1') || isOnlineSearch">
-                <div class="search_result_btn" v-show="isOnlineSearch || isMouseSearch || isMultiPoint">
-                    <h4 class="result_title">框选结果</h4>
-                    <div class="result_btn_box">
-                        <span @click="setOnlineSearch" v-show="!isMouseSearch && !isMultiPoint">设置</span>
-                        <span @click="clearSearch">取消</span>
-                    </div>
+            <div class="search_result_btn" v-show="isOnlineSearch || isMouseSearch || isMultiPoint">
+                <h4 class="result_title">框选结果</h4>
+                <div class="result_btn_box">
+                    <span @click="setOnlineSearch" v-show="!isMouseSearch && !isMultiPoint">设置</span>
+                    <span @click="clearSearch">取消</span>
                 </div>
+            </div>
+            <div class="search_body" v-show="(searchResList.length && activeSearchKind == '1') || isOnlineSearch">
                 <ul class="search_ul">
                     <li class="search_li" v-for="(item,index) in searchResList" :key="index">
                         <p class="li_name">
-                            {{item.resName}}
+                            <strong @click="moveMapByOnclickName(item,'resName')">{{item.resName}}</strong>
                             <span class="li_name_span" :class="item.isSelect ? 'li_name_span_active' : ''" @click="checkBoxFun(item)">
                                 <i v-show="item.isSelect" class="el-icon-minus"></i>
                                 <i v-show="!item.isSelect" class="el-icon-plus"></i>
@@ -63,7 +63,7 @@
                 <ul class="search_ul">
                     <li class="search_li" v-for="(item,index) in searchOnlineList" :key="index">
                         <p class="li_name li_name_online">
-                            {{item.title}}
+                            <strong  @click="moveMapByOnclickName(item,'onlineName')">{{item.title}}</strong>
                             <el-checkbox v-model="item.isSelect" @change="onlineCheckBox(item)"></el-checkbox>
                         </p>
                         <p class="li_address">{{item.address}}</p>
@@ -1042,7 +1042,7 @@
                 });
                 return label
             },
-            // 显示详
+            // 显示详情
             showInfo(info,point){
                 this.showResInfo = info
                 let content = this.$refs.resInfoWindow
@@ -1194,6 +1194,7 @@
                 }
                 if (temp === 'polyline') {
                     // 线-测距
+                    this.LinePoints = []
                     this.lineIndex++
                     this.drawingManager.open()
                     this.drawingManager.setDrawingMode(BMAP_DRAWING_POLYLINE);
@@ -1242,7 +1243,7 @@
                     labelText = (Number(this.twoPointsLength) + radius).toFixed(2) + '公里'
                     this.twoPointsLength += radius
                 }
-                console.log('twoPointsLength----',this.twoPointsLength)
+                // console.log('twoPointsLength----',this.twoPointsLength)
                 let label = new BMap.Label(labelText,{offset:new BMap.Size(-20,-16)});
                 label.setStyle({
                     borderRadius: "3px",
@@ -1262,7 +1263,7 @@
                 if(this.isMouseLine && this.mouseLineStep) {
                     // console.log('鼠标移动----e',ev.point)
                     this.resMap.removeOverlay(this.mapLabel)
-                    let radius= this.resMap.getDistance(this.LinePoints[0], ev.point) /1000 + this.twoPointsLength;
+                    let radius= this.resMap.getDistance(this.LinePoints[this.mouseLineStep - 1], ev.point) /1000 + this.twoPointsLength;
                     //添加文字标签
                     let opts = {
                         position: ev.point,                 // 指定文本标注所在的地理位置（当前鼠标的位置）
@@ -1501,10 +1502,12 @@
                         })
                         this.creatMarker()
                         this.activeSearchKind = '1'
-                        // console.log('resInfo',this.resInfo)
                         // 辐射点打点、画圆
                         this.setMultiPointMarker(params.centerInfoList)
                         this.isMoreCenterPointVisible = false
+                        if (!this.resInfo.length) {
+                            sessFun.messageFun('warning', '暂无匹配数据')
+                        }
                     } else {
                         sessFun.messageFun('warning', res.data.MSG || '接口异常')
                     }
@@ -1650,22 +1653,7 @@
                         this.onlineMarkers.push(marker)
                         this.resMap.addOverlay(marker);            // 将标注添加到地图中
                         marker.addEventListener("click", () => {
-                            let content =
-                                "<div>" +
-                                "<p style='font:14px arial,sans-serif;margin:0;line-height:1.5;'>"
-                                + key.title + "</p>" +
-                                "<p style='font:14px arial,sans-serif;margin:0;line-height:1.5;'>" +
-                                "地址:" + key.address + "</p>" +
-                                "</div>";
-                            // 信息窗口
-                            let opts = {
-                                width: 0,
-                                height: 0,
-                                title: "",
-                                enableMessage: false    //设置允许信息窗发送短息
-                            }
-                            let infoWindow = new BMap.InfoWindow(content, opts);    // 创建信息窗口对象
-                            this.resMap.openInfoWindow(infoWindow, key.point);      //开启信息窗口
+                            this.showOnlineDetail(key)
                         });
                     } else {
                         break
@@ -1673,6 +1661,25 @@
                     i++
                 }
                 this.searchOnlineLoading = false
+            },
+            // 显示在线搜索结果详情
+            showOnlineDetail(item) {
+                let content =
+                    "<div>" +
+                    "<p style='font:14px arial,sans-serif;margin:0;line-height:1.5;'>"
+                    + item.title + "</p>" +
+                    "<p style='font:14px arial,sans-serif;margin:0;line-height:1.5;'>" +
+                    "地址:" + item.address + "</p>" +
+                    "</div>";
+                // 信息窗口
+                let opts = {
+                    width: 0,
+                    height: 0,
+                    title: "",
+                    enableMessage: false    //设置允许信息窗发送短息
+                }
+                let infoWindow = new BMap.InfoWindow(content, opts);    // 创建信息窗口对象
+                this.resMap.openInfoWindow(infoWindow, item.point);      //开启信息窗口
             },
             // 亲邻社区全选
             selectAllFun(){
@@ -1721,6 +1728,28 @@
                     if(key.isSelect) {
                         key.isSelect = false
                         this.onlineCheckBox(key)
+                    }
+                }
+            },
+            // 点击检索结果名称移动地图中心
+            moveMapByOnclickName(item,temp) {
+                // console.log('item',item)
+                if(temp === 'resName') {
+                    for(let key of this.resMarkers) {
+                        if(item.lng == key.point.lng && item.lat == key.point.lat) {
+                            //转到该点位置
+                            this.resMap.panTo(key.point);
+                            this.showInfo(item, key.point);
+                            break
+                        }
+                    }
+                } else if(temp === 'onlineName') {
+                    for(let key of this.onlineMarkers) {
+                        if(item.point.lng == key.point.lng && item.point.lat == key.point.lat) {
+                            this.resMap.panTo(key.point);
+                            this.showOnlineDetail(item)
+                            break;
+                        }
                     }
                 }
             },
@@ -1975,6 +2004,7 @@
                     this.isMultiPoint = false
                     this.transfersFun()
                     this.searchResList = []
+                    this.mouseType.morePoint = false
                 } else {
                     // 周边搜索
                     this.isOnlineSearch = false
@@ -2155,6 +2185,13 @@
                 for(let key in this.filterData) {
                     this.filterData[key] = false
                 }
+                // 恢复鼠标绘制默认状态
+                for(let i in this.mouseType) {
+                    this.mouseType[i] = false
+                }
+                this.isMultiPoint = false
+                this.isMouseSearch = false
+
                 this.transfersFun()
             },
             /**
@@ -2407,6 +2444,7 @@
         line-height: 32px;
         font-size:14px;
         padding: 0 12px;
+        background: #fff;
     }
 
     .result_title {
@@ -2445,6 +2483,10 @@
         color: rgba(0, 0, 0, 0.85);
         position: relative;
         padding-right: 48px;
+    }
+
+    .li_name strong{
+        cursor: pointer;
     }
 
     .li_name_span{

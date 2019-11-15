@@ -4151,19 +4151,22 @@
                     let params = {
                         code: localStorage.getItem(`qinlinMapCode`)
                     }
-                    api.getApi(this.apiVar.mapApi + '/adsListByCode',params).then(res=>{
-                        console.log('res-----',res)
-                        if(res.data.SysCode === 200200) {
-                            this.mapAdsList = res.data.data
-                            this.setMapAdsListInShopCar()
-                            localStorage.removeItem('qinlinMapCode')
-                        } else {
-                            this.getMapLoading.close()
-                            sessFun.messageFun('warning','数据获取异常')
-                        }
-                    })
+                    if(params.code) {
+                        api.getApi(this.apiVar.mapApi + '/adsListByCode',params).then(res=>{
+                            console.log('res-----',res)
+                            if(res.data.SysCode === 200200) {
+                                this.mapAdsList = res.data.data
+                                this.setMapAdsListInShopCar()
+                                localStorage.removeItem('qinlinMapCode')
+                            } else {
+                                this.getMapLoading.close()
+                                sessFun.messageFun('warning','数据获取异常')
+                            }
+                        })
+                    } else {
+                        sessFun.messageFun('warning','请在地图选择社区并提交')
+                    }
                 }
-
             },
             // 根据地图选点返回的数据，设置成购物车所需的数据格式 （无忧地图）
             setShopDataByMapAD() {

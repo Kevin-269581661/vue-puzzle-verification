@@ -47,13 +47,12 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 24px;
-
     }
 
     .title h5 {
         color: rgba(0, 0, 0, 0.85);
         font-size: 20px;
-        font-weight: 500;
+        font-weight: bold;
     }
 
     .title button {
@@ -64,6 +63,7 @@
     .answer {
         font-size: 15px;
         color: rgba(0, 0, 0, 0.85);
+        line-height: 24px;
     }
     .answer /deep/ p{
         margin-bottom: 12px;
@@ -88,6 +88,9 @@
     }
     .answer /deep/ video:focus{
         outline: none;
+    }
+    .answer /deep/ ul li{
+        line-height: 24px;
     }
 
 

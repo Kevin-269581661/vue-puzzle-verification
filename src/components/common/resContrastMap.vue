@@ -223,7 +223,7 @@
             },
             // 选择区域
             filterArea() {
-                console.log('区域', this.selectArea)
+                // console.log('区域', this.selectArea)
                 // this.resMap.removeOverlay(that.mapLabel)
                 this.resMap.removeOverlay(this.QLpointCollection)
                 this.resMap.removeOverlay(this.FZpointCollection)

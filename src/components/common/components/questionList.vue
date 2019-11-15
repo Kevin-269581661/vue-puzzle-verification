@@ -35,7 +35,7 @@
         color:rgba(0,0,0,0.85);
         font-size: 20px;
         margin-bottom: 24px;
-        font-weight: 500;
+        font-weight: 600;
     }
     .question-li{
         height:42px;
@@ -47,6 +47,7 @@
         font-size: 16px;
         margin-bottom: 16px;
         cursor: pointer;
+        font-weight: bold;
     }
     .question-li:hover{
         color: #369EFE;

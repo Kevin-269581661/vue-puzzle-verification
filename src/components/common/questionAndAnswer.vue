@@ -362,4 +362,5 @@
     .ad_mediaDetail_wrap .el-collapse {
         border-top: none;
     }
+
 </style>

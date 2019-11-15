@@ -114,7 +114,7 @@
             // 初始化地图
             initMap() {
                 let that = this
-                console.log('初始化地图----')
+                // console.log('初始化地图----')
                 // 创建Map实例
                 this.resMap = new window.BMap.Map("resMap", {enableMapClick: false});
                 console.log('resMap', this.resMap)
@@ -207,10 +207,7 @@
                 this.resMap.setCurrentCity(city);
                 // 初始化地图,设置中心点坐标和地图级别
                 this.resMap.centerAndZoom(city, 11);
-                this.resMap.removeOverlay(this.QLpointCollection)
-                this.resMap.removeOverlay(this.FZpointCollection)
-                this.resMap.removeOverlay(this.XCpointCollection)
-                this.resMap.removeOverlay(this.XYMpointCollection)
+                this.clearMarkers()
                 this.selectArea = [];
                 this.getArea(this.selectCity)
                 console.log(this.companyCheckbox);
@@ -224,11 +221,7 @@
             // 选择区域
             filterArea() {
                 // console.log('区域', this.selectArea)
-                // this.resMap.removeOverlay(that.mapLabel)
-                this.resMap.removeOverlay(this.QLpointCollection)
-                this.resMap.removeOverlay(this.FZpointCollection)
-                this.resMap.removeOverlay(this.XCpointCollection)
-                this.resMap.removeOverlay(this.XYMpointCollection)
+               this.clearMarkers()
                 // this.getData()
                 if (this.companyCheckbox.length > 0) {
                     for (let data of this.companyCheckbox) {
@@ -236,9 +229,21 @@
                     }
                 }
             },
+            //清空marker
+            clearMarkers(){
+                this.resMap.removeOverlay(this.QLpointCollection)
+                this.resMap.removeOverlay(this.FZpointCollection)
+                this.resMap.removeOverlay(this.XCpointCollection)
+                this.resMap.removeOverlay(this.XYMpointCollection)
+            },
             //选择资源类型
             filterResType() {
-                console.log('类型', this.selectResType)
+                this.clearMarkers()
+                if (this.companyCheckbox.length > 0) {
+                    for (let data of this.companyCheckbox) {
+                        this.getData(data)
+                    }
+                }
             },
             //选择公司
             chooseCompany(e, id) {
@@ -558,6 +563,9 @@
         font-size: 16px;
         color: rgba(0, 0, 0, 0.85);
         cursor: pointer;
+    }
+    .radio-group /deep/  .el-checkbox__input.is-disabled+span.el-checkbox__label{
+        color: #c0c4cc !important;
     }
 
 </style>

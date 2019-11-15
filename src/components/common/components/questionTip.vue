@@ -19,7 +19,8 @@
                     {{item.name}}
                 </li>
             </ul>
-            <i slot="reference" class="el-icon-question" @click="showActions"></i>
+            <!--<i slot="reference" class="el-icon-question" @click="showActions"></i>-->
+            <img slot="reference" class="quesition-icon" src="../../../assets/images/question_icon.png"></img>
         </el-popover>
         <!--问题列表对话框-->
         <el-dialog class="question-dialog" :title="modalInfo.title" :visible.sync="dialogTableVisible" width="35%">
@@ -319,6 +320,11 @@
 
     .modal-list:last-child {
         margin-bottom: 0;
+    }
+    .quesition-icon{
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
     }
 
 </style>

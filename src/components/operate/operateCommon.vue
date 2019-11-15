@@ -10,7 +10,7 @@
             background-color="#444"
             text-color="#999999"
             active-text-color="#fff">
-            <el-menu-item index="">
+            <el-menu-item index="" class="no-hover">
                 <div class="logo_box">
                     <img src="../../assets/images/logo.png" alt="">
                 </div>
@@ -43,7 +43,7 @@
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
                 <el-menu-item index="/login">退出登陆</el-menu-item>
             </el-submenu>
-            <el-menu-item index="" style="cursor: default;float: right;padding: 0 0 0 4px">
+            <el-menu-item class="no-hover" index="" style="cursor: default;float: right;padding: 0 0 0 4px">
                 <questionTip></questionTip>
             </el-menu-item>
         </el-menu>

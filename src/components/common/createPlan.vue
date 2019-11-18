@@ -152,8 +152,8 @@
                             </div>
                             <el-row class="button_row">
                                 <el-col>
-                                    <!--<el-button type="primary" class="map" icon="el-icon-location-outline" @click="judgeMapSelect"-->
-                                    <el-button type="primary" class="map" icon="el-icon-location-outline" @click="mapAD"
+                            <!--        <el-button type="primary" class="map" icon="el-icon-location-outline" @click="mapAD"-->
+                                    <el-button type="primary" class="map" icon="el-icon-location-outline" @click="judgeMapSelect"
                                                v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt050_ck03'}">地图</el-button>
                                     <el-dropdown>
                                         <el-button type="success" class="importXle">
@@ -3980,7 +3980,7 @@
                             }
                         } else {
                             this.getMapLoading.close()
-                            sessFun.messageFun('warning', '数据获取异常')
+                            sessFun.messageFun('warning', res.data.MSG || '数据获取异常')
                         }
                     })
                 } else {
@@ -3994,17 +3994,21 @@
                     let params = {
                         code: localStorage.getItem(`qinlinMapCode`)
                     }
-                    api.getApi(this.apiVar.mapApi + '/adsListByCode',params).then(res=>{
-                        console.log('res-----',res)
-                        if(res.data.SysCode === 200200) {
-                            this.mapAdsList = res.data.data
-                            this.setMapAdsListInShopCar()
-                            localStorage.removeItem('qinlinMapCode')
-                        } else {
-                            this.getMapLoading.close()
-                            sessFun.messageFun('warning','数据获取异常')
-                        }
-                    })
+                    if(params.code) {
+                        api.getApi(this.apiVar.mapApi + '/adsListByCode',params).then(res=>{
+                            console.log('res-----',res)
+                            if(res.data.SysCode === 200200) {
+                                this.mapAdsList = res.data.data
+                                this.setMapAdsListInShopCar()
+                                localStorage.removeItem('qinlinMapCode')
+                            } else {
+                                this.getMapLoading.close()
+                                sessFun.messageFun('warning',res.data.MSG || '数据获取异常')
+                            }
+                        })
+                    } else {
+                        sessFun.messageFun('warning','请在地图选择社区并提交')
+                    }
                 }
             },
             // 根据地图选点返回的数据，设置成购物车所需的数据格式（无忧地图）
@@ -4417,33 +4421,33 @@
                 this.shopMedia_ADNum.twoNum = this.getResAsidNum(2, resAsidArr);
                 this.shopMedia_ADNum.threeNum = this.getResAsidNum(3, resAsidArr);
                 this.shopMedia_ADNum.moreNum = resAsidArr.length - this.shopMedia_ADNum.oneNum - this.shopMedia_ADNum.twoNum - this.shopMedia_ADNum.threeNum;
-                if (letter === 'mapAD') {
-                    let stepMNum = 1
-                    let stepADNum = 2
-                    if (mediaArr.length - this.shopMedia_ADNum.mediaNum > 500) {
-                        stepMNum = Math.round((mediaArr.length - this.shopMedia_ADNum.mediaNum) / 50)
-                        stepADNum = Math.round((mediaAD.length - this.shopMedia_ADNum.ADNum) / 100)
-                    }
-                    let that = this
-                    let timer = setInterval(function () {
-                        if (that.shopMedia_ADNum.mediaNum < mediaArr.length) {
-                            that.shopMedia_ADNum.mediaNum += stepMNum
-                        }
-                        if (that.shopMedia_ADNum.ADNum < mediaAD.length) {
-                            that.shopMedia_ADNum.ADNum += stepADNum
-                        }
-                        if (that.shopMedia_ADNum.mediaNum >= mediaArr.length - 1 && that.shopMedia_ADNum.ADNum >= mediaAD.length - 1) {
-                            that.shopMedia_ADNum.mediaNum = mediaArr.length
-                            that.shopMedia_ADNum.ADNum = mediaAD.length
-                            that.shopMedia_ADNum.resNum = resArr.length
-                            clearInterval(timer)
-                        }
-                    }, 1)
-                } else {
+                // if (letter === 'mapAD') {
+                //     let stepMNum = 1
+                //     let stepADNum = 2
+                //     if (mediaArr.length - this.shopMedia_ADNum.mediaNum > 500) {
+                //         stepMNum = Math.round((mediaArr.length - this.shopMedia_ADNum.mediaNum) / 50)
+                //         stepADNum = Math.round((mediaAD.length - this.shopMedia_ADNum.ADNum) / 100)
+                //     }
+                //     let that = this
+                //     let timer = setInterval(function () {
+                //         if (that.shopMedia_ADNum.mediaNum < mediaArr.length) {
+                //             that.shopMedia_ADNum.mediaNum += stepMNum
+                //         }
+                //         if (that.shopMedia_ADNum.ADNum < mediaAD.length) {
+                //             that.shopMedia_ADNum.ADNum += stepADNum
+                //         }
+                //         if (that.shopMedia_ADNum.mediaNum >= mediaArr.length - 1 && that.shopMedia_ADNum.ADNum >= mediaAD.length - 1) {
+                //             that.shopMedia_ADNum.mediaNum = mediaArr.length
+                //             that.shopMedia_ADNum.ADNum = mediaAD.length
+                //             that.shopMedia_ADNum.resNum = resArr.length
+                //             clearInterval(timer)
+                //         }
+                //     }, 1)
+                // } else {
                     this.shopMedia_ADNum.mediaNum = mediaArr.length
                     this.shopMedia_ADNum.ADNum = mediaAD.length
                     this.shopMedia_ADNum.resNum = resArr.length
-                }
+                // }
                 this.mediaLevelNum = mediaLevelNum
 
                 console.log('shopMedia_ADNum----', this.shopMedia_ADNum);

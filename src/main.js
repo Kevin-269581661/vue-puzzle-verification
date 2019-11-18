@@ -40,6 +40,8 @@ import '../static/css/header.css'
 import '../static/css/footer.css'
 // 字体图标css
 import 'font-awesome/css/font-awesome.css'
+// 引入地图聚合js
+import './components/common/map/MarkerClusterer.js'
 
 
 router.beforeEach((to, from, next) => {
@@ -64,6 +66,10 @@ router.beforeEach((to, from, next) => {
 		var s = document.getElementsByTagName("script")[0];
 		s.parentNode.insertBefore(mta, s);
 	})();
+    // 路由发生变化修改页面title
+    if (to.meta.title) {
+        document.title = to.meta.title
+    }
 	next();
 });
 

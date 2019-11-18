@@ -93,7 +93,9 @@
                 </el-option>
             </el-select>
             <!--楼盘类型-->
-            <el-select v-model="bType" size="small" placeholder="楼盘类型" clearable @change="filterBuildType">
+            <el-select v-model="bType" size="small" placeholder="楼盘类型" clearable
+                       @clear="transfersFun()"
+                       @change="filterBuildType">
                 <el-option v-for="item in buildTypeList" :key="item.buildValue"
                            :label="item.buildValue"
                            :value="item.buildValue">
@@ -196,6 +198,8 @@
             </el-select>
             <!--所在商圈-->
             <el-select placeholder="所在商圈" size="small"v-model="selectTradingArea" v-show="showMore"
+                       clearable
+                       @clear="transfersFun()"
                        @change="filterTradingArea">
                 <el-option
                     v-for="item in tradingAreaList"
@@ -206,6 +210,8 @@
             </el-select>
             <!--媒体类型-->
             <el-select placeholder="媒体类型" size="small" v-model="selectDoorType" v-show="showMore"
+                       clearable
+                       @clear="transfersFun()"
                        @change="filterDoorType">
                 <el-option
                     v-for="item in doorTypeList"
@@ -216,12 +222,16 @@
             </el-select>
             <!--媒介载体-->
             <el-select placeholder="媒介载体" size="small" v-model="selectMediaType"v-show="showMore"
+                       clearable
+                       @clear="transfersFun()"
                        @change="filterMediaType">
                 <el-option label="广告门" value="广告门"></el-option>
                 <el-option label="道闸" value="道闸"></el-option>
             </el-select>
             <!--媒体等级-->
             <el-select placeholder="媒体等级" size="small" v-model="selectMediaLevel" v-show="showMore"
+                       clearable
+                       @clear="transfersFun()"
                        @change="filterMediaLevel">
                 <el-option label="A级" value="A"></el-option>
                 <el-option label="B级" value="B"></el-option>
@@ -909,7 +919,7 @@
                     maxhNum: this.houseNum[1],
                     minchDay: this.liveYear[0],
                     maxchDay: this.liveYear[1],
-                    tradingArea: this.tradingArea,
+                    tradingArea: this.selectTradingArea,
                     adLimit: this.selectLimits.join(','),
                     mType: this.selectDoorType,
                     mVehicle: this.selectMediaType,
@@ -1601,7 +1611,7 @@
                         }
                     })
                     if(this.searchResList.length <= 0) {
-                        sessFun.messageFun('warning','搜索不到相关的亲邻资源，请换一个搜索姿势o')
+                        sessFun.messageFun('warning','搜索不到相关的亲邻资源，请换一个搜索姿势喔')
                     }
                 } else {
                     // 在线搜索
@@ -2084,19 +2094,14 @@
             },
             // 区域
             filterArea() {
-                // console.log('区域',this.selectArea)
                 this.transfersFun()
             },
             // 楼盘类型
             filterBuildType() {
-                // console.log('楼盘类型---',this.bType)
-                // if(this.bType) {
-                    this.transfersFun()
-                // }
+                this.transfersFun()
             },
             // 广告限制
             filterADLimit(limit) {
-                // console.log('广告限制limit', limit)
                 if (limit && limit.length) {
                     this.transfersFun()
                 }

@@ -4007,6 +4007,7 @@
                             }
                         })
                     } else {
+                        this.getMapLoading.close()
                         sessFun.messageFun('warning','请在地图选择社区并提交')
                     }
                 }

@@ -531,6 +531,8 @@
                 resMap: '',
                 // 聚合实例
                 markerClusterer: '',
+                // 是否开启聚合
+                isClusterer: false,
                 markerIcon: require('../../assets/images/map/markerIcon.png'),
                 resMarkers: [],
                 // 非多点辐射时的markers
@@ -962,7 +964,7 @@
                 console.log('在线搜索、鼠标绘制、多点辐射',this.isOnlineSearch,this.isMouseSearch,this.isMultiPoint)
                 this.markerClusterer ? this.markerClusterer.clearMarkers() : ''
                 if(this.isMultiPoint || (this.resInfo.length < 50 && this.isShare)) {
-                    // this.markerClusterer ? this.markerClusterer.clearMarkers() : ''
+                    this.isClusterer = false
                     let i = 0
                     let markerList = [];
                     let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(16,16),{
@@ -991,6 +993,7 @@
                     this.resMarkers = markerList
                 } else {
                     console.log('----------聚--合---------',this.resInfo)
+                    this.isClusterer = true
                     // 设置聚合的最大缩放级别
                     let markerList = [];
                     let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(16,16),{
@@ -1291,7 +1294,6 @@
             showResInPolygon(temp, overlay) {
                 console.time('显示多边形')
                 this.markerClusterer ? this.markerClusterer.clearMarkers() : ''
-                // console.log('resMarkers', this.resMarkers)
                 for (let akey of this.resMarkers) {
                     let isShow = ''
                     if (temp === 'circle') {
@@ -1302,7 +1304,7 @@
                     if (!isShow) {
                         akey.hide()
                     } else {
-                        this.resMap.addOverlay(akey);              // 将标注添加到地图中
+                        this.isClusterer ? this.resMap.addOverlay(akey) : '';   // 将标注添加到地图中
                         akey.show()
                         for (let key of this.resInfo) {
                             if (akey.getLabel().content === key.resName) {
@@ -1326,14 +1328,21 @@
             },
             // 清除上一次的绘制
             deleteDrawingOverlay() {
-                for (let akey of this.resMarkers) {
-                    if(akey.isVisible()){
-                        akey.hide()
-                    }
-                }
+                console.log('--清除上一次的绘制--',this.resMarkers)
                 this.resMap.removeOverlay(this.mouseoverlay)
                 this.searchResList = []
-                this.markerClusterer ? this.markerClusterer.addMarkers(this.resMarkers) : ''
+                if(this.isClusterer) {
+                    for (let akey of this.resMarkers) {
+                        if (akey.isVisible()) {
+                           this.resMap.removeOverlay(akey)
+                        }
+                    }
+                    this.creatMarker()
+                } else {
+                    for (let akey of this.resMarkers) {
+                        akey.show()
+                    }
+                }
             },
             // 地图缩放
             setMapZoom(temp) {
@@ -1993,12 +2002,12 @@
                 this.initResMarkers()
                 this.selfMotionPolylines = []
             },
-            // 取消在线搜索
+            // 取消在线搜索 showResInPolygon
             clearSearch() {
                 if(this.isMouseSearch) {
                     // 取消鼠标画圆
-                    this.deleteDrawingOverlay()
                     this.isMouseSearch = false
+                    this.deleteDrawingOverlay()
                     this.initMouseActive()
                 } else if(this.isMultiPoint) {
                     this.isMultiPoint = false
@@ -2026,8 +2035,6 @@
             },
             // 恢复打点原始状态
             initResMarkers() {
-                // console.time('恢复打点原始状态')
-                // let i = 0
                 for (let key of this.resMarkers) {
                     key.show()
                     // 移除标识marker在圆内到标识
@@ -2044,7 +2051,6 @@
                         key.mapCenter = ''
                     }
                 }
-                // console.timeEnd('恢复打点原始状态')
             },
             //
             /**
@@ -2336,6 +2342,8 @@
                     // 城市边界
                     this.displayBoundary()
                     this.mapLoading = false
+                    // 初始化鼠标绘制
+                    this.initMouseDrawing()
                 })
             },
             // 分享时设置广告限制、商圈、门体类型

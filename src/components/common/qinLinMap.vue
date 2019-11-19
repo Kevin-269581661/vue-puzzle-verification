@@ -622,7 +622,7 @@
                 // 选择到区域
                 selectArea: [],
                 // 楼盘类型
-                bType:[],
+                bType: '',
                 // 楼盘类型下拉
                 buildTypeList: [
                     {buildlabel: '高端住宅', buildValue: '高端住宅'},
@@ -2102,9 +2102,7 @@
             },
             // 广告限制
             filterADLimit(limit) {
-                if (limit && limit.length) {
-                    this.transfersFun()
-                }
+                this.transfersFun()
             },
             // 住户数量过滤
             filterHouseNum() {
@@ -2182,7 +2180,7 @@
             },
             // 清空条件
             clearFilter() {
-                this.bType = []
+                this.bType = ''
                 this.houseNum = ['', '']
                 this.buildNum = ['', '']
                 this.buildPrice = ['', '']
@@ -2481,7 +2479,7 @@
     }
 
     .search_ul {
-        height: 408px;
+        height: 460px;
         overflow-y: auto;
     }
 
@@ -3205,6 +3203,15 @@
         -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
         background:rgba(216,216,216,1);
         border-radius: 2px;
+    }
+    /*768 220 988*/
+    @media screen and (max-height: 800px){
+        .search_ul{
+            height: 278px;
+        }
+        .active_ul{
+            height: 100px;
+        }
     }
 </style>
 <style>

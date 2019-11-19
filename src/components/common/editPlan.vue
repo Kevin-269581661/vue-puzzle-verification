@@ -1410,6 +1410,8 @@
                 selectMapKind: 1,
                 // 亲邻地图
                 mapAdsList:[],
+                currPageSelect:0,
+                currPageAsLength:0
             };
         },
         mounted() {
@@ -1998,6 +2000,7 @@
             // 分页
             changePage(val) {
                 // console.log('当前页',val)
+                this.currPageSelect = 0
                 this.IsAll = false
                 this.pageNo = val
                 this.getAdsParamsData.pageNo = this.pageNo
@@ -2138,6 +2141,7 @@
             // 接口数据转成table
             setTableDataADDoor(ADSdata){
                 console.log('接口数据转成table当前时间',this.dateInput)
+                let i = 0
                 for(let key of ADSdata) {
                     let adObj = {
                         mID: key.mID,
@@ -2197,9 +2201,15 @@
                     }
                     if (key.asLabs.indexOf('A') === -1) {
                         adObj.box.A = true
+                    }else {
+                        //本页可选点位
+                        i++;
                     }
                     if (key.asLabs.indexOf('B') === -1) {
                         adObj.box.B = true
+                    }else {
+                        //本页可选点位
+                        i++;
                     }
                     if (key.adlInfo !== null && key.adlInfo !== undefined && key.adlInfo.length > 0) {
                         let arr = []
@@ -2225,6 +2235,7 @@
                     this.planList.push(adObj)
                 }
                 console.log('表格数据',this.planList)
+                this.currPageAsLength = i
                 this.loadScroll = true
             },
             setPageNoAndTableData(){
@@ -3010,9 +3021,15 @@
             // 根据购物车已有的mID对应AB面判断勾选
             judgeByselect() {
                 console.log('judgeByselect',this.planList)
-                if(this.shopingList.length > 0){
-                    for (let i = 0; i < this.shopingList.length; i++){
+                this.currPageSelect = 0
+                if (this.shopingList.length > 0) {
+                    for (let i = 0; i < this.shopingList.length; i++) {
                         this.hadADByshop(this.shopingList[i])
+                    }
+                    if (this.currPageSelect == this.currPageAsLength) {
+                        this.IsAll = true
+                    } else {
+                        this.IsAll = false
                     }
                 }
             },
@@ -3026,12 +3043,15 @@
                             if (crossIf) {
                                 if (shopAD.A_B === 'A') {
                                     key.checkBox.A = true
+                                    this.currPageSelect++
                                     // this.IsAll = true
                                 } else if (shopAD.A_B === 'B') {
                                     key.checkBox.B = true
+                                    this.currPageSelect++
                                     // this.IsAll = true
                                 } else if (shopAD.A_B === 'ABC'){
                                     key.checkBox.ABC = true
+                                    this.currPageSelect++
                                     // this.IsAll = true
                                 }
                                 break
@@ -3880,6 +3900,7 @@
             // 添加到购物车
             AddShopingInfo(info, letter) {
                 console.log('选中的row信息', info)
+                this.currPageSelect++
                 let selectInfo = this.setShopingTable(info,letter)
                 // console.log('selectInfo',selectInfo)
                 let asLabsArr = selectInfo.asLabs.split(',')
@@ -3904,8 +3925,13 @@
                     }
                     this.shopingList.push(selectInfo)
                 }
+                if (this.currPageSelect == this.currPageAsLength) {
+                    this.IsAll = true
+                } else {
+                    this.IsAll = false
+                }
                 // this.IsAll = true
-                // console.log('this.shopingList',this.shopingList)
+                console.log('shopingList', this.shopingList,this.currPageSelect)
             },
             // 选点列表数据到购物车数据
             setShopingTable(info,letter){
@@ -4006,6 +4032,7 @@
             },
             // 取消勾时,删除购物车里对应的数据行
             deleteShopRow(row, letter) {
+                this.currPageSelect--
                 for (let j = 0; j < this.shopingList.length; j++) {
                     if (this.shopingList[j].mID === row.mID && this.shopingList[j].A_B === letter) {
                         let crossIf = this.crossSchedules(this.shopingList[j].schedules)

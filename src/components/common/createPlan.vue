@@ -33,7 +33,8 @@
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="公司名称：" prop="companyName">
-                                <el-select v-model="planForm.companyName" @change="GetBrandByCid" placeholder="请选择公司名称" filterable>
+                                <el-select v-model="planForm.companyName" @change="GetBrandByCid" placeholder="请选择公司名称"
+                                           filterable>
                                     <el-option
                                         v-for="item in companyName"
                                         :key="item.value"
@@ -89,7 +90,8 @@
                                         +
                                     </el-button>
                                 </div>
-                                <el-select v-else v-model="planForm.throwCity" size="small" filterable multiple placeholder="请选择" @remove-tag="removeCity">
+                                <el-select v-else v-model="planForm.throwCity" size="small" filterable multiple
+                                           placeholder="请选择" @remove-tag="removeCity">
                                     <el-option
                                         v-for="item in throwCity"
                                         :key="item.value"
@@ -118,8 +120,10 @@
                                     </el-select>
                                 </div>
                                 <div>
-                                    <el-input placeholder="请输入要搜索的内容" v-model="searchInput" class="input-with-select" @change="initData">
-                                        <el-select v-model="selectValue" slot="prepend" class="type-select" @change="initData">
+                                    <el-input placeholder="请输入要搜索的内容" v-model="searchInput" class="input-with-select"
+                                              @change="initData">
+                                        <el-select v-model="selectValue" slot="prepend" class="type-select"
+                                                   @change="initData">
                                             <el-option v-for="item in typeSelect" :key="item.value" :label="item.value"
                                                        :value="item.value"></el-option>
                                         </el-select>
@@ -153,8 +157,10 @@
                             <el-row class="button_row">
                                 <el-col>
                                     <!--        <el-button type="primary" class="map" icon="el-icon-location-outline" @click="mapAD"-->
-                                    <el-button type="primary" class="map" icon="el-icon-location-outline" @click="judgeMapSelect"
-                                               v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt050_ck03'}">地图</el-button>
+                                    <el-button type="primary" class="map" icon="el-icon-location-outline"
+                                               @click="judgeMapSelect"
+                                               v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt050_ck03'}">地图
+                                    </el-button>
                                     <el-dropdown>
                                         <el-button type="success" class="importXle">
                                             导入<i class="el-icon-arrow-down el-icon--right"></i>
@@ -171,9 +177,11 @@
                                         </el-dropdown-menu>
                                     </el-dropdown>
                                     <el-button type="primary" @click="importFanan('copy')"
-                                               v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt054_ck04'}">复制方案</el-button>
+                                               v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt054_ck04'}">复制方案
+                                    </el-button>
                                     <el-button plain @click="dialogOneKeyPoint = true"
-                                               v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt055_ck04'}">一键选点</el-button>
+                                               v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt055_ck04'}">一键选点
+                                    </el-button>
                                 </el-col>
                             </el-row>
                         </div>
@@ -205,13 +213,15 @@
                             <dl style="border: none">
                                 <dt>其它条件：</dt>
                                 <dd class="other-dd">
-                                    <el-select v-model="mState" placeholder="媒体状态" class="otherSelect" :class="mState !== '' ? 'otherSelectActive' :'' "
+                                    <el-select v-model="mState" placeholder="媒体状态" class="otherSelect"
+                                               :class="mState !== '' ? 'otherSelectActive' :'' "
                                                @change="mStateChange">
                                         <el-option label="正常" value="1"></el-option>
                                         <el-option label="待安装" value="2"></el-option>
                                     </el-select>
                                     <el-select v-model="limitList" placeholder="广告限制" class="otherSelect adLimitSelect"
-                                               :class="limitList.length !== 0 ? 'otherSelectActive' :'' " multiple collapse-tags
+                                               :class="limitList.length !== 0 ? 'otherSelectActive' :'' " multiple
+                                               collapse-tags
                                                @change="activeADLimit"> <!--visible-change-->
                                         <el-option
                                             v-for="item in ADLimit"
@@ -229,7 +239,8 @@
                                         </el-option>
                                     </el-select>
                                     <el-select v-model="activeGrade" placeholder="媒体等级" class="otherSelect"
-                                               @change="gradeChange" :class=" activeGrade !== '' ? 'otherSelectActive' :''">
+                                               @change="gradeChange"
+                                               :class=" activeGrade !== '' ? 'otherSelectActive' :''">
                                         <el-option label="A级" value="A"></el-option>
                                         <el-option label="B级" value="B"></el-option>
                                         <el-option label="C级" value="C"></el-option>
@@ -245,9 +256,9 @@
                                             -
                                             <input type="text" class="input"
                                                    v-model="houseNum[1]">
-                                            <el-button @click="emptyFun('H')" class="input-wrap-Btn">清 除 </el-button>
+                                            <el-button @click="emptyFun('H')" class="input-wrap-Btn">清 除</el-button>
                                             <el-button type="primary" class="input-wrap-Btn"
-                                                       @click="tableHeaderFilter_h()" >确 定
+                                                       @click="tableHeaderFilter_h()">确 定
                                             </el-button>
                                         </div>
                                         <el-button slot="reference" class="otherBtn"
@@ -266,9 +277,9 @@
                                             -
                                             <input type="text" class="input"
                                                    v-model="buildPrice[1]">
-                                            <el-button @click="emptyFun('P')" class="input-wrap-Btn">清 除 </el-button>
+                                            <el-button @click="emptyFun('P')" class="input-wrap-Btn">清 除</el-button>
                                             <el-button type="primary" class="input-wrap-Btn"
-                                                       @click="tableHeaderFilter_p()" >确 定
+                                                       @click="tableHeaderFilter_p()">确 定
                                             </el-button>
                                         </div>
                                         <el-button slot="reference" class="otherBtn"
@@ -287,9 +298,9 @@
                                             -
                                             <input type="text" class="input"
                                                    v-model="liveYear[1]">
-                                            <el-button @click="emptyFun('Y')" class="input-wrap-Btn">清 除 </el-button>
+                                            <el-button @click="emptyFun('Y')" class="input-wrap-Btn">清 除</el-button>
                                             <el-button type="primary" class="input-wrap-Btn"
-                                                       @click="tableHeaderFilterByLiveYear()" >确 定
+                                                       @click="tableHeaderFilterByLiveYear()">确 定
                                             </el-button>
                                         </div>
                                         <el-button slot="reference" class="otherBtn"
@@ -308,9 +319,9 @@
                                             -
                                             <input type="text" class="input"
                                                    v-model="peopleFlow[1]">
-                                            <el-button @click="emptyFun('PF')" class="input-wrap-Btn">清 除 </el-button>
+                                            <el-button @click="emptyFun('PF')" class="input-wrap-Btn">清 除</el-button>
                                             <el-button type="primary" class="input-wrap-Btn"
-                                                       @click="tableHeaderFilterByPeopleFlow()" >确 定
+                                                       @click="tableHeaderFilterByPeopleFlow()">确 定
                                             </el-button>
                                         </div>
                                         <el-button slot="reference" class="otherBtn"
@@ -327,9 +338,9 @@
                                             <input type="text" class="input" v-model="carFlow[0]">
                                             -
                                             <input type="text" class="input" v-model="carFlow[1]">
-                                            <el-button @click="emptyFun('PSN')" class="input-wrap-Btn">清 除 </el-button>
+                                            <el-button @click="emptyFun('PSN')" class="input-wrap-Btn">清 除</el-button>
                                             <el-button type="primary" class="input-wrap-Btn"
-                                                       @click="tableHeaderFilterByCarFlow()" >确 定
+                                                       @click="tableHeaderFilterByCarFlow()">确 定
                                             </el-button>
                                         </div>
                                         <el-button slot="reference" class="otherBtn"
@@ -346,9 +357,9 @@
                                             <input type="text" class="input" v-model="parkSpaceNum[0]">
                                             -
                                             <input type="text" class="input" v-model="parkSpaceNum[1]">
-                                            <el-button @click="emptyFun('CF')" class="input-wrap-Btn">清 除 </el-button>
+                                            <el-button @click="emptyFun('CF')" class="input-wrap-Btn">清 除</el-button>
                                             <el-button type="primary" class="input-wrap-Btn"
-                                                       @click="tableHeaderFilterByParkSpaceNum()" >确 定
+                                                       @click="tableHeaderFilterByParkSpaceNum()">确 定
                                             </el-button>
                                         </div>
                                         <el-button slot="reference" class="otherBtn"
@@ -410,22 +421,25 @@
                                                         <li v-for="(item,index) in scope.row.adlInfo" :key="index">
                                                             <div v-if="item.asState">
                                                                 <p style="margin-bottom: 5px">
-                                                                    <span style="color: #333">该点位：{{item.asState}}中</span>
+                                                                    <span
+                                                                        style="color: #333">该点位：{{item.asState}}中</span>
                                                                 </p>
                                                             </div>
                                                             <div v-else>
                                                                 <p style="margin-bottom: 5px">
                                                                     <span style="color: #333">占点方案：</span>
                                                                     <span>
-                                                                        <span  style="font-weight: bold">{{sessionData.uType === 'MD' ? item.beOccupieApName : '******'}}</span>
+                                                                        <span style="font-weight: bold">{{sessionData.uType === 'MD' ? item.beOccupieApName : '******'}}</span>
                                                                         方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
                                                                     </span>
                                                                 </p>
-                                                                <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
+                                                                <p><span style="color: #333">占点排期：</span>{{item.schedules}}
+                                                                </p>
                                                             </div>
                                                         </li>
                                                     </ul>
-                                                    <el-checkbox slot="reference" v-model="scope.row.checkBox.A" label="A面"
+                                                    <el-checkbox slot="reference" v-model="scope.row.checkBox.A"
+                                                                 label="A面"
                                                                  @change="changeA(scope.row)"
                                                                  :disabled="scope.row.box.A">
                                                     </el-checkbox>
@@ -444,22 +458,25 @@
                                                         <li v-for="(item,index) in scope.row.adlInfo" :key="index">
                                                             <div v-if="item.asState">
                                                                 <p style="margin-bottom: 5px">
-                                                                    <span style="color: #333">该点位：{{item.asState}}中</span>
+                                                                    <span
+                                                                        style="color: #333">该点位：{{item.asState}}中</span>
                                                                 </p>
                                                             </div>
                                                             <div v-else>
                                                                 <p style="margin-bottom: 5px">
                                                                     <span style="color: #333">占点方案：</span>
                                                                     <span>
-                                                                        <span  style="font-weight: bold">{{sessionData.uType === 'MD' ? item.beOccupieApName : '******'}}</span>
+                                                                        <span style="font-weight: bold">{{sessionData.uType === 'MD' ? item.beOccupieApName : '******'}}</span>
                                                                         方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
                                                                     </span>
                                                                 </p>
-                                                                <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
+                                                                <p><span style="color: #333">占点排期：</span>{{item.schedules}}
+                                                                </p>
                                                             </div>
                                                         </li>
                                                     </ul>
-                                                    <el-checkbox slot="reference" v-model="scope.row.checkBox.B" label="B面"
+                                                    <el-checkbox slot="reference" v-model="scope.row.checkBox.B"
+                                                                 label="B面"
                                                                  @change="changeB(scope.row)"
                                                                  :disabled="scope.row.box.B">
                                                     </el-checkbox>
@@ -657,23 +674,30 @@
                                     <el-row style="margin-bottom:10px;">
                                         <el-col :span="8">
                                             <el-radio-group v-model="activeName" size="small" @change="handleClick">
-                                                <el-radio-button :label="item.type.toString()" v-for="item of typeShopList" :key="item.type">{{item.mVehicle}}</el-radio-button>
+                                                <el-radio-button :label="item.type.toString()"
+                                                                 v-for="item of typeShopList" :key="item.type">
+                                                    {{item.mVehicle}}
+                                                </el-radio-button>
                                             </el-radio-group>
                                         </el-col>
 
                                         <el-col :span="16" style="text-align:right;">
                                             <span class="button_point">
-                                                <el-button plain @click="getMapADList" size="small" class="mapBtn" :disabled="mapBtn"
+                                                <el-button plain @click="getMapADList" size="small" class="mapBtn"
+                                                           :disabled="mapBtn"
                                                            v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt061_ck05'}">获取地图选点</el-button>
                                             </span>
-                                            <el-select v-model="eventType" placeholder="快捷配点" filterable @change="changeEvent">
-                                                <el-option v-for="item of eventList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                                            <el-select v-model="eventType" placeholder="快捷配点" filterable
+                                                       @change="changeEvent">
+                                                <el-option v-for="item of eventList" :key="item.value"
+                                                           :label="item.label" :value="item.value"></el-option>
                                             </el-select>
                                         </el-col>
                                     </el-row>
                                     <el-row class="car-title">
                                         <el-col :span="10">
-                                            <img src="../../assets/images/statistics.png" alt="" style="vertical-align: text-top;">
+                                            <img src="../../assets/images/statistics.png" alt=""
+                                                 style="vertical-align: text-top;">
                                             社区:<span>{{shopMedia_ADNum.resNum}}</span>
                                             (选1面:<span>{{shopMedia_ADNum.oneNum}}</span>&nbsp;&nbsp;
                                             选2面:<span>{{shopMedia_ADNum.twoNum}}</span>&nbsp;&nbsp;
@@ -802,7 +826,8 @@
                                                 <span style="cursor: pointer;color: #1890ff"
                                                       @click="deleteRow(scope.row)"
                                                       v-qadn-mta-h5="{id: activeName == 1 ? 'a004_b008_c001_d001_bt058_ck04' : 'a004_b008_c001_d002_bt073_ck04'}">
-                                                    <i class="el-icon-delete" style="color: #108DE7;font-size: 20px;margin-left: 6px"></i>
+                                                    <i class="el-icon-delete"
+                                                       style="color: #108DE7;font-size: 20px;margin-left: 6px"></i>
                                                 </span>
                                             </template>
                                         </el-table-column>
@@ -844,7 +869,8 @@
                             </div>
                         </div>
                         <div class="panel">
-                            <ap-quotation :quotationData="quotationObj" :shopingList="shopingList" @APQuotationArr="APQuotationArr" :copydata="[]"></ap-quotation>
+                            <ap-quotation :quotationData="quotationObj" :shopingList="shopingList"
+                                          @APQuotationArr="APQuotationArr" :copydata="[]"></ap-quotation>
                         </div>
                     </div>
                 </div>
@@ -875,17 +901,23 @@
         </div>
         <div class="content_bottom_btn">
             <el-button plain @click="prev" v-if="active == 1 || active == 2" type="default"
-                       v-qadn-mta-h5="{id: 'a004_b009_c000_d000_bt088_ck03'}">上一步</el-button>
+                       v-qadn-mta-h5="{id: 'a004_b009_c000_d000_bt088_ck03'}">上一步
+            </el-button>
             <el-button plain @click="clearData" v-if="active === 0" type="default"
-                       v-qadn-mta-h5="{id: 'a004_b007_c000_d000_bt047_ck03'}">取消</el-button>
+                       v-qadn-mta-h5="{id: 'a004_b007_c000_d000_bt047_ck03'}">取消
+            </el-button>
             <!-- 空点导出 -->
             <el-button plain v-if="active === 0" type="default" @click="exportEmpty()"
-                       v-qadn-mta-h5="{id: 'a004_b007_c000_d000_bt048_ck04'}">导空点</el-button>
+                       v-qadn-mta-h5="{id: 'a004_b007_c000_d000_bt048_ck04'}">导空点
+            </el-button>
 
             <el-button @click="next" v-if="active == 0 || active == 1" type="primary"
-                       v-qadn-mta-h5="{id: active == 0 ? 'a004_b007_c000_d000_bt046_ck03' : 'a004_b008_c000_d000_bt057_ck03'}">下一步</el-button>
+                       v-qadn-mta-h5="{id: active == 0 ? 'a004_b007_c000_d000_bt046_ck03' : 'a004_b008_c000_d000_bt057_ck03'}">
+                下一步
+            </el-button>
             <el-button @click="next" v-if="active == 2" type="primary"
-                       v-qadn-mta-h5="{id: 'a004_b009_c000_d000_bt089_ck03'}">创建方案 </el-button>
+                       v-qadn-mta-h5="{id: 'a004_b009_c000_d000_bt089_ck03'}">创建方案
+            </el-button>
 
             <!-- <p v-if="active === 0" style="color: #666;font-size: 14px;margin-top:10px;">备注：导空点功能目前导出的为最近一年的空点</p> -->
 
@@ -914,7 +946,8 @@
                 <li v-for="item in beOccupiedAdsData">
                     <p>
                         <span style="color: #333">占点方案：</span>
-                        <span v-if="sessionData.uType === 'MD'"><span style="font-weight: bold">{{item.beOccupieApName}}</span> 方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）</span>
+                        <span v-if="sessionData.uType === 'MD'"><span
+                            style="font-weight: bold">{{item.beOccupieApName}}</span> 方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）</span>
                         <span v-else>******</span>
                     </p>
                     <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
@@ -932,23 +965,23 @@
                 <li v-show="ActiveConnectADList.connectResName !== ''">
                     <p>
                         <span style="color: #333">资源名称：</span>
-                        <span  style="font-weight: bold">{{ActiveConnectADList.connectResName}}</span>
+                        <span style="font-weight: bold">{{ActiveConnectADList.connectResName}}</span>
                     </p>
                     <p>
                         <span style="color: #333">媒体名称（连排门）：</span>
-                        <span  style="font-weight: bold">{{ActiveConnectADList.connectMedia}}为连排门</span>
+                        <span style="font-weight: bold">{{ActiveConnectADList.connectMedia}}为连排门</span>
                     </p>
                 </li>
                 <li v-show="ActiveConnectADList.commentWorkRes !== ''">
                     <p>
                         <span>同行资源回避：该社区已有同行广告主投放</span>
-                        <span  style="font-weight: bold">({{ActiveConnectADList.commentWorkRes}})</span>
+                        <span style="font-weight: bold">({{ActiveConnectADList.commentWorkRes}})</span>
                     </p>
                 </li>
                 <li v-show="ActiveConnectADList.commentworkMedia !== ''">
                     <p>
                         <span>同行媒体回避：{{ActiveConnectADList.asLab}}点已有同行广告主投放</span>
-                        <span  style="font-weight: bold">({{ActiveConnectADList.commentworkMedia}})</span>
+                        <span style="font-weight: bold">({{ActiveConnectADList.commentworkMedia}})</span>
                     </p>
                 </li>
             </ul>
@@ -965,10 +998,10 @@
                     :model="oneKeyPointData"
                     label-width="85px"
                     :rules="oneKeyPointDataRules">
-                    <el-form-item label="点位总量: "  prop="TotalPoint">
+                    <el-form-item label="点位总量: " prop="TotalPoint">
                         <el-input v-model="oneKeyPointData.TotalPoint"></el-input>
                     </el-form-item>
-                    <el-form-item label="每小区选: "  prop="pointNumByRes">
+                    <el-form-item label="每小区选: " prop="pointNumByRes">
                         <el-input v-model="oneKeyPointData.pointNumByRes"></el-input>
                     </el-form-item>
                     <el-form-item label="A面占比: " prop="A_cale" class="ABcaleItem">
@@ -991,7 +1024,7 @@
             top="35vh"
             width="40%">
             <p>
-                <el-radio-group v-model="dateType" >
+                <el-radio-group v-model="dateType">
                     <el-radio label="1" v-if="isShowHalfYear">默认半年日期</el-radio>
                     <el-radio label="2">自定义日期</el-radio>
                 </el-radio-group>
@@ -1010,7 +1043,7 @@
                 </el-date-picker>
             </p>
             <span slot="footer">
-                <el-button  size="small" type="primary" @click="downEmptyPoint()">确认</el-button>
+                <el-button size="small" type="primary" @click="downEmptyPoint()">确认</el-button>
             </span>
         </el-dialog>
         <!-- 导出空位弹出框 -->
@@ -1022,7 +1055,9 @@
             width="40%">
             <p id="shareDownUrl">{{downUrl}}</p>
             <p style="text-align:center;margin-top:25px;">
-                <el-button type="primary" @click="copyUrlDown()" size='small' style="width: 80px;height: 34px;outline: none;cursor: pointer;">复制链接</el-button>
+                <el-button type="primary" @click="copyUrlDown()" size='small'
+                           style="width: 80px;height: 34px;outline: none;cursor: pointer;">复制链接
+                </el-button>
             </p>
         </el-dialog>
         <!-- 导入方案弹出框 -->
@@ -1044,8 +1079,10 @@
                         :http-request="uploadFile"
                         :on-remove="fileRemove"
                         :multiple="false">
-                        <a v-if="importType=='1'" :href ='this.apiVar.qadnUrl + "/importTemplate/resTemplate.xlsx"' download="小区导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
-                        <a v-if="importType=='2'" :href ='this.apiVar.qadnUrl + "/importTemplate/adsTemplate.xlsx"' download="点位导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
+                        <a v-if="importType=='1'" :href='this.apiVar.qadnUrl + "/importTemplate/resTemplate.xlsx"'
+                           download="小区导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
+                        <a v-if="importType=='2'" :href='this.apiVar.qadnUrl + "/importTemplate/adsTemplate.xlsx"'
+                           download="点位导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
                         <el-button plain icon="el-icon-upload2" size="small" class="fileButton">上传文件</el-button>
                     </el-upload>
                 </el-col>
@@ -1054,7 +1091,7 @@
                 <el-col :span="2">
                     <i class="el-icon-warning" style="color:#FAAD14"></i>
                 </el-col>
-                <el-col :span="20" >
+                <el-col :span="20">
                     若需导入钼媒人群包进行选点，请在表格中填入正确的钼媒点位ID
                 </el-col>
                 <el-col :span="2">
@@ -1073,7 +1110,8 @@
             top="20vh"
             width="80%">
             <template v-if="importType =='1'">
-                <import-result :importData="importInfoData" :name="planForm.planName" @cancel="cancelImport" @confirmImport="confirmImport"></import-result>
+                <import-result :importData="importInfoData" :name="planForm.planName" @cancel="cancelImport"
+                               @confirmImport="confirmImport"></import-result>
             </template>
             <template v-if="importType == '2'">
                 <div class="car-title">
@@ -1087,20 +1125,20 @@
                     :data="excelDataUpload"
                     style="width: 100%"
                 >
-                    <el-table-column label="资源名称" min-width="140" prop="resName" >
+                    <el-table-column label="资源名称" min-width="140" prop="resName">
                     </el-table-column>
-                    <el-table-column prop="city" label="市" min-width="85" >
+                    <el-table-column prop="city" label="市" min-width="85">
                     </el-table-column>
-                    <el-table-column prop="origin" label="区" min-width="85" >
+                    <el-table-column prop="origin" label="区" min-width="85">
                     </el-table-column>
-                    <el-table-column prop="mediaName" label="媒体名称" min-width="130" >
+                    <el-table-column prop="mediaName" label="媒体名称" min-width="130">
                     </el-table-column>
                     <el-table-column min-width="70" label="投放面">
                         <template slot-scope="scope">
                             <span>{{scope.row.asLab}}面</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="assetTag" label="资产编号" min-width="130" >
+                    <el-table-column prop="assetTag" label="资产编号" min-width="130">
                     </el-table-column>
                     <el-table-column prop="schedules" label="排期" min-width="190">
                         <template slot-scope="scope">
@@ -1126,7 +1164,8 @@
                        :remote-method="remoteGetOrder"
                        :loading="loadingOrder"
             >
-                <el-option v-for="item of orderArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                <el-option v-for="item of orderArr" :key="item.value" :label="item.label"
+                           :value="item.value"></el-option>
             </el-select>
             <span slot="footer" class="dialog-footer">
                 <el-button plain size="small" @click="isCopy = false">取 消</el-button>
@@ -1145,7 +1184,7 @@
             </p>
             <div slot="footer" class="dialog-footer">
                 <el-button plain size="small" @click="isMapKind = false">取 消</el-button>
-                <el-button size="small" type="primary" @click="selectMap" >确 定</el-button>
+                <el-button size="small" type="primary" @click="selectMap">确 定</el-button>
             </div>
         </el-dialog>
     </div>
@@ -1220,7 +1259,7 @@
                 }
             };
             let validateNum = (rule, value, callback) => {
-                let reg = /^[0-9]+$/ ;
+                let reg = /^[0-9]+$/;
                 if (!(reg.test(value))) {
                     callback(new Error('只能输入整数值'));
                 } else {
@@ -1231,7 +1270,7 @@
                     }
                 }
             };
-            let validateCale = (rule, value, callback) =>{
+            let validateCale = (rule, value, callback) => {
                 let reg = /^\d+(\.\d+)?$/
                 if (value !== '' && !(reg.test(value))) {
                     callback(new Error('只能输入数字'));
@@ -1327,7 +1366,7 @@
                     {buildlabel: '洋房', buildValue: '洋房'},
                     {buildlabel: '商住', buildValue: '商住'}
                 ],
-                village:[               // 社区
+                village: [               // 社区
                     {buildlabel: '高端住宅', buildValue: '高端住宅'},
                     {buildlabel: '中端住宅', buildValue: '中端住宅'},
                     {buildlabel: '普通住宅', buildValue: '普通住宅'},
@@ -1337,10 +1376,10 @@
                     {buildlabel: '商住', buildValue: '商住'}
                 ],
                 officeBuilding: [           // 写字楼类型
-                    {buildValue:'单纯性写字楼',buildlabel:'单纯性写字楼'},
-                    {buildValue:'商住型写字楼',buildlabel:'商住型写字楼'},
-                    {buildValue:'综合型写字楼',buildlabel:'综合型写字楼'},
-                    {buildValue:'工业园区',buildlabel:'工业园区'},
+                    {buildValue: '单纯性写字楼', buildlabel: '单纯性写字楼'},
+                    {buildValue: '商住型写字楼', buildlabel: '商住型写字楼'},
+                    {buildValue: '综合型写字楼', buildlabel: '综合型写字楼'},
+                    {buildValue: '工业园区', buildlabel: '工业园区'},
                 ],
                 buildValue: '',
                 //搜索框
@@ -1361,7 +1400,7 @@
                     planRemark: '',
                 },
                 // 媒介选择所属销售列表
-                salerList:[],
+                salerList: [],
                 // 获取销售选项loading
                 salerListLoading: false,
                 //
@@ -1391,7 +1430,7 @@
                 },
                 shopingList: [],            // step2购物车列表
                 // 购物车展示的数据
-                typeShopList:[],
+                typeShopList: [],
                 activeName: '1',
                 // 事件选择
                 eventType: '',
@@ -1401,21 +1440,21 @@
                 planList: [],               //step2可选点位列表
                 IsAll: false,               //当前是否为全选状态
                 sessionData: '',            // 登录用户的数据
-                FAData: {apID:''},          // 创建方后台返回的数据
+                FAData: {apID: ''},          // 创建方后台返回的数据
                 timeout: null,
-                BDData: {uid: '0', realName: '',saleManageLevel: 0},
+                BDData: {uid: '0', realName: '', saleManageLevel: 0},
                 HSearch: '',                // 获取传值显示‘清除’、‘确定’按钮
                 houseNum: ['', ''],         // 表头搜索住户数量
                 buildNum: ['', ''],         // 表头搜索楼栋数量
                 buildPrice: ['', ''],       // 表头搜索楼盘价格
                 liveYear: ['', ''],         // 表头搜索入住年份
-                peopleFlow: ['',''],        // 表头搜索人流量
-                carFlow : ['',''],          // 表头搜索车位数
-                parkSpaceNum : ['',''],     // 表头搜索车流量
+                peopleFlow: ['', ''],        // 表头搜索人流量
+                carFlow: ['', ''],          // 表头搜索车位数
+                parkSpaceNum: ['', ''],     // 表头搜索车流量
                 filterData: {               // 记录判断含有哪些表头的过滤条件
-                    hNum:false,
-                    bNum:false,
-                    bPrice:false,
+                    hNum: false,
+                    bNum: false,
+                    bPrice: false,
                     lYear: false,
                     pFlow: false,
                     cFlow: false,
@@ -1444,18 +1483,18 @@
                 importType: '',
                 isShowTag: true,
                 // 当前上传文件的数据- 表格
-                fileData:[],
+                fileData: [],
                 // 导入excel部分失败弹出框
                 showUploadFail: false,
                 // 导入excel之后返回的失败成功点数
-                excelObj:{
+                excelObj: {
                     successNum: 0,
                     failNum: 0,
                 },
                 // excel导入返回来的数据
                 importInfoData: {},
                 // 导入excel之后返回的数组
-                excelDataUpload:[],
+                excelDataUpload: [],
                 // 复制方案
                 isCopy: false,
                 // 搜索方案时的loading
@@ -1464,10 +1503,10 @@
                 orderName: '',
                 // 返回的订单列表
                 orderArr: [],
-                apAicode:'',                  // 方案的协同aicode
+                apAicode: '',                  // 方案的协同aicode
                 shareADUrl: '',               // 协同选点的url https://beta.qinlinad.com/shareADList?apid=649&aicode=0DDD2685D9D3842ECB0DDC45D79D2131
                 dialogOneKeyPoint: false,     // 一键选点模态框
-                oneKeyPointData:{
+                oneKeyPointData: {
                     TotalPoint: '',
                     pointNumByRes: '',
                     A_cale: 0,
@@ -1478,11 +1517,11 @@
                         {required: true, message: '点位数不能为空', trigger: 'blur'},
                         {validator: validateNum, trigger: 'blur'},
                     ],
-                    pointNumByRes:[
+                    pointNumByRes: [
                         {required: true, message: '不能为空', trigger: 'blur'},
                         {validator: validateNum, trigger: 'blur'},
                     ],
-                    A_cale:[
+                    A_cale: [
                         {required: true, message: 'A面占比不能为空', trigger: 'blur'},
                         {validator: validateCale, trigger: 'blur'},
                     ]
@@ -1494,7 +1533,7 @@
                 shopDelRowClick: false,
                 pageNo: 1,                       // 页码
                 total: 1,                    // 总页数
-                pageSize: 20,                    //每页条数
+                pageSize: 10,                    //每页条数
                 getAdsParamsData: {},            //　获取点位列表的参数data
                 apMinTime: '',                   // 方案创建的开始时间
                 ADLimitActiveName: '1',
@@ -1502,8 +1541,8 @@
                 searchBtnAbled: false,           // 搜索按钮禁止
                 isCityPrice: false,              // 判断城市最大价格是否大于2000w
                 connectAdDialogVisible: false,   // 连排门模态框
-                ActiveConnectADList:{},          // 购物车 - 当前点击行的连排门信息
-                mediaLevelNum:{ALevel: 0, BLevel: 0, CLevel: 0,ANum:0,BNum:0},
+                ActiveConnectADList: {},          // 购物车 - 当前点击行的连排门信息
+                mediaLevelNum: {ALevel: 0, BLevel: 0, CLevel: 0, ANum: 0, BNum: 0},
                 saleManageLevel: 0,              // 销售权限 0地方销售 1全国销售
                 asrIDList: [],                   // 已选点位里存在的公司及城市
                 indexData: '',                   // 首页来源的数据-前置地图选点
@@ -1523,15 +1562,15 @@
                 isMapKind: false,
                 selectMapKind: 1,
                 // 亲邻地图
-                mapAdsList:[],
-                currPageAsLength:0,//当前页面可选的点位总数
-                currPageSelect:0,//当前页面已选择的点位数
+                mapAdsList: [],
+                currPageAsLength: 0,//当前页面可选的点位总数
+                currPageSelect: 0,//当前页面已选择的点位数
 
 
             };
         },
         mounted() {
-            console.log('limitList',this.limitList,'buildValue',this.buildValue)
+            console.log('limitList', this.limitList, 'buildValue', this.buildValue)
             this.getsessionData()   // 获取session中的数据
             this.areaCity = areaArr.cityArea()
             this.getADLimit()       // 获取广告限制列表
@@ -1559,12 +1598,12 @@
         // },
         computed: {
             nowPointNum() {
-                if(this.dialogTableVisible){
+                if (this.dialogTableVisible) {
                     this.resetConnectAdData()
                     this.computeConnectAdData()
                 }
                 // 当购物车点位数大于0时
-                if(this.shopingList.length || this.isSelect){
+                if (this.shopingList.length || this.isSelect) {
                     this.saveApInfo()
                 }
                 return this.shopingList.length
@@ -1574,6 +1613,7 @@
             // 分页
             changePage(val) {
                 // console.log('当前页',val)
+                this.currPageSelect = 0
                 this.IsAll = false
                 this.pageNo = val
                 this.getAdsParamsData.pageNo = this.pageNo
@@ -1606,7 +1646,7 @@
             getsessionData() {
                 this.sessionData = sessFun.getSess();
                 let sess = this.sessionData;
-                if((sess.uType == 'BD' && sess.saleManageLevel == 1) || (sess.uType == 'MD' && sess.mediaManageLevel == 1)){
+                if ((sess.uType == 'BD' && sess.saleManageLevel == 1) || (sess.uType == 'MD' && sess.mediaManageLevel == 1)) {
                     this.isShowHalfYear = true;
                 }
                 console.log('sessionData', this.sessionData)
@@ -1622,10 +1662,10 @@
                 } else {
                     this.isBD = false
                 }
-                this.dateTime = timeFormat.returnDayCount(0,'/')
+                this.dateTime = timeFormat.returnDayCount(0, '/')
                 let starTime, endTime
-                starTime = timeFormat.returnDayCount(1,'/')
-                endTime = timeFormat.returnDayCount(14,'/')
+                starTime = timeFormat.returnDayCount(1, '/')
+                endTime = timeFormat.returnDayCount(14, '/')
                 this.dateInput = [starTime, endTime]                // 设置默认时间
                 this.beforeDate = [starTime, endTime]
                 // 判断是否来至于首页的前置地图选点
@@ -1633,10 +1673,10 @@
                 if (inputPath.indexOf('from=index') !== -1) {
                     this.setDataByIndex()
                 }
-                console.log('this.dateInput',this.dateInput)
+                console.log('this.dateInput', this.dateInput)
             },
             // 动态设置购物车动画起点位置
-            setShopAnimate(){
+            setShopAnimate() {
                 // 注：window.onresize只能在项目内触发1次
                 let that = this
                 // 实时监控body的宽带。注：修改该方法后要重启项目并重新打开页面
@@ -1652,18 +1692,18 @@
                 shopAnimate.style.right = this.shopXY.x + 'px'
             },
             // 跳转来源于首页地图选点-设置部分默认数据
-            setDataByIndex(){
+            setDataByIndex() {
                 this.indexData = JSON.parse(sessionStorage.getItem('indexData'))
                 // this.mapADList = this.indexData.mapADList
                 this.dialogTableVisible = true
-                if(this.saleManageLevel == 1){
-                    this.selectedOptions = [this.indexData.rid.toString().substring(0,4)+ '00',this.indexData.rid]
+                if (this.saleManageLevel == 1) {
+                    this.selectedOptions = [this.indexData.rid.toString().substring(0, 4) + '00', this.indexData.rid]
                     this.throwCity.push({
                         value: this.indexData.rid,
                         label: this.indexData.city
                     })
                     this.dynamicTags.push(this.indexData.city);
-                }else{
+                } else {
 
                 }
                 this.planForm.throwCity.push(this.indexData.rid)
@@ -1715,7 +1755,7 @@
                         this.creatTab()                 // 报价单tab
                         this.getBand()                  // 获取公司品牌
                     } else {
-                        sessFun.messageFun('warning','请选择点位')
+                        sessFun.messageFun('warning', '请选择点位')
                     }
                 } else if (this.active === 2) {
                     // console.log('1')
@@ -1736,7 +1776,7 @@
                                 });
                                 this.creatAdPlan()    // 创建方案 当前价格大于系统支持的最大价格
                             } else {
-                                sessFun.messageFun('warning','单城市总价格大于系统支持的最大价格（2000万）')
+                                sessFun.messageFun('warning', '单城市总价格大于系统支持的最大价格（2000万）')
                             }
                             clearTimeout(timer)
                         }, 500)
@@ -1747,11 +1787,11 @@
                 }
             },
             // 创建方法
-            createFun(){
+            createFun() {
                 console.log('4444')
             },
             // 函数节流
-            throttle(func, wait){
+            throttle(func, wait) {
                 console.log('22')
                 let timer;
                 return () => {
@@ -1779,19 +1819,19 @@
                 this.$router.push("./planList");
             },
             // 确认导出空位
-            downEmptyPoint(){
-                if(this.dateType == '1'){
+            downEmptyPoint() {
+                if (this.dateType == '1') {
                     this.exportExcelData();
-                }else{
-                    if(this.emptyRange.length){
+                } else {
+                    if (this.emptyRange.length) {
                         this.dateRangeEmpty();
-                    }else{
-                        sessFun.messageFun('warning','请先选择日期')
+                    } else {
+                        sessFun.messageFun('warning', '请先选择日期')
                     }
                 }
             },
             // 导出时间段的空位
-            dateRangeEmpty(){
+            dateRangeEmpty() {
                 let loadingPoint = this.$loading({
                     lock: true,
                     text: '玩命加载中...',
@@ -1829,22 +1869,22 @@
                 });
             },
             // 导出空点格式化数据
-            formatData(arr){
-                let returnObj  = {
+            formatData(arr) {
+                let returnObj = {
                     city: [],
                     arr: ''
                 };
                 let result = [];
-                for(let data of arr){
+                for (let data of arr) {
                     let resObj = {
                         sheetName: this.getCityName(data.rID),
                         showList: [],
                     };
                     returnObj.city.push(resObj.sheetName);
                     let dataArr = data.adDoor.concat(data.barrier);
-                    for(let item of dataArr){
+                    for (let item of dataArr) {
                         let obj = {
-                            province: item.prName|| '--',
+                            province: item.prName || '--',
                             city: item.crName || '--',
                             rName: item.rName || '--',
                             resName: item.resName || '--',
@@ -1853,16 +1893,16 @@
                             mVehicle: item.mVehicle,
                             fNum: item.fNum || '--',
                             hNum: item.hNum || '--',
-                            hPrice: item.hPrice/100,
+                            hPrice: item.hPrice / 100,
                             cType: item.cType || '--',
                             chDay: item.chDay || '--',
                             carFlow: item.carFlow || '--',
-                            parkSpaceNum: item.parkSpaceNum ||'--',
+                            parkSpaceNum: item.parkSpaceNum || '--',
                             peopleFlow: item.peopleFlow || '--',
                             notPush: item.allNotPush || '--',
                             remark: item.allremark || '--',
                             adsNum: item.adsNum || 0,
-                            [this.emptyRange[0]+'-'+this.emptyRange[1]]: item.DateInfo.adsNum || 0
+                            [this.emptyRange[0] + '-' + this.emptyRange[1]]: item.DateInfo.adsNum || 0
                         };
                         resObj.showList.push(obj);
                     }
@@ -1872,10 +1912,10 @@
                 return returnObj;
             },
             // 获取城市中文名称
-            getCityName(rid){
+            getCityName(rid) {
                 let str = '';
-                for(let data of this.throwCity){
-                    if(data.value == rid){
+                for (let data of this.throwCity) {
+                    if (data.value == rid) {
                         str = data.label;
                         break;
                     }
@@ -1891,22 +1931,22 @@
                 }
             },
             // 导出空点导出次数接口
-            postDownLoadNum(type){
+            postDownLoadNum(type) {
                 let data = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                     type,
                 };
-                api.postApi(this.apiVar.Advertisement+"/AddExportLog", data).then(res =>{
+                api.postApi(this.apiVar.Advertisement + "/AddExportLog", data).then(res => {
                     console.log(res);
                 });
             },
             /*step1*/
             // 导出数据
-            exportExcelData: function(){
+            exportExcelData: function () {
                 this.postDownLoadNum(0);
                 // this.planForm.throwCity = [110100, 440100];
-                if(this.planForm.throwCity.length){
+                if (this.planForm.throwCity.length) {
                     let loadingPoint = this.$loading({
                         lock: true,
                         text: '玩命加载中...',
@@ -1914,61 +1954,61 @@
                         background: 'rgba(0, 0, 0, 0.7)'
                     });
                     let dateArr = [];
-                    let self=this;
-                    let request_times=self.planForm.throwCity.length; //计算分几次请求
-                    let funcs=[]; //Promise.all要用到的参数, 存放每次请求的Promise对象
+                    let self = this;
+                    let request_times = self.planForm.throwCity.length; //计算分几次请求
+                    let funcs = []; //Promise.all要用到的参数, 存放每次请求的Promise对象
 
-                    for (let i=0; i<request_times; i++) { // 循环请求次数，构造请求的Promise对象并插入funcs数组
-                        let func=new Promise((resolve, reject)=>{ //定义Promise并处理请求逻辑
-                            let data=[];
+                    for (let i = 0; i < request_times; i++) { // 循环请求次数，构造请求的Promise对象并插入funcs数组
+                        let func = new Promise((resolve, reject) => { //定义Promise并处理请求逻辑
+                            let data = [];
                             api.getApi(
-                                this.apiVar.jsonLink+self.planForm.throwCity[i]+'.json'
-                            ).then(function(response){
+                                this.apiVar.jsonLink + self.planForm.throwCity[i] + '.json'
+                            ).then(function (response) {
                                 console.log('response----', response.data);
                                 if (!response.data.SysCode) {
-                                    if(response.data.length){
+                                    if (response.data.length) {
                                         let dataArr = response.data;
                                         data.push(dataArr);
                                         resolve(data);
-                                    }else{
+                                    } else {
                                         resolve('');
                                     }
                                 } else {
                                     resolve('');
                                 }
-                            }).catch(function(error) {
+                            }).catch(function (error) {
                                 resolve('');
                             });
                         });
                         funcs.push(func);
                     }
 
-                    Promise.all(funcs).then((values)=>{ //使用Promise.all调用funcs里面的函数，并合并数据，最后给js-xlsx生成Excel
+                    Promise.all(funcs).then((values) => { //使用Promise.all调用funcs里面的函数，并合并数据，最后给js-xlsx生成Excel
                         let resultValus = [];
-                        for(let val of values){
-                            if(val){
+                        for (let val of values) {
+                            if (val) {
                                 resultValus.push(val);
                             }
                         }
-                        if(resultValus.length){
+                        if (resultValus.length) {
                             let returnobj = self.hasPointData(resultValus);
                             console.log('returnobj----', returnobj);
                             let date = returnobj.date;
-                            let head = [ '省份', '城市', '区域', '资源名称','商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '广告限制', '点位备注', '媒体数量(面)'];
+                            let head = ['省份', '城市', '区域', '资源名称', '商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '广告限制', '点位备注', '媒体数量(面)'];
                             let allHead = head.concat(date);
-                            let filename = returnobj.filename+'-'+ date[0].substring(0, 10)+'~'+date[date.length-1].substring(11)+'空位表';
+                            let filename = returnobj.filename + '-' + date[0].substring(0, 10) + '~' + date[date.length - 1].substring(11) + '空位表';
                             sheetExcel.toDownload(allHead, returnobj.arr, filename);
-                        }else{
-                            sessFun.messageFun('warning','此城市没有点位')
+                        } else {
+                            sessFun.messageFun('warning', '此城市没有点位')
                         }
                         loadingPoint.close();
                     });
-                }else{
-                    sessFun.messageFun('warning','请先选择投放城市')
+                } else {
+                    sessFun.messageFun('warning', '请先选择投放城市')
                 }
             },
             // 处理数据
-            hasPointData(arr){
+            hasPointData(arr) {
                 let returnObj = {
                     arr: '',
                     date: '',
@@ -1977,14 +2017,14 @@
                 let result = [];
                 let allDateArr = [];
                 let filenameArr = [];
-                for(let data of arr){
+                for (let data of arr) {
                     let resObj = {
                         sheetName: data[0][0].crName,
                         showList: [],
                     };
                     filenameArr.push(resObj.sheetName);
-                    for(let k = 0, kLen = data.length; k < kLen; k++){
-                        for(let item of data[k]){
+                    for (let k = 0, kLen = data.length; k < kLen; k++) {
+                        for (let item of data[k]) {
                             let dateArr = [];
                             let dataStr = [];
                             let obj = {
@@ -1997,7 +2037,7 @@
                                 mVehicle: item.mVehicle,
                                 fNum: item.fNum,
                                 hNum: item.hNum,
-                                hPrice: item.hPrice/100,
+                                hPrice: item.hPrice / 100,
                                 cType: item.cType,
                                 chDay: item.chDay,
                                 notPush: item.allNotPush || '',
@@ -2005,14 +2045,14 @@
                                 adsNum: item.adsNum,
                             };
                             let showData = item.DateInfo.sort(this.sortDate);
-                            for(let date of showData){
-                                dateArr.push(timeFormat.toDate(date.starDate, '/')+'-'+timeFormat.toDate(date.endDate, '/'));
+                            for (let date of showData) {
+                                dateArr.push(timeFormat.toDate(date.starDate, '/') + '-' + timeFormat.toDate(date.endDate, '/'));
                                 dataStr.push(date.adsNum);
                             }
                             let dateObj = this.concatObj(dateArr, dataStr);
                             let resultObj = Object.assign(obj, dateObj);
                             resObj.showList.push(obj);
-                            if(k >= kLen-1){
+                            if (k >= kLen - 1) {
                                 allDateArr = dateArr;
                             }
                         }
@@ -2027,28 +2067,28 @@
                 return returnObj;
             },
             // 键转换为值
-            concatObj(dateArr, dataStr){
+            concatObj(dateArr, dataStr) {
                 let obj = {};
-                for(let dateI = 0, dateLen = dateArr.length; dateI < dateLen; dateI++){
-                    obj[dateArr[dateI]] =  dataStr[dateI];
+                for (let dateI = 0, dateLen = dateArr.length; dateI < dateLen; dateI++) {
+                    obj[dateArr[dateI]] = dataStr[dateI];
                 }
                 return obj;
             },
             // 时间比较
-            sortDate(a, b){
+            sortDate(a, b) {
                 let aDate = timeFormat.toDate(a.starDate, '');
                 let bDate = timeFormat.toDate(b.starDate, '');
                 return aDate - bDate;
             },
             // 导入方案弹出框
-            importFanan(type){
-                if(type == 'res'){
+            importFanan(type) {
+                if (type == 'res') {
                     this.importType = '1';
                     this.doUpload = '/advertisement/AdPlanResImport'
-                }else if(type == 'ads'){
+                } else if (type == 'ads') {
                     this.importType = '2';
                     this.doUpload = '/advertisement/AnalysisExcelAdBaseInfo';
-                }else if(type == 'copy'){
+                } else if (type == 'copy') {
                     this.orderName = '';
                     this.orderArr = [];
                     this.isCopy = true;
@@ -2059,40 +2099,40 @@
                 this.importInfoData = {};
             },
             // 自定义上传
-            uploadFile(params){
+            uploadFile(params) {
                 this.fileData = [];
                 console.log(params);
                 let fileObj = params.file;
                 this.fileData.push(fileObj);
             },
             // 文件删除
-            fileRemove(file, fileList){
+            fileRemove(file, fileList) {
                 console.log(file, fileList);
                 this.fileData = fileList
             },
             // 导入模版下载
-            dowmLoadFun(event){
+            dowmLoadFun(event) {
                 // 阻止冒泡事件
                 event.stopPropagation();
             },
-            hideTag(){
+            hideTag() {
                 this.isShowTag = false;
             },
             // 确认上传
-            submitUpload(){
-                if(this.fileData.length){
+            submitUpload() {
+                if (this.fileData.length) {
                     let rids = this.planForm.throwCity.join(',');
                     let sess = this.sessionData;
                     let info = `?uid=${sess.uID}&token=${
-                        sess.token}&suId=${this.BDData.uid}&rids=${rids}&excludedApId=${this.activeAdPlan?this.activeAdPlan:''}`;
+                        sess.token}&suId=${this.BDData.uid}&rids=${rids}&excludedApId=${this.activeAdPlan ? this.activeAdPlan : ''}`;
                     let formData = new FormData();
                     formData.append('file', this.fileData[0]);
-                    if(this.importType == '2'){
+                    if (this.importType == '2') {
                         this.adsImport(formData, info);
-                    }else{
+                    } else {
                         this.resImport(formData, info);
                     }
-                }else{
+                } else {
                     sessFun.messageFun('warning', '请先上传文件');
                 }
             },
@@ -2102,7 +2142,7 @@
                 api.postUpload_file(this.doUpload + info, formData).then(res => {
                     if (!res.data.SysCode) {
                         let importInfo = res.data;
-                        console.log('importInfo',importInfo)
+                        console.log('importInfo', importInfo)
                         this.importInfoData = res.data;
                         if (importInfo.successList.length) {
                             this.setShopDataByImport(importInfo.successList);
@@ -2124,7 +2164,7 @@
                 });
             },
             // 小区导入
-            resImport(formData, info){
+            resImport(formData, info) {
                 let Loading = this.$loading({
                     lock: true,
                     text: '快马加鞭选点中...',
@@ -2132,33 +2172,33 @@
                     background: 'rgba(0, 0, 0, 0.7)'
                 });
                 // 上传文件
-                api.postUpload_file(this.doUpload+info, formData).then(res =>{
-                    if(res.data.SysCode == 200200){
+                api.postUpload_file(this.doUpload + info, formData).then(res => {
+                    if (res.data.SysCode == 200200) {
                         let importInfo = res.data.data;
                         this.importInfoData = importInfo;
                         this.showUploadFail = true;
                     } else {
-                        sessFun.messageFun('warning',res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
                     }
                     Loading.close();
-                }).catch(res =>{
+                }).catch(res => {
                     console.log(res);
                     Loading.close();
                 });
             },
             // 取消导入
-            cancelImport(){
+            cancelImport() {
                 this.showUploadFail = false;
                 this.isImport = false;
             },
             // 确定导入
-            confirmImport(arr){
+            confirmImport(arr) {
                 this.showUploadFail = false;
                 console.log('import----data---', arr);
-                for(let info of arr){
-                    if(info.mVehicle == '广告门'){
+                for (let info of arr) {
+                    if (info.mVehicle == '广告门') {
                         this.isHaveDiffPush(info);
-                    }else if(info.mVehicle =='道闸'){
+                    } else if (info.mVehicle == '道闸') {
                         this.isHaveDiffPush(info);
                     }
                 }
@@ -2169,12 +2209,12 @@
                 console.log('inport----data----shoplist', this.shopingList);
             },
             // 根据导入方案返回的数据,设置购物车所需要的数据格式
-            setShopDataByImport(arr){
+            setShopDataByImport(arr) {
                 console.log('方案导入返回的数据---', arr);
                 // let j = 0
-                for(let data of arr){
+                for (let data of arr) {
                     let info = data.adSInfo;
-                    for(let i = 0; i<2; i++){
+                    for (let i = 0; i < 2; i++) {
                         let importInfo = {
                             mID: info.mID,
                             resType: info.resType,
@@ -2202,7 +2242,7 @@
                             dNum: info.dNum || '',       // 出入口数
                             adLimit: info.notPush || '',
                             checkBox: {A: false, B: false, ABC: false},
-                            connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
+                            connData: {connectResName: '', connectMedia: '', commentWorkRes: '', commentworkMedia: ''},
                             connID: info.connID || '',        // 连排门id
                             industryInfos: info.industryInfos || [],   // 同行业资源回避
                             mediaLevel: info.grade || '',
@@ -2240,29 +2280,29 @@
                     // j++
                 }
                 console.log('this.shopingList1----', this.shopingList);
-                Message.success('成功导入'+arr.length+'条数据');
+                Message.success('成功导入' + arr.length + '条数据');
                 this.typeShopList = this.getTypeList();
                 this.isImport = false;
                 this.computeMedia_AD()
                 this.judgeByselect()
             },
             // 判断点位是否已存在购物车(同点位同排期去重、同点位排期交叉则合并、同点位排期联系则合并)
-            isHaveDiffPush(obj){
+            isHaveDiffPush(obj) {
                 console.log('obj----', obj, this.shopingList);
                 let ADData = obj;
                 let shopArr = this.shopingList;
                 let sameMidArr = [];
                 let resultArr = [];
-                for(let k = 0, kLen = shopArr.length; k<shopArr.length;){
+                for (let k = 0, kLen = shopArr.length; k < shopArr.length;) {
                     if (ADData.mID === shopArr[k].mID && ADData.A_B === shopArr[k].A_B) {
                         sameMidArr.push(shopArr[k]);
                         shopArr.splice(k, 1);
-                    }else{
+                    } else {
                         k++;
                     }
                 }
                 console.log('sameMidArr-----1111', sameMidArr, this.shopingList, shopArr);
-                for(let data of sameMidArr){
+                for (let data of sameMidArr) {
                     let ADScheArr = ADData.schedules.split('-');
                     let shopScheArr = data.schedules.split('-');
                     if (ADScheArr[0] < shopScheArr[0] && shopScheArr[0] <= ADScheArr[1] && ADScheArr[1] < shopScheArr[1]) {
@@ -2271,20 +2311,20 @@
                     } else if (shopScheArr[0] <= ADScheArr[0] && ADScheArr[1] <= shopScheArr[1]) {
                         ADData.schedules = shopScheArr[0] + '-' + shopScheArr[1];
                         // 购物车包含选点
-                    }else if (shopScheArr[0] < ADScheArr[0] && ADScheArr[0] <= shopScheArr[1] && shopScheArr[1] < ADScheArr[1]) {
+                    } else if (shopScheArr[0] < ADScheArr[0] && ADScheArr[0] <= shopScheArr[1] && shopScheArr[1] < ADScheArr[1]) {
                         // 右相交(购物车相交选点)
                         ADData.schedules = shopScheArr[0] + '-' + ADScheArr[1];
                     } else if (ADScheArr[0] <= shopScheArr[0] && shopScheArr[1] <= ADScheArr[1]) {
                         // 购物车被选点包含
                         ADData.schedules = ADScheArr[0] + '-' + ADScheArr[1];
-                    }else {
+                    } else {
                         let timeArr = [ADScheArr[0], ADScheArr[1], shopScheArr[0], shopScheArr[1]];
-                        timeArr.sort((a, b)=>{
+                        timeArr.sort((a, b) => {
                             return Date.parse(a) - Date.parse(b);
                         });
-                        if(Date.parse(timeArr[2]) - Date.parse(timeArr[1]) == 86400000){
+                        if (Date.parse(timeArr[2]) - Date.parse(timeArr[1]) == 86400000) {
                             ADData.schedules = timeArr[0] + '-' + timeArr[3];
-                        }else{
+                        } else {
                             resultArr.push(data);
                         }
                     }
@@ -2295,9 +2335,9 @@
                 this.shopingList = this.shopingList.concat(resultArr);
             },
             // 处理有问题的点
-            checkPointFun(obj){
+            checkPointFun(obj) {
                 let resultarr = [];
-                for(let data of obj.errorList){
+                for (let data of obj.errorList) {
                     let item = {
                         resName: data.resName,
                         city: data.city,
@@ -2314,13 +2354,13 @@
                 return resultarr;
             },
             // 导出有问题的点
-            downLoadExcel(){
+            downLoadExcel() {
                 let arr = this.questionPoint(this.excelDataUpload, this.importInfoData.successList);
-                let allHead = ['资源名称',	'市', '区',	'媒介载体', '媒体名称', '投放面', '资产编号', '投放排期', '钼媒点位ID'];
-                sheetExcel.toDownload(allHead, arr, this.planForm.planName+'问题点位表');
+                let allHead = ['资源名称', '市', '区', '媒介载体', '媒体名称', '投放面', '资产编号', '投放排期', '钼媒点位ID'];
+                sheetExcel.toDownload(allHead, arr, this.planForm.planName + '问题点位表');
             },
             // 导入excel后台返回的问题点位
-            questionPoint(arr, successArr){
+            questionPoint(arr, successArr) {
                 let resultarr = [
                     {
                         sheetName: '问题点位',
@@ -2331,7 +2371,7 @@
                         showList: [],
                     }
                 ];
-                for(let data of arr){
+                for (let data of arr) {
                     let obj = {
                         resName: data.resName,
                         city: data.city,
@@ -2345,7 +2385,7 @@
                     };
                     resultarr[0].showList.push(obj);
                 }
-                for(let data of successArr){
+                for (let data of successArr) {
                     let info = data.adSInfo;
                     let obj = {
                         resName: info.resName,
@@ -2355,7 +2395,7 @@
                         mediaName: info.mTitle,
                         asLab: info.asLab,
                         assetTag: info.assetTag,
-                        schedules: timeFormat.toDate(data.pbStar, '.')+'-'+timeFormat.toDate(data.pbEnd, '.'),
+                        schedules: timeFormat.toDate(data.pbStar, '.') + '-' + timeFormat.toDate(data.pbEnd, '.'),
                         pointId: data.pointId,
                     };
                     resultarr[1].showList.push(obj);
@@ -2363,7 +2403,7 @@
                 return resultarr;
             },
             // 获取订单
-            remoteGetOrder(query){
+            remoteGetOrder(query) {
                 if (query !== '') {
                     let sess = this.sessionData;
                     let info = {
@@ -2395,8 +2435,8 @@
                 }
             },
             // 确定复制
-            confirmCopy(){
-                if(this.orderName){
+            confirmCopy() {
+                if (this.orderName) {
                     let sess = this.sessionData;
                     let info = {
                         uid: sess.uID,
@@ -2432,8 +2472,8 @@
                 }
             },
             // 构建复制方案数据格式
-            setCopyData(info){
-                let checkBox = {A: false, B: false,ABC:false}
+            setCopyData(info) {
+                let checkBox = {A: false, B: false, ABC: false}
                 if (info.asLab === 'A') {
                     checkBox.A = true
                 } else if (info.asLab === 'B') {
@@ -2470,7 +2510,7 @@
                     adLimit: info.notPush || '',
                     A_B: info.asLab,
                     checkBox: checkBox,
-                    connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
+                    connData: {connectResName: '', connectMedia: '', commentWorkRes: '', commentworkMedia: ''},
                     connID: info.connID || '',        // 连排门id
                     industryInfos: info.industryInfos || [],   // 同行业资源回避
                     mediaLevel: info.grade || '',
@@ -2487,18 +2527,18 @@
                 return importInfo;
             },
             // 第四步的导出方案
-            downLoadFanan(){
+            downLoadFanan() {
                 let arr = this.excelData(this.shopingList)
-                let allHead = ['资源名称',	'市', '区', '商圈',	'资源地址',	'楼盘价格',	'入住年份',	'住户数量',	'出入口', '楼栋数量', '楼盘（写字楼）类型',	'地图中心点', '可选面数' ,'投放排期'];
-                let head = ['在线协同选点链接(可地图查看社区)  '+this.shareADUrl, '', '', '', '', '', '', '', '', '', '', '', ''];
-                sheetExcel.toDownload(allHead, arr, this.planForm.planName+'点位表', head);
+                let allHead = ['资源名称', '市', '区', '商圈', '资源地址', '楼盘价格', '入住年份', '住户数量', '出入口', '楼栋数量', '楼盘（写字楼）类型', '地图中心点', '可选面数', '投放排期'];
+                let head = ['在线协同选点链接(可地图查看社区)  ' + this.shareADUrl, '', '', '', '', '', '', '', '', '', '', '', ''];
+                sheetExcel.toDownload(allHead, arr, this.planForm.planName + '点位表', head);
             },
             // 处理数据
-            excelData(arr){
+            excelData(arr) {
                 console.log('arrr------excelData', arr);
                 let dateArr = [];
                 let filtersData = filterFormat(arr, "schedules");
-                for(let item of filtersData){
+                for (let item of filtersData) {
                     console.log(item);
                     let dateObj = {
                         sheetName: item.value,
@@ -2507,7 +2547,7 @@
                     };
                     dateArr.push(dateObj);
                 }
-                for(let data of arr){
+                for (let data of arr) {
                     let obj = {
                         resID: data.resID,
                         resName: data.resName,
@@ -2525,16 +2565,16 @@
                         adsNum: 1,
                         timeRange: '',
                     };
-                    for(let date of dateArr){
-                        if(data.schedules == date.sheetName){
-                            if(date.resIDArr.includes(data.resID)){
-                                for(let item of date.showList){
-                                    if(item.resID == data.resID){
+                    for (let date of dateArr) {
+                        if (data.schedules == date.sheetName) {
+                            if (date.resIDArr.includes(data.resID)) {
+                                for (let item of date.showList) {
+                                    if (item.resID == data.resID) {
                                         item.adsNum++;
                                         break;
                                     }
                                 }
-                            }else{
+                            } else {
                                 obj.timeRange = date.sheetName;
                                 date.resIDArr.push(data.resID);
                                 date.showList.push(obj);
@@ -2543,8 +2583,8 @@
                         }
                     }
                 }
-                for(let data of dateArr){
-                    for(let obj of data.showList){
+                for (let data of dateArr) {
+                    for (let obj of data.showList) {
                         delete obj.resID;
                     }
                     data.sheetName = data.sheetName.replace(/[/]/g, '.');
@@ -2553,19 +2593,19 @@
                 return dateArr;
             },
             // 导出空位
-            downEmpty(){
+            downEmpty() {
                 console.log('this.planForm.throwCity----', this.planForm.throwCity);
-                if(this.planForm.throwCity.length){
-                    let  rID = this.planForm.throwCity.join(',');
-                    this.downUrl = window.location.origin+'/emptyPoint?rid='+rID;
+                if (this.planForm.throwCity.length) {
+                    let rID = this.planForm.throwCity.join(',');
+                    this.downUrl = window.location.origin + '/emptyPoint?rid=' + rID;
                     console.log('downUrl-----', this.downUrl);
                     this.showEmpty = true;
-                }else{
-                    sessFun.messageFun('warning','请先选择投放城市')
+                } else {
+                    sessFun.messageFun('warning', '请先选择投放城市')
                 }
             },
             // 复制空位导出链接
-            copyUrlDown(){
+            copyUrlDown() {
                 let Url = document.getElementById("shareDownUrl").innerText;
                 console.log('url', Url)
                 let oInput = document.createElement('input');
@@ -2574,12 +2614,12 @@
                 oInput.select();                // 选择对象
                 document.execCommand("Copy"); // 执行浏览器复制命令
                 oInput.style.display = 'none';
-                sessFun.messageFun('success','复制成功')
+                sessFun.messageFun('success', '复制成功')
             },
             // step1投放城市权限是全国时spliceCity、showInput、handleInputConfirm
             spliceCity(tag) { // step1方案创建,删除选择城市
-                if(this.indexData.city.includes(tag)){
-                    sessFun.messageFun('warning',tag + '为地图选择所在城市，不可删除')
+                if (this.indexData.city.includes(tag)) {
+                    sessFun.messageFun('warning', tag + '为地图选择所在城市，不可删除')
                     return
                 }
                 this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
@@ -2605,10 +2645,10 @@
                 }
             },
             // 非全国，移除城市
-            removeCity(val){
-                console.log('非全国，移除城市val',val,this.planForm.throwCity)
+            removeCity(val) {
+                console.log('非全国，移除城市val', val, this.planForm.throwCity)
                 if (this.indexData.rid == val) {
-                    sessFun.messageFun('warning',this.indexData.city + '为选择的地图点位所在城市，不可删除')
+                    sessFun.messageFun('warning', this.indexData.city + '为选择的地图点位所在城市，不可删除')
                     this.planForm.throwCity.push(val)
                     this.$refs['planThrowCity'].clearValidate()
                 }
@@ -2639,13 +2679,13 @@
                                             value: inputValue[1],
                                         }
                                         this.throwCity.push(cityObj)
-                                        console.log('this.throwCity',this.throwCity)
-                                        console.log('this.selectedOptions',this.selectedOptions)
+                                        console.log('this.throwCity', this.throwCity)
+                                        console.log('this.selectedOptions', this.selectedOptions)
                                         this.inputVisible = false;
                                         this.selectedOptions = [];
                                         break
                                     } else {
-                                        sessFun.messageFun('warning','不可以选择重复的城市')
+                                        sessFun.messageFun('warning', '不可以选择重复的城市')
                                     }
                                 }
                             }
@@ -2655,8 +2695,8 @@
                 }
             },
             // 选择所属销售
-            changeSaler(val){
-                console.log('选择所属销售',val)
+            changeSaler(val) {
+                console.log('选择所属销售', val)
                 // 重新输入账号时，初始化部分数据
                 this.planForm.companyName = ''
                 this.planForm.companyBrand = ''
@@ -2690,7 +2730,7 @@
                         token: this.sessionData.token,
                         keyword: query
                     }
-                    api.postApi(this.apiVar.UCAPI + '/findBDUserByKeyword',params).then(res => {
+                    api.postApi(this.apiVar.UCAPI + '/findBDUserByKeyword', params).then(res => {
                         console.log('findBDUserByKeyword', res)
                         if (res.data.SysCode === 200200) {
                             let arr = []
@@ -2800,7 +2840,7 @@
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        console.log('表单验证this.throwCity',this.throwCity)
+                        console.log('表单验证this.throwCity', this.throwCity)
                         // 初始化
                         this.initStep2Data()
                         this.active++
@@ -2821,7 +2861,7 @@
                         this.getRejectPlanList()    // 获取排斥方案列表
                         this.getIndustryBycID()     // 根据所选公司获取公司所属行业
                         // 地图选点前置跳转而来，则直接显示购物车及其地图选择的点位
-                        if(this.indexData !== ''){
+                        if (this.indexData !== '') {
                             this.mapParams = {
                                 rid: this.indexData.rid,
                                 city: this.indexData.city,
@@ -2838,7 +2878,7 @@
                 });
             },
             // 初始化step2的数据
-            initStep2Data(){
+            initStep2Data() {
                 this.loadScroll = true
                 this.recType = 1
                 this.pageNo = 1
@@ -2848,42 +2888,42 @@
                 this.areaName = '全市'           // step2当前选中的区域
                 this.mediaType = '广告门'
                 let inputPath = this.$route.fullPath
-                if(inputPath.indexOf('unfinishedPlan') !== -1){
+                if (inputPath.indexOf('unfinishedPlan') !== -1) {
                     // this.unfinishedData.planData.throwCity
-                    console.log('缓存方案再编辑',this.unfinishedData.planData)
+                    console.log('缓存方案再编辑', this.unfinishedData.planData)
                     let arr = []
-                    for(let key of this.shopingList){
-                        if(this.unfinishedData.planData.baseInfo.throwCity.includes(key.rid)){
+                    for (let key of this.shopingList) {
+                        if (this.unfinishedData.planData.baseInfo.throwCity.includes(key.rid)) {
                             arr.push(key)
                         }
                     }
                     this.shopingList = arr
-                }else{
+                } else {
                     this.shopingList = []           // 购物车
                 }
                 this.limitList = []             // 初始化广告限制
                 this.filterCondition = []       // 过滤条件tag
                 this.mState = ''                // 媒体状态
                 this.buildValue = ''            // 楼盘类型
-                for(let i in this.filterData){
+                for (let i in this.filterData) {
                     this.filterData[i] = false
                 }
                 this.IsAll = false
             },
             /*step2*/
             // 获取排斥方案选择列
-            getRejectPlanList(){
+            getRejectPlanList() {
                 let params = {
-                    uid:this.sessionData.uID,
+                    uid: this.sessionData.uID,
                     token: this.sessionData.token,
                     sales_user: this.BDData.uid
                 }
                 api.getApi(this.apiVar.Advertisement + '/getSalesProject', params).then(res => {
-                    console.log('销售所属方案',res)
+                    console.log('销售所属方案', res)
                     if (res.data.SysCode == 200200) {
-                        let resData =  res.data.data
+                        let resData = res.data.data
                         let tempList = []
-                        for(let key of resData){
+                        for (let key of resData) {
                             tempList.push({
                                 value: key.apId,
                                 label: key.apName + '--' + key.cname + '--' + key.apcTime
@@ -2891,7 +2931,7 @@
                         }
                         this.rejectAdPlan = tempList
                     } else {
-                        sessFun.messageFun('warning',res.data.MSG)
+                        sessFun.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -2901,12 +2941,12 @@
                 let params = {
                     "uid": this.sessionData.uID,
                     "token": this.sessionData.token,
-                    "service":"GetNotPush",
+                    "service": "GetNotPush",
                     "data": {}
                 }
                 api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('广告限制列表', res)
-                    if(res.data.SysCode === 200200 ){
+                    if (res.data.SysCode === 200200) {
                         let limit = res.data.data
                         let limitArr = []
                         for (let i = 0; i < limit.length; i++) {
@@ -2918,9 +2958,9 @@
                 })
             },
             // 获取行业id
-            getIndustryBycID(){
-                for(let key of this.customer){
-                    if(key.cID === this.planForm.companyName){
+            getIndustryBycID() {
+                for (let key of this.customer) {
+                    if (key.cID === this.planForm.companyName) {
                         this.industryID = key.piID
                         break
                     }
@@ -2939,7 +2979,7 @@
                         }
                     }
                     if (j >= throwCityList.length - 1) {
-                        console.log('cityArr',cityArr)
+                        console.log('cityArr', cityArr)
                         this.city = cityArr
                         this.city.sort(this.compareFun)
                         console.log('this.city ', this.city)
@@ -2988,14 +3028,14 @@
             },
             // 获取广告点位列表
             getAdList() {
-                console.log('当前页码',this.pageNo,'当前时间',this.dateInput)
+                console.log('当前页码', this.pageNo, '当前时间', this.dateInput)
                 this.loading = true
                 this.getAdsParamsData.dateTimeBegin = this.dateInput[0]
                 this.getAdsParamsData.dateTimeEnd = this.dateInput[1]
                 this.getAdsParamsData.pageNo = this.pageNo
                 this.getAdsParamsData.uid = this.BDData.uid
-                for(let i in this.getAdsParamsData){
-                    if(this.getAdsParamsData[i] === ''){
+                for (let i in this.getAdsParamsData) {
+                    if (this.getAdsParamsData[i] === '') {
                         delete this.getAdsParamsData[i]
                     }
                 }
@@ -3003,7 +3043,7 @@
                     "uid": this.sessionData.uID,
                     "token": this.sessionData.token,
                     "service": "GetAdS",
-                    "data":  this.getAdsParamsData
+                    "data": this.getAdsParamsData
                 }
                 let timer = setTimeout(() => {        // setTimeout 异步让table出现loading
                     api.postApi_new(this.apiVar.Media, params).then(res => {
@@ -3024,19 +3064,19 @@
                             }
                             this.loading = false
                         } else {
-                            sessFun.messageFun('warning',res.data.MSG)
+                            sessFun.messageFun('warning', res.data.MSG)
                             this.loading = false
                         }
                         this.searchBtnAbled = false
                     })
                     clearTimeout(timer)
-                },0)
+                }, 0)
             },
             // 接口数据转成table
-            setTableDataADDoor(ADSdata){
+            setTableDataADDoor(ADSdata) {
                 let i = 0
-                console.log('接口数据转成table当前时间',this.dateInput)
-                for(let key of ADSdata) {
+                console.log('接口数据转成table当前时间', this.dateInput)
+                for (let key of ADSdata) {
                     let adObj = {
                         mID: key.mID,
                         resType: key.resType,
@@ -3055,7 +3095,7 @@
                         mediaRemark: key.mRemark || '--',
                         parkSpaceNum: key.parkSpaceNum,
                         carFlow: key.carFlow,
-                        peopleFlow : key.peopleFlow,
+                        peopleFlow: key.peopleFlow,
                         buildNum: key.fNum,
                         schedules: this.dateInput[0] + '-' + this.dateInput[1],
                         tradingArea: key.tradingArea || '',
@@ -3073,7 +3113,7 @@
                         mediaLevel: key.grade || '',        // 媒体等级
                         asName: key.asName,                 // 点位所属公司名称
                         asrID: key.asrID,                   // 所属公司id
-                        checkBox: {A: false, B: false,ABC:false},
+                        checkBox: {A: false, B: false, ABC: false},
                         box: {A: false, B: false},
                     }
                     // 点位价格
@@ -3089,13 +3129,13 @@
                     // A/B面
                     if (key.asLabs.indexOf('A') === -1) {
                         adObj.box.A = true;
-                    }else{
+                    } else {
                         //本页可选点位
                         i++;
                     }
                     if (key.asLabs.indexOf('B') === -1) {
                         adObj.box.B = true;
-                    }else{
+                    } else {
                         //本页可选点位
                         i++;
                     }
@@ -3124,15 +3164,11 @@
                     this.planList.push(adObj)
                 }
                 this.currPageAsLength = i
-                console.log('表格数据',this.planList,this.currPageAsLength)
                 this.loadScroll = true
-                if(this.currPageSelect == this.currPageAsLength){
-                    this.IsAll = true
-                }else{
-                    this.IsAll = false
-                }
+
+                console.log('表格数据', this.planList, this.currPageSelect, this.currPageAsLength)
             },
-            setPageNoAndTableData(){
+            setPageNoAndTableData() {
                 this.loadScroll = false
                 this.IsAll = false
                 this.HSearch = ''
@@ -3140,8 +3176,8 @@
                 this.planList = []
             },
             // 方案排斥选择
-            selectRejectPlan(val){
-                console.log('方案排斥选择',val,this.activeAdPlan)
+            selectRejectPlan(val) {
+                console.log('方案排斥选择', val, this.activeAdPlan)
                 this.getAdsParamsData.apId = this.activeAdPlan
                 this.setPageNoAndTableData()
                 this.getAdList()
@@ -3151,25 +3187,25 @@
                 this.searchBtnAbled = true
                 console.log('搜索排期时间', this.dateInput)
                 this.areaName = '全市'
-                if(this.selectValue === '被占查询'){
+                if (this.selectValue === '被占查询') {
                     this.loadScroll = false
                     //    this.isOccupied = false     // 被占搜索时隐藏过滤条件
                     this.beOccupiedGetList()    // 获取被占列表接口
-                    this.beOccupiedNumber ++
-                }else{
+                    this.beOccupiedNumber++
+                } else {
                     this.loadScroll = true
                     this.isOccupied = true      //  || this.dateInput !== this.beforeDate
                     if (this.searchInput !== '' && this.dateInput !== null) {
                         this.setPageNoAndTableData()
                         this.ResOriginSearch()
-                    }else if(this.searchInput === '' && this.dateInput !== this.beforeDate && this.dateInput !== null){
+                    } else if (this.searchInput === '' && this.dateInput !== this.beforeDate && this.dateInput !== null) {
                         this.setPageNoAndTableData()
                         this.getAdList()
                         this.beforeDate = this.dateInput
-                    }else if(!this.dateInput){
-                        sessFun.messageFun('warning','搜索时间不能为空')
+                    } else if (!this.dateInput) {
+                        sessFun.messageFun('warning', '搜索时间不能为空')
                         this.searchBtnAbled = false
-                    }else{
+                    } else {
                         this.searchBtnAbled = false
                     }
                 }
@@ -3177,15 +3213,15 @@
             },
             // 资源名称\商圈搜索typeSelect
             ResOriginSearch() {
-                if (this.selectValue === '资源名称'){
+                if (this.selectValue === '资源名称') {
                     this.getAdsParamsData.resName = this.searchInput
                     this.getAdsParamsData.tradingArea = ''
                     this.getAdsParamsData.assetTag = ''
-                }else if(this.selectValue === '商圈'){
+                } else if (this.selectValue === '商圈') {
                     this.getAdsParamsData.tradingArea = this.searchInput
                     this.getAdsParamsData.resName = ''
                     this.getAdsParamsData.assetTag = ''
-                }else if(this.selectValue === '资产编号'){
+                } else if (this.selectValue === '资产编号') {
                     this.getAdsParamsData.assetTag = this.searchInput
                     this.getAdsParamsData.tradingArea = ''
                     this.getAdsParamsData.resName = ''
@@ -3193,8 +3229,8 @@
                 this.getAdList()
             },
             // 当搜索框为空的时候进行重置显示
-            initData(val){
-                console.log('搜索框变化的值',val)
+            initData(val) {
+                console.log('搜索框变化的值', val)
                 if (!this.searchInput && this.selectValue !== '被占查询') {
                     this.isOccupied = true
                     this.getAdsParamsData.tradingArea = ''
@@ -3205,7 +3241,7 @@
                 }
             },
             //  查询被占点位
-            beOccupiedGetList(){
+            beOccupiedGetList() {
                 let starTime = this.dateInput[0]
                 let endTime = this.dateInput[1]
                 let params = {
@@ -3263,7 +3299,7 @@
             },
             // 判断地图权限
             judgeMapSelect() {
-                if(this.sessionData.rela == '直营') {
+                if (this.sessionData.rela == '直营') {
                     this.isMapKind = true
                 } else {
                     this.mapAD()
@@ -3271,9 +3307,9 @@
             },
             // 选择地图类型
             selectMap() {
-                if(this.selectMapKind == 1) {
+                if (this.selectMapKind == 1) {
                     this.mapAD()
-                } else if(this.selectMapKind == 2) {
+                } else if (this.selectMapKind == 2) {
                     this.setMapParams()
                 }
                 this.isMapKind = false
@@ -3289,7 +3325,7 @@
                     le: this.dateInput[1]
                 }
                 let params = {
-                    token:this.sessionData.token,
+                    token: this.sessionData.token,
                     uid: this.sessionData.uID,
                     rid: rid,
                     act: 1,
@@ -3298,18 +3334,18 @@
                     suID: this.BDData.uid,
                     apId: this.activeAdPlan
                 }
-                if(params.apId === ''){
+                if (params.apId === '') {
                     delete params.apId
                 }
                 console.log('生成地图MapID参数', params)
                 let tempwindow = window.open()
-                api.getApi(this.apiVar.Map +'/GetMapInfo', params).then(res => {
+                api.getApi(this.apiVar.Map + '/GetMapInfo', params).then(res => {
                     console.log('GetMapInfo地图mapid返回的信息', res)
                     if (!res.data.SysCode) {
                         let mapid = res.data.MapID
                         this.mapBtn = false
                         this.dialogVisible()
-                        tempwindow.location = this.apiVar.wuYouMap+ mapid + '&city=' + this.activeRName + '&flag=' + true
+                        tempwindow.location = this.apiVar.wuYouMap + mapid + '&city=' + this.activeRName + '&flag=' + true
                     } else {
                         tempwindow.close()
                         sessFun.messageFun('warning', res.data.MSG + ',请尝试重新点击')
@@ -3326,7 +3362,7 @@
                     ls: this.dateInput[0],
                     le: this.dateInput[1],
                 }
-                localStorage.setItem('mapParams',JSON.stringify({
+                localStorage.setItem('mapParams', JSON.stringify({
                     rid: this.activeCityData.rid,
                     ls: this.dateInput[0],
                     le: this.dateInput[1],
@@ -3334,13 +3370,13 @@
                 }))
                 // let tempWindow = window.open()
                 // let url = 'http://localhost:8080/ADResourceMap/chooseRes?city=' + this.mapParams.city  + '&flag=' + true
-                let url = this.apiVar.qadnUrl + '/ADResourceMap/chooseRes?city=' + this.mapParams.city  + '&flag=' + true
+                let url = this.apiVar.qadnUrl + '/ADResourceMap/chooseRes?city=' + this.mapParams.city + '&flag=' + true
                 window.open(url)
                 this.mapBtn = false
                 this.dialogVisible()
             },
             // 模态框中的确认按钮
-            oneKeyPointBtn(item){
+            oneKeyPointBtn(item) {
                 let IsBoolean = false
                 this.$refs[item].validate((valid) => {
                     if (valid) {
@@ -3350,19 +3386,19 @@
                     }
                 })
 
-                if(IsBoolean){
-                    if(Number(this.oneKeyPointData.TotalPoint) < Number(this.oneKeyPointData.pointNumByRes)){
-                        sessFun.messageFun('warning','每小区选择的个数不能大于点位总量')
-                    }else{
+                if (IsBoolean) {
+                    if (Number(this.oneKeyPointData.TotalPoint) < Number(this.oneKeyPointData.pointNumByRes)) {
+                        sessFun.messageFun('warning', '每小区选择的个数不能大于点位总量')
+                    } else {
                         this.oneKeySelectPoint()
                     }
-                }else{
-                    sessFun.messageFun('warning','信息填写有误')
+                } else {
+                    sessFun.messageFun('warning', '信息填写有误')
                 }
 
             },
             //一键选点
-            oneKeySelectPoint(){
+            oneKeySelectPoint() {
                 console.log('一键选点')
                 let oneKeyPointLoading = this.$loading({
                     lock: true,
@@ -3374,7 +3410,7 @@
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    vehicle:'AdGate',
+                    vehicle: 'AdGate',
                     act: 1,
                     ls: this.dateInput[0].replace(/\./g, '/'),
                     le: this.dateInput[1].replace(/\./g, '/'),
@@ -3382,7 +3418,7 @@
                     total: this.oneKeyPointData.TotalPoint,
                     everyResNumber: this.oneKeyPointData.pointNumByRes,
                     labAPercent: this.oneKeyPointData.A_cale,
-                    rt:  this.recType,
+                    rt: this.recType,
                     rhn: this.houseNum[0],
                     shn: this.houseNum[1],
                     shp: this.buildPrice[0] * 100,
@@ -3390,29 +3426,29 @@
                     suid: this.BDData.uid,
                     apId: this.activeAdPlan
                 }
-                if(this.selectValue === '商圈'){
+                if (this.selectValue === '商圈') {
                     params.ta = this.searchInput
                 }
                 // 过滤地区rID
-                if(this.areaName !== '全市'){
+                if (this.areaName !== '全市') {
                     params.qrid = this.areaRid
                 }
                 // 限制广告不能投放类型 ,分割
-                if(this.limitList.length > 0){
+                if (this.limitList.length > 0) {
                     params.adLimit = this.limitList.join(',')
                 }
-                for(let i in params){
-                    if(i !== 'labAPercent' && (params[i] === '' || params[i] === undefined || params[i] == 0)){
+                for (let i in params) {
+                    if (i !== 'labAPercent' && (params[i] === '' || params[i] === undefined || params[i] == 0)) {
                         delete params[i]
                     }
                 }
-                api.postApi(this.apiVar.Advertisement + '/AutoSetAdS', params).then(res=>{
-                    console.log('一键选点',res.data)
+                api.postApi(this.apiVar.Advertisement + '/AutoSetAdS', params).then(res => {
+                    console.log('一键选点', res.data)
                     IsXhr = true
                     let tempArr = []
                     let resArr = res.data
-                    if(resArr !== '' && resArr.length > 0){
-                        for(let key of res.data){
+                    if (resArr !== '' && resArr.length > 0) {
+                        for (let key of res.data) {
                             let selectInfo = {
                                 rid: this.city[this.activeIndex].rid,
                                 mID: key.mID,
@@ -3426,7 +3462,7 @@
                                 origin: key.rName,
                                 buildType: key.cType,
                                 houseNum: key.hNum,
-                                buildPrice: key.hPrice/100,
+                                buildPrice: key.hPrice / 100,
                                 mediaName: key.mTitle,
                                 buildNum: key.fNum,
                                 schedules: this.dateInput[0] + '-' + this.dateInput[1],
@@ -3438,18 +3474,23 @@
                                 address: key.resAddress || '',
                                 dNum: key.dNum || '',       // 出入口数
                                 A_B: key.asLab,
-                                checkBox: {A: false, B: false,ABC: false},
+                                checkBox: {A: false, B: false, ABC: false},
                                 connID: key.connID || '',                   // 连排门id
-                                connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
-                                industryInfos : key.industryInfos || [],
+                                connData: {
+                                    connectResName: '',
+                                    connectMedia: '',
+                                    commentWorkRes: '',
+                                    commentworkMedia: ''
+                                },
+                                industryInfos: key.industryInfos || [],
                                 mediaLevel: key.grade || '',
                                 adPrice: key.mVehicle === '道闸' ? key.asPrice / 100 || 0 : key.asPrice / 700 || 0,
                                 asName: key.asName || '',         // 点位所属公司名称
                                 asrID: key.asrID,                 // 所属公司id
                             }
-                            if(selectInfo.asLabs === 'A'){
+                            if (selectInfo.asLabs === 'A') {
                                 selectInfo.checkBox.A = true
-                            }else if(selectInfo.asLabs === 'B'){
+                            } else if (selectInfo.asLabs === 'B') {
                                 selectInfo.checkBox.B = true
                             }
                             if (this.judgeHaveDiffAD(selectInfo)) {
@@ -3469,32 +3510,32 @@
                         this.computeMedia_AD()
                         this.judgeByselect()
                         if (this.oneKeyPointData.TotalPoint == res.data.length) {
-                            sessFun.messageFun('success','成功选择了' + res.data.length + '面')
+                            sessFun.messageFun('success', '成功选择了' + res.data.length + '面')
                         } else {
-                            sessFun.messageFun('warning','满足条件的点位不足' + this.oneKeyPointData.TotalPoint + '面,成功选择了' + res.data.length + '面')
+                            sessFun.messageFun('warning', '满足条件的点位不足' + this.oneKeyPointData.TotalPoint + '面,成功选择了' + res.data.length + '面')
                         }
-                    }else{
-                        sessFun.messageFun('warning','选择失败,暂无匹配点位')
+                    } else {
+                        sessFun.messageFun('warning', '选择失败,暂无匹配点位')
                     }
                     oneKeyPointLoading.close()
                 })
-                let timer = setTimeout(()=>{
-                    if(!IsXhr){
-                        sessFun.messageFun('warning','点位选择异常')
+                let timer = setTimeout(() => {
+                    if (!IsXhr) {
+                        sessFun.messageFun('warning', '点位选择异常')
                         oneKeyPointLoading.close()
-                    }else{
+                    } else {
                         // console.log('一键选点已成功')
                     }
                     clearTimeout(timer)
-                },1000*65)
+                }, 1000 * 65)
             },
             // step2, 资源类型切换
             activeRecType(num) {
                 this.buildValue = ''
                 this.getAdsParamsData.buildType = ''
-                if(num == '1'){
+                if (num == '1') {
                     this.buildType = this.village
-                }else if(num == '2'){
+                } else if (num == '2') {
                     this.buildType = this.officeBuilding
                 }
                 this.setPageNoAndTableData()
@@ -3503,8 +3544,8 @@
                 this.getAdList()
             },
             //媒体类型切换
-            activeMediaType(mType){
-                console.log('媒体类型',mType)
+            activeMediaType(mType) {
+                console.log('媒体类型', mType)
                 this.setPageNoAndTableData()
                 this.mediaType = mType
                 this.getAdsParamsData.mVehicle = mType
@@ -3512,7 +3553,7 @@
             },
             // tab切换城市
             activeCity(item, index) {
-                console.log('item',item,'index',index)
+                console.log('item', item, 'index', index)
                 this.activeIndex = index
                 this.activeRName = item.rName
                 this.activeCityData = item
@@ -3527,23 +3568,23 @@
                 this.areaName = item.rName
                 this.areaRid = item.rID
                 this.setPageNoAndTableData()
-                if(this.areaName === '全市'){
+                if (this.areaName === '全市') {
                     this.getAdsParamsData.area = ''
-                }else{
+                } else {
                     this.getAdsParamsData.area = item.rName
                 }
                 this.getAdList()
             },
             // 选点表格头部过滤条件tab删除方法
-            filterTagCloseFun(tab,index){
-                console.log('tab',tab,'index',index)
+            filterTagCloseFun(tab, index) {
+                console.log('tab', tab, 'index', index)
                 if (tab.condition === 'mstate') {           // 媒体状态
                     this.mState = ''
                     this.getAdsParamsData.mState = ''
-                }else if(tab.condition === 'grade') {           // 媒体等级
+                } else if (tab.condition === 'grade') {           // 媒体等级
                     this.activeGrade = ''
                     this.getAdsParamsData.grade = ''
-                }else if (tab.condition === 'ADLimit'){        // 广告限制
+                } else if (tab.condition === 'ADLimit') {        // 广告限制
                     this.limitList = []
                     this.getAdsParamsData.adLimit = ''
                 } else if (tab.condition === 'cType') {         // 楼盘类型
@@ -3586,16 +3627,16 @@
                     this.getAdsParamsData.parkSpaceNumMin = ''
                     this.getAdsParamsData.parkSpaceNumMax = ''
                 }
-                this.filterCondition.splice(index,1)
+                this.filterCondition.splice(index, 1)
                 this.setPageNoAndTableData()
                 this.getAdList()
             },
             // 判断是否存在该条件的tag
-            isHaveThisTag(letter,tagName){
-                console.log('letter',letter,'tagName',tagName)
+            isHaveThisTag(letter, tagName) {
+                console.log('letter', letter, 'tagName', tagName)
                 let isHave = false
-                for(let i in this.filterCondition){
-                    if(this.filterCondition[i].condition === letter){
+                for (let i in this.filterCondition) {
+                    if (this.filterCondition[i].condition === letter) {
                         isHave = true
                         this.filterCondition[i].name = tagName
                         break
@@ -3632,9 +3673,9 @@
                 }
             },
             // 媒体等级过滤
-            gradeChange(data){
-                console.log('媒体等级过滤',data)
-                this.isHaveThisTag('grade',data+'级')
+            gradeChange(data) {
+                console.log('媒体等级过滤', data)
+                this.isHaveThisTag('grade', data + '级')
                 this.getAdsParamsData.grade = this.activeGrade
                 this.setPageNoAndTableData()
                 this.getAdList()
@@ -3644,12 +3685,12 @@
                 console.log('广告限制limit', limit) // 保险,恶俗医疗
                 let limitText = limit.join(',')
                 let stateName = '广告限制：' + limit.join('/')
-                if(limit.length > 0){
-                    this.isHaveThisTag('ADLimit',stateName)
-                }else{
-                    for(let i in this.filterCondition){
-                        if(this.filterCondition[i].condition === 'ADLimit'){
-                            this.filterCondition.splice(i,1)
+                if (limit.length > 0) {
+                    this.isHaveThisTag('ADLimit', stateName)
+                } else {
+                    for (let i in this.filterCondition) {
+                        if (this.filterCondition[i].condition === 'ADLimit') {
+                            this.filterCondition.splice(i, 1)
                             break
                         }
                     }
@@ -3661,7 +3702,7 @@
             // 住户数量过滤
             tableHeaderFilter_h() {
                 if (this.houseNum[0] == '' || this.houseNum[1] == '') {
-                    sessFun.messageFun('warning','数据区间填写有误')
+                    sessFun.messageFun('warning', '数据区间填写有误')
                 } else {
                     let tagName = '住户数量:' + this.houseNum[0] + "-" + this.houseNum[1]
                     this.isHaveThisTag('houseNum', tagName)
@@ -3675,7 +3716,7 @@
             // 楼盘价格过滤
             tableHeaderFilter_p() {
                 if (this.buildPrice[0] == '' || this.buildPrice[1] == '') {
-                    sessFun.messageFun('warning','数据区间填写有误')
+                    sessFun.messageFun('warning', '数据区间填写有误')
                 } else {
                     let tagName = '楼盘价格:' + this.buildPrice[0] + "-" + this.buildPrice[1]
                     this.isHaveThisTag('buildPrice', tagName)
@@ -3689,7 +3730,7 @@
             // 年份过滤
             tableHeaderFilterByLiveYear() {
                 if (this.liveYear[0] == '' || this.liveYear[1] == '') {
-                    sessFun.messageFun('warning','数据区间填写有误')
+                    sessFun.messageFun('warning', '数据区间填写有误')
                 } else {
                     let tagName = '入住年份:' + this.liveYear[0] + "-" + this.liveYear[1]
                     this.isHaveThisTag('liveYear', tagName)
@@ -3702,11 +3743,11 @@
             },
             // 楼盘类型过滤
             tableHeaderFilter_cType(data) {
-                console.log('楼盘类型过滤',data)
-                this.isHaveThisTag('cType',data)
-                if(data === '全部'){
+                console.log('楼盘类型过滤', data)
+                this.isHaveThisTag('cType', data)
+                if (data === '全部') {
                     this.getAdsParamsData.buildType = ''
-                }else{
+                } else {
                     this.getAdsParamsData.buildType = this.buildValue
                 }
                 this.setPageNoAndTableData()
@@ -3715,7 +3756,7 @@
             //人流量过滤
             tableHeaderFilterByPeopleFlow() {
                 if (this.peopleFlow[0] == '' || this.peopleFlow[1] == '') {
-                    sessFun.messageFun('warning','数据区间填写有误')
+                    sessFun.messageFun('warning', '数据区间填写有误')
                 } else {
                     let tagName = '人流量:' + this.peopleFlow[0] + "-" + this.peopleFlow[1]
                     this.isHaveThisTag('peopleFlow', tagName)
@@ -3729,7 +3770,7 @@
             // 车流量过滤
             tableHeaderFilterByCarFlow() {
                 if (this.carFlow[0] == '' || this.carFlow[1] == '') {
-                    sessFun.messageFun('warning','数据区间填写有误')
+                    sessFun.messageFun('warning', '数据区间填写有误')
                 } else {
                     let tagName = '车流量:' + this.carFlow[0] + "-" + this.carFlow[1]
                     this.isHaveThisTag('carFlow', tagName)
@@ -3741,12 +3782,12 @@
                 }
             },
             // 车位数过滤
-            tableHeaderFilterByParkSpaceNum(){
-                if(this.parkSpaceNum[0] == '' || this.parkSpaceNum[1]){
-                    sessFun.messageFun('warning','数据区间填写有误')
-                }else{
+            tableHeaderFilterByParkSpaceNum() {
+                if (this.parkSpaceNum[0] == '' || this.parkSpaceNum[1]) {
+                    sessFun.messageFun('warning', '数据区间填写有误')
+                } else {
                     let tagName = '车位数:' + this.parkSpaceNum[0] + "-" + this.parkSpaceNum[1]
-                    this.isHaveThisTag('parkSpaceNum',tagName)
+                    this.isHaveThisTag('parkSpaceNum', tagName)
                     this.filterData.pSNum = true
                     this.getAdsParamsData.parkSpaceNumMin = this.parkSpaceNum[0]
                     this.getAdsParamsData.parkSpaceNumMax = this.parkSpaceNum[1]
@@ -3774,28 +3815,38 @@
             // 根据购物车已有的mID对应AB面判断勾选
             judgeByselect() {
                 console.log('judgeByselect')
-                if(this.shopingList.length > 0){
-                    for (let i = 0; i < this.shopingList.length; i++){
+                this.currPageSelect = 0
+                if (this.shopingList.length > 0) {
+                    for (let i = 0; i < this.shopingList.length; i++) {
                         this.hadADByshop(this.shopingList[i])
                     }
+                    if (this.currPageSelect == this.currPageAsLength) {
+                        this.IsAll = true
+                    } else {
+                        this.IsAll = false
+                    }
                 }
+
             },
             // planList的勾选
             hadADByshop(data) {
                 let shopAD = data
-                if(this.activeRName === shopAD.city){
-                    for(let key of this.planList){
+                if (this.activeRName === shopAD.city) {
+                    for (let key of this.planList) {
                         if (key.mID === shopAD.mID) {
                             let crossIf = this.crossSchedules(shopAD.schedules)
                             if (crossIf) {
                                 if (shopAD.A_B === 'A') {
                                     key.checkBox.A = true
+                                    this.currPageSelect++
                                     // this.IsAll = true
                                 } else if (shopAD.A_B === 'B') {
                                     key.checkBox.B = true
+                                    this.currPageSelect++
                                     // this.IsAll = true
-                                } else if (shopAD.A_B === 'ABC'){
+                                } else if (shopAD.A_B === 'ABC') {
                                     key.checkBox.ABC = true
+                                    this.currPageSelect++
                                     // this.IsAll = true
                                 }
                                 break
@@ -3804,7 +3855,8 @@
                             }
                         }
                     }
-                }else{
+
+                } else {
                     console.log('不同城市')
                 }
             },
@@ -3842,27 +3894,27 @@
                 }
             },
             // 表头全选
-            allCheckboxAds(){
-                console.log('allCheckboxAds',this.IsAll)
-                if(this.IsAll){
+            allCheckboxAds() {
+                console.log('allCheckboxAds', this.IsAll)
+                if (this.IsAll) {
                     this.allSelectAdsBtn()
-                }else{
+                } else {
                     this.cancleSelectAds()
                 }
             },
             // 表头勾选重置
-            allCheckboxUpdata(){
-                if( this.shopingList.length <= 0){
+            allCheckboxUpdata() {
+                if (this.shopingList.length <= 0) {
                     this.IsAll = false
-                }else{
+                } else {
                     let isCheckBox = false
-                    for(let key of this.planList){
-                        if(key.checkBox.A || key.checkBox.B ||key.checkBox.ABC){
+                    for (let key of this.planList) {
+                        if (key.checkBox.A || key.checkBox.B || key.checkBox.ABC) {
                             isCheckBox = true
                             break
                         }
                     }
-                    if(!isCheckBox){
+                    if (!isCheckBox) {
                         this.IsAll = false
                     }
                 }
@@ -3883,34 +3935,34 @@
                 //         pkey.checkBox.ABC = true
                 //     }
                 // }
-                if(this.mediaType === '广告门'){
+                if (this.mediaType === '广告门') {
                     this.allSelectToShop_adDoor()
-                }else if(this.mediaType === '道闸'){
+                } else if (this.mediaType === '道闸') {
                     this.allSelectToShop_roadGate()
                 }
                 this.shopShow_hide('all')
                 // this.allSelectToShop(selection)
             },
             //取消全选
-            cancleSelectAds(){
-                console.log('取消全选',this.planList)
-                for(let pkey of this.planList){
-                    if(pkey.checkBox.A || pkey.checkBox.B || pkey.checkBox.ABC){
-                        for(let i=0; i<this.shopingList.length;){
-                            if(pkey.mID === this.shopingList[i].mID){
-                                if(pkey.checkBox.A && this.shopingList[i].A_B === 'A'){
-                                    this.shopingList.splice(i,1)
+            cancleSelectAds() {
+                console.log('取消全选', this.planList)
+                for (let pkey of this.planList) {
+                    if (pkey.checkBox.A || pkey.checkBox.B || pkey.checkBox.ABC) {
+                        for (let i = 0; i < this.shopingList.length;) {
+                            if (pkey.mID === this.shopingList[i].mID) {
+                                if (pkey.checkBox.A && this.shopingList[i].A_B === 'A') {
+                                    this.shopingList.splice(i, 1)
                                     pkey.checkBox.A = false
-                                }else if (pkey.checkBox.B && this.shopingList[i].A_B === 'B'){
-                                    this.shopingList.splice(i,1)
+                                } else if (pkey.checkBox.B && this.shopingList[i].A_B === 'B') {
+                                    this.shopingList.splice(i, 1)
                                     pkey.checkBox.B = false
-                                }else if (pkey.checkBox.ABC && this.shopingList[i].A_B === 'ABC'){
-                                    this.shopingList.splice(i,1)
+                                } else if (pkey.checkBox.ABC && this.shopingList[i].A_B === 'ABC') {
+                                    this.shopingList.splice(i, 1)
                                     pkey.checkBox.ABC = false
-                                }else{
+                                } else {
                                     i++
                                 }
-                            }else{
+                            } else {
                                 i++
                             }
                         }
@@ -3945,27 +3997,27 @@
                 }
             },
             // 道闸点位选择
-            changeABC(row){
-                if (row.checkBox.ABC === true){
-                    let obj = this.setShopingTable(row,'ABC')
+            changeABC(row) {
+                if (row.checkBox.ABC === true) {
+                    let obj = this.setShopingTable(row, 'ABC')
                     this.shopShow_hide()
                     this.shopingList.push(obj)
                     // this.IsAll = true
-                }else{
+                } else {
                     this.IsAll = false
                     this.deleteShopRow(row, 'ABC')
                 }
             },
             // 全选是放进购物车-广告门
-            allSelectToShop_adDoor(){
+            allSelectToShop_adDoor() {
                 for (let i = 0; i < this.planList.length; i++) {
                     let info = this.planList[i]
                     for (let j = 0; j < 2; j++) {
-                        let selectInfo = this.setShopingTable(info,'')
+                        let selectInfo = this.setShopingTable(info, '')
                         let asLabsArr = selectInfo.asLabs.split(',')
                         let asIDArr = selectInfo.asIDs.split(',')
                         if (j === 0 && !selectInfo.box.A) {
-                            if(!info.checkBox.A) {
+                            if (!info.checkBox.A) {
                                 info.checkBox.A = true
                                 selectInfo.A_B = 'A'
                                 for (let n = 0; n < asLabsArr.length; n++) {
@@ -3978,7 +4030,7 @@
                                 this.shopingList.push(selectInfo)
                             }
                         } else if (j === 1 && !selectInfo.box.B) {
-                            if(!info.checkBox.B) {
+                            if (!info.checkBox.B) {
                                 info.checkBox.B = true
                                 selectInfo.A_B = 'B'
                                 for (let n = 0; n < asLabsArr.length; n++) {
@@ -3998,11 +4050,11 @@
                 console.log('广告门全选时购物车', this.shopingList)
             },
             // 全选是放进购物车-道闸
-            allSelectToShop_roadGate(){
-                for (let pkey of this.planList){
-                    if(!pkey.checkBox.ABC) {
+            allSelectToShop_roadGate() {
+                for (let pkey of this.planList) {
+                    if (!pkey.checkBox.ABC) {
                         pkey.checkBox.ABC = true
-                        let selectInfo = this.setShopingTable(pkey,'ABC')
+                        let selectInfo = this.setShopingTable(pkey, 'ABC')
                         this.shopingList.push(selectInfo)
                     }
                 }
@@ -4065,15 +4117,15 @@
                     let params = {
                         code: localStorage.getItem(`qinlinMapCode`)
                     }
-                    api.getApi(this.apiVar.mapApi + '/adsListByCode',params).then(res=>{
-                        console.log('res-----',res)
-                        if(res.data.SysCode === 200200) {
+                    api.getApi(this.apiVar.mapApi + '/adsListByCode', params).then(res => {
+                        console.log('res-----', res)
+                        if (res.data.SysCode === 200200) {
                             this.mapAdsList = res.data.data
                             this.setMapAdsListInShopCar()
                             localStorage.removeItem('qinlinMapCode')
                         } else {
                             this.getMapLoading.close()
-                            sessFun.messageFun('warning','数据获取异常')
+                            sessFun.messageFun('warning', '数据获取异常')
                         }
                     })
                 }
@@ -4109,12 +4161,12 @@
                             liveYear: data.chDay,
                             mapCenter: '',
                             // mapCenter: data.reference.name ? data.reference.name +'-'+  data.reference.address :'' ,      // 地图中心点名称
-                            reference: data.reference ||'',
+                            reference: data.reference || '',
                             address: data.resAddress || '',
                             dNum: data.dNum || '',              // 出入口数
                             adLimit: data.notPush || '',
-                            checkBox: {A: false, B: false,ABC: false},
-                            connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
+                            checkBox: {A: false, B: false, ABC: false},
+                            connData: {connectResName: '', connectMedia: '', commentWorkRes: '', commentworkMedia: ''},
                             connID: data.connID || '',        // 连排门id
                             industryInfos: data.industryInfos || [],   // 同行业资源回避
                             mediaLevel: data.grade || '',
@@ -4130,7 +4182,7 @@
                         } else {
                             ADInfo.mapCenter = ''
                         }
-                        if(data.mVehicle === '广告门'){
+                        if (data.mVehicle === '广告门') {
                             let asLabsArr = ADInfo.asLabs.split(',')
                             let asIDArr = ADInfo.asIDs.split(',')
                             for (let n = 0; n < asLabsArr.length; n++) {
@@ -4138,7 +4190,7 @@
                                     ADInfo.checkBox.A = true
                                     ADInfo.A_B = 'A'
                                     ADInfo.asID = asIDArr[n]
-                                    if (this.judgeHaveDiffAD(ADInfo,'mapAds')) {
+                                    if (this.judgeHaveDiffAD(ADInfo, 'mapAds')) {
                                         tempArr.push(ADInfo)
                                         break
                                     }
@@ -4146,17 +4198,17 @@
                                     ADInfo.checkBox.B = true
                                     ADInfo.A_B = 'B'
                                     ADInfo.asID = asIDArr[n]
-                                    if (this.judgeHaveDiffAD(ADInfo,'mapAds')) {
+                                    if (this.judgeHaveDiffAD(ADInfo, 'mapAds')) {
                                         tempArr.push(ADInfo)
                                         break
                                     }
                                 }
                             }
-                        } else if(data.mVehicle === '道闸') {
+                        } else if (data.mVehicle === '道闸') {
                             ADInfo.checkBox.ABC = true
                             ADInfo.A_B = 'ABC'
                             ADInfo.asID = data.asIDs//data.asIDs.split(',')
-                            if (this.judgeHaveDiffAD(ADInfo,'mapAds')) {
+                            if (this.judgeHaveDiffAD(ADInfo, 'mapAds')) {
                                 tempArr.push(ADInfo)
                                 break
                             }
@@ -4172,10 +4224,10 @@
                 } else {
                     this.shopingList = tempArr
                 }
-                if(this.getMapLoading){
+                if (this.getMapLoading) {
                     this.getMapLoading.close()
                 }
-                sessFun.messageFun('success','成功获取到' + tempArr.length + '条数据')
+                sessFun.messageFun('success', '成功获取到' + tempArr.length + '条数据')
 
                 this.typeShopList = this.getTypeList();
                 this.getShowList();
@@ -4184,7 +4236,7 @@
                 this.judgeByselect()
             },
             // 判断点位是否已存在购物车（无忧地图）
-            judgeHaveDiffAD(data,SourceType) {
+            judgeHaveDiffAD(data, SourceType) {
                 let ADData = data
                 let shopArr = this.shopingList
                 let ifBoolea = true
@@ -4196,13 +4248,13 @@
                             let shopScheArr = shopArr[i].schedules.split('-')
                             // 全等
                             if (ADScheArr[0] == shopScheArr[0] && ADScheArr[1] == shopScheArr[1]) {
-                                if(SourceType === 'mapAds'){
+                                if (SourceType === 'mapAds') {
                                     let centerName = ''
                                     if (ADData.reference !== '-' && ADData.reference !== '' && ADData.reference !== undefined
                                         && ADData.reference !== null) {
                                         for (let key of ADData.reference) {
                                             let keyCenter = key.name + '-' + key.address
-                                            if(!shopArr[i].mapCenter.includes(keyCenter)){
+                                            if (!shopArr[i].mapCenter.includes(keyCenter)) {
                                                 centerName += keyCenter + ','
                                             }
                                         }
@@ -4217,22 +4269,22 @@
                                 ifBoolea = false
                                 break
                                 // 左相交
-                            }else if(ADScheArr[0] < shopScheArr[0] && ADScheArr[1] >=  shopScheArr[0] && ADScheArr[1] <= shopScheArr[1]){
+                            } else if (ADScheArr[0] < shopScheArr[0] && ADScheArr[1] >= shopScheArr[0] && ADScheArr[1] <= shopScheArr[1]) {
                                 ifBoolea = false
                                 break
                                 // 被包含
-                            }else if(ADScheArr[0] >= shopScheArr[0] && ADScheArr[1] <= shopScheArr[1]){
+                            } else if (ADScheArr[0] >= shopScheArr[0] && ADScheArr[1] <= shopScheArr[1]) {
                                 ifBoolea = false
                                 break
                                 // 右相交
-                            }else if(ADScheArr[0] >= shopScheArr[0] && ADScheArr[0] <= shopScheArr[1] && ADScheArr[1] > shopScheArr[1]){
+                            } else if (ADScheArr[0] >= shopScheArr[0] && ADScheArr[0] <= shopScheArr[1] && ADScheArr[1] > shopScheArr[1]) {
                                 ifBoolea = false
                                 break
                                 // 包含
-                            }else if(ADScheArr[0] < shopScheArr[0] && ADScheArr[1] > shopScheArr[1]){
+                            } else if (ADScheArr[0] < shopScheArr[0] && ADScheArr[1] > shopScheArr[1]) {
                                 ifBoolea = false
                                 break
-                            }else{
+                            } else {
                                 console.log('else')
                                 ifBoolea = true
                             }
@@ -4246,7 +4298,7 @@
             // 根据地图选点返回的数据，设置成购物车所需的数据格式（亲邻地图）
             setMapAdsListInShopCar() {
                 let tempArr = []
-                for(let key of this.mapAdsList) {
+                for (let key of this.mapAdsList) {
                     let adInfo = {
                         mID: key.mID,
                         resType: key.resType,
@@ -4256,8 +4308,8 @@
                         asLabs: key.asLab,
                         A_B: key.asLab,
                         resName: key.resName,
-                        city:  this.activeCityData.rName,
-                        rid:  this.activeCityData.rid,
+                        city: this.activeCityData.rName,
+                        rid: this.activeCityData.rid,
                         origin: key.rName,
                         buildType: key.cType,
                         houseNum: key.hNum,
@@ -4274,8 +4326,8 @@
                         address: key.resAddress || '',
                         dNum: key.dNum || '',              // 出入口数
                         adLimit: key.notPush || '',
-                        checkBox: {A: false, B: false,ABC: false},
-                        connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
+                        checkBox: {A: false, B: false, ABC: false},
+                        connData: {connectResName: '', connectMedia: '', commentWorkRes: '', commentworkMedia: ''},
                         connID: key.connID || '',        // 连排门id
                         industryInfos: key.industryInfos || [],   // 同行业资源回避
                         mediaLevel: key.grade || '',
@@ -4283,12 +4335,12 @@
                         asName: key.asName || '',         // 点位所属公司名称
                         asrID: key.asrID,                 // 所属公司id
                     }
-                    if(key.centerInfos && key.centerInfos.length) {
-                        for(let item of key.centerInfos) {
+                    if (key.centerInfos && key.centerInfos.length) {
+                        for (let item of key.centerInfos) {
                             adInfo.mapCenter += item.centerName + '-' + item.centerAddress + ','
                         }
                     }
-                    if(this.qinLinJudgeHaveDiffAD(adInfo,'mapAds')) {
+                    if (this.qinLinJudgeHaveDiffAD(adInfo, 'mapAds')) {
                         tempArr.push(adInfo)
                     }
                 }
@@ -4301,7 +4353,7 @@
                     this.shopingList = JSON.parse(JSON.stringify(tempArr))
                 }
                 this.getMapLoading.close()
-                sessFun.messageFun('success','成功获取到' + tempArr.length + '条数据')
+                sessFun.messageFun('success', '成功获取到' + tempArr.length + '条数据')
                 this.mapBtn = true
                 this.typeShopList = this.getTypeList();
                 this.getShowList();
@@ -4309,7 +4361,7 @@
                 this.judgeByselect()
             },
             // 判断点位是否已存在购物车（亲邻地图）
-            qinLinJudgeHaveDiffAD(data,SourceType) {
+            qinLinJudgeHaveDiffAD(data, SourceType) {
                 let ADData = data
                 let shopArr = this.shopingList
                 let ifBoolea = true
@@ -4321,12 +4373,12 @@
                             let shopScheArr = shopArr[i].schedules.split('-')
                             // 全等
                             if (ADScheArr[0] == shopScheArr[0] && ADScheArr[1] == shopScheArr[1]) {
-                                if(SourceType === 'mapAds'){
+                                if (SourceType === 'mapAds') {
                                     let centerName = ''
-                                    if(ADData.reference && ADData.reference.length) {
+                                    if (ADData.reference && ADData.reference.length) {
                                         for (let key of ADData.reference) {
                                             let keyCenter = key.centerName + '-' + key.centerAddress
-                                            if(!shopArr[i].mapCenter.includes(keyCenter)){
+                                            if (!shopArr[i].mapCenter.includes(keyCenter)) {
                                                 centerName += keyCenter + ','
                                             }
                                         }
@@ -4340,22 +4392,22 @@
                                 ifBoolea = false
                                 break
                                 // 左相交
-                            }else if(ADScheArr[0] < shopScheArr[0] && ADScheArr[1] >=  shopScheArr[0] && ADScheArr[1] <= shopScheArr[1]){
+                            } else if (ADScheArr[0] < shopScheArr[0] && ADScheArr[1] >= shopScheArr[0] && ADScheArr[1] <= shopScheArr[1]) {
                                 ifBoolea = false
                                 break
                                 // 被包含
-                            }else if(ADScheArr[0] >= shopScheArr[0] && ADScheArr[1] <= shopScheArr[1]){
+                            } else if (ADScheArr[0] >= shopScheArr[0] && ADScheArr[1] <= shopScheArr[1]) {
                                 ifBoolea = false
                                 break
                                 // 右相交
-                            }else if(ADScheArr[0] >= shopScheArr[0] && ADScheArr[0] <= shopScheArr[1] && ADScheArr[1] > shopScheArr[1]){
+                            } else if (ADScheArr[0] >= shopScheArr[0] && ADScheArr[0] <= shopScheArr[1] && ADScheArr[1] > shopScheArr[1]) {
                                 ifBoolea = false
                                 break
                                 // 包含
-                            }else if(ADScheArr[0] < shopScheArr[0] && ADScheArr[1] > shopScheArr[1]){
+                            } else if (ADScheArr[0] < shopScheArr[0] && ADScheArr[1] > shopScheArr[1]) {
                                 ifBoolea = false
                                 break
-                            }else{
+                            } else {
                                 console.log('else')
                                 ifBoolea = true
                             }
@@ -4367,7 +4419,7 @@
                 return ifBoolea
             },
             // 移除同行资源点位
-            removeCommentIndustryAds(letter){
+            removeCommentIndustryAds(letter) {
                 let shopingData = this.shopShowList
                 let arr = []
                 let num = 0     // 记录移除个数
@@ -4375,7 +4427,7 @@
                     if (shopingData[i].connData.commentWorkRes !== '' || shopingData[i].connData.commentworkMedia !== '') {
                         if (letter === 'media') { // 移除同行媒体点位
                             if (shopingData[i].connData.commentworkMedia !== '') {
-                                console.log(i,'移除同行媒体点位',shopingData[i])
+                                console.log(i, '移除同行媒体点位', shopingData[i])
                                 num++
                             } else {
                                 arr.push(shopingData[i])
@@ -4388,19 +4440,19 @@
                     }
                 }
                 if (num > 0) {
-                    sessFun.messageFun('success','成功移除' + num + '条数据')
+                    sessFun.messageFun('success', '成功移除' + num + '条数据')
                     this.getResultData(arr);
 
                     this.computeMedia_AD()
                     this.resetPlanList()
                     this.judgeByselect()
                 } else {
-                    sessFun.messageFun('warning','暂无同行回避点位')
+                    sessFun.messageFun('warning', '暂无同行回避点位')
                 }
             },
             // 清空购物车
             clearShop() {
-                if(this.shopingList.length > 0){
+                if (this.shopingList.length > 0) {
                     this.$confirm('此操作将删除已选的所有数据, 是否继续?', '提示', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
@@ -4410,13 +4462,13 @@
                         this.getResultData(arr);
                         this.allCheckboxUpdata()
                         this.computeMedia_AD()
-                        sessFun.messageFun('success','删除成功')
+                        sessFun.messageFun('success', '删除成功')
                         this.resetPlanList()      // 重置planList的勾选
                     }).catch(() => {
-                        sessFun.messageFun('info','已取消删除')
+                        sessFun.messageFun('info', '已取消删除')
                     })
-                }else{
-                    sessFun.messageFun('warning','无数据可删除')
+                } else {
+                    sessFun.messageFun('warning', '无数据可删除')
                 }
 
             },
@@ -4425,57 +4477,57 @@
                 let shopList = [];
                 let currTab = this.activeName;
                 console.log('typeShopList----', this.typeShopList);
-                shopList = this.typeShopList[currTab-1].asidList;
+                shopList = this.typeShopList[currTab - 1].asidList;
                 console.log('购物车统计面数媒体数shopList', shopList)
                 let mediaArr = []
                 let mediaAD = []
                 let resArr = []
                 let resAsidArr = [];
                 // ANum：A面数量  BNum：B面数量
-                let mediaLevelNum = {ALevel: 0, BLevel: 0, CLevel: 0,ANum:0,BNum:0}
-                for(let key of shopList){
-                    if(key.mVehicle === '广告门'){
+                let mediaLevelNum = {ALevel: 0, BLevel: 0, CLevel: 0, ANum: 0, BNum: 0}
+                for (let key of shopList) {
+                    if (key.mVehicle === '广告门') {
                         // 等级ABC
-                        if(key.mediaLevel === 'A'){
+                        if (key.mediaLevel === 'A') {
                             mediaLevelNum.ALevel++
-                        }else if(key.mediaLevel === 'B'){
+                        } else if (key.mediaLevel === 'B') {
                             mediaLevelNum.BLevel++
-                        }else if(key.mediaLevel === 'C'){
+                        } else if (key.mediaLevel === 'C') {
                             mediaLevelNum.CLevel++
                         }
                         // A\B面
-                        if(key.A_B === 'A'){
+                        if (key.A_B === 'A') {
                             mediaLevelNum.ANum++
-                        }else if(key.A_B === 'B'){
+                        } else if (key.A_B === 'B') {
                             mediaLevelNum.BNum++
                         }
                     }
-                    if(!mediaArr.includes(key.mID)){
+                    if (!mediaArr.includes(key.mID)) {
                         mediaArr.push(key.mID)
-                    }else{
+                    } else {
                         // console.log('重复媒体',key.mID)
                     }
-                    if(!mediaAD.includes(key.asID)){
+                    if (!mediaAD.includes(key.asID)) {
                         mediaAD.push(key.asID)
-                    }else{
-                        console.log('重复的点位',key.asID)
+                    } else {
+                        console.log('重复的点位', key.asID)
                     }
-                    if(!resArr.includes(key.resID)){
+                    if (!resArr.includes(key.resID)) {
                         resArr.push(key.resID)
-                    }else{
+                    } else {
                         // console.log('重复的点位',key.resID)
                     }
                     // 计算各个社区面数
                     let isHad = false;
-                    for(let data of resAsidArr){
-                        if(data.resID == key.resID){
+                    for (let data of resAsidArr) {
+                        if (data.resID == key.resID) {
                             isHad = true;
-                            if(!data.asidList.includes(key.asID)){
+                            if (!data.asidList.includes(key.asID)) {
                                 data.asidList.push(key.asID);
                             }
                         }
                     }
-                    if(!isHad){
+                    if (!isHad) {
                         let obj = {
                             resID: key.resID,
                             asidList: [key.asID],
@@ -4520,8 +4572,8 @@
                 console.log('shopMedia_ADNum----', this.shopMedia_ADNum);
             },
             // 获取社区选一面两面三名的数据
-            getResAsidNum(num, arr){
-                let result = arr.filter((item)=>{
+            getResAsidNum(num, arr) {
+                let result = arr.filter((item) => {
                     return item.asidList.length == num;
                 });
                 return result.length;
@@ -4535,7 +4587,7 @@
                 this.handleClick();
             },
             // 组合typeShopList
-            getTypeList(){
+            getTypeList() {
                 console.log('--------', this.shopingList);
                 let arr = [
                     {
@@ -4551,10 +4603,10 @@
                 ];
                 let type1 = [];
                 let type2 = [];
-                for(let data of this.shopingList){
-                    if(data.mVehicle == '广告门'){
+                for (let data of this.shopingList) {
+                    if (data.mVehicle == '广告门') {
                         type1.push(data);
-                    }else if(data.mVehicle == '道闸'){
+                    } else if (data.mVehicle == '道闸') {
                         type2.push(data);
                     }
                 }
@@ -4564,7 +4616,7 @@
                 return arr;
             },
             // 切换tab
-            handleClick(){
+            handleClick() {
                 console.log('this.activeName----', this.activeName, this.typeShopList);
                 this.eventType = '';
                 this.getShowList();
@@ -4572,13 +4624,13 @@
                 this.computeMedia_AD();
             },
             // 设置购物车表格数据
-            getShowList(){
+            getShowList() {
                 let currTab = this.activeName;
-                let arr = this.typeShopList[currTab-1].asidList;
+                let arr = this.typeShopList[currTab - 1].asidList;
                 this.shopShowList = arr;
             },
             // 获取事件
-            getEventList(){
+            getEventList() {
                 let arr = [
                     {
                         label: '移除被占点位',
@@ -4602,7 +4654,7 @@
                     },
                 ];
                 let currTab = this.activeName;
-                if(currTab == 1){
+                if (currTab == 1) {
                     let temp = [
                         {
                             label: '移除同行已选点位',
@@ -4618,10 +4670,10 @@
                         },
                     ];
                     arr = arr.concat(temp);
-                }else if(currTab == 2){
+                } else if (currTab == 2) {
                     arr = arr;
                 }
-                arr.sort((a, b)=>{
+                arr.sort((a, b) => {
                     return a.value - b.value;
                 });
                 this.eventList = arr;
@@ -4633,31 +4685,31 @@
                     switch (val) {
                         case 1:
                             this.clearADLock();
-                            this.MtaStatFun('a004_b008_c001_d001_bt063_ck04','a004_b008_c001_d002_bt078_ck04');
+                            this.MtaStatFun('a004_b008_c001_d001_bt063_ck04', 'a004_b008_c001_d002_bt078_ck04');
                             break;
                         case 3:
                             this.removeCommentIndustryAds('res');
-                            this.MtaStatFun('a004_b008_c001_d001_bt065_ck04','a004_b008_c001_d002_bt080_ck04');
+                            this.MtaStatFun('a004_b008_c001_d001_bt065_ck04', 'a004_b008_c001_d002_bt080_ck04');
                             break;
                         case 4:
                             this.removeCommentIndustryAds('media');
-                            this.MtaStatFun('a004_b008_c001_d001_bt066_ck04','a004_b008_c001_d002_bt081_ck04');
+                            this.MtaStatFun('a004_b008_c001_d001_bt066_ck04', 'a004_b008_c001_d002_bt081_ck04');
                             break;
                         case 5:
                             this.containNuminRes(1);
-                            this.MtaStatFun('a004_b008_c001_d001_bt067_ck04','a004_b008_c001_d002_bt082_ck04');
+                            this.MtaStatFun('a004_b008_c001_d001_bt067_ck04', 'a004_b008_c001_d002_bt082_ck04');
                             break;
                         case 6:
                             this.containNuminRes(2);
-                            this.MtaStatFun('a004_b008_c001_d001_bt068_ck04','a004_b008_c001_d002_bt083_ck04');
+                            this.MtaStatFun('a004_b008_c001_d001_bt068_ck04', 'a004_b008_c001_d002_bt083_ck04');
                             break;
                         case 7:
                             this.removeAllType('A');
-                            this.MtaStatFun('a004_b008_c001_d001_bt069_ck04','a004_b008_c001_d002_bt084_ck04');
+                            this.MtaStatFun('a004_b008_c001_d001_bt069_ck04', 'a004_b008_c001_d002_bt084_ck04');
                             break;
                         case 8:
                             this.removeAllType('B');
-                            this.MtaStatFun('a004_b008_c001_d001_bt070_ck04','a004_b008_c001_d002_bt085_ck04');
+                            this.MtaStatFun('a004_b008_c001_d001_bt070_ck04', 'a004_b008_c001_d002_bt085_ck04');
                             break;
                     }
                 } else {
@@ -4688,77 +4740,77 @@
                     this.getShowList();
 
                     if (haveADLock) {
-                        sessFun.messageFun('success','移除成功')
+                        sessFun.messageFun('success', '移除成功')
                         this.computeMedia_AD()
                     } else {
-                        sessFun.messageFun('warning','暂无被占点位')
+                        sessFun.messageFun('warning', '暂无被占点位')
                     }
                 }).catch(() => {
                     this.eventType = '';
-                    sessFun.messageFun('info','取消成功')
+                    sessFun.messageFun('info', '取消成功')
                 })
                 // this.ADLockNum = 0
                 this.resetPlanList()
             },
             // 同资源保留个数
-            containNuminRes(num){
+            containNuminRes(num) {
                 let resultArr = this.funToArr(this.shopShowList, 'resID');
                 resultArr = this.resRandomNum(resultArr, num);
                 let len = this.shopShowList.length;
-                if(resultArr.length){
+                if (resultArr.length) {
                     this.getResultData(resultArr);
-                    if(len != resultArr.length){
-                        sessFun.messageFun('success',`成功保留同资源${num}个点位！`);
-                    }else{
+                    if (len != resultArr.length) {
+                        sessFun.messageFun('success', `成功保留同资源${num}个点位！`);
+                    } else {
                         sessFun.messageFun('warning', '暂无同资源可移除的点位！')
                     }
                     this.computeMedia_AD();
                     this.resetPlanList();
                     this.judgeByselect();
-                }else{
+                } else {
                     sessFun.messageFun('warning', '暂无同资源可移除的点位！')
                 }
             },
             // 随机保留num个数点位
-            resRandomNum(arr, num){
+            resRandomNum(arr, num) {
                 let result = [];
-                for(let data of arr){
-                    if(num > 1){
+                for (let data of arr) {
+                    if (num > 1) {
                         let randomArr = [];
                         let max = data.asidList.length;
-                        if(num >= max){
+                        if (num >= max) {
                             result = result.concat(data.asidList);
-                        }else{
+                        } else {
                             randomArr = this.randomFun([], num, data.asidList.length);
-                            for(let item of randomArr){
+                            for (let item of randomArr) {
                                 result.push(data.asidList[item]);
                             }
                         }
-                    }else{
-                        let randomNum = parseInt(Math.random()*(data.asidList.length), 10);
+                    } else {
+                        let randomNum = parseInt(Math.random() * (data.asidList.length), 10);
                         result.push(data.asidList[randomNum]);
                     }
                 }
                 return result;
             },
             // 递归获取不同的随机数
-            randomFun(arr, num, max){
-                if(arr.length < num){
-                    let randomNum = parseInt(Math.random()*(max), 10);
-                    if(!arr.includes(randomNum)){
+            randomFun(arr, num, max) {
+                if (arr.length < num) {
+                    let randomNum = parseInt(Math.random() * (max), 10);
+                    if (!arr.includes(randomNum)) {
                         arr.push(randomNum);
                     }
                     return this.randomFun(arr, num, max);
-                }else{
+                } else {
                     return arr;
                 }
             },
             // 分组数据
-            funToArr(arr, condition){
-                let resultArr= arr.reduce((groups, item)=>{
-                    let groupFound= groups.find(arrItem => item[condition] === arrItem[condition]);
-                    if(groupFound) {
-                        if(!JSON.stringify(groupFound.asidList).includes(JSON.stringify(item))) {  //去重
+            funToArr(arr, condition) {
+                let resultArr = arr.reduce((groups, item) => {
+                    let groupFound = groups.find(arrItem => item[condition] === arrItem[condition]);
+                    if (groupFound) {
+                        if (!JSON.stringify(groupFound.asidList).includes(JSON.stringify(item))) {  //去重
                             groupFound.asidList.push(item);
                         }
                     } else {
@@ -4770,20 +4822,20 @@
                         groups.push(newGroup);
                     }
                     return groups;
-                },[]);
+                }, []);
                 return resultArr;
             },
             // 移除A/B面
-            removeAllType(type){
+            removeAllType(type) {
                 let resultArr = this.funToArr(this.shopShowList, 'mID');
                 console.log('resultArr------------das---', resultArr);
                 let len = this.shopShowList.length;
                 if (resultArr.length > 0) {
                     resultArr = this.isEnoughMedia(type, resultArr);
                     this.getResultData(resultArr);
-                    if(len != resultArr.length){
-                        sessFun.messageFun('success',`成功移除同门${type}面的点位！`)
-                    }else{
+                    if (len != resultArr.length) {
+                        sessFun.messageFun('success', `成功移除同门${type}面的点位！`)
+                    } else {
                         sessFun.messageFun('warning', '暂无可移除点位')
                     }
                     this.computeMedia_AD();
@@ -4794,27 +4846,27 @@
                 }
             },
             // 同一媒体是否有a/b面
-            isEnoughMedia(type, arr){
+            isEnoughMedia(type, arr) {
                 let resultArr = [];
-                for(let data of arr){
+                for (let data of arr) {
                     let result = [];
-                    if(data.asidList.length > 1){
-                        result = data.asidList.filter((item)=>{
+                    if (data.asidList.length > 1) {
+                        result = data.asidList.filter((item) => {
                             return (item.A_B != type);
                         });
-                    }else{
+                    } else {
                         result = data.asidList;
                     }
                     resultArr = resultArr.concat(result);
                 }
                 return resultArr;
             },
-            getResultData(resultArr){
+            getResultData(resultArr) {
                 let other = [];
-                for(let data of this.typeShopList){
-                    if(this.activeName != data.type){
+                for (let data of this.typeShopList) {
+                    if (this.activeName != data.type) {
                         other = other.concat(data.asidList);
-                    }else{
+                    } else {
                         data.asidList = resultArr;
                     }
                 }
@@ -4825,29 +4877,29 @@
             tableRowClassName({row}) {
                 if (row.lState !== undefined && row.lState.length > 0) {
                     return "warning-row";
-                } else if (row.connData.connectResName !== '' || row.connData.commentWorkRes !=='' || row.connData.connectMedia !=='') {
+                } else if (row.connData.connectResName !== '' || row.connData.commentWorkRes !== '' || row.connData.connectMedia !== '') {
                     return "warning-row-conncet";
-                }else {
+                } else {
                     return "";
                 }
             },
             // 打开购物车则计算连排门信息
-            computeConnectAdData(){
-                let date1=new Date();
-                console.log('this.industryID',this.industryID)
+            computeConnectAdData() {
+                let date1 = new Date();
+                console.log('this.industryID', this.industryID)
                 let shopData = this.shopingList
                 let shopDataLength = shopData.length
                 for (let i = 0; i < shopDataLength; i++) {
                     //连排门设置
-                    if(i < shopDataLength - 1){
+                    if (i < shopDataLength - 1) {
                         for (let j = i + 1; j < shopDataLength; j++) {
                             if (shopData[i].connID !== '' && shopData[i].mID !== shopData[j].mID && shopData[i].connID === shopData[j].connID) {
-                                if(shopData[i].connData.connectResName === ''){
+                                if (shopData[i].connData.connectResName === '') {
                                     shopData[i].connData.connectResName = shopData[i].resName
                                     shopData[i].connData.connectMedia = shopData[i].mediaName + '、' + shopData[j].mediaName
-                                }else{
-                                    if(!shopData[i].connData.connectMedia.includes(shopData[j].mediaName)){
-                                        shopData[i].connData.connectMedia += '、'+ shopData[j].mediaName
+                                } else {
+                                    if (!shopData[i].connData.connectMedia.includes(shopData[j].mediaName)) {
+                                        shopData[i].connData.connectMedia += '、' + shopData[j].mediaName
                                     }
                                 }
                                 shopData[j].connData.connectResName = shopData[i].connData.connectResName
@@ -4883,24 +4935,24 @@
                 }
                 let date2 = new Date();
                 let haomiao = date2.getTime() - date1.getTime();
-                console.log('打开购物车则计算连排门信息',this.shopingList,haomiao/(1000*60))
+                console.log('打开购物车则计算连排门信息', this.shopingList, haomiao / (1000 * 60))
             },
             // 重置购物车连排门信息
-            resetConnectAdData(){
-                for(let key of this.shopingList){
-                    if(key.connData){
-                        key.connData = { connectResName: '',connectMedia: '',commentWorkRes:'',commentworkMedia:''}
+            resetConnectAdData() {
+                for (let key of this.shopingList) {
+                    if (key.connData) {
+                        key.connData = {connectResName: '', connectMedia: '', commentWorkRes: '', commentworkMedia: ''}
                     }
                 }
             },
             // 购物车行被点击
-            shopRowClick(row, event, column){
-                console.log('购物车行被点击row',row,column)
+            shopRowClick(row, event, column) {
+                console.log('购物车行被点击row', row, column)
                 if (row.lState !== undefined && row.lState.length > 0) {
                     let dataArr = row.lState
                     console.log('row.asID', row.asID)
                     let arr = []
-                    for(let key of dataArr){
+                    for (let key of dataArr) {
                         let star = timeFormat.toDate(key.lStar, '/')
                         let end = timeFormat.toDate(key.lEnd, '/')
                         arr.push({
@@ -4916,9 +4968,9 @@
                     } else {
                         this.shopDelRowClick = false
                     }
-                }else if(row.connData.connectResName !== '' || row.connData.commentWorkRes !=='' || row.connData.connectMedia !==''){
+                } else if (row.connData.connectResName !== '' || row.connData.commentWorkRes !== '' || row.connData.connectMedia !== '') {
                     this.ActiveConnectADList = row.connData
-                    console.log('this.ActiveConnectADList',this.ActiveConnectADList)
+                    console.log('this.ActiveConnectADList', this.ActiveConnectADList)
                     this.connectAdDialogVisible = true
                 }
             },
@@ -4926,7 +4978,7 @@
             AddShopingInfo(info, letter) {
                 console.log('选中的row信息', info)
                 this.currPageSelect++
-                let selectInfo = this.setShopingTable(info,letter)
+                let selectInfo = this.setShopingTable(info, letter)
                 let asLabsArr = selectInfo.asLabs.split(',')
                 let asIDArr = selectInfo.asIDs.split(',')
                 if (letter == 'B') {
@@ -4948,14 +5000,16 @@
                     }
                     this.shopingList.push(selectInfo)
                 }
-                if(this.currPageSelect == this.currPageAsLength){
+                if (this.currPageSelect == this.currPageAsLength) {
                     this.IsAll = true
+                } else {
+                    this.IsAll = false
                 }
                 // this.IsAll = true
-                console.log('shopingList',this.shopingList)
+                console.log('shopingList', this.shopingList,this.currPageSelect)
             },
             // 选点列表数据到购物车数据
-            setShopingTable(info,letter){
+            setShopingTable(info, letter) {
                 let selectInfo = {
                     rid: info.rid,
                     mID: info.mID,
@@ -4982,9 +5036,12 @@
                     address: info.address || '',
                     dNum: info.dNum || '',       // 出入口数
                     A_B: letter,
-                    checkBox: {A: info.checkBox.A, B: info.checkBox.B,ABC:  info.checkBox.ABC},
-                    box: {A:info.box.A !== undefined ? info.box.A : false,B:info.box.B !== undefined ? info.box.B : false},
-                    connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
+                    checkBox: {A: info.checkBox.A, B: info.checkBox.B, ABC: info.checkBox.ABC},
+                    box: {
+                        A: info.box.A !== undefined ? info.box.A : false,
+                        B: info.box.B !== undefined ? info.box.B : false
+                    },
+                    connData: {connectResName: '', connectMedia: '', commentWorkRes: '', commentworkMedia: ''},
                     connID: info.connID,                 // 连排门id
                     industryInfos: info.industryInfos,   // 同行业资源回避
                     adPrice: info.adPrice,               // 点位价格
@@ -4995,20 +5052,20 @@
                 return selectInfo
             },
             // 自定义购物车表头-清空
-            renderHeader(h, {column}){
+            renderHeader(h, {column}) {
                 // console.log('********h*******',h,column)
                 return h('span', {
                         class: 'clearShopping',
                         on: {
-                            click: ()=>{
+                            click: () => {
                                 // console.log('**************123')
                                 this.clearShop()
                                 // （广告门，道闸）
-                                this.MtaStatFun('a004_b008_c001_d001_bt059_ck04','a004_b008_c001_d002_bt074_ck04')
+                                this.MtaStatFun('a004_b008_c001_d001_bt059_ck04', 'a004_b008_c001_d002_bt074_ck04')
                             }
                         }
-                    },[
-                        h('span','清空')
+                    }, [
+                        h('span', '清空')
                     ]
                 )
             },
@@ -5016,7 +5073,7 @@
             deleteRow(rows) {
                 console.log('购物车删除行', rows)
                 console.log('删除行id', rows.mID)
-                if (this.planList.length > 0 && rows.city === this.planList[0].city){
+                if (this.planList.length > 0 && rows.city === this.planList[0].city) {
                     for (let i = 0; i < this.planList.length; i++) {
                         if (rows.mID === this.planList[i].mID) {
                             if (rows.A_B === 'A') {
@@ -5083,15 +5140,15 @@
                 }
             },
             //行被点击 beOccupiedGetList timeFormat
-            rowClick(row, event, column){
+            rowClick(row, event, column) {
                 // console.log('row',row,event,column)
-                if(!this.isOccupied){
-                    let star = timeFormat.toDate(row.lStar,'/')
-                    let end = timeFormat.toDate(row.lEnd,'/')
+                if (!this.isOccupied) {
+                    let star = timeFormat.toDate(row.lStar, '/')
+                    let end = timeFormat.toDate(row.lEnd, '/')
                     let arr = []
                     arr.push({
                         beOccupieApName: row.apName,
-                        schedules: star + '-' +end,
+                        schedules: star + '-' + end,
                         lState: row.lState,
                     })
                     this.beOccupiedAdsData = arr
@@ -5124,10 +5181,10 @@
             },
 
             /*step3*/
-            getAsNameByShopingList(){
+            getAsNameByShopingList() {
                 let asrIDs = []
                 let isHad = false
-                for(let sKey of this.shopingList){
+                for (let sKey of this.shopingList) {
                     isHad = true
                     for (let aKey of asrIDs) {
                         if (aKey.asrID == sKey.asrID && aKey.rid == sKey.rid) {
@@ -5137,7 +5194,7 @@
                             isHad = true
                         }
                     }
-                    if(isHad){
+                    if (isHad) {
                         asrIDs.push({
                             asrID: sKey.asrID,
                             asName: sKey.asName,
@@ -5146,7 +5203,7 @@
                         })
                     }
                 }
-                console.log('统计购物车中存在了几个公司及城市asrIDs',asrIDs)
+                console.log('统计购物车中存在了几个公司及城市asrIDs', asrIDs)
                 this.asrIDList = asrIDs.concat()
             },
             // 创建报价单结构
@@ -5158,8 +5215,8 @@
                         rid: key.rid,
                         asrID: key.asrID,
                         asName: key.asName,
-                        priceMsg:{
-                            adDoor:{
+                        priceMsg: {
+                            adDoor: {
                                 schedules: [],                // 排期
                                 GMDate: 0,                   // 赠送面.天
                                 LevelGMDate: {A: 0, B: 0, C: 0},     // 赠送面.天
@@ -5180,7 +5237,7 @@
                                 total: 0,
                                 remark: '',                 //备注信息
                             },
-                            roadGate:{
+                            roadGate: {
                                 schedules: [],                // 排期
                                 GMDate: 0,                   // 赠送面.天
                                 discount: '100',           // 广告费折扣
@@ -5205,7 +5262,7 @@
                 }
                 this.quotation = quotationArr
                 console.log('创建报价单', this.quotation)
-                this.quotationObj = {quotation:this.quotation,isDetail:false}
+                this.quotationObj = {quotation: this.quotation, isDetail: false}
             },
             //计算总价格
             computeTotal() {
@@ -5231,28 +5288,28 @@
                 return commaFormat.init(price);
             },
             //设置报价单
-            APQuotationArr(...data){
-                console.log('回传报价单:',data);// data为包含传过来所有数据的数组，第一个元素是对象，第二个元素是字符串
+            APQuotationArr(...data) {
+                console.log('回传报价单:', data);// data为包含传过来所有数据的数组，第一个元素是对象，第二个元素是字符串
                 this.quotation = data[0]
                 let isBool = true
-                for(let key of this.quotation){
+                for (let key of this.quotation) {
                     console.log(key.noBoolClassified)
-                    if(key.noBoolClassified){
+                    if (key.noBoolClassified) {
                         this.active--
                         isBool = false
                         break
                     }
                 }
-                if(isBool){
+                if (isBool) {
                     this.computeTotal()
                 }
             },
             // 提交前校验单城市报价单价格是否大于2000w
-            vaildCityQuotation(){
-                for(let key of this.quotation){
-                    for(let i in key.priceMsg){
+            vaildCityQuotation() {
+                for (let key of this.quotation) {
+                    for (let i in key.priceMsg) {
                         // console.log('提交前校验单城市报价单价格是否大于2000w',key.priceMsg[i].total)
-                        if(key.priceMsg[i].total > 20000000){
+                        if (key.priceMsg[i].total > 20000000) {
                             this.isCityPrice = true
                             break
                         }
@@ -5260,32 +5317,32 @@
                 }
             },
             // 创建方案基本信息及投放城市详情(报价单数据提交)
-            creatAdPlan(){
-                console.log('creatAdPlan',this.quotation)
+            creatAdPlan() {
+                console.log('creatAdPlan', this.quotation)
                 let arr = []
                 let cityArea = []
-                for(let key of this.quotation){
+                for (let key of this.quotation) {
                     cityArea.push({
                         asrID: key.asrID,
                         city: key.city,
                         rid: key.rid
                     })
-                    for(let i in key.priceMsg){
+                    for (let i in key.priceMsg) {
                         let minTime = ''
                         let maxTime = ''
                         if (key.priceMsg[i].schedules.length > 0 && key.priceMsg[i].schedules !== '' && key.priceMsg[i].schedules !== null) {
                             let timeList = key.priceMsg[i].schedules.join(',')
-                            let schedulesArr = timeFormat.returnTimeArr(timeList,',','-')
+                            let schedulesArr = timeFormat.returnTimeArr(timeList, ',', '-')
                             minTime = schedulesArr[0]
                             maxTime = schedulesArr[schedulesArr.length - 1]
                         } else {
                             minTime = this.dateInput[0]
                             maxTime = this.dateInput[1]
                         }
-                        if(this.apMinTime === ''){
+                        if (this.apMinTime === '') {
                             this.apMinTime = minTime
-                        }else{
-                            if(this.apMinTime > minTime){
+                        } else {
+                            if (this.apMinTime > minTime) {
                                 this.apMinTime = minTime
                             }
                         }
@@ -5293,7 +5350,7 @@
                             "pdRemark": key.priceMsg[i].remark || '',
                             "asrID": key.asrID,
                             "rID": key.rid,
-                            "pdDays":  key.priceMsg[i].tfl,
+                            "pdDays": key.priceMsg[i].tfl,
                             "pdFreeNum": key.priceMsg[i].GMDate,                                // 赠送面*天
                             "pdStar": minTime.split(".").join('-'),
                             "pdEnd": maxTime.split(".").join('-'),
@@ -5307,7 +5364,7 @@
                         })
                     }
                 }
-                console.log('城市详情',arr,'cityArea',cityArea)
+                console.log('城市详情', arr, 'cityArea', cityArea)
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
@@ -5322,18 +5379,18 @@
                 if (this.sessionData.uType === 'BD') {
                     delete params.suid;
                 }
-                console.log('params',params)
-                api.postApi(this.apiVar.Advertisement + '/CreateAPDBatch', params).then(res=>{
-                    console.log('创建方案',res)
-                    if(res.data.SysCode == 200200){
+                console.log('params', params)
+                api.postApi(this.apiVar.Advertisement + '/CreateAPDBatch', params).then(res => {
+                    console.log('创建方案', res)
+                    if (res.data.SysCode == 200200) {
                         this.FAData.apID = res.data.Data[0].apID
                         this.PushADBFun(res.data.Data)
                         this.CreateShareADSFun()
                         sessionStorage.setItem("plan_apid", res.data.Data[0].apID)
                         sessionStorage.setItem('cityArea', JSON.stringify(cityArea));
-                    }else{
+                    } else {
                         this.ADloading.close()
-                        sessFun.messageFun('warning','方案创建失败')
+                        sessFun.messageFun('warning', '方案创建失败')
                     }
                 })
             },
@@ -5343,26 +5400,31 @@
                 console.log('shopingList', this.shopingList)
                 let cityArr = []
                 for (let j = 0; j < ADBData.length; j++) {
-                    let cityObj = {city: ADBData[j].city, pdID: ADBData[j].pdID, pdType: ADBData[j].pdType,asrID:ADBData[j].asrID}
+                    let cityObj = {
+                        city: ADBData[j].city,
+                        pdID: ADBData[j].pdID,
+                        pdType: ADBData[j].pdType,
+                        asrID: ADBData[j].asrID
+                    }
                     cityArr.push(cityObj)
                 }
                 console.log('cityArr', cityArr)
                 let pbSetTime = this.timestampToTime(Date.parse(new Date()))
                 console.log('当前日期时间', pbSetTime)
                 let arr = []
-                for(let key of this.shopingList) {
+                for (let key of this.shopingList) {
                     for (let cKey of cityArr) {
-                        if(key.city == cKey.city && key.asrID == cKey.asrID) {
+                        if (key.city == cKey.city && key.asrID == cKey.asrID) {
                             let adsInfo = {
                                 uID: this.sessionData.uID,
                                 asID: key.asID,
-                                pdID:cKey.pdID,
+                                pdID: cKey.pdID,
                                 pbStar: key.schedules.split('-')[0],
                                 pbEnd: key.schedules.split('-')[1],
                                 mapCenterName: key.mapCenter,
                                 pbSetTime: pbSetTime,
                             }
-                            if(cKey.pdType == 0 && key.mVehicle === '广告门') {
+                            if (cKey.pdType == 0 && key.mVehicle === '广告门') {
                                 arr.push(adsInfo)
                             } else if (cKey.pdType == 1 && key.mVehicle === '道闸') {
                                 arr.push(adsInfo)
@@ -5376,20 +5438,20 @@
                     token: this.sessionData.token,
                     abList: arr
                 }
-                api.postApi_json(this.apiVar.Advertisement + '/PushADB?uid='+this.sessionData.uID+'&token='+this.sessionData.token,postData).then(res => {
+                api.postApi_json(this.apiVar.Advertisement + '/PushADB?uid=' + this.sessionData.uID + '&token=' + this.sessionData.token, postData).then(res => {
                     console.log('PushADB提交选点', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
                         this.ADloading.close()
                     } else {
                         if (res.data === '' || res.data === null) {
-                            sessFun.messageFun('warning','提交选点失败')
+                            sessFun.messageFun('warning', '提交选点失败')
                         } else {
                             this.ADloading.close()
                             this.active = 3
-                            if(this.apMinTime <= this.dateTime){
-                                sessFun.messageFun('warning','该方案的投放期已经开始，建议立即发布该方案！')
-                            }else{
-                                sessFun.messageFun('success','方案创建成功')
+                            if (this.apMinTime <= this.dateTime) {
+                                sessFun.messageFun('warning', '该方案的投放期已经开始，建议立即发布该方案！')
+                            } else {
+                                sessFun.messageFun('success', '方案创建成功')
                             }
                             // 清除后台缓存
                             let params = {
@@ -5421,7 +5483,7 @@
                     apid: this.FAData.apID,
                     aiinfo: JSON.stringify(aiInfo)
                 }
-                api.postApi(this.apiVar.Advertisement+'/CreateShareCode', params).then(res => {
+                api.postApi(this.apiVar.Advertisement + '/CreateShareCode', params).then(res => {
                     console.log('生成协同选点aiCode', res)
                     this.apAicode = res.data.aiCode         // 协同选点 aiCode
                     this.shareADUrl = this.apiVar.qadnUrl + '/shareADList?apid=' + this.FAData.apID + '&aicode=' + res.data.aiCode
@@ -5448,35 +5510,35 @@
                 oInput.select();                // 选择对象
                 document.execCommand("Copy"); // 执行浏览器复制命令
                 oInput.style.display = 'none';
-                sessFun.messageFun('success','复制成功')
+                sessFun.messageFun('success', '复制成功')
             },
             // 公用方法
             // 方案异常时，存储当前方案基本数据及购物车点位等临时信息
-            saveApInfo(){
+            saveApInfo() {
                 this.isSelect = true
                 let planInfo = {
-                    uid:this.sessionData.uID,
+                    uid: this.sessionData.uID,
                     setTime: this.timestampToTime(Date.parse(new Date())),
                     planData: {
                         suid: this.BDData.uid,          // 销售uid,如果是销售自己创建方案则uid与suid相同
                         saleManageLevel: this.BDData.saleManageLevel,   // 销售权限
                         baseInfo: this.planForm,
                         adsList: this.shopingList,
-                        throwCity:this.throwCity,
+                        throwCity: this.throwCity,
                         companyBrand: this.companyBrand,
                     }
                 }
-                console.log('方案异常时，存储当前方案基本数据及购物车点位等临时信息',planInfo)
+                console.log('方案异常时，存储当前方案基本数据及购物车点位等临时信息', planInfo)
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                     adPlan: JSON.stringify(planInfo)
                 }
-                api.postApi(this.apiVar.Advertisement + '/createAdPlanBackups',params).then(res=>{
-                    console.log('res创建方案缓存',res)
-                    if(res.data.SysCode == 200200){
+                api.postApi(this.apiVar.Advertisement + '/createAdPlanBackups', params).then(res => {
+                    console.log('res创建方案缓存', res)
+                    if (res.data.SysCode == 200200) {
 
-                    }else{
+                    } else {
                         // 后台缓存异常，则前台缓存到localStorage
                         // cacheAdPlan.setData(planInfo)
                     }
@@ -5484,7 +5546,7 @@
                 cacheAdPlan.setData(planInfo)
             },
             // 设置方案信息
-            setPlanInfo(){
+            setPlanInfo() {
                 let returnData = cacheAdPlan.getData(this.sessionData.uID)
                 if (returnData) {
                     this.unfinishedData = returnData
@@ -5535,32 +5597,32 @@
                 let Y = date.getFullYear() + '-';
                 let M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
                 let D = date.getDate() + ' ';
-                let h = (date.getHours() < 10 ? '0'+ date.getHours() : date.getHours())+ ':';
-                let m = (date.getMinutes() < 10 ? '0'+ date.getMinutes() : date.getMinutes())+ ':'; //date.getMinutes() + ':';
-                let s = date.getSeconds() < 10 ? '0'+ date.getSeconds() : date.getSeconds();        //date.getSeconds();
+                let h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+                let m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':'; //date.getMinutes() + ':';
+                let s = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();        //date.getSeconds();
                 return Y + M + D + h + m + s;
             },
             // 事件埋点(无法使用模板指令时)--广告门，道闸
-            MtaStatFun(mtaStatIdAdDoor,mtaStatIdRoadGate) {
-                if(this.activeName == 1) {
+            MtaStatFun(mtaStatIdAdDoor, mtaStatIdRoadGate) {
+                if (this.activeName == 1) {
                     MtaH5.clickStat(mtaStatIdAdDoor)
-                } else if(this.activeName == 2) {
+                } else if (this.activeName == 2) {
                     MtaH5.clickStat(mtaStatIdRoadGate)
                 }
             },
         },
         // 页面销毁
         destroyed() {
-            if(this.active == 1 || this.active == 2) {
+            if (this.active == 1 || this.active == 2) {
                 console.log('页面销毁----')
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token
                 }
-                api.postApi(this.apiVar.Advertisement + '/AddCreatePlanLog',params).then(res => {
-                    console.log('上报成功-----',res)
+                api.postApi(this.apiVar.Advertisement + '/AddCreatePlanLog', params).then(res => {
+                    console.log('上报成功-----', res)
                 }).catch(err => {
-                    console.log('上报失败-----',err)
+                    console.log('上报失败-----', err)
                 })
             }
         },
@@ -5568,41 +5630,49 @@
 </script>
 
 <style scoped>
-    /deep/ .el-table__fixed,/deep/ .el-table__fixed-right{
+    /deep/ .el-table__fixed, /deep/ .el-table__fixed-right {
         height: 584px !important;
     }
-    /deep/ .el-table__fixed-right{
+
+    /deep/ .el-table__fixed-right {
         right: 4px !important;
     }
+
     /*/deep/ .el-table__fixed-right-patch{*/
     /*right: 8px !important;*/
     /*}*/
-    /deep/ .selectAdsTable .el-table__empty-text{
-        left:25%;
+    /deep/ .selectAdsTable .el-table__empty-text {
+        left: 25%;
     }
-    /deep/ .selectAdsTable .el-table_1_column_1{
+
+    /deep/ .selectAdsTable .el-table_1_column_1 {
         text-align: center;
     }
-    /deep/ .el-loading-mask{
+
+    /deep/ .el-loading-mask {
         z-index: 990;
     }
-    /deep/ .el-step__main{
+
+    /deep/ .el-step__main {
         height: 20px;
     }
-    .adsTable{
+
+    .adsTable {
         position: relative;
         margin-top: 5px;
     }
-    .myCheckbox{
+
+    .myCheckbox {
         position: absolute;
         width: 100px;
         height: 54px;
         text-align: center;
         line-height: 54px;
-        top:0;
+        top: 0;
         left: 0;
         z-index: 99;
     }
+
     /* .urlBtn {
         padding: 10px;
     } */
@@ -5619,14 +5689,17 @@
         margin-bottom: 5px;
         cursor: pointer;
     }
-    .button_row{
+
+    .button_row {
         margin-top: 12px;
     }
+
     /deep/ .el-form--inline .el-form-item {
         margin-right: 7px !important;
     }
+
     /*购物车提示信息*/
-    .warningInfoColor{
+    .warningInfoColor {
         display: inline-block;
         height: 16px;
         width: 16px;
@@ -5634,23 +5707,24 @@
         vertical-align: middle;
     }
 
-    .warningInfo .warningInfoName{
+    .warningInfo .warningInfoName {
         color: #333;
         font-size: 12px;
     }
 
     /*状态行*/
     /deep/ .el-table .warning-row {
-        background: rgba(255,0,0,0.08);
+        background: rgba(255, 0, 0, 0.08);
     }
 
     /deep/ .el-table .warning-row-conncet {
-        background: rgba(255,199,0,0.10)
+        background: rgba(255, 199, 0, 0.10)
     }
-    .shopList_adLimit{
+
+    .shopList_adLimit {
         width: 132px;
         overflow: hidden;
-        text-overflow:ellipsis;
+        text-overflow: ellipsis;
         white-space: nowrap;
     }
 
@@ -5819,15 +5893,18 @@
         border-bottom-right-radius: 0;
         padding-right: 0;
     }
-    /deep/ .type-select .el-input__inner{
+
+    /deep/ .type-select .el-input__inner {
         padding-left: 10px;
         color: rgb(144, 147, 153);
     }
+
     /*方案排斥*/
-    /deep/ .reject_select{
+    /deep/ .reject_select {
         left: -6px;
     }
-    /deep/ .reject_select .el-input,/deep/ .reject_select .el-input__inner{
+
+    /deep/ .reject_select .el-input, /deep/ .reject_select .el-input__inner {
         width: 185px;
         border-top-left-radius: 0;
     }
@@ -5874,8 +5951,9 @@
     /deep/ .el-dialog__header {
         font-weight: 700;
     }
+
     /*step2 四个按钮*/
-    .importXle.el-button--success{
+    .importXle.el-button--success {
         background: #51E171;
         border-color: #51E171;
     }
@@ -5910,7 +5988,7 @@
     .search-wrap {
         position: relative;
         /*清除浮动*/
-        overflow:hidden;
+        overflow: hidden;
     }
 
     .search-wrap > div {
@@ -5918,6 +5996,7 @@
         margin-right: 7px;
         /*margin-bottom: 18px;*/
     }
+
     /*购物车图标*/
     .shopcar {
         width: 65px;
@@ -5980,10 +6059,12 @@
         color: #1890FF;
         border: 1px solid #1890ff;
     }
-    .dw-panel .other-dd{
+
+    .dw-panel .other-dd {
         padding-left: 0px;
     }
-    .otherSelect /deep/ .el-input__inner{
+
+    .otherSelect /deep/ .el-input__inner {
         width: 100px;
         height: 30px;
         padding-left: 10px;
@@ -5991,47 +6072,58 @@
         border-radius: 0;
         overflow: hidden;
     }
-    .adLimitSelect /deep/ .el-select__tags > span{
+
+    .adLimitSelect /deep/ .el-select__tags > span {
         width: 68px;
         height: 28px;
         overflow: hidden;
     }
-    .otherSelect /deep/ .el-tag{
+
+    .otherSelect /deep/ .el-tag {
         background: #fff;
         color: #1890FF;
     }
-    .otherSelect /deep/ .el-input__inner:hover{
+
+    .otherSelect /deep/ .el-input__inner:hover {
         color: #1890FF;
         border-color: #1890FF;
     }
-    .otherSelectActive /deep/ .el-input__inner{
+
+    .otherSelectActive /deep/ .el-input__inner {
         border-color: #1890FF;
     }
-    .otherSelectActive /deep/ .el-input .el-select__caret{
+
+    .otherSelectActive /deep/ .el-input .el-select__caret {
         color: #1890FF;
     }
-    .otherBtn.el-button{
+
+    .otherBtn.el-button {
         border-radius: 0;
-        color:rgba(0,0,0,0.35);
+        color: rgba(0, 0, 0, 0.35);
     }
-    .otherBtn.el-button:hover{
+
+    .otherBtn.el-button:hover {
         border-color: #1890FF;
     }
-    .otherBtnActive.el-button{
+
+    .otherBtnActive.el-button {
         border-color: #1890FF;
         color: #1890FF;
     }
-    .input-wrap{
+
+    .input-wrap {
         text-align: center;
     }
-    .input-wrap .input{
-        width:66px;
-        height:26px;
-        background:rgba(255,255,255,1);
-        border-radius:4px;
-        border:1px solid rgba(194,194,194,1);
+
+    .input-wrap .input {
+        width: 66px;
+        height: 26px;
+        background: rgba(255, 255, 255, 1);
+        border-radius: 4px;
+        border: 1px solid rgba(194, 194, 194, 1);
     }
-    .input-wrap .input-wrap-Btn{
+
+    .input-wrap .input-wrap-Btn {
         width: 44px;
         height: 22px;
         margin-top: 6px;
@@ -6044,27 +6136,31 @@
     }
 
     /*筛选条件*/
-    .filter-condition{
+    .filter-condition {
         width: 100%;
-        height:36px;
+        height: 36px;
         line-height: 36px;
         margin: 5px 0 0;
-        background:rgb(241,241,241);
+        background: rgb(241, 241, 241);
     }
-    .filter-condition /deep/ .el-tag{
-        background:rgba(255,255,255,1);
-        border:1px solid rgba(0,0,0,0.1);
-        color:rgba(0,0,0,0.35);
+
+    .filter-condition /deep/ .el-tag {
+        background: rgba(255, 255, 255, 1);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        color: rgba(0, 0, 0, 0.35);
         margin-left: 10px;
     }
-    .filter-condition /deep/ .el-tag:hover{
+
+    .filter-condition /deep/ .el-tag:hover {
         color: #1890FF;
         border-color: #1890FF;
     }
-    .filter-condition /deep/ .el-tag:hover .el-tag__close.el-icon-close{
+
+    .filter-condition /deep/ .el-tag:hover .el-tag__close.el-icon-close {
         color: #1890FF;
     }
-    /deep/ .el-tag__close.el-icon-close:hover{
+
+    /deep/ .el-tag__close.el-icon-close:hover {
         background: #fff;
     }
 
@@ -6084,7 +6180,7 @@
         margin-left: 4px;
     }
 
-    /deep/ .el-table-column-checkbox .el-checkbox{
+    /deep/ .el-table-column-checkbox .el-checkbox {
         margin-right: 0;
     }
 
@@ -6106,11 +6202,12 @@
         padding: 0 0 0 12px;
     }
 
-    /deep/ .selectAdsTable .el-table__body-wrapper{
+    /deep/ .selectAdsTable .el-table__body-wrapper {
         overflow-x: auto !important;
     }
-    /deep/ .selectAdsTable .el-checkbox__label{
-        padding-left: 4px ;
+
+    /deep/ .selectAdsTable .el-checkbox__label {
+        padding-left: 4px;
     }
 
     /deep/ .car-list .el-table__body-wrapper {
@@ -6192,24 +6289,27 @@
     /deep/ .table_wrap.car-list {
         margin-top: 0 !important;
     }
+
     /*提示*/
-    .tip{
+    .tip {
         width: 100%;
-        background:rgba(230,247,255,1);
-        border-radius:4px;
-        border:1px solid rgba(145,213,255,1);
-        padding: 10px 16px ;
+        background: rgba(230, 247, 255, 1);
+        border-radius: 4px;
+        border: 1px solid rgba(145, 213, 255, 1);
+        padding: 10px 16px;
         box-sizing: border-box;
         display: flex;
         align-items: center;
         margin: 8px 0;
         font-size: 14px;
-        color:rgba(0,0,0,0.65);
+        color: rgba(0, 0, 0, 0.65);
     }
-    .tip span{
+
+    .tip span {
         color: #1890FF;
     }
-    .tip /deep/ .el-icon-info{
+
+    .tip /deep/ .el-icon-info {
         color: #1890ff;
         margin-right: 8px;
     }
@@ -6221,7 +6321,7 @@
         white-space: nowrap;
     }
 
-    /deep/ .el-table__row .cell span{
+    /deep/ .el-table__row .cell span {
         overflow-x: initial;
     }
 
@@ -6320,8 +6420,9 @@
     /deep/ .step3 .el-input__inner, /deep/ .step3 .el-textarea__inner {
         width: 348px;
     }
+
     /*广告费修改-赠送面天*/
-    /deep/ .step3 .is-controls-right .el-input__inner{
+    /deep/ .step3 .is-controls-right .el-input__inner {
         width: 304px;
     }
 
@@ -6339,7 +6440,7 @@
         right: 42px !important;
     }
 
-    .createPlan .type-select  /deep/ .el-input__suffix {
+    .createPlan .type-select /deep/ .el-input__suffix {
         right: 9px;
     }
 
@@ -6365,7 +6466,7 @@
     }
 
     /deep/ .changeMakePrice .NoClassified /deep/ .el-input-number,
-    /deep/ .step3 .NoClassified .is-controls-right .el-input__inner{
+    /deep/ .step3 .NoClassified .is-controls-right .el-input__inner {
         width: 352px;
     }
 
@@ -6445,9 +6546,10 @@
     }
 
     /*一键选点*/
-    /deep/ .onKeyPointFrom .el-form-item__content{
+    /deep/ .onKeyPointFrom .el-form-item__content {
         margin-left: 88px !important;
     }
+
     .ABcaleItem {
         display: inline-block;
     }
@@ -6469,46 +6571,54 @@
         max-width: 227px;
     }
 
-    .ABcalePercent{
+    .ABcalePercent {
         position: relative;
     }
-    .ABcalePercent .percent{
+
+    .ABcalePercent .percent {
         position: absolute;
-        top:0;
+        top: 0;
         right: 28px;
     }
-    .el-dialog__footer{
+
+    .el-dialog__footer {
         text-align: center;
     }
-    .OneKeyPoint_footer button{
+
+    .OneKeyPoint_footer button {
         padding: 0;
         line-height: 34px;
     }
-    /deep/ .clearShopping{
+
+    /deep/ .clearShopping {
         cursor: pointer;
         color: #1890ff;
         font-size: 14px;
     }
+
     /* 方案导入 */
-    .import_fanan a{
+    .import_fanan a {
         color: #606266;
     }
-    .import_fanan .fileButton{
+
+    .import_fanan .fileButton {
         width: 126px;
     }
 
-    .upload_file{
+    .upload_file {
         display: inline-block;
     }
-    .warning_box{
+
+    .warning_box {
         margin-top: 20px;
-        background:rgba(255,251,230,1);
-        border-radius:4px;
-        border:1px solid rgba(255,229,143,1);
-        color:rgba(0,0,0,0.65);
+        background: rgba(255, 251, 230, 1);
+        border-radius: 4px;
+        border: 1px solid rgba(255, 229, 143, 1);
+        color: rgba(0, 0, 0, 0.65);
         padding: 0 5px;
     }
-    .upload_file .aButton{
+
+    .upload_file .aButton {
         width: 124px;
         height: 29px;
         line-height: 31px;
@@ -6519,36 +6629,43 @@
         border-radius: 4px;
         border: 1px solid #dcdfe6;
     }
-    .aButton:hover{
+
+    .aButton:hover {
         border: 1px solid #409EFF;
         color: #409EFF;
     }
 
     /*safari下表头错位*/
-    /deep/ .el-table .el-table-column-checkbox .cell{
+    /deep/ .el-table .el-table-column-checkbox .cell {
         width: 110px;
     }
-    /deep/ .el-table .el-table-column-resName .cell{
+
+    /deep/ .el-table .el-table-column-resName .cell {
         width: 200px;
     }
-    /deep/ .el-table .el-table-column-mediaName .cell{
+
+    /deep/ .el-table .el-table-column-mediaName .cell {
         width: 140px;
     }
-    /deep/ .el-table .el-table-column-mediaRemark .cell{
+
+    /deep/ .el-table .el-table-column-mediaRemark .cell {
         width: 140px;
     }
-    .ad_pagination /deep/ .el-pagination__sizes .el-input__inner{
+
+    .ad_pagination /deep/ .el-pagination__sizes .el-input__inner {
         width: 100px;
     }
-    .ad_pagination /deep/ .el-pagination__editor.el-input .el-input__inner{
+
+    .ad_pagination /deep/ .el-pagination__editor.el-input .el-input__inner {
         width: 45px;
     }
 </style>
 <style>
-    .el-tooltip__popper.is-dark{
+    .el-tooltip__popper.is-dark {
         max-width: 200px;
     }
-    .other-dd-popper{
+
+    .other-dd-popper {
         padding: 6px;
     }
 </style>

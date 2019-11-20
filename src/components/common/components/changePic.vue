@@ -212,7 +212,7 @@
                     </el-button>
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item @click.native="showUpload()">换画</el-dropdown-item>
-                        <el-dropdown-item @click.native="cancelPain()">取消换画</el-dropdown-item>
+                        <el-dropdown-item @click.native="cancelPain('all')">取消换画</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
                 <!--<el-button type="primary" @click="showUpload()">换画</el-button>-->
@@ -307,7 +307,8 @@
             title="换画详情"
             :visible.sync="changePicDetailModal"
             custom-class="change-pic-detail-modal"
-            :before-close="handleCloseChangePicDetail"
+            :close-on-click-modal="false"
+            :show-close = "false"
             width="30%">
             <div class="change-pic-detail-info">
                 <div>
@@ -354,7 +355,7 @@
             </div>
             <div slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="confirmChange('one')">提 交</el-button>
-                <el-button plain v-if="changePicDetailInfo.replaceDate" @click="changePicDetailModal = false">取消换画
+                <el-button plain v-if="changePicDetailInfo.replaceDate" @click="cancelPain('one')">取消换画
                 </el-button>
                 <el-button plain @click="handleCloseChangePicDetail">关 闭</el-button>
 
@@ -395,7 +396,7 @@
             </el-row>
             <span slot="footer">
                 <el-button plain @click="cancelChange()">取 消</el-button>
-                <el-button type="primary" @click="confirmChange('all')">保 存</el-button>
+                <el-button type="primary" @click="confirmChange('all')">提 交</el-button>
             </span>
         </el-dialog>
 
@@ -1180,31 +1181,53 @@
                 };
                 return obj;
             },
-            //点击详情
+            //点击编辑
             showChangePicDetailModal(item) {
-                // console.log(item,this.oneEditInfo);
+
                 if(!item.replaceDate){
+                    this.imgUrl = []
                     this.oneEditInfo = {
                         date: "",
                         url: "",
                         remark: ""
                     }
+                }else{
+                    if(!item.picUrl){
+                        this.imgUrl = []
+                    }else{
+                        let resImg = {name: '图片1', url: item.picUrl};
+                        this.imgUrl = [resImg];
+                    }
+                    this.oneEditInfo = {
+                        date:item.replaceDate,
+                        url:item.picUrl,
+                        remark:item.remark
+                    }
+
                 }
+                // console.log(item,this.oneEditInfo);
                 this.changePicDetailModal = true
                 this.changePicDetailInfo = item
                 if (!this.isHaveFun(this.shoplist, item)) {
                     this.shoplist.push(item);
                 }
+
             },
             //换画详情对话框关闭前
             handleCloseChangePicDetail() {
                 // this.isShowChanggPicForm = false
                 this.changePicDetailModal = false
+                this.shoplist = this.shoplist.filter((item) => {
+                    if (item.lID == this.changePicDetailInfo.lID) {
+                        //不返回该项
+                        return false;
+                    }
+                    return true;
+                });
             },
             // 选择一条
             handleSelect(selection, row) {
                 console.log(selection, row, 'selection ---row ');
-                this.selection = selection
                 // 选中
                 if (this.isHaveFun(selection, row)) {
                     for (let data of selection) {
@@ -1228,7 +1251,6 @@
             // 全选
             handleSelectAll(selection) {
                 console.log(selection, 'selection-----all');
-                this.selection = selection
                 if (selection.length) {
                     for (let data of selection) {
                         if (!this.isHaveFun(this.shoplist, data)) {
@@ -1322,7 +1344,7 @@
                     apId: sessionStorage.getItem('order_apid'),
                 };
                 api.getApi(this.apiVar.replace + '/plan/resInfo', info).then(res => {
-                    console.log(res);
+                    // console.log(res);
                     if (res.data.SysCode == 200200) {
                         let result = res.data.data.map(item => {
                             return {
@@ -1332,6 +1354,7 @@
                             };
                         });
                         this.dialogInfo.resArr = result;
+                        // console.log('资源名称列表',this.dialogInfo.resArr);
                     } else {
                         sessFun.messageFun(res.data.MSG);
                     }
@@ -1540,14 +1563,15 @@
             }
             ,
             // 批量取消换画
-            cancelPain() {
+            cancelPain(type) {
                 if (this.shoplist.length) {
                     this.$confirm('确认取消换画后，所选点位换画信息将被清空', '是否确认取消换画', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        this.removePain();
+                        this.changePicDetailModal = false
+                        this.removePain(type);
                     }).catch(() => {
                         sessFun.messageFun('info', '已取消操作');
                     });
@@ -1557,21 +1581,40 @@
             }
             ,
             // 移除换画
-            removePain() {
+            removePain(type) {
                 let result = [];
-                for (let data of this.shoplist) {
-                    if (data.replaceDate) {
-                        let obj = {
-                            ...data,
-                            status: 0,
-                            picUrl: '',
-                            remark: '',
-                            replaceDate: '',
-                            replaceRecordId: this.painList[this.activePainIndex].id
-                        };
-                        result.push(obj);
+                if(type == 'all'){
+                    //批量
+                    for (let data of this.shoplist) {
+                        if (data.replaceDate) {
+                            let obj = {
+                                ...data,
+                                status: 0,
+                                picUrl: '',
+                                remark: '',
+                                replaceDate: '',
+                                replaceRecordId: this.painList[this.activePainIndex].id
+                            };
+                            result.push(obj);
+                        }
+                    }
+                }else{
+                    //单个
+                    for(let data of this.shoplist){
+                        if (data.replaceDate&&data.lID == this.changePicDetailInfo.lID) {
+                            let obj = {
+                                ...data,
+                                status: 0,
+                                picUrl: '',
+                                remark: '',
+                                replaceDate: '',
+                                replaceRecordId: this.painList[this.activePainIndex].id
+                            };
+                            result.push(obj);
+                        }
                     }
                 }
+
                 if (result.length) {
                     api.postApi_json(this.apiVar.replace + '/report/saveDetailInfo', result).then(res => {
                         console.log(res.data);
@@ -2428,7 +2471,7 @@
         height: 104px;
         background: rgba(0, 0, 0, 0.02);
         border-radius: 4px;
-        /* border: 1px solid rgba(0, 0, 0, 0.15); */
+        /*border: 1px dashed rgba(0, 0, 0, 0.15);*/
         display: flex;
         line-height: 1;
         flex-direction: column;

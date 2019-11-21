@@ -87,7 +87,8 @@
                                 添加画像
                             </el-dropdown-item>
                             <el-dropdown-item @click.native="openAllRemark()"
-                                              v-qadn-mta-h5="{id: 'a006_b011_c008_d005_bt127_ck04'}">添加备注
+                                              v-qadn-mta-h5="{id: 'a006_b011_c008_d005_bt127_ck04'}">
+                                添加备注
                             </el-dropdown-item>
                             <el-dropdown-item @click.native="deleteMaterInfo('all')">
                                 删除物料信息
@@ -99,7 +100,7 @@
             <div class="car-title">
                 <i class="el-icon-info" style="color: #1890FF;margin-right: 5px"></i>
                 <h4>
-                    已保存物料信息的点位数量有<span>{{remarkNum||0}}</span> 个 当前选择的点位<span>{{shopList.length}}</span>个
+                    已保存物料信息的点位数量有<span>{{hasMaterialCount}}</span> 个 当前选择的点位<span>{{selectNum}}</span>个
                 </h4>
             </div>
             <el-table :data="materInfoArr" border height="535" ref="multipleTable" v-loading="materloading"
@@ -175,13 +176,13 @@
             :visible.sync="MaterDetailModal"
             custom-class="change-pic-detail-modal"
             :close-on-click-modal="false"
-            :show-close = "false"
+            :show-close="false"
             width="30%">
             <div class="change-pic-detail-info">
                 <div>
                     <h5>
                         {{MaterDetailInfo.resName}}-{{MaterDetailInfo.mTitle}}-{{MaterDetailInfo.asLab}}面
-                        <span v-if="MaterDetailInfo.remark||MaterDetailInfo.picUrl" class="a">已添加</span>
+                        <span v-if="MaterDetailInfo.isAdd" class="a">已添加</span>
                         <span v-else class="b">未添加</span>
                     </h5>
                     <p>地址：{{MaterDetailInfo.resAddress}}</p>
@@ -213,7 +214,8 @@
             </div>
             <div slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="changeOneMater()">提 交</el-button>
-                <el-button style="padding: 0 10px" plain v-if="MaterDetailInfo.remark||MaterDetailInfo.picUrl" @click="deleteMaterInfo('one')">删除物料信息
+                <el-button style="padding: 0 10px" plain v-if="MaterDetailInfo.isAdd" @click="deleteMaterInfo('one')">
+                    删除物料信息
                 </el-button>
                 <el-button plain @click="handleCloseChangeOneMater">关 闭</el-button>
 
@@ -229,7 +231,7 @@
             <el-input type="textarea" :rows="2" placeholder="请输入备注信息" v-model="remarkInfo" :maxlength="100"></el-input>
             <span slot="footer" class="dialog-footer">
                 <el-button plain @click="showAllRemark = false" size="small">取消</el-button>
-                <el-button type="primary" @click="saveRemark()" size="small">确 定</el-button>
+                <el-button type="primary" @click="saveAllRemark()" size="small">确 定</el-button>
             </span>
         </el-dialog>
         <!-- 添加画像弹出框 -->
@@ -302,18 +304,7 @@
             }
         },
         computed: {
-            // 已经备注的数量
-            remarkNum() {
-                if (this.materInfoArr.length) {
-                    let num = 0;
-                    for (let data of this.materInfoArr) {
-                        if (data.remark || data.imgUrl) {
-                            num++;
-                        }
-                    }
-                    return num;
-                }
-            },
+
         },
         data() {
             return {
@@ -349,15 +340,19 @@
                 maInfoSize: 10,
                 total: 1,
                 loading_maInfo: false,
-                // 勾选的数据
-                shopList: [],
+                // 有操作的数据
+                shoplist: [],
+                //勾选的数据
+                selectList: [],
                 isSearch: true,
                 isReset: true,
-                MaterDetailInfo:{
-                    picUrl:'',
-                    remark:'',
+                MaterDetailInfo: {
+                    picUrl: '',
+                    remark: '',
                 },//当前行
-                MaterDetailModal:false,
+                MaterDetailModal: false,
+                selectNum:0,//勾选的个数
+                hasMaterialCount:0,//已备注的数量
             }
         },
         directives: {
@@ -410,10 +405,12 @@
             // 物料信息上传上画弹出框
             uploadMater() {
                 this.showPhotoRemark = true;
-                this.shopList = [];
+                this.shoplist = [];
                 this.currInfoPage = 1;
                 this.materInfoArr = [];
                 this.mapArr = [];
+                this.selectNum = 0
+                this.selectList = []
                 this.searchInfoFun();
                 this.getMapCenter();
             },
@@ -449,6 +446,7 @@
                         let dataInfo = res.data;
                         // 物料信息弹出框的选点信息
                         this.total = res.data.total;
+                        this.hasMaterialCount = res.data.hasMaterialCount
                         let dataArr = dataInfo.list;
                         // console.log(dataArr, 'datearr--');
                         this.materInfoArr = this.formatData(dataArr);
@@ -532,7 +530,8 @@
                     imgUrl: item.picUrl || '',
                     uploadUser: item.uploadUser || '',
                     isSelect: false,
-                    resAddress:item.resAddress||'--',
+                    resAddress: item.resAddress || '--',
+                    isAdd: !!(item.remark || item.imgUrl),//是否已添加物料信息
                 };
                 return obj;
             },
@@ -553,19 +552,21 @@
             },
             // 打开备注框
             openAllRemark() {
-                if (!this.shopList.length) {
+                if (!this.selectList.length) {
                     Message.warning('请先勾选需要备注的选点');
                     return;
                 }
+                // console.log(this.selectList);
                 this.remarkInfo = '';
                 this.showAllRemark = true;
             },
             //打开批量修改图片
             openAllPic() {
-                if (!this.shopList.length) {
+                if (!this.shoplist.length) {
                     Message.warning('请先勾选需要备注的选点');
                     return;
                 }
+                this.uploadimgUrl = []
                 this.showAllPic = true;
             },
             // 上传图片之前的格式大小判断
@@ -592,119 +593,145 @@
             },
             //取消批量上传图片
             cancleUploadAllPic() {
-                this.uploadimgUrl = []
+                // this.uploadimgUrl = []
                 this.showAllPic = false
             },
             //确定批量上传图片
             comfirmUploadAllPic() {
                 this.showAllPic = false
-                for (let data of this.shopList) {
+                for (let data of this.shoplist) {
                     data.imgUrl = this.uploadimgUrl[0].url;
                 }
                 for (let data of this.materInfoArr) {
-                    for (let item of this.shopList) {
+                    for (let item of this.selectList) {
                         if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
                             data.imgUrl = item.imgUrl;
                             data.uploadUser = this.sessionData.uID;
+                            this.selectNum=0
                             this.$refs.multipleTable.toggleRowSelection(data, false);
                             break;
                         }
                     }
                 }
+                this.selectList = []
                 this.uploadimgUrl = []
             },
             // 勾选一条
             handleSelect(selection, row) {
-                console.log('selection___________', selection, row);
-                row.isSelect = !row.isSelect;
-                console.log('row.isSelect-------', row.isSelect);
-                if (row.isSelect) {
-                    let bool = true;
-                    for (let data of this.shopList) {
-                        if (data.asID == row.asID && data.lStar == row.lStar && data.lEnd == row.lEnd) {
-                            bool = false;
-                            break;
+                console.log(selection, row, 'selection ---row ');
+                // 选中
+                if (this.isHaveFun(selection, row)) {
+                    for (let data of selection) {
+                        if (!this.isHaveFun(this.selectList, data)) {
+                            this.selectNum++
+                            this.selectList.push(data);
+                        }
+                        if (!this.isHaveFun(this.shoplist, data)) {
+                            this.shoplist.push(data);
                         }
                     }
-                    if (bool) {
-                        this.shopList.push(row);
-                    }
-
                 } else {
+                    // 取消选中
 
-                    for (let i = 0; i < this.shopList.length; i++) {
-                        if (this.shopList[i].asID == row.asID && this.shopList[i].lStar == row.lStar && this.shopList[i].lEnd == row.lEnd) {
-                            this.shopList.splice(i, 1);
-                        }
+                    if (this.isHaveFun(this.selectList, row)) {
+                        this.selectList = this.selectList.filter((item) => {
+                            if (row.asID == item.asID && row.lStar == item.lStar && row.lEnd == item.lEnd) {
+                                this.selectNum--
+                                return false;
+                            }
+                            return true;
+                        });
+                    }
+                    if (this.isHaveFun(this.shoplist, row)) {
+                        this.shoplist = this.shoplist.filter((item) => {
+                            if (row.asID == item.asID && row.lStar == item.lStar && row.lEnd == item.lEnd) {
+                                return false;
+                            }
+                            return true;
+                        });
                     }
                 }
-                console.log('this.shopList-----', this.shopList);
+
+                console.log(this.selectList, this.shoplist, 'one--selectList');
             },
             // 全选
             handleSelectAll(selection) {
-                console.log('selection___fdas____', selection);
+                console.log(selection, 'selection-----all');
                 if (selection.length) {
-                    for (let data of this.materInfoArr) {
-                        data.isSelect = true;
-                        let bool = true;
-                        for (let item of this.shopList) {
-                            if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
-                                console.log('重复了');
-                                bool = false;
-                                break;
-                            }
+                    for (let data of selection) {
+                        if (!this.isHaveFun(this.selectList, data)) {
+                            this.selectNum++
+                            this.selectList.push(data);
                         }
-                        if (bool) {
-                            this.shopList.push(data);
+                        if (!this.isHaveFun(this.shoplist, data)) {
+                            this.shoplist.push(data);
                         }
                     }
-                    console.log('this.shopListSelectTrue', this.shopList);
                 } else {
                     for (let data of this.materInfoArr) {
-                        data.isSelect = false;
-                        for (let i = 0; i < this.shopList.length; i++) {
-                            if (this.shopList[i].asID == data.asID && this.shopList[i].lStar == data.lStar && this.shopList[i].lEnd == data.lEnd) {
-                                this.shopList.splice(i, 1);
-                                break;
-                            }
+                        if (this.isHaveFun(this.selectList, data)) {
+                            this.selectList = this.selectList.filter((item) => {
+                                if (item.lID == data.lID) {
+                                    this.selectNum--
+                                    return false;
+                                }
+                                return true;
+                            });
                         }
+                        if (this.isHaveFun(this.shoplist, data)) {
+                            this.shoplist = this.shoplist.filter((item) => {
+                                if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
+                                    return false;
+                                }
+                                return true;
+                            });
+                        }
+
                     }
-                    console.log('取消全选之后的数据', this.shopList);
                 }
+
+                console.log(this.selectList, this.shoplist, 'all--selectList');
             },
             // 是否勾选更新
             SelectioUpdate() {
-                let timer = setTimeout(() => {
-                    for (let item of this.shopList) {
-                        for (let data of this.materInfoArr) {
-                            if (item.asID == data.asID && item.lStar == data.lStar && item.lEnd == data.lEnd) {
-                                data.isSelect = true;
-                                data.remark = item.remark;
-                                data.imgUrl = item.imgUrl;
-                                this.$refs.multipleTable.toggleRowSelection(data, false);
-                            }
+                console.log(this.selectList,this.shoplist);
+                for (let item of this.selectList) {
+                    for (let data of this.materInfoArr) {
+                        if (data.lID == item.lID) {
+                            this.$refs.multipleTable.toggleRowSelection(data, true);
                         }
                     }
-                    clearTimeout(timer);
-                }, 0);
+                }
+                for (let item of this.shoplist) {
+                    for (let data of this.materInfoArr) {
+                        if (data.lID == item.lID) {
+                            console.log(data);
+                            data.remark = item.remark;
+                            data.imgUrl = item.imgUrl;
+                            data.replaceDate = item.replaceDate;
+                        }
+                    }
+                }
             },
             // 保存备注
-            saveRemark() {
+            saveAllRemark() {
                 this.showAllRemark = false;
-                console.log('this.remarkInfo---', this.remarkInfo, this.shopList);
-                for (let data of this.shopList) {
+                console.log('this.remarkInfo---', this.remarkInfo, this.selectList);
+                for (let data of this.shoplist) {
                     data.remark = this.remarkInfo;
                 }
                 for (let data of this.materInfoArr) {
-                    for (let item of this.shopList) {
+                    for (let item of this.shoplist) {
                         if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
                             data.remark = item.remark;
+                            this.selectNum=0
+                            //取消选中
                             this.$refs.multipleTable.toggleRowSelection(data, false);
-                            break;
                         }
                     }
                 }
-                // console.log(this.materInfoArr, this.shopList);
+                this.selectList = []
+                // console.log(this.materInfoArr, this.selectList);
             },
             // 查看图片
             previewImg(row) {
@@ -712,10 +739,10 @@
                 this.dialogImageUrl = row.imgUrl;
                 this.dialogVisible = true;
             },
-            // 删除图片链接
+            // 删除物料信息
             deleteMaterInfo(type) {
                 if (type == 'all') {
-                    if (!this.shopList.length) {
+                    if (!this.shoplist.length) {
                         Message.warning('请先勾选需要删除物料信息的选点');
                         return;
                     }
@@ -725,10 +752,12 @@
                         type: 'warning'
                     }).then(() => {
                         for (let data of this.materInfoArr) {
-                            for (let item of this.shopList) {
+                            for (let item of this.shoplist) {
                                 if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
                                     data.imgUrl = '';
                                     data.remark = '';
+                                    this.selectNum=0
+                                    //取消选中
                                     this.$refs.multipleTable.toggleRowSelection(data, false);
                                     break;
                                 }
@@ -759,12 +788,11 @@
 
             },
             //修改单个物料信息-提交
-            changeOneMater(){
-                console.log(111);
-                this.MaterDetailInfo.picUrl = this.uploadimgUrl[0]?this.uploadimgUrl[0].url:''
-                if(!this.MaterDetailInfo.remark&&!this.MaterDetailInfo.picUrl){
+            changeOneMater() {
+                this.MaterDetailInfo.picUrl = this.uploadimgUrl[0] ? this.uploadimgUrl[0].url : ''
+                if (!this.MaterDetailInfo.remark && !this.MaterDetailInfo.picUrl) {
                     Message.warning('请上传物料素材或填写备注信息再提交！');
-                }else{
+                } else {
                     for (let data of this.materInfoArr) {
                         if (data.asID == this.MaterDetailInfo.asID && data.lStar == this.MaterDetailInfo.lStar && data.lEnd == this.MaterDetailInfo.lEnd) {
                             data.imgUrl = this.MaterDetailInfo.picUrl;
@@ -779,35 +807,36 @@
 
             },
             //取消编辑单个物料信息
-            handleCloseChangeOneMater(){
-                console.log(22);
+            handleCloseChangeOneMater() {
                 this.MaterDetailModal = false
                 this.MaterDetailInfo = {
                     ...this.MaterDetailInfo,
-                    picUrl:'',
-                    remark:'',
+                    picUrl: '',
+                    remark: '',
                 }
-                this.shopList = this.shopList.filter((item) => {
-                    if (item.asID == this.MaterDetailInfo.asID && item.lStar == this.MaterDetailInfo.lStar && item.lEnd == this.MaterDetailInfo.lEnd) {
-                        //不返回该项
-                        return false;
-                    }
-                    return true;
-                });
+
+                // this.shoplist = this.shoplist.filter((item) => {
+                //     if (item.asID == this.MaterDetailInfo.asID && item.lStar == this.MaterDetailInfo.lStar && item.lEnd == this.MaterDetailInfo.lEnd) {
+                //         //不返回该项
+                //         return false;
+                //     }
+                //     return true;
+                // });
             },
             //显示物料详情弹框
-            showMaterDetail(item){
-                console.log('单条信息',item);
-                // console.log(this.shopList);
+            showMaterDetail(item) {
+                console.log('单条信息', item);
+                // console.log(this.shoplist);
                 this.MaterDetailModal = true
-                this.MaterDetailInfo = item
-                if (!this.isHaveFun(this.shopList, item)) {
-                    this.shopList.push(item);
+                this.MaterDetailInfo = {...item}
+
+                if (!this.isHaveFun(this.shoplist, item)) {
+                    this.shoplist.push(item);
                 }
-                if(item.imgUrl){
+                if (item.imgUrl) {
                     let resImg = {name: '图片1', url: item.imgUrl};
                     this.uploadimgUrl = [resImg];
-                }else{
+                } else {
                     this.uploadimgUrl = []
                 }
             },
@@ -815,16 +844,14 @@
             saveAll() {
                 console.log('this.materInfoArr---', this.materInfoArr);
                 let result = [];
-                for (let data of this.shopList) {
-                    if (data.imgUrl || data.remark) {
-                        let obj = {
-                            "lID": data.lID,
-                            "picUrl": data.imgUrl,
-                            "remark": data.remark,
-                            "uploadUser": data.uploadUser ? data.uploadUser : this.sessionData.uID
-                        };
-                        result.push(obj);
-                    }
+                for (let data of this.shoplist) {
+                    let obj = {
+                        "lID": data.lID,
+                        "picUrl": data.imgUrl ? data.imgUrl : '',
+                        "remark": data.remark ? data.remark : '',
+                        "uploadUser": data.uploadUser ? data.uploadUser : this.sessionData.uID
+                    };
+                    result.push(obj);
                 }
                 if (result.length) {
                     let info = {
@@ -836,7 +863,7 @@
                         console.log(res.data);
                         if (res.data.SysCode == 200200) {
                             Message.success(res.data.MSG);
-                            // this.showPhotoRemark = false
+                            this.showPhotoRemark = false
                         } else {
                             Message.warning(res.data.MSG);
                         }
@@ -993,7 +1020,8 @@
         display: flex;
         justify-content: center;
     }
-    .imgpain_box.tal{
+
+    .imgpain_box.tal {
         justify-content: left;
     }
 
@@ -1012,6 +1040,7 @@
     /deep/ .imgpain_box .el-upload-list__item.is-success {
         display: block;
     }
+
     /*物料详情弹框*/
     .change-pic-detail-info h5 {
         color: rgba(0, 0, 0, 0.85);
@@ -1051,11 +1080,13 @@
         background: rgba(216, 216, 216, 1);
         margin: 24px 0;
     }
-    .remark-box{
+
+    .remark-box {
         display: flex;
         margin-top: 16px;
     }
-    .remark-box span{
+
+    .remark-box span {
         width: 86px;
     }
 
@@ -1066,6 +1097,7 @@
         text-align: center;
         padding-bottom: 20px;
     }
+
     .change-pic-detail-modal /deep/ .el-dialog__body {
         padding: 5px 24px;
     }

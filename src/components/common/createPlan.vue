@@ -385,7 +385,7 @@
                         <!--提示-->
                         <div class="tip">
                             <i class="el-icon-info"></i>
-                            <p>共 <span>{{total}}</span>个点位，已选点位 <span>{{nowPointNum>0?nowPointNum:0}}</span>个</p>
+                            <p>共 <span>{{adsCount}}</span>个点位，已选点位 <span>{{nowPointNum>0?nowPointNum:0}}</span>个</p>
                         </div>
                         <!--表格-->
                         <div class="table_wrap adsTable">
@@ -1533,7 +1533,7 @@
                 shopDelRowClick: false,
                 pageNo: 1,                       // 页码
                 total: 1,                    // 总页数
-                pageSize: 10,                    //每页条数
+                pageSize: 20,                    //每页条数
                 getAdsParamsData: {},            //　获取点位列表的参数data
                 apMinTime: '',                   // 方案创建的开始时间
                 ADLimitActiveName: '1',
@@ -1565,6 +1565,7 @@
                 mapAdsList: [],
                 currPageAsLength: 0,//当前页面可选的点位总数
                 currPageSelect: 0,//当前页面已选择的点位数
+                adsCount:0,//总可选点位
 
 
             };
@@ -3054,7 +3055,7 @@
                                 let ADList = res.data.data.list
                                 this.setTableDataADDoor(ADList)
                                 this.total = res.data.data.total
-
+                                this.adsCount = res.data.data.adsCount
                                 // this.pageNo++
                                 // console.log(' this.pageNo++', this.pageNo)
                                 this.judgeByselect()
@@ -5635,7 +5636,7 @@
     }
 
     /deep/ .el-table__fixed-right {
-        right: 4px !important;
+        right: 6px !important;
     }
 
     /*/deep/ .el-table__fixed-right-patch{*/
@@ -6217,13 +6218,13 @@
 
     /*滚动条*/
     /deep/ .el-table__body-wrapper {
-        height: 440px;
+        height: 100%;
         overflow-y: auto;
         overflow-x: hidden !important;
     }
 
     /deep/ .el-table__body-wrapper::-webkit-scrollbar {
-        width: 4px;
+        width: 6px;
         height: 8px;
         background: #FAFAFA;
     }

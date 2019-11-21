@@ -106,7 +106,7 @@
                     {value: 3, name: '新潮', count: 0, color: 'orange'},
                     {value: 4, name: '祥云门', count: 0, color: 'green'},
                 ],
-                companyCheckbox: [1],
+                companyCheckbox: [1,2],
 
             }
         },

@@ -223,7 +223,7 @@
                 <h4>
                     <span>全部点位共<em>{{ pointInfo.pointNum }}</em>个，</span>
                     <span v-if="pointInfo.setedNum>0">已保存换画点位<em>{{ pointInfo.setedNum }}</em>个，</span>
-                    <span>当前选择的点位<em>{{selectNum}}</em>个</span>
+                    <span>当前选择的点位<em>{{selectList.length||0}}</em>个</span>
                 </h4>
             </div>
 
@@ -602,7 +602,7 @@
                 changePicDetailModal: false,
                 changePicDetailInfo: '',
                 isShowChanggPicForm: false,
-                selectNum:0,//当前选择的点位
+                // selectNum:0,//当前选择的点位
             };
         },
         mounted() {
@@ -1239,7 +1239,7 @@
                             this.shoplist.push(data);
                         }
                         if (!this.isHaveFun(this.selectList, data)) {
-                            this.selectNum++
+                            // this.selectNum++
                             this.selectList.push(data);
                         }
                     }
@@ -1253,7 +1253,7 @@
                             return true;
                         });
                         this.selectList = this.selectList.filter((item) => {
-                            this.selectNum--
+                            // this.selectNum--
                             if (item.lID == row.lID) {
                                 return false;
                             }
@@ -1272,7 +1272,7 @@
                             this.shoplist.push(data);
                         }
                         if (!this.isHaveFun(this.selectList, data)) {
-                            this.selectNum++
+                            // this.selectNum++
                             this.selectList.push(data);
                         }
                     }
@@ -1289,7 +1289,7 @@
                         if (this.isHaveFun(this.selectList, data)) {
                             this.selectList = this.selectList.filter((item) => {
                                 if (item.lID == data.lID) {
-                                    this.selectNum--
+                                    // this.selectNum--
                                     return false;
                                 }
                                 return true;
@@ -1322,8 +1322,18 @@
                                 data.remark = this.changePicDetailInfo.remark;
                                 data.picUrl = this.changePicDetailInfo.picUrl;
                                 data.replaceDate = this.changePicDetailInfo.replaceDate;
+                                // this.selectNum--
                                 this.$refs.multipleTable.toggleRowSelection(data, false);
+                                if (this.isHaveFun(this.selectList, data)) {
+                                    this.selectList = this.selectList.filter((item) => {
+                                        if (item.lID == data.lID) {
+                                            return false;
+                                        }
+                                        return true;
+                                    });
+                                }
                             }
+
                         }
                         clearTimeout(timer);
                     }, 0);
@@ -1488,7 +1498,7 @@
                 this.imgUrl = [resImg];
                 console.log(this.imgUrl);
             },
-            // 保存上传图片
+            // 保存换画信息
             confirmChange(type) {
                 if (type == 'all') {
                     let {date, url, remark} = this.allEditInfo;
@@ -1504,11 +1514,12 @@
                                 if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
                                     data.remark = item.remark;
                                     //取消选中
+                                    // this.selectNum--
                                     this.$refs.multipleTable.toggleRowSelection(data, false);
                                 }
                             }
                         }
-                        this.selectNum = 0
+                        // this.selectNum = 0
                         this.selectList = [];
                         this.updateData(type);
                     } else {
@@ -1572,7 +1583,7 @@
                 this.isShowPic = false;
                 this.shoplist = [];
                 this.selectList = [];
-                this.selectNum = 0;
+                // this.selectNum = 0;
                 this.search();
             }
             ,

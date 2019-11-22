@@ -37,7 +37,7 @@
                 </div>
             </el-aside>
             <el-main>
-                <div class="scroll">
+                <div class="scroll" style="height: 100%">
                     <keep-alive>
                         <!--<component :is="comName" ></component>-->
                         <question-list :mainInfo="mainInfo" @callbackAnswer="handleAnswer"
@@ -233,7 +233,7 @@
         background: #ffffff;
         color: #333;
         text-align: left;
-        padding: 16px 0;
+        padding: 32px 0;
         box-sizing: border-box;
         border-right: 1px solid #e5e6e9;
         padding-right: 6px;
@@ -245,7 +245,7 @@
 
     /*!*滚动条*!*/
     .scroll {
-        height: 100%;
+        height: 95%;
         overflow-y: scroll;
     }
 

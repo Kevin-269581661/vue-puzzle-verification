@@ -100,7 +100,7 @@
             <div class="car-title">
                 <i class="el-icon-info" style="color: #1890FF;margin-right: 5px"></i>
                 <h4>
-                    已保存物料信息的点位数量有<span>{{hasMaterialCount}}</span> 个 当前选择的点位<span>{{selectNum}}</span>个
+                    已保存物料信息的点位数量有<span>{{hasMaterialCount}}</span> 个 当前选择的点位<span>{{selectList.length}}</span>个
                 </h4>
             </div>
             <el-table :data="materInfoArr" border height="535" ref="multipleTable" v-loading="materloading"
@@ -351,7 +351,7 @@
                     remark: '',
                 },//当前行
                 MaterDetailModal: false,
-                selectNum:0,//勾选的个数
+                // selectNum:0,//勾选的个数
                 hasMaterialCount:0,//已备注的数量
             }
         },
@@ -409,7 +409,7 @@
                 this.currInfoPage = 1;
                 this.materInfoArr = [];
                 this.mapArr = [];
-                this.selectNum = 0
+                // this.selectNum = 0
                 this.selectList = []
                 this.searchInfoFun();
                 this.getMapCenter();
@@ -607,7 +607,7 @@
                         if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
                             data.imgUrl = item.imgUrl;
                             data.uploadUser = this.sessionData.uID;
-                            this.selectNum=0
+                            // this.selectNum=0
                             this.$refs.multipleTable.toggleRowSelection(data, false);
                             break;
                         }
@@ -623,7 +623,7 @@
                 if (this.isHaveFun(selection, row)) {
                     for (let data of selection) {
                         if (!this.isHaveFun(this.selectList, data)) {
-                            this.selectNum++
+                            // this.selectNum++
                             this.selectList.push(data);
                         }
                         if (!this.isHaveFun(this.shoplist, data)) {
@@ -636,7 +636,7 @@
                     if (this.isHaveFun(this.selectList, row)) {
                         this.selectList = this.selectList.filter((item) => {
                             if (row.asID == item.asID && row.lStar == item.lStar && row.lEnd == item.lEnd) {
-                                this.selectNum--
+                                // this.selectNum--
                                 return false;
                             }
                             return true;
@@ -660,7 +660,7 @@
                 if (selection.length) {
                     for (let data of selection) {
                         if (!this.isHaveFun(this.selectList, data)) {
-                            this.selectNum++
+                            // this.selectNum++
                             this.selectList.push(data);
                         }
                         if (!this.isHaveFun(this.shoplist, data)) {
@@ -671,8 +671,8 @@
                     for (let data of this.materInfoArr) {
                         if (this.isHaveFun(this.selectList, data)) {
                             this.selectList = this.selectList.filter((item) => {
-                                if (item.lID == data.lID) {
-                                    this.selectNum--
+                                if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
+                                    // this.selectNum--
                                     return false;
                                 }
                                 return true;
@@ -695,23 +695,26 @@
             // 是否勾选更新
             SelectioUpdate() {
                 console.log(this.selectList,this.shoplist);
-                for (let item of this.selectList) {
-                    for (let data of this.materInfoArr) {
-                        if (data.lID == item.lID) {
-                            this.$refs.multipleTable.toggleRowSelection(data, true);
+                let timer = setTimeout(() => {
+                    for (let item of this.selectList) {
+                        for (let data of this.materInfoArr) {
+                            if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
+                                // console.log(data);
+                                this.$refs.multipleTable.toggleRowSelection(data, true);
+                            }
                         }
                     }
-                }
-                for (let item of this.shoplist) {
-                    for (let data of this.materInfoArr) {
-                        if (data.lID == item.lID) {
-                            console.log(data);
-                            data.remark = item.remark;
-                            data.imgUrl = item.imgUrl;
-                            data.replaceDate = item.replaceDate;
+                    for (let item of this.shoplist) {
+                        for (let data of this.materInfoArr) {
+                            if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
+                                data.remark = item.remark;
+                                data.imgUrl = item.imgUrl;
+                                data.replaceDate = item.replaceDate;
+                            }
                         }
                     }
-                }
+                    clearTimeout(timer);
+                },0)
             },
             // 保存备注
             saveAllRemark() {
@@ -724,7 +727,7 @@
                     for (let item of this.shoplist) {
                         if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
                             data.remark = item.remark;
-                            this.selectNum=0
+                            // this.selectNum=0
                             //取消选中
                             this.$refs.multipleTable.toggleRowSelection(data, false);
                         }
@@ -756,7 +759,7 @@
                                 if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
                                     data.imgUrl = '';
                                     data.remark = '';
-                                    this.selectNum=0
+                                    // this.selectNum=0
                                     //取消选中
                                     this.$refs.multipleTable.toggleRowSelection(data, false);
                                     break;
@@ -775,6 +778,7 @@
                             if (data.asID == this.MaterDetailInfo.asID && data.lStar == this.MaterDetailInfo.lStar && data.lEnd == this.MaterDetailInfo.lEnd) {
                                 data.imgUrl = '';
                                 data.remark = '';
+                                // this.selectNum--
                                 this.$refs.multipleTable.toggleRowSelection(data, false);
                                 this.MaterDetailModal = false
                                 break;
@@ -797,7 +801,18 @@
                         if (data.asID == this.MaterDetailInfo.asID && data.lStar == this.MaterDetailInfo.lStar && data.lEnd == this.MaterDetailInfo.lEnd) {
                             data.imgUrl = this.MaterDetailInfo.picUrl;
                             data.remark = this.MaterDetailInfo.remark;
+                            // this.selectNum--
+
                             this.$refs.multipleTable.toggleRowSelection(data, false);
+                            if (this.isHaveFun(this.selectList, data)) {
+                                this.selectList = this.selectList.filter((item) => {
+                                    if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
+                                        // this.selectNum--
+                                        return false;
+                                    }
+                                    return true;
+                                });
+                            }
                             break;
                         }
                     }

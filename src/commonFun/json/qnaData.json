@@ -50,7 +50,7 @@
                         "id": "6",
                         "path": "媒体模块 > 媒体操作",
                         "title": "如何导出目前录入在系统中的所有点位信息？",
-                        "answer": "<p>若需要导出系统中的所有点位信息，可直接联系QADN微信客服，微信号：qadnKeFu</p></br><img style='width:80%' src='../../../../static/images/qna_2.1.2.png' alt=''>"
+                        "answer": "<p>若需要导出系统中的所有点位信息，可直接联系QADN微信客服，微信号：qadnKeFu</p></br><img style='width:40%' src='../../../../static/images/qna_2.1.2.png' alt=''>"
                     },
                     {
                         "id": "7",
@@ -81,7 +81,7 @@
                         "id": "10",
                         "path": "媒体模块 > 新建媒体",
                         "title": " 媒体如何批量导入？",
-                        "answer":"<p>若需要导出系统中的所有点位信息，可直接联系QADN微信客服，微信号：qadnKeFu</p></br><img style='width:80%' src='../../../../static/images/qna_2.1.2.png' alt=''><p>批量导入流程：联系客服→获得模板与使用说明→填写导入模板→发给客服→客服批量导入。</p>"
+                        "answer":"<p>若需要导出系统中的所有点位信息，可直接联系QADN微信客服，微信号：qadnKeFu</p></br><img style='width:40%' src='../../../../static/images/qna_2.1.2.png' alt=''><p>批量导入流程：联系客服→获得模板与使用说明→填写导入模板→发给客服→客服批量导入。</p>"
                     },
                     {
                         "id": "11",
@@ -111,7 +111,7 @@
                         "id": "15",
                         "path": "媒体模块 > 新建媒体",
                         "title": "城市的区域发生了变化，与系统提供的不同时怎么办？",
-                        "answer": "<p>系统中的城市区域是按照国家统计局的数据进行划分的，当实际区域发生变化时，可联系QADN微信客服，微信号：qadnKeFu。向客服进行说明，由系统后台对区域进行调整。</p></br><img style='width:80%' src='../../../../static/images/qna_2.1.2.png' alt=''>"
+                        "answer": "<p>系统中的城市区域是按照国家统计局的数据进行划分的，当实际区域发生变化时，可联系QADN微信客服，微信号：qadnKeFu。向客服进行说明，由系统后台对区域进行调整。</p></br><img style='width:40%' src='../../../../static/images/qna_2.1.2.png' alt=''>"
                     },
                     {
                         "id": "16",
@@ -361,7 +361,7 @@
                 "id": "43",
                 "path": "账号相关",
                 "title": "账号密码忘了，可否进行重置？",
-                "answer": "<p>可以进行重置，请联系QADN微信客服，微信号：qadnKeFu。</p></br><img style='width:80%' src='../../../../static/images/qna_2.1.2.png' alt=''>"
+                "answer": "<p>可以进行重置，请联系QADN微信客服，微信号：qadnKeFu。</p></br><img style='width:40%' src='../../../../static/images/qna_2.1.2.png' alt=''>"
             },
             {
                 "id": "43",
@@ -392,7 +392,7 @@
                 "id": "46",
                 "path": "亲邻小助手",
                 "title": " 登入账号后，提示“您已绑定成功，可直接登录微信后台哦！”是什么情况？",
-                "answer": "<p>当手机账号登入后，弹出该提示时，说明使用了错误的权限登入亲邻小助手。亲邻小助手只能用工程人员权限的账号登入，遇到该情况可联系QADN微信客服，微信号：qadnKeFu，提交绑定的账号，由后台进行账号解绑。</p></br><img style='width:80%' src='../../../../static/images/qna_2.1.2.png' alt=''>"
+                "answer": "<p>当手机账号登入后，弹出该提示时，说明使用了错误的权限登入亲邻小助手。亲邻小助手只能用工程人员权限的账号登入，遇到该情况可联系QADN微信客服，微信号：qadnKeFu，提交绑定的账号，由后台进行账号解绑。</p></br><img style='width:40%' src='../../../../static/images/qna_2.1.2.png' alt=''>"
             },
             {
                 "id": "47",
@@ -404,7 +404,7 @@
                 "id": "48",
                 "path": "亲邻小助手",
                 "title": "亲邻小助手如何解绑微信？",
-                "answer": "<p>请联系QADN微信客服，微信号：qadnKeFu，提交绑定的账号，由后台进行账号解绑。</p></br><img style='width:80%' src='../../../../static/images/qna_2.1.2.png' alt=''>"
+                "answer": "<p>请联系QADN微信客服，微信号：qadnKeFu，提交绑定的账号，由后台进行账号解绑。</p></br><img style='width:40%' src='../../../../static/images/qna_2.1.2.png' alt=''>"
             },
             {
                 "id": "49",

@@ -30,7 +30,7 @@
                 <template slot="title">
                     辅助资料
                 </template>
-                <el-menu-item index="/media/questionAndAnswer">常见问题</el-menu-item>
+                <!--<el-menu-item index="/media/questionAndAnswer">常见问题</el-menu-item>-->
                 <el-menu-item index="/media/compact">文件下载</el-menu-item>
             </el-submenu>
             <!--<el-menu-item index="/media/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>-->

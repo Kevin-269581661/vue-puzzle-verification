@@ -29,7 +29,7 @@
 
 <style scoped>
     .question-list{
-        padding: 32px;
+        padding: 0 32px;
     }
     .question-list h5{
         color:rgba(0,0,0,0.85);

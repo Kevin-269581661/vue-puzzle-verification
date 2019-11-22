@@ -92,6 +92,9 @@
     .answer /deep/ ul li{
         line-height: 24px;
     }
+    /deep/ .f-color{
+        font-weight: inherit;
+    }
 
 
     /*!*滚动条*!*/

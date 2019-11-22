@@ -2,7 +2,7 @@
     <div class="search-result">
         <h5>搜索结果</h5>
         <ul v-if="searchData.list.length>0">
-            <li class="result-li" v-for="(item,index) in searchData.list" :key="index" @click="chooseQuestion(item)">
+            <li class="result-li" v-for="(item,index) in searchData.list" :key="index" @click="chooseQuestion(item.title)">
                 <h6 v-html="item.title"></h6>
                 <div class="answer" v-html="item.answer"></div>
                 <p class="path">{{item.path}}</p>
@@ -25,8 +25,8 @@
             }
         },
         methods:{
-            chooseQuestion(item){
-                this.$emit("callbackResult", item)
+            chooseQuestion(title){
+                this.$emit("callbackResult", title)
             }
         },
         mounted() {
@@ -48,6 +48,7 @@
     }
     /deep/ .f-color {
         color: #1890ff;
+        font-weight: inherit;
     }
 
     .answer {
@@ -72,6 +73,7 @@
         font-size: 16px;
         margin-bottom: 4px;
         cursor: pointer;
+        font-weight: bold;
     }
     .result-li h6:hover{
         color: #1890ff;

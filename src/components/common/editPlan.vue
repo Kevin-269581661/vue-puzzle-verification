@@ -2940,19 +2940,22 @@
             },
             //取消全选
             cancleSelectAds(){
-                console.log('取消全选',this.planList)
+                console.log('取消全选',this.planList,this.currPageSelect)
                 for(let pkey of this.planList){
                     if(pkey.checkBox.A || pkey.checkBox.B || pkey.checkBox.ABC){
                         for(let i=0; i<this.shopingList.length;){
                             if(pkey.mID === this.shopingList[i].mID){
                                 if(pkey.checkBox.A && this.shopingList[i].A_B === 'A'){
                                     this.shopingList.splice(i,1)
+                                    this.currPageSelect--
                                     pkey.checkBox.A = false
                                 }else if (pkey.checkBox.B && this.shopingList[i].A_B === 'B'){
                                     this.shopingList.splice(i,1)
+                                    this.currPageSelect--
                                     pkey.checkBox.B = false
                                 }else if (pkey.checkBox.ABC && this.shopingList[i].A_B === 'ABC'){
                                     this.shopingList.splice(i,1)
+                                    this.currPageSelect--
                                     pkey.checkBox.ABC = false
                                 }else{
                                     i++
@@ -2984,6 +2987,7 @@
                                         break
                                     }
                                 }
+                                this.currPageSelect++
                                 this.shopingList.push(selectInfo)
                             }
 
@@ -2998,6 +3002,7 @@
                                         break
                                     }
                                 }
+                                this.currPageSelect++
                                 this.shopingList.push(selectInfo)
                             }
 
@@ -3012,6 +3017,7 @@
                     if(!pkey.checkBox.ABC) {
                         pkey.checkBox.ABC = true
                         let selectInfo = this.setShopingTable(pkey,'ABC')
+                        this.currPageSelect++
                         this.shopingList.push(selectInfo)
                     }
                     }

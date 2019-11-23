@@ -1199,7 +1199,7 @@
                     if(this.dialogInfo.picState===1){
                         //搜索已选
                         if (data.replaceDate) {
-                           this.pointArr.push(data)
+                            this.pointArr.push(data)
                         }
                     }else if(this.dialogInfo.picState===0){
                         //搜索未选
@@ -1232,7 +1232,6 @@
             },
             //点击编辑
             showChangePicDetailModal(item) {
-
                 if(!item.replaceDate){
                     this.imgUrl = []
                     this.oneEditInfo = {
@@ -1306,7 +1305,7 @@
                         });
                     }
                 }
-                console.log(this.shoplist, 'one--shoplist');
+                console.log(this.selectList, 'one--shoplist');
             },
             // 全选
             handleSelectAll(selection) {
@@ -1510,6 +1509,7 @@
             },
             // 换画上传图片等
             showUpload() {
+                this.imgUrl = []
                 if (this.selectList.length) {
                     this.isShowEdit = true;
                     this.allEditInfo = {
@@ -1563,6 +1563,7 @@
             },
             // 提交换画信息
             confirmChange(type) {
+                console.log(this.selectList);
                 if (type == 'all') {
                     let {date, url, remark} = this.allEditInfo;
                     if (date) {
@@ -1595,6 +1596,8 @@
                         this.changePicDetailModal = false
                         if (this.imgUrl[0]) {
                             this.oneEditInfo.url = this.imgUrl[0].url;
+                        }else{
+                            this.oneEditInfo.url = ''
                         }
                         console.log(this.oneEditInfo, 'oneEditInfo---');
                         this.updateData(type);

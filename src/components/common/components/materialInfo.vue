@@ -110,8 +110,8 @@
                 </el-table-column>
                 <el-table-column prop="imgUrl" label="" width="50" class="change-pic-icon">
                     <template slot-scope="scope">
-                        <img v-if="scope.row.imgUrl" src="../../../assets/images/changeIcon_1.png" alt="" >
-                        <img v-else src="../../../assets/images/changeIcon_2.png" alt="">
+                        <img v-if="scope.row.imgUrl" @click="previewImg(scope.row)" src="../../../assets/images/changePic_3.png" alt="" >
+                        <img v-else src="../../../assets/images/changePic_2.png" alt="">
                     </template>
                 </el-table-column>
                 <el-table-column prop="resName" label="资源名称" show-overflow-tooltip>
@@ -197,7 +197,6 @@
                             :file-list="uploadimgUrl"
                             :on-success="materImgSuccess"
                             :before-upload="materImgBeforeUpload"
-                            :on-preview="previewImg"
                             :on-remove="delectImg"
                             :limit='1'>
                         <span class="upload_border">
@@ -215,10 +214,11 @@
             </div>
             <div slot="footer" class="dialog-footer">
                 <el-button plain @click="handleCloseChangeOneMater">取 消</el-button>
-                <el-button type="primary" @click="changeOneMater()">提 交</el-button>
-                <el-button style="padding: 0 10px" plain v-if="MaterDetailInfo.isAdd" @click="deleteMaterInfo('one')">
+
+                <el-button style="padding: 0 10px" plain v-if="MaterDetailInfo.remark||MaterDetailInfo.imgUrl" @click="deleteMaterInfo('one')">
                     删除物料信息
                 </el-button>
+                <el-button type="primary" @click="changeOneMater()">提 交</el-button>
                 <!--<el-button plain @click="handleCloseChangeOneMater">关 闭</el-button>-->
 
 
@@ -563,7 +563,7 @@
             },
             //打开批量修改图片
             openAllPic() {
-                if (!this.shoplist.length) {
+                if (!this.selectList.length) {
                     Message.warning('请先勾选需要修改物料的选点');
                     return;
                 }
@@ -756,14 +756,14 @@
             // 查看图片
             previewImg(file) {
                 console.log(file);
-                this.dialogImageUrl = file.url;
+                this.dialogImageUrl = file.imgUrl;
                 this.dialogVisible = true;
             },
             // 删除物料信息
             deleteMaterInfo(type) {
                 if (type == 'all') {
                     if (!this.shoplist.length) {
-                        Message.warning('请先勾选需要删除物料信息的选点');
+                        Message.warning('请先勾选需要删除物料信息的点位');
                         return;
                     }
                     this.$confirm('确认删除后，所选的物料信息将被清空', '是否确认批量删除物料信息', {
@@ -772,7 +772,7 @@
                         type: 'warning'
                     }).then(() => {
                         for (let data of this.materInfoArr) {
-                            for (let item of this.shoplist) {
+                            for (let item of this.selectList) {
                                 if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
                                     data.imgUrl = '';
                                     data.remark = '';

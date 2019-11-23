@@ -108,7 +108,6 @@
 
             }
 
-
             // console.log(this.qnaData);
         },
         methods: {

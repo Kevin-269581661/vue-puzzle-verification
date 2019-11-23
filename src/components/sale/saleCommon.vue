@@ -47,7 +47,7 @@
             <el-menu-item class="no-hover" index="" style="cursor: default;float: right;padding: 0 0 0 4px">
                 <messageNotice></messageNotice>
             </el-menu-item>
-            <el-menu-item class="no-hover" index="" style="cursor: default;float: right;padding: 0 0 0 4px">
+            <el-menu-item class="no-hover" index="" style="cursor: default;float: right;padding: 0 10px 0 0">
                 <questionTip></questionTip>
             </el-menu-item>
         </el-menu>

@@ -43,7 +43,7 @@
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
                 <el-menu-item index="/login">退出登陆</el-menu-item>
             </el-submenu>
-            <el-menu-item class="no-hover" index="" style="cursor: default;float: right;padding: 0 0 0 4px">
+            <el-menu-item class="no-hover" index="" style="cursor: default;float: right;padding: 0 10px 0 0">
                 <questionTip></questionTip>
             </el-menu-item>
         </el-menu>

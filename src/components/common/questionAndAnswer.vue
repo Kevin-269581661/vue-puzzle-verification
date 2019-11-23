@@ -87,38 +87,51 @@
             }
         },
         mounted() {
-            let questionInfo = JSON.parse(sessionStorage.getItem('questionInfo'))
-            if (questionInfo && questionInfo.fromPage == 'fastMenu') {
-                this.componentType = 2
-                this.answerData = questionInfo.question
-                this.activeName = questionInfo.question.index
-            } else {
-                this.componentType = 1
-            }
             this.qnaData = qnaData;
-            this.mainInfo = qnaData[0];
+            let questionInfo = JSON.parse(sessionStorage.getItem('questionInfo'))
+            if(questionInfo.fromPage == 'fastMenu'){
+                if (questionInfo.type!=='other'){
+                    if(questionInfo.question.index) {
+                        this.componentType = 2
+                        this.answerData = questionInfo.question
+                        this.activeName = questionInfo.question.index
+                    } else {
+                        this.activeName = questionInfo.index
+                        this.componentType = 1
+                        this.handleSelect(this.activeName)
+                    }
+                }else{
+                    this.activeName = '1'
+                    this.componentType = 1
+                    this.mainInfo = qnaData[0];
+                }
+
+            }
+
+
             // console.log(this.qnaData);
         },
         methods: {
             //点击菜单
             handleSelect(index) {
-                // console.log(index);
+                console.log(index);
                 this.activeName = index;
                 this.componentType = 1
-
-                this.qnaData.forEach((value, key) => {
+                for(let value of this.qnaData){
                     if (value.children) {
-                        value.children.forEach((v, k) => {
+                        for(let v of value.children){
                             if (v.index == index) {
                                 this.mainInfo = v
                             }
-                        })
+                        }
+
                     } else {
                         if (value.index == index) {
                             this.mainInfo = value
                         }
                     }
-                })
+                }
+
                 // console.log(this.mainInfo);
 
             },

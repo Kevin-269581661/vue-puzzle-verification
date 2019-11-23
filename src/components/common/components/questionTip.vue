@@ -26,10 +26,10 @@
         <el-dialog class="question-dialog" :title="modalInfo.title" :visible.sync="dialogTableVisible" width="35%">
             <ul>
                 <li class="modal-list" v-for="(item,index) in modalInfo.question" :key="index"
-                    @click="goQuestionPage(item)">
+                    @click="goQuestionPage('one',item)">
                     {{item.title}}
                 </li>
-                <li class="modal-list" @click="goQuestionPage">更多{{modalInfo.type}}相关问题……</li>
+                <li class="modal-list" @click="goQuestionPage('more')">更多{{modalInfo.type}}相关问题……</li>
             </ul>
         </el-dialog>
     </div>
@@ -49,7 +49,7 @@
                 modalInfo: {
                     type: '',
                     title: '',
-                    list: [],
+                    question:'',
                 },
                 dialogTableVisible: false
             }
@@ -194,20 +194,24 @@
                     }
                     case 5: {
                         this.dialogTableVisible = false
-                        this.goQuestionPage()
+                        this.goQuestionPage('other')
                     }
 
                 }
             },
-            goQuestionPage(item) {
+            goQuestionPage(type,item) {
                 this.dialogTableVisible = false
-                if (item) {
-                    let obj = {
-                        'fromPage': 'fastMenu',
-                        'question': item ? item : '',
-                    }
-                    sessionStorage.setItem('questionInfo', JSON.stringify(obj))
+                let obj = {
+                    'type':type,
+                    'fromPage': 'fastMenu',
+                    'question': '',
+                    "index":this.modalInfo.question?this.modalInfo.question[0].index:''
                 }
+                if (item) {
+                    obj.question=item
+                }
+                console.log(obj);
+                sessionStorage.setItem('questionInfo', JSON.stringify(obj))
                 if (!this.$route.path.includes('questionAndAnswer')) {
                     //不是消息列表页
                     // console.log(this.$route.path.split('/'));
@@ -215,7 +219,7 @@
                     // console.log(str);
                     this.$router.push(str)
                 } else {
-                    //是消息列表页 有空可用provide /inject
+                    //是消息列表页 可用provide /inject
                     location.reload()
                 }
             }

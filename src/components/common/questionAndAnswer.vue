@@ -149,6 +149,7 @@
                                 let aWord = data.answer.split('。')
                                 for (let item of aWord) {
                                     if (item.includes(keyword)) {
+                                // var reg=/<[^>]*>|/g;
                                         let obj = {
                                             id: data.id,
                                             path: data.path,

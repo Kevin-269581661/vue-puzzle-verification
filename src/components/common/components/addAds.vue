@@ -1189,18 +1189,20 @@
                 let check = row
                 if (check.checkBox.A) {
                     this.AddShopingInfo(row, 'A') // 添加到购物车
-                } else {                          // A、B都勾选的时候
+                } else {
+                    this.IsAll = false
                     this.deleteShopRow(check, 'A')
-                    this.badgeNumber--
+
                 }
             },
             changeB(row) {
                 let check = row
                 if (check.checkBox.B === true) {
                     this.AddShopingInfo(row, 'B') // 添加到购物车
-                } else {                        // A、B都勾选的时候
+                } else {
+                    this.IsAll = false
                     this.deleteShopRow(check, 'B')
-                    this.badgeNumber--
+
                 }
             },
             // 道闸点位选择
@@ -1210,7 +1212,7 @@
                     this.shopingList.push(obj)
                 }else{
                     this.deleteShopRow(row, 'ABC')
-                    this.badgeNumber--
+
                 }
                 this.$emit('ievent',this.shopingList);
                 this.IsAll = true
@@ -1234,6 +1236,7 @@
                                         break
                                     }
                                 }
+                                this.currPageSelect++
                                 this.shopingList.push(selectInfo)
                             }
 
@@ -1248,6 +1251,7 @@
                                         break
                                     }
                                 }
+                                this.currPageSelect++
                                 this.shopingList.push(selectInfo)
                             }
 
@@ -1263,6 +1267,7 @@
                     if (!pkey.checkBox.ABC) {
                         pkey.checkBox.ABC = true
                         let selectInfo = this.setShopingTable(pkey,'ABC')
+                        this.currPageSelect++
                         this.shopingList.push(selectInfo)
                     }
 
@@ -1328,12 +1333,15 @@
                             if(pkey.mID === this.shopingList[i].mID){
                                 if(pkey.checkBox.A && this.shopingList[i].A_B === 'A'){
                                     this.shopingList.splice(i,1)
+                                    this.currPageSelect--
                                     pkey.checkBox.A = false
                                 }else if (pkey.checkBox.B && this.shopingList[i].A_B === 'B'){
                                     this.shopingList.splice(i,1)
+                                    this.currPageSelect--
                                     pkey.checkBox.B = false
                                 }else if (pkey.checkBox.ABC && this.shopingList[i].A_B === 'ABC'){
                                     this.shopingList.splice(i,1)
+                                    this.currPageSelect--
                                     pkey.checkBox.ABC = false
                                 }else{
                                     i++

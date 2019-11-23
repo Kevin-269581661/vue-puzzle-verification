@@ -44,7 +44,7 @@
                         "id": "5",
                         "path": "媒体模块 > 媒体操作",
                         "title": "多录的、重复的、录错的媒体资源能否进行删除？",
-                        "answer": "<p>可以删除。可通过【媒体管理】→【操作】→【删除】的步骤对媒体资源进行删除。</br>注意事项：</p><ul><li>目前的删除功能暂不支持删除已被方案或订单使用的点位；</li><li>若是被方案使用的点位，可以从方案中将点位移除，再进行删除操作；</li><li>订单中的点位，即使点位被终止了，也无法对该点位进行删除；</li><ul><img src='../../../../static/images/qna_2.1.1.png' alt=''><div>&nbsp;</div> <p>以下是媒体状态修改相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E5%AA%92%E4%BD%93%E7%AE%A1%E7%90%86%EF%BC%88%E4%BA%8C%EF%BC%89.mp4'></video>"
+                        "answer": "<p>可以删除。可通过【媒体管理】→【操作】→【删除】的步骤对媒体资源进行删除。</p><p>注意事项：</p><ul><li>目前的删除功能暂不支持删除已被方案或订单使用的点位；</li><li>若是被方案使用的点位，可以从方案中将点位移除，再进行删除操作；</li><li>订单中的点位，即使点位被终止了，也无法对该点位进行删除；</li><ul><img src='../../../../static/images/qna_2.1.1.png' alt=''><div>&nbsp;</div> <p>以下是媒体状态修改相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E5%AA%92%E4%BD%93%E7%AE%A1%E7%90%86%EF%BC%88%E4%BA%8C%EF%BC%89.mp4'></video>"
                     },
                     {
                         "id": "6",

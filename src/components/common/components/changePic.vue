@@ -234,9 +234,8 @@
                     </el-table-column>
                     <el-table-column prop="picUrl" label="" width="50" class="change-pic-icon">
                         <template slot-scope="scope">
-                            <img v-if="scope.row.replaceDate" src="../../../assets/images/changePic_1.png" alt=""
-                                 @click="previewImg(scope.row.picUrl)" style="cursor: pointer">
-                            <img v-else src="../../../assets/images/changePic_2.png" alt="">
+                            <img v-if="scope.row.replaceDate" src="../../../assets/images/changeIcon_1.png" alt="" >
+                            <img v-else src="../../../assets/images/changeIcon_2.png" alt="">
                         </template>
                     </el-table-column>
                     <el-table-column prop="resName" label="资源" show-overflow-tooltip>
@@ -304,12 +303,12 @@
         </el-dialog>
         <!--编辑换画-->
         <el-dialog
-            title="换画详情"
+            title="编辑换画信息"
             :visible.sync="changePicDetailModal"
             custom-class="change-pic-detail-modal"
             :close-on-click-modal="false"
             :show-close = "false"
-            width="30%">
+            width="448px">
             <div class="change-pic-detail-info">
                 <div>
                     <h5>
@@ -339,6 +338,8 @@
                             :file-list="imgUrl"
                             :before-upload="beforeUpload"
                             :on-success="onsucess"
+                            :on-preview="previewImg"
+                            :on-remove="delectImg"
                             :limit='1'>
                         <span class="upload_border">
                             <i class="el-icon-plus"></i>
@@ -354,10 +355,12 @@
                 </el-row>
             </div>
             <div slot="footer" class="dialog-footer">
+                <el-button plain v-if="!changePicDetailInfo.replaceDate"  @click="handleCloseChangePicDetail">取 消</el-button>
                 <el-button type="primary" @click="confirmChange('one')">提 交</el-button>
                 <el-button plain v-if="changePicDetailInfo.replaceDate" @click="cancelPain('one')">取消换画
                 </el-button>
-                <el-button plain @click="handleCloseChangePicDetail">关 闭</el-button>
+                <el-button plain v-if="changePicDetailInfo.replaceDate" @click="handleCloseChangePicDetail">关 闭</el-button>
+
 
             </div>
         </el-dialog>
@@ -602,6 +605,7 @@
                 changePicDetailModal: false,
                 changePicDetailInfo: '',
                 isShowChanggPicForm: false,
+                isSearch:false,
                 // selectNum:0,//当前选择的点位
             };
         },
@@ -1146,6 +1150,9 @@
                             let dataArr = dataInfo.dataList;
                             // this.pointArr = this.pointArr.concat(this.formatData(dataArr));
                             this.pointArr = this.formatData(dataArr)
+                            if(this.isSearch&&this.dialogInfo.picState!==''){
+                                this.formateResult()
+                            }
                             this.dialogPage = {
                                 ...this.dialogPage,
                                 loading_maInfo: true,
@@ -1184,6 +1191,44 @@
                     timeRange: timeRange,
                 };
                 return obj;
+            },
+            //搜索结果格式化
+            formateResult(){
+                console.log(this.pointArr,this.shoplist,this.isSearch,this.dialogInfo.picState);
+                for(let data of this.shoplist){
+                    if(this.dialogInfo.picState===1){
+                        //搜索已选
+                        if (data.replaceDate) {
+                           this.pointArr.push(data)
+                        }
+                    }else if(this.dialogInfo.picState===0){
+                        //搜索未选
+                        if (!data.replaceDate) {
+                            this.pointArr.push(data)
+                        }
+                    }
+                }
+                console.log(this.pointArr);
+                for(let data of this.pointArr){
+                    for(let item of this.shoplist){
+                        if(this.dialogInfo.picState===1){
+                            //搜索已选
+                            console.log(data,data.replaceDate);
+                            if (!item.replaceDate&&data.lID==item.lID) {
+                                console.log(data);
+                                this.pointArr.splice(this.pointArr.indexOf(data),1)
+                            }
+                        }else if(this.dialogInfo.picState===0){
+                            //搜索未选
+                            if (!item.replaceDate&&data.lID==item.lID) {
+                                console.log(data);
+                                this.pointArr.splice(this.pointArr.indexOf(data),1)
+                            }
+                        }
+                    }
+
+                }
+
             },
             //点击编辑
             showChangePicDetailModal(item) {
@@ -1407,6 +1452,7 @@
             // 换画点位搜索
             searchPoint() {
                 console.log(this.dialogInfo);
+                this.isSearch = true
                 this.pointArr = [];
                 this.dialogPage = {
                     ...this.dialogPage,
@@ -1419,6 +1465,7 @@
             },
             // 重置
             resetPoint() {
+                this.isSearch = false
                 let info = {
                     resName: "",
                     picState: "",
@@ -1440,8 +1487,8 @@
                 console.log(this.dialogInfo, this.dialogPage);
             },
             // 查看图片
-            previewImg(url) {
-                this.dialogImageUrl = url;
+            previewImg(file) {
+                this.dialogImageUrl = file.url;
                 this.dialogVisible = true;
             },
             // 删除图片链接
@@ -1463,7 +1510,7 @@
             },
             // 换画上传图片等
             showUpload() {
-                if (this.shoplist.length) {
+                if (this.selectList.length) {
                     this.isShowEdit = true;
                     this.allEditInfo = {
                         date: "",
@@ -1498,7 +1545,23 @@
                 this.imgUrl = [resImg];
                 console.log(this.imgUrl);
             },
-            // 保存换画信息
+            //删除图片
+            delectImg(res, file) {
+                this.imgUrl = [];
+                this.changePicDetailInfo.picUrl = '';
+                for (let data of this.pointArr) {
+                    if (data.lID == this.changePicDetailInfo.lID) {
+                        data.imgUrl = '';
+                        data.uploadUser = this.sessionData.uID;
+                        // this.selectNum=0
+                        this.$refs.multipleTable.toggleRowSelection(data, false);
+                        break;
+                    }
+                }
+
+                // console.log('删除图片', this.MaterDetailInfo);
+            },
+            // 提交换画信息
             confirmChange(type) {
                 if (type == 'all') {
                     let {date, url, remark} = this.allEditInfo;
@@ -1589,18 +1652,16 @@
             ,
             // 保存
             saveAll() {
-                console.log(this.pointArr);
+                console.log(this.pointArr,this.shoplist);
                 if (this.shoplist.length) {
                     let result = [];
                     for (let data of this.shoplist) {
-                        if (data.replaceDate) {
-                            let obj = {
-                                ...data,
-                                status: 1,
-                                replaceRecordId: this.painList[this.activePainIndex].id
-                            };
-                            result.push(obj);
-                        }
+                        let obj = {
+                            ...data,
+                            status: data.replaceDate?1:0,
+                            replaceRecordId: this.painList[this.activePainIndex].id
+                        };
+                        result.push(obj);
                     }
                     if (result.length) {
                         api.postApi_json(this.apiVar.replace + '/report/saveDetailInfo', result).then(res => {
@@ -1617,26 +1678,43 @@
                         sessFun.messageFun('warning', '没有需要保存的点');
                     }
                 } else {
-                    sessFun.messageFun('warning', '请先勾选选点');
+                    sessFun.messageFun('warning', '没有需要保存的点');
                 }
             }
             ,
-            // 批量取消换画
+            // 取消换画
             cancelPain(type) {
-                if (this.selectList.length) {
+                if(type=='all'){
+                    if (this.selectList.length) {
+                        this.$confirm('确认取消换画后，所选点位换画信息将被清空', '是否确认取消换画', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            // this.changePicDetailModal = false
+                            this.removePain(type);
+                        }).catch(() => {
+                            sessFun.messageFun('info', '已取消操作');
+                        });
+                    } else {
+                        sessFun.messageFun('warning', '请先选择需要取消换画的点位!');
+                    }
+                }else{
                     this.$confirm('确认取消换画后，所选点位换画信息将被清空', '是否确认取消换画', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
+                        // console.log(1);
                         this.changePicDetailModal = false
                         this.removePain(type);
                     }).catch(() => {
+                        // console.log(2);
                         sessFun.messageFun('info', '已取消操作');
                     });
-                } else {
-                    sessFun.messageFun('warning', '请先勾选选点');
                 }
+
+
             }
             ,
             // 移除换画
@@ -1644,50 +1722,42 @@
                 let result = [];
                 if(type == 'all'){
                     //批量
-                    for (let data of this.selectList) {
-                        if (data.replaceDate) {
-                            let obj = {
-                                ...data,
-                                status: 0,
-                                picUrl: '',
-                                remark: '',
-                                replaceDate: '',
-                                replaceRecordId: this.painList[this.activePainIndex].id
-                            };
-                            result.push(obj);
+                    for(let item of this.pointArr){
+                        for (let data of this.selectList) {
+                            if (item.replaceDate&&item.lID == data.lID) {
+                                item.picUrl = ''
+                                item.remark = ''
+                                item.replaceDate = ''
+                                this.$refs.multipleTable.toggleRowSelection(item, false);
+                            }
                         }
                     }
+
                 }else{
                     //单个
-                    for(let data of this.selectList){
-                        if (data.replaceDate&&data.lID == this.changePicDetailInfo.lID) {
-                            let obj = {
-                                ...data,
-                                status: 0,
-                                picUrl: '',
-                                remark: '',
-                                replaceDate: '',
-                                replaceRecordId: this.painList[this.activePainIndex].id
-                            };
-                            result.push(obj);
+                    for(let data of this.pointArr){
+                        if (data.lID == this.changePicDetailInfo.lID) {
+                            data.picUrl = ''
+                            data.remark = ''
+                            data.replaceDate = ''
                         }
                     }
                 }
 
-                if (result.length) {
-                    api.postApi_json(this.apiVar.replace + '/report/saveDetailInfo', result).then(res => {
-                        console.log(res.data);
-                        if (res.data.SysCode == 200200) {
-                            this.isShowPic = false;
-                            sessFun.messageFun('success', res.data.MSG);
-                            this.search();
-                        } else {
-                            sessFun.messageFun('warning', res.data.MSG);
-                        }
-                    });
-                } else {
-                    sessFun.messageFun('warning', '没有需要保存的点');
-                }
+                // if (result.length) {
+                //     api.postApi_json(this.apiVar.replace + '/report/saveDetailInfo', result).then(res => {
+                //         console.log(res.data);
+                //         if (res.data.SysCode == 200200) {
+                //             this.isShowPic = false;
+                //             sessFun.messageFun('success', res.data.MSG);
+                //             this.search();
+                //         } else {
+                //             sessFun.messageFun('warning', res.data.MSG);
+                //         }
+                //     });
+                // } else {
+                //     sessFun.messageFun('warning', '没有需要保存的点');
+                // }
             }
             ,
             // 给上下刊添加图片的收藏状态
@@ -2610,7 +2680,7 @@
     }
 
     .change-pic-detail-info .divide {
-        width: 400px;
+        width:100%;
         height: 1px;
         background: rgba(216, 216, 216, 1);
         margin: 24px 0;

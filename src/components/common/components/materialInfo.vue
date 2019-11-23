@@ -110,9 +110,8 @@
                 </el-table-column>
                 <el-table-column prop="imgUrl" label="" width="50" class="change-pic-icon">
                     <template slot-scope="scope">
-                        <img v-if="scope.row.imgUrl" src="../../../assets/images/changePic_3.png" alt=""
-                             @click="previewImg(scope.row)" style="cursor: pointer">
-                        <img v-else src="../../../assets/images/changePic_2.png" alt="">
+                        <img v-if="scope.row.imgUrl" src="../../../assets/images/changeIcon_1.png" alt="" >
+                        <img v-else src="../../../assets/images/changeIcon_2.png" alt="">
                     </template>
                 </el-table-column>
                 <el-table-column prop="resName" label="资源名称" show-overflow-tooltip>
@@ -170,14 +169,14 @@
                 <el-button type="primary" size="small" @click="saveAll()">保存</el-button>
             </p>
         </el-dialog>
-        <!--物料详情弹出框-->
+        <!--编辑物料弹出框-->
         <el-dialog
-            title="物料详情"
+            title="编辑物料"
             :visible.sync="MaterDetailModal"
             custom-class="change-pic-detail-modal"
             :close-on-click-modal="false"
             :show-close="false"
-            width="30%">
+            width="448px">
             <div class="change-pic-detail-info">
                 <div>
                     <h5>
@@ -198,6 +197,8 @@
                             :file-list="uploadimgUrl"
                             :on-success="materImgSuccess"
                             :before-upload="materImgBeforeUpload"
+                            :on-preview="previewImg"
+                            :on-remove="delectImg"
                             :limit='1'>
                         <span class="upload_border">
                             <i class="el-icon-plus"></i>
@@ -213,11 +214,13 @@
                 </el-row>
             </div>
             <div slot="footer" class="dialog-footer">
+                <el-button plain @click="handleCloseChangeOneMater">取 消</el-button>
                 <el-button type="primary" @click="changeOneMater()">提 交</el-button>
                 <el-button style="padding: 0 10px" plain v-if="MaterDetailInfo.isAdd" @click="deleteMaterInfo('one')">
                     删除物料信息
                 </el-button>
-                <el-button plain @click="handleCloseChangeOneMater">关 闭</el-button>
+                <!--<el-button plain @click="handleCloseChangeOneMater">关 闭</el-button>-->
+
 
             </div>
         </el-dialog>
@@ -303,9 +306,7 @@
                 default: false
             }
         },
-        computed: {
-
-        },
+        computed: {},
         data() {
             return {
                 //图片预览
@@ -352,7 +353,7 @@
                 },//当前行
                 MaterDetailModal: false,
                 // selectNum:0,//勾选的个数
-                hasMaterialCount:0,//已备注的数量
+                hasMaterialCount: 0,//已备注的数量
             }
         },
         directives: {
@@ -563,7 +564,7 @@
             //打开批量修改图片
             openAllPic() {
                 if (!this.shoplist.length) {
-                    Message.warning('请先勾选需要备注的选点');
+                    Message.warning('请先勾选需要修改物料的选点');
                     return;
                 }
                 this.uploadimgUrl = []
@@ -590,6 +591,22 @@
                 let resImg = {name: '图片1', url: res[0].pURL};
                 this.uploadimgUrl = [resImg];
                 console.log(this.uploadimgUrl);
+            },
+            //删除图片
+            delectImg(res, file) {
+                this.uploadimgUrl = [];
+                this.MaterDetailInfo.imgUrl = '';
+                for (let data of this.materInfoArr) {
+                    if (data.asID == this.MaterDetailInfo.asID && data.lStar == this.MaterDetailInfo.lStar && data.lEnd == this.MaterDetailInfo.lEnd) {
+                        data.imgUrl = '';
+                        data.uploadUser = this.sessionData.uID;
+                        // this.selectNum=0
+                        this.$refs.multipleTable.toggleRowSelection(data, false);
+                        break;
+                    }
+                }
+
+                // console.log('删除图片', this.MaterDetailInfo);
             },
             //取消批量上传图片
             cancleUploadAllPic() {
@@ -694,7 +711,7 @@
             },
             // 是否勾选更新
             SelectioUpdate() {
-                console.log(this.selectList,this.shoplist);
+                console.log(this.selectList, this.shoplist);
                 let timer = setTimeout(() => {
                     for (let item of this.selectList) {
                         for (let data of this.materInfoArr) {
@@ -714,7 +731,7 @@
                         }
                     }
                     clearTimeout(timer);
-                },0)
+                }, 0)
             },
             // 保存备注
             saveAllRemark() {
@@ -737,9 +754,9 @@
                 // console.log(this.materInfoArr, this.selectList);
             },
             // 查看图片
-            previewImg(row) {
-                console.log(row);
-                this.dialogImageUrl = row.imgUrl;
+            previewImg(file) {
+                console.log(file);
+                this.dialogImageUrl = file.url;
                 this.dialogVisible = true;
             },
             // 删除物料信息
@@ -1090,7 +1107,7 @@
     }
 
     .change-pic-detail-info .divide {
-        width: 400px;
+        width: 100%;
         height: 1px;
         background: rgba(216, 216, 216, 1);
         margin: 24px 0;

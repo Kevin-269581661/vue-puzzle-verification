@@ -161,7 +161,7 @@
                                 // let aWord = data.answer.split('。')
                                 // for (let item of aWord) {
                                 //     if (item.includes(keyword)) {
-                                // var reg=/<[^>]*>|/g;
+
                                         let obj = {
                                             id: data.id,
                                             path: data.path,
@@ -186,6 +186,7 @@
                                     // console.log(data.title, aWord);
                                     // for (let item of aWord) {
                                     //     if (item.includes(keyword)) {
+                                    this.getText(data.answer)
                                             let obj = {
                                                 id: data.id,
                                                 path: data.path,
@@ -207,7 +208,11 @@
                 };
                 console.log(this.searchData);
             },
+            getText(str){
+                var pattern = /(<p>|<\/p>|<br\/>|<\/br>|<img[\s\S]*>)/
+                console.log(str.replace(pattern, ''));
 
+            },
             //清空搜索框
             clearSearch() {
                 this.qnaData.forEach((value, key) => {

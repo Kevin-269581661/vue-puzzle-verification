@@ -162,7 +162,7 @@ export default new Router({
                 {path: '/superOperate/changePwd', component: changePwd},
                 {path: '/superOperate/myInfo', component: myInfo},
                 {path: '/superOperate/ADqinlinzk', component: ADqinlinzk},
-                {path: '/superOperate/questionAndAnswer', component: questionAndAnswer},
+                {path: '/superOperate/questionAndAnswer', component: questionAndAnswer, meta:{title:'常见问题'}},
                 {path: '/superOperate/tvOrderList', component: tvOrderList},
                 {path: '/superOperate/tvOrderDetail', component: tvOrderDetail},
                 {path: '/superOperate/settingPrice', component: settingPrice},

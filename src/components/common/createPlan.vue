@@ -4028,6 +4028,7 @@
                                         break
                                     }
                                 }
+                                this.currPageSelect++
                                 this.shopingList.push(selectInfo)
                             }
                         } else if (j === 1 && !selectInfo.box.B) {
@@ -4041,6 +4042,7 @@
                                         break
                                     }
                                 }
+                                this.currPageSelect++
                                 this.shopingList.push(selectInfo)
                             }
 
@@ -5013,7 +5015,7 @@
                     this.IsAll = false
                 }
                 // this.IsAll = true
-                console.log('shopingList', this.shopingList,this.currPageSelect)
+                console.log('shopingList', this.shopingList,this.currPageSelect,this.currPageAsLength)
             },
             // 选点列表数据到购物车数据
             setShopingTable(info, letter) {

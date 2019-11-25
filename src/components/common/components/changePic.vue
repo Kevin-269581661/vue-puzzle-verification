@@ -234,7 +234,7 @@
                     </el-table-column>
                     <el-table-column prop="picUrl" label="" width="50" class="change-pic-icon">
                         <template slot-scope="scope">
-                            <img v-if="scope.row.replaceDate" src="../../../assets/images/changeIcon_1.png" alt="" >
+                            <img v-if="scope.row.replaceDate" src="../../../assets/images/changeIcon_1.png" alt="">
                             <img v-else src="../../../assets/images/changeIcon_2.png" alt="">
                         </template>
                     </el-table-column>
@@ -307,7 +307,7 @@
             :visible.sync="changePicDetailModal"
             custom-class="change-pic-detail-modal"
             :close-on-click-modal="false"
-            :show-close = "false"
+            :show-close="false"
             width="448px">
             <div class="change-pic-detail-info">
                 <div>
@@ -355,11 +355,13 @@
                 </el-row>
             </div>
             <div slot="footer" class="dialog-footer">
-                <el-button plain v-if="!changePicDetailInfo.replaceDate"  @click="handleCloseChangePicDetail">取 消</el-button>
+                <el-button plain v-if="!changePicDetailInfo.replaceDate" @click="handleCloseChangePicDetail">取 消
+                </el-button>
                 <el-button type="primary" @click="confirmChange('one')">提 交</el-button>
                 <el-button plain v-if="changePicDetailInfo.replaceDate" @click="cancelPain('one')">取消换画
                 </el-button>
-                <el-button plain v-if="changePicDetailInfo.replaceDate" @click="handleCloseChangePicDetail">关 闭</el-button>
+                <el-button plain v-if="changePicDetailInfo.replaceDate" @click="handleCloseChangePicDetail">关 闭
+                </el-button>
 
 
             </div>
@@ -605,7 +607,7 @@
                 changePicDetailModal: false,
                 changePicDetailInfo: '',
                 isShowChanggPicForm: false,
-                isSearch:false,
+                isSearch: false,
                 // selectNum:0,//当前选择的点位
             };
         },
@@ -1150,7 +1152,7 @@
                             let dataArr = dataInfo.dataList;
                             // this.pointArr = this.pointArr.concat(this.formatData(dataArr));
                             this.pointArr = this.formatData(dataArr)
-                            if(this.isSearch&&this.dialogInfo.picState!==''){
+                            if (this.isSearch && this.dialogInfo.picState !== '') {
                                 this.formateResult()
                             }
                             this.dialogPage = {
@@ -1193,15 +1195,15 @@
                 return obj;
             },
             //搜索结果格式化
-            formateResult(){
-                console.log(this.pointArr,this.shoplist,this.isSearch,this.dialogInfo.picState);
-                for(let data of this.shoplist){
-                    if(this.dialogInfo.picState===1){
+            formateResult() {
+                console.log(this.pointArr, this.shoplist, this.isSearch, this.dialogInfo.picState);
+                for (let data of this.shoplist) {
+                    if (this.dialogInfo.picState === 1) {
                         //搜索已选
                         if (data.replaceDate) {
                             this.pointArr.push(data)
                         }
-                    }else if(this.dialogInfo.picState===0){
+                    } else if (this.dialogInfo.picState === 0) {
                         //搜索未选
                         if (!data.replaceDate) {
                             this.pointArr.push(data)
@@ -1209,20 +1211,20 @@
                     }
                 }
                 console.log(this.pointArr);
-                for(let data of this.pointArr){
-                    for(let item of this.shoplist){
-                        if(this.dialogInfo.picState===1){
+                for (let data of this.pointArr) {
+                    for (let item of this.shoplist) {
+                        if (this.dialogInfo.picState === 1) {
                             //搜索已选
-                            console.log(data,data.replaceDate);
-                            if (!item.replaceDate&&data.lID==item.lID) {
+                            console.log(data, data.replaceDate);
+                            if (!item.replaceDate && data.lID == item.lID) {
                                 console.log(data);
-                                this.pointArr.splice(this.pointArr.indexOf(data),1)
+                                this.pointArr.splice(this.pointArr.indexOf(data), 1)
                             }
-                        }else if(this.dialogInfo.picState===0){
+                        } else if (this.dialogInfo.picState === 0) {
                             //搜索未选
-                            if (!item.replaceDate&&data.lID==item.lID) {
+                            if (!item.replaceDate && data.lID == item.lID) {
                                 console.log(data);
-                                this.pointArr.splice(this.pointArr.indexOf(data),1)
+                                this.pointArr.splice(this.pointArr.indexOf(data), 1)
                             }
                         }
                     }
@@ -1232,24 +1234,24 @@
             },
             //点击编辑
             showChangePicDetailModal(item) {
-                if(!item.replaceDate){
+                if (!item.replaceDate) {
                     this.imgUrl = []
                     this.oneEditInfo = {
                         date: "",
                         url: "",
                         remark: ""
                     }
-                }else{
-                    if(!item.picUrl){
+                } else {
+                    if (!item.picUrl) {
                         this.imgUrl = []
-                    }else{
+                    } else {
                         let resImg = {name: '图片1', url: item.picUrl};
                         this.imgUrl = [resImg];
                     }
                     this.oneEditInfo = {
-                        date:item.replaceDate,
-                        url:item.picUrl,
-                        remark:item.remark
+                        date: item.replaceDate,
+                        url: item.picUrl,
+                        remark: item.remark
                     }
 
                 }
@@ -1358,51 +1360,53 @@
             },
             // 是否勾选更新
             selectioUpdate(type) {
-                console.log(type,this.shoplist, this.selectList, 'arr---point--');
-                if (type == 'one') {
-                    let timer = setTimeout(() => {
+                console.log(type, this.shoplist, this.selectList, 'arr---point--');
+                // if (type == 'one') {
+                //     let timer = setTimeout(() => {
+                //         for (let data of this.pointArr) {
+                //             if (data.lID == this.changePicDetailInfo.lID) {
+                //                 data.remark = this.changePicDetailInfo.remark;
+                //                 data.picUrl = this.changePicDetailInfo.picUrl;
+                //                 data.replaceDate = this.changePicDetailInfo.replaceDate;
+                //                 // this.selectNum--
+                //                 this.$refs.multipleTable.toggleRowSelection(data, false);
+                //                 if (this.isHaveFun(this.selectList, data)) {
+                //                     this.selectList = this.selectList.filter((item) => {
+                //                         if (item.lID == data.lID) {
+                //                             return false;
+                //                         }
+                //                         return true;
+                //                     });
+                //                 }
+                //             }
+                //
+                //         }
+                //         clearTimeout(timer);
+                //     }, 0);
+                // }
+                // else {
+                let timer = setTimeout(() => {
+                    for (let item of this.selectList) {
                         for (let data of this.pointArr) {
-                            if (data.lID == this.changePicDetailInfo.lID) {
-                                data.remark = this.changePicDetailInfo.remark;
-                                data.picUrl = this.changePicDetailInfo.picUrl;
-                                data.replaceDate = this.changePicDetailInfo.replaceDate;
-                                // this.selectNum--
-                                this.$refs.multipleTable.toggleRowSelection(data, false);
-                                if (this.isHaveFun(this.selectList, data)) {
-                                    this.selectList = this.selectList.filter((item) => {
-                                        if (item.lID == data.lID) {
-                                            return false;
-                                        }
-                                        return true;
-                                    });
-                                }
-                            }
-
-                        }
-                        clearTimeout(timer);
-                    }, 0);
-                } else {
-                    let timer = setTimeout(() => {
-                        for (let item of this.selectList) {
-                            for (let data of this.pointArr) {
-                                if (data.lID == item.lID) {
-                                    this.$refs.multipleTable.toggleRowSelection(data, true);
-                                }
+                            if (data.lID == item.lID) {
+                                // console.log(data);
+                                this.$refs.multipleTable.toggleRowSelection(data, true);
                             }
                         }
-                        for (let item of this.shoplist) {
-                            for (let data of this.pointArr) {
-                                if (data.lID == item.lID) {
-                                    // console.log(item.lID);
-                                    data.remark = item.remark;
-                                    data.picUrl = item.picUrl;
-                                    data.replaceDate = item.replaceDate;
-                                }
+                    }
+                    for (let item of this.shoplist) {
+                        for (let data of this.pointArr) {
+                            if (data.lID == item.lID) {
+                                data.remark = item.remark;
+                                data.imgUrl = item.imgUrl;
+                                data.replaceDate = item.replaceDate;
                             }
                         }
-                        clearTimeout(timer);
-                    }, 0);
-                }
+                    }
+                    // this.selectList = []
+                    clearTimeout(timer);
+                }, 0);
+                // }
 
             },
             // 获取地图中心点
@@ -1575,8 +1579,10 @@
                         console.log(this.allEditInfo, 'allEditInfo---');
                         for (let data of this.pointArr) {
                             for (let item of this.selectList) {
-                                if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
-                                    data.remark = item.remark;
+                                if (data.lID == item.lID) {
+                                    data.remark = this.allEditInfo.remark;
+                                    data.replaceDate = this.allEditInfo.date;
+                                    data.picUrl = this.allEditInfo.url;
                                     //取消选中
                                     // this.selectNum--
                                     this.$refs.multipleTable.toggleRowSelection(data, false);
@@ -1584,8 +1590,9 @@
                             }
                         }
                         // this.selectNum = 0
-                        this.selectList = [];
-                        this.updateData(type);
+                        // this.selectList = [];
+                        // this.updateData(type);
+
                     } else {
                         sessFun.messageFun('warning', '请选择换画日期!');
                     }
@@ -1596,11 +1603,23 @@
                         this.changePicDetailModal = false
                         if (this.imgUrl[0]) {
                             this.oneEditInfo.url = this.imgUrl[0].url;
-                        }else{
+                        } else {
                             this.oneEditInfo.url = ''
                         }
                         console.log(this.oneEditInfo, 'oneEditInfo---');
-                        this.updateData(type);
+                        for (let data of this.pointArr) {
+                            if (data.lID == this.changePicDetailInfo.lID) {
+                                console.log(data);
+                                data.remark = this.oneEditInfo.remark;
+                                data.replaceDate = this.oneEditInfo.date;
+                                data.picUrl = this.oneEditInfo.url;
+                                //取消选中
+                                // this.selectNum--
+                                this.$refs.multipleTable.toggleRowSelection(data, false);
+                            }
+                        }
+                        // this.updateData(type);
+
                     } else {
                         sessFun.messageFun('warning', '请选择换画日期!');
                     }
@@ -1611,35 +1630,35 @@
 
             // 更新表格
             updateData(type) {
-                let arr = this.shoplist;
-                let obj = null
-                if (type == 'one') {
-                    obj = this.oneEditInfo;
-                    let result = arr.map((item, index) => {
-                        if (item.lID == this.changePicDetailInfo.lID) {
-                            if (Date.parse(item.beginDate) < Date.parse(obj.date) && Date.parse(item.endDate) > Date.parse(obj.date)) {
-                                item.replaceDate = obj.date;
-                                item.picUrl = obj.url;
-                                item.remark = obj.remark;
-                            }
-                        }
-                        return item;
-                    });
-                    this.shoplist = result;
-                    this.selectioUpdate(type);
-                } else {
-                    obj = this.allEditInfo;
-                    let result = arr.map((item, index) => {
-                        if (Date.parse(item.beginDate) < Date.parse(obj.date) && Date.parse(item.endDate) > Date.parse(obj.date)) {
-                            item.replaceDate = obj.date;
-                            item.picUrl = obj.url;
-                            item.remark = obj.remark;
-                        }
-                        return item;
-                    });
-                    this.shoplist = result;
-                    this.selectioUpdate(type);
-                }
+                // let arr = this.shoplist;
+                // let obj = null
+                // if (type == 'one') {
+                //     obj = this.oneEditInfo;
+                //     let result = arr.map((item, index) => {
+                //         if (item.lID == this.changePicDetailInfo.lID) {
+                //             if (Date.parse(item.beginDate) < Date.parse(obj.date) && Date.parse(item.endDate) > Date.parse(obj.date)) {
+                //                 item.replaceDate = obj.date;
+                //                 item.picUrl = obj.url;
+                //                 item.remark = obj.remark;
+                //             }
+                //         }
+                //         return item;
+                //     });
+                //     this.shoplist = result;
+                //     this.selectioUpdate(type);
+                // } else {
+                //     obj = this.allEditInfo;
+                //     let result = arr.map((item, index) => {
+                //         if (Date.parse(item.beginDate) < Date.parse(obj.date) && Date.parse(item.endDate) > Date.parse(obj.date)) {
+                //             item.replaceDate = obj.date;
+                //             item.picUrl = obj.url;
+                //             item.remark = obj.remark;
+                //         }
+                //         return item;
+                //     });
+                //     this.shoplist = result;
+                //     this.selectioUpdate(type);
+                // }
                 // console.log(arr);
 
             }
@@ -1655,13 +1674,13 @@
             ,
             // 保存
             saveAll() {
-                console.log(this.pointArr,this.shoplist);
+                console.log(this.pointArr, this.shoplist);
                 if (this.shoplist.length) {
                     let result = [];
                     for (let data of this.shoplist) {
                         let obj = {
                             ...data,
-                            status: data.replaceDate?1:0,
+                            status: data.replaceDate ? 1 : 0,
                             replaceRecordId: this.painList[this.activePainIndex].id
                         };
                         result.push(obj);
@@ -1687,7 +1706,7 @@
             ,
             // 取消换画
             cancelPain(type) {
-                if(type=='all'){
+                if (type == 'all') {
                     if (this.selectList.length) {
                         this.$confirm('确认取消换画后，所选点位换画信息将被清空', '是否确认取消换画', {
                             confirmButtonText: '确定',
@@ -1702,7 +1721,7 @@
                     } else {
                         sessFun.messageFun('warning', '请先选择需要取消换画的点位!');
                     }
-                }else{
+                } else {
                     this.$confirm('确认取消换画后，所选点位换画信息将被清空', '是否确认取消换画', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
@@ -1723,11 +1742,11 @@
             // 移除换画
             removePain(type) {
                 let result = [];
-                if(type == 'all'){
+                if (type == 'all') {
                     //批量
-                    for(let item of this.pointArr){
+                    for (let item of this.pointArr) {
                         for (let data of this.selectList) {
-                            if (item.replaceDate&&item.lID == data.lID) {
+                            if (item.replaceDate && item.lID == data.lID) {
                                 item.picUrl = ''
                                 item.remark = ''
                                 item.replaceDate = ''
@@ -1736,9 +1755,9 @@
                         }
                     }
 
-                }else{
+                } else {
                     //单个
-                    for(let data of this.pointArr){
+                    for (let data of this.pointArr) {
                         if (data.lID == this.changePicDetailInfo.lID) {
                             data.picUrl = ''
                             data.remark = ''
@@ -2683,7 +2702,7 @@
     }
 
     .change-pic-detail-info .divide {
-        width:100%;
+        width: 100%;
         height: 1px;
         background: rgba(216, 216, 216, 1);
         margin: 24px 0;

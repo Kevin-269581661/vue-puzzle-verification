@@ -227,7 +227,7 @@
         <!-- 添加备注弹出框 -->
         <el-dialog
             title="批量添加备注信息"
-            width="40%"
+            width="348px"
             :close-on-click-modal="false"
             :show-close="false"
             :visible.sync="showAllRemark">

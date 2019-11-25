@@ -94,6 +94,7 @@ export default {
         margin: 0 auto;
         height: 140px;
         background: #fff;
+        border: 1px solid #e5e6e9;
     }
     .dl_style{
         display: inline-block;

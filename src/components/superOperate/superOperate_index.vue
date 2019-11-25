@@ -4,11 +4,11 @@
         <home-top :user-info="userInfo" :data-arr="dataArr" :honor-img="companyHonor"></home-top>
         <div style="margin:24px 0;display:flex">
             <!--isPlatform-->
-            <div :class="isPlatform ? 'use_module' : 'platFrom_use_module'">
+            <div :class="isPlatform ? 'use_module' : 'platFrom_use_module'" style="border: 1px solid #e5e6e9;">
                 <h2 class="h2_style">常用模块</h2>
                 <home-link :link="linkArr"></home-link>
             </div>
-            <div v-if="isPlatform" style="width:33%; margin-left:24px;background:#fff;">
+            <div v-if="isPlatform" style="width:33%; margin-left:24px;background:#fff;border: 1px solid #e5e6e9;">
                 <h2 class="h2_style">勋章墙</h2>
                 <div class="loglist_box">
                     <div class="info_box">
@@ -42,7 +42,7 @@
                     @change="changeMonthToCompare('end')">
                 </el-date-picker>
             </div>
-            <el-tabs style="height: 440px;" v-model="activeTabsName" @tab-click="tabHandleClick">
+            <el-tabs style="height: 440px;border: 1px solid #e5e6e9;" v-model="activeTabsName" @tab-click="tabHandleClick">
                 <el-tab-pane label="成交金额" name="price">
                    <div id="price_bar_box"
                         v-loading="priceBoxLoading"
@@ -241,7 +241,7 @@
     import sessFun from '../../commonFun/sessFun.js'
     import api from "../../api/api";
     import indexIsDateFirst from '../../commonFun/indexIsDateFirst.js';
-    
+
     export default {
         name: "admin_index",
         data() {
@@ -552,7 +552,7 @@
             getDataByAsrID(){
                 if (this.isRetailCompany) {
                     // 直营公司收入排名(超级运营排行弹窗) GetPdIncomeCount
-                    let nowDate = timeFormat.toDate(new Date(), '/');		
+                    let nowDate = timeFormat.toDate(new Date(), '/');
                     if(indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)){
                         this.getPdIncomeCountByID()
                     }
@@ -1481,6 +1481,7 @@
         height: 608px;
         width: 100%;
         background: #fff;
+        border: 1px solid #e5e6e9;
     }
     .results_runway_title{
         font-family:PingFangSC-Medium;

@@ -263,8 +263,8 @@
 
 .ad_mediaDetail_nav {
     /* width: 92%; */
-    height: 32px;
-    line-height: 32px;
+    height: 42px;
+    line-height: 42px;
     margin: 0 64px;
 }
 
@@ -291,4 +291,7 @@
     position: relative;
     margin-bottom: 24px;
 }
-
+/*某些菜单样式*/
+.no-hover{
+    background-color: rgb(68, 68, 68) !important;
+}

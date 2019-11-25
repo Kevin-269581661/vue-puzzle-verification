@@ -10,7 +10,7 @@
             background-color="#444"
             text-color="#999999"
             active-text-color="#fff">
-            <el-menu-item index="" style="cursor: default">
+            <el-menu-item index="" class="no-hover" style="cursor: default">
                 <div class="logo_box">
                     <img src="../../assets/images/logo.png" alt="">
                 </div>
@@ -25,7 +25,7 @@
                     辅助资料
                 </template>
                 <el-menu-item index="/sale/publishPriceList">刊例价</el-menu-item>
-                <el-menu-item index="/sale/questionAndAnswer">操作说明</el-menu-item>
+                <!--<el-menu-item index="/sale/questionAndAnswer">常见问题</el-menu-item>-->
                 <el-menu-item index="/sale/compact">文件下载</el-menu-item>
             </el-submenu>
             <el-menu-item index="/sale/tvOrderList">电视广告</el-menu-item>
@@ -44,8 +44,11 @@
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
                 <el-menu-item index="/login">退出登陆</el-menu-item>
             </el-submenu>
-            <el-menu-item index="" style="cursor: default;float: right;padding: 0 0 0 4px">
+            <el-menu-item class="no-hover" index="" style="cursor: default;float: right;padding: 0 0 0 4px">
                 <messageNotice></messageNotice>
+            </el-menu-item>
+            <el-menu-item class="no-hover" index="" style="cursor: default;float: right;padding: 0 10px 0 0">
+                <questionTip></questionTip>
             </el-menu-item>
         </el-menu>
         <!--body-->
@@ -77,10 +80,12 @@
     import uTypeToText from "../../commonFun/uTypeToText.js";
     import api from "../../api/api"
     import messageNotice from '../common/components/messageNotice.vue';
+    import questionTip from '../common/components/questionTip.vue';
     export default {
         name: "saleCommon",
         components:{
-            messageNotice
+            messageNotice,
+            questionTip
         },
         data(){
             return{

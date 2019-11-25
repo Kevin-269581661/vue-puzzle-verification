@@ -43,10 +43,10 @@
                     消息列表
                 </div>
             </div>
-            <!--<i v-if="messageList.unread==0" class="el-icon-bell" slot="reference"  style="color: #fff;font-size: 20px"></i>-->
-            <el-badge slot="reference" :value="messageList.unread" :max="99">
+            <el-badge v-if="messageList.unread>0" slot="reference" :value="messageList.unread" :max="99">
                 <i class="el-icon-bell" style="color: #fff;font-size: 20px"></i>
             </el-badge>
+            <i v-else slot="reference" class="el-icon-bell" style="color: #fff;font-size: 20px"></i>
         </el-popover>
     </div>
 </template>
@@ -62,7 +62,7 @@
                 page: 1,
                 maxPage: 0,
                 messageList: {
-                    unread: 0,
+                    unread: 1,
                     allTxt: 0,
                     list: [],
                     unreadlist:[]
@@ -348,4 +348,26 @@
     }
 
 
+</style>
+<style>
+    .popper /deep/.el-badge__content{
+        background-color: #ff4141;
+        border-radius: 10px;
+        color: #fff;
+        display: inline-block;
+        font-size: 12px;
+        height: 12px;
+        line-height: 12px;
+        padding: 0px 6px;
+        text-align: center;
+        white-space: nowrap;
+        border: 1px solid #fff;
+    }
+    .popper /deep/ .el-badge__content.is-fixed{
+        position: absolute;
+        top: 3px;
+        right: 20px;
+        -webkit-transform: translateY(-50%) translateX(100%);
+        transform: translateY(-50%) translateX(100%);
+    }
 </style>

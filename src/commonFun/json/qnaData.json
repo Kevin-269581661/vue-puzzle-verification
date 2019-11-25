@@ -428,7 +428,7 @@
                 "id": "52",
                 "path": "亲邻小助手",
                 "title": "巡点记录去哪儿可以查看得到？",
-                "answer": "<p>巡点之后上传的记录可在两处查看。</p><ul><li>在小助手相应点位的【巡点记录】中查看；</br><img style='width:50%' src='../../../../static/images/qna_8.7_1.png' alt=''></br><img style='width:50%' src='../../../../static/images/qna_8.7_2.png' alt=''></li><li>在电脑系统里的维护管理中查看；</br>操作步骤：【媒体管理】→【维护管理】→【操作】→【历史记录】</br><img src='../../../../static/images/qna_8.7_3.png' alt=''></br><img src='../../../../static/images/qna_8.7_4.png' alt=''></li></ul><div>&nbsp;</div><p>以下是巡点相关操作视频，可观看了解更多</p><video controls src='https://img.qinlinad.com/UserHelper/%E4%BA%B2%E9%82%BB%E5%B0%8F%E5%8A%A9%E6%89%8B.mp4'></video>"
+                "answer": "<p>巡点之后上传的记录可在两处查看。</p><ul><li>在小助手相应点位的【巡点记录】中查看；</br><img style='width:50%' src='../../../../static/images/qna_8.7_1.png' alt=''></br><img style='width:50%' src='../../../../static/images/qna_8.7_2.png' alt=''></li><li>在电脑系统里的维护管理中查看；</br>操作步骤：【媒体管理】→【维护管理】→【操作】→【历史记录】</br><img src='../../../../static/images/qna_8.7_3.png' alt=''></br><img src='../../../../static/images/qna_8.7_4.png' alt=''></li></ul><div>&nbsp;</div><p>以下是巡点相关操作视频，可观看了解更多</p><video style='height: 500px;' controls src='https://img.qinlinad.com/UserHelper/%E4%BA%B2%E9%82%BB%E5%B0%8F%E5%8A%A9%E6%89%8B.mp4'></video>"
             }
         ]
     },
@@ -587,13 +587,13 @@
                 "id": "75",
                 "path": "操作视频查看",
                 "title": "亲邻小助手",
-                "answer": "<video controls src='https://img.qinlinad.com/UserHelper/%E4%BA%B2%E9%82%BB%E5%B0%8F%E5%8A%A9%E6%89%8B.mp4'></video>"
+                "answer": "<video controls style='height: 500px;' src='https://img.qinlinad.com/UserHelper/%E4%BA%B2%E9%82%BB%E5%B0%8F%E5%8A%A9%E6%89%8B.mp4'></video>"
             },
             {
                 "id": "76",
                 "path": "操作视频查看",
                 "title": "小亲快选",
-                "answer": "<video controls src='https://img.qinlinad.com/UserHelper/%E5%B0%8F%E4%BA%B2%E5%BF%AB%E9%80%89.mp4'></video>"
+                "answer": "<video style='height: 500px;' controls src='https://img.qinlinad.com/UserHelper/%E5%B0%8F%E4%BA%B2%E5%BF%AB%E9%80%89.mp4'></video>"
             }
         ]
     }

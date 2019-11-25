@@ -55,12 +55,7 @@
 </template>
 
 <script>
-    // import mediaQNA from './components/mediaQNA'
-    // import clientQNA from './components/clientQNA'
-    // import planQNA from './components/planQNA'
-    // import orderQNA from './components/orderQNA'
-    // import tvQNA from './components/tvQNA'
-    // import wordQNA from './components/wordQNA'
+
     import questionList from './components/questionList'
     import answerPanel from './components/answerPanel'
     import searchResult from './components/searchResult'
@@ -89,6 +84,7 @@
         mounted() {
             this.qnaData = qnaData;
             let questionInfo = JSON.parse(sessionStorage.getItem('questionInfo'))
+            console.log(3332);
             if (questionInfo.fromPage == 'fastMenu') {
                 if (questionInfo.type !== 'other') {
                     if (questionInfo.question.index) {
@@ -105,7 +101,6 @@
                     this.componentType = 1
                     this.mainInfo = qnaData[0];
                 }
-
             }
 
             // console.log(this.qnaData);
@@ -142,7 +137,9 @@
             },
             //答案面板点击返回
             handleBack(type) {
+                // console.log(type, this.activeName);
                 this.componentType = type
+                this.handleSelect(this.activeName)
             },
             //搜索
             searchFun() {

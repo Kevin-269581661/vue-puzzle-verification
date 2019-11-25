@@ -23,7 +23,7 @@
             <img slot="reference" class="quesition-icon" src="../../../assets/images/question_icon.png"></img>
         </el-popover>
         <!--问题列表对话框-->
-        <el-dialog class="question-dialog" :title="modalInfo.title" :visible.sync="dialogTableVisible" width="35%">
+        <el-dialog class="question-dialog" :title="modalInfo.title" :visible.sync="dialogTableVisible" width="36%">
             <ul>
                 <li class="modal-list" v-for="(item,index) in modalInfo.question" :key="index"
                     @click="goQuestionPage('one',item)">
@@ -172,14 +172,14 @@
                                     "id": "43",
                                     "path": "账号相关",
                                     "title": "账号密码忘了，可否进行重置？",
-                                    "answer": "<p>可以进行重置，请联系QADN微信客服，微信号：qadnKeFu。</p></br><img style='width:80%' src='../../../../static/images/qna_2.1.2.png' alt=''>"
+                                    "answer": "<p>可以进行重置，请联系QADN微信客服，微信号：qadnKeFu。</p></br><img style='width:400px' src='../../../../static/images/qna_2.1.2.png' alt=''>"
                                 },
                                 {
                                     "index": "7",
                                     "id": "44",
                                     "path": "账号相关",
                                     "title": "如何修改账号密码？",
-                                    "answer": "<p>操作步骤：登入账号→触碰右上角登入用户名称→【个人中心】→【密码设置】</p></br><img src='../../../../static/images/qna_7.3_1.png' alt=''></br><img src='../../../../static/images/qna_7.3_2.png' alt=''>"
+                                    "answer": "<p>操作步骤：登入账号→触碰右上角登入用户名称→【个人中心】→【密码设置】</p></br><img src='../../../../static/images/qna_7.3_1.png' alt=''></br><img  src='../../../../static/images/qna_7.3_2.png' alt=''>"
                                 },
                                 {
                                     "index": "7",

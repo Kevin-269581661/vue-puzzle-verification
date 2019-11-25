@@ -317,8 +317,8 @@
                 // 排期时间过滤
                 filtersData: [],
                 // 上传图片地址
-                // doUpload: "/advertisement/UpLoad",
-                doUpload: "http://192.168.1.239/advertisement/UpLoad",
+                doUpload: "/advertisement/UpLoad",
+                // doUpload: "http://192.168.1.239/advertisement/UpLoad",
                 uploadimgUrl: [],
                 // 是否显示上传素材弹框
                 showPhotoRemark: false,

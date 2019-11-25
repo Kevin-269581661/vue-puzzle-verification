@@ -557,10 +557,15 @@
         watch: {
             IsAddAds: function(newVal,oldVal){
                 console.log('父组件相子组件传值',newVal,oldVal)
+
                 this.IsAdd = newVal
                 this.IsAll = false
                 this.shopingList = []    // 获取获取方案信息
-                this.resetPlanList()
+                this.pageSize = 20;
+                this.pageNo = 1;
+                // this.resetPlanList()
+                this.getInitData()
+                this.getAdList()
             }
         },
         // directives: {
@@ -1405,17 +1410,17 @@
             // 重置planList的勾选
             resetPlanList() {
                 console.log('重置planList的勾选开始')
-                for (let i = 0; i < this.planList.length; i++) {
-                    if (this.planList[i].checkBox.A || this.planList[i].checkBox.B || this.planList[i].checkBox.ABC) {
-                        console.log('有勾选')
-                        this.planList[i].checkBox.A = false
-                        this.planList[i].checkBox.B = false
-                        this.planList[i].checkBox.ABC = false
-                        // this.$refs.multipleTable.toggleRowSelection(this.planList[i], false)
-                    } else {
-                        console.log('无勾选')
-                    }
-                }
+                // for (let i = 0; i < this.planList.length; i++) {
+                //     if (this.planList[i].checkBox.A || this.planList[i].checkBox.B || this.planList[i].checkBox.ABC) {
+                //         console.log('有勾选')
+                //         this.planList[i].checkBox.A = false
+                //         this.planList[i].checkBox.B = false
+                //         this.planList[i].checkBox.ABC = false
+                //         // this.$refs.multipleTable.toggleRowSelection(this.planList[i], false)
+                //     } else {
+                //         // console.log('无勾选')
+                //     }
+                // }
                 console.log('重置planList的勾选结束')
             },
             // 添加到购物车

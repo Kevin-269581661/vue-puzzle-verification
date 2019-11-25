@@ -408,6 +408,7 @@
                 this.showPhotoRemark = true;
                 this.shoplist = [];
                 this.currInfoPage = 1;
+                this.maInfoSize = 10
                 this.materInfoArr = [];
                 this.mapArr = [];
                 // this.selectNum = 0

@@ -1088,6 +1088,7 @@
                 this.dialogPage = {
                     ...this.dialogPage,
                     currInfoPage: 1,
+                    pageSize:10,
                 };
                 this.dialogInfo = {
                     ...this.dialogInfo,

@@ -89,9 +89,9 @@
         mounted() {
             this.qnaData = qnaData;
             let questionInfo = JSON.parse(sessionStorage.getItem('questionInfo'))
-            if(questionInfo.fromPage == 'fastMenu'){
-                if (questionInfo.type!=='other'){
-                    if(questionInfo.question.index) {
+            if (questionInfo.fromPage == 'fastMenu') {
+                if (questionInfo.type !== 'other') {
+                    if (questionInfo.question.index) {
                         this.componentType = 2
                         this.answerData = questionInfo.question
                         this.activeName = questionInfo.question.index
@@ -100,7 +100,7 @@
                         this.componentType = 1
                         this.handleSelect(this.activeName)
                     }
-                }else{
+                } else {
                     this.activeName = '1'
                     this.componentType = 1
                     this.mainInfo = qnaData[0];
@@ -116,9 +116,9 @@
                 console.log(index);
                 this.activeName = index;
                 this.componentType = 1
-                for(let value of this.qnaData){
+                for (let value of this.qnaData) {
                     if (value.children) {
-                        for(let v of value.children){
+                        for (let v of value.children) {
                             if (v.index == index) {
                                 this.mainInfo = v
                             }
@@ -154,64 +154,66 @@
                 let arr = [...this.qnaData]
                 // console.log(arr);
                 arr.forEach((item, index) => {
-                    if (item.question) {
-                        //
-                        for (let data of item.question) {
-                            if (data.title.includes(keyword) || data.answer.includes(keyword)) {
-                                // let aWord = data.answer.split('。')
-                                // for (let item of aWord) {
-                                //     if (item.includes(keyword)) {
+                        if (item.question) {
+                            //
+                            for (let data of item.question) {
+                                if (data.title.includes(keyword) || data.answer.includes(keyword)) {
+                                    let aWord = this.getText(data.answer).split('。')
+                                    let obj = {
+                                        id: data.id,
+                                        path: data.path,
+                                        title: data.title.split(keyword).join("<em class='f-color'>" + keyword + "</em>"),
+                                        answer: data.answer,
+                                    }
 
+                                    if (data.path == '合同下载') {
+                                        var re = /<a[^>]*href=['"]([^"]*)['"][^>]*>(.*?)<\/a>/g;
+                                        // console.log(re.exec(data.answer)[2]);
+                                        obj.answer = re.exec(item)[2].split(keyword).join("<em class='f-color'>" + keyword + "</em>")
+                                    }
+                                    for (let item of aWord) {
+                                        if (item.includes(keyword)) {
+                                            obj.answer = item.split(keyword).join("<em class='f-color'>" + keyword + "</em>")
+                                        }
+                                    }
+                                    result.push(obj)
+                                }
+                            }
+                        }
+                        else {
+                            for (let value of item.children) {
+                                for (let data of value.question) {
+                                    if (data.title.includes(keyword) || data.answer.includes(keyword)) {
+                                        let aWord = this.getText(data.answer).split('。')
+                                        // console.log(data.title, aWord);
                                         let obj = {
                                             id: data.id,
                                             path: data.path,
                                             title: data.title.split(keyword).join("<em class='f-color'>" + keyword + "</em>"),
-                                            answer: data.answer.split(keyword).join("<em class='f-color'>" + keyword + "</em>"),
+                                            answer: data.answer,
                                         }
-                                        if (data.path == '合同下载') {
-                                            var re = /<a[^>]*href=['"]([^"]*)['"][^>]*>(.*?)<\/a>/g;
-                                            // console.log(re.exec(data.answer)[2]);
-                                            obj.answer = re.exec(data.answer)[2].split(keyword).join("<em class='f-color'>" + keyword + "</em>")
-                                        }
-                                        result.push(obj)
-                                    }
-                                // }
-                            // }
-                        }
-                    } else {
-                        for (let value of item.children) {
-                            for (let data of value.question) {
-                                if (data.title.includes(keyword) || data.answer.includes(keyword)) {
-                                    // let aWord = data.answer.split('。')
-                                    // console.log(data.title, aWord);
-                                    // for (let item of aWord) {
-                                    //     if (item.includes(keyword)) {
-                                    this.getText(data.answer)
-                                            let obj = {
-                                                id: data.id,
-                                                path: data.path,
-                                                title: data.title.split(keyword).join("<em class='f-color'>" + keyword + "</em>"),
-                                                answer: data.answer.split(keyword).join("<em class='f-color'>" + keyword + "</em>"),
+                                        for (let item of aWord) {
+                                            if (item.includes(keyword)) {
+                                                obj.answer = item.split(keyword).join("<em class='f-color'>" + keyword + "</em>")
                                             }
-                                            result.push(obj);
                                         }
+                                        result.push(obj);
                                     }
-
-                                // }
-                            // }
+                                }
+                            }
                         }
                     }
-                });
+                );
                 this.searchData = {
                     list: result,
                     keyword: keyword
                 };
                 console.log(this.searchData);
             },
-            getText(str){
-                var pattern = /(<p>|<\/p>|<br\/>|<\/br>|<img[\s\S]*>)/
-                console.log(str.replace(pattern, ''));
-
+            getText(str) {
+                var pattern =  /<\/?.+?\/?>/g
+                // console.log(str.replace(pattern, ''));
+                return (str.replace(pattern, ''))
             },
             //清空搜索框
             clearSearch() {
@@ -234,17 +236,17 @@
             handleResult(title) {
                 // console.log(title);
                 for (let data of this.qnaData) {
-                    if(data.question){
-                        for(let i of data.question){
+                    if (data.question) {
+                        for (let i of data.question) {
                             if (title == i.title) {
                                 this.answerData = i;
                                 sessionStorage.setItem('questionInfo', JSON.stringify({'fromPage': 'search'}))
                                 this.componentType = 2
                             }
                         }
-                    }else{
-                        for( let i of data.children){
-                            for(let j of i.question){
+                    } else {
+                        for (let i of data.children) {
+                            for (let j of i.question) {
                                 if (title == j.title) {
                                     this.answerData = j;
                                     sessionStorage.setItem('questionInfo', JSON.stringify({'fromPage': 'search'}))

@@ -110,7 +110,8 @@
                 </el-table-column>
                 <el-table-column prop="imgUrl" label="" width="50" class="change-pic-icon">
                     <template slot-scope="scope">
-                        <img v-if="scope.row.imgUrl" @click="previewImg(scope.row)" src="../../../assets/images/changePic_3.png" alt="" >
+                        <img v-if="scope.row.imgUrl" @click="previewImg(scope.row)"
+                             src="../../../assets/images/changePic_3.png" alt="">
                         <img v-else src="../../../assets/images/changePic_2.png" alt="">
                     </template>
                 </el-table-column>
@@ -213,13 +214,17 @@
                 </el-row>
             </div>
             <div slot="footer" class="dialog-footer">
-                <el-button plain  @click="handleCloseChangeOneMater">取 消</el-button>
+                <el-button plain @click="handleCloseChangeOneMater">取 消</el-button>
 
                 <!--<el-button style="padding: 0 10px" plain v-if="MaterDetailInfo.remark||MaterDetailInfo.imgUrl" @click="deleteMaterInfo('one')">-->
-                    <!--删除物料信息-->
+                <!--删除物料信息-->
                 <!--</el-button>-->
-                <el-button type="primary"  v-if="!(MaterDetailInfo.remark||MaterDetailInfo.imgUrl)" @click="changeOneMater('submit')">提 交</el-button>
-                <el-button type="primary" v-if="MaterDetailInfo.remark||MaterDetailInfo.imgUrl" @click="changeOneMater('save')">保 存</el-button>
+                <el-button type="primary" v-if="!(MaterDetailInfo.remark||MaterDetailInfo.imgUrl)"
+                           @click="changeOneMater('submit')">提 交
+                </el-button>
+                <el-button type="primary" v-if="MaterDetailInfo.remark||MaterDetailInfo.imgUrl"
+                           @click="changeOneMater('save')">保 存
+                </el-button>
                 <!--<el-button plain @click="handleCloseChangeOneMater">关 闭</el-button>-->
 
 
@@ -318,8 +323,8 @@
                 // 排期时间过滤
                 filtersData: [],
                 // 上传图片地址
-                doUpload: "/advertisement/UpLoad",
-                // doUpload: "http://192.168.1.239/advertisement/UpLoad",
+                // doUpload: "/advertisement/UpLoad",
+                doUpload: "http://192.168.1.239/advertisement/UpLoad",
                 uploadimgUrl: [],
                 // 是否显示上传素材弹框
                 showPhotoRemark: false,
@@ -355,7 +360,7 @@
                 MaterDetailModal: false,
                 // selectNum:0,//勾选的个数
                 hasMaterialCount: 0,//已备注的数量
-                oneEditInfo:{remark:''}
+                oneEditInfo: {remark: '',imgUrl:''}
             }
         },
         directives: {
@@ -598,7 +603,7 @@
             //删除图片
             delectImg(res, file) {
                 this.uploadimgUrl = [];
-                this.MaterDetailInfo.imgUrl = '';
+                this.oneEditInfo.imgUrl = '';
                 for (let data of this.materInfoArr) {
                     if (data.asID == this.MaterDetailInfo.asID && data.lStar == this.MaterDetailInfo.lStar && data.lEnd == this.MaterDetailInfo.lEnd) {
                         data.imgUrl = '';
@@ -813,37 +818,13 @@
             },
             //修改单个物料信息-提交
             changeOneMater(type) {
-                this.MaterDetailInfo.picUrl = this.uploadimgUrl[0] ? this.uploadimgUrl[0].url : ''
-                if(type=='submit'&&!this.oneEditInfo.remark && !this.MaterDetailInfo.picUrl){
-                    // if (!this.MaterDetailInfo.remark && !this.MaterDetailInfo.picUrl) {
-                        Message.warning('请上传物料素材或填写备注信息再提交！');
-                    // }
-                    // else {
-                    //     for (let data of this.materInfoArr) {
-                    //         if (data.asID == this.MaterDetailInfo.asID && data.lStar == this.MaterDetailInfo.lStar && data.lEnd == this.MaterDetailInfo.lEnd) {
-                    //             data.imgUrl = this.MaterDetailInfo.picUrl;
-                    //             data.remark = this.MaterDetailInfo.remark;
-                    //             // this.selectNum--
-                    //
-                    //             this.$refs.multipleTable.toggleRowSelection(data, false);
-                    //             if (this.isHaveFun(this.selectList, data)) {
-                    //                 this.selectList = this.selectList.filter((item) => {
-                    //                     if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
-                    //                         // this.selectNum--
-                    //                         return false;
-                    //                     }
-                    //                     return true;
-                    //                 });
-                    //             }
-                    //             break;
-                    //         }
-                    //     }
-                    //     this.MaterDetailModal = false
-                    // }
-                }else{
+                this.oneEditInfo.imgUrl = this.uploadimgUrl[0] ? this.uploadimgUrl[0].url : ''
+                if (type == 'submit' && !this.oneEditInfo.remark && !this.oneEditInfo.imgUrl) {
+                    Message.warning('请上传物料素材或填写备注信息再提交！');
+                } else {
                     for (let data of this.materInfoArr) {
                         if (data.asID == this.MaterDetailInfo.asID && data.lStar == this.MaterDetailInfo.lStar && data.lEnd == this.MaterDetailInfo.lEnd) {
-                            data.imgUrl = this.MaterDetailInfo.picUrl;
+                            data.imgUrl = this.oneEditInfo.imgUrl;
                             data.remark = this.oneEditInfo.remark;
                             // this.selectNum--
 
@@ -862,7 +843,6 @@
                     }
                     this.MaterDetailModal = false
                 }
-
 
 
             },
@@ -890,7 +870,8 @@
                 // console.log(this.shoplist);
                 this.MaterDetailModal = true
                 this.MaterDetailInfo = {...item}
-                this.oneEditInfo.remark = item.remark?item.remark:''
+                this.oneEditInfo.remark = item.remark ? item.remark : ''
+                this.oneEditInfo.imgUrl = item.imgUrl ? item.imgUrl : ''
 
                 if (!this.isHaveFun(this.shoplist, item)) {
                     this.shoplist.push(item);
@@ -898,6 +879,7 @@
                 if (item.imgUrl) {
                     let resImg = {name: '图片1', url: item.imgUrl};
                     this.uploadimgUrl = [resImg];
+
                 } else {
                     this.uploadimgUrl = []
                 }

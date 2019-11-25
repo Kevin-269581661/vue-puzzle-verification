@@ -207,18 +207,19 @@
                     </el-col>
                     <el-col class="flex_box remark-box">
                         <span>备注信息：</span>
-                        <el-input type="textarea" :rows="2" placeholder="请输入备注信息" v-model="MaterDetailInfo.remark"
+                        <el-input type="textarea" :rows="2" placeholder="请输入备注信息" v-model="oneEditInfo.remark"
                                   :maxlength="100"></el-input>
                     </el-col>
                 </el-row>
             </div>
             <div slot="footer" class="dialog-footer">
-                <el-button plain @click="handleCloseChangeOneMater">取 消</el-button>
+                <el-button plain  @click="handleCloseChangeOneMater">取 消</el-button>
 
-                <el-button style="padding: 0 10px" plain v-if="MaterDetailInfo.remark||MaterDetailInfo.imgUrl" @click="deleteMaterInfo('one')">
-                    删除物料信息
-                </el-button>
-                <el-button type="primary" @click="changeOneMater()">提 交</el-button>
+                <!--<el-button style="padding: 0 10px" plain v-if="MaterDetailInfo.remark||MaterDetailInfo.imgUrl" @click="deleteMaterInfo('one')">-->
+                    <!--删除物料信息-->
+                <!--</el-button>-->
+                <el-button type="primary"  v-if="!(MaterDetailInfo.remark||MaterDetailInfo.imgUrl)" @click="changeOneMater('submit')">提 交</el-button>
+                <el-button type="primary" v-if="MaterDetailInfo.remark||MaterDetailInfo.imgUrl" @click="changeOneMater('save')">保 存</el-button>
                 <!--<el-button plain @click="handleCloseChangeOneMater">关 闭</el-button>-->
 
 
@@ -354,6 +355,7 @@
                 MaterDetailModal: false,
                 // selectNum:0,//勾选的个数
                 hasMaterialCount: 0,//已备注的数量
+                oneEditInfo:{remark:''}
             }
         },
         directives: {
@@ -810,15 +812,39 @@
 
             },
             //修改单个物料信息-提交
-            changeOneMater() {
+            changeOneMater(type) {
                 this.MaterDetailInfo.picUrl = this.uploadimgUrl[0] ? this.uploadimgUrl[0].url : ''
-                if (!this.MaterDetailInfo.remark && !this.MaterDetailInfo.picUrl) {
-                    Message.warning('请上传物料素材或填写备注信息再提交！');
-                } else {
+                if(type=='submit'&&!this.oneEditInfo.remark && !this.MaterDetailInfo.picUrl){
+                    // if (!this.MaterDetailInfo.remark && !this.MaterDetailInfo.picUrl) {
+                        Message.warning('请上传物料素材或填写备注信息再提交！');
+                    // }
+                    // else {
+                    //     for (let data of this.materInfoArr) {
+                    //         if (data.asID == this.MaterDetailInfo.asID && data.lStar == this.MaterDetailInfo.lStar && data.lEnd == this.MaterDetailInfo.lEnd) {
+                    //             data.imgUrl = this.MaterDetailInfo.picUrl;
+                    //             data.remark = this.MaterDetailInfo.remark;
+                    //             // this.selectNum--
+                    //
+                    //             this.$refs.multipleTable.toggleRowSelection(data, false);
+                    //             if (this.isHaveFun(this.selectList, data)) {
+                    //                 this.selectList = this.selectList.filter((item) => {
+                    //                     if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
+                    //                         // this.selectNum--
+                    //                         return false;
+                    //                     }
+                    //                     return true;
+                    //                 });
+                    //             }
+                    //             break;
+                    //         }
+                    //     }
+                    //     this.MaterDetailModal = false
+                    // }
+                }else{
                     for (let data of this.materInfoArr) {
                         if (data.asID == this.MaterDetailInfo.asID && data.lStar == this.MaterDetailInfo.lStar && data.lEnd == this.MaterDetailInfo.lEnd) {
                             data.imgUrl = this.MaterDetailInfo.picUrl;
-                            data.remark = this.MaterDetailInfo.remark;
+                            data.remark = this.oneEditInfo.remark;
                             // this.selectNum--
 
                             this.$refs.multipleTable.toggleRowSelection(data, false);
@@ -836,6 +862,7 @@
                     }
                     this.MaterDetailModal = false
                 }
+
 
 
             },
@@ -858,10 +885,12 @@
             },
             //显示物料详情弹框
             showMaterDetail(item) {
+
                 console.log('单条信息', item);
                 // console.log(this.shoplist);
                 this.MaterDetailModal = true
                 this.MaterDetailInfo = {...item}
+                this.oneEditInfo.remark = item.remark?item.remark:''
 
                 if (!this.isHaveFun(this.shoplist, item)) {
                     this.shoplist.push(item);

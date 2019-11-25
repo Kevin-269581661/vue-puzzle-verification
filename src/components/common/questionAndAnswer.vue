@@ -158,48 +158,46 @@
                         //
                         for (let data of item.question) {
                             if (data.title.includes(keyword) || data.answer.includes(keyword)) {
-                                let aWord = data.answer.split('。')
-                                for (let item of aWord) {
-                                    if (item.includes(keyword)) {
+                                // let aWord = data.answer.split('。')
+                                // for (let item of aWord) {
+                                //     if (item.includes(keyword)) {
                                 // var reg=/<[^>]*>|/g;
                                         let obj = {
                                             id: data.id,
                                             path: data.path,
                                             title: data.title.split(keyword).join("<em class='f-color'>" + keyword + "</em>"),
-                                            answer: item.split(keyword).join("<em class='f-color'>" + keyword + "</em>"),
+                                            answer: data.answer.split(keyword).join("<em class='f-color'>" + keyword + "</em>"),
                                         }
                                         if (data.path == '合同下载') {
                                             var re = /<a[^>]*href=['"]([^"]*)['"][^>]*>(.*?)<\/a>/g;
                                             // console.log(re.exec(data.answer)[2]);
-                                            obj.answer = re.exec(item)[2].split(keyword).join("<em class='f-color'>" + keyword + "</em>")
+                                            obj.answer = re.exec(data.answer)[2].split(keyword).join("<em class='f-color'>" + keyword + "</em>")
                                         }
                                         result.push(obj)
-                                        break;
                                     }
-                                }
-                            }
+                                // }
+                            // }
                         }
                     } else {
                         for (let value of item.children) {
                             for (let data of value.question) {
                                 if (data.title.includes(keyword) || data.answer.includes(keyword)) {
-                                    let aWord = data.answer.split('。')
+                                    // let aWord = data.answer.split('。')
                                     // console.log(data.title, aWord);
-                                    for (let item of aWord) {
-                                        if (item.includes(keyword)) {
+                                    // for (let item of aWord) {
+                                    //     if (item.includes(keyword)) {
                                             let obj = {
                                                 id: data.id,
                                                 path: data.path,
                                                 title: data.title.split(keyword).join("<em class='f-color'>" + keyword + "</em>"),
-                                                answer: item.split(keyword).join("<em class='f-color'>" + keyword + "</em>"),
+                                                answer: data.answer.split(keyword).join("<em class='f-color'>" + keyword + "</em>"),
                                             }
                                             result.push(obj);
-                                            break;
                                         }
                                     }
 
-                                }
-                            }
+                                // }
+                            // }
                         }
                     }
                 });

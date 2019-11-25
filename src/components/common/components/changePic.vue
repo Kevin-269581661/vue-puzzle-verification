@@ -357,11 +357,11 @@
             <div slot="footer" class="dialog-footer">
                 <el-button plain v-if="!changePicDetailInfo.replaceDate" @click="handleCloseChangePicDetail">取 消
                 </el-button>
-                <el-button type="primary" @click="confirmChange('one')">提 交</el-button>
-                <el-button plain v-if="changePicDetailInfo.replaceDate" @click="cancelPain('one')">取消换画
-                </el-button>
                 <el-button plain v-if="changePicDetailInfo.replaceDate" @click="handleCloseChangePicDetail">关 闭
                 </el-button>
+                <el-button plain v-if="changePicDetailInfo.replaceDate" @click="cancelPain('one')">取消换画
+                </el-button>
+                <el-button type="primary" @click="confirmChange('one')">提 交</el-button>
 
 
             </div>

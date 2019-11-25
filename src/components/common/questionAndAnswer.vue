@@ -210,6 +210,7 @@
                 };
                 console.log(this.searchData);
             },
+            //去掉字符串里的标签
             getText(str) {
                 var pattern =  /<\/?.+?\/?>/g
                 // console.log(str.replace(pattern, ''));

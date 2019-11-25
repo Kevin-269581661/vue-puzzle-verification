@@ -762,7 +762,7 @@
             // 删除物料信息
             deleteMaterInfo(type) {
                 if (type == 'all') {
-                    if (!this.shoplist.length) {
+                    if (!this.selectList.length) {
                         Message.warning('请先勾选需要删除物料信息的点位');
                         return;
                     }

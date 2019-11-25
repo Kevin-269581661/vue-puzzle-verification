@@ -207,6 +207,7 @@
                 };
                 console.log(this.searchData);
             },
+
             //清空搜索框
             clearSearch() {
                 this.qnaData.forEach((value, key) => {

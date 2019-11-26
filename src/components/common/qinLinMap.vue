@@ -922,6 +922,7 @@
                     tradingArea: this.selectTradingArea,
                     adLimit: this.selectLimits.join(','),
                     mType: this.selectDoorType,
+                    mType: this.selectDoorType,
                     mVehicle: this.selectMediaType,
                     grade: this.selectMediaLevel
                 }
@@ -999,8 +1000,10 @@
                         }
                         i++
                         markerList.push(marker)
+
                     }
                     this.resMarkers = markerList
+
                 } else {
                     console.log('----------聚--合---------',this.resInfo)
                     this.isClusterer = true

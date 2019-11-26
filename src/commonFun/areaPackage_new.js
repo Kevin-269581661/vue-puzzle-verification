@@ -122,6 +122,20 @@ region.TextToCode = function(text){
 	return result;
 }
 
+//由rid获取中文
+region.CodeToText = function(code){
+    let result = ''
+    for(let province of cityData){
+        for(let city of province.regionEntitys){
+            if(city.code == code){
+                result =  city.region;
+                break;
+            }
+        }
+    }
+    return result;
+}
+
 // 由一个中文模糊匹配获取下面的rid
 region.sameTextToCode = function(text){
 	let result = '';

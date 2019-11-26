@@ -5,18 +5,6 @@
             <p class="clearfix">
                 <a href="#" style="color: #999">亲邻智邻</a>
             </p>
-            <div class="portrait_header_select">
-                <el-dropdown @command="selectAsrIdFun">
-                    <p class="el-dropdown-link">
-                        {{currCompany.asrName}}<i class="el-icon-arrow-down el-icon--right"></i>
-                    </p>
-                    <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item v-for="(item,index) in companyList" :key="index" :command="item">
-                            {{item.asrName}}
-                        </el-dropdown-item>
-                    </el-dropdown-menu>
-                </el-dropdown>
-            </div>
         </div>
         <div class="top-content-wrap">
             <div class="title">
@@ -239,9 +227,6 @@
         name: "portraitDetail",
         data() {
             return {
-                // 默认选择的公司
-                currCompany: '',
-                companyList: [],
                 activeName: 'first',
                 tagSelect: '同区对比',
                 //图表legend
@@ -315,28 +300,8 @@
             }
         },
         methods: {
-            // 平台商公司列表
-            getCompanyList() {
-                let portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo'))
-                console.log(portraitInfo);
-                // 选中的公司
-                this.currCompany = JSON.parse(sessionStorage.getItem('currCompany'))
-                // let arr = []
-                // for (let key of portraitInfo) {
-                //     arr.push({
-                //         asrId: key.asrId,
-                //         asrName: key.asrName,
-                //     })
-                // }
-                this.companyList.push(this.currCompany)
-                // console.log('companyList', this.companyList)
-            },
-            // 选择公司
-            selectAsrIdFun(item) {
-                this.currCompany = item
-                sessionStorage.setItem('currCompany',JSON.stringify(this.currCompany))
 
-            },
+
             //性别情况
             sexChartFn() {
                 this.sexChart = this.$echarts.init(this.$refs.sexChart)
@@ -1317,7 +1282,6 @@
 
         mounted() {
             this.getParams();
-            this.getCompanyList();
             this.getTags();
             this.echartsListener();
         }

@@ -1110,16 +1110,6 @@
             /**
              *  选择换画点位弹出框
              */
-            // 物料弹出框滚动加载
-            // pointLoadMore(){
-            //     if(this.dialogPage.loading_maInfo){
-            //         this.dialogPage.loading_maInfo = false;
-            //         if(this.dialogPage.currInfoPage <= this.dialogPage.totalInfoPage){
-            //             this.searchInfoFun();
-            //         }
-            //     }
-            // },
-
             searchInfoFun() {
                 this.dialogPage.pointLoading = true;
                 let info = this.searchDataFormat();
@@ -1266,15 +1256,7 @@
             },
             //换画详情对话框关闭前
             handleCloseChangePicDetail() {
-                // this.isShowChanggPicForm = false
                 this.changePicDetailModal = false
-                // this.selectList = this.selectList.filter((item) => {
-                //     if (item.lID == this.changePicDetailInfo.lID) {
-                //         //不返回该项
-                //         return false;
-                //     }
-                //     return true;
-                // });
             },
             // 选择一条
             handleSelect(selection, row) {
@@ -1362,30 +1344,6 @@
             // 是否勾选更新
             selectioUpdate(type) {
                 console.log(type, this.shoplist, this.selectList, 'arr---point--');
-                // if (type == 'one') {
-                //     let timer = setTimeout(() => {
-                //         for (let data of this.pointArr) {
-                //             if (data.lID == this.changePicDetailInfo.lID) {
-                //                 data.remark = this.changePicDetailInfo.remark;
-                //                 data.picUrl = this.changePicDetailInfo.picUrl;
-                //                 data.replaceDate = this.changePicDetailInfo.replaceDate;
-                //                 // this.selectNum--
-                //                 this.$refs.multipleTable.toggleRowSelection(data, false);
-                //                 if (this.isHaveFun(this.selectList, data)) {
-                //                     this.selectList = this.selectList.filter((item) => {
-                //                         if (item.lID == data.lID) {
-                //                             return false;
-                //                         }
-                //                         return true;
-                //                     });
-                //                 }
-                //             }
-                //
-                //         }
-                //         clearTimeout(timer);
-                //     }, 0);
-                // }
-                // else {
                 let timer = setTimeout(() => {
                     for (let item of this.selectList) {
                         for (let data of this.pointArr) {
@@ -1404,10 +1362,9 @@
                             }
                         }
                     }
-                    // this.selectList = []
                     clearTimeout(timer);
                 }, 0);
-                // }
+
 
             },
             // 获取地图中心点
@@ -1592,7 +1549,7 @@
                         }
                         // this.selectNum = 0
                         this.selectList = [];
-                        // this.updateData(type);
+
 
                     } else {
                         sessFun.messageFun('warning', '请选择换画日期!');
@@ -1619,7 +1576,7 @@
                                 this.$refs.multipleTable.toggleRowSelection(data, false);
                             }
                         }
-                        // this.updateData(type);
+
 
                     } else {
                         sessFun.messageFun('warning', '请选择换画日期!');
@@ -1629,41 +1586,6 @@
 
             },
 
-            // 更新表格
-            updateData(type) {
-                // let arr = this.shoplist;
-                // let obj = null
-                // if (type == 'one') {
-                //     obj = this.oneEditInfo;
-                //     let result = arr.map((item, index) => {
-                //         if (item.lID == this.changePicDetailInfo.lID) {
-                //             if (Date.parse(item.beginDate) < Date.parse(obj.date) && Date.parse(item.endDate) > Date.parse(obj.date)) {
-                //                 item.replaceDate = obj.date;
-                //                 item.picUrl = obj.url;
-                //                 item.remark = obj.remark;
-                //             }
-                //         }
-                //         return item;
-                //     });
-                //     this.shoplist = result;
-                //     this.selectioUpdate(type);
-                // } else {
-                //     obj = this.allEditInfo;
-                //     let result = arr.map((item, index) => {
-                //         if (Date.parse(item.beginDate) < Date.parse(obj.date) && Date.parse(item.endDate) > Date.parse(obj.date)) {
-                //             item.replaceDate = obj.date;
-                //             item.picUrl = obj.url;
-                //             item.remark = obj.remark;
-                //         }
-                //         return item;
-                //     });
-                //     this.shoplist = result;
-                //     this.selectioUpdate(type);
-                // }
-                // console.log(arr);
-
-            }
-            ,
             // 取消
             cancel() {
                 this.isShowPic = false;
@@ -1767,20 +1689,6 @@
                     }
                 }
 
-                // if (result.length) {
-                //     api.postApi_json(this.apiVar.replace + '/report/saveDetailInfo', result).then(res => {
-                //         console.log(res.data);
-                //         if (res.data.SysCode == 200200) {
-                //             this.isShowPic = false;
-                //             sessFun.messageFun('success', res.data.MSG);
-                //             this.search();
-                //         } else {
-                //             sessFun.messageFun('warning', res.data.MSG);
-                //         }
-                //     });
-                // } else {
-                //     sessFun.messageFun('warning', '没有需要保存的点');
-                // }
             }
             ,
             // 给上下刊添加图片的收藏状态

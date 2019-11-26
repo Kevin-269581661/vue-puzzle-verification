@@ -423,15 +423,7 @@
                 this.searchInfoFun();
                 this.getMapCenter();
             },
-            // // 物料弹出框滚动加载
-            // materLoadMore() {
-            //     if (this.loading_maInfo) {
-            //         this.loading_maInfo = false;
-            //         if (this.currInfoPage <= this.total) {
-            //             this.searchInfoFun();
-            //         }
-            //     }
-            // },
+
             // 改变每页条数
             sizeChange(pageVal) {
                 this.currInfoPage = 1;
@@ -855,13 +847,6 @@
                     remark: '',
                 }
 
-                // this.shoplist = this.shoplist.filter((item) => {
-                //     if (item.asID == this.MaterDetailInfo.asID && item.lStar == this.MaterDetailInfo.lStar && item.lEnd == this.MaterDetailInfo.lEnd) {
-                //         //不返回该项
-                //         return false;
-                //     }
-                //     return true;
-                // });
             },
             //显示物料详情弹框
             showMaterDetail(item) {

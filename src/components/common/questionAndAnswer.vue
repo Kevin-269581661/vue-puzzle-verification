@@ -84,7 +84,6 @@
         mounted() {
             this.qnaData = qnaData;
             let questionInfo = JSON.parse(sessionStorage.getItem('questionInfo'))
-            console.log(3332);
             if (questionInfo.fromPage == 'fastMenu') {
                 if (questionInfo.type !== 'other') {
                     if (questionInfo.question.index) {

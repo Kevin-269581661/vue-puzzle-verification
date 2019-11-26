@@ -297,7 +297,7 @@
                     let timeString = time[0] + time[1].split(':').join('')
                     if (navigator.msSaveBlob) {
                         // 兼容IE 如果存在msSaveBlob则启用IE自带的下载器
-                        let fileName =  '上画清单' + timeString + '.xls'
+                        let fileName =  '上画清单' + timeString + '.xlsx'
                         try {
                             window.navigator.msSaveBlob(blob, fileName)
                         } catch (e) {
@@ -307,8 +307,9 @@
                         let downloadElement = document.createElement('a');
                         let href = window.URL.createObjectURL(blob);    //创建下载的链接
                         downloadElement.href = href;
-                        downloadElement.download = '上画统计' + timeString + '.xlsx'// res.headers['content-disposition'].split('=')[1]; //下载后文件名
+                        downloadElement.download = decodeURI(res.headers['content-disposition'].split('=')[1]); //下载后文件名
                         document.body.appendChild(downloadElement);
+                        downloadElement.target = "_blank"; // 针对 ie模式 的浏览器
                         downloadElement.click();                        //点击下载
                         document.body.removeChild(downloadElement);     //下载完成移除元素
                         window.URL.revokeObjectURL(href);               //释放掉blob对象

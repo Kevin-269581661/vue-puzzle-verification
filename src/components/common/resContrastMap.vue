@@ -477,12 +477,15 @@
         background-color: rgba(255,169,64,0.8);
         border-color: rgba(255,169,64,0.8);
     }
-
-
     .green /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner {
         background-color: rgba(82,196,26,0.8);
         border-color: rgba(82,196,26,0.8);
     }
+    .lakeBlue /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+        background-color:rgba(21, 196, 178, 0.8);
+        border-color: rgba(21, 196, 178, 0.8);
+    }
+
     .red /deep/ .el-checkbox__inner {
         background-color: rgba(255,49,49,0.2);
         border-color: rgba(255,49,49,0.2);
@@ -498,6 +501,10 @@
     .green /deep/ .el-checkbox__inner {
         background-color: rgba(82,196,26,0.2);
         border-color: rgba(82,196,26,0.2);
+    }
+    .lakeBlue /deep/ .el-checkbox__inner {
+        background-color: rgba(21, 196, 178, 0.2);
+        border-color: rgba(21, 196, 178, 0.2);
     }
 
     .red /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .blue /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .orange /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .green /deep/ .el-checkbox__input.is-focus .el-checkbox__inner {

@@ -436,6 +436,13 @@
         border: 1px solid #fff;
         font-size: 14px;
     }
+    .select-group /deep/ .el-select .el-tag{
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 88px;
+        margin-top: 6px;
+    }
 
     /*右上角*/
     .radio-group {

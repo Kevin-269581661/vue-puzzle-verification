@@ -182,7 +182,7 @@
                 <div>
                     <h5>
                         {{MaterDetailInfo.resName}}-{{MaterDetailInfo.mTitle}}-{{MaterDetailInfo.asLab}}面
-                        <span v-if="MaterDetailInfo.isAdd" class="a">已添加</span>
+                        <span v-if="MaterDetailInfo.remark||MaterDetailInfo.imgUrl" class="a">已添加</span>
                         <span v-else class="b">未添加</span>
                     </h5>
                     <p>地址：{{MaterDetailInfo.resAddress}}</p>

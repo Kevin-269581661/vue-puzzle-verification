@@ -313,7 +313,7 @@
                 <div>
                     <h5>
                         {{changePicDetailInfo.resName}}-{{changePicDetailInfo.mTitle}}-{{changePicDetailInfo.asLab}}面
-                        <span v-if="changePicDetailInfo.replaceDate" class="a">换画</span>
+                        <span v-if="changePicDetailInfo.replaceDate" class="a">已换画</span>
                         <span v-else class="b">未换画</span>
                     </h5>
                     <p>地址：{{changePicDetailInfo.resAddress}}</p>
@@ -1591,7 +1591,7 @@
                             }
                         }
                         // this.selectNum = 0
-                        // this.selectList = [];
+                        this.selectList = [];
                         // this.updateData(type);
 
                     } else {

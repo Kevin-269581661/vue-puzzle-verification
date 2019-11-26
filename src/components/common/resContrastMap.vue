@@ -176,12 +176,12 @@
             pointInBounds() {
                 console.log('判断点是否在视野内------', this.resMap.getZoom())
                 if (!this.isMouseSearch && !this.isOnlineSearch && !this.isMultiPoint && this.resMap.getZoom() >= 16) {
-                    let bound = this.resMap.getBounds();// 地图可视区域
-                    for (let key of this.resMarkers) {
-                        if (bound.containsPoint(key.point) == true && !key.isVisible()) {
-                            key.show()
-                        }
-                    }
+                    // let bound = this.resMap.getBounds();// 地图可视区域
+                    // for (let key of this.resMarkers) {
+                    //     if (bound.containsPoint(key.point) == true && !key.isVisible()) {
+                    //         key.show()
+                    //     }
+                    // }
                 }
             },
             // 地图缩放
@@ -320,19 +320,7 @@
             },
             //添加标注
             addMarker(arr, color,companyId) {
-                // for (let data of arr) {
-                //     let point = new window.BMap.Point(data.lng, data.lat); //将标注点转化成地图上的点
-                //     let myIcon = new window.BMap.Icon(iconUrl, new window.BMap.Size(22, 22), {
-                //         anchor: new BMap.Size(-22, -11),//图标的定位点相对于图标左上角的偏移值
-                //         imageSize: new BMap.Size(22, 22),//图标大小
-                //     });
-                //     let marker = new window.BMap.Marker(point, {icon: myIcon}); //将点转化成标注点
-                //     Markers.push(marker)
-                //     this.resMap.addOverlay(marker);  //将标注点添加到地图上
-                //     // setTimeout(()=>{
-                //     this.mapLoading = false
-                //     // },5000)
-                // }
+
                 if (document.createElement('canvas').getContext) {  // 判断当前浏览器是否支持绘制海量点
                     var points = [];  // 添加海量点数据
                     for (let data of arr) {

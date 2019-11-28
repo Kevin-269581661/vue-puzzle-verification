@@ -1272,6 +1272,7 @@ export default {
         margin: 0 32px 0;
     }
 
+
     /*日期控件*/
     /deep/ .el-range-separator {
         position: relative;
@@ -1285,7 +1286,7 @@ export default {
     }
 
     /deep/ .el-dialog__body {
-        padding: 5px 20px;
+        padding: 5px 24px 32px;
 
     }
 

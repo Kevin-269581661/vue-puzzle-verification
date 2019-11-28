@@ -191,7 +191,7 @@
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item command="0"
                                             @click.native.prevent="changeState('0',scope.$index, scope.row)"
-                                            :disabled="scope.row.mState == 0 || scope.row.mState === 4"
+                                            :disabled="scope.row.mState == 0 || scope.row.mState == 4"
                                             v-qadn-mta-h5="{id: 'a002_b000_c000_d000_bt015_ck04'}">禁用</el-dropdown-item>
                                         <el-dropdown-item command="1"
                                             @click.native.prevent="changeState('1',scope.$index, scope.row)"
@@ -201,11 +201,11 @@
                                         </el-dropdown-item>
                                         <el-dropdown-item command="2"
                                             @click.native.prevent="changeState('2',scope.$index, scope.row)"
-                                            :disabled="scope.row.mState == 2 || scope.row.mState === 4"
+                                            :disabled="scope.row.mState == 2 || scope.row.mState == 4"
                                             v-qadn-mta-h5="{id: 'a002_b000_c000_d000_bt017_ck04'}">待安装</el-dropdown-item>
                                         <el-dropdown-item command="3"
                                             @click.native.prevent="changeState('3',scope.$index, scope.row)"
-                                            :disabled="scope.row.mState == 3 || scope.row.mState === 4"
+                                            :disabled="scope.row.mState == 3 || scope.row.mState == 4"
                                             v-qadn-mta-h5="{id: 'a002_b000_c000_d000_bt016_ck04'}">待维修</el-dropdown-item>
                                         <el-dropdown-item command="5"
                                                           @click.native.prevent="changeState('5',scope.$index, scope.row)"

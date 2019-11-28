@@ -3,11 +3,11 @@
 		<div class="ad_index_container">
 			<home-top :user-info="userInfo" :data-arr="dataArr" :honor-img="companyHonor"></home-top>
 			<div style="margin:24px 0;display:flex;">
-				<div style="width:66%;">
+				<div style="width:66%;border: 1px solid #e5e6e9;">
 					<h2 class="h2_style">常用模块</h2>
 					<home-link :link="linkArr"></home-link>
 				</div>
-				<div style="width:33%; margin-left:24px;background:#fff;">
+				<div style="width:33%; margin-left:24px;background:#fff;border: 1px solid #e5e6e9;">
 					<h2 class="h2_style">您的助手</h2>
 					<div class="loglist_box">
 						<p class="time_box">
@@ -23,7 +23,7 @@
 					</div>
 				</div>
 			</div>
-			<div style="margin:24px 0; background:#fff;">
+			<div style="margin:24px 0; background:#fff;border: 1px solid #e5e6e9;">
 				<h2 class="h2_style">业绩进度 <span class="span_rank">单位为：万</span></h2>
 				<div style=" width:96%; margin:24px auto;position:relative;" v-if="isShowLine">
 

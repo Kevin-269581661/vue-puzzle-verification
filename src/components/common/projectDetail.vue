@@ -88,7 +88,7 @@
                         已上画:<span>{{tableNumInfo.finishNum}}</span>
                         上画率:<span>{{tableNumInfo.progress}}%</span>
                     </el-row>
-                    <el-table border :data="currAsidList" v-loading="loading" 
+                    <el-table border :data="currAsidList" v-loading="loading"
                         element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                         <el-table-column type="index" label="序号" width="60">
                         </el-table-column>
@@ -118,7 +118,7 @@
                         </el-table-column>
                         <el-table-column prop="state" label="状态" width="80">
                             <template slot-scope="scope">
-                                <point-state :state-text="stateToText(scope.row.state).text" :color="stateToText(scope.row.state).color"></point-state>                                                                
+                                <point-state :state-text="stateToText(scope.row.state).text" :color="stateToText(scope.row.state).color"></point-state>
                             </template>
                         </el-table-column>
                         <el-table-column label="素材" width="60" >
@@ -256,7 +256,7 @@
                     progress: 0.83,
                 },
                 // 表格loading
-                loading: true,                
+                loading: true,
                 // 更新loading
                 updateLoading: false,
                 // 导出loading
@@ -293,15 +293,38 @@
                 api.getApi_file(this.apiVar.publishPaintTask+"/taskDetailsReport", info).then(res =>{
                     console.log(res.data);
                     let blob = new Blob([res.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
-                    let downloadElement = document.createElement('a');
-                    let href = window.URL.createObjectURL(blob); //创建下载的链接
-                    downloadElement.href = href;
-                    downloadElement.download = decodeURI(res.headers['content-disposition'].split('=')[1]); //下载后文件名
-                    document.body.appendChild(downloadElement);
-                    downloadElement.click(); //点击下载
-                    document.body.removeChild(downloadElement); //下载完成移除元素
-                    window.URL.revokeObjectURL(href); //释放掉blob对象
+                    let time = timeFormat.toDateTime(new Date(), '').split(' ')
+                    let timeString = time[0] + time[1].split(':').join('')
+                    if (navigator.msSaveBlob) {
+                        // 兼容IE 如果存在msSaveBlob则启用IE自带的下载器
+                        let fileName =  '上画清单' + timeString + '.xlsx'
+                        try {
+                            window.navigator.msSaveBlob(blob, fileName)
+                        } catch (e) {
+                            console.log(e);
+                        }
+                    } else {
+                        let downloadElement = document.createElement('a');
+                        let href = window.URL.createObjectURL(blob);    //创建下载的链接
+                        downloadElement.href = href;
+                        downloadElement.download = decodeURI(res.headers['content-disposition'].split('=')[1]); //下载后文件名
+                        document.body.appendChild(downloadElement);
+                        downloadElement.target = "_blank"; // 针对 ie模式 的浏览器
+                        downloadElement.click();                        //点击下载
+                        document.body.removeChild(downloadElement);     //下载完成移除元素
+                        window.URL.revokeObjectURL(href);               //释放掉blob对象
+                    }
                     this.downLoading = false;
+                    // let blob = new Blob([res.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
+                    // let downloadElement = document.createElement('a');
+                    // let href = window.URL.createObjectURL(blob); //创建下载的链接
+                    // downloadElement.href = href;
+                    // downloadElement.download = decodeURI(res.headers['content-disposition'].split('=')[1]); //下载后文件名
+                    // document.body.appendChild(downloadElement);
+                    // downloadElement.click(); //点击下载
+                    // document.body.removeChild(downloadElement); //下载完成移除元素
+                    // window.URL.revokeObjectURL(href); //释放掉blob对象
+                    // this.downLoading = false;
                 }).catch(err =>{
                     console.log(err);
                     this.downLoading = false;

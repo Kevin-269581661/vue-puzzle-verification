@@ -273,16 +273,23 @@
                         delete params[i]
                     }
                 }
-                api.getApi_file(this.apiVar.report + '/publish/export', params).then(res=>{
-                    console.log('导出res',res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-                        sessFun.loginTimeout()
+                api.getApi_file(this.apiVar.report + '/publish/export', params).then(res => {
+                    console.log('导出res', JSON.stringify(res))
+                    // console.log('导出headers',res.headers);
+                    let blob = new Blob([res.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
+                    let time = timeFormat.toDateTime(new Date(), '').split(' ')
+                    let timeString = time[0] + time[1].split(':').join('')
+                    if (navigator.msSaveBlob) {
+                        // 兼容IE 如果存在msSaveBlob则启用IE自带的下载器
+                        let fileName =  '上画统计' + timeString + '.xls'
+                        try {
+                            window.navigator.msSaveBlob(blob, fileName)
+                        } catch (e) {
+                            console.log(e);
+                        }
                     } else {
-                        console.log('导出headers',res.headers);
-                        let time = timeFormat.toDateTime(new Date(), '').split(' ')
-                        let timeString = time[0] + time[1].split(':').join('')
-                        let blob = new Blob([res.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
                         let downloadElement = document.createElement('a');
+                        downloadElement.target = "_blank"; // 针对 ie模式 的浏览器
                         let href = window.URL.createObjectURL(blob);    //创建下载的链接
                         downloadElement.href = href;
                         downloadElement.download = '上画统计' + timeString + '.xls'// res.headers['content-disposition'].split('=')[1]; //下载后文件名
@@ -294,6 +301,7 @@
                     this.activeDownload = false
                 }).catch(error => {
                     sessFun.messageFun('warning','导出接口异常！')
+                    console.log('error',error)
                     this.activeDownload = false
                 })
             },

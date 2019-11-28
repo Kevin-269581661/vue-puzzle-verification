@@ -575,8 +575,8 @@
                 // 上传图片以及换画日期弹出框
                 isShowEdit: false,
                 // 上传图片地址
-                doUpload: "/advertisement/UpLoad",
-                // doUpload: "http://192.168.1.239/advertisement/UpLoad",
+                // doUpload: "/advertisement/UpLoad",
+                doUpload: "http://192.168.1.239/advertisement/UpLoad",
                 imgUrl: [],
                 allEditInfo: {
                     date: "",
@@ -1190,14 +1190,14 @@
                 console.log(this.pointArr, this.shoplist, this.isSearch, this.dialogInfo.picState);
                 for (let data of this.shoplist) {
                     if (this.dialogInfo.picState === 1) {
-                        //搜索已选
+                        //搜索已指定
                         if (data.replaceDate) {
                             this.pointArr.push(data)
                         }
                     } else if (this.dialogInfo.picState === 0) {
-                        //搜索未选
-                        if (!data.replaceDate) {
-                            this.pointArr.push(data)
+                        //搜索未指定
+                        if (data.replaceDate) {
+                            this.pointArr.splice(data,1)
                         }
                     }
                 }
@@ -1510,16 +1510,16 @@
             //删除图片
             delectImg(res, file) {
                 this.imgUrl = [];
-                this.changePicDetailInfo.picUrl = '';
-                for (let data of this.pointArr) {
-                    if (data.lID == this.changePicDetailInfo.lID) {
-                        data.imgUrl = '';
-                        data.uploadUser = this.sessionData.uID;
-                        // this.selectNum=0
-                        this.$refs.multipleTable.toggleRowSelection(data, false);
-                        break;
-                    }
-                }
+                this.oneEditInfo.url = '';
+                // for (let data of this.pointArr) {
+                //     if (data.lID == this.changePicDetailInfo.lID) {
+                //         data.imgUrl = '';
+                //         data.uploadUser = this.sessionData.uID;
+                //         // this.selectNum=0
+                //         this.$refs.multipleTable.toggleRowSelection(data, false);
+                //         break;
+                //     }
+                // }
 
                 // console.log('删除图片', this.MaterDetailInfo);
             },
@@ -1677,7 +1677,7 @@
                             }
                         }
                     }
-
+                    this.selectList = []
                 } else {
                     //单个
                     for (let data of this.pointArr) {

@@ -1582,6 +1582,7 @@
             if (this.routePath.indexOf('unfinishedPlan') !== -1) {
                 this.setPlanInfo()
             }
+
             console.log('this.cityOptions', this.cityOptions)
         },
         // directives: {
@@ -3108,12 +3109,14 @@
                     // A/B面
                     if (key.asLabs.indexOf('A') === -1) {
                         adObj.box.A = true;
+
                     } else {
                         //本页可选点位
                         i++;
                     }
                     if (key.asLabs.indexOf('B') === -1) {
                         adObj.box.B = true;
+
                     } else {
                         //本页可选点位
                         i++;
@@ -3802,9 +3805,11 @@
                     if (this.currPageSelect == this.currPageAsLength) {
                         this.IsAll = true
                     } else {
+                        console.log(2);
                         this.IsAll = false
                     }
                 }
+                console.log(this.IsAll,this.currPageSelect,this.currPageAsLength);
 
             },
             // planList的勾选
@@ -3818,15 +3823,15 @@
                                 if (shopAD.A_B === 'A') {
                                     key.checkBox.A = true
                                     this.currPageSelect++
-                                    // this.IsAll = true
+
                                 } else if (shopAD.A_B === 'B') {
                                     key.checkBox.B = true
                                     this.currPageSelect++
-                                    // this.IsAll = true
+
                                 } else if (shopAD.A_B === 'ABC') {
                                     key.checkBox.ABC = true
                                     this.currPageSelect++
-                                    // this.IsAll = true
+
                                 }
                                 break
                             } else {
@@ -3947,7 +3952,7 @@
                         }
                     }
                 }
-                this.computeMedia_AD()
+                // this.computeMedia_AD()
             },
             //获取mouseEnter屏幕时的坐标像素
             mouseEnter(row, column, cell, event) {
@@ -4464,6 +4469,7 @@
                 let shopList = [];
                 let currTab = this.activeName;
                 console.log('typeShopList----', this.typeShopList);
+                // this.typeShopList = this.getTypeList();
                 shopList = this.typeShopList[currTab - 1].asidList;
                 console.log('购物车统计面数媒体数shopList', shopList)
                 let mediaArr = []

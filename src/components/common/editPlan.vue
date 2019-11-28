@@ -2966,7 +2966,7 @@
                         }
                     }
                 }
-                this.computeMedia_AD()
+                // this.computeMedia_AD()
             },
             // 全选时放进购物车-广告门
             allSelectToShop_adDoor(){

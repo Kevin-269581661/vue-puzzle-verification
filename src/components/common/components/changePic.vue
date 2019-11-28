@@ -575,8 +575,8 @@
                 // 上传图片以及换画日期弹出框
                 isShowEdit: false,
                 // 上传图片地址
-                // doUpload: "/advertisement/UpLoad",
-                doUpload: "http://192.168.1.239/advertisement/UpLoad",
+                doUpload: "/advertisement/UpLoad",
+                // doUpload: "http://192.168.1.239/advertisement/UpLoad",
                 imgUrl: [],
                 allEditInfo: {
                     date: "",

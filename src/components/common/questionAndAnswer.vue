@@ -279,7 +279,7 @@
     }
 
     .container {
-        height: 740px;
+        height: 78vh;
     }
 
     .el-aside {

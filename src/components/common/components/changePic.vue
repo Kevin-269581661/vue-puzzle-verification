@@ -1143,9 +1143,7 @@
                             let dataArr = dataInfo.dataList;
                             // this.pointArr = this.pointArr.concat(this.formatData(dataArr));
                             this.pointArr = this.formatData(dataArr)
-                            // if (this.isSearch && this.dialogInfo.picState !== '') {
-                            //     this.formateResult()
-                            // }
+
                             this.dialogPage = {
                                 ...this.dialogPage,
                                 loading_maInfo: true,
@@ -1185,46 +1183,7 @@
                 };
                 return obj;
             },
-            //搜索结果格式化
-            formateResult() {
-                console.log(this.pointArr, this.shoplist, this.isSearch, this.dialogInfo.picState);
-                // for (let data of this.shoplist) {
-                //     if (this.dialogInfo.picState === 1) {
-                //         //搜索已指定
-                //         if (data.replaceDate) {
-                //             this.pointArr.push(data)
-                //         }
-                //     } else if (this.dialogInfo.picState === 0) {
-                //         //搜索未指定
-                //         if (data.replaceDate) {
-                //             // this.pointArr.push(data)
-                //             console.log(data);
-                //             this.pointArr.splice(this.pointArr.indexOf(data), 1)
-                //             // this.pointArr.splice(data,1)
-                //         }
-                //     }
-                // }
-                console.log(this.pointArr);
-                //搜到的
-                for (let data of this.pointArr) {
-                    for (let item of this.shoplist) {
-                        if (this.dialogInfo.picState === 1) {
-                            //搜索已选
-                            if (!item.replaceDate && data.lID == item.lID) {
-                                console.log(data);
-                                this.pointArr.splice(this.pointArr.indexOf(data), 1)
-                            }
-                        } else if (this.dialogInfo.picState === 0) {
-                            //搜索未选
-                            if (item.replaceDate && data.lID == item.lID) {
-                                this.pointArr.splice(this.pointArr.indexOf(data), 1)
-                            }
-                        }
-                    }
 
-                }
-
-            },
             //点击编辑
             showChangePicDetailModal(item) {
                 if (!item.replaceDate) {

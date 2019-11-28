@@ -84,10 +84,12 @@
                 FZpointCollection: [],
                 XCpointCollection: [],
                 XYMpointCollection: [],
+                KJpointCollection: [],
                 QLResData: [],
                 FZResData: [],
                 XCResData: [],
                 XYMResData: [],
+                KJResData:[],
                 //比例
                 scale: '5公里',
                 cityList: '',
@@ -240,6 +242,7 @@
                 this.resMap.removeOverlay(this.FZpointCollection)
                 this.resMap.removeOverlay(this.XCpointCollection)
                 this.resMap.removeOverlay(this.XYMpointCollection)
+                this.resMap.removeOverlay(this.KJpointCollection)
             },
             //选择资源类型
             filterResType() {
@@ -262,8 +265,10 @@
                         this.resMap.removeOverlay(this.FZpointCollection)
                     }else if(id == 3){
                         this.resMap.removeOverlay(this.XCpointCollection)
-                    }else{
+                    }else if(id == 4){
                         this.resMap.removeOverlay(this.XYMpointCollection)
+                    }else {
+                        this.resMap.removeOverlay(this.KJpointCollection)
                     }
                 }
             },
@@ -293,9 +298,12 @@
                         } else if (companyId == 3) {
                             this.XCResData = result
                             this.addMarker(result, '#ffa940', companyId)
-                        } else {
+                        } else if (companyId == 4){
                             this.XYMResData = result
                             this.addMarker(result, '#52c41a', companyId)
+                        } else {
+                            this.KJResData = result
+                            this.addMarker(result, '#15C4B2', companyId)
                         }
                     } else {
                         this.$message.warning(res.data.MSG)
@@ -349,9 +357,12 @@
                     } else if (companyId == 3) {
                         this.XCpointCollection = new BMap.PointCollection(points, options);  // 初始化PointCollection
                         this.resMap.addOverlay(this.XCpointCollection);  // 添加Overlay
-                    } else {
+                    } else if(companyId == 4){
                         this.XYMpointCollection = new BMap.PointCollection(points, options);  // 初始化PointCollection
                         this.resMap.addOverlay(this.XYMpointCollection);  // 添加Overlay
+                    }else{
+                        this.KJpointCollection =  new BMap.PointCollection(points, options);  // 初始化PointCollection
+                        this.resMap.addOverlay(this.KJpointCollection);  // 添加Overlay
                     }
 
                     this.mapLoading = false
@@ -513,10 +524,10 @@
         border-color: rgba(21, 196, 178, 0.2);
     }
 
-    .red /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .blue /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .orange /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .green /deep/ .el-checkbox__input.is-focus .el-checkbox__inner {
+    .red /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .blue /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .orange /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .green /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .lakeBlue /deep/ .el-checkbox__input.is-focus .el-checkbox__inner {
         border-color: transparent;
     }
-    .red /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner, .blue /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner, .orange /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner, .green /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner {
+    .red /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner, .blue /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner, .orange /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner, .lakeBlue /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner , .green /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner {
         background-color: #edf2fc;
         border-color: #dcdfe6;
     }

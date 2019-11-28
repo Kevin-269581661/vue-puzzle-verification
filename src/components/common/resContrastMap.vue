@@ -313,6 +313,9 @@
                     // console.log('数据', res.data)
                     if (res.data.SysCode == 200200) {
                         this.companyList = res.data.data
+                        if(res.data.data[1].count>0){
+                            this.getData(res.data.data[1].value)
+                        }
                     } else {
                         this.$message.warning(res.data.MSG)
                     }

@@ -214,6 +214,7 @@
             },
             //清空搜索框
             clearSearch() {
+                this.keyword = ''
                 this.qnaData.forEach((value, key) => {
                     if (value.children) {
                         value.children.forEach((v, k) => {

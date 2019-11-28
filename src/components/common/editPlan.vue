@@ -266,7 +266,7 @@
                         <!--提示-->
                         <div class="tip">
                             <i class="el-icon-info"></i>
-                            <p>共 <span>{{total}}</span>个点位，已选点位 <span>{{nowPointNum>0?nowPointNum:0}}</span>个</p>
+                            <p>共 <span>{{adsCount}}</span>个点位，已选点位 <span>{{nowPointNum>0?nowPointNum:0}}</span>个</p>
                         </div>
                         <!--表格-->
                         <div class="table_wrap adsTable">
@@ -1188,6 +1188,7 @@
                 ownerBU: [],               //step1联系人
                 throwCity: [],             //step1投放城市
                 dialogTableVisible: true,  //购物车
+
                 //搜索类型
                 typeSelect: [
                     {
@@ -1411,7 +1412,8 @@
                 // 亲邻地图
                 mapAdsList:[],
                 currPageSelect:0,
-                currPageAsLength:0
+                currPageAsLength:0,
+                adsCount:0,//总可选点位
             };
         },
         mounted() {
@@ -2123,6 +2125,7 @@
                             let ADList = res.data.data.list
                             this.setTableDataADDoor(ADList)
                             this.total = res.data.data.total
+                            this.adsCount = res.data.data.adsCount
                             // this.pageNo++
                             // console.log(' this.pageNo++', this.pageNo)
                             this.judgeByselect()
@@ -2917,19 +2920,7 @@
             // 全选表格点位
             allSelectAdsBtn() {
                 console.log('全选')
-                // for (let pkey of this.planList) {
-                //     if(this.mediaType === '广告门'){
-                //         // 根据是否被占用去打勾
-                //         if (!pkey.box.A) {
-                //             pkey.checkBox.A = true
-                //         }
-                //         if (!pkey.box.B) {
-                //             pkey.checkBox.B = true
-                //         }
-                //     }else if(this.mediaType === '道闸'){
-                //         pkey.checkBox.ABC = true
-                //     }
-                // }
+
                 if(this.mediaType === '广告门'){
                     this.allSelectToShop_adDoor()
                 }else if(this.mediaType === '道闸'){
@@ -2947,15 +2938,12 @@
                             if(pkey.mID === this.shopingList[i].mID){
                                 if(pkey.checkBox.A && this.shopingList[i].A_B === 'A'){
                                     this.shopingList.splice(i,1)
-                                    this.currPageSelect--
                                     pkey.checkBox.A = false
                                 }else if (pkey.checkBox.B && this.shopingList[i].A_B === 'B'){
                                     this.shopingList.splice(i,1)
-                                    this.currPageSelect--
                                     pkey.checkBox.B = false
                                 }else if (pkey.checkBox.ABC && this.shopingList[i].A_B === 'ABC'){
                                     this.shopingList.splice(i,1)
-                                    this.currPageSelect--
                                     pkey.checkBox.ABC = false
                                 }else{
                                     i++
@@ -2966,6 +2954,7 @@
                         }
                     }
                 }
+                this.currPageSelect = 0
                 // this.computeMedia_AD()
             },
             // 全选时放进购物车-广告门
@@ -3050,15 +3039,12 @@
                                 if (shopAD.A_B === 'A') {
                                     key.checkBox.A = true
                                     this.currPageSelect++
-                                    // this.IsAll = true
                                 } else if (shopAD.A_B === 'B') {
                                     key.checkBox.B = true
                                     this.currPageSelect++
-                                    // this.IsAll = true
                                 } else if (shopAD.A_B === 'ABC'){
                                     key.checkBox.ABC = true
                                     this.currPageSelect++
-                                    // this.IsAll = true
                                 }
                                 break
                             } else {

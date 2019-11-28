@@ -138,7 +138,9 @@
             handleBack(type) {
                 // console.log(type, this.activeName);
                 this.componentType = type
-                this.handleSelect(this.activeName)
+                if(sessionStorage.getItem('questionInfo').fromPage =='search'){
+                    this.handleSelect(this.activeName)
+                }
             },
             //搜索
             searchFun() {
@@ -232,7 +234,8 @@
             },
             //点击搜到的问题
             handleResult(title) {
-                // console.log(title);
+                console.log(title);
+                title = this.getText(title)
                 for (let data of this.qnaData) {
                     if (data.question) {
                         for (let i of data.question) {

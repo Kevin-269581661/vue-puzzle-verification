@@ -922,7 +922,7 @@
                     tradingArea: this.selectTradingArea,
                     adLimit: this.selectLimits.join(','),
                     mType: this.selectDoorType,
-                    mType: this.selectDoorType,
+                    // mType: this.selectDoorType,
                     mVehicle: this.selectMediaType,
                     grade: this.selectMediaLevel
                 }

@@ -1759,8 +1759,6 @@
                         sessFun.messageFun('warning', '请选择点位')
                     }
                 } else if (this.active === 2) {
-                    // console.log('1')
-                    // this.throttle(this.createFun,500)()
                     this.isCityPrice = false
                     this.vaildCityQuotation()
                     // // 防多次点击创建
@@ -1786,26 +1784,6 @@
                 if (this.active > 3) {
                     this.active = 0;
                 }
-            },
-            // 创建方法
-            createFun() {
-                console.log('4444')
-            },
-            // 函数节流
-            throttle(func, wait) {
-                console.log('22')
-                let timer;
-                return () => {
-                    if (timer) {
-                        console.log('return---')
-                        return;
-                    }
-                    timer = setTimeout(() => {
-                        console.log('333')
-                        func();
-                        timer = null;
-                    }, wait);
-                };
             },
             // 上一步
             prev() {

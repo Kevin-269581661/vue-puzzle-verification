@@ -1530,6 +1530,13 @@
                 let QArr = this.quotation
                 console.log('确认修改',QArr,'this.ADchanger',this.ADchanger,this.priceInfo)
                 if (letter === 'AD') {              // 广告费修改
+                    if(!this.ADchanger.totalGMDate && this.ADchanger.totalGMDate !== 0) {
+                        this.$message({
+                            message: '赠送天数不能为空',
+                            type: 'warning'
+                        });
+                        return
+                    }
                     let IsChange = false
                     if (Number(this.ADchanger.reaPrice) > Number(this.priceInfo.oldPrice)) {
                         this.ADchanger.reaPrice = this.priceInfo.oldPrice

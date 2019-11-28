@@ -596,17 +596,7 @@
             delectImg(res, file) {
                 this.uploadimgUrl = [];
                 this.oneEditInfo.imgUrl = '';
-                // for (let data of this.materInfoArr) {
-                //     if (data.asID == this.MaterDetailInfo.asID && data.lStar == this.MaterDetailInfo.lStar && data.lEnd == this.MaterDetailInfo.lEnd) {
-                //         data.imgUrl = '';
-                //         data.uploadUser = this.sessionData.uID;
-                //         // this.selectNum=0
-                //         this.$refs.multipleTable.toggleRowSelection(data, false);
-                //         break;
-                //     }
-                // }
 
-                // console.log('删除图片', this.MaterDetailInfo);
             },
             //取消批量上传图片
             cancleUploadAllPic() {
@@ -617,12 +607,16 @@
             comfirmUploadAllPic() {
                 this.showAllPic = false
                 for (let data of this.shoplist) {
-                    data.imgUrl = this.uploadimgUrl[0].url;
+                    for (let item of this.selectList) {
+                        if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
+                            data.imgUrl = this.uploadimgUrl[0].url;
+                        }
+                    }
                 }
                 for (let data of this.materInfoArr) {
                     for (let item of this.selectList) {
                         if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
-                            data.imgUrl = item.imgUrl;
+                            data.imgUrl = this.uploadimgUrl[0].url;
                             data.uploadUser = this.sessionData.uID;
                             // this.selectNum=0
                             this.$refs.multipleTable.toggleRowSelection(data, false);
@@ -738,12 +732,16 @@
                 this.showAllRemark = false;
                 console.log('this.remarkInfo---', this.remarkInfo, this.selectList);
                 for (let data of this.shoplist) {
-                    data.remark = this.remarkInfo;
+                    for (let item of this.selectList) {
+                        if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
+                            data.remark = this.remarkInfo;
+                        }
+                    }
                 }
                 for (let data of this.materInfoArr) {
                     for (let item of this.selectList) {
                         if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
-                            data.remark = item.remark;
+                            data.remark = this.remarkInfo;
                             // this.selectNum=0
                             //取消选中
                             this.$refs.multipleTable.toggleRowSelection(data, false);
@@ -843,11 +841,6 @@
             //取消编辑单个物料信息
             handleCloseChangeOneMater() {
                 this.MaterDetailModal = false
-                // this.MaterDetailInfo = {
-                //     ...this.MaterDetailInfo,
-                //     picUrl: '',
-                //     remark: '',
-                // }
 
             },
             //显示物料详情弹框

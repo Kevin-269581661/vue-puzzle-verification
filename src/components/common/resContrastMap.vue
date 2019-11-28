@@ -170,18 +170,23 @@
                 this.resMap.addEventListener('moveend', (e) => {
                     this.pointInBounds()
                 })
-                this.getData(1)
+                if (this.companyCheckbox.length > 0) {
+                    for (let data of this.companyCheckbox) {
+                        // 设置地图显示的城市 此项是必须设置的
+                        this.getData(data)
+                    }
+                }
             },
             // 判断点是否在视野内
             pointInBounds() {
                 console.log('判断点是否在视野内------', this.resMap.getZoom())
                 if (!this.isMouseSearch && !this.isOnlineSearch && !this.isMultiPoint && this.resMap.getZoom() >= 16) {
-                    let bound = this.resMap.getBounds();// 地图可视区域
-                    for (let key of this.resMarkers) {
-                        if (bound.containsPoint(key.point) == true && !key.isVisible()) {
-                            key.show()
-                        }
-                    }
+                    // let bound = this.resMap.getBounds();// 地图可视区域
+                    // for (let key of this.resMarkers) {
+                    //     if (bound.containsPoint(key.point) == true && !key.isVisible()) {
+                    //         key.show()
+                    //     }
+                    // }
                 }
             },
             // 地图缩放
@@ -313,6 +318,7 @@
                     // console.log('数据', res.data)
                     if (res.data.SysCode == 200200) {
                         this.companyList = res.data.data
+
                     } else {
                         this.$message.warning(res.data.MSG)
                     }
@@ -320,19 +326,7 @@
             },
             //添加标注
             addMarker(arr, color,companyId) {
-                // for (let data of arr) {
-                //     let point = new window.BMap.Point(data.lng, data.lat); //将标注点转化成地图上的点
-                //     let myIcon = new window.BMap.Icon(iconUrl, new window.BMap.Size(22, 22), {
-                //         anchor: new BMap.Size(-22, -11),//图标的定位点相对于图标左上角的偏移值
-                //         imageSize: new BMap.Size(22, 22),//图标大小
-                //     });
-                //     let marker = new window.BMap.Marker(point, {icon: myIcon}); //将点转化成标注点
-                //     Markers.push(marker)
-                //     this.resMap.addOverlay(marker);  //将标注点添加到地图上
-                //     // setTimeout(()=>{
-                //     this.mapLoading = false
-                //     // },5000)
-                // }
+
                 if (document.createElement('canvas').getContext) {  // 判断当前浏览器是否支持绘制海量点
                     var points = [];  // 添加海量点数据
                     for (let data of arr) {
@@ -436,6 +430,13 @@
         border: 1px solid #fff;
         font-size: 14px;
     }
+    .select-group /deep/ .el-select .el-tag{
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 88px;
+        margin-top: 6px;
+    }
 
     /*右上角*/
     .radio-group {
@@ -482,12 +483,15 @@
         background-color: rgba(255,169,64,0.8);
         border-color: rgba(255,169,64,0.8);
     }
-
-
     .green /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner {
         background-color: rgba(82,196,26,0.8);
         border-color: rgba(82,196,26,0.8);
     }
+    .lakeBlue /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+        background-color:rgba(21, 196, 178, 0.8);
+        border-color: rgba(21, 196, 178, 0.8);
+    }
+
     .red /deep/ .el-checkbox__inner {
         background-color: rgba(255,49,49,0.2);
         border-color: rgba(255,49,49,0.2);
@@ -503,6 +507,10 @@
     .green /deep/ .el-checkbox__inner {
         background-color: rgba(82,196,26,0.2);
         border-color: rgba(82,196,26,0.2);
+    }
+    .lakeBlue /deep/ .el-checkbox__inner {
+        background-color: rgba(21, 196, 178, 0.2);
+        border-color: rgba(21, 196, 178, 0.2);
     }
 
     .red /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .blue /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .orange /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .green /deep/ .el-checkbox__input.is-focus .el-checkbox__inner {

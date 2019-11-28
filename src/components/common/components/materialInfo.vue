@@ -741,7 +741,7 @@
                     data.remark = this.remarkInfo;
                 }
                 for (let data of this.materInfoArr) {
-                    for (let item of this.shoplist) {
+                    for (let item of this.selectList) {
                         if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
                             data.remark = item.remark;
                             // this.selectNum=0

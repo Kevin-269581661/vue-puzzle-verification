@@ -170,7 +170,12 @@
                 this.resMap.addEventListener('moveend', (e) => {
                     this.pointInBounds()
                 })
-                this.getData(1)
+                if (this.companyCheckbox.length > 0) {
+                    for (let data of this.companyCheckbox) {
+                        // 设置地图显示的城市 此项是必须设置的
+                        this.getData(data)
+                    }
+                }
             },
             // 判断点是否在视野内
             pointInBounds() {
@@ -313,9 +318,7 @@
                     // console.log('数据', res.data)
                     if (res.data.SysCode == 200200) {
                         this.companyList = res.data.data
-                        if(res.data.data[1].count>0){
-                            this.getData(res.data.data[1].value)
-                        }
+
                     } else {
                         this.$message.warning(res.data.MSG)
                     }

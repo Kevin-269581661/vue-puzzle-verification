@@ -124,7 +124,7 @@
                             </label>
                             <div class="icon_box" v-if="showPreImg === img.pID">
                                 <p class="img_box_icon">
-                                    <i class="el-icon-search" @click="previewImg(img.pURL)"></i>
+                                    <i class="el-icon-search" @click="handlePictureCardPreview(img.pURL)"></i>
                                     <i class="el-icon-star-off" v-if="!img.isCollection"
                                        @click="saveImgFun(item, imgIndex)"></i>
                                     <i v-if="img.isCollection" class="el-icon-star-on icon_save"
@@ -1410,6 +1410,7 @@
             },
             // 查看图片
             previewImg(file) {
+                console.log(file);
                 this.dialogImageUrl = file.url;
                 this.dialogVisible = true;
             },
@@ -1915,7 +1916,8 @@
             ,
             // 查看预览图片
             handlePictureCardPreview(file) {
-                this.dialogImageUrl = file.url;
+                console.log(file);
+                this.dialogImageUrl = file;
                 this.dialogVisible = true;
             }
             ,

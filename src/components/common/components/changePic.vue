@@ -1389,7 +1389,7 @@
             resetPoint() {
                 this.isSearch = false
                 let info = {
-                    resName: "",
+                    resName: [],
                     picState: "",
                     mapName: ""
                 };

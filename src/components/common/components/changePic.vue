@@ -609,6 +609,7 @@
                 isShowChanggPicForm: false,
                 isSearch: false,
                 // selectNum:0,//当前选择的点位
+                handleFlag:false,
             };
         },
         mounted() {
@@ -1100,6 +1101,7 @@
                 this.selectList = [];
                 this.selectNum = 0;
                 this.pointArr = [];
+                this.handleFlag = false
                 // 获取资源名称列表
                 this.getDialogInfoResArr();
                 // 获取地图中心点
@@ -1488,6 +1490,7 @@
             // 提交换画信息
             confirmChange(type) {
                 console.log(this.selectList);
+                this.handleFlag = true
                 if (type == 'all') {
                     let {date, url, remark} = this.allEditInfo;
                     if (date) {
@@ -1559,8 +1562,9 @@
             ,
             // 保存
             saveAll() {
-                console.log(this.pointArr, this.shoplist);
-                if (this.shoplist.length) {
+                console.log(this.handleFlag, this.shoplist);
+
+                if (this.handleFlag&&this.shoplist.length) {
                     let result = [];
                     for (let data of this.shoplist) {
                         let obj = {
@@ -1570,22 +1574,18 @@
                         };
                         result.push(obj);
                     }
-                    if (result.length) {
-                        api.postApi_json(this.apiVar.replace + '/report/saveDetailInfo', result).then(res => {
-                            console.log(res.data);
-                            if (res.data.SysCode == 200200) {
-                                this.isShowPic = false;
-                                sessFun.messageFun('success', res.data.MSG);
-                            } else {
-                                sessFun.messageFun('warning', res.data.MSG);
-                            }
-                            this.search();
-                        });
-                    } else {
-                        sessFun.messageFun('warning', '没有需要保存的点');
-                    }
+                    api.postApi_json(this.apiVar.replace + '/report/saveDetailInfo', result).then(res => {
+                        console.log(res.data);
+                        if (res.data.SysCode == 200200) {
+                            this.isShowPic = false;
+                            sessFun.messageFun('success', res.data.MSG);
+                        } else {
+                            sessFun.messageFun('warning', res.data.MSG);
+                        }
+                        this.search();
+                    });
                 } else {
-                    sessFun.messageFun('warning', '没有需要保存的点');
+                    sessFun.messageFun('warning', '没有点位信息发生变更，请先对点位进行操作');
                 }
             }
             ,
@@ -1626,16 +1626,16 @@
             ,
             // 移除换画
             removePain(type) {
-                let result = [];
+                this.handleFlag = true
                 if (type == 'all') {
                     //批量
                     for (let item of this.pointArr) {
+                        this.$refs.multipleTable.toggleRowSelection(item, false);
                         for (let data of this.selectList) {
                             if (item.replaceDate && item.lID == data.lID) {
                                 item.picUrl = ''
                                 item.remark = ''
                                 item.replaceDate = ''
-                                this.$refs.multipleTable.toggleRowSelection(item, false);
                             }
                         }
                     }

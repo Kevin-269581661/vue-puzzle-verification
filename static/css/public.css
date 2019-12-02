@@ -295,3 +295,21 @@
 .no-hover{
     background-color: rgb(68, 68, 68) !important;
 }
+/*导航*/
+.el-menu-nav /deep/ .el-menu-item, .el-menu-nav /deep/ .el-submenu__title{
+    padding: 0 16px;
+
+}
+/deep/ .el-menu--horizontal .el-menu .el-menu-item, /deep/ .el-menu--horizontal .el-menu .el-submenu__title{
+    text-align: center;
+}
+.submenu/deep/ .el-menu--popup{
+    min-width: 118px;
+    text-align: center;
+}
+.two-word-submenu /deep/ .el-menu--popup{
+    min-width: 88px;
+    text-align: center;
+}
+
+

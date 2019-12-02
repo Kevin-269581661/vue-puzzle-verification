@@ -19,24 +19,26 @@
             <el-menu-item index="/sale/clientList">客户管理</el-menu-item>
             <el-menu-item index="/sale/planList">方案管理</el-menu-item>
             <el-menu-item index="/sale/orderList">订单管理</el-menu-item>
-            <el-menu-item index="/sale/photoGallery">案例库</el-menu-item>
-            <el-submenu index="8" :show-timeout="80">
-                <template slot="title">
-                    辅助资料
-                </template>
-                <el-menu-item index="/sale/publishPriceList">刊例价</el-menu-item>
-                <!--<el-menu-item index="/sale/questionAndAnswer">常见问题</el-menu-item>-->
-                <el-menu-item index="/sale/compact">文件下载</el-menu-item>
-            </el-submenu>
-            <el-menu-item index="/sale/tvOrderList">电视广告</el-menu-item>
+            <el-menu-item index="/sale/adsDialPlate">点位表盘</el-menu-item>
+            <el-menu-item index="/sale/photoGallery">图片库</el-menu-item>
             <!--<el-menu-item index="/sale/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>-->
-            <el-submenu index="10" :show-timeout="80" v-show="showQinlin">
+            <el-submenu index="10" :show-timeout="80" v-show="showQinlin" popper-class="submenu">
                 <template slot="title">亲邻智邻</template>
                 <el-menu-item index="/sale/communityPortrait">社区画像</el-menu-item>
                 <el-menu-item index="/sale/communityRank">社区排名</el-menu-item>
                 <el-menu-item index="" @click="goResContrastMap">资源对比</el-menu-item>
             </el-submenu>
-            <el-submenu index="9" class="user_center" popper-class="user_center_item" :show-timeout="80">
+            <el-submenu index="8" :show-timeout="80" popper-class="submenu two-word-submenu">
+                <template slot="title">
+                    更多
+                </template>
+                <el-menu-item index="/sale/publishPriceList">刊例价</el-menu-item>
+                <!--<el-menu-item index="/sale/questionAndAnswer">常见问题</el-menu-item>-->
+                <el-menu-item index="/sale/compact">资料下载</el-menu-item>
+                <el-menu-item index="/sale/tvOrderList">电视广告</el-menu-item>
+            </el-submenu>
+
+            <el-submenu index="9" class="user_center" popper-class="user_center_item submenu" :show-timeout="80">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">
                     {{userName}}

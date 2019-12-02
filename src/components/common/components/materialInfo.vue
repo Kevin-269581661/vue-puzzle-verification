@@ -596,15 +596,15 @@
             delectImg(res, file) {
                 this.uploadimgUrl = [];
                 this.oneEditInfo.imgUrl = '';
-                for (let data of this.materInfoArr) {
-                    if (data.asID == this.MaterDetailInfo.asID && data.lStar == this.MaterDetailInfo.lStar && data.lEnd == this.MaterDetailInfo.lEnd) {
-                        data.imgUrl = '';
-                        data.uploadUser = this.sessionData.uID;
-                        // this.selectNum=0
-                        this.$refs.multipleTable.toggleRowSelection(data, false);
-                        break;
-                    }
-                }
+                // for (let data of this.materInfoArr) {
+                //     if (data.asID == this.MaterDetailInfo.asID && data.lStar == this.MaterDetailInfo.lStar && data.lEnd == this.MaterDetailInfo.lEnd) {
+                //         data.imgUrl = '';
+                //         data.uploadUser = this.sessionData.uID;
+                //         // this.selectNum=0
+                //         this.$refs.multipleTable.toggleRowSelection(data, false);
+                //         break;
+                //     }
+                // }
 
                 // console.log('删除图片', this.MaterDetailInfo);
             },
@@ -771,6 +771,7 @@
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
+
                         for (let data of this.materInfoArr) {
                             for (let item of this.selectList) {
                                 if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
@@ -783,6 +784,7 @@
                                 }
                             }
                         }
+                        this.selectList = []
                     }).catch(() => {
                     });
                 } else {
@@ -841,11 +843,11 @@
             //取消编辑单个物料信息
             handleCloseChangeOneMater() {
                 this.MaterDetailModal = false
-                this.MaterDetailInfo = {
-                    ...this.MaterDetailInfo,
-                    picUrl: '',
-                    remark: '',
-                }
+                // this.MaterDetailInfo = {
+                //     ...this.MaterDetailInfo,
+                //     picUrl: '',
+                //     remark: '',
+                // }
 
             },
             //显示物料详情弹框

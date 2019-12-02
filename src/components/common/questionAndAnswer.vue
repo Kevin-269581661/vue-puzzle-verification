@@ -214,6 +214,7 @@
             },
             //清空搜索框
             clearSearch() {
+                this.keyword = ''
                 this.qnaData.forEach((value, key) => {
                     if (value.children) {
                         value.children.forEach((v, k) => {
@@ -278,7 +279,7 @@
     }
 
     .container {
-        height: 740px;
+        height: 78vh;
     }
 
     .el-aside {

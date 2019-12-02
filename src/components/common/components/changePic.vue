@@ -539,11 +539,11 @@
                             value: 2
                         },
                         {
-                            label: "已指定换画点位",
+                            label: "已保存换画点位",
                             value: 1
                         },
                         {
-                            label: "未指定换画点位",
+                            label: "未保存换画点位",
                             value: 0
                         }
                     ],
@@ -1143,9 +1143,9 @@
                             let dataArr = dataInfo.dataList;
                             // this.pointArr = this.pointArr.concat(this.formatData(dataArr));
                             this.pointArr = this.formatData(dataArr)
-                            if (this.isSearch && this.dialogInfo.picState !== '') {
-                                this.formateResult()
-                            }
+                            // if (this.isSearch && this.dialogInfo.picState !== '') {
+                            //     this.formateResult()
+                            // }
                             this.dialogPage = {
                                 ...this.dialogPage,
                                 loading_maInfo: true,
@@ -1188,33 +1188,35 @@
             //搜索结果格式化
             formateResult() {
                 console.log(this.pointArr, this.shoplist, this.isSearch, this.dialogInfo.picState);
-                for (let data of this.shoplist) {
-                    if (this.dialogInfo.picState === 1) {
-                        //搜索已选
-                        if (data.replaceDate) {
-                            this.pointArr.push(data)
-                        }
-                    } else if (this.dialogInfo.picState === 0) {
-                        //搜索未选
-                        if (!data.replaceDate) {
-                            this.pointArr.push(data)
-                        }
-                    }
-                }
+                // for (let data of this.shoplist) {
+                //     if (this.dialogInfo.picState === 1) {
+                //         //搜索已指定
+                //         if (data.replaceDate) {
+                //             this.pointArr.push(data)
+                //         }
+                //     } else if (this.dialogInfo.picState === 0) {
+                //         //搜索未指定
+                //         if (data.replaceDate) {
+                //             // this.pointArr.push(data)
+                //             console.log(data);
+                //             this.pointArr.splice(this.pointArr.indexOf(data), 1)
+                //             // this.pointArr.splice(data,1)
+                //         }
+                //     }
+                // }
                 console.log(this.pointArr);
+                //搜到的
                 for (let data of this.pointArr) {
                     for (let item of this.shoplist) {
                         if (this.dialogInfo.picState === 1) {
                             //搜索已选
-                            console.log(data, data.replaceDate);
                             if (!item.replaceDate && data.lID == item.lID) {
                                 console.log(data);
                                 this.pointArr.splice(this.pointArr.indexOf(data), 1)
                             }
                         } else if (this.dialogInfo.picState === 0) {
                             //搜索未选
-                            if (!item.replaceDate && data.lID == item.lID) {
-                                console.log(data);
+                            if (item.replaceDate && data.lID == item.lID) {
                                 this.pointArr.splice(this.pointArr.indexOf(data), 1)
                             }
                         }
@@ -1510,16 +1512,16 @@
             //删除图片
             delectImg(res, file) {
                 this.imgUrl = [];
-                this.changePicDetailInfo.picUrl = '';
-                for (let data of this.pointArr) {
-                    if (data.lID == this.changePicDetailInfo.lID) {
-                        data.imgUrl = '';
-                        data.uploadUser = this.sessionData.uID;
-                        // this.selectNum=0
-                        this.$refs.multipleTable.toggleRowSelection(data, false);
-                        break;
-                    }
-                }
+                this.oneEditInfo.url = '';
+                // for (let data of this.pointArr) {
+                //     if (data.lID == this.changePicDetailInfo.lID) {
+                //         data.imgUrl = '';
+                //         data.uploadUser = this.sessionData.uID;
+                //         // this.selectNum=0
+                //         this.$refs.multipleTable.toggleRowSelection(data, false);
+                //         break;
+                //     }
+                // }
 
                 // console.log('删除图片', this.MaterDetailInfo);
             },
@@ -1677,7 +1679,7 @@
                             }
                         }
                     }
-
+                    this.selectList = []
                 } else {
                     //单个
                     for (let data of this.pointArr) {

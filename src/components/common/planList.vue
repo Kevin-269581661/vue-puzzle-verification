@@ -18,36 +18,50 @@
                             <el-option label="品牌名称" value="3"></el-option>
                         </el-select>
                     </el-input>
-                    <el-date-picker size="small" class="marginR" v-model="searchInfo.rangeDate" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="投放日期" end-placeholder="投放日期">
+                    <el-date-picker size="small" class="marginR" v-model="searchInfo.rangeDate" type="daterange"
+                                    range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd"
+                                    start-placeholder="投放日期" end-placeholder="投放日期">
                     </el-date-picker>
-                    <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small"  class="marginR">
-                        <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
+                    <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small" class="marginR">
+                        <el-option v-for="item of stateList" :key="item.value" :label="item.text"
+                                   :value="item.value"></el-option>
                     </el-select>
-                    <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable size="small" v-if="isAll"  class="marginR">
-                        <el-option v-for="item of companyData" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable size="small" v-if="isAll"
+                               class="marginR">
+                        <el-option v-for="item of companyData" :key="item.value" :label="item.label"
+                                   :value="item.value"></el-option>
                     </el-select>
-                    <el-select v-model="searchInfo.cityWord" placeholder="请选择投放城市" filterable size="small" class="marginR">
-                        <el-option v-for="item of filterCityData" :key="item.rID" :label="item.text" :value="item.text"></el-option>
+                    <el-select v-model="searchInfo.cityWord" placeholder="请选择投放城市" filterable size="small"
+                               class="marginR">
+                        <el-option v-for="item of filterCityData" :key="item.rID" :label="item.text"
+                                   :value="item.text"></el-option>
                     </el-select>
                     <el-select v-model="searchInfo.Lock" placeholder="是否预锁" size="small" class="marginR">
                         <el-option label="已预锁" value="2"></el-option>
                         <el-option label="未预锁" value="1"></el-option>
                     </el-select>
                     <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch"
-                               v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt038_ck01'}"class="marginR">搜索</el-button>
+                               v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt038_ck01'}" class="marginR">搜索
+                    </el-button>
                     <el-button plain @click="reset()" :disabled="!isReset" class="marginR"
-                               v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt039_ck02'}">重置</el-button>
-                    <template v-if="showNewBtn || !isNation" >
+                               v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt039_ck02'}">重置
+                    </el-button>
+                    <template v-if="showNewBtn || !isNation">
                         <el-button plain v-if="showNewBtn" @click="addOne()" class="marginR"
-                                   v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt040_ck03'}">新建</el-button>
+                                   v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt040_ck03'}">新建
+                        </el-button>
                         <el-button plain v-if="showNewBtn" @click="isOpenDownload=true" class="marginR"
-                                   v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt041_ck04'}">导空位</el-button>
+                                   v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt041_ck04'}">导空位
+                        </el-button>
                         <el-button plain v-if="!isNation" @click="goToDiaPlate" class="marginR"
-                                   v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt042_ck03'}">点位表盘</el-button>
+                                   v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt042_ck03'}">点位表盘
+                        </el-button>
                     </template>
                 </div>
                 <div class="table_wrap">
-                    <el-table border :data="currentPlan" style="width: 100%" @sort-change="sortChange" v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
+                    <el-table border :data="currentPlan" style="width: 100%" @sort-change="sortChange"
+                              v-loading="loading" element-loading-text="玩命加载中.."
+                              element-loading-spinner="el-icon-loading">
                         <el-table-column prop="apName" label="方案名称" min-width="14.9%">
                             <template slot-scope="scope">
                                 <span style="color: #108ee9;cursor: pointer" @click="ToDetail(scope.row)">{{scope.row.apName}}</span>
@@ -62,40 +76,58 @@
                                 <span>&yen;{{scope.row.apTotal?priceFormat(scope.row.apTotal/100):0}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="realName" label="所有人" min-width="6.1%"  v-if="!(role=='AD')" show-overflow-tooltip>
+                        <el-table-column prop="realName" label="所有人" min-width="6.1%" v-if="!(role=='AD')"
+                                         show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column label="投放城市(点位面数,排期)"
                                          prop="cityArea"
-                                         min-width="25.8%" show-overflow-tooltip>
+                                         min-width="25.8%">
                             <template slot-scope="scope">
-                                <p v-if="isAll" v-for="(item, index) of scope.row.cityArea" :key="index" class="city_p">
-                                    <template v-if="item.isshow">
-                                        <span v-if="item.isshow">{{item.asName}}</span>
-                                        <span v-show="item.RemainDay">
-                                             预锁:剩<b :style="item.RemainDay<=3?'color:red;':''">{{item.RemainDay}}</b>天
-                                        </span>
-                                        <i v-if="item.RemainDay>=0" class="fa fa-lock fa-lg" style="color:#999;"></i>
-                                        <i v-else></i>
-                                        <br>
-                                    </template>
-                                    {{item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'}}
-                                </p>
-                                <p v-if="!isAll" v-for="item of scope.row.cityArea" :key="item.rid+'-'+item.asrID" class="city_p">
-                                    {{item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'}}
-                                    <span v-show="item.RemainDay"> 预锁:剩<b :style="item.RemainDay<=3?'color:red;':''">{{item.RemainDay}}</b>天</span>
-                                    <i v-if="item.RemainDay>=0" class="fa fa-lock fa-lg" style="color:#999;"></i>
-                                    <i v-else></i>
-                                </p>
+                                <div v-if="isAll" v-for="(item, index) of scope.row.cityArea" :key="index"
+                                     class="city_p">
+                                    <el-tooltip class="item" effect="dark" :content="item.asName+' '+item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'" placement="top">
+                                        <div>
+                                            <span v-if="item.isshow">{{item.asName}}</span>
+                                            <p>{{item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'}}</p>
+                                        </div>
+                                    </el-tooltip>
+
+                                    <el-tooltip class="item" effect="dark" :content="'距离解锁还剩'+item.RemainDay+'天'"
+                                                placement="top">
+                                             <span v-show="item.RemainDay" class="lock-icon">
+                                             <!--预锁:剩<b :style="item.RemainDay<=3?'color:red;':''">{{item.RemainDay}}</b>天-->
+                                             <b :class="item.RemainDay<=3?'red':'blue'">{{item.RemainDay}}</b>
+                                             </span>
+                                    </el-tooltip>
+                                </div>
+                                <div v-if="!isAll" v-for="item of scope.row.cityArea" :key="item.rid+'-'+item.asrID"
+                                   class="city_p">
+                                    <el-tooltip class="item" effect="dark" :content="item.asName+' '+item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'" placement="top">
+                                            <p>{{item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'}}</p>
+                                    </el-tooltip>
+
+                                    <el-tooltip class="item" effect="dark" :content="'距离解锁还剩'+item.RemainDay+'天'"
+                                                placement="top">
+                                         <span v-show="item.RemainDay" class="lock-icon">
+                                        <!--预锁:剩<b :style="item.RemainDay<=3?'color:red;':''">{{item.RemainDay}}</b>天-->
+                                          <b :class="item.RemainDay<=3?'red':'blue'">{{item.RemainDay}}</b>
+                                         </span>
+                                    </el-tooltip>
+                                    <!--<i v-if="item.RemainDay>=0" class="fa fa-lock fa-lg" style="color:#999;"></i>-->
+                                    <!--<i v-else></i>-->
+                                </div>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="apcTime" label="创建日期" width="100px" sortable="custom" show-overflow-tooltip>
+                        <el-table-column prop="apcTime" label="创建日期" width="100px" sortable="custom"
+                                         show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <span>{{formatTime(scope.row.apcTime)}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column class="tac" prop="apState" label="状态" min-width="6.1%" show-overflow-tooltip>
                             <template slot-scope="scope">
-                                <point-state :state-text="stateToText(scope.row.apState).text" :color="stateToText(scope.row.apState).color"></point-state>
+                                <point-state :state-text="stateToText(scope.row.apState).text"
+                                             :color="stateToText(scope.row.apState).color"></point-state>
                             </template>
                         </el-table-column>
                         <el-table-column label="操作" width="100px" v-if="!(role=='OP' || role=='AD')">
@@ -118,7 +150,8 @@
                                                           v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt045_ck04'}">解除预锁
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="splitAdPlan(scope.row)"
-                                                          v-if="scope.row.apControlLevel === 2 && sessionData.uType === 'BD'">拆单
+                                                          v-if="scope.row.apControlLevel === 2 && sessionData.uType === 'BD'">
+                                            拆单
                                         </el-dropdown-item>
                                     </el-dropdown-menu>
                                 </el-dropdown>
@@ -149,8 +182,12 @@
         <!-- 预锁公司 -->
         <el-dialog :title="isLock?'请选择预锁公司':'请选择解锁公司'" :visible.sync="dialogVisible" width="30%" center>
             <el-checkbox-group v-model="cityChoose">
-                <el-checkbox v-if="isLock" :label="item.asrID" v-for="item of cityList" :key="item.rid" border :disabled="item.RemainDay>=0" size="mini">{{item.asName}}</el-checkbox>
-                <el-checkbox v-if="!isLock" :label="item.asrID" v-for="item of cityList" :key="item.rid" border :disabled="item.RemainDay==undefined || item.RemainDay==null" size="mini">{{item.asName}}</el-checkbox>
+                <el-checkbox v-if="isLock" :label="item.asrID" v-for="item of cityList" :key="item.rid" border
+                             :disabled="item.RemainDay>=0" size="mini">{{item.asName}}
+                </el-checkbox>
+                <el-checkbox v-if="!isLock" :label="item.asrID" v-for="item of cityList" :key="item.rid" border
+                             :disabled="item.RemainDay==undefined || item.RemainDay==null" size="mini">{{item.asName}}
+                </el-checkbox>
             </el-checkbox-group>
             <span slot="footer" class="dialog-footer">
                 <el-button plain @click="cancelLock">取 消</el-button>
@@ -310,11 +347,11 @@
                 cityList: [],
                 // 状态列表
                 stateList: [
-                    { text: '已完成', value: 0 },
-                    { text: '进行中', value: 1 },
-                    { text: '未投放', value: 2 },
-                    { text: '投放中', value: 3 },
-                    { text: '强制结束', value: 5 }
+                    {text: '已完成', value: 0},
+                    {text: '进行中', value: 1},
+                    {text: '未投放', value: 2},
+                    {text: '投放中', value: 3},
+                    {text: '强制结束', value: 5}
                 ],
                 // 根据角色判断是否显示新建按钮
                 showNewBtn: true,
@@ -329,7 +366,7 @@
                 // 未完成方案
                 planInfo: '',
                 // 继续编辑未完成方案跳转时的loading
-                continueEditLoading:'',
+                continueEditLoading: '',
                 // 空位导出
                 isOpenDownload: false,
                 // 判断是否为全国媒介
@@ -340,7 +377,7 @@
             this.getSessionData();
             this.getRole();
             this.getFanCity();
-            if(this.isAll){
+            if (this.isAll) {
                 this.getCompany();
             }
             this.searchFun();
@@ -360,18 +397,18 @@
                 this.searchFun();
             },
             // 获取公司
-            getCompany(){
+            getCompany() {
                 let sess = this.sessionData;
                 let info = {
                     uid: sess.uID,
                     token: sess.token,
                 };
-                if(sess.ascType==0){
-                    api.getApi(this.apiVar.UCAPI + '/GetDirectAscr', info).then(res =>{
+                if (sess.ascType == 0) {
+                    api.getApi(this.apiVar.UCAPI + '/GetDirectAscr', info).then(res => {
                         console.log(res);
-                        if(!res.data.SysCode){
+                        if (!res.data.SysCode) {
                             let result = [];
-                            for(let data of res.data){
+                            for (let data of res.data) {
                                 let obj = {
                                     label: data.asName,
                                     value: data.asrID,
@@ -379,18 +416,18 @@
                                 result.push(obj);
                             }
                             this.companyData = result;
-                        }else{
+                        } else {
                             this.messageFun('warning', res.data.MSG);
                         }
-                    }).catch(err =>{
+                    }).catch(err => {
                         console.log(err);
                     });
-                }else{
-                    api.getApi(this.apiVar.UCAPI + '/ShowAscr', info).then(res =>{
+                } else {
+                    api.getApi(this.apiVar.UCAPI + '/ShowAscr', info).then(res => {
                         console.log(res);
-                        if(!res.data.SysCode){
+                        if (!res.data.SysCode) {
                             let result = [];
-                            for(let data of res.data){
+                            for (let data of res.data) {
                                 let obj = {
                                     label: data.asName,
                                     value: data.asrID,
@@ -398,36 +435,36 @@
                                 result.push(obj);
                             }
                             this.companyData = result;
-                        }else{
+                        } else {
                             this.messageFun('warning', res.data.MSG);
                         }
-                    }).catch(err =>{
+                    }).catch(err => {
                         console.log(err);
                     });
                 }
             },
             // 滚动加载获取数据(无搜索数据)
-            getData(params){
-                api.getApi(this.apiVar.Advertisement+'/GetProposal', params).then(res =>{
+            getData(params) {
+                api.getApi(this.apiVar.Advertisement + '/GetProposal', params).then(res => {
                     console.log(res.data);
-                    if(!res.data.SysCode){
+                    if (!res.data.SysCode) {
                         let dataInfo = res.data;
                         this.totalNum = dataInfo.total;
                         let dataArr = dataInfo.list;
                         this.currentPlan = this.funcData(dataArr);
                         this.loading = false;
-                        if(dataInfo.totalpage == 0){
+                        if (dataInfo.totalpage == 0) {
                             this.messageFun('warning', '暂无数据');
                         }
-                    }else{
+                    } else {
                         this.messageFun('warning', res.data.MSG);
                     }
                 });
             },
             // 数据处理
-            funcData(dataArr){
+            funcData(dataArr) {
                 let result = [];
-                for(let data of dataArr){
+                for (let data of dataArr) {
                     let tmpObj = {};
                     tmpObj = this.setTableData(data);
                     result.push(tmpObj);
@@ -438,24 +475,24 @@
             getSessionData() {
                 this.sessionData = sessFun.getSess();
                 let sess = this.sessionData;
-                if(sess.ascType==0 || (sess.uType=='MD' && sess.mediaManageLevel==1) || (sess.uType =='BD') && sess.saleManageLevel == 1){
+                if (sess.ascType == 0 || (sess.uType == 'MD' && sess.mediaManageLevel == 1) || (sess.uType == 'BD') && sess.saleManageLevel == 1) {
                     this.isAll = true;
-                }else{
+                } else {
                     this.isAll = false;
                 }
             },
             // 获取城市
-            getFanCity(){
-                let info ={
+            getFanCity() {
+                let info = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                 };
-                api.getApi(this.apiVar.Advertisement+'/GetAPDCityNames', info).then(res =>{
+                api.getApi(this.apiVar.Advertisement + '/GetAPDCityNames', info).then(res => {
                     console.log(res.data);
                     let arr = res.data;
                     let result = [];
-                    if(!arr.SysCode){
-                        for(let data of arr){
+                    if (!arr.SysCode) {
+                        for (let data of arr) {
                             result.push({
                                 rName: data.rName,
                                 rID: data.rID,
@@ -476,7 +513,7 @@
                 console.log(role);
                 if (role == "MD") {
                     this.isDisable = false;
-                    if(this.sessionData.mediaManageLevel == 0){
+                    if (this.sessionData.mediaManageLevel == 0) {
                         this.isNation = false
                     }
                 }
@@ -486,18 +523,18 @@
                 if (role == "BD" || role == "SM") {
                     this.isDisable = true;
                 }
-                if(role == "BD" && (this.sessionData.saleManageLevel === 0 || this.sessionData.saleManageLevel === 1)) {
+                if (role == "BD" && (this.sessionData.saleManageLevel === 0 || this.sessionData.saleManageLevel === 1)) {
                     this.isNation = false
                 }
             },
             // 状态转换成文本
             stateToText(val) {
                 let state = [
-                    { text: "已完成", value: 0, color: 'rgba(196,203,211,1)' },
-                    { text: "进行中", value: 1, color: 'rgba(250,173,20,1)' },
-                    { text: "未投放", value: 2, color: 'rgba(82,196,26,1)' },
-                    { text: "投放中", value: 3, color: 'rgba(24,144,255,1)' },
-                    { text: "强制结束", value: 5, color: 'rgba(245,34,45,1)' }
+                    {text: "已完成", value: 0, color: 'rgba(196,203,211,1)'},
+                    {text: "进行中", value: 1, color: 'rgba(250,173,20,1)'},
+                    {text: "未投放", value: 2, color: 'rgba(82,196,26,1)'},
+                    {text: "投放中", value: 3, color: 'rgba(24,144,255,1)'},
+                    {text: "强制结束", value: 5, color: 'rgba(245,34,45,1)'}
                 ];
                 for (let data of state) {
                     if (val == data.value) {
@@ -505,7 +542,7 @@
                     }
                 }
             },
-            // 时间格式规范
+            // 时间格式规范预锁
             formatTime(val) {
                 return dateFormat.toDate(val, '/');
             },
@@ -514,12 +551,12 @@
                 return commaFormat.init(price);
             },
             // 价格时间排序(请求后台接口进行排序)
-            sortChange(column){
+            sortChange(column) {
                 console.log('columm---', column);
-                if(column.order == "ascending"){
+                if (column.order == "ascending") {
                     this.searchInfo.orderby = column.prop;
                     this.searchInfo.desc = 0;
-                }else if(column.order == "descending"){
+                } else if (column.order == "descending") {
                     this.searchInfo.orderby = column.prop;
                     this.searchInfo.desc = 1;
                 }
@@ -535,17 +572,17 @@
                     background: 'rgba(0, 0, 0, 0.5)'
                 });
                 let params = {
-                    uid:this.sessionData.uID,
-                    token:this.sessionData.token
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token
                 }
-                api.getApi(this.apiVar.Advertisement + '/getAdPlanBackups',params).then(res=>{
-                    console.log('获取方案缓存',res)
+                api.getApi(this.apiVar.Advertisement + '/getAdPlanBackups', params).then(res => {
+                    console.log('获取方案缓存', res)
                     this.continueEditLoading.close()
                     if (res.data.SysCode == 200200) {
-                        console.log('获取缓存成功',res.data)
-                        if(JSON.stringify(res.data.data) === '{}'){
+                        console.log('获取缓存成功', res.data)
+                        if (JSON.stringify(res.data.data) === '{}') {
                             this.$router.push("./createPlan");
-                        }else{
+                        } else {
                             let planInfo = JSON.parse(res.data.data)
                             this.showCookeAdPlan(planInfo)
                             // 缓存到localStorage
@@ -560,21 +597,21 @@
                             this.$router.push("./createPlan");
                         }
                     }
-                }).catch(err=>{
-                    console.log('err',err)
+                }).catch(err => {
+                    console.log('err', err)
                     this.continueEditLoading.close()
-                    if(this.$route.path.includes('planList')){
+                    if (this.$route.path.includes('planList')) {
                         this.$router.push("./createPlan");
                     }
                 })
             },
             // 点位表盘
-            goToDiaPlate(){
-                console.log('this.$router',this.$router)
+            goToDiaPlate() {
+                console.log('this.$router', this.$router)
                 this.$router.push('./adsDialPlate')
             },
             // 显示缓存方案的信息
-            showCookeAdPlan(adPlan){
+            showCookeAdPlan(adPlan) {
                 // this.planForm.realNamesName
                 let ownerSales = (this.sessionData.uType === 'MD' && adPlan.planData.baseInfo.realNamesName) ?
                     adPlan.planData.baseInfo.realNamesName : adPlan.planData.baseInfo.ownerSales
@@ -615,30 +652,30 @@
                 let dataArr = row.cityArea;
                 let sess = this.sessionData;
                 let isRelease = false;
-                if(sess.uType == 'MD' && (sess.mediaManageLevel == 1)){
+                if (sess.uType == 'MD' && (sess.mediaManageLevel == 1)) {
                     isRelease = true;
-                }else{
+                } else {
                     let num = 0;
-                    for(let data of dataArr){
-                        if(data.asrID == sess.asrID){
+                    for (let data of dataArr) {
+                        if (data.asrID == sess.asrID) {
                             num++;
                         }
                     }
-                    if(num == dataArr.length){
+                    if (num == dataArr.length) {
                         isRelease = true;
                     }
                 }
-                if(isRelease){
+                if (isRelease) {
                     // uid         int【必填】     当前账户UserID
                     // apid        int             公司对应方案apID
-                    api.getApi(this.apiVar.Advertisement+"/GetFanganInfo", info)
+                    api.getApi(this.apiVar.Advertisement + "/GetFanganInfo", info)
                         .then(res => {
                             console.log(res.data);
                             if (res.data.SysCode == 200200) {
                                 let text = res.data.data;
-                                if(text.apQC){
+                                if (text.apQC) {
                                     this.QCinfo = text.apQC;
-                                }else{
+                                } else {
                                     this.QCinfo = this.getContractNo(text.rID);
                                 }
                                 MessageBox.prompt("合同编号:", {
@@ -664,7 +701,7 @@
                                 this.messageFun('warning', res.data.MSG);
                             }
                         })
-                }else{
+                } else {
                     this.messageFun('warning', '您没有权限发布该方案');
                 }
             },
@@ -679,23 +716,23 @@
                     apid: this.currentItem.apID,
                 };
                 info.qc = contractNo;
-                api.postApi(this.apiVar.Advertisement+"/SetAdPlan", info)
+                api.postApi(this.apiVar.Advertisement + "/SetAdPlan", info)
                     .then(res => {
                         console.log(res);
-                        if(res.data.SysCode == 300200){
+                        if (res.data.SysCode == 300200) {
                             // 查看是否被锁
-                            api.postApi(this.apiVar.Advertisement+"/CheckLock", info).then(res =>{
+                            api.postApi(this.apiVar.Advertisement + "/CheckLock", info).then(res => {
                                 console.log(res.data);
-                                if(!res.data.SysCode){
-                                    if(!res.data.IsLock){
+                                if (!res.data.SysCode) {
+                                    if (!res.data.IsLock) {
                                         this.releaseFun();
-                                    }else{
+                                    } else {
                                         this.messageFun('warning', "该方案被预锁,请先解除预锁");
                                         this.Ctrlloading.close();
                                     }
                                 }
                             });
-                        }else{
+                        } else {
                             this.messageFun('warning', res.data.MSG);
                             this.Ctrlloading.close();
                         }
@@ -705,7 +742,7 @@
                         this.Ctrlloading.close();
                     });
             },
-            releaseFun(){
+            releaseFun() {
                 let reseleInfo = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
@@ -716,10 +753,10 @@
                 this.releaseFangan(reseleInfo);
             },
             // 发布方案(优化后的接口)
-            releaseFangan(info){
-                api.postApi(this.apiVar.Advertisement+'/SetFangan', info).then(res =>{
+            releaseFangan(info) {
+                api.postApi(this.apiVar.Advertisement + '/SetFangan', info).then(res => {
                     console.log(res.data);
-                    if(res.data.SysCode == 300200){
+                    if (res.data.SysCode == 300200) {
                         this.messageFun('success', res.data.MSG);
                         for (let data of this.currentPlan) {
                             if (data.apID == this.currentItem.apID) {
@@ -727,18 +764,18 @@
                                 break;
                             }
                         }
-                    }else if(res.data.SysCode == 300500){
-                        if(res.data.asList){
+                    } else if (res.data.SysCode == 300500) {
+                        if (res.data.asList) {
                             // 存在点位被占，是否立即去方案详情修改？
                             this.changeRoute();
-                        }else{
+                        } else {
                             this.messageFun('warning', res.data.MSG);
                         }
-                    }else{
+                    } else {
                         this.messageFun('warning', res.data.MSG);
                     }
                     this.Ctrlloading.close();
-                }).catch(res =>{
+                }).catch(res => {
                     this.Ctrlloading.close();
                 });
             },
@@ -757,7 +794,7 @@
                 this.$router.push("./editPlan");
             },
             // 比较两个时间大小
-            compareTime(arr, sField, eField){
+            compareTime(arr, sField, eField) {
                 return dateFormat.compareTime(arr, sField, eField);
             },
             //预锁
@@ -767,40 +804,40 @@
 
                 let startObj = this.compareTime(row.cityArea, 'pdStar', 'pdEnd');
                 let date = timeFormat.toDate(new Date(), '/');
-                if(startObj.startTime<=date){
+                if (startObj.startTime <= date) {
                     this.messageFun('warning', '开始投放时间已经早于当前时间,请直接发布！');
                     return;
                 }
                 this.cityList = this.getCityList(row.cityArea);
-                if(this.cityList.length){
+                if (this.cityList.length) {
                     this.cityChoose = [];
                     this.isLock = true;
                     this.dialogVisible = true;
-                }else{
+                } else {
                     this.messageFun('warning', '方案权限城市内您没有可以预锁的城市');
                 }
             },
             // 获取权限城市内的城市,进行勾选
-            getCityList(arr){
+            getCityList(arr) {
                 // 1)	全国媒介可发布全部销售的方案
                 // 2)	地方媒介只能发布只选择了该所属公司点位的方案
                 // 1)	全国媒介可预锁全部的方案
                 // 2)	地方媒介只能预锁方案中投放至该公司的部分
                 let sess = this.sessionData;
                 let resultArr = [];
-                if(sess.uType == 'MD' && (sess.mediaManageLevel == 1)){
+                if (sess.uType == 'MD' && (sess.mediaManageLevel == 1)) {
                     resultArr = arr;
-                }else{
-                    for(let data of arr){
-                        if(data.asrID == sess.asrID){
+                } else {
+                    for (let data of arr) {
+                        if (data.asrID == sess.asrID) {
                             resultArr.push(data);
                         }
                     }
                 }
                 let asrIDs = [];
                 let resultInfo = [];
-                for(let com of resultArr){
-                    if(!asrIDs.join(',').includes(com.asrID)){
+                for (let com of resultArr) {
+                    if (!asrIDs.join(',').includes(com.asrID)) {
                         asrIDs.push(com.asrID);
                         resultInfo.push(com);
                     }
@@ -820,13 +857,13 @@
                 let params = {
                     apID: row.apID
                 }
-                api.getApi(this.apiVar.Advertisement + '/SplitAdPlan',params).then(res=>{
-                    console.log('方案拆分res',res)
-                    if(res.data.SysCode === 200200) {
-                        sessFun.messageFun('success','拆分成功')
+                api.getApi(this.apiVar.Advertisement + '/SplitAdPlan', params).then(res => {
+                    console.log('方案拆分res', res)
+                    if (res.data.SysCode === 200200) {
+                        sessFun.messageFun('success', '拆分成功')
                         this.searchFun()
                     } else {
-                        sessFun.messageFun('warning',res.data.MSG || '方案异常')
+                        sessFun.messageFun('warning', res.data.MSG || '方案异常')
                     }
                 })
             },
@@ -837,7 +874,7 @@
             // 确定预锁
             confirmLock() {
                 console.log(this.cityChoose);
-                if(this.cityChoose.length){
+                if (this.cityChoose.length) {
                     this.Ctrlloading = Loading.service(
                         {
                             text: "请耐心等待...",
@@ -861,23 +898,23 @@
                         this.noLockCity(arr);
                     }
                     this.dialogVisible = false;
-                }else{
-                    if(this.isLock){
+                } else {
+                    if (this.isLock) {
                         this.messageFun('warning', '请选择预锁公司！');
-                    }else{
+                    } else {
                         this.messageFun('warning', '请选择解锁公司！');
                     }
                 }
             },
             // 预锁
-            LockCity(arr, act){
-                console.log('lockcity----',arr);
+            LockCity(arr, act) {
+                console.log('lockcity----', arr);
                 let asrIDs = [];
-                for(let data of arr){
+                for (let data of arr) {
                     asrIDs.push(data.asrID);
                 }
                 let apid = arr[0].apID;
-                let info ={
+                let info = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                     act: act,
@@ -885,15 +922,15 @@
                     asrIDs: asrIDs.join(',')
                 };
                 console.log(info);
-                api.postApi(this.apiVar.Advertisement+'/SetFangan', info).then(res =>{
+                api.postApi(this.apiVar.Advertisement + '/SetFangan', info).then(res => {
                     console.log(res.data);
-                    if(res.data.SysCode == 300200){
+                    if (res.data.SysCode == 300200) {
                         for (let plandata of this.currentPlan) {
                             if (plandata.apID == this.currentItem.apID) {
-                                for(let item of plandata.cityArea){
-                                    if(info.asrIDs.includes(item.asrID)){
-                                        for(let ridItem of arr){
-                                            if(ridItem.asrID == item.asrID){
+                                for (let item of plandata.cityArea) {
+                                    if (info.asrIDs.includes(item.asrID)) {
+                                        for (let ridItem of arr) {
+                                            if (ridItem.asrID == item.asrID) {
                                                 let RemainDay = this.countDay(ridItem.pdStar);
                                                 item.RemainDay = RemainDay;
                                                 this.$set(item, 'RemainDay', RemainDay);
@@ -908,44 +945,44 @@
                         this.currentPlan.push();
                         this.messageFun('success', res.data.MSG);
 
-                    }else if(res.data.SysCode == 300500){
-                        if(res.data.asList){
+                    } else if (res.data.SysCode == 300500) {
+                        if (res.data.asList) {
                             // 存在点位被占，是否立即去方案详情修改？
                             this.changeRoute();
-                        }else{
+                        } else {
                             this.messageFun('warning', res.data.MSG);
                         }
-                    }else{
+                    } else {
                         this.messageFun('warning', res.data.MSG);
                     }
                     this.Ctrlloading.close();
-                }).catch(err =>{
+                }).catch(err => {
                     console.log(err);
                     this.Ctrlloading.close();
                 });
             },
             // 解锁
-            noLockCity(arr){
+            noLockCity(arr) {
                 let asrIDs = [];
-                for(let data of arr){
+                for (let data of arr) {
                     asrIDs.push(data.asrID);
                 }
                 let apid = arr[0].apID;
-                let info ={
+                let info = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                     apId: apid,
                     asrIDs: asrIDs
                 };
                 console.log(info);
-                api.postApi(this.apiVar.Advertisement+'/ClFangan', info).then(res =>{
+                api.postApi(this.apiVar.Advertisement + '/ClFangan', info).then(res => {
                     console.log(res.data);
                     this.Ctrlloading.close();
-                    if(res.data.SysCode == 300200){
+                    if (res.data.SysCode == 300200) {
                         for (let plandata of this.currentPlan) {
                             if (plandata.apID == this.currentItem.apID) {
-                                for(let item of plandata.cityArea){
-                                    if(info.asrIDs.includes(item.asrID)){
+                                for (let item of plandata.cityArea) {
+                                    if (info.asrIDs.includes(item.asrID)) {
                                         delete item.RemainDay;
                                     }
                                 }
@@ -955,20 +992,20 @@
                         this.currentPlan.push();
                     }
                     this.messageFun('success', res.data.MSG);
-                }).catch(err =>{
+                }).catch(err => {
                     console.log(err);
                     this.Ctrlloading.close();
                 });
             },
             // 7天以上显示7天,否则显示相隔天数
-            countDay(time){
+            countDay(time) {
                 let dayA = Math.abs(timeFormat.getDayBetween(time, new Date()));
                 console.log('dayA-----', dayA);
-                let RemainDay = dayA>7?7:dayA;
+                let RemainDay = dayA > 7 ? 7 : dayA;
                 return RemainDay;
             },
             // 弹出框修改路径
-            changeRoute(){
+            changeRoute() {
                 MessageBox.confirm(
                     `存在点位被占，是否修改方案？`,
                     "提示",
@@ -986,26 +1023,26 @@
                     });
             },
             // 搜索（优化）
-            search(){
-                let { keyword, rangeDate, status, company, cityWord, Lock } = this.searchInfo;
+            search() {
+                let {keyword, rangeDate, status, company, cityWord, Lock} = this.searchInfo;
                 this.isSearch = false;
-                let timer = setTimeout(()=>{
+                let timer = setTimeout(() => {
                     this.isSearch = true;
                     clearTimeout(timer);
                 }, 1000);
-                if(
-                    keyword || rangeDate || (status===0 || status>0) || company || cityWord || Lock
-                ){
+                if (
+                    keyword || rangeDate || (status === 0 || status > 0) || company || cityWord || Lock
+                ) {
                     this.currentPlan = [];
                     this.loading = true;
-                    this.currPage  = 1;
+                    this.currPage = 1;
                     this.searchFun();
 
-                }else{
+                } else {
                     this.messageFun('warning', '请输入搜索条件');
                 }
             },
-            searchFun(){
+            searchFun() {
                 this.paginationShow = false;
                 this.loading = true;
                 let info = this.searchFormat();
@@ -1015,29 +1052,29 @@
                 });
             },
             // 搜索数据格式化
-            searchFormat(){
+            searchFormat() {
                 let info = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                     start: this.currPage,
                     pagesize: this.pageSize
                 };
-                let { select, keyword, rangeDate, status, company, cityWord, Lock, orderby, desc } = this.searchInfo;
+                let {select, keyword, rangeDate, status, company, cityWord, Lock, orderby, desc} = this.searchInfo;
                 info = {
                     ...info,
                     ...(keyword && {keywordType: select, keyword}),
                     ...(rangeDate && {starttime: rangeDate[0], andtime: rangeDate[1]}),
-                    ...(status!=='' && status>=0 && {apstate: status}),
+                    ...(status !== '' && status >= 0 && {apstate: status}),
                     ...(company && {asrID: company}),
                     ...(cityWord && {rname: cityWord}),
                     ...(Lock && {onyusuo: Lock}),
                     ...(orderby && {orderby}),
-                    ...(desc!=='' && desc>=0 &&{desc})
+                    ...(desc !== '' && desc >= 0 && {desc})
                 };
                 return info;
             },
             // 设置表格数据
-            setTableData(item){
+            setTableData(item) {
                 let obj = {
                     adcID: item.adcID,
                     apID: item.apID,
@@ -1052,14 +1089,14 @@
                     // isKA: item.isKA,     // 1：ka销售方案，不可发布及预锁
                     apControlLevel: item.apControlLevel   // 1:可预锁、发布 2：可拆单、不可预锁和发布 3.表示KA销售单已拆，不可（拆单、预锁、发布）
                 };
-                item.details.sort((a, b)=>{
+                item.details.sort((a, b) => {
                     return a.asrID - b.asrID;
                 });
                 let asrIDarr = [];
-                for(let data of item.details){
-                    if(asrIDarr.includes(data.asrID)){
+                for (let data of item.details) {
+                    if (asrIDarr.includes(data.asrID)) {
                         data.isshow = 0;
-                    }else{
+                    } else {
                         asrIDarr.push(data.asrID);
                         data.isshow = 1;
                     }
@@ -1071,7 +1108,7 @@
                 return jsonData.map(v => filterVal.map(j => v[j]))
             },
             // 重置
-            reset(){
+            reset() {
                 this.searchInfo = {
                     select: "1",
                     keyword: "",
@@ -1085,14 +1122,14 @@
                 this.currPage = 1;
                 this.currentPlan = [];
                 this.isReset = false;
-                let timer = setTimeout(()=>{
+                let timer = setTimeout(() => {
                     this.isReset = true;
                     clearTimeout(timer);
                 }, 1000);
                 this.searchFun();
             },
             // 操作提示统一方法
-            messageFun(mesType, mes){
+            messageFun(mesType, mes) {
                 this.$message({
                     message: mes,
                     type: mesType,
@@ -1100,7 +1137,7 @@
                 })
             },
             // 放弃继续编辑
-            cancelEdit(){
+            cancelEdit() {
                 this.$confirm('放弃后将清除该方案信息及点位!', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -1112,8 +1149,8 @@
                         uid: this.sessionData.uID,
                         token: this.sessionData.token
                     }
-                    api.postApi(this.apiVar.Advertisement + '/clearAdPlanBackups',params).then(res=>{
-                        console.log('清空缓存的方案',res)
+                    api.postApi(this.apiVar.Advertisement + '/clearAdPlanBackups', params).then(res => {
+                        console.log('清空缓存的方案', res)
                         if (res.data.SysCode == 200200) {
                             console.log('缓存方案清除成功')
                         } else {
@@ -1127,7 +1164,7 @@
                 })
             },
             // 继续创建
-            continueEdit(){
+            continueEdit() {
                 this.continueEditLoading = this.$loading({
                     lock: true,
                     text: '方案数据获取中...',
@@ -1139,7 +1176,7 @@
             },
         },
         beforeDestroy() {
-            if(this.continueEditLoading){
+            if (this.continueEditLoading) {
                 this.continueEditLoading.close()
             }
         }
@@ -1186,6 +1223,7 @@
     /deep/ .el-input-group--prepend .el-input__inner {
         width: 185px;
     }
+
     /deep/ .min_input .el-input-group--prepend .el-input__inner {
         width: 110px;
     }
@@ -1195,11 +1233,12 @@
         border-radius: 4px;
     }
 
-    .flex_box{
+    .flex_box {
         display: flex;
         flex-wrap: wrap;
     }
-    .marginR{
+
+    .marginR {
         margin-right: 6px;
         margin-bottom: 16px;
     }
@@ -1220,12 +1259,14 @@
         top: -2px;
     }
 
-    /deep/.search_row .el-input__inner {
+    /deep/ .search_row .el-input__inner {
         width: 140px;
     }
-    /deep/ .el-date-editor{
+
+    /deep/ .el-date-editor {
         width: 245px;
     }
+
     /deep/ .el-date-editor i,
     /deep/ .el-date-editor input,
     /deep/ .el-date-editor span {
@@ -1248,16 +1289,53 @@
         color: #409EFF;
     }
 
-    .mediaList_wrap .mediaList_container .table_wrap{
+    .mediaList_wrap .mediaList_container .table_wrap {
         margin: 0 auto 16px;
     }
-    .el-button+.el-button{
+
+    .el-button + .el-button {
         margin-left: 0;
     }
-    .table_wrap .city_p span{
+
+    .table_wrap .city_p span {
         float: none !important;
     }
-    /deep/ .el-date-editor--daterange.el-input__inner{
+
+    .table_wrap .city_p {
+        position: relative;
+    }
+
+    .table_wrap .city_p .lock-icon {
+        position: absolute;
+        right: 0px;
+        top: 0px;
+
+    }
+
+    .table_wrap .city_p .lock-icon b {
+        display: inline-block;
+        padding: 0 4px;
+        font-size: 12px;
+        height: 16px;
+        line-height: 16px;
+        text-align: center;
+    }
+
+    .table_wrap .city_p .lock-icon b.blue {
+        color: #1890FF;
+        background: rgba(230, 247, 255, 1);
+        border-radius: 2px;
+        border: 1px solid rgba(145, 213, 255, 1);
+    }
+
+    .table_wrap .city_p .lock-icon b.red {
+        color: #FA541C;
+        background: rgba(255, 242, 232, 1);
+        border-radius: 2px;
+        border: 1px solid rgba(255, 187, 150, 1);
+    }
+
+    /deep/ .el-date-editor--daterange.el-input__inner {
         width: 240px;
     }
 
@@ -1265,26 +1343,31 @@
         float: none !important;
     }
 
-    /deep/ .el-table td .cell{
+    /deep/ .el-table td .cell {
         padding: 2px 10px;
         height: auto;
         line-height: 28px;
     }
+
     /*未完成方案*/
-    /deep/ .unfinished_plan_dialog .el-dialog__header{
+    /deep/ .unfinished_plan_dialog .el-dialog__header {
         padding: 20px 20px;
         border-bottom: 1px solid #E8E8E8;
     }
-    /deep/ .unfinished_plan_dialog .el-dialog__title{
+
+    /deep/ .unfinished_plan_dialog .el-dialog__title {
         font-size: 15px;
     }
-    /deep/ .unfinished_plan_dialog .el-dialog__body{
+
+    /deep/ .unfinished_plan_dialog .el-dialog__body {
         padding: 10px 20px;
     }
-    /deep/ .unfinished_plan_dialog .el-dialog__title{
+
+    /deep/ .unfinished_plan_dialog .el-dialog__title {
         font-weight: bold;
     }
-    .unfinished_plan_li{
+
+    .unfinished_plan_li {
         line-height: 28px;
     }
 </style>

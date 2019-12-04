@@ -30,9 +30,9 @@
                         <div class="handleBtn">
                             <el-button type="plain" @click="changePain()" v-if="role=='MD'"
                                        v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt110_ck04'}">换画</el-button>
-                            <el-button type="primary" :disabled="usableBtn"
-                                       v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0" @click="changePoint"
-                                       v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}">换点</el-button>
+                            <!--<el-button type="primary" :disabled="usableBtn"-->
+                                       <!--v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0" @click="changePoint" v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}">换点</el-button>-->
+                            <el-button type="primary" v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0" @click="changePoint" v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}">换点</el-button>
                         </div>
                     </div>
                     <div>
@@ -44,10 +44,10 @@
                 <el-tabs v-model="planPanel" @tab-click="handleClick()">
                     <el-tab-pane label="选点排期" name="first">
                         <div class="first-wrap box-wrap">
-                            <h4 v-if="showTitle" style="margin-bottom:16px;">
+                        <!--    <h4 v-if="showTitle" style="margin-bottom:16px;">
                                 更换点位
                                <span>单位:面&nbsp;&nbsp; 首次投放:{{nowPointNum}}&nbsp;&nbsp; 中止投放:{{stopPointNum}} &nbsp;&nbsp;&nbsp; 新增面数:{{addNewPointNum}} &nbsp;&nbsp;&nbsp; 累计投放:{{setpointArr.length}} </span>
-                            </h4>
+                            </h4>-->
                             <el-row class="search-row">
                                 <el-col>
                                     <el-input placeholder="请输入内容" v-model="keyword" class="input-with-select" @change="init()">
@@ -57,10 +57,9 @@
                                     </el-input>
                                     <el-button type="primary" icon="el-icon-search" @click="search()"
                                                v-qadn-mta-h5="{id: showHandel ? 'a006_b011_c012_d000_bt149_ck01' : 'a006_b011_c006_d000_bt121_ck01'}">搜索</el-button>
-                                    <el-button type="primary" @click="showAddPointDialog" v-show="showHandel"
-                                               v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt150_ck04'}">添加点位</el-button>
-                                    <el-button plain type="default" icon="el-icon-download" @click="export2Excel(orderDetail.apName)" :disabled="isDown"
-                                               v-qadn-mta-h5="{id: 'a006_b011_c006_d000_bt122_ck05'}">导出</el-button>
+                                    <!--<el-button type="primary" @click="showAddPointDialog" v-show="showHandel" v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt150_ck04'}">添加点位</el-button>-->
+                                    <el-button plain type="default" icon="el-icon-download" @click="export2Excel(orderDetail.apName)" :disabled="isDown" v-qadn-mta-h5="{id: 'a006_b011_c006_d000_bt122_ck05'}">导出</el-button>
+                                    <el-button style="float: right" plain type="default">更改记录</el-button>
                                 </el-col>
                             </el-row>
                             <div class="table_wrap">
@@ -90,16 +89,28 @@
                                             </el-form>
                                         </template>
                                     </el-table-column>
-                                    <el-table-column label="资源名称" min-width="16.1%">
+                                    <el-table-column label="资源名称" min-width="16.1%" class-name="resName-wrap">
                                         <template slot-scope="scope">
-                                            <el-popover v-show="scope.row.isNew"
-                                                        placement="top-start"
-                                                        title="新增时间"
-                                                        width="200"
-                                                        trigger="hover"
-                                                        :content="formatToTime(scope.row.lSetTime)">
-                                                <span slot="reference" style="font-size: 18px;color: red">*</span>
-                                            </el-popover>
+                                            <div style="float:left;position: absolute;left: 0;top: 0">
+                                                <!--<el-popover v-show="scope.row.isNew"-->
+                                                            <!--placement="top-start"-->
+                                                            <!--title="新增时间"-->
+                                                            <!--width="200"-->
+                                                            <!--trigger="hover"-->
+                                                            <!--:content="formatToTime(scope.row.lSetTime)">-->
+                                                    <!--<span slot="reference" style="font-size: 18px;color: red">*</span>-->
+                                                    <div v-if="scope.row.isNew" slot="reference" class="color-line"></div>
+                                                <!--</el-popover>-->
+                                                <!--<el-popover v-show="scope.row.lState==2"-->
+                                                            <!--placement="top-start"-->
+                                                            <!--title="终止时间"-->
+                                                            <!--width="200"-->
+                                                            <!--trigger="hover"-->
+                                                            <!--:content="formatToTime(scope.row.lSetTime)">-->
+                                                    <!--<span slot="reference" style="font-size: 18px;color: red">*</span>-->
+                                                    <div  v-if="scope.row.lState==2" slot="reference" class="color-line" style="background-color: #FF763B"></div>
+                                                <!--</el-popover>-->
+                                            </div>
                                             <span>{{scope.row.resName||'--'}}</span>
                                         </template>
                                     </el-table-column>
@@ -140,19 +151,38 @@
                                             <span v-else>{{scope.row.timeRange}}</span>
                                         </template>
                                     </el-table-column>
-                                    <el-table-column label="操作" min-width="4.3%" v-if="showHandel">
+                                   <!-- <el-table-column label="操作" min-width="4.3%" v-if="showHandel">
                                         <template slot-scope="scope">
                                             <span style="color:#999;cursor: pointer;" v-if="scope.row.lState==2">终止</span>
                                             <span style="color:#409EFF;cursor: pointer;" v-else @click="disContinue(scope.row)"
                                                   v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt151_ck05'}">终止</span>
                                         </template>
-                                    </el-table-column>
+                                    </el-table-column>-->
 
                                     <div slot="empty">
                                         <no-search-result></no-search-result>
                                     </div>
                                 </el-table>
-                                <p style="font-size: 12px;color: #666666;margin-top: 10px">提示：带*号的为新增点位</p>
+                                <!--<p style="font-size: 12px;color: #666666;margin-top: 10px">提示：带*号的为新增点位</p>-->
+                                <div class="table-bottom-tip">
+                                    <div style="display: flex">
+                                        <p><span style="background-color: #1890ff" class="color-line"></span>新增点位</p>
+                                        <p><span style="background-color: #FF763B" class="color-line"></span>终止点位</p>
+                                    </div>
+                                    <div class="ad_pagination" v-if="total">
+                                        <el-pagination
+                                            background
+                                            layout="total, sizes, prev, pager, next, jumper"
+                                            @current-change="changePage"
+                                            @size-change="sizeChange"
+                                            :page-sizes="[10,20,50,100]"
+                                            :current-page.sync="currPage"
+                                            :page-size="pageSize"
+                                            :total="total">
+                                        </el-pagination>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </el-tab-pane>
@@ -210,6 +240,139 @@
                         <el-button type="primary" @click="conFirmStopAds">确 定</el-button>
                     </span>
                 </el-dialog>
+
+                <!--换点对话框-->
+                <el-dialog title="更换点位" :visible.sync="dialogChangePoint" before-close="closeDialogChangePoint">
+                    <div>
+                        <el-row class="search-row">
+                            <el-col>
+                                <el-input placeholder="请输入内容" v-model="keyword" class="input-with-select" @change="init()" style="width: 300px">
+                                    <el-select v-model="selectRecName" slot="prepend" placeholder="请选择">
+                                        <el-option label="资源名称" value="1"></el-option>
+                                    </el-select>
+                                </el-input>
+                                <el-button type="plain" icon="el-icon-search" @click="search()"
+                                           v-qadn-mta-h5="{id: showHandel ? 'a006_b011_c012_d000_bt149_ck01' : 'a006_b011_c006_d000_bt121_ck01'}">搜索</el-button>
+                                <el-button type="plain" icon="el-icon-search" @click="search()">重置</el-button>
+                               <div style="float: right">
+                                   <el-button type="primary" @click="showAddPointDialog"
+                                              v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt150_ck04'}">新增点位</el-button>
+                                   <el-dropdown >
+                                       <el-button type="primary">
+                                           批量操作<i class="el-icon-arrow-down el-icon--right"></i>
+                                       </el-button>
+                                       <el-dropdown-menu slot="dropdown">
+                                           <el-dropdown-item @click.native="showUpload()">换画</el-dropdown-item>
+                                           <el-dropdown-item @click.native="cancelPain('all')">取消换画</el-dropdown-item>
+                                       </el-dropdown-menu>
+                                   </el-dropdown>
+                               </div>
+
+                            </el-col>
+                        </el-row>
+                        <div class="table_wrap">
+                            <el-table border :data="currentSetpoint" style="width: 100%"
+                                      :default-sort="{prop: 'recName', order: 'descending'}"
+                                      v-loading="loading"
+                                      element-loading-text="玩命加载中.."
+                                      element-loading-spinner="el-icon-loading">
+                                <el-table-column type="expand">
+                                    <template slot-scope="props">
+                                        <el-form label-position="left" inline class="demo-table-expand">
+                                            <el-form-item label="商圈：">
+                                                <span>{{ props.row.tradingArea}}</span>
+                                            </el-form-item>
+                                            <el-form-item label="楼栋数量：">
+                                                <span>{{ props.row.fNum }}</span>
+                                            </el-form-item>
+                                            <el-form-item label="资产编号：">
+                                                <span>{{ props.row.assetTag }}</span>
+                                            </el-form-item>
+                                            <el-form-item label="入住年份：">
+                                                <span>{{ props.row.chDay }}</span>
+                                            </el-form-item>
+                                            <el-form-item label="广告限制：">
+                                                <span>{{ props.row.notPush }}</span>
+                                            </el-form-item>
+                                        </el-form>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="资源名称" min-width="16.1%" class-name="resName-wrap">
+                                    <template slot-scope="scope">
+                                        <span>{{scope.row.resName||'--'}}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="mTitle" label="媒体名称" min-width="10.3%">
+                                </el-table-column>
+                                <el-table-column prop="asLab" label="投放面" min-width="8.8%">
+                                </el-table-column>
+                                <el-table-column prop="city" label="城市" min-width="6%" :filters="filterCityData" :filter-method="filterCity">
+                                </el-table-column>
+                                <el-table-column prop="rName" label="区域" min-width="7.4%" :filters="filtersArea" :filter-method="filterRName">
+                                </el-table-column>
+                                <el-table-column prop="cType" label="楼盘类型" min-width="8.8%">
+                                    <template slot-scope="scope">
+                                        <span>{{scope.row.cType||'--'}}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="hNum" label="小区户数" min-width="7.3%" align="right">
+                                    <template slot-scope="scope">
+                                        <span>{{(scope.row.hNum)?priceToFormat(scope.row.hNum):0}}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="楼盘价格" min-width="7.3%" align="right">
+                                    <template slot-scope="scope">
+                                        <span>&yen;{{(scope.row.hPrice)?priceFormat(scope.row.hPrice/100): 0 }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="timeRange" label="排期" min-width="14.2%" :filters="filtersData" :filter-method="filterTimeRange">
+                                    <template slot-scope="scope">
+                                        <template v-if="scope.row.lState==2">
+                                            <span>{{scope.row.finishTimeRange}}</span>
+                                            <el-tooltip placement="top">
+                                                <div slot="content">
+                                                    <span>{{scope.row.timeRange}}</span>
+                                                </div>
+                                                <i class="el-icon-question"> </i>
+                                            </el-tooltip>
+                                        </template>
+                                        <span v-else>{{scope.row.timeRange}}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="操作" min-width="4.3%" v-if="showHandel">
+                                    <template slot-scope="scope">
+                                        <span style="color:#999;cursor: pointer;" v-if="scope.row.lState==2">终止</span>
+                                        <span style="color:#409EFF;cursor: pointer;" v-else @click="disContinue(scope.row)"
+                                              v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt151_ck05'}">终止</span>
+                                    </template>
+                                </el-table-column>
+
+                                <div slot="empty">
+                                    <no-search-result></no-search-result>
+                                </div>
+                            </el-table>
+                            <!--<p style="font-size: 12px;color: #666666;margin-top: 10px">提示：带*号的为新增点位</p>-->
+                            <div class="ad_pagination" v-if="total">
+                                <el-pagination
+                                    background
+                                    layout="total, sizes, prev, pager, next, jumper"
+                                    @current-change="changePage"
+                                    @size-change="sizeChange"
+                                    :page-sizes="[10,20,50,100]"
+                                    :current-page.sync="currPage"
+                                    :page-size="pageSize"
+                                    :total="total">
+                                </el-pagination>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div slot="footer" class="dialog-footer">
+                        <el-button @click="dialogChangePoint = false">取 消</el-button>
+                        <el-button type="primary" @click="dialogChangePoint = false">提 交</el-button>
+                    </div>
+                </el-dialog>
+
             </div>
             <!-- 返回框 -->
             <div class="content_bottom_btn">
@@ -252,6 +415,10 @@ export default {
             // session信息
             sessionData: {},
             isDown: false,
+            //点位列表分页
+            total:1,
+            currPage:1,
+            pageSize:10,
             //加载中
             loading: true,
             maLoading: true,
@@ -339,6 +506,8 @@ export default {
             showTitle: false,
             //选点排期按钮
             showBtn: true,
+            //更换点位对话框
+            dialogChangePoint:false,
             //更换点位取消终止按钮
             cancelbtnShow: false,
             //选点排期操作
@@ -410,6 +579,26 @@ export default {
         },
     },
     methods: {
+        //更换点位对话框
+        closeDialogChangePoint(){
+          //重置页数页码
+            this.currPage = 1;
+            this.pageSize = 10;
+            this.dialogChangePoint = false
+        },
+        // 改变页数
+        sizeChange(pageVal) {
+            this.loading = true;
+            this.currPage = 1;
+            this.pageSize = pageVal;
+            this.getSetPoint();
+        },
+        // 点击页数
+        changePage(page) {
+            this.loading = true;
+            this.currPage = page;
+            this.getSetPoint();
+        },
         setInfo(data){
            console.log('defail------data', data);
             this.pdidList = data;
@@ -493,18 +682,18 @@ export default {
         },
         //返回列表
         goBack() {
-            let isChange = sessionStorage.getItem('change_point');
-            if(isChange =='yes'){
-                sessionStorage.setItem('change_point', 'no');
-                // location.reload();
-                this.usableBtn = false;
-                $(window).scrollTop(0);
-                this.showTitle = false;
-                this.showBtn = true;
-                this.showHandel = false;
-            }else{
+            // let isChange = sessionStorage.getItem('change_point');
+            // if(isChange =='yes'){
+            //     sessionStorage.setItem('change_point', 'no');
+            //     // location.reload();
+            //     this.usableBtn = false;
+            //     $(window).scrollTop(0);
+            //     this.showTitle = false;
+            //     this.showBtn = true;
+            //     this.showHandel = false;
+            // }else{
                 this.$router.push("./orderList");
-            }
+            // }
         },
         // 获取选点排期列表数据
         getInitData() {
@@ -870,6 +1059,7 @@ export default {
             this.showTitle = true;
             this.showBtn = false;
             this.showHandel = true;
+            this.dialogChangePoint = true
         },
         //保存更换点位
         saveChangePoint() {
@@ -1037,6 +1227,26 @@ export default {
 </script>
 
 <style scoped>
+    /*选点排期列表底部提示*/
+    .table-bottom-tip{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color:rgba(0,0,0,0.45);
+        font-size: 12px;
+        margin-top: 24px;
+    }
+    .table-bottom-tip p{
+        margin-right: 24px;
+    }
+    .table-bottom-tip .color-line{
+        display: inline-block;
+        width:2px;
+        height:12px;
+        margin-right: 8px;
+        position: relative;
+        top: 2px;
+    }
     /*修改合同号*/
     .changeCID {
         color: #1890ff;
@@ -1385,5 +1595,15 @@ export default {
 
     .box-wrap, #pane-second{
         margin-bottom: 32px;
+    }
+    .resName-wrap{
+        position: relative;
+    }
+    .resName-wrap .color-line{
+        float: left;
+        width:3px;
+        height:47px;
+        background-color: #1890ff;
+
     }
 </style>

@@ -159,10 +159,12 @@
             custom-class="price-dialog"
             :before-close="cancelChangePrice">
             <p>原订单金额 <span style="color: #1890ff">&yen;{{currPrice}}</span> 修改为：</p>
-            <div class="num-input-wrap">
+            <div class="num-input-wrap" :class="inputErr?'input-err-wrap':''">
                 <span>&yen;</span>
-                <el-input-number v-model="changePrice" controls-position="right" :controls="false" @change="inputPrice" :min="0" :max="999999999"></el-input-number>
+                <el-input-number placehlder="请输入修改金额" v-model="changePrice" controls-position="right" :controls="false" @change="inputPrice" :min="0" :max="999999999"></el-input-number>
+
             </div>
+            <p v-if="inputErr" style="font-size: 12px;color: #F5222D;margin-top: 4px;text-align: right">尚未填写修改金额</p>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="cancelChangePrice">取 消</el-button>
                 <el-button type="primary" @click="confirmChangePrice">确 定</el-button>
@@ -250,8 +252,9 @@
                 // 保留点击申请画像当前行
                 orderRow: {},
                 changePriceModal:false,
-                changePrice:'',
+                changePrice:undefined,
                 currPrice:0,
+                inputErr:false,
             };
         },
         mounted() {
@@ -602,9 +605,17 @@
             //修改订单金额
             inputPrice(){
                 console.log(this.changePrice);
+                if(this.changePrice!=0||this.changePrice!=undefined){
+                    this.inputErr = false
+                }
             },
             confirmChangePrice(){
-
+                if(this.changePrice==0||this.changePrice==undefined){
+                    this.inputErr = true
+                    // Message.info('尚未填写修改金额')
+                }else{
+                    this.inputErr = false
+                }
             },
             cancelChangePrice(){
                 this.changePriceModal = false
@@ -924,6 +935,10 @@
         border:1px solid rgba(0,0,0,0.15);
         border-radius:4px;
     }
+    .price-dialog .num-input-wrap.input-err-wrap{
+        border-color: #F5222D;
+    }
+
     .price-dialog .num-input-wrap span{
         display: inline-block;
         width: 30px;

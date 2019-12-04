@@ -3109,14 +3109,12 @@
                     // A/B面
                     if (key.asLabs.indexOf('A') === -1) {
                         adObj.box.A = true;
-
                     } else {
                         //本页可选点位
                         i++;
                     }
                     if (key.asLabs.indexOf('B') === -1) {
                         adObj.box.B = true;
-
                     } else {
                         //本页可选点位
                         i++;
@@ -3805,7 +3803,6 @@
                     if (this.currPageSelect == this.currPageAsLength) {
                         this.IsAll = true
                     } else {
-                        console.log(2);
                         this.IsAll = false
                     }
                 }
@@ -3906,19 +3903,7 @@
             // 全选表格点位
             allSelectAdsBtn() {
                 console.log('全选')
-                // for (let pkey of this.planList) {
-                //     if(this.mediaType === '广告门'){
-                //         // 根据是否被占用去打勾
-                //         if (!pkey.box.A) {
-                //             pkey.checkBox.A = true
-                //         }
-                //         if (!pkey.box.B) {
-                //             pkey.checkBox.B = true
-                //         }
-                //     }else if(this.mediaType === '道闸'){
-                //         pkey.checkBox.ABC = true
-                //     }
-                // }
+
                 if (this.mediaType === '广告门') {
                     this.allSelectToShop_adDoor()
                 } else if (this.mediaType === '道闸') {
@@ -3952,6 +3937,7 @@
                         }
                     }
                 }
+                this.currPageSelect = 0
                 // this.computeMedia_AD()
             },
             //获取mouseEnter屏幕时的坐标像素

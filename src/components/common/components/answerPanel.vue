@@ -28,7 +28,7 @@
             backToList() {
 
                 let type = JSON.parse(sessionStorage.getItem('questionInfo')).fromPage
-                console.log(type);
+                // console.log(type);
                 this.componentType = type=='search'?3:1
                 this.$emit("callbackComponentType", this.componentType)
             }

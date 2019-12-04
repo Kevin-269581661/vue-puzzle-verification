@@ -34,6 +34,7 @@
                 <template slot="title">亲邻智邻</template>
                 <el-menu-item index="/sale/communityPortrait">社区画像</el-menu-item>
                 <el-menu-item index="/sale/communityRank">社区排名</el-menu-item>
+                <el-menu-item index="" @click="goResContrastMap">资源对比</el-menu-item>
             </el-submenu>
             <el-submenu index="9" class="user_center" popper-class="user_center_item" :show-timeout="80">
                 <template slot="title">
@@ -163,6 +164,12 @@
                     sessionStorage.clear();
                 }
             },
+            goResContrastMap(){
+                const {href} = this.$router.resolve({
+                    path: '/resContrastMap',
+                })
+                window.open(href, '_blank')
+            }
         },
         computed:{
             isActive(val) {

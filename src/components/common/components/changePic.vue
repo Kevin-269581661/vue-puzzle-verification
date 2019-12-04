@@ -124,7 +124,7 @@
                             </label>
                             <div class="icon_box" v-if="showPreImg === img.pID">
                                 <p class="img_box_icon">
-                                    <i class="el-icon-search" @click="previewImg(img.pURL)"></i>
+                                    <i class="el-icon-search" @click="handlePictureCardPreview(img.pURL)"></i>
                                     <i class="el-icon-star-off" v-if="!img.isCollection"
                                        @click="saveImgFun(item, imgIndex)"></i>
                                     <i v-if="img.isCollection" class="el-icon-star-on icon_save"
@@ -609,6 +609,7 @@
                 isShowChanggPicForm: false,
                 isSearch: false,
                 // selectNum:0,//当前选择的点位
+                handleFlag:false,
             };
         },
         mounted() {
@@ -1100,6 +1101,7 @@
                 this.selectList = [];
                 this.selectNum = 0;
                 this.pointArr = [];
+                this.handleFlag = false
                 // 获取资源名称列表
                 this.getDialogInfoResArr();
                 // 获取地图中心点
@@ -1143,9 +1145,7 @@
                             let dataArr = dataInfo.dataList;
                             // this.pointArr = this.pointArr.concat(this.formatData(dataArr));
                             this.pointArr = this.formatData(dataArr)
-                            // if (this.isSearch && this.dialogInfo.picState !== '') {
-                            //     this.formateResult()
-                            // }
+
                             this.dialogPage = {
                                 ...this.dialogPage,
                                 loading_maInfo: true,
@@ -1185,46 +1185,7 @@
                 };
                 return obj;
             },
-            //搜索结果格式化
-            formateResult() {
-                console.log(this.pointArr, this.shoplist, this.isSearch, this.dialogInfo.picState);
-                // for (let data of this.shoplist) {
-                //     if (this.dialogInfo.picState === 1) {
-                //         //搜索已指定
-                //         if (data.replaceDate) {
-                //             this.pointArr.push(data)
-                //         }
-                //     } else if (this.dialogInfo.picState === 0) {
-                //         //搜索未指定
-                //         if (data.replaceDate) {
-                //             // this.pointArr.push(data)
-                //             console.log(data);
-                //             this.pointArr.splice(this.pointArr.indexOf(data), 1)
-                //             // this.pointArr.splice(data,1)
-                //         }
-                //     }
-                // }
-                console.log(this.pointArr);
-                //搜到的
-                for (let data of this.pointArr) {
-                    for (let item of this.shoplist) {
-                        if (this.dialogInfo.picState === 1) {
-                            //搜索已选
-                            if (!item.replaceDate && data.lID == item.lID) {
-                                console.log(data);
-                                this.pointArr.splice(this.pointArr.indexOf(data), 1)
-                            }
-                        } else if (this.dialogInfo.picState === 0) {
-                            //搜索未选
-                            if (item.replaceDate && data.lID == item.lID) {
-                                this.pointArr.splice(this.pointArr.indexOf(data), 1)
-                            }
-                        }
-                    }
 
-                }
-
-            },
             //点击编辑
             showChangePicDetailModal(item) {
                 if (!item.replaceDate) {
@@ -1430,7 +1391,7 @@
             resetPoint() {
                 this.isSearch = false
                 let info = {
-                    resName: "",
+                    resName: [],
                     picState: "",
                     mapName: ""
                 };
@@ -1451,6 +1412,7 @@
             },
             // 查看图片
             previewImg(file) {
+                console.log(file);
                 this.dialogImageUrl = file.url;
                 this.dialogVisible = true;
             },
@@ -1528,6 +1490,7 @@
             // 提交换画信息
             confirmChange(type) {
                 console.log(this.selectList);
+                this.handleFlag = true
                 if (type == 'all') {
                     let {date, url, remark} = this.allEditInfo;
                     if (date) {
@@ -1599,8 +1562,9 @@
             ,
             // 保存
             saveAll() {
-                console.log(this.pointArr, this.shoplist);
-                if (this.shoplist.length) {
+                console.log(this.handleFlag, this.shoplist);
+
+                if (this.handleFlag&&this.shoplist.length) {
                     let result = [];
                     for (let data of this.shoplist) {
                         let obj = {
@@ -1610,22 +1574,18 @@
                         };
                         result.push(obj);
                     }
-                    if (result.length) {
-                        api.postApi_json(this.apiVar.replace + '/report/saveDetailInfo', result).then(res => {
-                            console.log(res.data);
-                            if (res.data.SysCode == 200200) {
-                                this.isShowPic = false;
-                                sessFun.messageFun('success', res.data.MSG);
-                            } else {
-                                sessFun.messageFun('warning', res.data.MSG);
-                            }
-                            this.search();
-                        });
-                    } else {
-                        sessFun.messageFun('warning', '没有需要保存的点');
-                    }
+                    api.postApi_json(this.apiVar.replace + '/report/saveDetailInfo', result).then(res => {
+                        console.log(res.data);
+                        if (res.data.SysCode == 200200) {
+                            this.isShowPic = false;
+                            sessFun.messageFun('success', res.data.MSG);
+                        } else {
+                            sessFun.messageFun('warning', res.data.MSG);
+                        }
+                        this.search();
+                    });
                 } else {
-                    sessFun.messageFun('warning', '没有需要保存的点');
+                    sessFun.messageFun('warning', '没有点位信息发生变更，请先对点位进行操作');
                 }
             }
             ,
@@ -1666,16 +1626,16 @@
             ,
             // 移除换画
             removePain(type) {
-                let result = [];
+                this.handleFlag = true
                 if (type == 'all') {
                     //批量
                     for (let item of this.pointArr) {
+                        this.$refs.multipleTable.toggleRowSelection(item, false);
                         for (let data of this.selectList) {
                             if (item.replaceDate && item.lID == data.lID) {
                                 item.picUrl = ''
                                 item.remark = ''
                                 item.replaceDate = ''
-                                this.$refs.multipleTable.toggleRowSelection(item, false);
                             }
                         }
                     }
@@ -1956,7 +1916,8 @@
             ,
             // 查看预览图片
             handlePictureCardPreview(file) {
-                this.dialogImageUrl = file.url;
+                console.log(file);
+                this.dialogImageUrl = file;
                 this.dialogVisible = true;
             }
             ,

@@ -179,14 +179,7 @@
                 if(key === '/login'){
                     sessionStorage.clear();
                 }
-                // if(key=='/resContrastMap'){
-                //     const {href} = this.$router.resolve({
-                //         path: '/resContrastMap',
-                //     })
-                //     window.open(href, '_blank')
-                //     // let url = this.apiVar.qadnUrl + '/resContrastMap'
-                //     // window.open(url)
-                // }
+
             },
             goResContrastMap(){
                 const {href} = this.$router.resolve({

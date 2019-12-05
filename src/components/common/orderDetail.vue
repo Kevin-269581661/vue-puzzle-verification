@@ -10,12 +10,14 @@
             </div>
             <!--资源信息-->
             <div class="mediaList_wrap">
-                <div class="content_top_wrap" v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
+                <div class="content_top_wrap" v-loading="loading" element-loading-text="玩命加载中.."
+                     element-loading-spinner="el-icon-loading">
                     <div class="plan-title">
                         <h4>
                             <img src="../../assets/images/planlogo.png" alt="">{{orderDetail.apName}}
                             <p>{{orderDetail.apQC}}
-                                <i class="el-icon-edit" v-if="(role=='MD')" @click="changeCID = true" :class="{changeCID:!usableBtn}"
+                                <i class="el-icon-edit" v-if="(role=='MD')" @click="changeCID = true"
+                                   :class="{changeCID:!usableBtn}"
                                    v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt118_ck10'}"></i>
                             </p>
                         </h4>
@@ -23,16 +25,22 @@
                         <el-dialog title="修改合同编号" :visible.sync="changeCID" width="30%">
                             <el-input v-model="apQC"></el-input>
                             <span slot="footer" class="dialog-footer">
-                                <el-button plain @click="cancelChangeID" v-qadn-mta-h5="{id: 'a006_b011_c005_d000_bt120_ck08'}">取 消</el-button>
-                                <el-button type="primary" @click="confirmChangeID" v-qadn-mta-h5="{id: 'a006_b011_c005_d000_bt119_ck08'}">确 定</el-button>
+                                <el-button plain @click="cancelChangeID"
+                                           v-qadn-mta-h5="{id: 'a006_b011_c005_d000_bt120_ck08'}">取 消</el-button>
+                                <el-button type="primary" @click="confirmChangeID"
+                                           v-qadn-mta-h5="{id: 'a006_b011_c005_d000_bt119_ck08'}">确 定</el-button>
                             </span>
                         </el-dialog>
                         <div class="handleBtn">
                             <el-button type="plain" @click="changePain()" v-if="role=='MD'"
-                                       v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt110_ck04'}">换画</el-button>
+                                       v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt110_ck04'}">换画
+                            </el-button>
                             <!--<el-button type="primary" :disabled="usableBtn"-->
-                                       <!--v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0" @click="changePoint" v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}">换点</el-button>-->
-                            <el-button type="primary" v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0" @click="changePoint" v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}">换点</el-button>
+                            <!--v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0" @click="changePoint" v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}">换点</el-button>-->
+                            <el-button type="primary"
+                                       v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0"
+                                       @click="changePoint" v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}">换点
+                            </el-button>
                         </div>
                     </div>
                     <div>
@@ -44,28 +52,42 @@
                 <el-tabs v-model="planPanel" @tab-click="handleClick()">
                     <el-tab-pane label="选点排期" name="first">
                         <div class="first-wrap box-wrap">
-                        <!--    <h4 v-if="showTitle" style="margin-bottom:16px;">
-                                更换点位
-                               <span>单位:面&nbsp;&nbsp; 首次投放:{{nowPointNum}}&nbsp;&nbsp; 中止投放:{{stopPointNum}} &nbsp;&nbsp;&nbsp; 新增面数:{{addNewPointNum}} &nbsp;&nbsp;&nbsp; 累计投放:{{setpointArr.length}} </span>
-                            </h4>-->
+                            <!--    <h4 v-if="showTitle" style="margin-bottom:16px;">
+                                    更换点位
+                                   <span>单位:面&nbsp;&nbsp; 首次投放:{{nowPointNum}}&nbsp;&nbsp; 中止投放:{{stopPointNum}} &nbsp;&nbsp;&nbsp; 新增面数:{{addNewPointNum}} &nbsp;&nbsp;&nbsp; 累计投放:{{setpointArr.length}} </span>
+                                </h4>-->
                             <el-row class="search-row">
                                 <el-col>
-                                    <el-input placeholder="请输入内容" v-model="keyword" class="input-with-select" @change="init()">
+                                    <span style="font-size: 14px;color: rgba(0,0,0,0.85)">资源名称：</span>
+                                    <el-input placeholder="请输入资源名称进行搜索" v-model="keyword" class="input-with-select"
+                                              style="width: 260px"></el-input>
+                                    <!--<el-input placeholder="请输入内容" v-model="keyword" class="input-with-select"
+                                              @change="init()">
                                         <el-select v-model="selectRecName" slot="prepend" placeholder="请选择">
                                             <el-option label="资源名称" value="1"></el-option>
                                         </el-select>
-                                    </el-input>
-                                    <el-button type="primary" icon="el-icon-search" @click="search()"
-                                               v-qadn-mta-h5="{id: showHandel ? 'a006_b011_c012_d000_bt149_ck01' : 'a006_b011_c006_d000_bt121_ck01'}">搜索</el-button>
+                                    </el-input>-->
+                                    <el-button type="primary" icon="el-icon-search" @click="search('current')"
+                                               v-qadn-mta-h5="{id: showHandel ? 'a006_b011_c012_d000_bt149_ck01' : 'a006_b011_c006_d000_bt121_ck01'}" style="position: relative;top: 2px;margin-left: 3px">
+                                        搜索
+                                    </el-button>
+                                    <el-button style="position: relative;top: 2px" @click="reset('current')" plain>重置</el-button>
                                     <!--<el-button type="primary" @click="showAddPointDialog" v-show="showHandel" v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt150_ck04'}">添加点位</el-button>-->
-                                    <el-button plain type="default" icon="el-icon-download" @click="export2Excel(orderDetail.apName)" :disabled="isDown" v-qadn-mta-h5="{id: 'a006_b011_c006_d000_bt122_ck05'}">导出</el-button>
-                                    <el-button style="float: right" plain type="default">更改记录</el-button>
+                                    <el-button style="float: right;position: relative;top: 2px;margin-left: 3px" plain
+                                               type="default">更改记录
+                                    </el-button>
+                                    <el-button plain type="default" icon="el-icon-download"
+                                               @click="export2Excel(orderDetail.apName)" :disabled="isDown"
+                                               v-qadn-mta-h5="{id: 'a006_b011_c006_d000_bt122_ck05'}"
+                                               style="position: relative;top: 2px;float: right;margin-right: 3px">导出
+                                    </el-button>
+
                                 </el-col>
                             </el-row>
                             <div class="table_wrap">
-                                <el-table border :data="currentSetpoint" style="width: 100%"
+                                <el-table border :data="currentPointArr" style="width: 100%"
                                           :default-sort="{prop: 'recName', order: 'descending'}"
-                                          v-loading="loading"
+                                          v-loading="currPointloading"
                                           element-loading-text="玩命加载中.."
                                           element-loading-spinner="el-icon-loading">
                                     <el-table-column type="expand">
@@ -93,22 +115,23 @@
                                         <template slot-scope="scope">
                                             <div style="float:left;position: absolute;left: 0;top: 0">
                                                 <!--<el-popover v-show="scope.row.isNew"-->
-                                                            <!--placement="top-start"-->
-                                                            <!--title="新增时间"-->
-                                                            <!--width="200"-->
-                                                            <!--trigger="hover"-->
-                                                            <!--:content="formatToTime(scope.row.lSetTime)">-->
-                                                    <!--<span slot="reference" style="font-size: 18px;color: red">*</span>-->
-                                                    <div v-if="scope.row.isNew" slot="reference" class="color-line"></div>
+                                                <!--placement="top-start"-->
+                                                <!--title="新增时间"-->
+                                                <!--width="200"-->
+                                                <!--trigger="hover"-->
+                                                <!--:content="formatToTime(scope.row.lSetTime)">-->
+                                                <!--<span slot="reference" style="font-size: 18px;color: red">*</span>-->
+                                                <div v-if="scope.row.isNew" slot="reference" class="color-line"></div>
                                                 <!--</el-popover>-->
                                                 <!--<el-popover v-show="scope.row.lState==2"-->
-                                                            <!--placement="top-start"-->
-                                                            <!--title="终止时间"-->
-                                                            <!--width="200"-->
-                                                            <!--trigger="hover"-->
-                                                            <!--:content="formatToTime(scope.row.lSetTime)">-->
-                                                    <!--<span slot="reference" style="font-size: 18px;color: red">*</span>-->
-                                                    <div  v-if="scope.row.lState==2" slot="reference" class="color-line" style="background-color: #FF763B"></div>
+                                                <!--placement="top-start"-->
+                                                <!--title="终止时间"-->
+                                                <!--width="200"-->
+                                                <!--trigger="hover"-->
+                                                <!--:content="formatToTime(scope.row.lSetTime)">-->
+                                                <!--<span slot="reference" style="font-size: 18px;color: red">*</span>-->
+                                                <div v-if="scope.row.lState==2" slot="reference" class="color-line"
+                                                     style="background-color: #FF763B"></div>
                                                 <!--</el-popover>-->
                                             </div>
                                             <span>{{scope.row.resName||'--'}}</span>
@@ -118,9 +141,11 @@
                                     </el-table-column>
                                     <el-table-column prop="asLab" label="投放面" min-width="8.8%">
                                     </el-table-column>
-                                    <el-table-column prop="city" label="城市" min-width="6%" :filters="filterCityData" :filter-method="filterCity">
+                                    <el-table-column prop="city" label="城市" min-width="6%" :filters="filterCityData"
+                                                     :filter-method="filterCity">
                                     </el-table-column>
-                                    <el-table-column prop="rName" label="区域" min-width="7.4%" :filters="filtersArea" :filter-method="filterRName">
+                                    <el-table-column prop="rName" label="区域" min-width="7.4%" :filters="filtersArea"
+                                                     :filter-method="filterRName">
                                     </el-table-column>
                                     <el-table-column prop="cType" label="楼盘类型" min-width="8.8%">
                                         <template slot-scope="scope">
@@ -137,7 +162,8 @@
                                             <span>&yen;{{(scope.row.hPrice)?priceFormat(scope.row.hPrice/100): 0 }}</span>
                                         </template>
                                     </el-table-column>
-                                    <el-table-column prop="timeRange" label="排期" min-width="14.2%" :filters="filtersData" :filter-method="filterTimeRange">
+                                    <el-table-column prop="timeRange" label="排期" min-width="14.2%"
+                                                     :filters="filtersData" :filter-method="filterTimeRange">
                                         <template slot-scope="scope">
                                             <template v-if="scope.row.lState==2">
                                                 <span>{{scope.row.finishTimeRange}}</span>
@@ -151,13 +177,13 @@
                                             <span v-else>{{scope.row.timeRange}}</span>
                                         </template>
                                     </el-table-column>
-                                   <!-- <el-table-column label="操作" min-width="4.3%" v-if="showHandel">
-                                        <template slot-scope="scope">
-                                            <span style="color:#999;cursor: pointer;" v-if="scope.row.lState==2">终止</span>
-                                            <span style="color:#409EFF;cursor: pointer;" v-else @click="disContinue(scope.row)"
-                                                  v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt151_ck05'}">终止</span>
-                                        </template>
-                                    </el-table-column>-->
+                                    <!-- <el-table-column label="操作" min-width="4.3%" v-if="showHandel">
+                                         <template slot-scope="scope">
+                                             <span style="color:#999;cursor: pointer;" v-if="scope.row.lState==2">终止</span>
+                                             <span style="color:#409EFF;cursor: pointer;" v-else @click="disContinue(scope.row)"
+                                                   v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt151_ck05'}">终止</span>
+                                         </template>
+                                     </el-table-column>-->
 
                                     <div slot="empty">
                                         <no-search-result></no-search-result>
@@ -187,10 +213,12 @@
                         </div>
                     </el-tab-pane>
                     <el-tab-pane label="报价单" name="second">
-                        <ap-quotation @detailInfo="setInfo" :quotationData="quotation" :copydata="copyAsidArr" :isorder="true" :shopingList="[]" class="price_quo"></ap-quotation>
+                        <ap-quotation @detailInfo="setInfo" :quotationData="quotation" :copydata="copyAsidArr"
+                                      :isorder="true" :shopingList="[]" class="price_quo"></ap-quotation>
                     </el-tab-pane>
                     <el-tab-pane label="物料信息" name="third" :disabled="usableBtn">
-                        <material :material="materialInfo" :daomater="daoInfo" :loading="maLoading" :isOrder="true" v-if="planPanel=='third'"></material>
+                        <material :material="materialInfo" :daomater="daoInfo" :loading="maLoading" :isOrder="true"
+                                  v-if="planPanel=='third'"></material>
                     </el-tab-pane>
                     <el-tab-pane label="上刊报告" name="forth" :disabled="usableBtn||role =='OP'">
                         <div class="changepic_box" v-if="planPanel=='forth'">
@@ -216,16 +244,17 @@
                            top="6vh"
                            :close-on-press-escape="false"
                            :show-close="false">
-                    <add-ads :IsAddAds="IsAddPoint" @ievent = "ievent"></add-ads>
+                    <add-ads :IsAddAds="IsAddPoint" @ievent="ievent"></add-ads>
                     <span slot="footer" class="dialog-footer">
                         <el-button plain @click="cancelAddPoint" v-qadn-mta-h5="{id: 'a006_b011_c012_d009_bt154_ck08'}">取 消</el-button>
-                        <el-button type="primary" @click="confirmAddPoint" v-qadn-mta-h5="{id: 'a006_b011_c012_d009_bt153_ck08'}">确 定</el-button>
+                        <el-button type="primary" @click="confirmAddPoint"
+                                   v-qadn-mta-h5="{id: 'a006_b011_c012_d009_bt153_ck08'}">确 定</el-button>
                     </span>
                 </el-dialog>
 
                 <!-- 图片查看显示 -->
                 <el-dialog :visible.sync="dialogVisible" class="imgPreview" top="10vh">
-                    <img  :src="dialogImageUrl" alt="" />
+                    <img :src="dialogImageUrl" alt=""/>
                 </el-dialog>
 
                 <!-- 终止点位弹出框 -->
@@ -233,7 +262,8 @@
                     title="终止点位"
                     :visible.sync="isFinish">
                     <span>请选择终止时间：</span>
-                    <el-date-picker v-model="finishDate" type="date" format="yyyy.MM.dd" value-format="yyyy.MM.dd" placeholder="终止日期" :picker-options="pickerOptions">
+                    <el-date-picker v-model="finishDate" type="date" format="yyyy.MM.dd" value-format="yyyy.MM.dd"
+                                    placeholder="终止日期" :picker-options="pickerOptions">
                     </el-date-picker>
                     <span slot="footer" class="dialog-footer">
                         <el-button plain @click="isFinish = false">取消</el-button>
@@ -242,38 +272,38 @@
                 </el-dialog>
 
                 <!--换点对话框-->
-                <el-dialog title="更换点位" :visible.sync="dialogChangePoint" before-close="closeDialogChangePoint">
+                <el-dialog title="更换点位" :visible.sync="dialogChangePoint" :close-on-press-escape="false"
+                           :show-close="false" :before-close="closeDialogChangePoint">
                     <div>
-                        <el-row class="search-row">
+                        <el-row class="search-row" style="margin: 0">
                             <el-col>
-                                <el-input placeholder="请输入内容" v-model="keyword" class="input-with-select" @change="init()" style="width: 300px">
-                                    <el-select v-model="selectRecName" slot="prepend" placeholder="请选择">
-                                        <el-option label="资源名称" value="1"></el-option>
-                                    </el-select>
-                                </el-input>
-                                <el-button type="plain" icon="el-icon-search" @click="search()"
-                                           v-qadn-mta-h5="{id: showHandel ? 'a006_b011_c012_d000_bt149_ck01' : 'a006_b011_c006_d000_bt121_ck01'}">搜索</el-button>
-                                <el-button type="plain" icon="el-icon-search" @click="search()">重置</el-button>
-                               <div style="float: right">
-                                   <el-button type="primary" @click="showAddPointDialog"
-                                              v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt150_ck04'}">新增点位</el-button>
-                                   <el-dropdown >
-                                       <el-button type="primary">
-                                           批量操作<i class="el-icon-arrow-down el-icon--right"></i>
-                                       </el-button>
-                                       <el-dropdown-menu slot="dropdown">
-                                           <el-dropdown-item @click.native="showUpload()">换画</el-dropdown-item>
-                                           <el-dropdown-item @click.native="cancelPain('all')">取消换画</el-dropdown-item>
-                                       </el-dropdown-menu>
-                                   </el-dropdown>
-                               </div>
-
+                                <span>资源名称：</span>
+                                <el-input placeholder="请输入资源名称进行搜索" v-model="changeKeyword" class="input-with-select"
+                                          style="width: 200px"></el-input>
+                                <el-button type="primary" @click="search('change')"  icon="el-icon-search"
+                                           v-qadn-mta-h5="{id: showHandel ? 'a006_b011_c012_d000_bt149_ck01' : 'a006_b011_c006_d000_bt121_ck01'}" style="position: relative;top: 2px;margin-left: 3px">搜索
+                                </el-button>
+                                <el-button plain @click="reset('change')" style="position: relative;top: 2px">重置
+                                </el-button>
+                                <div style="float: right">
+                                    <el-button type="primary" @click="showAddPointDialog"
+                                               v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt150_ck04'}">新增点位
+                                    </el-button>
+                                </div>
                             </el-col>
                         </el-row>
-                        <div class="table_wrap">
-                            <el-table border :data="currentSetpoint" style="width: 100%"
+                        <div class="table-top-tip">
+                            <i class="el-icon-info" style="color: #1890FF;"></i>
+                            <h4>
+                                <span>当前点位共<em>{{ changePointInfo.allPoint }}</em>个，</span>
+                                <span>已终止点位<em>{{ changePointInfo.stopPointlist.length||0 }}</em>个，</span>
+                                <span>新增点位<em>{{changePointInfo.addPointlist.length||0}}</em>个</span>
+                            </h4>
+                        </div>
+                        <div>
+                            <el-table border :data="changePointArr" style="width: 100%"
                                       :default-sort="{prop: 'recName', order: 'descending'}"
-                                      v-loading="loading"
+                                      v-loading="changePointloading"
                                       element-loading-text="玩命加载中.."
                                       element-loading-spinner="el-icon-loading">
                                 <el-table-column type="expand">
@@ -299,50 +329,62 @@
                                 </el-table-column>
                                 <el-table-column label="资源名称" min-width="16.1%" class-name="resName-wrap">
                                     <template slot-scope="scope">
+                                        <div style="float:left;position: absolute;left: 0;top: 0">
+                                            <div v-if="scope.row.isNew" slot="reference" class="color-line"></div>
+                                            <div v-if="scope.row.lState==2" slot="reference" class="color-line"
+                                                 style="background-color: #FF763B"></div>
+                                        </div>
                                         <span>{{scope.row.resName||'--'}}</span>
                                     </template>
                                 </el-table-column>
                                 <el-table-column prop="mTitle" label="媒体名称" min-width="10.3%">
                                 </el-table-column>
-                                <el-table-column prop="asLab" label="投放面" min-width="8.8%">
+                                <el-table-column prop="asLab" label="投放面" min-width="5.8%">
                                 </el-table-column>
-                                <el-table-column prop="city" label="城市" min-width="6%" :filters="filterCityData" :filter-method="filterCity">
+                                <el-table-column prop="city" label="城市" min-width="6%" :filters="filterCityData"
+                                                 :filter-method="filterCity">
                                 </el-table-column>
-                                <el-table-column prop="rName" label="区域" min-width="7.4%" :filters="filtersArea" :filter-method="filterRName">
+                                <el-table-column prop="rName" label="区域" min-width="7.4%" :filters="filtersArea"
+                                                 :filter-method="filterRName">
                                 </el-table-column>
-                                <el-table-column prop="cType" label="楼盘类型" min-width="8.8%">
+                                <el-table-column prop="cType" label="楼盘类型" min-width="6.5%">
                                     <template slot-scope="scope">
                                         <span>{{scope.row.cType||'--'}}</span>
                                     </template>
                                 </el-table-column>
-                                <el-table-column prop="hNum" label="小区户数" min-width="7.3%" align="right">
+                                <el-table-column prop="hNum" label="小区户数" min-width="6.5%" align="right">
                                     <template slot-scope="scope">
                                         <span>{{(scope.row.hNum)?priceToFormat(scope.row.hNum):0}}</span>
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="楼盘价格" min-width="7.3%" align="right">
+                                <el-table-column label="楼盘价格" min-width="7.3%" align="right" show-overflow-tooltip>
                                     <template slot-scope="scope">
                                         <span>&yen;{{(scope.row.hPrice)?priceFormat(scope.row.hPrice/100): 0 }}</span>
                                     </template>
                                 </el-table-column>
-                                <el-table-column prop="timeRange" label="排期" min-width="14.2%" :filters="filtersData" :filter-method="filterTimeRange">
+                                <el-table-column prop="timeRange" label="排期" min-width="14.2%" :filters="filtersData"
+                                                 :filter-method="filterTimeRange" show-overflow-tooltip>
                                     <template slot-scope="scope">
-                                        <template v-if="scope.row.lState==2">
-                                            <span>{{scope.row.finishTimeRange}}</span>
-                                            <el-tooltip placement="top">
-                                                <div slot="content">
-                                                    <span>{{scope.row.timeRange}}</span>
-                                                </div>
-                                                <i class="el-icon-question"> </i>
-                                            </el-tooltip>
-                                        </template>
-                                        <span v-else>{{scope.row.timeRange}}</span>
+                                        <!--<template v-if="scope.row.lState==2">-->
+                                            <!--<span>{{scope.row.finishTimeRange}}</span>-->
+                                            <!--<el-tooltip placement="top">-->
+                                                <!--<div slot="content">-->
+                                                    <!--<span>{{scope.row.timeRange}}</span>-->
+                                                <!--</div>-->
+                                                <!--<i class="el-icon-question"> </i>-->
+                                            <!--</el-tooltip>-->
+                                        <!--</template>-->
+                                        <span>{{scope.row.timeRange}}</span>
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="操作" min-width="4.3%" v-if="showHandel">
+                                <el-table-column label="操作" min-width="4.3%">
                                     <template slot-scope="scope">
-                                        <span style="color:#999;cursor: pointer;" v-if="scope.row.lState==2">终止</span>
-                                        <span style="color:#409EFF;cursor: pointer;" v-else @click="disContinue(scope.row)"
+                                        <span style="color:#409EFF;cursor: pointer;"
+                                              v-if="scope.row.lState==2" @click="restoreState(scope.row)">恢复</span>
+                                        <span style="color:#409EFF;cursor: pointer;" v-if="scope.row.isNew">删除</span>
+                                        <span style="color:#409EFF;cursor: pointer;"
+                                              v-if="scope.row.lState!=2&&!scope.row.isNew"
+                                              @click="disContinue(scope.row)"
                                               v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt151_ck05'}">终止</span>
                                     </template>
                                 </el-table-column>
@@ -352,631 +394,489 @@
                                 </div>
                             </el-table>
                             <!--<p style="font-size: 12px;color: #666666;margin-top: 10px">提示：带*号的为新增点位</p>-->
-                            <div class="ad_pagination" v-if="total">
-                                <el-pagination
-                                    background
-                                    layout="total, sizes, prev, pager, next, jumper"
-                                    @current-change="changePage"
-                                    @size-change="sizeChange"
-                                    :page-sizes="[10,20,50,100]"
-                                    :current-page.sync="currPage"
-                                    :page-size="pageSize"
-                                    :total="total">
-                                </el-pagination>
+                            <div class="table-bottom-tip">
+                                <div style="display: flex">
+                                    <p><span style="background-color: #1890ff" class="color-line"></span>新增点位</p>
+                                    <p><span style="background-color: #FF763B" class="color-line"></span>终止点位</p>
+                                </div>
+                                <div class="ad_pagination" v-if="pointTotal">
+                                    <el-pagination
+                                        background
+                                        layout="total, sizes, prev, pager, next, jumper"
+                                        @current-change="pointChangePage"
+                                        @size-change="pointSizeChange"
+                                        :page-sizes="[10,20,50,100]"
+                                        :current-page.sync="pointCurrPage"
+                                        :page-size="pointPageSize"
+                                        :total="pointTotal">
+                                    </el-pagination>
+                                </div>
                             </div>
 
                         </div>
                     </div>
                     <div slot="footer" class="dialog-footer">
-                        <el-button @click="dialogChangePoint = false">取 消</el-button>
-                        <el-button type="primary" @click="dialogChangePoint = false">提 交</el-button>
+                        <el-button @click="closeDialogChangePoint">取 消</el-button>
+                        <el-button type="primary" @click="submitChangePoint">提 交</el-button>
                     </div>
                 </el-dialog>
 
             </div>
             <!-- 返回框 -->
             <div class="content_bottom_btn">
-                <el-button plain type="default" @click="goBack" v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt111_ck03'}">返回</el-button>
+                <el-button plain type="default" @click="goBack" v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt111_ck03'}">
+                    返回
+                </el-button>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import { Message, MessageBox } from 'element-ui';
-import { api } from "../../api/api.js";
-// 价格格式化
-import commaFormat from "../../commonFun/commaFormat.js";
-// 筛选过滤
-import filterFormat from "../../commonFun/filterTableData.js";
-// 时间格式化
-import dateFormat from "../../commonFun/timeFormat.js";
-import sessFun from '../../commonFun/sessFun.js';
-// 报价单
-import apQuotation from './components/apQuotation.vue'
-import material from "./components/materialInfo.vue";
-import detail from "./components/detailInfo.vue";
-import addAds from "./components/addAds"
-import noSearchResult from "./components/noSearchResult.vue";
-import changePic from "./components/changePic.vue";
+    import {Message, MessageBox} from 'element-ui';
+    import {api} from "../../api/api.js";
+    // 价格格式化
+    import commaFormat from "../../commonFun/commaFormat.js";
+    // 筛选过滤
+    import filterFormat from "../../commonFun/filterTableData.js";
+    // 时间格式化
+    import dateFormat from "../../commonFun/timeFormat.js";
+    import sessFun from '../../commonFun/sessFun.js';
+    // 报价单
+    import apQuotation from './components/apQuotation.vue'
+    import material from "./components/materialInfo.vue";
+    import detail from "./components/detailInfo.vue";
+    import addAds from "./components/addAds"
+    import noSearchResult from "./components/noSearchResult.vue";
+    import changePic from "./components/changePic.vue";
 
-export default {
-    name: "orderDetail",
-    components: {
-        apQuotation,
-        material,
-        detail,
-        addAds,
-        changePic,
-        noSearchResult,
-    },
-    data() {
-        return {
-            // session信息
-            sessionData: {},
-            isDown: false,
-            //点位列表分页
-            total:1,
-            currPage:1,
-            pageSize:10,
-            //加载中
-            loading: true,
-            maLoading: true,
-            // 判断
-            role: "",
-            // 订单详情头部
-            orderDetail: {
-                AdDoor:{},
-                barrier:{},
-            },
-            //修改合同号
-            changeCID: false,
-            planPanel: "first",
-            // 选点排期
-            setpointArr: [],
-            currentSetpoint: [],
-            copyAsidArr: [],
-            // addNewAdsNum: 0,    // 添加点位数
-            // 报价单详情
-            quotation: {
-                isDetail: true,
-                quotation: []
-            },
-            // 城市过滤结果
-            filterCityData: [],
-            // 地区过滤结果
-            filtersArea: [],
-            // 排期时间过滤
-            filtersData: [],
-            //选点排期资源名称搜索
-            keyword: "",
-            // 资源名称类型
-            selectRecName: "1",
-            // 保存当前点击的那项
-            imgOrder: "",
-            // 广告物料信息
-            materialInfo:[],
-            // 道闸物料信息
-            daoInfo:[],
-            // 默认合同编号(如果订单详情没有合同编号)
-            apQC: "",
-            // 图片显示放大按钮控件
-            isShow: null,
-            isShow2: null,
-            // 终止点位时间弹出框
-            isFinish: false,
-            finishDate: '',
-            nowRow: {},
-            dateRange:{
-                beginDate: '',
-                endDate: ''
-            },
-            pickerOptions:{
-                disabledDate: (time) => {
-                    let beginDateVal = new Date(this.dateRange.beginDate).getTime();
-                    let endDateVal = new Date(this.dateRange.endDate).getTime()-60*60*24*1000;
-                    if (beginDateVal || endDateVal) {
-                        return (time.getTime() < beginDateVal) || (time.getTime() > endDateVal);
+    export default {
+        name: "orderDetail",
+        components: {
+            apQuotation,
+            material,
+            detail,
+            addAds,
+            changePic,
+            noSearchResult,
+        },
+        data() {
+            return {
+                // session信息
+                sessionData: {},
+                isDown: false,
+                //选点排期列表分页
+                total: 1,
+                currPage: 1,
+                pageSize: 10,
+                //更换点位分页
+                pointTotal: 1,
+                pointCurrPage: 1,
+                pointPageSize: 10,
+                //加载中
+                loading: true,
+                maLoading: true,
+                // 判断
+                role: "",
+                // 订单详情头部
+                orderDetail: {
+                    AdDoor: {},
+                    barrier: {},
+                },
+                //修改合同号
+                changeCID: false,
+                planPanel: "first",
+                // 选点排期
+                setpointArr: [],
+                changePointArr: [],//更换点位列表
+                changePointloading: true,
+                currentPointArr: [],//选点排期列表
+                currPointloading: true,
+                copyAsidArr: [],
+                // addNewAdsNum: 0,    // 添加点位数
+                // 报价单详情
+                quotation: {
+                    isDetail: true,
+                    quotation: []
+                },
+                // 城市过滤结果
+                filterCityData: [],
+                // 地区过滤结果
+                filtersArea: [],
+                // 排期时间过滤
+                filtersData: [],
+                //选点排期资源名称搜索
+                keyword: "",
+                // 资源名称类型
+                selectRecName: "1",
+                // 保存当前点击的那项
+                imgOrder: "",
+                // 广告物料信息
+                materialInfo: [],
+                // 道闸物料信息
+                daoInfo: [],
+                // 默认合同编号(如果订单详情没有合同编号)
+                apQC: "",
+                // 图片显示放大按钮控件
+                isShow: null,
+                isShow2: null,
+                // 终止点位时间弹出框
+                isFinish: false,
+                finishDate: '',
+                nowRow: {},
+                dateRange: {
+                    beginDate: '',
+                    endDate: ''
+                },
+                pickerOptions: {
+                    disabledDate: (time) => {
+                        let beginDateVal = new Date(this.dateRange.beginDate).getTime();
+                        let endDateVal = new Date(this.dateRange.endDate).getTime() - 60 * 60 * 24 * 1000;
+                        if (beginDateVal || endDateVal) {
+                            return (time.getTime() < beginDateVal) || (time.getTime() > endDateVal);
+                        }
                     }
-                }
-            },
+                },
 
-            //添加点位
-            dialogAddPoint: false,
-            IsAddPoint: true,
-            addAdsArr: [],
-            dateInput: "",
-            pdidList:[],
-            //默认
-            value: "资源名称",
-            buildValue: "",
-            //搜索框
-            searchInput: "",
-            planSelect: "",
-            //添加点位列表
-            planList: [],
-            //按钮
-            usableBtn: false,
-            //发送报告
-            sendReportchecked: false,
-            //上传照片
-            dialogImageUrl: "",
-            dialogVisible: false,
-            //选点排期标题
-            showTitle: false,
-            //选点排期按钮
-            showBtn: true,
-            //更换点位对话框
-            dialogChangePoint:false,
-            //更换点位取消终止按钮
-            cancelbtnShow: false,
-            //选点排期操作
-            showHandel: false,
-            UploadTime: 0,
-            // 导出订单图片包
-            downLoading: false,
-            //显示预览图蒙版
-            showPreImg: null,
-            // 换画
-            showPain: false,
-            fromType: false,
-            // 换画列表
-            painlist: [],
-        };
-    },
-    created() {
-        if(this.isChangePoint()){
-            this.changePoint();
-        }
-        // 根据角色判断是否有修改合同编号的权限
-        this.getRole();
-        // 获取订单详情的上面公司的信息
-        this.getInitData();
-        // 选点排期
-        this.getSetPoint();
-        if(this.role == 'MD' || this.role == 'BD'){
-            // 获取换画列表
-            this.getPainlist();
-        }
-    },
-    computed: {
-        // 现投放面数
-        nowPointNum() {
-            if (this.setpointArr.length) {
-                let num = 0;
-                for (let data of this.setpointArr) {
-                    if (data.isNew != 1) {
-                    // if (data.lState != 2) {
-                        num++;
-                    }
-                }
-                return num;
-            }
-        },
-        // 中止投放面数
-        stopPointNum() {
-            if (this.setpointArr.length) {
-                let num = 0;
-                for (let data of this.setpointArr) {
-                    if (data.lState == 2) {
-                        num++;
-                    }
-                }
-                return num;
-            }
-        },
-        // 新增点位
-        addNewPointNum(){
-            if (this.setpointArr.length) {
-                let addNum = 0;
-                for (let data of this.setpointArr) {
-                    if (data.isNew == 1) {
-                        addNum++;
-                    }
-                }
-                return addNum;
-            }
-        },
-    },
-    methods: {
-        //更换点位对话框
-        closeDialogChangePoint(){
-          //重置页数页码
-            this.currPage = 1;
-            this.pageSize = 10;
-            this.dialogChangePoint = false
-        },
-        // 改变页数
-        sizeChange(pageVal) {
-            this.loading = true;
-            this.currPage = 1;
-            this.pageSize = pageVal;
-            this.getSetPoint();
-        },
-        // 点击页数
-        changePage(page) {
-            this.loading = true;
-            this.currPage = page;
-            this.getSetPoint();
-        },
-        setInfo(data){
-           console.log('defail------data', data);
-            this.pdidList = data;
-        },
-        // 导出excel
-        export2Excel(name) {
-            this.isDown = true;
-            let resultArr = [];
-            for(let data of this.currentSetpoint){
-                let obj = {
-                    resName: data.resName,
-                    city: data.city,
-                    rName: data.rName,
-                    mVehicle: data.mVehicle,
-                    mTitle: data.mTitle,
-                    assetTag: data.assetTag,
-                    asLab: data.asLab,
-                    timeRange: data.timeRange,
-                    finishTimeRange: data.finishTimeRange,
-                    tradingArea: data.tradingArea,
-                    cType: data.cType,
-                    hPrice: data.hPrice/100,
-                    hNum: data.hNum == '0' ? '&' : data.hNum,
-                    fNum: data.fNum,
-                    chDay: data.chDay,
-                    adSize: data.mVehicle == "广告门" ? data.adSize: data.picSize,
-                    adViewSize: data.mVehicle == "广告门" ? data.adViewSize: data.lightBoxSize,
-                    notPush: data.notPush,
-                    mRemark: data.mRemark,
-                    resAddress: data.resAddress,
-                };
-                resultArr.push(obj);
-            }
+                //添加点位
+                dialogAddPoint: false,
+                IsAddPoint: true,
+                addAdsArr: [],
+                dateInput: "",
+                pdidList: [],
+                //默认
+                value: "资源名称",
+                buildValue: "",
+                //搜索框
+                searchInput: "",
+                planSelect: "",
+                //添加点位列表
+                planList: [],
+                //按钮
+                usableBtn: false,
+                //发送报告
+                sendReportchecked: false,
+                //上传照片
+                dialogImageUrl: "",
+                dialogVisible: false,
+                //选点排期标题
+                showTitle: false,
+                //选点排期按钮
+                showBtn: true,
+                //更换点位对话框
+                dialogChangePoint: false,
+                //更换点位对话框搜索
+                changeKeyword: '',
+                //更换点位对话框数据
+                changePointInfo: {
+                    allPoint: 0,
+                    stopPointlist: [],
+                    addPointlist: [],
+                },
 
-            require.ensure([], () => {
-                const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
-                const tHeader = ['资源名称', '市', '区域', '媒介载体', '媒体名称', '资产编号', '投放面', '投放日期', '终止日期', '商圈', '楼盘类型/写字楼类型', '楼盘价格', '住户数量/办公室数量', '楼栋数量', '入住年份/建成年份', '广告尺寸/画面尺寸', '可视画面/灯箱尺寸', '广告限制', '媒体备注', '详细地址'];
-                const filterVal = ['resName', 'city', 'rName', 'mVehicle', 'mTitle', 'assetTag', 'asLab', 'timeRange', 'finishTimeRange', 'tradingArea', 'cType', 'hPrice', 'hNum', 'fNum', 'chDay', 'adSize', 'adViewSize', 'notPush', 'mRemark', 'resAddress'];
-                const list = resultArr;
-                const data = this.formatJson(filterVal, list);
-                export_json_to_excel(tHeader, data, name);
-                this.isDown = false;
-            })
+                //更换点位取消终止按钮
+                cancelbtnShow: false,
+                //选点排期操作
+                showHandel: false,
+                UploadTime: 0,
+                // 导出订单图片包
+                downLoading: false,
+                //显示预览图蒙版
+                showPreImg: null,
+                // 换画
+                showPain: false,
+                fromType: false,
+                // 换画列表
+                painlist: [],
+            };
         },
-        formatJson(filterVal, jsonData) {
-            return jsonData.map(v => filterVal.map(j => v[j]))
-        },
-        // 判断是否是有换点跳转过来的？
-        isChangePoint(){
-            let isChange = sessionStorage.getItem('change_point');
-            if(isChange == 'yes'){
-                return true;
-            }
-            return false;
-        },
-        // 获取角色
-        getRole() {
-            this.sessionData = sessFun.getSess();
-            this.role = this.sessionData.uType;
-        },
-        // tab点击
-        handleClick() {
-            this.allPic = '';
-            this.allhouse = '';
-            this.citySelect = [];
-            if (this.planPanel == "first") {
+        created() {
+            if (this.isChangePoint()) {
+                this.changePoint();
+            }else{
                 this.getSetPoint();
-                MtaH5.clickStat('a006_b011_c000_d000_bt112_ck09')
-            } else if (this.planPanel == "second") {
-                MtaH5.clickStat('a006_b011_c000_d000_bt113_ck09')
-            } else if (this.planPanel == "third") {
-                MtaH5.clickStat('a006_b011_c000_d000_bt114_ck09')
-            } else if (this.planPanel == "forth") {
-                MtaH5.clickStat('a006_b011_c000_d000_bt115_ck09')
-            } else if (this.planPanel == "fifth") {
-                MtaH5.clickStat('a006_b011_c000_d000_bt116_ck09')
-            } else if (this.planPanel == "sixth") {
-                MtaH5.clickStat('a006_b011_c000_d000_bt117_ck09')
             }
+            // 根据角色判断是否有修改合同编号的权限
+            this.getRole();
+            // 获取订单详情的上面公司的信息
+            this.getInitData();
+            // 选点排期
+            // this.getMaterInfo();
 
-        },
-        //返回列表
-        goBack() {
-            // let isChange = sessionStorage.getItem('change_point');
-            // if(isChange =='yes'){
-            //     sessionStorage.setItem('change_point', 'no');
-            //     // location.reload();
-            //     this.usableBtn = false;
-            //     $(window).scrollTop(0);
-            //     this.showTitle = false;
-            //     this.showBtn = true;
-            //     this.showHandel = false;
-            // }else{
-                this.$router.push("./orderList");
-            // }
-        },
-        // 获取选点排期列表数据
-        getInitData() {
-            // 真实数据
-            let apid = sessionStorage.getItem("order_apid");
-            let info = {
-                uid: this.sessionData.uID,
-                token: this.sessionData.token,
-                apid: apid
-            };
-            // uid         int【必填】     当前账户UserID
-            // apid        int             公司对应方案apID
-            api.getApi(this.apiVar.Advertisement+"/GetFanganInfo", info)
-                .then(res => {
-                    console.log(res.data);
-                    if (res.data.SysCode == 200200) {
-                        let info = res.data.data;
-                        this.orderDetail = {
-                            adcID: info.adcID,
-                            apID: info.apID,
-                            apQC: info.apQC,
-                            apName: info.apName,
-                            apState: info.apState,
-                            apTotal: info.apTotal,
-                            apcTime: info.apcTime,
-                            bTitle: info.bTitle,
-                            cName: info.cName,
-                            cuName: info.cuName,
-                            pdEnd: info.pdEnd,
-                            pdStar: info.pdStar,
-                            rID: info.rID,
-                            rIDs: info.rIDs,
-                            realName: info.realName,
-                            pdTotal: this.priceFormat((info.apTotal - info.adOtherFee- info.adSendFee)/100),
-                            pdSendFee: this.priceFormat(info.adSendFee/100),
-                            pdOtherFee: this.priceFormat(info.adOtherFee/100),
-                            Total: this.priceFormat(info.apTotal/100),
-                            AdDoor:{
-                                pdTotal: this.priceFormat((info.AdDoor.pdTotal - info.AdDoor.adOtherFee- info.AdDoor.adSendFee)/100),
-                                pdSendFee: this.priceFormat(info.AdDoor.adSendFee/100),
-                                pdOtherFee: this.priceFormat(info.AdDoor.adOtherFee/100),
-                            },
-                            barrier:{
-                                pdTotal: this.priceFormat((info.barrier.pdTotal - info.barrier.adOtherFee- info.barrier.adSendFee)/100),
-                                pdSendFee: this.priceFormat(info.barrier.adSendFee/100),
-                                pdOtherFee: this.priceFormat(info.barrier.adOtherFee/100),
-                            },
-                        };
-                        // this.orderDetail = info;
-                        console.log('orderDetail',this.orderDetail)
-                        this.apQC = this.orderDetail.apQC ? this.orderDetail.apQC : this.getContractNo(this.orderDetail.rID);
-                    }else {
-                        Message.warning(res.data.MSG);
-                    }
-                })
-                .catch(res => {
-                    console.log(res);
-                });
-        },
-        // 获取选点排期
-        getSetPoint(string) {
-
-            if (this.setpointArr.length && string !== 'add') {
-                return;
+            if (this.role == 'MD' || this.role == 'BD') {
+                // 获取换画列表
+                this.getPainlist();
             }
-            // 真实数据
-            let loginData = this.sessionData;
-            let apid = sessionStorage.getItem("order_apid");
-            let info = {
-                uid: loginData.uID,
-                apid: apid,
-                token: loginData.token
-            };
-            // uid         int【必填】     当前账户UserID
-            // apid        int             公司对应方案apID
-            api.getApi(this.apiVar.Advertisement+"/GetAdLaunch", info)
-                .then(res => {
-                    console.log(res.data);
-                    if (!res.data.SysCode) {
-                        let initData = res.data;
-                        let result = initData.adSpaceInfo;
-                        // this.addNewAdsNum = res.data.isNewCount
-                        for (let data of result) {
-                            let time = this.formatTime(data.lStar) + "-" +this.formatTime(data.lEnd);
-                            data.timeRange = time;
-                            let finishTimeRange = '';
-                            if(data.lState ==2){
-                                finishTimeRange = this.formatTime(data.lStar)+"-"+this.formatTime(data.lSetTime);
+        },
+        computed: {
+            /*    // 现投放面数
+                nowPointNum() {
+                    if (this.setpointArr.length) {
+                        let num = 0;
+                        for (let data of this.setpointArr) {
+                            if (data.isNew != 1) {
+                                // if (data.lState != 2) {
+                                num++;
                             }
-                            data.finishTimeRange = finishTimeRange;
                         }
-                        // 选点排期
-                        this.copyAsidArr = JSON.parse(JSON.stringify(result));
-
-                        this.setpointArr = result;
-                        this.currentSetpoint = this.setpointArr;
-                        // 城市筛选过滤
-                        this.filterCityData = filterFormat(result, "city");
-                        console.log('城市filter',this.filterCityData)
-                        this.filtersArea = filterFormat(result, "rName");
-                        this.filtersData = filterFormat(result, "timeRange");
-
-                        // 广告门物料信息
-                        let mInfo = initData.gateMaterialInfo;
-                        let materialRes = [];
-                        for(let data of mInfo){
-                            let str = data.gateMaterialSize.split('-');
-                            let obj = {
-                                adSize: str[0],
-                                adViewSize: str[1],
-                                pointNum : data.gateMaterialCount,
-                                resolution : "150dpi",
-                                colorMode : "CMYK",
-                                photoFormat : "JPG/TIF/AI/PSD/CDR",
-                            };
-                            materialRes.push(obj);
-                        }
-                        this.materialInfo = materialRes;
-
-                        // 道闸物料信息
-                        let InfoTest = initData.roadGateMaterialInfo;
-                        let daoRes = [];
-                        for(let data of InfoTest){
-                            let str = data.roadGateMaterialSize.split('-');
-                            let obj = {
-                                adSize: str[0],
-                                adViewSize: str[1],
-                                pointNum : data.roadGateMaterialCount,
-                                resolution : "150dpi",
-                                colorMode : "CMYK",
-                                photoFormat : "JPG/TIF/AI/PSD/CDR",
-                            };
-                            daoRes.push(obj);
-                        }
-                        this.daoInfo = daoRes;
-
-                        this.loading = false;
-                        this.maLoading = false;
-                    }else {
-                        Message.warning(res.data.MSG);
+                        return num;
                     }
+                },
+                // 中止投放面数
+                stopPointNum() {
+                    if (this.setpointArr.length) {
+                        let num = 0;
+                        for (let data of this.setpointArr) {
+                            if (data.lState == 2) {
+                                num++;
+                            }
+                        }
+                        return num;
+                    }
+                },
+                // 新增点位
+                addNewPointNum() {
+                    if (this.setpointArr.length) {
+                        let addNum = 0;
+                        for (let data of this.setpointArr) {
+                            if (data.isNew == 1) {
+                                addNum++;
+                            }
+                        }
+                        return addNum;
+                    }
+                },*/
+        },
+        methods: {
+            //初始化各项数据
+            initListData() {
+                this.currPage = 1
+                this.pageSize = 10
+                this.pointCurrPage = 1
+                this.pointPageSize = 10
+                this.keyword = ''
+                this.changeKeyword = ''
+            },
+            //更换点位对话框关闭
+            closeDialogChangePoint() {
+                //重置页数页码
+                this.currPage = 1;
+                this.pageSize = 10;
+
+                MessageBox.confirm(
+                    '确定后，设置的换点将被全部清除',
+                    "是否确定取消更换点位",
+                    {
+                        dangerouslyUseHTMLString: true,
+                        confirmButtonText: "确定",
+                        cancelButtonText: "取消",
+                        type: "warning"
+                    }
+                ).then(() => {
+                    this.initListData()
+                    this.dialogChangePoint = false
                 })
-                .catch(res => {
-                    this.loading = false;
-                    this.maLoading = false;
-                    console.log(res);
-                });
-        },
-        // 时间格式规范 年月日
-        formatTime(val) {
-            return dateFormat.toDate(val, "/");
-        },
-        // 时间格式规范 年月日时分秒
-        formatToTime(val) {
-            return dateFormat.toDateTime(val, "/");
-        },
-        // 价格加上逗号
-        priceFormat(price) {
-            // console.log('price', price);
-            return commaFormat.init(price);
-        },
-        priceToFormat(price){
-            return commaFormat.format(price);
-        },
-        // 随机生成合同编号
-        getContractNo(rid) {
-            let date = new Date();
-            let result = "QC";
-            result = result + dateFormat.toDate(date, "");
-            result = result + rid.toString().substring(0, 4);
-            result = result + "00" + Math.round(Math.random() * 10);
-            // console.log(result);
-            return result;
-        },
-        // 当搜索框为空的时候进行重置显示
-        init() {
-            if (!this.keyword) {
-                this.currentSetpoint = this.setpointArr;
-            }
-        },
-        // 搜索
-        search() {
-            // 账号，姓名
-            console.log(this.selectRecName);
-            console.log(this.keyword);
-            let select = this.selectRecName;
-            let keyword = this.keyword;
-            if (this.keyword) {
-                let arr = [];
-                for (let data of this.setpointArr) {
-                    if (data.resName) {
-                        if (select == "1" && data.resName.includes(keyword)) {
-                            arr.push(data);
+                    .catch(() => {
+
+                    });
+            },
+            //提交更换点位操作
+            submitChangePoint() {
+                if (this.changePointInfo.stopPointlist.length > 0||this.changePointInfo.addPointlist.length > 0) {
+                    MessageBox.confirm(
+                        '确定后，将执行该订单的换点设置',
+                        "是否确定提交换点设置",
+                        {
+                            dangerouslyUseHTMLString: true,
+                            confirmButtonText: "确定",
+                            cancelButtonText: "取消",
+                            type: "warning"
                         }
-                    }
+                    ).then(() => {
+                        //提交
+                        this.dialogChangePoint = false
+                    })
+                        .catch(() => {
+
+                        });
+                } else {
+                    Message.warning('尚未进行任何换点操作')
                 }
-                this.currentSetpoint = arr;
-                return;
-            }
-            this.currentSetpoint = this.setpointArr;
-        },
-        // 城市筛选
-        filterCity(value, row) {
-            return row.city === value;
-        },
-        // 地区筛选
-        filterRName(value, row) {
-            return row.rName === value;
-        },
-        // 排期筛选
-        filterTimeRange(value, row) {
-            return row.timeRange === value;
-        },
-        // 取消修改合同编号
-        cancelChangeID() {
-            this.changeCID = false;
-            Message.info("取消修改合同编号");
-        },
-        // 修改合同编号
-        confirmChangeID() {
-            let reg = /^[^\u4e00-\u9fa5]{0,}$/;
-            if (!reg.test(this.apQC)) {
-                Message.warning("只能输入字母、数字、符号");
-                return;
-            }
-            let qc = this.apQC;
-            let apid = this.orderDetail.apID;
-            let session = this.sessionData;
-            // uid         int【必填】     当前账户UserID
-            // apid        int【必填】     方案apID
-            // qc          String【必填】  方案合同编号
-            let info = {
-                uid: session.uID,
-                token: session.token,
-                apid: apid,
-                qc: qc
-            };
-            api.postApi(this.apiVar.Advertisement+"/SetAdPlan", info)
-                .then(res => {
-                    console.log(res);
-                    if (res.data.SysCode == 300200) {
-                        this.$set(this.orderDetail, "apQC", qc);
-                        Message.success(res.data.MSG);
-                    } else {
-                        Message.warning(res.data.MSG);
-                    }
+            },
+            // 改变页数
+            sizeChange(pageVal) {
+                this.currPointloading = true;
+                this.currPage = 1;
+                this.pageSize = pageVal;
+                this.getSetPoint();
+            },
+            // 点击页数
+            changePage(page) {
+                this.currPointloading = true;
+                this.currPage = page;
+                this.getSetPoint();
+            },
+            // 更换点位改变页数
+            pointSizeChange(pageVal) {
+                this.changePointloading = true;
+                this.pointCurrPage = 1;
+                this.pointPageSize = pageVal;
+                this.changePointPageFn()
+            },
+            // 点击页数
+            pointChangePage(page) {
+                this.changePointloading = true;
+                this.pointCurrPage = page;
+                this.changePointPageFn()
+            },
+            setInfo(data) {
+                console.log('defail------data', data);
+                this.pdidList = data;
+            },
+            // 导出excel
+            export2Excel(name) {
+                this.isDown = true;
+                let resultArr = [];
+                for (let data of this.currentPointArr) {
+                    let obj = {
+                        resName: data.resName,
+                        city: data.city,
+                        rName: data.rName,
+                        mVehicle: data.mVehicle,
+                        mTitle: data.mTitle,
+                        assetTag: data.assetTag,
+                        asLab: data.asLab,
+                        timeRange: data.timeRange,
+                        finishTimeRange: data.finishTimeRange,
+                        tradingArea: data.tradingArea,
+                        cType: data.cType,
+                        hPrice: data.hPrice / 100,
+                        hNum: data.hNum == '0' ? '&' : data.hNum,
+                        fNum: data.fNum,
+                        chDay: data.chDay,
+                        adSize: data.mVehicle == "广告门" ? data.adSize : data.picSize,
+                        adViewSize: data.mVehicle == "广告门" ? data.adViewSize : data.lightBoxSize,
+                        notPush: data.notPush,
+                        mRemark: data.mRemark,
+                        resAddress: data.resAddress,
+                    };
+                    resultArr.push(obj);
+                }
+
+                require.ensure([], () => {
+                    const {export_json_to_excel} = require('../../vendorExcel/Export2Excel');
+                    const tHeader = ['资源名称', '市', '区域', '媒介载体', '媒体名称', '资产编号', '投放面', '投放日期', '终止日期', '商圈', '楼盘类型/写字楼类型', '楼盘价格', '住户数量/办公室数量', '楼栋数量', '入住年份/建成年份', '广告尺寸/画面尺寸', '可视画面/灯箱尺寸', '广告限制', '媒体备注', '详细地址'];
+                    const filterVal = ['resName', 'city', 'rName', 'mVehicle', 'mTitle', 'assetTag', 'asLab', 'timeRange', 'finishTimeRange', 'tradingArea', 'cType', 'hPrice', 'hNum', 'fNum', 'chDay', 'adSize', 'adViewSize', 'notPush', 'mRemark', 'resAddress'];
+                    const list = resultArr;
+                    const data = this.formatJson(filterVal, list);
+                    export_json_to_excel(tHeader, data, name);
+                    this.isDown = false;
                 })
-                .catch(res => {
-                    console.log(res);
-                });
-            this.changeCID = false;
-        },
-        // 终止点位
-        conFirmStopAds(){
-            let info = {
-                uid: this.sessionData.uID,
-                token: this.sessionData.token,
-                lids: this.nowRow.lID
-            };
-            console.log('info---', info);
-            MessageBox.confirm(
-                `是否在${this.finishDate}这一天终止 ${this.nowRow.resName + this.nowRow.mTitle + this.nowRow.asLab}面在 ${
-                    this.nowRow.timeRange
-                } 的投放？\n`,
-                "提示",
-                {
-                    dangerouslyUseHTMLString: true,
-                    confirmButtonText: "确定",
-                    cancelButtonText: "取消",
-                    type: "warning"
+            },
+            formatJson(filterVal, jsonData) {
+                return jsonData.map(v => filterVal.map(j => v[j]))
+            },
+            // 判断是否是有换点跳转过来的？
+            isChangePoint() {
+                let isChange = sessionStorage.getItem('change_point');
+                if (isChange == 'yes') {
+                    return true;
                 }
-            ).then(() => {
-                api.postApi(this.apiVar.Advertisement+"/StopADS", info)
+                return false;
+            },
+            // 获取角色
+            getRole() {
+                this.sessionData = sessFun.getSess();
+                this.role = this.sessionData.uType;
+            },
+            // tab点击
+            handleClick() {
+                this.allPic = '';
+                this.allhouse = '';
+                this.citySelect = [];
+                if (this.planPanel == "first") {
+
+                    this.getSetPoint()
+                    MtaH5.clickStat('a006_b011_c000_d000_bt112_ck09')
+                } else if (this.planPanel == "second") {
+                    MtaH5.clickStat('a006_b011_c000_d000_bt113_ck09')
+                } else if (this.planPanel == "third") {
+                    this.getMaterInfo();
+                    MtaH5.clickStat('a006_b011_c000_d000_bt114_ck09')
+                } else if (this.planPanel == "forth") {
+                    MtaH5.clickStat('a006_b011_c000_d000_bt115_ck09')
+                } else if (this.planPanel == "fifth") {
+                    MtaH5.clickStat('a006_b011_c000_d000_bt116_ck09')
+                } else if (this.planPanel == "sixth") {
+                    MtaH5.clickStat('a006_b011_c000_d000_bt117_ck09')
+                }
+
+            },
+            //返回列表
+            goBack() {
+                // let isChange = sessionStorage.getItem('change_point');
+                // if(isChange =='yes'){
+                //     sessionStorage.setItem('change_point', 'no');
+                //     // location.reload();
+                //     this.usableBtn = false;
+                //     $(window).scrollTop(0);
+                //     this.showTitle = false;
+                //     this.showBtn = true;
+                //     this.showHandel = false;
+                // }else{
+                this.$router.push("./orderList");
+                // }
+            },
+            // 获取订单详情的上面公司的信息
+            getInitData() {
+                // 真实数据
+                let apid = sessionStorage.getItem("order_apid");
+                let info = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    apid: apid
+                };
+                // uid         int【必填】     当前账户UserID
+                // apid        int             公司对应方案apID
+                api.getApi(this.apiVar.Advertisement + "/GetFanganInfo", info)
                     .then(res => {
                         console.log(res.data);
-                        if (!res.data.SysCode) {
-                            let resdata = res.data;
-                            this.$set(this.nowRow, "lState", resdata.lState);
-                            this.$set(this.nowRow, "lSetTime", resdata.lSetTime);
-                            let time = this.formatTime(resdata.lStar)+"-"+this.formatTime(resdata.lSetTime);
-                            this.$set(this.nowRow, 'finishTimeRange', time);
-                            this.isFinish = false;
-                            Message.success("终止成功");
+                        if (res.data.SysCode == 200200) {
+                            let info = res.data.data;
+                            this.orderDetail = {
+                                adcID: info.adcID,
+                                apID: info.apID,
+                                apQC: info.apQC,
+                                apName: info.apName,
+                                apState: info.apState,
+                                apTotal: info.apTotal,
+                                apcTime: info.apcTime,
+                                bTitle: info.bTitle,
+                                cName: info.cName,
+                                cuName: info.cuName,
+                                pdEnd: info.pdEnd,
+                                pdStar: info.pdStar,
+                                rID: info.rID,
+                                rIDs: info.rIDs,
+                                realName: info.realName,
+                                pdTotal: this.priceFormat((info.apTotal - info.adOtherFee - info.adSendFee) / 100),
+                                pdSendFee: this.priceFormat(info.adSendFee / 100),
+                                pdOtherFee: this.priceFormat(info.adOtherFee / 100),
+                                Total: this.priceFormat(info.apTotal / 100),
+                                AdDoor: {
+                                    pdTotal: this.priceFormat((info.AdDoor.pdTotal - info.AdDoor.adOtherFee - info.AdDoor.adSendFee) / 100),
+                                    pdSendFee: this.priceFormat(info.AdDoor.adSendFee / 100),
+                                    pdOtherFee: this.priceFormat(info.AdDoor.adOtherFee / 100),
+                                },
+                                barrier: {
+                                    pdTotal: this.priceFormat((info.barrier.pdTotal - info.barrier.adOtherFee - info.barrier.adSendFee) / 100),
+                                    pdSendFee: this.priceFormat(info.barrier.adSendFee / 100),
+                                    pdOtherFee: this.priceFormat(info.barrier.adOtherFee / 100),
+                                },
+                            };
+                            // this.orderDetail = info;
+                            console.log('orderDetail', this.orderDetail)
+                            this.apQC = this.orderDetail.apQC ? this.orderDetail.apQC : this.getContractNo(this.orderDetail.rID);
                         } else {
                             Message.warning(res.data.MSG);
                         }
@@ -984,269 +884,642 @@ export default {
                     .catch(res => {
                         console.log(res);
                     });
-                })
-                .catch(() => {
-                    Message.info("已取消操作");
-                    this.isFinish = false;
-                });
-
-        },
-        //终止操作确认操作对话框
-        disContinue(row) {
-            // this.isFinish = true;
-            // this.finishDate = '';
-            // this.dateRange.beginDate = this.formatTime(row.lStar);
-            // this.dateRange.endDate = this.formatTime(row.lEnd);
-            // this.nowRow = row;
-
-            // console.log(this.dateRange);
-            this.nowRow = row;
-            let info = {
-                uid: this.sessionData.uID,
-                token: this.sessionData.token,
-                lids: row.lID
-            };
-            MessageBox.confirm(
-                `是否终止 ${row.resName + row.mTitle + row.asLab}面在 ${
-                    row.timeRange
-                } 的投放？\n`,
-                "提示",
-                {
-                    dangerouslyUseHTMLString: true,
-                    confirmButtonText: "确定",
-                    cancelButtonText: "取消",
-                    type: "warning"
+            },
+            // 获取物料
+            getMaterInfo(string) {
+                if (this.setpointArr.length && string !== 'add') {
+                    return;
                 }
-            ).then(() => {
-                api.postApi(this.apiVar.Advertisement+"/StopADS", info)
+                // 真实数据
+                let loginData = this.sessionData;
+                let apid = sessionStorage.getItem("order_apid");
+                let info = {
+                    uid: loginData.uID,
+                    apid: apid,
+                    token: loginData.token
+                };
+                // uid         int【必填】     当前账户UserID
+                // apid        int             公司对应方案apID
+                api.getApi(this.apiVar.Advertisement + "/GetAdLaunch", info)
                     .then(res => {
                         console.log(res.data);
                         if (!res.data.SysCode) {
-                            if(res.data){
-                                // this.$set(row, "lState", res.data.lState);
-                                // this.$set(row, "lSetTime", res.data.lSetTime);
-                                // Message.success("终止成功");
+                            let initData = res.data;
+                            // let result = initData.adSpaceInfo;
+                            // // this.addNewAdsNum = res.data.isNewCount
+                            // for (let data of result) {
+                            //     let time = this.formatTime(data.lStar) + "-" + this.formatTime(data.lEnd);
+                            //     data.timeRange = time;
+                            //     let finishTimeRange = '';
+                            //     if (data.lState == 2) {
+                            //         finishTimeRange = this.formatTime(data.lStar) + "-" + this.formatTime(data.lSetTime);
+                            //     }
+                            //     data.finishTimeRange = finishTimeRange;
+                            // }
+                            // // 选点排期
+                            // this.copyAsidArr = JSON.parse(JSON.stringify(result));
+                            //
+                            // this.setpointArr = result;
+                            // this.currentPointArr = result;
+                            // this.changePointArr = this.setpointArr;
+                            // // 城市筛选过滤
+                            // this.filterCityData = filterFormat(result, "city");
+                            // console.log('城市filter', this.filterCityData)
+                            // this.filtersArea = filterFormat(result, "rName");
+                            // this.filtersData = filterFormat(result, "timeRange");
+
+                            // 广告门物料信息
+                            let mInfo = initData.gateMaterialInfo;
+                            let materialRes = [];
+                            for (let data of mInfo) {
+                                let str = data.gateMaterialSize.split('-');
+                                let obj = {
+                                    adSize: str[0],
+                                    adViewSize: str[1],
+                                    pointNum: data.gateMaterialCount,
+                                    resolution: "150dpi",
+                                    colorMode: "CMYK",
+                                    photoFormat: "JPG/TIF/AI/PSD/CDR",
+                                };
+                                materialRes.push(obj);
+                            }
+                            this.materialInfo = materialRes;
+
+                            // 道闸物料信息
+                            let InfoTest = initData.roadGateMaterialInfo;
+                            let daoRes = [];
+                            for (let data of InfoTest) {
+                                let str = data.roadGateMaterialSize.split('-');
+                                let obj = {
+                                    adSize: str[0],
+                                    adViewSize: str[1],
+                                    pointNum: data.roadGateMaterialCount,
+                                    resolution: "150dpi",
+                                    colorMode: "CMYK",
+                                    photoFormat: "JPG/TIF/AI/PSD/CDR",
+                                };
+                                daoRes.push(obj);
+                            }
+                            this.daoInfo = daoRes;
+
+                            this.loading = false;
+                            this.maLoading = false;
+                        } else {
+                            Message.warning(res.data.MSG);
+                        }
+                    })
+                    .catch(res => {
+                        this.loading = false;
+                        this.maLoading = false;
+                        console.log(res);
+                    });
+            },
+            //获取选点排期
+            getSetPoint(type) {
+                let loginData = this.sessionData;
+                let apid = sessionStorage.getItem("order_apid");
+                let info = {
+                    uid: loginData.uID,
+                    apID: apid,
+                    token: loginData.token,
+                    pageNum: this.currPage,
+                    pageSize: this.pageSize,
+                };
+                if (type) {
+                    if (type == 'change') {
+                        //更换点位列表拿全部
+                        info.lState = 1
+                        info.resName == this.changeKeyword
+                    } else {
+                        info.resName = this.keyword
+                    }
+                }
+                api.getApi(this.apiVar.Advertisement + "/GetAdLaunchList", info)
+                    .then(res => {
+                        console.log(res.data);
+                        if (res.data.SysCode == 200200) {
+                            let initData = res.data.data;
+                            let result = initData.list;
+                            this.total = initData.total
+                            this.changePointInfo.allPoint = initData.total
+                            // this.addNewAdsNum = res.data.isNewCount
+                            for (let data of result) {
+                                let time = this.formatTime(data.lStar) + "-" + this.formatTime(data.lEnd);
+                                data.timeRange = time;
+                                let finishTimeRange = '';
+                                if (data.lState == 2) {
+                                    finishTimeRange = this.formatTime(data.lStar) + "-" + this.formatTime(data.lSetTime);
+                                }
+                                data.finishTimeRange = finishTimeRange;
+                            }
+                            // 选点排期
+                            this.copyAsidArr = JSON.parse(JSON.stringify(result));
+
+                            if (type && type == 'change') {
+                                this.setpointArr = result;
+                                this.changePointPageFn()
+                            } else {
+                                this.currentPointArr = result;
+                            }
+
+                            // 城市筛选过滤
+                            this.filterCityData = filterFormat(result, "city");
+                            console.log('城市filter', this.filterCityData)
+                            this.filtersArea = filterFormat(result, "rName");
+                            this.filtersData = filterFormat(result, "timeRange");
+                            this.changePointloading = false;
+                            this.currPointloading = false;
+                            this.loading = false;
+                            this.maLoading = false;
+                        } else {
+                            Message.warning(res.data.MSG);
+                        }
+                    })
+                    .catch(res => {
+                        this.loading = false;
+                        this.maLoading = false;
+                        this.changePointloading = false;
+                        this.currPointloading = false;
+                        console.log(res);
+                    });
+            },
+            //更换点位列表分页数据
+            changePointPageFn(){
+                console.log('更换点位所有数据--',this.setpointArr);
+                let total = this.setpointArr.length
+                let pageNum = this.pointCurrPage
+                let pageSize = this.pointPageSize
+                let totalPage = 0
+                if(total/pageSize > parseInt(total/pageSize)){
+                    totalPage=parseInt(total/pageSize)+1;
+                }else{
+                    totalPage=parseInt(total/pageSize);
+                }
+                this.pointTotal = total
+                var result = [];
+                for(let i=0;i<total;i+=pageSize){
+                    result.push(this.setpointArr.slice(i,i+pageSize));
+                }
+                console.log(result);
+                //当前页
+                this.changePointArr = result[pageNum-1]
+                this.changePointloading = false
+                console.log('更换点位当前页数据--',this.currentPointArr);
+
+            },
+            // 时间格式规范 年月日
+            formatTime(val) {
+                return dateFormat.toDate(val, "/");
+            },
+            // 时间格式规范 年月日时分秒
+            formatToTime(val) {
+                return dateFormat.toDateTime(val, "/");
+            },
+            // 价格加上逗号
+            priceFormat(price) {
+                // console.log('price', price);
+                return commaFormat.init(price);
+            },
+            priceToFormat(price) {
+                return commaFormat.format(price);
+            },
+            // 随机生成合同编号
+            getContractNo(rid) {
+                let date = new Date();
+                let result = "QC";
+                result = result + dateFormat.toDate(date, "");
+                result = result + rid.toString().substring(0, 4);
+                result = result + "00" + Math.round(Math.random() * 10);
+                // console.log(result);
+                return result;
+            },
+            // 当搜索框为空的时候进行重置显示
+            // init() {
+            //     if (!this.keyword) {
+            //         this.changePointArr = this.setpointArr;
+            //     }
+            // },
+            // 搜索
+            search(type) {
+                // 账号，姓名
+                // console.log(this.selectRecName);
+                console.log(this.keyword, this.changeKeyword, type);
+                // let keyword = this.keyword;
+                if (type == 'change') {
+                    //更换点位
+                    if (this.changeKeyword) {
+                        let a = []
+                        for (let data of this.setpointArr) {
+                            if (data.resName && data.resName.includes(this.changeKeyword)) {
+                                a.push(data);
+                            }
+                        }
+                        this.changePointArr = a;
+                    } else {
+                        this.changePointArr = this.setpointArr
+                    }
+
+                } else {
+                    if (this.keyword) {
+                        this.getSetPoint(type)
+                    } else {
+                        this.getSetPoint()
+                    }
+                }
+            },
+            //重置
+            reset(type) {
+                if (type == 'change') {
+                    this.changeKeyword = ''
+                    this.changePointPageFn()
+                }else{
+                    this.keyword = ''
+                    this.getSetPoint()
+                }
+
+            },
+
+            // 城市筛选
+            filterCity(value, row) {
+                return row.city === value;
+            },
+            // 地区筛选
+            filterRName(value, row) {
+                return row.rName === value;
+            },
+            // 排期筛选
+            filterTimeRange(value, row) {
+                return row.timeRange === value;
+            },
+            // 取消修改合同编号
+            cancelChangeID() {
+                this.changeCID = false;
+                Message.info("取消修改合同编号");
+            },
+            // 修改合同编号
+            confirmChangeID() {
+                let reg = /^[^\u4e00-\u9fa5]{0,}$/;
+                if (!reg.test(this.apQC)) {
+                    Message.warning("只能输入字母、数字、符号");
+                    return;
+                }
+                let qc = this.apQC;
+                let apid = this.orderDetail.apID;
+                let session = this.sessionData;
+                // uid         int【必填】     当前账户UserID
+                // apid        int【必填】     方案apID
+                // qc          String【必填】  方案合同编号
+                let info = {
+                    uid: session.uID,
+                    token: session.token,
+                    apid: apid,
+                    qc: qc
+                };
+                api.postApi(this.apiVar.Advertisement + "/SetAdPlan", info)
+                    .then(res => {
+                        console.log(res);
+                        if (res.data.SysCode == 300200) {
+                            this.$set(this.orderDetail, "apQC", qc);
+                            Message.success(res.data.MSG);
+                        } else {
+                            Message.warning(res.data.MSG);
+                        }
+                    })
+                    .catch(res => {
+                        console.log(res);
+                    });
+                this.changeCID = false;
+            },
+            // 终止点位
+            conFirmStopAds() {
+                let info = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    lids: this.nowRow.lID
+                };
+                console.log('info---', info);
+                MessageBox.confirm(
+                    `是否在${this.finishDate}这一天终止 ${this.nowRow.resName + this.nowRow.mTitle + this.nowRow.asLab}面在 ${
+                        this.nowRow.timeRange
+                        } 的投放？\n`,
+                    "提示",
+                    {
+                        dangerouslyUseHTMLString: true,
+                        confirmButtonText: "确定",
+                        cancelButtonText: "取消",
+                        type: "warning"
+                    }
+                ).then(() => {
+                    api.postApi(this.apiVar.Advertisement + "/StopADS", info)
+                        .then(res => {
+                            console.log(res.data);
+                            if (!res.data.SysCode) {
                                 let resdata = res.data;
                                 this.$set(this.nowRow, "lState", resdata.lState);
                                 this.$set(this.nowRow, "lSetTime", resdata.lSetTime);
-                                let time = this.formatTime(resdata.lStar)+"-"+this.formatTime(resdata.lSetTime);
+                                let time = this.formatTime(resdata.lStar) + "-" + this.formatTime(resdata.lSetTime);
                                 this.$set(this.nowRow, 'finishTimeRange', time);
                                 this.isFinish = false;
                                 Message.success("终止成功");
-                            }else{
-                                Message.warning('系统异常,请稍后重试');
+                            } else {
+                                Message.warning(res.data.MSG);
                             }
-
-                        } else {
-                            Message.warning(res.data.MSG);
-                        }
-                    })
-                    .catch(res => {
-                        console.log(res);
-                    });
-                })
-                .catch(() => {
-                    Message.info("已取消操作");
-                });
-
-        },
-        //点击换点
-        changePoint() {
-            // Message.warning("该功能尚未完善");
-            sessionStorage.setItem('change_point', 'yes');
-            this.usableBtn = true;
-            $(window).scrollTop(288);
-            this.showTitle = true;
-            this.showBtn = false;
-            this.showHandel = true;
-            this.dialogChangePoint = true
-        },
-        //保存更换点位
-        saveChangePoint() {
-            this.usableBtn = false;
-            this.showTitle = false;
-            this.showBtn = true;
-            this.showHandel = false;
-        },
-        //取消更换点位
-        cancelChangePoint() {
-            this.usableBtn = false;
-            this.showTitle = false;
-            this.showBtn = true;
-            this.showHandel = false;
-        },
-        //显示添加点位的模态框
-        showAddPointDialog(){
-            let pdidArr = this.pdidList
-            console.log('pdidarr---', pdidArr);
-            this.dialogAddPoint = true
-            this.IsAddPoint = !this.IsAddPoint
-            // if(this.IsAddPoint){
-            //     this.IsAddPoint = false
-            // }
-        },
-        //获取子组件选择的点位数据
-        ievent(...data){
-            console.log('allData:',data);// data为包含传过来所有数据的数组，第一个元素是对象，第二个元素是字符串
-            this.addAdsArr = data[0] //this.encodeHtml(data[0])
-        },
-        //添加点位对话框确认按钮
-        confirmAddPoint() {
-            let addload = this.$loading({
-                lock: true,
-                text: '加急添加中...',
-                spinner: 'el-icon-loading',
-                background: 'rgba(0, 0, 0, 0.7)'
-            });
-            console.log('pdidarr---', this.addAdsArr);
-            console.log('shopingArr',this.pdidList)
-            let userData = this.sessionData;
-            let arr = []
-            for (let key of this.addAdsArr) {
-                for (let pKey of this.pdidList) {
-                    if (key.city == pKey.city && key.asrID == pKey.asrID) {
-                        let adsInfo = {
-                            asID: Number(key.asID),
-                            pdID: pKey.pdID,
-                            pbStar: (key.schedules.split('-')[0]).split('/').join('-'),    // 开始投放时间
-                            pbEnd: (key.schedules.split('-')[1]).split('/').join('-'),       // 开始投放时间
-                            uID: this.sessionData.uID,
-                        }
-                        if (pKey.pdType == 0 && key.mVehicle === '广告门') {
-                            arr.push(adsInfo)
-                            break
-                        } else if (pKey.pdType == 1 && key.mVehicle === '道闸') {
-                            arr.push(adsInfo)
-                            break
-                        }
-                    }
-                }
-            }
-            let postData = { uID: userData.uID, token: userData.token, asIDList: arr}
-            console.log('添加点位对话框确认按钮', postData)
-            api.postApi_json(this.apiVar.Advertisement + '/SetPDAS?uid='+ userData.uID + '&token=' + userData.token,
-                JSON.stringify(postData)).then(res => {
-                console.log('添加选点返回信息', res)
-                addload.close();
-                if (res.data.SysCode === 300500) {
-                    Message.warning(res.data.MSG)
-                }else {
-                    if (res.data === '' || res.data === null) {
-                        this.$message({
-                            message: '新增点位失败',
-                            type: 'warning'
                         })
-                    } else {
-                        Message.success("添加点位成功")
-                        this.dialogAddPoint = false
-                        this.IsAddPoint = true
-                        this.getSetPoint('add')
-                    }
-                }
-            })
-        },
-        //添加点位对话框取消按钮
-        cancelAddPoint() {
-            // this.IsAddPoint = true
-            this.dialogAddPoint = false;
-            // Message.info("已取消操作");
-        },
-        // 换画
-        // 获取换画列表
-        getPainlist(){
-            let info = {
-                apId: sessionStorage.getItem("order_apid")
-            };
-            api.getApi(this.apiVar.replace+'/report/list', info).then(res =>{
-                console.log(res);
-                if(res.data.SysCode == 200200){
-                    this.painlist = res.data.data;
-                    if(this.painlist.length){
-                        this.showPain = true;
-                    }
-                }else{
-                    sessFun.messageFun('warning', res.data.msg);
-                }
-            });
-        },
-        changePain(){
-            MessageBox.confirm(
-                "注：换画时间需在对应点位排期时间内",
-                "是否创建新的换画报告\n",
-                {
-                    dangerouslyUseHTMLString: true,
-                    confirmButtonText: "确定",
-                    cancelButtonText: "取消",
-                    type: "warning"
-                }
-            ).then(() => {
-                this.getPainlist();
-                this.addPainReport();
-            });
-        },
-        // 新增换画报告
-        addPainReport(){
-            let info = {
-                apId: sessionStorage.getItem("order_apid")
-            };
-            api.getApi(this.apiVar.replace+'/report/list', info).then(res =>{
-                console.log(res);
-                if(res.data.SysCode == 200200){
-                    this.painlist = res.data.data;
-                    let len = this.painlist.length;
-                    let painInfo = {
-                        apId: this.orderDetail.apID,
-                        replaceRecordName: `换画${len+1}`,
-                    };
-                    api.postApi_json(this.apiVar.replace+'/report/add', painInfo).then(res =>{
-                        if(res.data.SysCode == 200200){
-                            this.showPain = true;
-                            this.planPanel = 'sixth';
-                            setTimeout(()=>{
-                                this.fromType = !this.fromType;
-                            }, 10);
-                        }else{
-                            sessFun.messageFun('warning', res.data.msg);
-                        }
+                        .catch(res => {
+                            console.log(res);
+                        });
+                })
+                    .catch(() => {
+                        Message.info("已取消操作");
+                        this.isFinish = false;
                     });
-                }else{
-                    sessFun.messageFun('warning', res.data.msg);
+
+            },
+            //终止操作确认操作对话框
+            disContinue(row) {
+                // this.isFinish = true;
+                // this.finishDate = '';
+                // this.dateRange.beginDate = this.formatTime(row.lStar);
+                // this.dateRange.endDate = this.formatTime(row.lEnd);
+                // this.nowRow = row;
+
+                // console.log(this.dateRange);
+                console.log(row);
+                this.nowRow = row;
+                let info = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    lids: row.lID
+                };
+                MessageBox.confirm(
+                    `是否终止 ${row.resName + row.mTitle + row.asLab}面在 ${
+                        row.timeRange
+                        } 的投放？\n`,
+                    "提示",
+                    {
+                        dangerouslyUseHTMLString: true,
+                        confirmButtonText: "确定",
+                        cancelButtonText: "取消",
+                        type: "warning"
+                    }
+                ).then(() => {
+                    // api.postApi(this.apiVar.Advertisement+"/StopADS", info)
+                    //     .then(res => {
+                    //         console.log(res.data);
+                    //         if (!res.data.SysCode) {
+                    //             if(res.data){
+                    //                 // this.$set(row, "lState", res.data.lState);
+                    //                 // this.$set(row, "lSetTime", res.data.lSetTime);
+                    //                 // Message.success("终止成功");
+                    //                 let resdata = res.data;
+                    //                 this.$set(this.nowRow, "lState", resdata.lState);
+                    //                 this.$set(this.nowRow, "lSetTime", resdata.lSetTime);
+                    //                 let time = this.formatTime(resdata.lStar)+"-"+this.formatTime(resdata.lSetTime);
+                    //                 this.$set(this.nowRow, 'finishTimeRange', time);
+                    //                 this.isFinish = false;
+                    //                 Message.success("终止成功");
+                    //             }else{
+                    //                 Message.warning('系统异常,请稍后重试');
+                    //             }
+                    //
+                    //         } else {
+                    //             Message.warning(res.data.MSG);
+                    //         }
+                    //     })
+                    //     .catch(res => {
+                    //         console.log(res);
+                    //     });
+                    for(let data of this.setpointArr){
+                        if(data.lID == row.lID){
+                            this.$set(this.nowRow, "lState", 2);
+                        }
+                    }
+                    this.changePointInfo.stopPointlist.push(row)
+                })
+                    .catch(() => {
+                        Message.info("已取消操作");
+                    });
+
+            },
+            //恢复/取消终止操作
+            restoreState(row){
+                for(let data of this.setpointArr){
+                    if(data.lID == row.lID){
+                        this.$set(row, "lState", 1);
+                        this.changePointInfo.stopPointlist.splice(data,1)
+                    }
                 }
-            });
+            },
+            //点击换点
+            changePoint() {
+                // Message.warning("该功能尚未完善");
+                sessionStorage.setItem('change_point', 'yes');
+                // this.usableBtn = true;
+                // $(window).scrollTop(288);
+                // this.showTitle = true;
+                // this.showBtn = false;
+                // this.showHandel = true;
+                this.initListData()
+                this.dialogChangePoint = true
+                this.getSetPoint('change')
+            },
+            //保存更换点位
+            saveChangePoint() {
+                // this.usableBtn = false;
+                // this.showTitle = false;
+                // this.showBtn = true;
+                // this.showHandel = false;
+            },
+            //取消更换点位
+            cancelChangePoint() {
+                // this.usableBtn = false;
+                // this.showTitle = false;
+                // this.showBtn = true;
+                // this.showHandel = false;
+            },
+            //显示添加点位的模态框
+            showAddPointDialog() {
+                let pdidArr = this.pdidList
+                console.log('pdidarr---', pdidArr);
+                this.dialogAddPoint = true
+                this.IsAddPoint = !this.IsAddPoint
+                // if(this.IsAddPoint){
+                //     this.IsAddPoint = false
+                // }
+            },
+            //获取子组件选择的点位数据
+            ievent(...data) {
+                console.log('allData:', data);// data为包含传过来所有数据的数组，第一个元素是对象，第二个元素是字符串
+                this.addAdsArr = data[0] //this.encodeHtml(data[0])
+            },
+            //添加点位对话框确认按钮
+            confirmAddPoint() {
+                let addload = this.$loading({
+                    lock: true,
+                    text: '加急添加中...',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                });
+                console.log('pdidarr---', this.addAdsArr);
+                console.log('shopingArr', this.pdidList)
+                let userData = this.sessionData;
+                let arr = []
+                for (let key of this.addAdsArr) {
+                    for (let pKey of this.pdidList) {
+                        if (key.city == pKey.city && key.asrID == pKey.asrID) {
+                            let adsInfo = {
+                                asID: Number(key.asID),
+                                pdID: pKey.pdID,
+                                pbStar: (key.schedules.split('-')[0]).split('/').join('-'),    // 开始投放时间
+                                pbEnd: (key.schedules.split('-')[1]).split('/').join('-'),       // 开始投放时间
+                                uID: this.sessionData.uID,
+                            }
+                            if (pKey.pdType == 0 && key.mVehicle === '广告门') {
+                                arr.push(adsInfo)
+                                break
+                            } else if (pKey.pdType == 1 && key.mVehicle === '道闸') {
+                                arr.push(adsInfo)
+                                break
+                            }
+                        }
+                    }
+                }
+                let postData = {uID: userData.uID, token: userData.token, asIDList: arr}
+                for(let data of arr){
+                    this.changePointInfo.addPointlist.push(data)
+                    this.setpointArr= this.setpointArr.unshift(data)
+                }
+                console.log('添加点位对话框确认按钮', this.setpointArr)
+                addload.close();
+                this.dialogAddPoint = false
+                // this.IsAddPoint = true
+
+                /*      api.postApi_json(this.apiVar.Advertisement + '/SetPDAS?uid=' + userData.uID + '&token=' + userData.token,
+                          JSON.stringify(postData)).then(res => {
+                          console.log('添加选点返回信息', res)
+                          addload.close();
+                          if (res.data.SysCode === 300500) {
+                              Message.warning(res.data.MSG)
+                          } else {
+                              if (res.data === '' || res.data === null) {
+                                  this.$message({
+                                      message: '新增点位失败',
+                                      type: 'warning'
+                                  })
+                              } else {
+                                  Message.success("添加点位成功")
+                                  this.dialogAddPoint = false
+                                  this.IsAddPoint = true
+                                  // this.getMaterInfo('add')
+                              }
+                          }
+                      })*/
+            },
+            //添加点位对话框取消按钮
+            cancelAddPoint() {
+                // this.IsAddPoint = true
+                this.dialogAddPoint = false;
+                // Message.info("已取消操作");
+            },
+            // 换画
+            // 获取换画列表
+            getPainlist() {
+                let info = {
+                    apId: sessionStorage.getItem("order_apid")
+                };
+                api.getApi(this.apiVar.replace + '/report/list', info).then(res => {
+                    console.log(res);
+                    if (res.data.SysCode == 200200) {
+                        this.painlist = res.data.data;
+                        if (this.painlist.length) {
+                            this.showPain = true;
+                        }
+                    } else {
+                        sessFun.messageFun('warning', res.data.msg);
+                    }
+                });
+            },
+            changePain() {
+                MessageBox.confirm(
+                    "注：换画时间需在对应点位排期时间内",
+                    "是否创建新的换画报告\n",
+                    {
+                        dangerouslyUseHTMLString: true,
+                        confirmButtonText: "确定",
+                        cancelButtonText: "取消",
+                        type: "warning"
+                    }
+                ).then(() => {
+                    this.getPainlist();
+                    this.addPainReport();
+                });
+            },
+            // 新增换画报告
+            addPainReport() {
+                let info = {
+                    apId: sessionStorage.getItem("order_apid")
+                };
+                api.getApi(this.apiVar.replace + '/report/list', info).then(res => {
+                    console.log(res);
+                    if (res.data.SysCode == 200200) {
+                        this.painlist = res.data.data;
+                        let len = this.painlist.length;
+                        let painInfo = {
+                            apId: this.orderDetail.apID,
+                            replaceRecordName: `换画${len + 1}`,
+                        };
+                        api.postApi_json(this.apiVar.replace + '/report/add', painInfo).then(res => {
+                            if (res.data.SysCode == 200200) {
+                                this.showPain = true;
+                                this.planPanel = 'sixth';
+                                setTimeout(() => {
+                                    this.fromType = !this.fromType;
+                                }, 10);
+                            } else {
+                                sessFun.messageFun('warning', res.data.msg);
+                            }
+                        });
+                    } else {
+                        sessFun.messageFun('warning', res.data.msg);
+                    }
+                });
+            },
+            // 操作提示统一方法
+            messageFun(mesType, mes) {
+                this.$message({
+                    message: mes,
+                    type: mesType,
+                    showClose: true,
+                })
+            },
         },
-        // 操作提示统一方法
-        messageFun(mesType,mes){
-            this.$message({
-                message: mes,
-                type: mesType,
-                showClose: true,
-            })
-        },
-    },
-};
+    };
 </script>
 
 <style scoped>
     /*选点排期列表底部提示*/
-    .table-bottom-tip{
+    .table-bottom-tip {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        color:rgba(0,0,0,0.45);
+        color: rgba(0, 0, 0, 0.45);
         font-size: 12px;
         margin-top: 24px;
     }
-    .table-bottom-tip p{
+
+    .table-bottom-tip p {
         margin-right: 24px;
     }
-    .table-bottom-tip .color-line{
+
+    .table-bottom-tip .color-line {
         display: inline-block;
-        width:2px;
-        height:12px;
+        width: 2px;
+        height: 12px;
         margin-right: 8px;
         position: relative;
         top: 2px;
     }
+
     /*修改合同号*/
     .changeCID {
         color: #1890ff;
@@ -1411,16 +1684,19 @@ export default {
         text-align: right;
         padding-right: 20px;
     }
+
     /*页码*/
     .pager {
         height: 32px;
         margin-top: 30px;
         text-align: right;
     }
+
     /* 换画 */
-    .changepic_box{
+    .changepic_box {
         margin: 0px 32px 32px;
     }
+
     /*按钮*/
     .content_bottom_btn {
         width: 100%;
@@ -1482,7 +1758,6 @@ export default {
         margin: 0 32px 0;
     }
 
-
     /*日期控件*/
     /deep/ .el-range-separator {
         position: relative;
@@ -1500,25 +1775,29 @@ export default {
 
     }
 
-    .imgPreview /deep/ .el-dialog{
+    .imgPreview /deep/ .el-dialog {
         width: 35%;
     }
-    .imgPreview /deep/ .el-dialog__body{
+
+    .imgPreview /deep/ .el-dialog__body {
         text-align: center;
     }
-    /deep/ .imgPreview .el-dialog__body img{
+
+    /deep/ .imgPreview .el-dialog__body img {
         max-width: 100%;
         width: auto;
         height: 550px;
     }
+
     @media screen and (max-width: 1440px) {
-        /deep/ .imgPreview .el-dialog__body img{
+        /deep/ .imgPreview .el-dialog__body img {
             height: 450px;
         }
     }
 
     /deep/ .el-dialog__footer {
-        padding: 20px 20px 20px;
+        padding: 0px 20px 20px;
+        text-align: center;
     }
 
     /deep/ .el-dialog /deep/ .el-input__inner {
@@ -1565,7 +1844,8 @@ export default {
             top: 30px;
         }
     }
-    /deep/ .el-upload-list__item.is-success{
+
+    /deep/ .el-upload-list__item.is-success {
         display: none;
     }
 
@@ -1586,24 +1866,54 @@ export default {
     /deep/ .el-table__row .cell span {
         overflow-x: initial;
     }
-    /deep/ .el-form-item__content{
+
+    /deep/ .el-form-item__content {
         line-height: 46px;
     }
-    /deep/ .table_wrap .el-table__body-wrapper{
+
+    /deep/ .table_wrap .el-table__body-wrapper {
         min-height: auto;
     }
 
-    .box-wrap, #pane-second{
+    .box-wrap, #pane-second {
         margin-bottom: 32px;
     }
-    .resName-wrap{
+
+    .resName-wrap {
         position: relative;
     }
-    .resName-wrap .color-line{
+
+    .resName-wrap .color-line {
         float: left;
-        width:3px;
-        height:47px;
+        width: 3px;
+        height: 47px;
         background-color: #1890ff;
 
     }
+
+    .table-top-tip {
+        background: #e6f7ff;
+        border: 1px solid #bae7ff;
+        border-radius: 4px;
+        margin: 16px 0;
+        padding: 5px;
+    }
+
+    .table-top-tip /deep/ .el-icon-info {
+        margin-right: 4px;
+    }
+
+    .table-top-tip h4 {
+        font-size: 14px;
+        display: inline-block;
+    }
+
+    .table-top-tip em {
+        font-size: 14px;
+        font-weight: normal;
+        margin: 0 6px;
+        cursor: pointer;
+        color: #1890ff;
+    }
+
 </style>

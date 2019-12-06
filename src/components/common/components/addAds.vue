@@ -830,6 +830,7 @@
             },
             // 接口数据转成table
             setTableDataADDoor(ADSdata){
+                // console.log(ADSdata);
                 // console.log('接口数据转成table当前时间',this.dateInput)
                 let i = 0
                 for(let key of ADSdata) {

@@ -720,7 +720,7 @@
             // 获取订单详情的上面公司的信息
             this.getInitData();
             // 选点排期
-            this.getMaterInfo();
+            // this.getMaterInfo();
 
             if (this.role == 'MD' || this.role == 'BD') {
                 // 获取换画列表
@@ -794,6 +794,7 @@
                 ).then(() => {
                     this.initListData()
                     this.dialogChangePoint = false
+                    this.getSetPoint()
                 })
                     .catch(() => {
 

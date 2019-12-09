@@ -340,7 +340,7 @@
                 // 地图中心点数组:
                 mapArr: [],
                 // loading
-                materloading: true,
+                materloading: false,
                 // 物料信息弹出框的选点信息
                 materInfoArr: [],
                 currInfoPage: 1,
@@ -440,6 +440,7 @@
                 this.getMaterInfo(info);
             },
             getMaterInfo(params) {
+                this.materloading = true;
                 api.postApi(this.apiVar.Advertisement + '/GetAdMaterial', params).then(res => {
                     console.log('列表', res.data);
                     if (res.data.list.length >= 0) {
@@ -770,6 +771,14 @@
                         type: 'warning'
                     }).then(() => {
 
+                        for (let data of this.shoplist) {
+                            for (let item of this.selectList) {
+                                if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
+                                    data.imgUrl = '';
+                                    data.remark = '';
+                                }
+                            }
+                        }
                         for (let data of this.materInfoArr) {
                             for (let item of this.selectList) {
                                 if (data.asID == item.asID && data.lStar == item.lStar && data.lEnd == item.lEnd) {
@@ -778,7 +787,6 @@
                                     // this.selectNum=0
                                     //取消选中
                                     this.$refs.multipleTable.toggleRowSelection(data, false);
-                                    break;
                                 }
                             }
                         }

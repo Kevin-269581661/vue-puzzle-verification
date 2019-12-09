@@ -1500,6 +1500,15 @@
                             this.allEditInfo.url = this.imgUrl[0].url;
                         }
                         console.log(this.allEditInfo, 'allEditInfo---');
+                        for (let data of this.shoplist) {
+                            for (let item of this.selectList) {
+                                if (data.lID == item.lID) {
+                                    data.remark = this.allEditInfo.remark;
+                                    data.replaceDate = this.allEditInfo.date;
+                                    data.picUrl = this.allEditInfo.url;
+                                }
+                            }
+                        }
                         for (let data of this.pointArr) {
                             for (let item of this.selectList) {
                                 if (data.lID == item.lID) {
@@ -1507,7 +1516,6 @@
                                     data.replaceDate = this.allEditInfo.date;
                                     data.picUrl = this.allEditInfo.url;
                                     //取消选中
-                                    // this.selectNum--
                                     this.$refs.multipleTable.toggleRowSelection(data, false);
                                 }
                             }
@@ -1629,13 +1637,23 @@
                 this.handleFlag = true
                 if (type == 'all') {
                     //批量
-                    for (let item of this.pointArr) {
-                        this.$refs.multipleTable.toggleRowSelection(item, false);
-                        for (let data of this.selectList) {
-                            if (item.replaceDate && item.lID == data.lID) {
-                                item.picUrl = ''
-                                item.remark = ''
-                                item.replaceDate = ''
+                    for (let data of this.shoplist) {
+                        for (let item of this.selectList) {
+                            if (data.lID == item.lID) {
+                                data.picUrl = ''
+                                data.remark = ''
+                                data.replaceDate = ''
+                            }
+                        }
+                    }
+                    for (let data of this.pointArr) {
+                        for (let item of this.selectList) {
+                            if (data.lID == item.lID) {
+                                data.picUrl = ''
+                                data.remark = ''
+                                data.replaceDate = ''
+                                //取消选中
+                                this.$refs.multipleTable.toggleRowSelection(data, false);
                             }
                         }
                     }

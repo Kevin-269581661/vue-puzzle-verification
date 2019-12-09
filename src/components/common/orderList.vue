@@ -153,23 +153,14 @@
         <!--修改金额弹框-->
         <el-dialog
             title="修改订单金额"
-            :visible.sync="changePriceModal"
-            width="372px"
+            width="768px"
             top="40vh"
             custom-class="price-dialog"
+            :visible.sync="changePriceModal"
             :before-close="cancelChangePrice">
-            <p>原订单金额 <span style="color: #1890ff">&yen;{{currPrice}}</span> 修改为：</p>
-            <div class="num-input-wrap" :class="inputErr?'input-err-wrap':''">
-                <span>&yen;</span>
-                <el-input-number placehlder="请输入修改金额" v-model="changePrice" controls-position="right" :controls="false" @change="inputPrice" :min="0" :max="999999999"></el-input-number>
-
-            </div>
-            <p v-if="inputErr" style="font-size: 12px;color: #F5222D;margin-top: 4px;text-align: right">尚未填写修改金额</p>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="cancelChangePrice">取 消</el-button>
-                <el-button type="primary" @click="confirmChangePrice">确 定</el-button>
-            </span>
+            <changeOrderPrice @cancel="cancelChangePrice" :changePriceData="changePriceData"></changeOrderPrice>
         </el-dialog>
+
     </div>
 </template>
 
@@ -185,6 +176,7 @@
     import applyphoto from './components/applyPhoto.vue';
     import noSearchResult from "./components/noSearchResult.vue";
     import pointState from './components/pointState.vue';
+    import changeOrderPrice from './components/changeOrderPrice.vue';
 
     export default {
         name: "projectList",
@@ -192,6 +184,7 @@
             applyphoto,
             noSearchResult,
             pointState,
+            changeOrderPrice
         },
         data() {
             return {
@@ -251,10 +244,19 @@
                 houselist: [],
                 // 保留点击申请画像当前行
                 orderRow: {},
-                changePriceModal:false,
-                changePrice:undefined,
-                currPrice:0,
-                inputErr:false,
+                //修改订单金额数据
+                changePriceModal: false,
+                changePriceInfo: '',
+                changePriceData:{
+                    AdDoorAdPrice: 0,
+                    AdDoorMakePrice: 0,
+                    BreakAdPrice: 0,
+                    BreakMakePrice: 0,
+                    orderOldPrice:0,
+                    orderCompanyList:[],
+                    priceCurrCompany:0,
+                },
+
             };
         },
         mounted() {
@@ -561,63 +563,77 @@
                             type: "success"
                         }
                     ).then(() => {
-                        this.currPrice = price
+                        this.changePriceInfo = row
                         this.changePriceModal = true
+                        this.changePriceData.orderOldPrice = price
+                        console.log('当前订单信息--',this.changePriceInfo);
+                        let arr = []
+                        for(let data of row.companyList){
+                            for(let i =0;i< data.cityList.length;i++){
+                                let obj = {
+                                    city:data.cityList[i].city,
+                                    company:data.asName,
+                                    index:i,
+                                }
+                                arr.push(obj)
+                            }
+                        }
+                        this.changePriceData.orderCompanyList = arr
                     })
                         .catch(() => {
                             Message.info("已取消操作");
                         });
-                   /* api.postApi(this.apiVar.Advertisement + "/SetFangan", info)
-                        .then(res => {
-                            console.log(res.data);
-                            if (res.data.SysCode == 300200) {
-                                //结束订单成功
-                                let price = (row.apTotal) ? this.priceFormat(row.apTotal / 100) : 0
-                                MessageBox.confirm(
-                                    "现订单金额为 <span style='color: #1890ff'>&yen;" + price + "</span>",
-                                    "结束订单成功，是否修改订单金额？",
-                                    {
-                                        confirmButtonText: "修改",
-                                        cancelButtonText: "不修改",
-                                        dangerouslyUseHTMLString: true,
-                                        type: "success"
-                                    }
-                                ).then(() => {
-                                    this.changePriceModal = true
-                                })
-                                    .catch(() => {
-                                        Message.info("已取消操作");
-                                    });
-                                // Message.success(res.data.MSG);
-                                this.$set(row, "apState", 5);
-                            } else {
-                                Message.warning(res.data.MSG);
-                            }
-                        })
-                        .catch(res => {
-                            console.log(res);
-                        });*/
+              /*       api.postApi(this.apiVar.Advertisement + "/SetFangan", info)
+                         .then(res => {
+                             console.log(res.data);
+                             if (res.data.SysCode == 300200) {
+                                 //结束订单成功
+                                 let price = (row.apTotal) ? this.priceFormat(row.apTotal / 100) : 0
+                                 MessageBox.confirm(
+                                     "现订单金额为 <span style='color: #1890ff'>&yen;" + price + "</span>",
+                                     "结束订单成功，是否修改订单金额？",
+                                     {
+                                         confirmButtonText: "修改",
+                                         cancelButtonText: "不修改",
+                                         dangerouslyUseHTMLString: true,
+                                         type: "success"
+                                     }
+                                 ).then(() => {
+                                     this.changePriceInfo = row
+                                     this.changePriceModal = true
+                                     this.orderOldPrice = price
+                                     console.log('当前订单信息--',this.changePriceInfo);
+                                     let arr = []
+                                     for(let data of row.companyList){
+                                         for(let i =0;i< data.cityList.length;i++){
+                                             let obj = {
+                                                 city:data.cityList[i].city,
+                                                 company:data.asName,
+                                                 index:i,
+                                             }
+                                             arr.push(obj)
+                                         }
+                                     }
+                                     this.orderCompanyList = arr
+                                 })
+                                     .catch(() => {
+                                         Message.info("已取消操作");
+                                     });
+                                 this.$set(row, "apState", 5);
+                             } else {
+                                 Message.warning(res.data.MSG);
+                             }
+                         })
+                         .catch(res => {
+                             console.log(res);
+                         });*/
                 })
                     .catch(() => {
                         Message.info("已取消操作");
                     });
             },
-            //修改订单金额
-            inputPrice(){
-                console.log(this.changePrice);
-                if(this.changePrice!=0||this.changePrice!=undefined){
-                    this.inputErr = false
-                }
-            },
-            confirmChangePrice(){
-                if(this.changePrice==0||this.changePrice==undefined){
-                    this.inputErr = true
-                    // Message.info('尚未填写修改金额')
-                }else{
-                    this.inputErr = false
-                }
-            },
-            cancelChangePrice(){
+
+            cancelChangePrice() {
                 this.changePriceModal = false
                 Message.info("已取消操作");
             },
@@ -925,39 +941,12 @@
 
 </style>
 <style>
-    .price-dialog /deep/ .el-dialog__body{
+    .price-dialog /deep/ .el-dialog__body {
         padding: 10px 20px;
     }
-    .price-dialog /deep/ .el-dialog__body p{
+
+    .price-dialog /deep/ .el-dialog__body p {
         margin-bottom: 8px;
     }
-    .price-dialog .num-input-wrap{
-        border:1px solid rgba(0,0,0,0.15);
-        border-radius:4px;
-    }
-    .price-dialog .num-input-wrap.input-err-wrap{
-        border-color: #F5222D;
-    }
 
-    .price-dialog .num-input-wrap span{
-        display: inline-block;
-        width: 30px;
-        height: 30px;
-        background:rgba(250,250,250,1);
-        border-radius:3px 0px 0px 3px;
-        text-align: center;
-        line-height: 30px;
-        border-right: 1px solid rgba(0,0,0,0.15);
-
-    }
-    .price-dialog .num-input-wrap /deep/ .el-input-number .el-input{
-        height: 30px;
-        line-height: 30px;
-    }
-    .price-dialog .num-input-wrap /deep/ .el-input-number.is-controls-right .el-input__inner{
-        border: none;
-        height: 30px;
-        line-height: 30px;
-        text-align: left;
-    }
 </style>

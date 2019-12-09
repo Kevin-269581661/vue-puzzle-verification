@@ -1327,8 +1327,6 @@
                     }
                     clearTimeout(timer);
                 }, 0);
-
-
             },
             // 获取地图中心点
             getMapArr() {

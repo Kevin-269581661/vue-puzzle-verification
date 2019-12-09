@@ -48,6 +48,7 @@ const messageList = () => import('../components/common/messageList.vue')
 const communityRank = () => import('../components/common/communityRank.vue')
 const portraitDetail = () => import('../components/common/portraitDetail.vue')
 const qinLinMap = () => import('../components/common/qinLinMap.vue')
+const resContrastMap = () => import('../components/common/resContrastMap.vue')
 
 // 下载进度页面
 const progressDown = () => import('../components/common/progressDown.vue')
@@ -112,9 +113,11 @@ export default new Router({
         {path: '/shareADList', name: 'shareADList', component: shareADList},
         {path: '/emptyPoint', name: 'emptyPoint', component: emptyPoint},
         // 亲邻地图
-        {path: '/ADResourceMap/chooseRes',name:'qinLinMap',component: qinLinMap},
+        {path: '/ADResourceMap/chooseRes',name:'qinLinMap',component: qinLinMap, meta:{title: '亲邻科技，智慧选点'}},
         // 地图分享
-        {path: '/ADResourcesMap/shareRes',name:'qinLinMap',component: qinLinMap},
+        {path: '/ADResourcesMap/shareRes',name:'qinLinMap',component: qinLinMap, meta:{title: '亲邻科技，智慧分享'}},
+        //资源对比可视化
+        {path: '/resContrastMap',name:'resContrastMap',component: resContrastMap, meta:{title: '亲邻科技，智慧地图'}},
         //消息列表
         //上下刊报告h5页面
         {path: '/Report', name: 'Report', component: Report},
@@ -159,7 +162,7 @@ export default new Router({
                 {path: '/superOperate/changePwd', component: changePwd},
                 {path: '/superOperate/myInfo', component: myInfo},
                 {path: '/superOperate/ADqinlinzk', component: ADqinlinzk},
-                {path: '/superOperate/questionAndAnswer', component: questionAndAnswer},
+                {path: '/superOperate/questionAndAnswer', component: questionAndAnswer, meta:{title:'常见问题'}},
                 {path: '/superOperate/tvOrderList', component: tvOrderList},
                 {path: '/superOperate/tvOrderDetail', component: tvOrderDetail},
                 {path: '/superOperate/settingPrice', component: settingPrice},
@@ -200,14 +203,14 @@ export default new Router({
             children: [
                 {path: '/media', component: mediaIndex},
                 {path: '/media/mediaList', component: mediaList},
-                {path: '/media/mediaInput', component: mediaInput},
-                {path: '/media/mediaEdit', component: mediaInput},
+                {path: '/media/mediaInput', component: mediaInput, meta:{title: '创建媒体'}},
+                {path: '/media/mediaEdit', component: mediaInput, meta:{title: '编辑媒体'}},
                 {path: '/media/mediaDetail', component: mediaDetail},
                 {path: '/media/planList', component: planList},
                 {path: '/media/publishPriceList', component: publishPriceList},
                 {path: '/media/orderList', component: orderList},
-                {path: '/media/createPlan', component: createPlan},
-                {path: '/media/editPlan', component: editPlan},
+                {path: '/media/createPlan', component: createPlan, meta:{title: '创建方案'}},
+                {path: '/media/editPlan', component: editPlan, meta:{title: '编辑方案'}},
                 {path: '/media/planDetail', component: planDetail},
                 {path: '/media/orderDetail', component: orderDetail},
                 {path: '/media/photoGallery', component: photoGallery},
@@ -244,8 +247,8 @@ export default new Router({
                 {path: '/sale/publishPriceList', component: publishPriceList},
                 {path: '/sale/orderList', component: orderList},
                 {path: '/sale/clientDetail', component: clientDetail},
-                {path: '/sale/createPlan', component: createPlan},
-                {path: '/sale/editPlan', component: editPlan},
+                {path: '/sale/createPlan', component: createPlan, meta:{title: '创建方案'}},
+                {path: '/sale/editPlan', component: editPlan, meta:{title: '编辑方案'}},
                 {path: '/sale/planDetail', component: planDetail},
                 {path: '/sale/orderDetail', component: orderDetail},
                 {path: '/sale/photoGallery', component: photoGallery},

@@ -10,7 +10,7 @@
             background-color="#444"
             text-color="#999999"
             active-text-color="#fff">
-            <el-menu-item index="">
+            <el-menu-item index="" class="no-hover">
                 <div class="logo_box">
                     <img src="../../assets/images/logo.png" alt="">
                 </div>
@@ -26,13 +26,14 @@
                 <template slot="title">
                     辅助资料
                 </template>
-                <el-menu-item index="/operate/questionAndAnswer">操作说明</el-menu-item>
+                <!--<el-menu-item index="/operate/questionAndAnswer">常见问题</el-menu-item>-->
                 <el-menu-item index="/operate/compact">文件下载</el-menu-item>
             </el-submenu>
             <el-submenu index="7" :show-timeout="80" v-show="showQinlin">
                 <template slot="title">亲邻智邻</template>
                 <el-menu-item index="/operate/communityPortrait">社区画像</el-menu-item>
                 <el-menu-item index="/operate/communityRank">社区排名</el-menu-item>
+                <el-menu-item index="" @click="goResContrastMap">资源对比</el-menu-item>
             </el-submenu>
             <el-submenu index="9" class="user_center" show-timeout="80">
                 <template slot="title">
@@ -43,6 +44,9 @@
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
                 <el-menu-item index="/login">退出登陆</el-menu-item>
             </el-submenu>
+            <el-menu-item class="no-hover" index="" style="cursor: default;float: right;padding: 0 10px 0 0">
+                <questionTip></questionTip>
+            </el-menu-item>
         </el-menu>
 
         <!--body-->
@@ -74,8 +78,12 @@
     import uTypeToText from '../../commonFun/uTypeToText.js'
     import sessFun from '../../commonFun/sessFun.js';
     import api from "../../api/api"
+    import questionTip from '../common/components/questionTip.vue';
     export default {
         name: "operateCommon",
+        components: {
+            questionTip
+        },
         data(){
             return{
                 newDate: new Date().getFullYear(),
@@ -153,6 +161,12 @@
                     sessionStorage.clear();
                 }
             },
+            goResContrastMap(){
+                const {href} = this.$router.resolve({
+                    path: '/resContrastMap',
+                })
+                window.open(href, '_blank')
+            }
         }
     }
 </script>

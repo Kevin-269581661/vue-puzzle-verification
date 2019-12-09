@@ -5,18 +5,6 @@
             <p class="clearfix">
                 <a href="#" style="color: #999">亲邻智邻</a>
             </p>
-            <div class="portrait_header_select">
-                <el-dropdown @command="selectAsrIdFun">
-                    <p class="el-dropdown-link">
-                        {{currCompany.asrName}}<i class="el-icon-arrow-down el-icon--right"></i>
-                    </p>
-                    <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item v-for="(item,index) in companyList" :key="index" :command="item">
-                            {{item.asrName}}
-                        </el-dropdown-item>
-                    </el-dropdown-menu>
-                </el-dropdown>
-            </div>
         </div>
         <div class="top-content-wrap">
             <div class="title">
@@ -165,10 +153,10 @@
                     <div class="part part1">
                         <div class="flex1">
                             <h6>行业词云</h6>
-                            <div class="chart-wrap" v-loading="wordCloudLoading"
+                            <div class="chart-wrap" style="padding: 20px;box-sizing: border-box" v-loading="wordCloudLoading"
                                  element-loading-text="玩命加载中..."
                                  element-loading-background="rgba(255, 255, 255)">
-                                <div class="word-cloud-box" ref='wordCloudBox'></div>
+                                <div class="word-cloud-box" ref='wordCloudBox' style="width: 100%;height: 100%"></div>
                             </div>
                         </div>
                         <div class="flex2">
@@ -239,9 +227,6 @@
         name: "portraitDetail",
         data() {
             return {
-                // 默认选择的公司
-                currCompany: '',
-                companyList: [],
                 activeName: 'first',
                 tagSelect: '同区对比',
                 //图表legend
@@ -315,26 +300,8 @@
             }
         },
         methods: {
-            // 平台商公司列表
-            getCompanyList() {
-                let portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo'))
-                console.log(portraitInfo);
-                // 选中的公司
-                this.currCompany = portraitInfo[0]
-                let arr = []
-                for (let key of portraitInfo) {
-                    arr.push({
-                        asrId: key.asrId,
-                        asrName: key.asrName,
-                    })
-                }
-                this.companyList = arr
-                console.log('companyList', this.companyList)
-            },
-            // 选择公司
-            selectAsrIdFun(item) {
-                this.currCompany = item
-            },
+
+
             //性别情况
             sexChartFn() {
                 this.sexChart = this.$echarts.init(this.$refs.sexChart)
@@ -416,6 +383,7 @@
                                 '</span>' + params[0].data + '%' + '</p>'
                         },
                     },
+                    grid: {x: 80, y: 40, x2: 80, y2: 80,},//图表位置
                     xAxis: {
                         type: 'category',
                         axisLine: {
@@ -427,7 +395,7 @@
                         axisLabel: {
                             //坐标轴刻度标签
                             margin: 7, //刻度标签与轴线之间的距离
-                            interval: 0,    //强制文字产生间隔
+                            interval: 0,    //强制文字全部显示
                             textStyle: {
                                 fontFamily: "DINPro-Regular",
                                 color: "#2C313C" //坐标轴刻度文字的颜色
@@ -462,7 +430,7 @@
                     series: [{
                         data: this.ageData.y,
                         type: 'bar',
-                        barWidth: '18%',
+                        barWidth: 16,
                     }]
                 })
                 this.ageChartLoading = false
@@ -656,12 +624,7 @@
                                 '</span>' + params[0].data + '%' + '</p>'
                         },
                     },
-                    grad: {
-                        x: 25,
-                        y: 45,
-                        x2: 5,
-                        y2: 20,
-                    },
+                    grid: {x: 80, y: 40, x2: 80, y2: 80,},//图表位置
                     xAxis: {
                         type: 'category',
                         axisLine: {
@@ -709,7 +672,7 @@
                     series: [{
                         data: this.lifeData.y,
                         type: 'bar',
-                        barWidth: '18%',
+                        barWidth: 16,
                     }]
                 })
                 this.lifeChartLoading = false
@@ -741,6 +704,7 @@
                                 '</span>' + params[0].data + '%' + '</p>'
                         },
                     },
+                    grid: {x: 80, y: 40, x2: 80, y2: 80,},//图表位置
                     xAxis: {
                         type: 'category',
                         axisLine: {
@@ -787,7 +751,7 @@
                     series: [{
                         data: this.jobData.y,
                         type: 'bar',
-                        barWidth: '18%',
+                        barWidth: 16,
                     }]
                 })
                 this.jobChartLoading = false
@@ -825,11 +789,10 @@
                                 fontWeight: 'bold',
                                 color: function () {
                                     // Random color
-                                    return 'rgb(' + [
-                                        Math.round(Math.random() * 160),
-                                        Math.round(Math.random() * 160),
-                                        Math.round(Math.random() * 160)
-                                    ].join(',') + ')';
+                                    let arr = ['#9AE65C','#41D9C7','#1890FF','#FACC14','#2FC25B']
+                                    let rgb = arr[Math.round(Math.random() * 4)]
+                                    // console.log(rgb);
+                                    return rgb;
                                 }
                             },
                             //鼠标悬浮阴影
@@ -922,7 +885,8 @@
                             }
                         },
                         axisLabel: {
-                            color: '#2C313C'
+                            color: '#2C313C',
+                            interval: 0,
                         },
                         data: this.currTagsChartsData.tag2_data.x
                     },
@@ -951,14 +915,14 @@
                     series: [
                         {
                             type: 'bar',
-                            barWidth: '18%',
+                            barWidth: 16,
                             color: '#1890FF',
                             name: this.tagLegendData[0],
                             data: this.currTagsChartsData.tag2_data.y1
                         },
                         {
                             type: 'bar',
-                            barWidth: '18%',
+                            barWidth: 16,
                             color: '#4DCB73',
                             name: this.tagLegendData[1],
                             data: this.currTagsChartsData.tag2_data.y2
@@ -1018,7 +982,8 @@
                             }
                         },
                         axisLabel: {
-                            color: '#2C313C'
+                            color: '#2C313C',
+                            interval: 0,
                         },
                         data: this.currTagsChartsData.tag3_data.x
                     },
@@ -1047,14 +1012,14 @@
                     series: [
                         {
                             type: 'bar',
-                            barWidth: '18%',
+                            barWidth: 16,
                             color: '#1890FF',
                             name: this.tagLegendData[0],
                             data: this.currTagsChartsData.tag3_data.y1
                         },
                         {
                             type: 'bar',
-                            barWidth: '18%',
+                            barWidth: 16,
                             color: '#4DCB73',
                             name: this.tagLegendData[1],
                             data: this.currTagsChartsData.tag3_data.y2
@@ -1127,7 +1092,7 @@
             },
             //获取小区信息
             getCommunityInfo() {
-                // api.getApi('https://test-qadn.qinlindmp.com/portrait/api/v1/' + 'resInfo/getResInfoByResId', {resId: this.resId}).then(res => {
+
                 api.getApi(this.apiVar.portrait + 'resInfo/getResInfoByResId', {resId: this.resId}).then(res => {
                     // console.log(res.data);
                     if (res.data.SysCode == 200200) {
@@ -1317,7 +1282,6 @@
 
         mounted() {
             this.getParams();
-            this.getCompanyList();
             this.getTags();
             this.echartsListener();
         }

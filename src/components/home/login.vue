@@ -48,7 +48,7 @@
                     </div>
                 </div>
                 <div class="tip">
-                    <p>温馨提示：加盟城市请(<a href="/ApplicationForm.doc" download="申请表">点击并下载申请表</a>)，申请平台账号</p>
+                    <p>温馨提示：加盟城市请(<a :href ='apiVar.qadnUrl + "/importTemplate/ApplicationForm.doc"' download="申请表">点击并下载申请表</a>)，申请平台账号</p>
                 </div>
             </div>
         </div>

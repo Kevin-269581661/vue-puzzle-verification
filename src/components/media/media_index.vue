@@ -3,11 +3,11 @@
 		<div class="ad_index_container">
 			<home-top :user-info="userInfo" :data-arr="dataArr" :honor-img="companyHonor"></home-top>
 			<div style="margin:24px 0;display:flex;">
-				<div style="width:66%;">
+				<div style="width:66%;border: 1px solid #e5e6e9;">
 					<h2 class="h2_style">常用模块</h2>
 					<home-link :link="linkArr"></home-link>
 				</div>
-				<div style="width:33%; margin-left:24px;background:#fff;">
+				<div style="width:33%; margin-left:24px;background:#fff;border: 1px solid #e5e6e9;">
 					<h2 :class="isCom?'com_style':'h2_style'">个人荣誉</h2>
 					<div :class="isCom?'com_loglistBox':'loglist_box'">
 						<el-row style="text-align:center;">
@@ -28,7 +28,7 @@
 					</template>
 				</div>
 			</div>
-			<div style="margin:24px 0; background:#fff;padding-bottom: 24px;">
+			<div style="margin:24px 0; background:#fff;padding-bottom: 24px;border: 1px solid #e5e6e9;">
 				<h2 class="h2_style flex_box">
 					<b>业绩指标</b>
 					<span style="margin-right:24px;">

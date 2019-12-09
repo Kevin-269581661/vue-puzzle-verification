@@ -224,8 +224,10 @@
                             </el-table>
                         </el-tab-pane>
                         <el-tab-pane label="地图模式" name="second">
-                            <share-ad-map :mapADList="showADList" :mapCity="activeCity" :tableSelects="tableSelects"
-                                          :activeName="activeName" :reading="reading" @mapSelectRes="getMapSelect"></share-ad-map>
+                            <keep-alive>
+                                <share-ad-map :mapADList="showADList" :mapCity="activeCity" :tableSelects="tableSelects"
+                                              :activeName="activeName" :reading="reading" @mapSelectRes="getMapSelect"></share-ad-map>
+                            </keep-alive>
                         </el-tab-pane>
                     </el-tabs>
                 </div>

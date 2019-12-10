@@ -23,7 +23,7 @@
                         :value="item.value">
                     </el-option>
                 </el-select>
-                <i slot="suffix" class="el-input__icon el-icon-search" @click="searchFun"></i>
+                <i slot="append" class="el-icon-search" @click="searchFun"></i>
             </el-input>
             <div class="search_result_btn" v-show="isOnlineSearch || isMouseSearch || isMultiPoint">
                 <h4 class="result_title">框选结果</h4>
@@ -371,22 +371,47 @@
             :visible.sync="searchDialogVisible"
             :show-close="false"
             :close-on-click-modal="false"
-            width="360px"
+            width="380px"
+            top="22vh"
             custom-class="map_dialog">
             <div class="around_search_body">
-                <p>
+                <div>
                     <span class="p_span">框选方式：</span>
-                    <el-radio v-model="aroundSearchInfo.searchRadio" :label="1">辐射圈并集</el-radio>
-                    <el-radio v-model="aroundSearchInfo.searchRadio" :label="2">辐射圈交集</el-radio>
-                </p>
-                <p>
+                    <div>
+                        <el-radio v-model="aroundSearchInfo.searchRadio" :label="1">辐射圈并集</el-radio>
+                        <el-popover
+                            placement="top"
+                            width="240"
+                            trigger="hover">
+                            <div class="popover_map_info">
+                                <p>辐射圈范围内覆盖的全部点位均会被筛选出来，如下图示:</p>
+                                <img src="../../assets/images/map/unionset.png" alt="">
+                            </div>
+                            <i slot="reference" class="el-icon-question" style="color: #dfdfdf;margin-right: 12px"></i>
+                        </el-popover>
+                    </div>
+                    <div>
+                        <el-radio v-model="aroundSearchInfo.searchRadio" :label="2">辐射圈交集</el-radio>
+                        <el-popover
+                            placement="top"
+                            width="240"
+                            trigger="hover">
+                            <div class="popover_map_info">
+                                <p>多个辐射圈相交部分范围内的全部点位均会被筛选出来，如下图示:</p>
+                                <img src="../../assets/images/map/intersection.png" alt="">
+                            </div>
+                            <i slot="reference" class="el-icon-question" style="color: #dfdfdf"></i>
+                        </el-popover>
+                    </div>
+                </div>
+                <div>
                     <span class="p_span">框选范围：</span>
                     <el-slider class="p_slider" v-model="aroundSearchInfo.searchRadius"></el-slider>
                     <el-input class="radius_input" placeholder="请输入半径" size="small"
                               @change="changeInput"
                               v-model="aroundSearchInfo.searchRadius"></el-input>
                     <span>km</span>
-                </p>
+                </div>
             </div>
             <div slot="footer" class="dialog-footer">
                 <el-button plain size="small" @click="searchDialogVisible = false">取 消</el-button>
@@ -463,17 +488,40 @@
             title="多点辐射"
             width="600px"
             custom-class="map_dialog"
+            top="22vh"
             :visible.sync="isMoreCenterPointVisible">
             <div class="map_dialog_body">
-                <p>
+                <div>
                     <span class="p_span">框选方式：</span>
                     <el-radio v-model="aroundSearchInfo.searchRadio" :label="1">辐射圈并集</el-radio>
+                    <el-popover
+                        placement="top"
+                        width="240"
+                        trigger="hover">
+                        <div class="popover_map_info">
+                            <p>辐射圈范围内覆盖的全部点位均会被筛选出来，如下图示:</p>
+                            <img src="../../assets/images/map/unionset.png" alt="">
+                        </div>
+                        <i slot="reference" class="el-icon-question" style="color: #dfdfdf;margin-right: 12px"></i>
+                    </el-popover>
                     <el-radio v-model="aroundSearchInfo.searchRadio" :label="2">辐射圈交集</el-radio>
-                </p>
+                    <el-popover
+                        placement="top"
+                        width="240"
+                        trigger="hover">
+                        <div class="popover_map_info">
+                            <p>多个辐射圈相交部分范围内的全部点位均会被筛选出来，如下图示:</p>
+                            <img src="../../assets/images/map/intersection.png" alt="">
+                        </div>
+                        <i slot="reference" class="el-icon-question" style="color: #dfdfdf;"></i>
+                    </el-popover>
+                </div>
                 <ul>
                     <li class="map_dialog_li clearfix" v-for="(item,index) in moreRadiationInfo">
                         <span class="p_span map_li_p">辐射圈{{index+1}}：</span>
                         <el-select
+                            class="more_radiation_select"
+                            popper-class="radiation_select_popper"
                             v-model="item.searchValue"
                             multiple
                             filterable
@@ -483,13 +531,16 @@
                             size="small"
                             :remote-method="remoteMethod"
                             :loading="loadingMore"
-                            class="more_radiation_select"
                             @focus="moreRadiationIndex = index">
                             <el-option
-                                v-for="item in item.searchOptions"
-                                :key="item.id"
-                                :label="item.title"
-                                :value="item.id">
+                                v-for="key in item.searchOptions"
+                                :key="key.id"
+                                :label="key.title"
+                                :value="key.id">
+                                <div slot="">
+                                    <p>{{key.title}}</p>
+                                    <p class="select_address">{{key.address}}</p>
+                                </div>
                             </el-option>
                         </el-select>
                         <el-input size="small" class="search_radius_input" placeholder="请输入半径距离"
@@ -517,6 +568,8 @@
     import sessFun from "../../commonFun/sessFun";
     import timeFormat from "../../commonFun/timeFormat"
     import api from "../../api/api"
+    import BMapLib from 'BMapLib'
+    import mapStyle from "./map/mapStyle"
     export default {
         name: "qinLinMap",
         components:{
@@ -551,8 +604,6 @@
                 resMarkers: [],
                 // 非多点辐射时的markers
                 beforeResMarkes: [],
-                // 时间排期
-                dateTime:[],
                 // 地图loading
                 mapLoading: true,
                 //比例尺
@@ -562,7 +613,7 @@
                 // 搜索到关键词
                 selectName: '',
                 // 搜索类型 1->亲邻社区，2->在线结果
-                activeSearchKind: '1',
+                activeSearchKind: '2',
                 selOptions: [
                     {
                         value: '1',
@@ -603,7 +654,7 @@
                 // 标识在线搜索结果状态
                 isOnlineSearch: false,
                 // 收起/展开
-                showSelectList: true,
+                showSelectList: false,
                 // 是否显示小区详情
                 isShowInfo: false,
                 // 被点击的资源标注信息
@@ -723,12 +774,13 @@
                         searchOptions: [],  // 多点辐射下拉选择
                         searchValue:'',     // 下拉选中
                         searchRadius: 1,    // 辐射半径
+                        query: '',          // 检索的条件
                     }
                 ],
                 // 当前点击的行
                 moreRadiationIndex: 0,
                 // 检索中
-                loadingMore: true,
+                loadingMore: false,
             }
         },
         mounted() {
@@ -1219,6 +1271,8 @@
                     return
                 }
                 this.initMouseDrawing()
+                this.isMouseSearch = false
+                this.deleteDrawingOverlay()
                 if (temp === 'polyline') {
                     // 线-测距
                     this.LinePoints = []
@@ -1306,14 +1360,6 @@
                     console.log('-----e')
                 }
             },
-            // 匹配多边形内的点位
-            // isInsidePolygon(pt, poly) {
-            //     for (var c = false, i = -1, l = poly.length, j = l - 1; ++i < l; j = i)
-            //         ((poly[i].lat <= pt.lat && pt.lat < poly[j].lat) || (poly[j].lat <= pt.lat && pt.lat < poly[i].lat)) &&
-            //         (pt.lng < (poly[j].lng - poly[i].lng) * (pt.lat - poly[i].lat) / (poly[j].lat - poly[i].lat) + poly[i].lng) &&
-            //         (c = !c);
-            //     return c;
-            // },
             // 显示多边形内的点位
             showResInPolygon(temp, overlay) {
                 let showLoading = this.$loading({
@@ -1323,7 +1369,7 @@
                     background: 'rgba(0, 0, 0, 0.7)'
                 });
                 console.time('显示多边形')
-                // 异步保证showLoading能出现，其他方法暂时无法实现（async/await）
+                //  异步保证showLoading能出现，其他方法暂时无法实现（async/await、this.$nextTick）
                 let timer = setTimeout(() => {
                     this.markerClusterer ? this.markerClusterer.clearMarkers() : ''
                     for (let akey of this.resMarkers) {
@@ -1446,36 +1492,50 @@
             },
             // 多点辐射
             remoteMethod(query) {
+                console.log('多点辐射query',query)
                 if (query !== '') {
-                    let resultArray = []
-                    this.loadingMore = true;
-                    let options = {
-                        onSearchComplete:  (results) =>{
-                            // 判断状态是否正确
-                            if (local.getStatus() == 0){
-                                // console.log(results.getPoi);
-                                for (let i = 0; i < results.getCurrentNumPois(); i++) {
-                                    //在当前页面下获取页面中的内容
-                                    resultArray.push({
-                                        id: results.getPoi(i).uid,
-                                        title: results.getPoi(i).title,
-                                        address: results.getPoi(i).address,
-                                        city: results.getPoi(i).city,
-                                        province: results.getPoi(i).province,
-                                        point: results.getPoi(i).point,
-                                    })
+                    let isHave = this.moreRadiationInfo.some((item,index)=>{
+                        if(item.query === query && index !== this.moreRadiationIndex) {
+                            return true
+                        }
+                    })
+                    if(isHave) {
+                        sessFun.messageFun('warning','搜索条件不可重复');
+                        this.loadingMore = false;
+                    } else {
+                        let resultArray = []
+                        this.loadingMore = true;
+                        this.moreRadiationInfo[this.moreRadiationIndex].searchValue = []
+                        this.moreRadiationInfo[this.moreRadiationIndex].query = query
+                        let options = {
+                            onSearchComplete:  (results) =>{
+                                // 判断状态是否正确
+                                if (local.getStatus() == 0){
+                                    // console.log(results.getPoi);
+                                    for (let i = 0; i < results.getCurrentNumPois(); i++) {
+                                        //在当前页面下获取页面中的内容
+                                        resultArray.push({
+                                            id: results.getPoi(i).uid,
+                                            title: results.getPoi(i).title,
+                                            address: results.getPoi(i).address,
+                                            city: results.getPoi(i).city,
+                                            province: results.getPoi(i).province,
+                                            point: results.getPoi(i).point,
+                                        })
+                                    }
+                                    this.loadingMore = false
+                                    this.moreRadiationInfo[this.moreRadiationIndex].searchOptions = resultArray
+                                    console.log('resultArray',resultArray,this.moreRadiationIndex)
+                                } else {
+                                    console.log('没有搜索到该关键词！')
                                 }
-                                this.loadingMore = false
-                                this.moreRadiationInfo[this.moreRadiationIndex].searchOptions = JSON.parse(JSON.stringify(resultArray))
-                                console.log('resultArray',resultArray,this.moreRadiationIndex)
-                            } else {
-                                console.log('没有搜索到该关键词！')
-                            }
-                        },
-                        pageCapacity: 100
-                    };
-                    let local = new BMap.LocalSearch(this.resMap,options)
-                    local.search(this.$route.query.city + query)
+                            },
+                            pageCapacity: 100
+                        };
+                        let local = new BMap.LocalSearch(this.resMap,options)
+                        local.search(this.$route.query.city + query)
+                    }
+
                 } else {
                     this.loadingMore = false;
                 }
@@ -1639,6 +1699,10 @@
                         sessFun.messageFun('warning','搜索不到相关的亲邻资源，请换一个搜索姿势喔')
                     }
                 } else {
+                    // 清除上一次检索的结果标注
+                    for(let key of this.onlineMarkers) {
+                        this.resMap.removeOverlay(key)
+                    }
                     // 在线搜索
                     this.onlineSearchFun()
                 }
@@ -1664,6 +1728,7 @@
                                     city: results.getPoi(i).city,
                                     province: results.getPoi(i).province,
                                     point: results.getPoi(i).point,
+                                    isSelect: false
                                 })
                             }
                             if (currPage < totalPages - 1) {
@@ -1675,7 +1740,8 @@
                                 // console.log("全部结果有：", resultArray, "------原本搜索结果有：", totalResults);
                             }
                         } else {
-                            sessFun.messageFun('warning','检索异常')
+                            sessFun.messageFun('warning','无搜索结果')
+                            this.searchOnlineLoading = false
                         }
                     },
                     pageCapacity: 50
@@ -1688,19 +1754,24 @@
                 this.onlineMarkers = []
                 let i = 0
                 for (let key of this.searchOnlineList) {
-                    if (i < 100) {
-                        let myIcon = new BMap.Icon(require('../../assets/images/map/onlineIcon.png'), new BMap.Size(32,32),{
-                            anchor: new BMap.Size(16, 16)
+                    // 创建标注
+                    let marker = new BMap.Marker(
+                        key.point,
+                        {
+                            icon: new BMap.Icon(require('../../assets/images/map/onlineIcon.png'),
+                                new BMap.Size(32, 32), { anchor: new BMap.Size(16, 16)})
                         });
-                        let marker = new BMap.Marker(key.point,{icon:myIcon});  // 创建标注
-                        marker.setTop(true);
-                        this.onlineMarkers.push(marker)
-                        this.resMap.addOverlay(marker);            // 将标注添加到地图中
-                        marker.addEventListener("click", () => {
-                            this.showOnlineDetail(key)
-                        });
-                    } else {
-                        break
+                    let label = this.setMarkerLabel(key.title)
+                    marker.setLabel(label);
+                    marker.setTop(true);
+                    marker.isSelect = false
+                    this.onlineMarkers.push(marker)
+                    this.resMap.addOverlay(marker);            // 将标注添加到地图中
+                    marker.addEventListener("click", () => {
+                        this.showOnlineDetail(key)
+                    });
+                    if (i > 100) {
+                        marker.hide()
                     }
                     i++
                 }
@@ -1779,6 +1850,7 @@
                         this.onlineCheckBox(key)
                     }
                 }
+                console.log('取消在线选择',this.searchOnlineList)
             },
             // 点击检索结果名称移动地图中心
             moveMapByOnclickName(item,temp) {
@@ -1796,6 +1868,7 @@
                     for(let key of this.onlineMarkers) {
                         if(item.point.lng == key.point.lng && item.point.lat == key.point.lat) {
                             this.resMap.panTo(key.point);
+                            key.show()
                             this.showOnlineDetail(item)
                             break;
                         }
@@ -1828,6 +1901,7 @@
                 })
                 if(!isHave) {
                     this.selectResList.push(item)
+                    this.showSelectList = true
                 }
             },
             // 画圆标识选中状态
@@ -1860,13 +1934,15 @@
             },
             // 在线勾选/取消
             onlineCheckBox(item) {
-                // console.log('在线item', item)
-                for(let key of this.onlineMarkers) {
-                    if(key.point.lat  === item.point.lat && key.point.lng  === item.point.lng) {
-                        let onlineIcon =  ''
-                        if(item.isSelect) {
+                console.log('在线item', item)
+                for (let key of this.onlineMarkers) {
+                    if (key.point.lat === item.point.lat && key.point.lng === item.point.lng) {
+                        let onlineIcon = ''
+                        if (item.isSelect) {
+                            key.isSelect = true
                             onlineIcon = require('../../assets/images/map/isActiveIcon.png')
                         } else {
+                            key.isSelect = false
                             onlineIcon = require('../../assets/images/map/onlineIcon.png')
                         }
                         let myIcon = new BMap.Icon(
@@ -1896,6 +1972,14 @@
             },
             changeInput() {
                 this.aroundSearchInfo.searchRadius = Number(this.aroundSearchInfo.searchRadius)
+            },
+            // 隐藏没有勾选的在线结果标注
+            hideOnlineMarker() {
+                for (let key of this.onlineMarkers) {
+                    if(!key.isSelect) {
+                        key.hide()
+                    }
+                }
             },
             // 周边搜索
             searchAround() {
@@ -1929,6 +2013,7 @@
                     }
                     // console.log('---------周边搜索------结束---------')
                     this.searchLoading = false
+                    this.hideOnlineMarker()
                     clearTimeout(timer)
                 },10)
             },
@@ -2489,6 +2574,14 @@
         border: none;
     }
 
+    .left_search_box /deep/ .el-input-group__append{
+        position: relative;
+        top:-1px;
+        border: none;
+        cursor: pointer;
+        padding: 0 12px;
+    }
+
     .search_body {
         background: #fff;
         margin-top: 8px;
@@ -2632,7 +2725,7 @@
         padding: 8px 20px 0;
     }
 
-    .around_search_body p{
+    .around_search_body >div{
         display: flex;
         margin-bottom:16px;
     }
@@ -3267,5 +3360,28 @@
     .el-popover.filter-popper,
     .el-popover.mouse_polyline{
         padding: 0;
+    }
+
+    .radiation_select_popper .el-select-dropdown__item{
+        height: 56px;
+
+    }
+
+    .radiation_select_popper .select_address{
+        line-height: 20px;
+        color: rgba(0,0,0,0.45);
+        max-width: 452px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .radiation_select_popper .selected .select_address{
+        color: rgba(64,158,255,1);
+        font-weight: 500;
+    }
+
+    .popover_map_info {
+        text-align: center;
     }
 </style>

@@ -1642,6 +1642,7 @@
                                     city: results.getPoi(i).city,
                                     province: results.getPoi(i).province,
                                     point: results.getPoi(i).point,
+                                    isSelect:false,
                                 })
                             }
                             if (currPage < totalPages - 1) {

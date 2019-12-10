@@ -497,10 +497,11 @@
                 };
                 api.getApi(this.apiVar.Advertisement+"/GetAPD", info)
                     .then(res =>{
-                        console.log('test--', res.data);
+                        // console.log('test--', res.data);
                         if (!res.data.SysCode) {
                             let plandata = res.data;
                             this.planData = res.data
+                            sessionStorage.setItem('priceData',JSON.stringify(res.data))
                             for (let data of plandata) {
                                 if(!this.ridString.includes(data.asrID)){
                                     this.ridString += data.asrID + ','

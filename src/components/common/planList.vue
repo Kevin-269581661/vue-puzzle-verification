@@ -18,10 +18,18 @@
                             <el-option label="品牌名称" value="3"></el-option>
                         </el-select>
                     </el-input>
-                    <el-date-picker size="small" class="marginR" v-model="searchInfo.rangeDate" type="daterange"
-                                    range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd"
-                                    start-placeholder="投放日期" end-placeholder="投放日期">
-                    </el-date-picker>
+                   <div style="margin-left: -30px">
+                       <el-select size="small" v-model="searchInfo.dateType" placeholder="请选择" class="date-type-select">
+                           <el-option label="上刊日期" value="1"></el-option>
+                           <el-option label="下刊日期" value="2"></el-option>
+                           <el-option label="发布日期" value="3"></el-option>
+                           <el-option label="换画日期" value="4"></el-option>
+                       </el-select>
+                       <el-date-picker size="small" class="marginR" v-model="searchInfo.rangeDate" type="daterange"
+                                       range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd"
+                                       start-placeholder="选择日期" end-placeholder="选择日期">
+                       </el-date-picker>
+                   </div>
                     <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small" class="marginR">
                         <el-option v-for="item of stateList" :key="item.value" :label="item.text"
                                    :value="item.value"></el-option>
@@ -302,6 +310,8 @@
                     keyword: "",
                     // 时间范围
                     rangeDate: "",
+                    //日期类型
+                    dateType:'1',
                     // 状态筛选
                     status: '',
                     // 公司搜索
@@ -314,6 +324,7 @@
                     orderby: '',
                     // 升序降序0/1
                     desc: "",
+
                 },
                 // 公司列表
                 companyData: [],
@@ -1190,6 +1201,21 @@
     /*筛选*/
     /deep/ .el-checkbox-group .el-checkbox + .el-checkbox {
         margin-left: 0;
+    }
+    .date-type-select{
+        position: relative;
+        left: 30px;
+        z-index: 9;
+        width: 104px;
+    }
+    .date-type-select /deep/ .el-input__inner{
+        width: 104px !important;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        color: rgb(144, 147, 153);
+    }
+    .date-type-select /deep/  .el-input.is-focus .el-input__inner{
+        border-color:#dcdfe6
     }
 
     .typeBox p {

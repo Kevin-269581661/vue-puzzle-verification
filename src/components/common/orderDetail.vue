@@ -301,9 +301,9 @@
                         <div class="table-top-tip">
                             <i class="el-icon-info" style="color: #1890FF;"></i>
                             <h4>
-                                <span>当前点位共<em>{{ changePointInfo.allPoint +changePointInfo.addPointlist.length}}</em>个，</span>
-                                <span>终止点位<em>{{ changePointInfo.stopPointlist.length||0 }}</em>个，</span>
-                                <span>新增点位<em>{{changePointInfo.addPointlist.length||0}}</em>个</span>
+                                <span>当前点位共<em>{{pointTotal}}</em>个，</span>
+                                <span>终止点位<em>{{ changePointInfo.stopPointNum }}</em>个，</span>
+                                <span>新增点位<em>{{changePointInfo.addPointNum}}</em>个</span>
                             </h4>
                         </div>
                         <div>
@@ -352,8 +352,8 @@
                                 </el-table-column>
                                 <el-table-column label="资源名称" min-width="16.1%" class-name="resName-wrap">
                                     <template slot-scope="scope">
-                                        <div style="float:left;position: absolute;left: 0;top: 0">
-                                            <div v-if="scope.row.isNew" slot="reference" class="color-line"></div>
+                                        <div style="float:left;position: absolute;left: 0;top: 0" v-if="isHandleChange">
+                                            <div v-if="scope.row.isCurrNew" slot="reference" class="color-line"></div>
                                             <div v-if="scope.row.lState==2" slot="reference" class="color-line"
                                                  style="background-color: #FF763B"></div>
                                         </div>
@@ -419,7 +419,7 @@
                             </el-table>
                             <!--<p style="font-size: 12px;color: #666666;margin-top: 10px">提示：带*号的为新增点位</p>-->
                             <div class="table-bottom-tip">
-                                <div style="display: flex">
+                                <div style="display: flex" v-if="isHandleChange">
                                     <p><span style="background-color: #1890ff" class="color-line"></span>新增点位</p>
                                     <p><span style="background-color: #FF763B" class="color-line"></span>终止点位</p>
                                 </div>
@@ -440,8 +440,9 @@
                         </div>
                     </div>
                     <div slot="footer" class="dialog-footer">
-                        <el-button @click="closeDialogChangePoint">取 消</el-button>
-                        <el-button type="primary" @click="closeDialogChangePoint">完 成</el-button>
+                        <el-button v-if="isHandleChange" plain @click="doneChangePoint">完 成</el-button>
+                        <el-button v-else plain @click="closeDialogChangePoint">取 消</el-button>
+
                     </div>
                 </el-dialog>
                 <!--点位更改记录对话框-->
@@ -523,7 +524,7 @@
                 <el-dialog
                     title="修改订单金额"
                     width="768px"
-                    top="40vh"
+                    top="20vh"
                     custom-class="price-dialog"
                     :visible.sync="changePriceModal"
                     :before-close="cancelChangePrice">
@@ -557,6 +558,7 @@
     import addAds from "./components/addAds"
     import noSearchResult from "./components/noSearchResult.vue";
     import changePic from "./components/changePic.vue";
+    import changeOrderPrice from "./components/changeOrderPrice.vue";
 
     export default {
         name: "orderDetail",
@@ -567,6 +569,7 @@
             addAds,
             changePic,
             noSearchResult,
+            changeOrderPrice
         },
         data() {
             return {
@@ -679,7 +682,9 @@
                 changePointInfo: {
                     allPoint: 0,
                     stopPointlist: [],
+                    stopPointNum: 0,
                     addPointlist: [],
+                    addPointNum: 0,
                 },
 
                 //更换点位取消终止按钮
@@ -745,6 +750,7 @@
                     orderCompanyList: [],
                     priceCurrCompany: 0,
                 },
+                isHandleChange: false,
             };
         },
         created() {
@@ -758,7 +764,7 @@
             // 获取订单详情的上面公司的信息
             this.getInitData();
             // 选点排期
-            // this.getMaterInfo();
+            this.getMaterInfo();
 
             if (this.role == 'MD' || this.role == 'BD') {
                 // 获取换画列表
@@ -813,13 +819,19 @@
                 this.pointPageSize = 10
                 this.keyword = ''
                 this.changeKeyword = ''
+                this.changePointInfo = {
+                    allPoint: 0,
+                    stopPointlist: [],
+                    stopPointNum: 0,
+                    addPointlist: [],
+                    addPointNum: 0,
+                }
             },
             //更换点位对话框关闭
             closeDialogChangePoint() {
                 //重置页数页码
                 this.currPage = 1;
                 this.pageSize = 10;
-                this.initListData()
                 this.dialogChangePoint = false
                 this.getSetPoint()
                 /*   MessageBox.confirm(
@@ -840,7 +852,70 @@
 
                        });*/
             },
+            //更换点位对话框-完成
+            doneChangePoint() {
+                this.closeDialogChangePoint()
+                MessageBox.confirm(
+                    "已完成更换点位操作，是否修改订单金额？",
+                    "提示",
+                    {
+                        confirmButtonText: "修改",
+                        cancelButtonText: "不修改",
+                        dangerouslyUseHTMLString: true,
+                        type: "success"
+                    }
+                ).then(() => {
+                    this.changePriceModal = true
+                    let priceData = JSON.parse(sessionStorage.getItem('priceData'))
+                    console.log('订单金额',priceData);
+                    let obj = {
+                        AdDoorAdPrice: 0,
+                        AdDoorMakePrice: 0,
+                        BreakAdPrice: 0,
+                        BreakMakePrice: 0,
+                        orderOldPrice: 0,
+                        orderCompanyList: [],
+                        priceCurrCompany: 0,
 
+                    }
+
+                    for (let item of priceData) {
+                        if (obj.orderCompanyList.length>0) {
+                            for(let data of obj.orderCompanyList){
+                                if(item.asrID==data.asrID&&item.rID==data.rID){
+                                    let totalPrice = (data.pdAdFee+data.pdAdMake+item.pdAdFee+item.pdAdMake)/100
+                                    if(data.pdType==1){
+                                        obj.BreakAdPrice = data.pdAdFee/100;
+                                        obj.BreakMakePrice = data.pdAdMake/100;
+                                        obj.AdDoorAdPrice = item.pdAdFee/100;
+                                        obj.AdDoorMakePrice = item.pdAdMake/100;
+                                    }else{
+                                        obj.BreakAdPrice = item.pdAdFee/100;
+                                        obj.BreakMakePrice = item.pdAdMake/100;
+                                        obj.AdDoorAdPrice = data.pdAdFee/100;
+                                        obj.AdDoorMakePrice = data.pdAdMake/100;
+                                    }
+                                    obj.orderOldPrice = this.priceFormat(totalPrice)
+
+                                }
+                            }
+                        }else{
+                            let a = {
+                                ...item,
+                                company: item.asName,
+                            }
+                            obj.orderCompanyList.push(a)
+                        }
+                    }
+                    this.changePriceData = obj
+                    console.log(this.changePriceData);
+
+                })
+                    .catch(() => {
+                        Message.info("已取消操作");
+                    });
+                // this.dialogChangePoint = false
+            },
             //提交更换点位操作
             stopPoint() {
                 if (this.changePointInfo.stopPointlist.length > 0) {
@@ -882,13 +957,21 @@
                             console.log(res.data)
                             if (res.data.SysCode == 200200) {
                                 // this.dialogChangePoint = false
+
                                 Message.warning(res.data.MSG)
-                                this.getSetPoint('change')
-                                this.changePointInfo = {
-                                    allPoint: 0,
-                                    stopPointlist: [],
-                                    addPointlist: [],
-                                };
+                                this.changePointInfo.stopPointNum = this.changePointInfo.stopPointlist.length
+                                for (let data of this.changePointInfo.stopPointlist) {
+                                    for (let item of this.setpointArr) {
+                                        if (data.asID == item.asID && data.timeRange == item.timeRange) {
+                                            item.lState = 2
+                                        }
+                                    }
+                                }
+                                this.changePointPageFn()
+                                // this.getSetPoint('change')
+                                this.changePointInfo.stopPointlist = []
+                                this.changePointInfo.addPointlist = []
+                                this.isHandleChange = true
                             } else {
                                 Message.warning(res.data.MSG)
                                 this.dialogChangePoint = false
@@ -897,7 +980,7 @@
                         // this.dialogChangePoint = false
                     })
                         .catch(() => {
-
+                            Message.info("已取消操作");
                         });
                 } else {
                     Message.warning('请先勾选点位')
@@ -921,15 +1004,15 @@
                 this.changePointloading = true;
                 this.pointCurrPage = 1;
                 this.pointPageSize = pageVal;
-                this.getSetPoint('change')
-                // this.changePointPageFn()
+                // this.getSetPoint('change')
+                this.changePointPageFn()
             },
             // 点击页数
             pointChangePage(page) {
                 this.changePointloading = true;
                 this.pointCurrPage = page;
-                this.getSetPoint('change')
-                // this.changePointPageFn()
+                // this.getSetPoint('change')
+                this.changePointPageFn()
             },
             setInfo(data) {
                 console.log('defail------data', data);
@@ -1002,7 +1085,7 @@
                 } else if (this.planPanel == "second") {
                     MtaH5.clickStat('a006_b011_c000_d000_bt113_ck09')
                 } else if (this.planPanel == "third") {
-                    this.getMaterInfo();
+                    // this.getMaterInfo();
                     MtaH5.clickStat('a006_b011_c000_d000_bt114_ck09')
                 } else if (this.planPanel == "forth") {
                     MtaH5.clickStat('a006_b011_c000_d000_bt115_ck09')
@@ -1108,7 +1191,7 @@
                             let initData = res.data;
                             let result = initData.adSpaceInfo;
                             // this.addNewAdsNum = res.data.isNewCount
-                            for (let data of result) {
+                          /*  for (let data of result) {
                                 let time = this.formatTime(data.lStar) + "-" + this.formatTime(data.lEnd);
                                 data.timeRange = time;
                                 let finishTimeRange = '';
@@ -1124,7 +1207,7 @@
                             this.filterCityData = filterFormat(result, "city");
                             console.log('城市filter', this.filterCityData)
                             this.filtersArea = filterFormat(result, "rName");
-                            this.filtersData = filterFormat(result, "timeRange");
+                            this.filtersData = filterFormat(result, "timeRange");*/
 
                             // 广告门物料信息
                             let mInfo = initData.gateMaterialInfo;
@@ -1189,6 +1272,7 @@
                         info.resName == this.changeKeyword
                         info.pageNum = this.pointCurrPage
                         info.pageSize = this.pointPageSize
+                        info.lState = 1
                     } else {
                         info.resName = this.keyword
 
@@ -1219,8 +1303,7 @@
                             if (type && type == 'change') {
                                 this.setpointArr = result;
                                 this.changePointArr = result;
-                                //切换页数时勾选
-                                this.selectioUpdate()
+                                this.changePointPageFn()
 
                             } else {
                                 this.currentPointArr = result;
@@ -1262,7 +1345,7 @@
             },
             //以终止的不可勾选
             selectInit(item) {
-                if (item.lState==2) {
+                if (item.lState == 2) {
                     return false  //不可勾选
                 } else {
                     return true  //可勾选
@@ -1314,10 +1397,13 @@
                 for (let i = 0; i < total; i += pageSize) {
                     result.push(this.setpointArr.slice(i, i + pageSize));
                 }
+                console.log(result);
                 //当前页
                 this.changePointArr = result[pageNum - 1]
+                //切换页数时勾选
+                this.selectioUpdate()
                 this.changePointloading = false
-                console.log('更换点位当前页数据--', this.currentPointArr);
+                console.log('更换点位当前页数据--', this.changePointArr);
 
             },
             // 时间格式规范 年月日
@@ -1360,7 +1446,8 @@
                 // let keyword = this.keyword;
                 if (type == 'change') {
                     //更换点位
-                    this.getSetPoint(type)
+                    this.changePointPageFn()
+                    // this.getSetPoint(type)
                 } else {
                     this.getSetPoint()
                 }
@@ -1369,8 +1456,8 @@
             reset(type) {
                 if (type == 'change') {
                     this.changeKeyword = ''
-                    this.getSetPoint(type)
-                    // this.changePointPageFn()
+                    // this.getSetPoint(type)
+                    this.changePointPageFn()
                 } else {
                     this.keyword = ''
                     this.getSetPoint()
@@ -1515,21 +1602,8 @@
                 // this.showHandel = true;
                 this.initListData()
                 this.dialogChangePoint = true
+                this.isHandleChange = false
                 this.getSetPoint('change')
-            },
-            //保存更换点位
-            saveChangePoint() {
-                // this.usableBtn = false;
-                // this.showTitle = false;
-                // this.showBtn = true;
-                // this.showHandel = false;
-            },
-            //取消更换点位
-            cancelChangePoint() {
-                // this.usableBtn = false;
-                // this.showTitle = false;
-                // this.showBtn = true;
-                // this.showHandel = false;
             },
             //显示添加点位的模态框
             showAddPointDialog() {
@@ -1594,11 +1668,8 @@
                     }
                 }
                 let postData = {uID: userData.uID, token: userData.token, asIDList: arr}
-                // for (let data of arr) {
-                //     this.changePointInfo.addPointlist.push(data)
-                //     this.setpointArr.unshift(data)
-                // }
-                console.log('添加点位对话框确认按钮', this.setpointArr)
+
+                console.log('添加点位对话框确认按钮', this.changePointInfo.addPointlist)
                 // this.changePointPageFn()
                 // this.IsAddPoint = true
                 api.postApi_json(this.apiVar.Advertisement + '/SetPDAS?uid=' + userData.uID + '&token=' + userData.token,
@@ -1615,14 +1686,27 @@
                             })
                         } else {
                             Message.success("添加点位成功")
+                            for (let data of arr) {
+                                this.changePointInfo.addPointlist.push(data)
+                                this.setpointArr.unshift(data)
+                            }
                             this.dialogAddPoint = false
                             this.IsAddPoint = true
-                            this.getSetPoint()
-                            this.changePointInfo = {
-                                allPoint: 0,
-                                stopPointlist: [],
-                                addPointlist: [],
-                            };
+                            this.isHandleChange = true
+                            this.changePointInfo.addPointNum = this.changePointInfo.addPointlist.length
+                            // this.getSetPoint('change')
+
+                            for (let data of this.changePointInfo.addPointlist) {
+                                for (let item of  this.setpointArr) {
+                                    if (data.asID == item.asID && data.timeRange == item.timeRange) {
+                                        item.isCurrNew = 1
+                                    }
+                                }
+                            }
+                            this.changePointPageFn()
+                            this.changePointInfo.stopPointlist = []
+                            this.changePointInfo.addPointlist = []
+
                             // this.getMaterInfo('add')
                         }
                     }
@@ -1708,6 +1792,15 @@
             //修改订单金额
             cancelChangePrice() {
                 this.changePriceModal = false
+                this.changePriceData = {
+                    AdDoorAdPrice: 0,
+                    AdDoorMakePrice: 0,
+                    BreakAdPrice: 0,
+                    BreakMakePrice: 0,
+                    orderOldPrice: 0,
+                    orderCompanyList: [],
+                    priceCurrCompany: 0,
+                }
                 Message.info("已取消操作");
             },
         }
@@ -1725,6 +1818,14 @@
         color: rgba(0, 0, 0, 0.45);
         font-size: 12px;
         margin-top: 24px;
+        position: relative;
+        height: 48px;
+    }
+
+    .table-bottom-tip .ad_pagination {
+        position: absolute;
+        right: 0;
+        margin-top: 0;
     }
 
     .table-bottom-tip p {

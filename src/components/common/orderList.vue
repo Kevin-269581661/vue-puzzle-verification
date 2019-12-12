@@ -19,11 +19,12 @@
                         </el-select>
                     </el-input>
                     <div style="margin-left: -30px">
-                        <el-select size="small" v-model="searchInfo.dateType" placeholder="请选择" class="date-type-select">
-                            <el-option label="上刊日期" value="1"></el-option>
-                            <el-option label="下刊日期" value="2"></el-option>
+                        <el-select size="small" v-model="searchInfo.dateType" placeholder="请选择"
+                                   class="date-type-select">
+                            <el-option label="上刊日期" value="0"></el-option>
+                            <el-option label="下刊日期" value="1"></el-option>
                             <el-option label="发布日期" value="3"></el-option>
-                            <el-option label="换画日期" value="4"></el-option>
+                            <el-option label="换画日期" value="2"></el-option>
                         </el-select>
                         <el-date-picker size="small" class="marginR" v-model="searchInfo.rangeDate" type="daterange"
                                         range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd"
@@ -167,7 +168,8 @@
             custom-class="price-dialog"
             :visible.sync="changePriceModal"
             :before-close="cancelChangePrice">
-            <changeOrderPrice @cancel="cancelChangePrice" @done="doneChangePrice" :changePriceData="changePriceData"></changeOrderPrice>
+            <changeOrderPrice @cancel="cancelChangePrice" @done="doneChangePrice"
+                              :changePriceData="changePriceData"></changeOrderPrice>
         </el-dialog>
 
     </div>
@@ -206,7 +208,7 @@
                     // 时间范围
                     rangeDate: "",
                     //日期类型
-                    dateType:'1',
+                    dateType: '0',
                     // 公司搜索
                     company: '',
                     // 城市筛选
@@ -257,16 +259,16 @@
                 orderRow: {},
                 //修改订单金额数据
                 changePriceModal: false,
-                changePriceData:{
+                changePriceData: {
                     AdDoorAdPrice: 0,
                     AdDoorMakePrice: 0,
                     BreakAdPrice: 0,
                     BreakMakePrice: 0,
-                    orderOldPrice:0,
-                    orderCompanyList:[],
-                    priceCurrCompany:0,
+                    orderOldPrice: 0,
+                    orderCompanyList: [],
+                    priceCurrCompany: 0,
                 },
-                priceData:''
+                priceData: ''
 
 
             };
@@ -387,7 +389,7 @@
                     pageNum: this.currPage,
                     pageSize: this.pageSize
                 };
-                let {select, keyword, rangeDate, company, cityWord, status, orderby, desc} = this.searchInfo;
+                let {select, keyword, rangeDate, company, cityWord, status, orderby, desc, dateType} = this.searchInfo;
                 info = {
                     ...info,
                     ...(keyword && (select == '1' && {orderName: keyword}) || (select == '2' && {customerName: keyword}) || (select == '3' && {contractNum: keyword})),
@@ -396,7 +398,8 @@
                     ...(company && {asrID: company}),
                     ...(cityWord && {rID: cityWord}),
                     ...(orderby && {orderby}),
-                    ...(desc !== '' && desc >= 0 && {desc})
+                    ...(desc !== '' && desc >= 0 && {desc}),
+                    ...(dateType && {timeType: dateType})
                 };
                 return info;
             },
@@ -430,13 +433,13 @@
             },
             // 搜索(优化)
             search() {
-                let {keyword, rangeDate, company, cityWord, status} = this.searchInfo;
+                let {keyword, rangeDate, company, cityWord, status,dateType} = this.searchInfo;
                 this.isSearch = false;
                 let timer = setTimeout(() => {
                     this.isSearch = true;
                     clearTimeout(timer);
                 }, 1000);
-                if (keyword || rangeDate || company || cityWord || (status > 0 || status === 0)) {
+                if (keyword || rangeDate || company || cityWord || (status > 0 || status === 0) || dateType) {
                     this.currentOrder = [];
                     this.loading = true;
                     this.currPage = 1;
@@ -600,19 +603,19 @@
                                 Message.warning(res.data.MSG);
                             }
                         })
-                }) .catch(() => {
+                }).catch(() => {
                     Message.info("已取消操作");
                 });
             },
             //获取订单金额详情
-            getOrderPriceDetail(apid){
-                api.getApi(this.apiVar.Advertisement+"/GetAPD", {apid:apid})
-                    .then(res =>{
+            getOrderPriceDetail(apid) {
+                api.getApi(this.apiVar.Advertisement + "/GetAPD", {apid: apid})
+                    .then(res => {
                         // console.log('test--', res.data);
                         if (!res.data.SysCode) {
-                            sessionStorage.setItem('priceData',JSON.stringify(res.data))
+                            sessionStorage.setItem('priceData', JSON.stringify(res.data))
                             let priceData = res.data
-                            console.log('订单金额',priceData);
+                            console.log('订单金额', priceData);
                             let obj = {
                                 AdDoorAdPrice: 0,
                                 AdDoorMakePrice: 0,
@@ -621,30 +624,30 @@
                                 orderOldPrice: 0,
                                 orderCompanyList: [],
                                 priceCurrCompany: 0,
-                                handleTime:new Date().getTime(),
-                                apID:apid
+                                handleTime: new Date().getTime(),
+                                apID: apid
                             }
                             for (let item of priceData) {
-                                if (obj.orderCompanyList.length>0) {
-                                    for(let data of obj.orderCompanyList){
-                                        if(item.asrID==data.asrID&&item.rID==data.rID){
-                                            let totalPrice = (data.pdAdFee+data.pdAdMake+item.pdAdFee+item.pdAdMake)/100
-                                            if(data.pdType==1){
-                                                obj.BreakAdPrice = data.pdAdFee/100;
-                                                obj.BreakMakePrice = data.pdAdMake/100;
-                                                obj.AdDoorAdPrice = item.pdAdFee/100;
-                                                obj.AdDoorMakePrice = item.pdAdMake/100;
-                                            }else{
-                                                obj.BreakAdPrice = item.pdAdFee/100;
-                                                obj.BreakMakePrice = item.pdAdMake/100;
-                                                obj.AdDoorAdPrice = data.pdAdFee/100;
-                                                obj.AdDoorMakePrice = data.pdAdMake/100;
+                                if (obj.orderCompanyList.length > 0) {
+                                    for (let data of obj.orderCompanyList) {
+                                        if (item.asrID == data.asrID && item.rID == data.rID) {
+                                            let totalPrice = (data.pdAdFee + data.pdAdMake + item.pdAdFee + item.pdAdMake) / 100
+                                            if (data.pdType == 1) {
+                                                obj.BreakAdPrice = data.pdAdFee / 100;
+                                                obj.BreakMakePrice = data.pdAdMake / 100;
+                                                obj.AdDoorAdPrice = item.pdAdFee / 100;
+                                                obj.AdDoorMakePrice = item.pdAdMake / 100;
+                                            } else {
+                                                obj.BreakAdPrice = item.pdAdFee / 100;
+                                                obj.BreakMakePrice = item.pdAdMake / 100;
+                                                obj.AdDoorAdPrice = data.pdAdFee / 100;
+                                                obj.AdDoorMakePrice = data.pdAdMake / 100;
                                             }
                                             obj.orderOldPrice = this.priceFormat(totalPrice)
 
                                         }
                                     }
-                                }else{
+                                } else {
                                     let a = {
                                         ...item,
                                         company: item.asName,
@@ -673,7 +676,7 @@
                 }
                 Message.info("已取消操作");
             },
-            doneChangePrice(){
+            doneChangePrice() {
                 this.changePriceModal = false
                 this.changePriceData = {
                     AdDoorAdPrice: 0,
@@ -709,6 +712,7 @@
                     cityWord: '',
                     // 状态筛选
                     status: '',
+                    dateType:'0',
                 };
                 this.currPage = 1;
                 this.currentOrder = [];
@@ -888,20 +892,23 @@
     .el-checkbox + .el-checkbox {
         margin-left: 0;
     }
-    .date-type-select{
+
+    .date-type-select {
         position: relative;
         left: 30px;
         z-index: 9;
         width: 104px;
     }
-    .date-type-select /deep/ .el-input__inner{
+
+    .date-type-select /deep/ .el-input__inner {
         width: 104px !important;
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
         color: rgb(144, 147, 153);
     }
-    .date-type-select /deep/  .el-input.is-focus .el-input__inner{
-        border-color:#dcdfe6
+
+    .date-type-select /deep/ .el-input.is-focus .el-input__inner {
+        border-color: #dcdfe6
     }
 
     /deep/ .el-checkbox__label {

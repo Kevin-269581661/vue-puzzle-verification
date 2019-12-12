@@ -18,18 +18,19 @@
                             <el-option label="品牌名称" value="3"></el-option>
                         </el-select>
                     </el-input>
-                   <div style="margin-left: -30px">
-                       <el-select size="small" v-model="searchInfo.dateType" placeholder="请选择" class="date-type-select">
-                           <el-option label="上刊日期" value="1"></el-option>
-                           <el-option label="下刊日期" value="2"></el-option>
-                           <el-option label="发布日期" value="3"></el-option>
-                           <el-option label="换画日期" value="4"></el-option>
-                       </el-select>
-                       <el-date-picker size="small" class="marginR" v-model="searchInfo.rangeDate" type="daterange"
-                                       range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd"
-                                       start-placeholder="选择日期" end-placeholder="选择日期">
-                       </el-date-picker>
-                   </div>
+                    <div style="margin-left: -30px">
+                        <el-select size="small" v-model="searchInfo.dateType" placeholder="请选择"
+                                   class="date-type-select">
+                            <el-option label="上刊日期" value="0"></el-option>
+                            <el-option label="下刊日期" value="1"></el-option>
+                            <el-option label="发布日期" value="3"></el-option>
+                            <el-option label="换画日期" value="2"></el-option>
+                        </el-select>
+                        <el-date-picker size="small" class="marginR" v-model="searchInfo.rangeDate" type="daterange"
+                                        range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd"
+                                        start-placeholder="选择日期" end-placeholder="选择日期">
+                        </el-date-picker>
+                    </div>
                     <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small" class="marginR">
                         <el-option v-for="item of stateList" :key="item.value" :label="item.text"
                                    :value="item.value"></el-option>
@@ -93,10 +94,13 @@
                             <template slot-scope="scope">
                                 <div v-if="isAll" v-for="(item, index) of scope.row.cityArea" :key="index"
                                      class="city_p">
-                                    <el-tooltip class="item" effect="dark" :content="item.asName+' '+item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'" placement="top">
+                                    <el-tooltip class="item" effect="dark"
+                                                :content="item.asName+' '+item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'"
+                                                placement="top">
                                         <div>
                                             <span v-if="item.isshow">{{item.asName}}</span>
-                                            <p>{{item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'}}</p>
+                                            <p>
+                                                {{item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'}}</p>
                                         </div>
                                     </el-tooltip>
 
@@ -109,9 +113,12 @@
                                     </el-tooltip>
                                 </div>
                                 <div v-if="!isAll" v-for="item of scope.row.cityArea" :key="item.rid+'-'+item.asrID"
-                                   class="city_p">
-                                    <el-tooltip class="item" effect="dark" :content="item.asName+' '+item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'" placement="top">
-                                            <p>{{item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'}}</p>
+                                     class="city_p">
+                                    <el-tooltip class="item" effect="dark"
+                                                :content="item.asName+' '+item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'"
+                                                placement="top">
+                                        <p>
+                                            {{item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'}}</p>
                                     </el-tooltip>
 
                                     <el-tooltip class="item" effect="dark" :content="'距离解锁还剩'+item.RemainDay+'天'"
@@ -311,7 +318,7 @@
                     // 时间范围
                     rangeDate: "",
                     //日期类型
-                    dateType:'1',
+                    dateType: '1',
                     // 状态筛选
                     status: '',
                     // 公司搜索
@@ -1035,15 +1042,13 @@
             },
             // 搜索（优化）
             search() {
-                let {keyword, rangeDate, status, company, cityWord, Lock} = this.searchInfo;
+                let {keyword, rangeDate, status, company, cityWord, Lock, dateType} = this.searchInfo;
                 this.isSearch = false;
                 let timer = setTimeout(() => {
                     this.isSearch = true;
                     clearTimeout(timer);
                 }, 1000);
-                if (
-                    keyword || rangeDate || (status === 0 || status > 0) || company || cityWord || Lock
-                ) {
+                if (keyword || rangeDate || (status === 0 || status > 0) || company || cityWord || Lock || dateType) {
                     this.currentPlan = [];
                     this.loading = true;
                     this.currPage = 1;
@@ -1070,7 +1075,7 @@
                     start: this.currPage,
                     pagesize: this.pageSize
                 };
-                let {select, keyword, rangeDate, status, company, cityWord, Lock, orderby, desc} = this.searchInfo;
+                let {select, keyword, rangeDate, status, company, cityWord, Lock, orderby, desc,dateType} = this.searchInfo;
                 info = {
                     ...info,
                     ...(keyword && {keywordType: select, keyword}),
@@ -1080,7 +1085,8 @@
                     ...(cityWord && {rname: cityWord}),
                     ...(Lock && {onyusuo: Lock}),
                     ...(orderby && {orderby}),
-                    ...(desc !== '' && desc >= 0 && {desc})
+                    ...(desc !== '' && desc >= 0 && {desc}),
+                    ...(dateType && {timeType: dateType})
                 };
                 return info;
             },
@@ -1128,6 +1134,7 @@
                     company: '',
                     cityWord: '',
                     Lock: '',
+                    dateType:'1',
                 };
 
                 this.currPage = 1;
@@ -1202,20 +1209,23 @@
     /deep/ .el-checkbox-group .el-checkbox + .el-checkbox {
         margin-left: 0;
     }
-    .date-type-select{
+
+    .date-type-select {
         position: relative;
         left: 30px;
         z-index: 9;
         width: 104px;
     }
-    .date-type-select /deep/ .el-input__inner{
+
+    .date-type-select /deep/ .el-input__inner {
         width: 104px !important;
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
         color: rgb(144, 147, 153);
     }
-    .date-type-select /deep/  .el-input.is-focus .el-input__inner{
-        border-color:#dcdfe6
+
+    .date-type-select /deep/ .el-input.is-focus .el-input__inner {
+        border-color: #dcdfe6
     }
 
     .typeBox p {

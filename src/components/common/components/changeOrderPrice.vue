@@ -119,6 +119,9 @@
 
             }
         },
+        mounted(){
+            this.newPrice = this.priceFormat(this.changePriceData.AdDoorAdPrice + this.changePriceData.AdDoorMakePrice + this.changePriceData.BreakAdPrice + this.changePriceData.BreakMakePrice)
+        },
         methods: {
             // 价格加上逗号
             priceFormat(price) {
@@ -131,6 +134,7 @@
                         apID:this.changePriceData.apID,
                         orderMoneyInfos:[],
                         mark:this.changePriceData.handleTime,
+                        opType:this.changePriceData.opType
                     }
                     info.orderMoneyInfos = [
                         {

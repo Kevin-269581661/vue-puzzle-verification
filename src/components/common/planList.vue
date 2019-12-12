@@ -23,8 +23,8 @@
                                    class="date-type-select">
                             <el-option label="上刊日期" value="0"></el-option>
                             <el-option label="下刊日期" value="1"></el-option>
-                            <el-option label="发布日期" value="3"></el-option>
-                            <el-option label="换画日期" value="2"></el-option>
+                            <el-option label="创建日期" value="2"></el-option>
+                            <!--<el-option label="换画日期" value="2"></el-option>-->
                         </el-select>
                         <el-date-picker size="small" class="marginR" v-model="searchInfo.rangeDate" type="daterange"
                                         range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd"
@@ -1086,7 +1086,7 @@
                     ...(Lock && {onyusuo: Lock}),
                     ...(orderby && {orderby}),
                     ...(desc !== '' && desc >= 0 && {desc}),
-                    ...(dateType && {timeType: dateType})
+                    ...(rangeDate && {timeType: dateType})
                 };
                 return info;
             },

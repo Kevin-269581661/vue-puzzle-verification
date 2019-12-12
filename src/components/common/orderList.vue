@@ -165,7 +165,7 @@
             title="修改订单金额"
             width="768px"
             top="20vh"
-            custom-class="price-dialog"
+            custom-class="price-dialog-list"
             :visible.sync="changePriceModal"
             :before-close="cancelChangePrice">
             <changeOrderPrice @cancel="cancelChangePrice" @done="doneChangePrice"
@@ -399,7 +399,7 @@
                     ...(cityWord && {rID: cityWord}),
                     ...(orderby && {orderby}),
                     ...(desc !== '' && desc >= 0 && {desc}),
-                    ...(dateType && {timeType: dateType})
+                    ...(rangeDate && {timeType: dateType})
                 };
                 return info;
             },
@@ -625,7 +625,8 @@
                                 orderCompanyList: [],
                                 priceCurrCompany: 0,
                                 handleTime: new Date().getTime(),
-                                apID: apid
+                                apID: apid,
+                                opType:2
                             }
                             for (let item of priceData) {
                                 if (obj.orderCompanyList.length > 0) {
@@ -1027,5 +1028,7 @@
     .price-dialog /deep/ .el-dialog__body p {
         margin-bottom: 8px;
     }
-
+    .price-dialog-list .price-dialog .num-input-wrap span {
+        top: 2px !important;
+    }
 </style>

@@ -215,9 +215,8 @@
                         </div>
                     </el-tab-pane>
                     <el-tab-pane label="报价单" name="second">
-                        <div v-if="planPanel=='second'">
-                            <ap-quotation @detailInfo="setInfo" :quotationData="quotation" :copydata="copyAsidArr"
-                                          :isorder="true" :shopingList="[]" class="price_quo"></ap-quotation>
+                        <div>
+                            <ap-quotation ref="apQuotation" @detailInfo="setInfo" :quotationData="quotation" :copydata="copyAsidArr" :isorder="true" :shopingList="[]" class="price_quo"></ap-quotation>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane label="物料信息" name="third" :disabled="usableBtn">
@@ -469,6 +468,7 @@
                                 <div class="content">
                                     <h6>{{item.updateTime}}<span>操作人:{{item.realName}}</span></h6>
                                     <el-table
+                                        v-if="item.adsInfo"
                                         :data="item.adsInfo"
                                         border
                                         style="width: 100%">
@@ -516,9 +516,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div v-else>
-                                <no-search-result></no-search-result>
-                            </div>
+                            <no-search-result v-if="recordList.table.length==0" style="width: 100%;height: 100%;display: flex;flex-direction: column;justify-content: center;align-items: center;"></no-search-result>
                         </div>
                     </div>
                     <span slot="footer" class="dialog-footer">
@@ -787,7 +785,8 @@
                                 orderCompanyList: [],
                                 priceCurrCompany: 0,
                                 handleTime:this.handleTime,
-                                apID:sessionStorage.getItem("order_apid")
+                                apID:sessionStorage.getItem("order_apid"),
+                                opType:1
                             }
                             for (let item of priceData) {
                                 if (obj.orderCompanyList.length>0) {
@@ -1040,6 +1039,7 @@
                     this.getSetPoint()
                     MtaH5.clickStat('a006_b011_c000_d000_bt112_ck09')
                 } else if (this.planPanel == "second") {
+                    this.$refs.apQuotation.judgeIsDetail()
                     MtaH5.clickStat('a006_b011_c000_d000_bt113_ck09')
                 } else if (this.planPanel == "third") {
                     // this.getMaterInfo();
@@ -1266,7 +1266,7 @@
                                 this.currentPointArr = result;
                             }
 
-                            // 城市筛选过滤
+                            // 城市筛选过滤点位更改记录
                             this.filterCityData = filterFormat(result, "city");
                             // console.log('城市filter', this.filterCityData)
                             this.filtersArea = filterFormat(result, "rName");
@@ -1470,12 +1470,14 @@
                             newPoint: res.data.data.newAdsCount
                         }
                         let arr = []
-                        for(let data of res.data.data.orderHistory){
-                            let obj = {
-                                ...data,
-                                adsInfo:JSON.parse(data.adsInfo)
+                        if(res.data.data.orderHistory.length){
+                            for(let data of res.data.data.orderHistory){
+                                let obj = {
+                                    ...data,
+                                    adsInfo:JSON.parse(data.adsInfo)
+                                }
+                                arr.push(obj)
                             }
-                            arr.push(obj)
                         }
                         this.recordList.table =arr
 
@@ -1669,12 +1671,17 @@
                         }
                     }
                 }
-                let postData = {uID: userData.uID, token: userData.token, asIDList: arr}
+                let postData = {
+                    apID: this.orderDetail.apID,
+                    mark:this.handleTime,
+                    orderNewAdsInfos: arr,
+                    orderStoppedAdsInfos:[]
+                }
 
                 console.log('添加点位对话框确认按钮', this.changePointInfo.addPointlist)
                 // this.changePointPageFn()
                 // this.IsAddPoint = true
-                api.postApi_json(this.apiVar.Advertisement + '/SetPDAS?uid=' + userData.uID + '&token=' + userData.token,
+                api.postApi_json(this.apiVar.Advertisement + '/UpdateOrder',
                     JSON.stringify(postData)).then(res => {
                     console.log('添加选点返回信息', res)
                     addload.close();

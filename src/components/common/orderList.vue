@@ -163,11 +163,11 @@
         <el-dialog
             title="修改订单金额"
             width="768px"
-            top="40vh"
+            top="20vh"
             custom-class="price-dialog"
             :visible.sync="changePriceModal"
             :before-close="cancelChangePrice">
-            <changeOrderPrice @cancel="cancelChangePrice" :changePriceData="changePriceData"></changeOrderPrice>
+            <changeOrderPrice @cancel="cancelChangePrice" @done="doneChangePrice" :changePriceData="changePriceData"></changeOrderPrice>
         </el-dialog>
 
     </div>
@@ -257,7 +257,6 @@
                 orderRow: {},
                 //修改订单金额数据
                 changePriceModal: false,
-                changePriceInfo: '',
                 changePriceData:{
                     AdDoorAdPrice: 0,
                     AdDoorMakePrice: 0,
@@ -267,6 +266,7 @@
                     orderCompanyList:[],
                     priceCurrCompany:0,
                 },
+                priceData:''
 
 
             };
@@ -564,90 +564,135 @@
                         type: "warning"
                     }
                 ).then(() => {
-                    let price = (row.apTotal) ? this.priceFormat(row.apTotal / 100) : 0
-                    MessageBox.confirm(
-                        "现订单金额为 <span style='color: #1890ff'>&yen;" + price + "</span>",
-                        "结束订单成功，是否修改订单金额？",
-                        {
-                            confirmButtonText: "修改",
-                            cancelButtonText: "不修改",
-                            dangerouslyUseHTMLString: true,
-                            type: "success"
-                        }
-                    ).then(() => {
-                        this.changePriceInfo = row
-                        this.changePriceModal = true
-                        this.changePriceData.orderOldPrice = price
-                        console.log('当前订单信息--',this.changePriceInfo);
-                        let arr = []
-                        for(let data of row.companyList){
-                            for(let i =0;i< data.cityList.length;i++){
-                                let obj = {
-                                    city:data.cityList[i].city,
-                                    company:data.asName,
-                                    index:i,
-                                }
-                                arr.push(obj)
-                            }
-                        }
-                        this.changePriceData.orderCompanyList = arr
-                    })
-                        .catch(() => {
-                            Message.info("已取消操作");
-                        });
-              /*       api.postApi(this.apiVar.Advertisement + "/SetFangan", info)
-                         .then(res => {
-                             console.log(res.data);
-                             if (res.data.SysCode == 300200) {
-                                 //结束订单成功
-                                 let price = (row.apTotal) ? this.priceFormat(row.apTotal / 100) : 0
-                                 MessageBox.confirm(
-                                     "现订单金额为 <span style='color: #1890ff'>&yen;" + price + "</span>",
-                                     "结束订单成功，是否修改订单金额？",
-                                     {
-                                         confirmButtonText: "修改",
-                                         cancelButtonText: "不修改",
-                                         dangerouslyUseHTMLString: true,
-                                         type: "success"
-                                     }
-                                 ).then(() => {
-                                     this.changePriceInfo = row
-                                     this.changePriceModal = true
-                                     this.orderOldPrice = price
-                                     console.log('当前订单信息--',this.changePriceInfo);
-                                     let arr = []
-                                     for(let data of row.companyList){
-                                         for(let i =0;i< data.cityList.length;i++){
-                                             let obj = {
-                                                 city:data.cityList[i].city,
-                                                 company:data.asName,
-                                                 index:i,
-                                             }
-                                             arr.push(obj)
-                                         }
-                                     }
-                                     this.orderCompanyList = arr
-                                 })
-                                     .catch(() => {
-                                         Message.info("已取消操作");
-                                     });
-                                 this.$set(row, "apState", 5);
-                             } else {
-                                 Message.warning(res.data.MSG);
-                             }
-                         })
-                         .catch(res => {
-                             console.log(res);
-                         });*/
-                })
-                    .catch(() => {
-                        Message.info("已取消操作");
+                    const loading = this.$loading({
+                        lock: true,
+                        text: '正在结束订单...',
+                        spinner: 'el-icon-loading',
+                        background: 'rgba(0, 0, 0, 0.7)'
                     });
+                    api.postApi(this.apiVar.Advertisement + "/SetFangan", info)
+                        .then(res => {
+                            // console.log(res.data);
+                            if (res.data.SysCode == 300200) {
+                                //结束订单成功
+                                loading.close();
+                                let price = (row.apTotal) ? this.priceFormat(row.apTotal / 100) : 0
+                                MessageBox.confirm(
+                                    "现订单金额为 <span style='color: #1890ff'>&yen;" + price + "</span>",
+                                    "结束订单成功，是否修改订单金额？",
+                                    {
+                                        confirmButtonText: "修改",
+                                        cancelButtonText: "不修改",
+                                        dangerouslyUseHTMLString: true,
+                                        type: "success"
+                                    }
+                                ).then(() => {
+                                    this.changePriceModal = true
+                                    this.getOrderPriceDetail(row.apID)
+                                })
+                                    .catch(() => {
+                                        // Message.info("已取消操作");
+                                    });
+                                this.$set(row, "apState", 5);
+                            }
+                            else {
+                                loading.close();
+                                Message.warning(res.data.MSG);
+                            }
+                        })
+                }) .catch(() => {
+                    Message.info("已取消操作");
+                });
             },
+            //获取订单金额详情
+            getOrderPriceDetail(apid){
+                api.getApi(this.apiVar.Advertisement+"/GetAPD", {apid:apid})
+                    .then(res =>{
+                        // console.log('test--', res.data);
+                        if (!res.data.SysCode) {
+                            sessionStorage.setItem('priceData',JSON.stringify(res.data))
+                            let priceData = res.data
+                            console.log('订单金额',priceData);
+                            let obj = {
+                                AdDoorAdPrice: 0,
+                                AdDoorMakePrice: 0,
+                                BreakAdPrice: 0,
+                                BreakMakePrice: 0,
+                                orderOldPrice: 0,
+                                orderCompanyList: [],
+                                priceCurrCompany: 0,
+                                handleTime:new Date().getTime(),
+                                apID:apid
+                            }
+                            for (let item of priceData) {
+                                if (obj.orderCompanyList.length>0) {
+                                    for(let data of obj.orderCompanyList){
+                                        if(item.asrID==data.asrID&&item.rID==data.rID){
+                                            let totalPrice = (data.pdAdFee+data.pdAdMake+item.pdAdFee+item.pdAdMake)/100
+                                            if(data.pdType==1){
+                                                obj.BreakAdPrice = data.pdAdFee/100;
+                                                obj.BreakMakePrice = data.pdAdMake/100;
+                                                obj.AdDoorAdPrice = item.pdAdFee/100;
+                                                obj.AdDoorMakePrice = item.pdAdMake/100;
+                                            }else{
+                                                obj.BreakAdPrice = item.pdAdFee/100;
+                                                obj.BreakMakePrice = item.pdAdMake/100;
+                                                obj.AdDoorAdPrice = data.pdAdFee/100;
+                                                obj.AdDoorMakePrice = data.pdAdMake/100;
+                                            }
+                                            obj.orderOldPrice = this.priceFormat(totalPrice)
 
+                                        }
+                                    }
+                                }else{
+                                    let a = {
+                                        ...item,
+                                        company: item.asName,
+                                    }
+                                    obj.orderCompanyList.push(a)
+                                }
+                            }
+                            this.changePriceData = obj
+                        } else if (res.data.SysCode == 100302) {
+                            this.loginTimeout();
+                        } else {
+                            Message.warning(res.data.MSG);
+                        }
+                    })
+            },
             cancelChangePrice() {
                 this.changePriceModal = false
+                this.changePriceData = {
+                    AdDoorAdPrice: 0,
+                    AdDoorMakePrice: 0,
+                    BreakAdPrice: 0,
+                    BreakMakePrice: 0,
+                    orderOldPrice: 0,
+                    orderCompanyList: [],
+                    priceCurrCompany: 0,
+                }
                 Message.info("已取消操作");
+            },
+            doneChangePrice(){
+                this.changePriceModal = false
+                this.changePriceData = {
+                    AdDoorAdPrice: 0,
+                    AdDoorMakePrice: 0,
+                    BreakAdPrice: 0,
+                    BreakMakePrice: 0,
+                    orderOldPrice: 0,
+                    orderCompanyList: [],
+                    priceCurrCompany: 0,
+                }
+                Message.success("修改订单金额成功!");
+            },
+            // 登录超时
+            loginTimeout() {
+                this.$message({
+                    message: '登录超时或权限异常,请重新登录',
+                    type: 'warning'
+                })
+                this.$router.push('/login')
             },
             // 重置
             reset() {

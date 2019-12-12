@@ -215,8 +215,10 @@
                         </div>
                     </el-tab-pane>
                     <el-tab-pane label="报价单" name="second">
-                        <ap-quotation @detailInfo="setInfo" :quotationData="quotation" :copydata="copyAsidArr"
-                                      :isorder="true" :shopingList="[]" class="price_quo"></ap-quotation>
+                        <div v-if="planPanel=='second'">
+                            <ap-quotation @detailInfo="setInfo" :quotationData="quotation" :copydata="copyAsidArr"
+                                          :isorder="true" :shopingList="[]" class="price_quo"></ap-quotation>
+                        </div>
                     </el-tab-pane>
                     <el-tab-pane label="物料信息" name="third" :disabled="usableBtn">
                         <material :material="materialInfo" :daomater="daoInfo" :loading="maLoading" :isOrder="true"
@@ -311,7 +313,7 @@
                                       :default-sort="{prop: 'recName', order: 'descending'}"
                                       v-loading="changePointloading"
                                       ref="multipleTable"
-                                      @selection-change="handleSelectionChange"
+                                      @select="handleSelect" @select-all="handleSelectAll"
                                       element-loading-text="玩命加载中.."
                                       element-loading-spinner="el-icon-loading">
                                 <el-table-column
@@ -465,15 +467,18 @@
                                  v-for="(item,index) in recordList.table" :key="index">
                                 <div class="line"></div>
                                 <div class="content">
-                                    <h6>{{item.time}}<span>操作人:{{item.handler}}</span></h6>
+                                    <h6>{{item.updateTime}}<span>操作人:{{item.realName}}</span></h6>
                                     <el-table
-                                        :data="item.handleList"
+                                        :data="item.adsInfo"
                                         border
                                         style="width: 100%">
                                         <el-table-column
                                             prop="type"
                                             label="变更类型"
                                             min-width="6%">
+                                            <template slot-scope="scope">
+                                                {{scope.row.type==1?'新增点位':'终止点位'}}
+                                            </template>
                                         </el-table-column>
                                         <el-table-column
                                             prop="resName"
@@ -496,17 +501,17 @@
                                             min-width="6%">
                                         </el-table-column>
                                         <el-table-column
-                                            prop="area"
+                                            prop="district"
                                             label="区域"
                                             min-width="6%">
                                         </el-table-column>
                                     </el-table>
                                     <div class="price-wrap">
                                         <p>
-                                            原订单金额：<span>&yen;{{item.oldPrice?priceFormat(item.oldPrice / 100) : 0}}</span>
+                                            原订单金额：<span>&yen;{{item.previousApTotal?priceFormat(item.previousApTotal / 100) : 0}}</span>
                                         </p>
                                         <p>
-                                            变更后订单金额：<span>&yen;{{item.newPrice?priceFormat(item.newPrice / 100) : 0}}</span>
+                                            变更后订单金额：<span>&yen;{{item.currentApTotal?priceFormat(item.currentApTotal / 100) : 0}}</span>
                                         </p>
                                     </div>
                                 </div>
@@ -528,7 +533,7 @@
                     custom-class="price-dialog"
                     :visible.sync="changePriceModal"
                     :before-close="cancelChangePrice">
-                    <changeOrderPrice @cancel="cancelChangePrice" :changePriceData="changePriceData"></changeOrderPrice>
+                    <changeOrderPrice @cancel="cancelChangePrice" @done="doneChangePrice" :changePriceData="changePriceData"></changeOrderPrice>
                 </el-dialog>
             </div>
             <!-- 返回框 -->
@@ -709,34 +714,7 @@
                         stopPoint: 2,
                         newPoint: 3
                     },
-                    table: [
-                        {
-                            time: '2019/08/30',
-                            handler: '张敬轩',
-                            handleList: [{
-                                type: '3',
-                                resName: '2',
-                                mTitle: '1',
-                                asLab: 'A',
-                                city: '广州',
-                                area: '区域',
-                            }],
-                            oldPrice: 3000,
-                        },
-                        {
-                            time: '2019/08/30',
-                            handler: 'wu',
-                            handleList: [{
-                                type: '3',
-                                resName: '2',
-                                mTitle: '1',
-                                asLab: 'A',
-                                city: '广州',
-                                area: '区域',
-                            }],
-                            newPrice: 4000,
-                        }
-                    ]
+                    table: []
                 },
                 //修改订单金额数据
                 changePriceModal: false,
@@ -749,8 +727,10 @@
                     orderOldPrice: 0,
                     orderCompanyList: [],
                     priceCurrCompany: 0,
+                    handleTime:'',
                 },
                 isHandleChange: false,
+                handleTime:'',//换点操作和修改订单的时间戳
             };
         },
         created() {
@@ -770,45 +750,7 @@
                 // 获取换画列表
                 this.getPainlist();
             }
-        },
-        computed: {
-            /*    // 现投放面数
-                nowPointNum() {
-                    if (this.setpointArr.length) {
-                        let num = 0;
-                        for (let data of this.setpointArr) {
-                            if (data.isNew != 1) {
-                                // if (data.lState != 2) {
-                                num++;
-                            }
-                        }
-                        return num;
-                    }
-                },
-                // 中止投放面数
-                stopPointNum() {
-                    if (this.setpointArr.length) {
-                        let num = 0;
-                        for (let data of this.setpointArr) {
-                            if (data.lState == 2) {
-                                num++;
-                            }
-                        }
-                        return num;
-                    }
-                },
-                // 新增点位
-                addNewPointNum() {
-                    if (this.setpointArr.length) {
-                        let addNum = 0;
-                        for (let data of this.setpointArr) {
-                            if (data.isNew == 1) {
-                                addNum++;
-                            }
-                        }
-                        return addNum;
-                    }
-                },*/
+            this.getOrderPriceDetail()
         },
         methods: {
             //初始化各项数据
@@ -826,6 +768,62 @@
                     addPointlist: [],
                     addPointNum: 0,
                 }
+            },
+            //获取订单金额详情
+            getOrderPriceDetail(){
+                api.getApi(this.apiVar.Advertisement+"/GetAPD", {apid:sessionStorage.getItem("order_apid")})
+                    .then(res =>{
+                        // console.log('test--', res.data);
+                        if (!res.data.SysCode) {
+                            sessionStorage.setItem('priceData',JSON.stringify(res.data))
+                            let priceData = res.data
+                            console.log('订单金额',priceData);
+                            let obj = {
+                                AdDoorAdPrice: 0,
+                                AdDoorMakePrice: 0,
+                                BreakAdPrice: 0,
+                                BreakMakePrice: 0,
+                                orderOldPrice: 0,
+                                orderCompanyList: [],
+                                priceCurrCompany: 0,
+                                handleTime:this.handleTime,
+                                apID:sessionStorage.getItem("order_apid")
+                            }
+                            for (let item of priceData) {
+                                if (obj.orderCompanyList.length>0) {
+                                    for(let data of obj.orderCompanyList){
+                                        if(item.asrID==data.asrID&&item.rID==data.rID){
+                                            let totalPrice = (data.pdAdFee+data.pdAdMake+item.pdAdFee+item.pdAdMake)/100
+                                            if(data.pdType==1){
+                                                obj.BreakAdPrice = data.pdAdFee/100;
+                                                obj.BreakMakePrice = data.pdAdMake/100;
+                                                obj.AdDoorAdPrice = item.pdAdFee/100;
+                                                obj.AdDoorMakePrice = item.pdAdMake/100;
+                                            }else{
+                                                obj.BreakAdPrice = item.pdAdFee/100;
+                                                obj.BreakMakePrice = item.pdAdMake/100;
+                                                obj.AdDoorAdPrice = data.pdAdFee/100;
+                                                obj.AdDoorMakePrice = data.pdAdMake/100;
+                                            }
+                                            obj.orderOldPrice = this.priceFormat(totalPrice)
+
+                                        }
+                                    }
+                                }else{
+                                    let a = {
+                                        ...item,
+                                        company: item.asName,
+                                    }
+                                    obj.orderCompanyList.push(a)
+                                }
+                            }
+                            this.changePriceData = obj
+                        } else if (res.data.SysCode == 100302) {
+                            this.loginTimeout();
+                        } else {
+                            Message.warning(res.data.MSG);
+                        }
+                    })
             },
             //更换点位对话框关闭
             closeDialogChangePoint() {
@@ -866,49 +864,7 @@
                     }
                 ).then(() => {
                     this.changePriceModal = true
-                    let priceData = JSON.parse(sessionStorage.getItem('priceData'))
-                    console.log('订单金额',priceData);
-                    let obj = {
-                        AdDoorAdPrice: 0,
-                        AdDoorMakePrice: 0,
-                        BreakAdPrice: 0,
-                        BreakMakePrice: 0,
-                        orderOldPrice: 0,
-                        orderCompanyList: [],
-                        priceCurrCompany: 0,
-
-                    }
-
-                    for (let item of priceData) {
-                        if (obj.orderCompanyList.length>0) {
-                            for(let data of obj.orderCompanyList){
-                                if(item.asrID==data.asrID&&item.rID==data.rID){
-                                    let totalPrice = (data.pdAdFee+data.pdAdMake+item.pdAdFee+item.pdAdMake)/100
-                                    if(data.pdType==1){
-                                        obj.BreakAdPrice = data.pdAdFee/100;
-                                        obj.BreakMakePrice = data.pdAdMake/100;
-                                        obj.AdDoorAdPrice = item.pdAdFee/100;
-                                        obj.AdDoorMakePrice = item.pdAdMake/100;
-                                    }else{
-                                        obj.BreakAdPrice = item.pdAdFee/100;
-                                        obj.BreakMakePrice = item.pdAdMake/100;
-                                        obj.AdDoorAdPrice = data.pdAdFee/100;
-                                        obj.AdDoorMakePrice = data.pdAdMake/100;
-                                    }
-                                    obj.orderOldPrice = this.priceFormat(totalPrice)
-
-                                }
-                            }
-                        }else{
-                            let a = {
-                                ...item,
-                                company: item.asName,
-                            }
-                            obj.orderCompanyList.push(a)
-                        }
-                    }
-                    this.changePriceData = obj
-                    console.log(this.changePriceData);
+                    this.getOrderPriceDetail()
 
                 })
                     .catch(() => {
@@ -948,6 +904,7 @@
                         }
                         let info = {
                             apID: this.orderDetail.apID,
+                            mark:this.handleTime,
                             orderNewAdsInfos: orderNewAdsInfos ? orderNewAdsInfos : [],
                             orderStoppedAdsInfos: orderStoppedAdsInfos ? orderStoppedAdsInfos : []
                         }
@@ -1191,23 +1148,23 @@
                             let initData = res.data;
                             let result = initData.adSpaceInfo;
                             // this.addNewAdsNum = res.data.isNewCount
-                          /*  for (let data of result) {
-                                let time = this.formatTime(data.lStar) + "-" + this.formatTime(data.lEnd);
-                                data.timeRange = time;
-                                let finishTimeRange = '';
-                                if (data.lState == 2) {
-                                    finishTimeRange = this.formatTime(data.lStar) + "-" + this.formatTime(data.lSetTime);
-                                }
-                                data.finishTimeRange = finishTimeRange;
-                            }
-                            // 选点排期
-                            this.copyAsidArr = JSON.parse(JSON.stringify(result));
-                            this.currentPointArr = result;
-                            // 城市筛选过滤
-                            this.filterCityData = filterFormat(result, "city");
-                            console.log('城市filter', this.filterCityData)
-                            this.filtersArea = filterFormat(result, "rName");
-                            this.filtersData = filterFormat(result, "timeRange");*/
+                            /*  for (let data of result) {
+                                  let time = this.formatTime(data.lStar) + "-" + this.formatTime(data.lEnd);
+                                  data.timeRange = time;
+                                  let finishTimeRange = '';
+                                  if (data.lState == 2) {
+                                      finishTimeRange = this.formatTime(data.lStar) + "-" + this.formatTime(data.lSetTime);
+                                  }
+                                  data.finishTimeRange = finishTimeRange;
+                              }
+                              // 选点排期
+                              this.copyAsidArr = JSON.parse(JSON.stringify(result));
+                              this.currentPointArr = result;
+                              // 城市筛选过滤
+                              this.filterCityData = filterFormat(result, "city");
+                              console.log('城市filter', this.filterCityData)
+                              this.filtersArea = filterFormat(result, "rName");
+                              this.filtersData = filterFormat(result, "timeRange");*/
 
                             // 广告门物料信息
                             let mInfo = initData.gateMaterialInfo;
@@ -1332,16 +1289,54 @@
                         console.log(res);
                     });
             },
-            //更换点位列表勾选
-            handleSelectionChange(val) {
-                // console.log(val);
-                if (val.length) {
-                    for (let data of val) {
+            // 选择一条
+            handleSelect(selection, row) {
+                // console.log(selection, row, 'selection ---row ');
+                // 选中
+                if (this.isHaveFun(selection, row)) {
+                    for (let data of selection) {
                         if (!this.isHaveFun(this.changePointInfo.stopPointlist, data)) {
-                            this.changePointInfo.stopPointlist.push(data)
+                            this.changePointInfo.stopPointlist.push(data);
+                        }
+
+                    }
+                } else {
+                    // 取消选中
+                    if (this.isHaveFun(this.changePointInfo.stopPointlist, row)) {
+                        this.changePointInfo.stopPointlist = this.changePointInfo.stopPointlist.filter((item) => {
+                            if (item.lID == row.lID) {
+                                return false;
+                            }
+                            return true;
+                        });
+
+                    }
+                }
+                console.log(this.changePointInfo.stopPointlist, 'one--shoplist');
+            },
+            //全选
+            handleSelectAll(selection) {
+                // console.log(selection);
+
+                if (selection.length) {
+                    for (let data of selection) {
+                        if (!this.isHaveFun(this.changePointInfo.stopPointlist, data)) {
+                            this.changePointInfo.stopPointlist.push(data);
+                        }
+                    }
+                } else {
+                    for (let data of this.changePointArr) {
+                        if (this.isHaveFun(this.changePointInfo.stopPointlist, data)) {
+                            this.changePointInfo.stopPointlist = this.changePointInfo.stopPointlist.filter((item) => {
+                                if (item.lID == data.lID) {
+                                    return false;
+                                }
+                                return true;
+                            });
                         }
                     }
                 }
+                console.log(this.changePointInfo.stopPointlist);
             },
             //以终止的不可勾选
             selectInit(item) {
@@ -1354,7 +1349,6 @@
             selectioUpdate() {
                 console.log('是否勾选', this.changePointInfo.stopPointlist);
                 let timer = setTimeout(() => {
-
                     for (let data of this.changePointInfo.stopPointlist) {
                         for (let item of this.changePointArr) {
                             this.selectInit(item)
@@ -1467,19 +1461,26 @@
             //查询点位更新记录
             getPointRecord() {
                 this.dialogChangePointRecord = true
-                api.getApi(this.apiVar.Advertisement + "/UpdateOrderMoney?apID=" + this.orderDetail.apID).then(res => {
+                api.getApi(this.apiVar.Advertisement + "/GetOrderHistory?apID=" + this.orderDetail.apID).then(res => {
                     console.log(res.data)
                     if (res.data.SysCode == 200200) {
-                        /* *
-                  updateTime	string	修改时间
-    previousApTotal	number	此次修改前的订单总金额
-    currentApTotal	number	此次修改后的订单总金额
-    adsInfo	jsonString	此次修改涉及到的点位，如果是整个订单终止，这个字段为空
-    newAdsCount	number	此次修改新增的点位
-    stopAdsCount	number	此次修改禁用的点位
-    opType	number	此次修改的类型，1-点位修改，2-整个订单终止
-                        * */
+                        this.recordList.info = {
+                            allPoint: res.data.data.totalAdsCount,
+                            stopPoint: res.data.data.stoppedAdsCount,
+                            newPoint: res.data.data.newAdsCount
+                        }
+                        let arr = []
+                        for(let data of res.data.data.orderHistory){
+                            let obj = {
+                                ...data,
+                                adsInfo:JSON.parse(data.adsInfo)
+                            }
+                            arr.push(obj)
+                        }
+                        this.recordList.table =arr
 
+                    }else{
+                        Message.warning(res.data.MSG)
                     }
                 })
             },
@@ -1601,6 +1602,7 @@
                 // this.showBtn = false;
                 // this.showHandel = true;
                 this.initListData()
+                this.handleTime = new Date().getTime()
                 this.dialogChangePoint = true
                 this.isHandleChange = false
                 this.getSetPoint('change')
@@ -1789,7 +1791,7 @@
                     showClose: true,
                 })
             },
-            //修改订单金额
+            //修改订单金额-取消
             cancelChangePrice() {
                 this.changePriceModal = false
                 this.changePriceData = {
@@ -1803,6 +1805,22 @@
                 }
                 Message.info("已取消操作");
             },
+            //修改金额-成功
+            doneChangePrice(){
+                this.changePriceModal = false
+                this.changePriceData = {
+                    AdDoorAdPrice: 0,
+                    AdDoorMakePrice: 0,
+                    BreakAdPrice: 0,
+                    BreakMakePrice: 0,
+                    orderOldPrice: 0,
+                    orderCompanyList: [],
+                    priceCurrCompany: 0,
+                }
+                this.getInitData();
+                Message.success("修改订单金额成功!");
+
+            }
         }
         ,
     }
@@ -2304,6 +2322,7 @@
 
     .record .price-wrap p span {
         color: #1890ff;
+        font-weight: normal;
     }
 
     /*滚动条*/

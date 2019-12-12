@@ -1,6 +1,5 @@
 <template>
     <div class="price-dialog">
-
         <ul class="city-tab">
             <li v-for="(item,index) in changePriceData.orderCompanyList" :key="index"
                 @click="changePriceData.priceCurrCompany = index"
@@ -129,8 +128,9 @@
             confirmChangePrice() {
                 if (this.newPrice !== 0) {
                     let info = {
-                        apID:sessionStorage.getItem('order_apid'),
-                        orderMoneyInfos:[]
+                        apID:this.changePriceData.apID,
+                        orderMoneyInfos:[],
+                        mark:this.changePriceData.handleTime,
                     }
                     info.orderMoneyInfos = [
                         {
@@ -148,8 +148,13 @@
                             "pdAdMake": this.changePriceData.BreakMakePrice*100,
                         }
                     ]
-                    api.postApi_json(this.apiVar.Advertisement + '/ChangeOrderMoney', JSON.stringify({info})).then(res => {
+                    api.postApi_json(this.apiVar.Advertisement + '/ChangeOrderMoney', JSON.stringify(info)).then(res => {
                         console.log(res.data)
+                        if(res.data.SysCode==200200){
+                            this.$emit("done");
+                        }else{
+                            Message.warning(res.data.MSG)
+                        }
                     })
                 }else{
                     Message.error("请修改金额再提交!");
@@ -264,9 +269,8 @@
         text-align: center;
         line-height: 34px;
         position: relative;
-        top: 1px;
+        top: 3px;
     }
-
     .price-dialog /deep/ .el-input-number, .price-dialog .num-input-wrap /deep/ .el-input, .price-dialog .num-input-wrap /deep/ .el-input__inner {
         width: 115px;
         height: 34px;
@@ -278,7 +282,7 @@
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
         position: relative;
-        top: -2px;
+        top: 0px;
     }
 
     .price-dialog-footer {

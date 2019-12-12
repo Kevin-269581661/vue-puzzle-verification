@@ -437,7 +437,7 @@
             console.log('数据',this.quotationData)
             if(this.quotationData.quotation !== undefined){
                 this.quotation = JSON.parse(JSON.stringify(this.quotationData.quotation))
-                console.log('mounted',this.quotation)
+                // console.log('mounted',this.quotation)
                 this.isDetail = this.quotationData.isDetail
                 this.judgeIsDetail()
             }

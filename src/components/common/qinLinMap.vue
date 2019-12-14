@@ -273,6 +273,17 @@
         </div>
         <!--底部右侧鼠标绘制-->
         <div class="bottom_right_control">
+            <!--聚合开关-->
+            <div class="switch_box">
+                聚合
+                <el-switch
+                    v-model="isClustererOpen"
+                    active-color="rgba(24, 144, 255, 1)"
+                    inactive-color="#ff4949"
+                    :disabled="disabledSwitch"
+                    @change="changeClustererOpen">
+                </el-switch>
+            </div>
             <!--比例尺-->
             <ul class="scale_control">
                 <li class="li_map_zoom">
@@ -365,7 +376,7 @@
                 </el-button>
             </div>
         </div>
-        <!--框选条件-->
+        <!--在线搜索框选条件-->
         <el-dialog
             title="框选条件"
             :visible.sync="searchDialogVisible"
@@ -600,6 +611,10 @@
                 markerClusterer: '',
                 // 是否开启聚合
                 isClusterer: false,
+                // 聚合开关
+                isClustererOpen: true,
+                // 聚合开关禁用-防止连续开与关的动作
+                disabledSwitch: false,
                 markerIcon: require('../../assets/images/map/markerIcon.png'),
                 resMarkers: [],
                 // 非多点辐射时的markers
@@ -781,7 +796,7 @@
                         query: '',          // 检索的条件
                     }
                 ],
-                // 多点辐射marker
+                // 缓存多点辐射时的覆盖物
                 multiPointMarkerList:[],
                 // 当前点击的行
                 moreRadiationIndex: 0,
@@ -940,7 +955,7 @@
                 })
                 // 监听地图移动
                 this.resMap.addEventListener('moveend',(e) => {
-                    this.transfersShowOverlay
+                    this.transfersShowOverlay()
                 })
             },
             // 城市边界
@@ -970,6 +985,7 @@
             },
             // 获取小区数据
             getResList() {
+                console.time('创建区域标注---')
                 this.mapLoading = true
                 let params = {
                     startTime: this.adListParams.ls,
@@ -1005,17 +1021,18 @@
                     this.resMap.clearOverlays()
                     if(res.data.SysCode === 200200) {
                         this.resAreaList = res.data.data
-                        // this.resInfo = res.data.data
                         this.creatAreaMarker()
-                        // this.creatMarker()
-                        // this.judgeByselect()
+                        this.judgeByselect()
                         console.log('resInfo',this.resInfo)
                     } else {
                         sessFun.messageFun('warning',res.data.MSG)
                     }
                     // 城市边界
                     this.displayBoundary()
-                    this.mapLoading = false
+                    let timer = setTimeout(()=>{
+                        this.mapLoading = false
+                        clearTimeout(timer)
+                    },800)
                 }).catch(err=>{
                     console.log('err',err)
                     this.mapLoading = false
@@ -1050,7 +1067,7 @@
                         key.districtName + `<br/>` + key.resList.length,
                         {
                             offset:new BMap.Size(4,-18),
-                            position : new BMap.Point(key.centerLng,key.centerLat)
+                            position : new BMap.Point(key.averageLng,key.averageLat)
                         });
                     label.setStyle({
                         width: "64px",
@@ -1067,7 +1084,6 @@
                     });
                     label.rid = key.districtId
                     label.addEventListener("click",(e)=>{
-                        // let zoom = this.resMap.getZoom() + 3
                         console.log('e',e)
                         this.resMap.setCenter(e.target.point);
                         this.resMap.setZoom(15)
@@ -1090,6 +1106,7 @@
                 }
                 this.areaLables = lableList
                 this.resMarkers = markerList
+                console.timeEnd('创建区域标注---')
             },
             creatMarker(resKey,myIcon) {
                 this.$set(resKey, "isSelect", false);
@@ -1123,12 +1140,12 @@
             },
             // 区域标注重新打上地图、隐藏具体点位标注
             showAreaLabels() {
-                console.log('showAreaLabels-----')
                 if(!this.isMouseSearch && !this.isOnlineSearch && !this.isMultiPoint) {
                     for(let labelKey of this.areaLables) {
                         this.resMap.addOverlay(labelKey)
                     }
                     for(let key of this.resMarkers) {
+                        key.inCircleNum = 0
                         key.hide()
                     }
                 }
@@ -1207,7 +1224,7 @@
             // 中转显示
             transfersShowOverlay() {
                 // 跟进地图等级进行显示
-                if(this.resMap.getZoom() >= 15) {
+                if(this.resMap.getZoom() >= 15 || !this.isClustererOpen) {
                     this.removeAreaLabels()
                     this.pointInBounds()
                 } else {
@@ -1261,7 +1278,6 @@
                         if(e.drawingMode === 'circle') {
                             that.showResInPolygon('circle',e.overlay)
                         } else if(e.drawingMode === 'polygon') {
-                            // console.log('画多边形',overlay,e.overlay.getPath());
                             that.polygonPoint = e.overlay.getPath()
                             that.showResInPolygon('polygon',e.overlay)
                         } else if(e.drawingMode === 'polyline') {
@@ -1451,11 +1467,20 @@
                 this.searchResList = []
                 this.transfersShowOverlay()
             },
+            // 聚合开关
+            changeClustererOpen() {
+                this.disabledSwitch = true
+                this.transfersShowOverlay()
+                let timer = setTimeout(()=>{
+                    this.disabledSwitch = false
+                    clearTimeout(timer)
+                },800)
+            },
             // 地图缩放
             setMapZoom(temp) {
                 if(temp === 'add') {
                     this.resMap.zoomIn()
-                } else if(temp === 'minus'){
+                } else if(temp === 'minus') {
                     this.resMap.zoomOut()
                 }
                 let scaleArr = ['20米','50米','100米','200米','500米','1公里','2公里','5公里','10公里','20公里','25公里','50公里','100公里','200公里','500公里','1000公里','2000公里','5000公里','10000公里']
@@ -1472,6 +1497,7 @@
                 if(!this.isMouseSearch && !this.isOnlineSearch && !this.isMultiPoint) {
                     let bound = this.resMap.getBounds();// 地图可视区域
                     for (let key of this.resMarkers) {
+                        key.inCircleNum = 0
                         if (bound.containsPoint(key.point) == true) {
                             key.show()
                         } else {
@@ -1637,7 +1663,13 @@
                             this.searchResList.push(item)
                             return item
                         })
+                        // 隐藏区域覆盖物
                         this.removeAreaLabels()
+                        for(let key of this.resMarkers) {
+                            key.inCircleNum = 0
+                            key.hide()
+                        }
+                        // 显示框选结果小区到左侧
                         this.activeSearchKind = '1'
                         // 辐射点打点、画圆
                         this.setMultiPointMarker(params.centerInfoList)
@@ -1672,8 +1704,8 @@
                     let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
                     marker.setTop(true);
                     this.resMap.addOverlay(marker);                     // 将标注添加到地图中
+                    // 缓存多点辐射时的覆盖物
                     this.multiPointMarkerList.push(marker)
-                    // this.onlineMarkers.push(marker)
                     marker.addEventListener("click", () => {
                         let content =
                             "<div>" +
@@ -1844,6 +1876,7 @@
                         }
                     }
                     this.addAllLoading = false
+                    this.showSelectList = true
                     console.log('全选',this.selectResList,this.resMarkers[0].point.lng)
                     clearTimeout(timer)
                 },10)
@@ -1912,7 +1945,7 @@
             },
             // 勾选/取消
             checkBoxFun(item) {
-                // console.log('亲邻item', item)
+                console.log('亲邻item', item)
                 if (item.isSelect) {
                     // 取消选定
                     this.deleteRes(item)
@@ -2061,15 +2094,13 @@
                         // 多个圆时
                         rkey.inCircleNum ? rkey.show() : rkey.hide()
                     } else {
-                        // this.resMap.addOverlay(rkey)
-                        rkey.inCircleNum++
                         rkey.show()
+                        rkey.inCircleNum++
                         // 标注marker匹配亲邻小区
                         for(let key of this.resInfo) {
-                            // if(rkey.getLabel().content === key.resName) {
                             if(key.resID === rkey.resID && rkey.point.lng == key.lng && rkey.point.lat == key.lat) {
                                 // 判断是否已存在左侧结果列表
-                                let flag = this.searchResList.some((item, index) => {
+                                let flag = this.searchResList.some(item => {
                                     if (key.resID === item.resID) {
                                         return true
                                     }
@@ -2177,7 +2208,7 @@
                         this.resMap.removeOverlay(key)
                     }
                     this.multiPointMarkerList = []
-                    //
+                    // 恢复多点辐射前的社区list
                     for(let key of this.resAreaList) {
                         for(let resKey of key.resList) {
                             this.resInfo.push(resKey)
@@ -2186,30 +2217,35 @@
                     this.transfersShowOverlay()
                 } else {
                     // 周边搜索
-                    this.isOnlineSearch = false
-                    // 清除圆覆盖物
-                    let allOverlay = this.resMap.getOverlays();
-                    for (let akey of allOverlay) {
-                        if (akey.toString() == "[object Circle]" || akey.toString() == "[object Polygon]" || akey.toString() == "[object Polyline]") {
-                            this.resMap.removeOverlay(akey);
-                        }
-                    }
-                    // 跟进地图等级进行显示
-                    this.transfersShowOverlay()
-                    // 移除
-                    for (let key of this.selectOnlineList) {
-                        this.deleteCircle(key.id)
-                    }
-                    this.selfMotionPolylines = []
-                    // 显示被隐藏的在线搜索结果标注
-                    this.onlineMarkers.forEach((item, index) => {
-                        if (index < 100 || item.isSelect) {
-                            item.show()
-                        } else {
-                            item.hide()
-                        }
-                    })
+                    this.initOnlineSearchBefor()
                 }
+            },
+            // 在线搜索取消-恢复框选前
+            initOnlineSearchBefor() {
+                this.isOnlineSearch = false
+                this.searchResList = []
+                // 清除圆覆盖物
+                let allOverlay = this.resMap.getOverlays();
+                for (let akey of allOverlay) {
+                    if (akey.toString() == "[object Circle]" || akey.toString() == "[object Polygon]" || akey.toString() == "[object Polyline]") {
+                        this.resMap.removeOverlay(akey);
+                    }
+                }
+                // 根据地图等级进行显示
+                this.transfersShowOverlay()
+                // 移除
+                for (let key of this.selectOnlineList) {
+                    this.deleteCircle(key.id)
+                }
+                this.selfMotionPolylines = []
+                // 显示被隐藏的在线搜索结果标注
+                this.onlineMarkers.forEach((item, index) => {
+                    if (index < 100 || item.isSelect) {
+                        item.show()
+                    } else {
+                        item.hide()
+                    }
+                })
             },
             // 恢复打点原始状态
             initResMarkers() {
@@ -2236,6 +2272,7 @@
              * */
             // 中转判断
             transfersFun() {
+                this.initOtherFilter()
                 if(this.isShare) {
                     this.getShareResList()
                 } else {
@@ -2362,6 +2399,13 @@
                 for(let key in this.filterData) {
                     this.filterData[key] = false
                 }
+                this.initOtherFilter()
+                this.selectName = ''
+                // 重新获取数据
+                this.transfersFun()
+            },
+            // 头部筛选的时候需初始化左侧搜索、鼠标绘制、多点辐射
+            initOtherFilter() {
                 // 恢复鼠标绘制默认状态
                 for(let i in this.mouseType) {
                     this.mouseType[i] = false
@@ -2372,11 +2416,8 @@
                 // 清空左侧搜索
                 this.searchResList = []
                 this.searchOnlineList = []
-                this.activeSearchKind = '1'
+                this.activeSearchKind = '2'
                 this.isOnlineSearch = false
-                this.selectName = ''
-                // 重新获取数据
-                this.transfersFun()
             },
             /**
              *  左下选中框
@@ -3122,11 +3163,25 @@
         position: fixed;
         bottom: 16px;
         right: 24px;
-        width: 265px;
+        width: 370px;
+    }
+
+    .switch_box{
+        float: left;
+        width: 26%;
+        height: 32px;
+        background: #fff;
+        text-align: center;
+        margin-right: 2%;
+        border-radius:4px;
+        font-size: 14px;
+        color: rgba(0,0,0,0.65);
+        line-height: 32px;
+        box-shadow:0px 0px 8px 0px rgba(0,0,0,0.12);
     }
 
     .scale_control {
-        width: 48%;
+        width: 35%;
         height: 20px;
         background: #fff;
         box-shadow:0px 0px 8px 0px rgba(0,0,0,0.12);
@@ -3171,7 +3226,7 @@
     }
 
     .mouse_control {
-        width: 48%;
+        width: 35%;
         height: 32px;
         float: left;
         margin-right: 2%;

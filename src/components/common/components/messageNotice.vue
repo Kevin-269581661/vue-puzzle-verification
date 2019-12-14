@@ -5,7 +5,9 @@
             v-model="showPopover"
             width="340"
             popper-class="message-popper"
-            trigger="click">
+            trigger="click"
+            :loading="loading"
+        >
             <div>
                 <div class="tab-pane">
                     <span @click="handleClick('all')"
@@ -73,6 +75,7 @@
                 sessionData: '',
                 // system: 'http://192.168.1.239:8021/system/message',
                 showPopover: false,
+                loading:true,
             }
         },
         methods: {
@@ -128,6 +131,7 @@
                                     this.messageList.list.push(data)
                                 }
                             }
+                            this.loading = false
                         }
                     }
                 })
@@ -149,12 +153,13 @@
                 api.postApi(this.apiVar.system + '/readMessage', {messageId: messageId}).then(res => {
                     // api.postApi(this.system + '/readMessage', {messageId: messageId}).then(res => {
                     if (res.data.SysCode == 200200) {
+                        this.page = 1
+                        that.messageList.list = []
+                        that.messageList.unreadlist = []
                         //操作成功
-                        item.status = 1
+                        // item.status = 1
                         setTimeout(() => {
-                            this.page = 1
-                            that.messageList.list = []
-                            that.messageList.unreadlist = []
+
                             that.getUnreadCount()
                             that.getMessageList()
                         }, 500)
@@ -164,20 +169,20 @@
             //全部已读
             readAll() {
                 let that = this
+                this.loading = true
                 api.postApi(this.apiVar.system + '/readAllMessage').then(res => {
-                    // api.postApi(this.system + '/readAllMessage').then(res => {
                     if (res.data.SysCode == 200200) {
                         //操作成功
-                        for(let data of this.messageList.list){
-                            data.status = 1
-                            setTimeout(() => {
-                                this.page = 1
-                                that.messageList.list = []
-                                that.messageList.unreadlist = []
-                                that.getUnreadCount()
-                                that.getMessageList()
-                            }, 500)
+                        this.page = 1
+                        // that.messageList.list = []
+                        for(let data of that.messageList.list){
+                            data.status =1
                         }
+                        that.messageList.unreadlist = []
+                        setTimeout(() => {
+                            that.getUnreadCount()
+                            that.getMessageList()
+                        }, 1000)
                     } else {
                         Message.warning(res.data.MSG);
                     }

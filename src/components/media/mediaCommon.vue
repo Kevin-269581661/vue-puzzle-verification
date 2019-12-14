@@ -194,7 +194,7 @@
                 // console.log(val, 'isActive', this.$route.path)
                 let path = this.$route.path
                 let routePath = ''
-                if (path.includes('/mediaDetail') || path.includes('/mediaEdit') || path.includes('/mediaInput')) {
+                if (path.includes('/mediaDetail') || path.includes('/mediaEdit') || path.includes('/mediaInput') || path.includes('adsDialPlate')) {
                     // 媒体管理
                     routePath = '/media/mediaList'
                 } else if (path.includes('/editPlan') || path.includes('/planDetail')

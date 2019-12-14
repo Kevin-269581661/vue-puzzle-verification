@@ -1753,10 +1753,12 @@
                 return iDays
             },
             // 返回两位小数
-            returnTwoFloat(num) {
-                // console.log('num',typeof(num),num)
+            returnTwoFloat(num,r) {
+                console.log('num',typeof(num),num,'r----',r)
                 if (!num) {
-                    return num
+                    return  num || 0
+                } else if(!isFinite(num)){
+                    return 0
                 } else {
                     return Number(num).toFixed(2)
                 }

@@ -45,7 +45,7 @@
                     <el-col>
                         <el-button type="primary" @click="search()" :disabled="!isSearch">查询</el-button>
                         <el-button plain @click="reset()">重置</el-button>
-                        <el-button plain @click="paintedCount">上画统计</el-button>
+                        <!--<el-button plain @click="paintedCount">上画统计</el-button>-->
                     </el-col>
                 </el-row>
 

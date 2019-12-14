@@ -708,9 +708,9 @@
                 dialogChangePointRecord: false,
                 recordList: {
                     info: {
-                        allPoint: 1,
-                        stopPoint: 2,
-                        newPoint: 3
+                        allPoint: 0,
+                        stopPoint: 0,
+                        newPoint: 0,
                     },
                     table: []
                 },
@@ -789,33 +789,40 @@
                                 opType:1
                             }
                             for (let item of priceData) {
-                                if (obj.orderCompanyList.length>0) {
+                                let isHave = obj.orderCompanyList.some(key=>{
+                                    if(item.asrID==key.asrID&&item.rID==key.rID){
+                                        //obj.orderCompanyList里是否已有相同的公司和城市
+                                        return true
+                                    }
+                                })
+                                if(isHave) {
                                     for(let data of obj.orderCompanyList){
                                         if(item.asrID==data.asrID&&item.rID==data.rID){
                                             let totalPrice = (data.pdAdFee+data.pdAdMake+item.pdAdFee+item.pdAdMake)/100
                                             if(data.pdType==1){
-                                                obj.BreakAdPrice = data.pdAdFee/100;
-                                                obj.BreakMakePrice = data.pdAdMake/100;
-                                                obj.AdDoorAdPrice = item.pdAdFee/100;
-                                                obj.AdDoorMakePrice = item.pdAdMake/100;
+                                                data.BreakAdPrice = data.pdAdFee/100;
+                                                data.BreakMakePrice = data.pdAdMake/100;
+                                                data.AdDoorAdPrice = item.pdAdFee/100;
+                                                data.AdDoorMakePrice = item.pdAdMake/100;
                                             }else{
-                                                obj.BreakAdPrice = item.pdAdFee/100;
-                                                obj.BreakMakePrice = item.pdAdMake/100;
-                                                obj.AdDoorAdPrice = data.pdAdFee/100;
-                                                obj.AdDoorMakePrice = data.pdAdMake/100;
+                                                data.BreakAdPrice = item.pdAdFee/100;
+                                                data.BreakMakePrice = item.pdAdMake/100;
+                                                data.AdDoorAdPrice = data.pdAdFee/100;
+                                                data.AdDoorMakePrice = data.pdAdMake/100;
                                             }
-                                            obj.orderOldPrice = this.priceFormat(totalPrice)
-
+                                            data.orderOldPrice = this.priceFormat(totalPrice)
                                         }
                                     }
-                                }else{
+                                } else {
                                     let a = {
                                         ...item,
                                         company: item.asName,
                                     }
                                     obj.orderCompanyList.push(a)
                                 }
+
                             }
+                            console.log(obj);
                             this.changePriceData = obj
                         } else if (res.data.SysCode == 100302) {
                             this.loginTimeout();
@@ -913,8 +920,7 @@
                             console.log(res.data)
                             if (res.data.SysCode == 200200) {
                                 // this.dialogChangePoint = false
-
-                                Message.warning(res.data.MSG)
+                                Message.success(res.data.MSG)
                                 this.changePointInfo.stopPointNum = this.changePointInfo.stopPointlist.length
                                 for (let data of this.changePointInfo.stopPointlist) {
                                     for (let item of this.setpointArr) {

@@ -2,7 +2,7 @@
     <div class="price-dialog">
         <ul class="city-tab">
             <li v-for="(item,index) in changePriceData.orderCompanyList" :key="index"
-                @click="changePriceData.priceCurrCompany = index"
+                @click="getInitData(index)"
                 :class="changePriceData.priceCurrCompany == index?'active':''">
                 <h6>{{item.city}}</h6>
                 <p>{{item.company}}</p>
@@ -120,9 +120,18 @@
             }
         },
         mounted(){
-            this.newPrice = this.priceFormat(this.changePriceData.AdDoorAdPrice + this.changePriceData.AdDoorMakePrice + this.changePriceData.BreakAdPrice + this.changePriceData.BreakMakePrice)
+            this.getInitData(this.changePriceData.priceCurrCompany)
+
         },
         methods: {
+            getInitData(index){
+                this.changePriceData.priceCurrCompany = index
+                this.changePriceData.AdDoorAdPrice = this.changePriceData.orderCompanyList[index].AdDoorAdPrice
+                this.changePriceData.AdDoorMakePrice = this.changePriceData.orderCompanyList[index].AdDoorMakePrice
+                this.changePriceData.BreakAdPrice = this.changePriceData.orderCompanyList[index].BreakAdPrice
+                this.changePriceData.BreakMakePrice = this.changePriceData.orderCompanyList[index].BreakMakePrice
+                this.newPrice = this.priceFormat(this.changePriceData.AdDoorAdPrice + this.changePriceData.AdDoorMakePrice + this.changePriceData.BreakAdPrice + this.changePriceData.BreakMakePrice)
+            },
             // 价格加上逗号
             priceFormat(price) {
                 return commaFormat.init(price);

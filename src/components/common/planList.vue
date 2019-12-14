@@ -62,9 +62,9 @@
                         <el-button plain v-if="showNewBtn" @click="isOpenDownload=true" class="marginR"
                                    v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt041_ck04'}">导空位
                         </el-button>
-                        <el-button plain v-if="!isNation" @click="goToDiaPlate" class="marginR"
+                        <!--<el-button plain v-if="!isNation" @click="goToDiaPlate" class="marginR"
                                    v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt042_ck03'}">点位表盘
-                        </el-button>
+                        </el-button>-->
                     </template>
                 </div>
                 <div class="table_wrap">
@@ -103,7 +103,6 @@
                                                 {{item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'}}</p>
                                         </div>
                                     </el-tooltip>
-
                                     <el-tooltip class="item" effect="dark" :content="'距离解锁还剩'+item.RemainDay+'天'"
                                                 placement="top">
                                              <span v-show="item.RemainDay" class="lock-icon">
@@ -120,7 +119,6 @@
                                         <p>
                                             {{item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'}}</p>
                                     </el-tooltip>
-
                                     <el-tooltip class="item" effect="dark" :content="'距离解锁还剩'+item.RemainDay+'天'"
                                                 placement="top">
                                          <span v-show="item.RemainDay" class="lock-icon">
@@ -153,16 +151,13 @@
                                     </span>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item @click.native.prevent="preload(scope.row)"
-                                                          :disabled="isDisable || scope.row.apState!=1 || scope.row.apControlLevel !== 1"
-                                                          v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt043_ck04'}">预锁
+                                                          :disabled="isDisable || scope.row.apState!=1 || scope.row.apControlLevel !== 1 || !scope.row.canLock" v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt043_ck04'}">预锁
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="release(scope.row)"
-                                                          :disabled="isDisable || scope.row.apState!=1 || scope.row.apControlLevel !== 1"
-                                                          v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt044_ck04'}">发布
+                                                          :disabled="isDisable || scope.row.apState!=1 || scope.row.apControlLevel !== 1" v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt044_ck04'}">发布
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="clearLock(scope.row)"
-                                                          :disabled="isDisable || scope.row.apState!=1 || scope.row.apControlLevel !== 1"
-                                                          v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt045_ck04'}">解除预锁
+                                                          :disabled="isDisable || scope.row.apState!=1 || scope.row.apControlLevel !== 1 || scope.row.canLock" v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt045_ck04'}">解除预锁
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="splitAdPlan(scope.row)"
                                                           v-if="scope.row.apControlLevel === 2 && sessionData.uType === 'BD'">
@@ -179,6 +174,7 @@
                     </el-table>
 
                     <div class="ad_pagination">
+                        <p>注：<span>3</span>表示预锁天数</p>
                         <el-pagination
                             background
                             v-if="paginationShow"
@@ -818,22 +814,52 @@
             //预锁
             preload(row) {
                 console.log('row-----', row);
-                this.currentItem = row;
+                this.$confirm('<p>锁定后，方案中的点位将被占用</p>', '是否确认锁定该方案的点位', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    dangerouslyUseHTMLString: true
+                }).then(() => {
+                    this.currentItem = row;
+                    let startObj = this.compareTime(row.cityArea, 'pdStar', 'pdEnd');
+                    let date = timeFormat.toDate(new Date(), '/');
+                    if (startObj.startTime <= date) {
+                        this.messageFun('warning', '开始投放时间已经早于当前时间,请直接发布！');
+                        return;
+                    }
+                    this.cityList = this.getCityList(row.cityArea);
+                    if (this.cityList.length) {
+                        this.cityChoose = [];
+                        this.isLock = true;
 
-                let startObj = this.compareTime(row.cityArea, 'pdStar', 'pdEnd');
-                let date = timeFormat.toDate(new Date(), '/');
-                if (startObj.startTime <= date) {
-                    this.messageFun('warning', '开始投放时间已经早于当前时间,请直接发布！');
-                    return;
-                }
-                this.cityList = this.getCityList(row.cityArea);
-                if (this.cityList.length) {
-                    this.cityChoose = [];
-                    this.isLock = true;
-                    this.dialogVisible = true;
-                } else {
-                    this.messageFun('warning', '方案权限城市内您没有可以预锁的城市');
-                }
+                    } else {
+                        this.messageFun('warning', '方案权限城市内您没有可以预锁的城市');
+                    }
+                    if(this.isNation){
+                        this.dialogVisible = true;
+                    }else{
+                        //地方媒介
+                        this.Ctrlloading = Loading.service(
+                            {
+                                text: "请耐心等待...",
+                                spinner: "el-icon-loading",
+                                background: "rgba(0, 0, 0, 0.7)"
+                            }
+                        );
+                        if (this.isLock) {
+                            this.LockCity(this.cityList, 'L');
+                        } else {
+                            this.noLockCity(this.cityList);
+                        }
+                        this.dialogVisible = false;
+                    }
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消操作'
+                    });
+                });
+
             },
             // 获取权限城市内的城市,进行勾选
             getCityList(arr) {
@@ -866,9 +892,26 @@
             clearLock(row) {
                 this.cityChoose = [];
                 this.isLock = false;
-                this.dialogVisible = true;
                 this.currentItem = row;
                 this.cityList = this.getCityList(row.cityArea);
+                if(this.isNation){
+                    this.dialogVisible = true;
+                }else{
+                    //地方媒介
+                    this.Ctrlloading = Loading.service(
+                        {
+                            text: "请耐心等待...",
+                            spinner: "el-icon-loading",
+                            background: "rgba(0, 0, 0, 0.7)"
+                        }
+                    );
+                    if (this.isLock) {
+                        this.LockCity(this.cityList, 'L');
+                    } else {
+                        this.noLockCity(this.cityList);
+                    }
+                    this.dialogVisible = false;
+                }
             },
             // KA方案拆分
             splitAdPlan(row) {
@@ -943,7 +986,7 @@
                 api.postApi(this.apiVar.Advertisement + '/SetFangan', info).then(res => {
                     console.log(res.data);
                     if (res.data.SysCode == 300200) {
-                        for (let plandata of this.currentPlan) {
+             /*           for (let plandata of this.currentPlan) {
                             if (plandata.apID == this.currentItem.apID) {
                                 for (let item of plandata.cityArea) {
                                     if (info.asrIDs.includes(item.asrID)) {
@@ -960,7 +1003,8 @@
                                 break;
                             }
                         }
-                        this.currentPlan.push();
+                        this.currentPlan.push();*/
+                        this.searchFun();
                         this.messageFun('success', res.data.MSG);
 
                     } else if (res.data.SysCode == 300500) {
@@ -996,7 +1040,7 @@
                 api.postApi(this.apiVar.Advertisement + '/ClFangan', info).then(res => {
                     console.log(res.data);
                     this.Ctrlloading.close();
-                    if (res.data.SysCode == 300200) {
+                   /* if (res.data.SysCode == 300200) {
                         for (let plandata of this.currentPlan) {
                             if (plandata.apID == this.currentItem.apID) {
                                 for (let item of plandata.cityArea) {
@@ -1008,7 +1052,8 @@
                             }
                         }
                         this.currentPlan.push();
-                    }
+                    }*/
+                    this.searchFun();
                     this.messageFun('success', res.data.MSG);
                 }).catch(err => {
                     console.log(err);
@@ -1110,13 +1155,19 @@
                     return a.asrID - b.asrID;
                 });
                 let asrIDarr = [];
+                obj.canLock = item.details.some( function( item, index ){
+                    return !item.RemainDay;
+                })
+                //console.log(obj.canLock); false表示不能再预锁
                 for (let data of item.details) {
+
                     if (asrIDarr.includes(data.asrID)) {
                         data.isshow = 0;
                     } else {
                         asrIDarr.push(data.asrID);
                         data.isshow = 1;
                     }
+
                 }
                 obj.cityArea = item.details;
                 return obj;
@@ -1343,7 +1394,7 @@
 
     .table_wrap .city_p .lock-icon {
         position: absolute;
-        right: 0px;
+        right: -10px;
         top: 0px;
 
     }
@@ -1405,6 +1456,25 @@
 
     .unfinished_plan_li {
         line-height: 28px;
+    }
+    .ad_pagination{
+        display: flex;
+        justify-content: space-between;
+    }
+    .ad_pagination p{
+        color:rgba(0,0,0,0.65);
+        font-size: 12px;
+    }
+    .ad_pagination span{
+        display: inline-block;
+        width:16px;
+        height:16px;
+        background:rgba(230,247,255,1);
+        border-radius:2px;
+        border:1px solid rgba(145,213,255,1);
+        text-align: center;
+        color: #1890ff;
+        margin-right: 5px;
     }
 </style>
 

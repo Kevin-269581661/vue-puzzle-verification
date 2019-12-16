@@ -325,6 +325,11 @@
                 </li>
             </ul>
         </div>
+        <!--底部提示语-->
+        <div class="bottom_markedWords">
+            <i class="el-icon-info"></i>
+            当前地图显示均为排期内含空闲点位的小区
+        </div>
         <!--标注info框-->
         <div class="res_info_window" ref="resInfoWindow" v-show="isShowInfo">
             <div class="res_info_header">
@@ -1277,9 +1282,11 @@
                         that.drawingManager.close()
                         if(e.drawingMode === 'circle') {
                             that.showResInPolygon('circle',e.overlay)
+                            that.removeLeftFilterInfo()
                         } else if(e.drawingMode === 'polygon') {
                             that.polygonPoint = e.overlay.getPath()
                             that.showResInPolygon('polygon',e.overlay)
+                            that.removeLeftFilterInfo()
                         } else if(e.drawingMode === 'polyline') {
                             that.isMouseLine = false
                             that.resMap.removeEventListener('mousemove',that.mapMouseMove,false)
@@ -1314,6 +1321,17 @@
                             });
                         }
                     });
+                }
+            },
+            // 移除左侧搜索状态及结果
+            removeLeftFilterInfo() {
+                if (this.onlineMarkers.length) {
+                    for(let key of this.onlineMarkers) {
+                        this.resMap.removeOverlay(key)
+                    }
+                    this.onlineMarkers = []
+                    this.isOnlineSearch = false
+                    this.searchOnlineList = []
                 }
             },
             // 打开绘制类型
@@ -1352,6 +1370,7 @@
                     sessFun.messageFun('warning', '点击异常！')
                 }
             },
+            //
             // 初始化鼠标绘制选中状态
             initMouseActive(temp) {
                 for(let i in this.mouseType) {
@@ -2155,7 +2174,6 @@
                         rkey.show()
                         // 标注marker匹配亲邻小区
                         for(let key of this.resInfo) {
-                            // if(rkey.getLabel().content === key.resName) {
                             if(rkey.point.lng == key.lng && rkey.point.lat == key.lat) {
                                 // 判断是否已存在左侧结果列表
                                 let flag = this.searchResList.some((item, index) => {
@@ -2519,13 +2537,14 @@
                             notPush: data.adLimit || '',
                             mRemark: data.mRemark || '',
                             mediaNum: data.mediaCount || '',
+                            spareAdsCount: data.spareAdsCount || ''
                         };
                         resultArr.push(obj);
                     }
                     require.ensure([], () => {
                         const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
-                        const tHeader = ['资源名称', '市', '区域', '详细地址','商圈','楼栋数量', '住户数量/办公室数量','楼盘价格','楼盘类型/写字楼类型','入住年份/建成年份','广告限制','媒体备注', '媒体数量（门）'];
-                        const filterVal = ['resName', 'city', 'rName', 'resAddress','tradingArea', 'fNum',  'hNum',  'hPrice','cType', 'chDay','notPush', 'mRemark','mediaNum'];
+                        const tHeader = ['资源名称', '市', '区域', '详细地址','商圈','楼栋数量', '住户数量/办公室数量','楼盘价格','楼盘类型/写字楼类型','入住年份/建成年份','广告限制','媒体备注', '媒体数量（门）','可用媒体数量（面）'];
+                        const filterVal = ['resName', 'city', 'rName', 'resAddress','tradingArea', 'fNum',  'hNum',  'hPrice','cType', 'chDay','notPush', 'mRemark','mediaNum','spareAdsCount'];
                         const list = resultArr;
                         const data = this.formatJson(filterVal, list);
                         export_json_to_excel(tHeader, data, name);
@@ -2554,7 +2573,8 @@
                     adLimit: this.selectLimits.join(','),
                     mType: this.selectDoorType,
                     mVehicle: this.selectMediaType,
-                    grade: this.selectMediaLevel
+                    grade: this.selectMediaLevel,
+                    groupByDistrict: 1  // 1按地区分组
                 }
                 for(let i in params) {
                     if(!params[i]) {
@@ -2564,8 +2584,10 @@
                 api.postApi(this.apiVar.mapApi + '/shareAdsInfo',params).then(res=>{
                     console.log('分享list',res)
                     if(res.data.SysCode === 200200) {
-                        this.resInfo = res.data.data.resList
-                        this.creatMarker()
+                        this.resAreaList = res.data.data.resList
+                        this.creatAreaMarker()
+                        // this.resInfo = res.data.data.resList
+                        // this.creatMarker()
                         this.setLimitsDoorTypeAndTradingArea(res.data.data)
                     } else {
                         sessFun.messageFun('warning','数据获取异常')
@@ -3161,7 +3183,7 @@
     /*底部右侧控件*/
     .bottom_right_control{
         position: fixed;
-        bottom: 16px;
+        bottom: 24px;
         right: 24px;
         width: 370px;
     }
@@ -3441,6 +3463,25 @@
 
     /deep/.el-carousel__item{
         text-align: center;
+    }
+
+    /*底部提示语*/
+    .bottom_markedWords{
+        position: fixed;
+        z-index: 99;
+        bottom:2px;
+        right: 24px;
+        width: 363px;
+        padding: 1px 4px;
+        font-size: 12px;
+        color: rgba(0,0,0,0.65);
+        border-radius: 3px;
+        background: rgba(255, 255, 255, 0.7);
+    }
+
+    .bottom_markedWords i{
+        color: #1890ff;
+        margin-right: 2px;
     }
 
     ::-webkit-scrollbar {

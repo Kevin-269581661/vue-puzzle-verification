@@ -1316,7 +1316,7 @@
     }
 
     .el-input {
-        width: 180px;
+        width: 290px;
         border-radius: 4px;
     }
 
@@ -1347,7 +1347,7 @@
     }
 
     /deep/ .search_row .el-input__inner {
-        width: 140px;
+        width: 185px;
     }
 
     /deep/ .el-date-editor {

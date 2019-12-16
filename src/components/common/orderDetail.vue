@@ -169,12 +169,12 @@
                                         <template slot-scope="scope">
                                             <template v-if="scope.row.lState==2">
                                                 <span>{{scope.row.finishTimeRange}}</span>
-                                                <el-tooltip placement="top">
-                                                    <div slot="content">
-                                                        <span>{{scope.row.timeRange}}</span>
-                                                    </div>
-                                                    <i class="el-icon-question"> </i>
-                                                </el-tooltip>
+                                                <!--<el-tooltip placement="top">-->
+                                                    <!--<div slot="content">-->
+                                                        <!--<span>{{scope.row.timeRange}}</span>-->
+                                                    <!--</div>-->
+                                                    <!--<i class="el-icon-question"> </i>-->
+                                                <!--</el-tooltip>-->
                                             </template>
                                             <span v-else>{{scope.row.timeRange}}</span>
                                         </template>
@@ -822,6 +822,11 @@
                                 }
 
                             }
+                            obj.AdDoorAdPrice = obj.orderCompanyList[obj.priceCurrCompany].AdDoorAdPrice
+                            obj.AdDoorMakePrice = obj.orderCompanyList[obj.priceCurrCompany].AdDoorMakePrice
+                            obj.BreakAdPrice = obj.orderCompanyList[obj.priceCurrCompany].BreakAdPrice
+                            obj.BreakMakePrice = obj.orderCompanyList[obj.priceCurrCompany].BreakMakePrice
+
                             console.log(obj);
                             this.changePriceData = obj
                         } else if (res.data.SysCode == 100302) {
@@ -1266,7 +1271,18 @@
                             if (type && type == 'change') {
                                 this.setpointArr = result;
                                 this.changePointArr = result;
+                                //本次是否有新增
+                                for (let data of this.changePointInfo.addPointlist) {
+                                    for (let item of  this.setpointArr) {
+                                        if (data.asID == item.asID && data.timeRange == item.timeRange) {
+                                            item.isCurrNew = 1
+                                        }
+                                    }
+                                }
                                 this.changePointPageFn()
+                                this.changePointInfo.stopPointlist = []
+                                this.changePointInfo.addPointlist = []
+                                // this.changePointPageFn()
 
                             } else {
                                 this.currentPointArr = result;
@@ -1282,6 +1298,8 @@
                             this.loading = false;
                             this.maLoading = false;
                             this.changePointloading = false
+
+
 
                         } else {
                             Message.warning(res.data.MSG);
@@ -1660,7 +1678,7 @@
                                 cType: key.buildType,
                                 timeRange: key.schedules,
                                 hNum: key.houseNum,
-                                hPrice: key.buildPrice,
+                                hPrice: key.buildPrice*100,
                                 fNum: key.buildNum,
                                 chDay: key.liveYear,
                                 notPush: key.adLimit,
@@ -1709,9 +1727,9 @@
                             this.IsAddPoint = true
                             this.isHandleChange = true
                             this.changePointInfo.addPointNum = this.changePointInfo.addPointlist.length
-                            // this.getSetPoint('change')
+                            this.getSetPoint('change')
 
-                            for (let data of this.changePointInfo.addPointlist) {
+                            /*for (let data of this.changePointInfo.addPointlist) {
                                 for (let item of  this.setpointArr) {
                                     if (data.asID == item.asID && data.timeRange == item.timeRange) {
                                         item.isCurrNew = 1
@@ -1720,7 +1738,7 @@
                             }
                             this.changePointPageFn()
                             this.changePointInfo.stopPointlist = []
-                            this.changePointInfo.addPointlist = []
+                            this.changePointInfo.addPointlist = []*/
 
                             // this.getMaterInfo('add')
                         }

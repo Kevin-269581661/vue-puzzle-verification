@@ -945,7 +945,7 @@
     }
 
     .el-input {
-        width: 180px;
+        width: 290px;
         border-radius: 4px;
     }
 

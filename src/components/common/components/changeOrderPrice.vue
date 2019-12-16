@@ -125,6 +125,7 @@
         },
         methods: {
             getInitData(index){
+                console.log(index);
                 this.changePriceData.priceCurrCompany = index
                 this.changePriceData.AdDoorAdPrice = this.changePriceData.orderCompanyList[index].AdDoorAdPrice
                 this.changePriceData.AdDoorMakePrice = this.changePriceData.orderCompanyList[index].AdDoorMakePrice

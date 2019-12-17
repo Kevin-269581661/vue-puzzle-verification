@@ -314,7 +314,7 @@
                     // 时间范围
                     rangeDate: "",
                     //日期类型
-                    dateType: '1',
+                    dateType: '0',
                     // 状态筛选
                     status: '',
                     // 公司搜索
@@ -890,28 +890,41 @@
             },
             // 解除预锁
             clearLock(row) {
-                this.cityChoose = [];
-                this.isLock = false;
-                this.currentItem = row;
-                this.cityList = this.getCityList(row.cityArea);
-                if(this.isNation){
-                    this.dialogVisible = true;
-                }else{
-                    //地方媒介
-                    this.Ctrlloading = Loading.service(
-                        {
-                            text: "请耐心等待...",
-                            spinner: "el-icon-loading",
-                            background: "rgba(0, 0, 0, 0.7)"
+                this.$confirm('<p>解锁后，方案中的点位将被释放</p>', '是否确认解锁该方案的点位', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    dangerouslyUseHTMLString: true
+                }).then(() => {
+                    this.cityChoose = [];
+                    this.isLock = false;
+                    this.currentItem = row;
+                    this.cityList = this.getCityList(row.cityArea);
+                    if(this.isNation){
+                        this.dialogVisible = true;
+                    }else{
+                        //地方媒介
+                        this.Ctrlloading = Loading.service(
+                            {
+                                text: "请耐心等待...",
+                                spinner: "el-icon-loading",
+                                background: "rgba(0, 0, 0, 0.7)"
+                            }
+                        );
+                        if (this.isLock) {
+                            this.LockCity(this.cityList, 'L');
+                        } else {
+                            this.noLockCity(this.cityList);
                         }
-                    );
-                    if (this.isLock) {
-                        this.LockCity(this.cityList, 'L');
-                    } else {
-                        this.noLockCity(this.cityList);
+                        this.dialogVisible = false;
                     }
-                    this.dialogVisible = false;
-                }
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消操作'
+                    });
+                });
+
             },
             // KA方案拆分
             splitAdPlan(row) {

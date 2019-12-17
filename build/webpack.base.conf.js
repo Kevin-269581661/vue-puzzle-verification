@@ -27,9 +27,12 @@ module.exports = {
     new webpack.ProvidePlugin({
       $:"jquery",
       jQuery:"jquery",
-      "windows.jQuery":"jquery"
+      "windows.jQuery":"jquery",
     })
   ],
+    externals: {
+        "BMapLib": "BMapLib"
+    },
   resolve: {
     extensions: ['.js', '.vue', '.json'],
     alias: {

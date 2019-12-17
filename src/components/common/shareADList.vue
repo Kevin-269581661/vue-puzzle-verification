@@ -224,10 +224,9 @@
                             </el-table>
                         </el-tab-pane>
                         <el-tab-pane label="地图模式" name="second">
-                            <keep-alive>
-                                <share-ad-map :mapADList="showADList" :mapCity="activeCity" :tableSelects="tableSelects"
-                                              :activeName="activeName" :reading="reading" @mapSelectRes="getMapSelect"></share-ad-map>
-                            </keep-alive>
+                            <share-ad-map :mapADList="showADList" :mapCity="activeCity" :tableSelects="tableSelects"
+                                          :activeName="activeName" :reading="reading"
+                                          @mapSelectRes="getMapSelect"></share-ad-map>
                         </el-tab-pane>
                     </el-tabs>
                 </div>
@@ -459,7 +458,7 @@
                                         notPush: rKey.notPush,
                                         resAddress: rKey.resAddress,
                                         tradingArea: rKey.tradingArea,
-                                        cType: rKey.cType
+                                        mType: rKey.mType
                                     })
                                 }
                                 tableArr.push({

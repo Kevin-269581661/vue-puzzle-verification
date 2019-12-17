@@ -32,6 +32,7 @@
                     <span @click="clearSearch">取消</span>
                 </div>
             </div>
+            <!--亲邻社区搜索结果-->
             <div class="search_body" v-show="(searchResList.length && activeSearchKind == '1') || isOnlineSearch">
                 <ul class="search_ul">
                     <li class="search_li" v-for="(item,index) in searchResList" :key="index">
@@ -53,9 +54,12 @@
                     </li>
                 </ul>
                 <div class="search_bottom_btn">
-                    <el-button plain size="small" @click="selectAllFun">添加全部</el-button>
+                    <el-button plain size="small" @click="selectAllFun" :loading="addAllLoading">
+                        {{addAllLoading ? '添加中' :'添加全部'}}
+                    </el-button>
                 </div>
             </div>
+            <!--在线搜索结果-->
             <div class="search_body" v-show="(activeSearchKind == '2' && !isOnlineSearch) && (searchOnlineLoading || searchOnlineList.length)"
                  v-loading="searchOnlineLoading"
                  element-loading-text="玩命加载中.."
@@ -572,6 +576,8 @@
                 selectResList: [],
                 // 搜索的资源列表
                 searchResList: [],
+                // 添加全部时loading
+                addAllLoading: false,
                 /* 在线搜索 */
                 // 在线搜索到list
                 searchOnlineList:[],
@@ -735,6 +741,8 @@
                 this.isShare = false
                 // 获取小区数据
                 this.getResList();
+                // 初始化鼠标绘制
+                this.initMouseDrawing()
                 // 获取商圈list
                 this.getTradingArea();
                 // 获取媒体类型(门类型)
@@ -946,8 +954,6 @@
                     }
                     // 城市边界
                     this.displayBoundary()
-                    // 初始化鼠标绘制
-                    this.initMouseDrawing()
                     this.mapLoading = false
                 }).catch(err=>{
                     console.log('err',err)
@@ -988,7 +994,9 @@
                         let label = this.setMarkerLabel(key.resName)
                         marker.setLabel(label);
                         marker.setTop(true);
+                        // 自定义给maeker绑定inCircleNum、resID属性
                         marker.inCircleNum = 0
+                        marker.resID = key.resID
                         this.resMap.addOverlay(marker);              // 将标注添加到地图中
                         label.addEventListener("click",()=>{
                             this.showInfo(key,point)
@@ -1018,7 +1026,9 @@
                         let label = this.setMarkerLabel(key.resName)
                         marker.setLabel(label);
                         marker.setTop(true);
+                        // 自定义给maeker绑定inCircleNum、resID属性
                         marker.inCircleNum = 0;
+                        marker.resID = key.resID;
                         label.addEventListener("click",()=>{
                             this.showInfo(key,point)
                         });
@@ -1208,6 +1218,7 @@
                     sessFun.messageFun('waning','当前为多点辐射状态，请取消后再进行其它绘制操作！')
                     return
                 }
+                this.initMouseDrawing()
                 if (temp === 'polyline') {
                     // 线-测距
                     this.LinePoints = []
@@ -1305,39 +1316,50 @@
             // },
             // 显示多边形内的点位
             showResInPolygon(temp, overlay) {
+                let showLoading = this.$loading({
+                    lock: true,
+                    text: '框选中...',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                });
                 console.time('显示多边形')
-                this.markerClusterer ? this.markerClusterer.clearMarkers() : ''
-                for (let akey of this.resMarkers) {
-                    let isShow = ''
-                    if (temp === 'circle') {
-                        isShow = BMapLib.GeoUtils.isPointInCircle(akey.point, overlay)
-                    } else if (temp === 'polygon') {
-                        isShow = BMapLib.GeoUtils.isPointInPolygon(akey.point, overlay)
-                    }
-                    if (!isShow) {
-                        akey.hide()
-                    } else {
-                        this.isClusterer ? this.resMap.addOverlay(akey) : '';   // 将标注添加到地图中
-                        akey.show()
-                        for (let key of this.resInfo) {
-                            if (akey.getLabel().content === key.resName) {
-                                let flag = this.searchResList.some((item, index) => {
-                                    if (key.resID === item.resID) {
-                                        return true
-                                    }
-                                })
-                                if (!flag) {
-                                    this.searchResList.push(key)
+                // 异步保证showLoading能出现，其他方法暂时无法实现（async/await）
+                let timer = setTimeout(() => {
+                    this.markerClusterer ? this.markerClusterer.clearMarkers() : ''
+                    for (let akey of this.resMarkers) {
+                        let isShow = ''
+                        if (temp === 'circle') {
+                            isShow = BMapLib.GeoUtils.isPointInCircle(akey.point, overlay)
+                        } else if (temp === 'polygon') {
+                            isShow = BMapLib.GeoUtils.isPointInPolygon(akey.point, overlay)
+                        }
+                        if (!isShow) {
+                            akey.hide()
+                        } else {
+                            this.isClusterer ? this.resMap.addOverlay(akey) : '';   // 将标注添加到地图中
+                            akey.show()
+                            let flag = this.searchResList.some(item => {
+                                if (akey.resID === item.resID) {
+                                    return true
                                 }
-                                break
+                            })
+                            if (!flag) {
+                                for (let key of this.resInfo) {
+                                    if (key.resID === akey.resID) {
+                                        this.searchResList.push(key)
+                                        break
+                                    }
+                                }
                             }
                         }
                     }
-                }
-                this.isMouseSearch = true
-                this.activeSearchKind = '1'
-                // console.log('isMouseSearch',this.isMouseSearch)
-                console.timeEnd('显示多边形')
+                    this.isMouseSearch = true
+                    this.activeSearchKind = '1'
+                    // console.log('isMouseSearch',this.isMouseSearch)
+                    showLoading.close()
+                    console.timeEnd('显示多边形')
+                    clearTimeout(timer)
+                }, 20)
             },
             // 清除上一次的绘制
             deleteDrawingOverlay() {
@@ -1705,15 +1727,20 @@
             },
             // 亲邻社区全选
             selectAllFun(){
-                for(let key of this.searchResList) {
-                    if(!key.isSelect) {
-                        key.isSelect = true
-                        this.selectResList.push(key)
-                        this.createCircle(key.resID, new BMap.Point(key.lng, key.lat))
-                        this.judgeMarkerShow(key.lng,key.lat)
+                this.addAllLoading = true
+                let timer = setTimeout(()=>{
+                    for(let key of this.searchResList) {
+                        if(!key.isSelect) {
+                            key.isSelect = true
+                            this.selectResList.push(key)
+                            this.createCircle(key.resID, new BMap.Point(key.lng, key.lat))
+                            this.judgeMarkerShow(key.lng,key.lat)
+                        }
                     }
-                }
-                console.log('全选',this.selectResList,this.resMarkers[0].point.lng)
+                    this.addAllLoading = false
+                    console.log('全选',this.selectResList,this.resMarkers[0].point.lng)
+                    clearTimeout(timer)
+                },10)
             },
             // 判断marker是否隐藏
             judgeMarkerShow(lng,lat) {
@@ -1921,7 +1948,7 @@
                         // 标注marker匹配亲邻小区
                         for(let key of this.resInfo) {
                             // if(rkey.getLabel().content === key.resName) {
-                            if(rkey.point.lng == key.lng && rkey.point.lat == key.lat) {
+                            if(key.resID === rkey.resID && rkey.point.lng == key.lng && rkey.point.lat == key.lat) {
                                 // 判断是否已存在左侧结果列表
                                 let flag = this.searchResList.some((item, index) => {
                                     if (key.resID === item.resID) {
@@ -2204,6 +2231,13 @@
                 this.isMultiPoint = false
                 this.isMouseSearch = false
 
+                // 清空左侧搜索
+                this.searchResList = []
+                this.searchOnlineList = []
+                this.activeSearchKind = '1'
+                this.isOnlineSearch = false
+                this.selectName = ''
+                // 重新获取数据
                 this.transfersFun()
             },
             /**
@@ -2219,12 +2253,24 @@
                         break
                     }
                 }
+                let findRes = this.resInfo.some(resItem=>{
+                    if(resItem.resID === item.resID) {
+                        resItem.isSelect = false
+                        return true
+                    }
+                })
             },
             // 删除全部
             deleteAll() {
                 for (let key of this.selectResList) {
                     key.isSelect = false
                     this.deleteCircle(key.resID)
+                    for(let resKey of this.resInfo) {
+                        if(key.resID === resKey.resID) {
+                            resKey.isSelect = false
+                            break
+                        }
+                    }
                 }
                 this.selectResList = []
             },

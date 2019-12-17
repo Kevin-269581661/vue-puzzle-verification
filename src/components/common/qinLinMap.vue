@@ -585,7 +585,7 @@
     import timeFormat from "../../commonFun/timeFormat"
     import api from "../../api/api"
     import BMapLib from 'BMapLib'
-    import mapStyle from "./map/mapStyle"
+    // import mapStyle from "./map/mapStyle"
     export default {
         name: "qinLinMap",
         components:{

@@ -2095,7 +2095,7 @@
                     }
                     if(this.aroundSearchInfo.searchRadio == 2) {
                         // 计算交集
-                        this.computeINtersection()
+                        this.computeIntersection()
                     }
                     // console.log('---------周边搜索------结束---------')
                     this.searchLoading = false
@@ -2168,13 +2168,13 @@
                 console.timeEnd('交集圆半径内小区')
             },
             // 计算交集
-            computeINtersection() {
+            computeIntersection() {
                 for (let rkey of this.resMarkers) {
                     if(rkey.inCircleNum >= 2) {
                         rkey.show()
                         // 标注marker匹配亲邻小区
                         for(let key of this.resInfo) {
-                            if(rkey.point.lng == key.lng && rkey.point.lat == key.lat) {
+                            if(rkey.resID === key.resID && rkey.point.lng == key.lng && rkey.point.lat == key.lat) {
                                 // 判断是否已存在左侧结果列表
                                 let flag = this.searchResList.some((item, index) => {
                                     if (key.resID === item.resID) {

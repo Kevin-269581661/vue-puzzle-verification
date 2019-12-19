@@ -151,13 +151,13 @@
                                     </span>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item @click.native.prevent="preload(scope.row)"
-                                                          :disabled="isDisable || scope.row.apState!=1 || scope.row.apControlLevel !== 1 || !scope.row.canLock" v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt043_ck04'}">预锁
+                                                          :disabled="(isDisable || scope.row.apState!=1 || scope.row.apControlLevel !== 1) && !scope.row.canLock" v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt043_ck04'}">预锁
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="release(scope.row)"
                                                           :disabled="isDisable || scope.row.apState!=1 || scope.row.apControlLevel !== 1" v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt044_ck04'}">发布
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="clearLock(scope.row)"
-                                                          :disabled="isDisable || scope.row.apState!=1 || scope.row.apControlLevel !== 1 || scope.row.canLock" v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt045_ck04'}">解除预锁
+                                                          :disabled="(isDisable || scope.row.apState!=1 || scope.row.apControlLevel !== 1) && scope.row.canLock" v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt045_ck04'}">解除预锁
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="splitAdPlan(scope.row)"
                                                           v-if="scope.row.apControlLevel === 2 && sessionData.uType === 'BD'">
@@ -191,7 +191,7 @@
             </div>
         </div>
         <!-- 预锁公司 -->
-        <el-dialog :title="isLock?'请选择预锁公司':'请选择解锁公司'" :visible.sync="dialogVisible" width="30%" center>
+        <el-dialog :title="isLock?'请选择预锁公司':'请选择解锁公司'" :visible.sync="dialogVisible" width="35%" center>
             <el-checkbox-group v-model="cityChoose">
                 <el-checkbox v-if="isLock" :label="item.asrID" v-for="item of cityList" :key="item.rid" border
                              :disabled="item.RemainDay>=0" size="mini">{{item.asName}}
@@ -1171,7 +1171,7 @@
                 obj.canLock = item.details.some( function( item, index ){
                     return !item.RemainDay;
                 })
-                //console.log(obj.canLock); false表示不能再预锁
+                console.log(obj.canLock); //false表示不能再预锁
                 for (let data of item.details) {
 
                     if (asrIDarr.includes(data.asrID)) {
@@ -1198,7 +1198,7 @@
                     company: '',
                     cityWord: '',
                     Lock: '',
-                    dateType:'1',
+                    dateType:'0',
                 };
 
                 this.currPage = 1;

@@ -587,7 +587,8 @@
                                         confirmButtonText: "修改",
                                         cancelButtonText: "不修改",
                                         dangerouslyUseHTMLString: true,
-                                        type: "success"
+                                        type: "success",
+                                        closeOnClickModal:false,
                                     }
                                 ).then(() => {
                                     this.changePriceModal = true
@@ -725,7 +726,7 @@
                     cityWord: '',
                     // 状态筛选
                     status: '',
-                    dateType:'0',
+                    dateType:'1',
                 };
                 this.currPage = 1;
                 this.currentOrder = [];

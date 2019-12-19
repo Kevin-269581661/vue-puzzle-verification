@@ -1724,9 +1724,9 @@
                             this.IsAddPoint = true
                             this.isHandleChange = true
                             this.changePointInfo.addPointNum = this.changePointInfo.addPointlist.length
-                            this.getSetPoint('change')
+                            // this.getSetPoint('change')
 
-                            /*for (let data of this.changePointInfo.addPointlist) {
+                            for (let data of this.changePointInfo.addPointlist) {
                                 for (let item of  this.setpointArr) {
                                     if (data.asID == item.asID && data.timeRange == item.timeRange) {
                                         item.isCurrNew = 1
@@ -1734,8 +1734,8 @@
                                 }
                             }
                             this.changePointPageFn()
-                            this.changePointInfo.stopPointlist = []
-                            this.changePointInfo.addPointlist = []*/
+                            // this.changePointInfo.stopPointlist = []
+                            // this.changePointInfo.addPointlist = []
 
                             // this.getMaterInfo('add')
                         }

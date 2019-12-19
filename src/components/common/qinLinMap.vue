@@ -325,10 +325,14 @@
                 </li>
             </ul>
         </div>
-        <!--底部提示语-->
+        <!--底部左侧提示语-->
         <div class="bottom_markedWords">
             <i class="el-icon-info"></i>
             当前地图显示均为排期内含空闲点位的小区
+        </div>
+        <!--版权所有-->
+        <div class="censor-code">
+            <p>亲邻科技 - @2019 Baidu-GS(2018)5572号</p>
         </div>
         <!--标注info框-->
         <div class="res_info_window" ref="resInfoWindow" v-show="isShowInfo">
@@ -875,7 +879,7 @@
             // 获取商圈
             getTradingArea() {
                 let params = {
-                    cityId: '440100'
+                    cityId: this.adListParams.rid
                 }
                 api.getApi(this.apiVar.mapApi + '/tradingAreaList',params).then(res=>{
                     if (res.data.SysCode === 200200) {
@@ -1085,7 +1089,7 @@
                         background: 'rgba(24,144,255,1)',
                         color: 'rgba(255,255,255,1)',
                         padding: '16px 4px',
-                        cursor: 'pointer'
+                        // cursor: 'pointer'
                     });
                     label.rid = key.districtId
                     label.addEventListener("click",(e)=>{
@@ -1925,19 +1929,23 @@
                         }
                     }
                 } else {
-                    this.canceAllOnline()
+                    // this.canceAllOnline()
+                    for(let key of this.searchOnlineList) {
+                        if(key.isSelect) {
+                            key.isSelect = false
+                            this.onlineCheckBox(key)
+                        }
+                    }
                 }
                 console.timeEnd('在线全选耗时')
             },
             // 取消在线选择
             canceAllOnline() {
-                for(let key of this.searchOnlineList) {
-                    if(key.isSelect) {
-                        key.isSelect = false
-                        this.onlineCheckBox(key)
-                    }
+                this.isOnlineSearch = false
+                for(let key of this.onlineMarkers) {
+                    this.resMap.removeOverlay(key)
                 }
-                console.log('取消在线选择',this.searchOnlineList)
+                this.searchOnlineList = []
             },
             // 点击检索结果名称移动地图中心
             moveMapByOnclickName(item,temp) {
@@ -3484,6 +3492,24 @@
         margin-right: 2px;
     }
 
+    .censor-code{
+        position: fixed;
+        z-index: 99;
+        bottom:2px;
+        left: 2px;
+        /*width: 363px;*/
+        padding: 1px 4px;
+        font-size: 12px;
+        color: rgba(0,0,0,0.65);
+        border-radius: 3px;
+        background: rgba(255, 255, 255, 0.7);
+    }
+
+    .censor-code img{
+        width: auto;
+        height: 14px;
+    }
+
     ::-webkit-scrollbar {
         width: 4px;
         height: 8px;
@@ -3532,5 +3558,9 @@
 
     .popover_map_info {
         text-align: center;
+    }
+
+    .anchorBL{
+        display: none;
     }
 </style>

@@ -385,7 +385,14 @@
 </style>
 <style>
     .message-popper {
-        padding: 0;
+        padding: 0 !important;
+        position: absolute !important;
+        top: 42px !important;
+        right: 5%;
+        /*left: 1055px !important;*/
+    }
+    .message-popper .el-popper[x-placement^=bottom] .popper__arrow{
+        left: 49% !important;
     }
 
 </style>

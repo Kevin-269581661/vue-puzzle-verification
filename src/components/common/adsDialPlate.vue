@@ -2,7 +2,7 @@
     <div class="ad_main">
         <div class="ad_breadcrumb">
             <p>
-                <a href="#">媒体管理</a><em> / </em><a href="#">点位表盘</a>
+                <a href="#">方案管理</a><em> / </em><a href="#">点位表盘</a>
                 <span class="ad_breadcrumb_time">数据统计截止至{{checkDate}}</span>
             </p>
         </div>

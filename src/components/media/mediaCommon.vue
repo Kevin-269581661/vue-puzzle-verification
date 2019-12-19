@@ -21,9 +21,14 @@
                 <template slot="title">媒体管理</template>
                 <el-menu-item index="/media/mediaList">媒体列表</el-menu-item>
                 <el-menu-item index="/media/maintainList">媒体维护</el-menu-item>
+                <!--<el-menu-item index="/media/adsDialPlate" v-if="!isNation">点位表盘</el-menu-item>-->
+            </el-submenu>
+            <!--<el-menu-item index="/media/planList">方案管理</el-menu-item>-->
+            <el-submenu index="5" :show-timeout="80" popper-class="submenu">
+                <template slot="title">方案管理</template>
+                <el-menu-item index="/media/planList">方案列表</el-menu-item>
                 <el-menu-item index="/media/adsDialPlate" v-if="!isNation">点位表盘</el-menu-item>
             </el-submenu>
-            <el-menu-item index="/media/planList">方案管理</el-menu-item>
             <el-menu-item index="/media/orderList">订单管理</el-menu-item>
             <!--<el-menu-item index="/media/projectList">工程管理</el-menu-item>-->
             <el-submenu index="7" :show-timeout="80" popper-class="submenu">
@@ -194,17 +199,16 @@
                 // console.log(val, 'isActive', this.$route.path)
                 let path = this.$route.path
                 let routePath = ''
-                if (path.includes('/mediaDetail') || path.includes('/mediaEdit') || path.includes('/mediaInput') || path.includes('adsDialPlate')) {
+                if (path.includes('/mediaDetail') || path.includes('/mediaEdit') || path.includes('/mediaInput')) {
                     // 媒体管理
                     routePath = '/media/mediaList'
-                } else if (path.includes('/editPlan') || path.includes('/planDetail')
-                    || path.includes('/createPlan') || path.includes('/adsDialPlate')) {
+                } else if (path.includes('/editPlan') || path.includes('/planDetail') || path.includes('/createPlan')) {
                     // 方案管理
                     routePath = '/media/planList'
                 } else if (path.includes('/orderDetail')) {
                     // 订单管理
                     routePath = '/media/orderList'
-                } else if (path.includes('/projectDetail') || path.includes('/paintedCount')) {
+                } else if (path.includes('/projectDetail') ) {
                     // 工程管理
                     routePath = '/media/projectList'
                 } else {

@@ -247,7 +247,7 @@
                            top="6vh"
                            :close-on-press-escape="false"
                            :show-close="false">
-                    <add-ads :IsAddAds="IsAddPoint" @ievent="ievent"></add-ads>
+                    <add-ads  :IsAddAds="IsAddPoint" @ievent="ievent"></add-ads>
                     <span slot="footer" class="dialog-footer">
                         <el-button plain @click="cancelAddPoint" v-qadn-mta-h5="{id: 'a006_b011_c012_d009_bt154_ck08'}">取 消</el-button>
                         <el-button type="primary" @click="confirmAddPoint"
@@ -276,7 +276,7 @@
 
                 <!--换点对话框-->
                 <el-dialog title="更换点位" :visible.sync="dialogChangePoint" :close-on-press-escape="false"
-                           :show-close="false" :before-close="closeDialogChangePoint">
+                           :show-close="false" :before-close="closeDialogChangePoint" :close-on-click-modal="false">
                     <div>
                         <el-row class="search-row" style="margin: 0">
                             <el-col>
@@ -459,6 +459,7 @@
                                 <span>全部点位共<em>{{ recordList.info.allPoint}}</em>个，</span>
                                 <span>已终止点位<em>{{ recordList.info.stopPoint}}</em>个，</span>
                                 <span>新增点位<em>{{recordList.info.newPoint}}</em>个</span>
+                                <span>当前正常投放点位<em>{{recordList.info.normalPoint}}</em>个</span>
                             </h4>
                         </div>
                         <div class="record-table-wrap">
@@ -711,6 +712,7 @@
                         allPoint: 0,
                         stopPoint: 0,
                         newPoint: 0,
+                        normalPoint:0,
                     },
                     table: []
                 },
@@ -879,7 +881,7 @@
 
                 })
                     .catch(() => {
-                        Message.info("已取消操作");
+                        // Message.info("已取消操作");
                     });
                 // this.dialogChangePoint = false
             },
@@ -1280,8 +1282,7 @@
                                     }
                                 }
                                 this.changePointPageFn()
-                                this.changePointInfo.stopPointlist = []
-                                this.changePointInfo.addPointlist = []
+
                                 // this.changePointPageFn()
 
                             } else {
@@ -1491,7 +1492,8 @@
                         this.recordList.info = {
                             allPoint: res.data.data.totalAdsCount,
                             stopPoint: res.data.data.stoppedAdsCount,
-                            newPoint: res.data.data.newAdsCount
+                            newPoint: res.data.data.newAdsCount,
+                            normalPoint:res.data.data.usingAdsCount
                         }
                         let arr = []
                         if(res.data.data.orderHistory.length){
@@ -1630,6 +1632,8 @@
                 this.initListData()
                 this.handleTime = new Date().getTime()
                 this.dialogChangePoint = true
+                this.changePointInfo.stopPointlist = []
+                this.changePointInfo.addPointlist = []
                 this.isHandleChange = false
                 this.getSetPoint('change')
             },

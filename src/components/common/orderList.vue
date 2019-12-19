@@ -208,7 +208,7 @@
                     // 时间范围
                     rangeDate: "",
                     //日期类型
-                    dateType: '0',
+                    dateType: '1',
                     // 公司搜索
                     company: '',
                     // 城市筛选
@@ -608,14 +608,14 @@
                 });
             },
             //获取订单金额详情
-            getOrderPriceDetail(apid) {
-                api.getApi(this.apiVar.Advertisement + "/GetAPD", {apid: apid})
-                    .then(res => {
+            getOrderPriceDetail(){
+                api.getApi(this.apiVar.Advertisement+"/GetAPD", {apid:sessionStorage.getItem("order_apid")})
+                    .then(res =>{
                         // console.log('test--', res.data);
                         if (!res.data.SysCode) {
-                            sessionStorage.setItem('priceData', JSON.stringify(res.data))
+                            sessionStorage.setItem('priceData',JSON.stringify(res.data))
                             let priceData = res.data
-                            console.log('订单金额', priceData);
+                            console.log('订单金额',priceData);
                             let obj = {
                                 AdDoorAdPrice: 0,
                                 AdDoorMakePrice: 0,
@@ -624,28 +624,33 @@
                                 orderOldPrice: 0,
                                 orderCompanyList: [],
                                 priceCurrCompany: 0,
-                                handleTime: new Date().getTime(),
-                                apID: apid,
-                                opType:2
+                                handleTime:this.handleTime,
+                                apID:sessionStorage.getItem("order_apid"),
+                                opType:1
                             }
                             for (let item of priceData) {
-                                if (obj.orderCompanyList.length > 0) {
-                                    for (let data of obj.orderCompanyList) {
-                                        if (item.asrID == data.asrID && item.rID == data.rID) {
-                                            let totalPrice = (data.pdAdFee + data.pdAdMake + item.pdAdFee + item.pdAdMake) / 100
-                                            if (data.pdType == 1) {
-                                                obj.BreakAdPrice = data.pdAdFee / 100;
-                                                obj.BreakMakePrice = data.pdAdMake / 100;
-                                                obj.AdDoorAdPrice = item.pdAdFee / 100;
-                                                obj.AdDoorMakePrice = item.pdAdMake / 100;
-                                            } else {
-                                                obj.BreakAdPrice = item.pdAdFee / 100;
-                                                obj.BreakMakePrice = item.pdAdMake / 100;
-                                                obj.AdDoorAdPrice = data.pdAdFee / 100;
-                                                obj.AdDoorMakePrice = data.pdAdMake / 100;
+                                let isHave = obj.orderCompanyList.some(key=>{
+                                    if(item.asrID==key.asrID&&item.rID==key.rID){
+                                        //obj.orderCompanyList里是否已有相同的公司和城市
+                                        return true
+                                    }
+                                })
+                                if(isHave) {
+                                    for(let data of obj.orderCompanyList){
+                                        if(item.asrID==data.asrID&&item.rID==data.rID){
+                                            let totalPrice = (data.pdAdFee+data.pdAdMake+item.pdAdFee+item.pdAdMake)/100
+                                            if(data.pdType==1){
+                                                data.BreakAdPrice = data.pdAdFee/100;
+                                                data.BreakMakePrice = data.pdAdMake/100;
+                                                data.AdDoorAdPrice = item.pdAdFee/100;
+                                                data.AdDoorMakePrice = item.pdAdMake/100;
+                                            }else{
+                                                data.BreakAdPrice = item.pdAdFee/100;
+                                                data.BreakMakePrice = item.pdAdMake/100;
+                                                data.AdDoorAdPrice = data.pdAdFee/100;
+                                                data.AdDoorMakePrice = data.pdAdMake/100;
                                             }
-                                            obj.orderOldPrice = this.priceFormat(totalPrice)
-
+                                            data.orderOldPrice = this.priceFormat(totalPrice)
                                         }
                                     }
                                 } else {
@@ -655,7 +660,14 @@
                                     }
                                     obj.orderCompanyList.push(a)
                                 }
+
                             }
+                            obj.AdDoorAdPrice = obj.orderCompanyList[obj.priceCurrCompany].AdDoorAdPrice
+                            obj.AdDoorMakePrice = obj.orderCompanyList[obj.priceCurrCompany].AdDoorMakePrice
+                            obj.BreakAdPrice = obj.orderCompanyList[obj.priceCurrCompany].BreakAdPrice
+                            obj.BreakMakePrice = obj.orderCompanyList[obj.priceCurrCompany].BreakMakePrice
+
+                            console.log(obj);
                             this.changePriceData = obj
                         } else if (res.data.SysCode == 100302) {
                             this.loginTimeout();

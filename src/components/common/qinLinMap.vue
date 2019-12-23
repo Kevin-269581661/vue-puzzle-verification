@@ -576,8 +576,8 @@
             </div>
             <div slot="footer" class="dialog-footer">
                 <el-button size="small" type="primary" @click="setMoreRadiation" :loading="isMoreRadiation">
-                    {{isMoreRadiation ? '检索中.' : '确 定'}}</el-button>
-                <el-button plain size="small" @click="isMoreCenterPointVisible = false">取 消</el-button>
+                    {{isMoreRadiation ? '检索中.' : '确 定'}}</el-button> <!---->
+                <el-button plain size="small" @click="cancelMoreRaiation">取 消</el-button>
             </div>
         </el-dialog>
     </div>
@@ -1341,7 +1341,7 @@
             // 打开绘制类型
             drawingMouse(temp) {
                 if(this.isMultiPoint && temp !== 'polyline') {
-                    sessFun.messageFun('waning','当前为多点辐射状态，请取消后再进行其它绘制操作！')
+                    sessFun.messageFun('warning','当前为多点辐射状态，请取消后再进行其它绘制操作！')
                     return
                 }
                 this.initMouseDrawing()
@@ -1649,9 +1649,17 @@
                 // console.log('选择辐射点arr',arr)
                 return arr
             },
+            // 取消多点辐射
+            cancelMoreRaiation() {
+                this.isMoreCenterPointVisible = false
+                if(!this.isMultiPoint) {
+                    this.mouseType.morePoint = false
+                }
+            },
             // 多点辐射
             setMoreRadiation() {
                 this.isMoreRadiation = true
+                this.removeLeftFilterInfo()
                 let params = {
                     "startTime": this.adListParams.ls,
                     "endTime": this.adListParams.le,

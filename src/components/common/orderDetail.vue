@@ -458,7 +458,7 @@
                             <h4>
                                 <span>全部点位共<em>{{ recordList.info.allPoint}}</em>个，</span>
                                 <span>已终止点位<em>{{ recordList.info.stopPoint}}</em>个，</span>
-                                <span>新增点位<em>{{recordList.info.newPoint}}</em>个</span>
+                                <span>新增点位<em>{{recordList.info.newPoint}}</em>个，</span>
                                 <span>当前正常投放点位<em>{{recordList.info.normalPoint}}</em>个</span>
                             </h4>
                         </div>
@@ -873,7 +873,8 @@
                         confirmButtonText: "修改",
                         cancelButtonText: "不修改",
                         dangerouslyUseHTMLString: true,
-                        type: "success"
+                        type: "success",
+                        closeOnClickModal:false,
                     }
                 ).then(() => {
                     this.changePriceModal = true
@@ -885,7 +886,7 @@
                     });
                 // this.dialogChangePoint = false
             },
-            //提交更换点位操作
+            //终止点位操作
             stopPoint() {
                 if (this.changePointInfo.stopPointlist.length > 0) {
                     MessageBox.confirm(
@@ -903,16 +904,8 @@
                         let orderStoppedAdsInfos = []
                         if (this.changePointInfo.stopPointlist.length > 0) {
                             for (let data of this.changePointInfo.stopPointlist) {
-                                let obj = {
-                                    "asID": data.asID,
-                                    "asLab": data.asLab,
-                                    "mTitle": data.mTitle,
-                                    "resName": data.resName,
-                                    "district": data.rName,
-                                    "city": data.city,
-                                    "lID": data.lID
-                                }
-                                orderStoppedAdsInfos.push(obj)
+                                // console.log(data);
+                                orderStoppedAdsInfos.push(data)
                             }
                         }
                         let info = {
@@ -1716,7 +1709,7 @@
                     if (res.data.SysCode === 300500) {
                         Message.warning(res.data.MSG)
                     } else {
-                        if (res.data === '' || res.data === null) {
+                        if (res.data.SysCode !=200200) {
                             this.$message({
                                 message: '新增点位失败',
                                 type: 'warning'
@@ -1731,9 +1724,9 @@
                             this.IsAddPoint = true
                             this.isHandleChange = true
                             this.changePointInfo.addPointNum = this.changePointInfo.addPointlist.length
-                            this.getSetPoint('change')
+                            // this.getSetPoint('change')
 
-                            /*for (let data of this.changePointInfo.addPointlist) {
+                            for (let data of this.changePointInfo.addPointlist) {
                                 for (let item of  this.setpointArr) {
                                     if (data.asID == item.asID && data.timeRange == item.timeRange) {
                                         item.isCurrNew = 1
@@ -1741,8 +1734,8 @@
                                 }
                             }
                             this.changePointPageFn()
-                            this.changePointInfo.stopPointlist = []
-                            this.changePointInfo.addPointlist = []*/
+                            // this.changePointInfo.stopPointlist = []
+                            // this.changePointInfo.addPointlist = []
 
                             // this.getMaterInfo('add')
                         }

@@ -2,7 +2,7 @@
     <div class="ad_mediaDetail_wrap clearfix">
         <div class="ad_mediaDetail_nav ">
             <p class="clearfix">
-                <a href="#" style="color: #999">工程管理</a>
+                <a href="#">工程管理</a><em> / </em><a href="#">上画任务</a>
             </p>
         </div>
         <div class="mediaList_wrap">

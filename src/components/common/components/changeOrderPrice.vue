@@ -119,12 +119,12 @@
 
             }
         },
-        mounted(){
+        mounted() {
             this.getInitData(this.changePriceData.priceCurrCompany)
 
         },
         methods: {
-            getInitData(index){
+            getInitData(index) {
                 console.log(index);
                 this.changePriceData.priceCurrCompany = index
                 this.changePriceData.AdDoorAdPrice = this.changePriceData.orderCompanyList[index].AdDoorAdPrice
@@ -141,36 +141,36 @@
             confirmChangePrice() {
                 if (this.newPrice !== 0) {
                     let info = {
-                        apID:this.changePriceData.apID,
-                        orderMoneyInfos:[],
-                        mark:this.changePriceData.handleTime,
-                        opType:this.changePriceData.opType
+                        apID: this.changePriceData.apID,
+                        orderMoneyInfos: [],
+                        mark: this.changePriceData.handleTime,
+                        opType: this.changePriceData.opType
                     }
                     info.orderMoneyInfos = [
                         {
                             "rID": this.changePriceData.orderCompanyList[this.changePriceData.priceCurrCompany].rID,
                             "asrID": this.changePriceData.orderCompanyList[this.changePriceData.priceCurrCompany].asrID,
                             "pdType": 0,
-                            "pdAdFee": this.changePriceData.AdDoorAdPrice*100,
-                            "pdAdMake": this.changePriceData.AdDoorMakePrice*100,
+                            "pdAdFee": this.changePriceData.AdDoorAdPrice * 100,
+                            "pdAdMake": this.changePriceData.AdDoorMakePrice * 100,
                         },
                         {
                             "rID": this.changePriceData.orderCompanyList[this.changePriceData.priceCurrCompany].rID,
                             "asrID": this.changePriceData.orderCompanyList[this.changePriceData.priceCurrCompany].asrID,
                             "pdType": 1,
-                            "pdAdFee": this.changePriceData.BreakAdPrice*100,
-                            "pdAdMake": this.changePriceData.BreakMakePrice*100,
+                            "pdAdFee": this.changePriceData.BreakAdPrice * 100,
+                            "pdAdMake": this.changePriceData.BreakMakePrice * 100,
                         }
                     ]
                     api.postApi_json(this.apiVar.Advertisement + '/ChangeOrderMoney', JSON.stringify(info)).then(res => {
                         console.log(res.data)
-                        if(res.data.SysCode==200200){
+                        if (res.data.SysCode == 200200) {
                             this.$emit("done");
-                        }else{
+                        } else {
                             Message.warning(res.data.MSG)
                         }
                     })
-                }else{
+                } else {
                     Message.error("请修改金额再提交!");
                 }
 
@@ -180,7 +180,12 @@
                 this.$emit("cancel");
             },
             changePrice() {
-                console.log(this.changePriceData);
+                console.log(this.changePriceData, this.changePriceData.priceCurrCompany);
+                let index = this.changePriceData.priceCurrCompany
+                this.changePriceData.orderCompanyList[index].AdDoorAdPrice = this.changePriceData.AdDoorAdPrice
+                this.changePriceData.orderCompanyList[index].AdDoorMakePrice = this.changePriceData.AdDoorMakePrice
+                this.changePriceData.orderCompanyList[index].BreakAdPrice = this.changePriceData.BreakAdPrice
+                this.changePriceData.orderCompanyList[index].BreakMakePrice = this.changePriceData.BreakMakePrice
                 this.newPrice = this.priceFormat(this.changePriceData.AdDoorAdPrice + this.changePriceData.AdDoorMakePrice + this.changePriceData.BreakAdPrice + this.changePriceData.BreakMakePrice)
             },
 
@@ -285,6 +290,7 @@
         position: relative;
         top: 3px;
     }
+
     .price-dialog /deep/ .el-input-number, .price-dialog .num-input-wrap /deep/ .el-input, .price-dialog .num-input-wrap /deep/ .el-input__inner {
         width: 115px;
         height: 34px;

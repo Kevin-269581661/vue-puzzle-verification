@@ -1,9 +1,9 @@
 <template>
     <div class="ad_mediaDetail_wrap clearfix">
         <div class="ad_mediaDetail_nav ">
-            <p class="clearfix">
-                <a href="#" style="color: #999">方案管理</a>
-            </p>
+            <p class="clearfix"  v-if="!isNation">
+                <a href="#" style="color: #999">方案管理</a><em> / </em><a href="#">方案列表</a></p>
+            <p v-else><a href="#">方案管理</a></p>
         </div>
         <div class="mediaList_wrap">
             <div class="mediaList_head">
@@ -151,13 +151,13 @@
                                     </span>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item @click.native.prevent="preload(scope.row)"
-                                                          :disabled="(isDisable || scope.row.apState!=1 || scope.row.apControlLevel !== 1) && !scope.row.canLock" v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt043_ck04'}">预锁
+                                                          :disabled=" scope.row.apState==1 && !scope.row.canLock" v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt043_ck04'}">预锁
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="release(scope.row)"
-                                                          :disabled="isDisable || scope.row.apState!=1 || scope.row.apControlLevel !== 1" v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt044_ck04'}">发布
+                                                          :disabled="isDisable &&  scope.row.apState!=1 &&  scope.row.apControlLevel !== 1" v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt044_ck04'}">发布
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="clearLock(scope.row)"
-                                                          :disabled="(isDisable || scope.row.apState!=1 || scope.row.apControlLevel !== 1) && scope.row.canLock" v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt045_ck04'}">解除预锁
+                                                          :disabled=" scope.row.apState==1 && !scope.row.unLock" v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt045_ck04'}">解除预锁
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="splitAdPlan(scope.row)"
                                                           v-if="scope.row.apControlLevel === 2 && sessionData.uType === 'BD'">
@@ -1171,7 +1171,11 @@
                 obj.canLock = item.details.some( function( item, index ){
                     return !item.RemainDay;
                 })
-                console.log(obj.canLock); //false表示不能再预锁
+                obj.unLock = item.details.some( function( item, index ){
+                    return item.RemainDay;
+                })
+                // console.log(obj.canLock); //false表示不能再预锁
+                // console.log(obj.unLock); //true 表示可解锁
                 for (let data of item.details) {
 
                     if (asrIDarr.includes(data.asrID)) {

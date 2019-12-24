@@ -268,7 +268,8 @@
                     orderCompanyList: [],
                     priceCurrCompany: 0,
                 },
-                priceData: ''
+                priceData: '',
+                currApid:'',
 
 
             };
@@ -551,6 +552,7 @@
             },
             // 结束订单
             finishOrder(row) {
+
                 let info = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
@@ -567,6 +569,7 @@
                         type: "warning"
                     }
                 ).then(() => {
+                    this.currApid = row.apID
                     const loading = this.$loading({
                         lock: true,
                         text: '正在结束订单...',
@@ -610,7 +613,7 @@
             },
             //获取订单金额详情
             getOrderPriceDetail(){
-                api.getApi(this.apiVar.Advertisement+"/GetAPD", {apid:sessionStorage.getItem("order_apid")})
+                api.getApi(this.apiVar.Advertisement+"/GetAPD", {apid:this.currApid})
                     .then(res =>{
                         // console.log('test--', res.data);
                         if (!res.data.SysCode) {
@@ -626,7 +629,7 @@
                                 orderCompanyList: [],
                                 priceCurrCompany: 0,
                                 handleTime:this.handleTime,
-                                apID:sessionStorage.getItem("order_apid"),
+                                apID:this.currApid,
                                 opType:1
                             }
                             for (let item of priceData) {

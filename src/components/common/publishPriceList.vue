@@ -1,15 +1,15 @@
 <template>
     <div class="ad_mediaDetail_wrap clearfix">
         <div class="ad_mediaDetail_nav ">
-            <p class="clearfix">
-                <a href="#" style="color: #999">刊例价</a>
-            </p>
+            <p v-if="session_data.uType=='SM'" class="clearfix"><a href="#">系统管理</a><em> / </em><a href="#">账号列表</a></p>
+            <p v-else class="clearfix"><a href="#" style="color: #999">刊例价</a></p>
+
         </div>
         <div class="mediaList_wrap">
             <div class="mediaList_head">
                 <h2 style="display:inline-block;margin-right:20px;">刊例价列表</h2>
                 <el-button size="small" type="primary" @click="addOne()" v-if="session_data.uType=='SM'" >新增刊例价</el-button>
-            </div> 
+            </div>
             <div class="mediaList_container">
                 <el-row class="search_row" v-if="session_data.uType=='SM'">
                     <el-col>
@@ -19,7 +19,7 @@
                         <!-- <el-select v-model="searchInfo.city" placeholder="请选择城市" filterable size="small">
                             <el-option v-for="item of cityList" :key="item.rID" :label="item.text" :value="item.value"></el-option>
                         </el-select> -->
-                        <el-cascader :options="allProvince" v-model="searchInfo.cityArr" separator="-" :show-all-levels="false" filterable></el-cascader>                           
+                        <el-cascader :options="allProvince" v-model="searchInfo.cityArr" separator="-" :show-all-levels="false" filterable></el-cascader>
                         <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
                         <el-button plain @click="reset()" :disabled="!isReset">重置</el-button>
                     </el-col>
@@ -112,7 +112,7 @@
                     <el-select v-model="priceInfo.asrID" placeholder="请选择所属公司" filterable >
                         <el-option v-for="item of companyArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                     </el-select>
-                    <el-cascader :options="allProvince" v-model="priceInfo.cityArr" separator="-" :show-all-levels="false" @change="seleProClient" @active-item-change="handleItemChange"></el-cascader>   
+                    <el-cascader :options="allProvince" v-model="priceInfo.cityArr" separator="-" :show-all-levels="false" @change="seleProClient" @active-item-change="handleItemChange"></el-cascader>
                     <el-select v-model="priceInfo.cityLevel" placeholder="请选择" @change="selectLevel()">
                         <el-option v-for="item in cityLevelArr" :key="item.level" :label="item.name" :value="item.level"></el-option>
                     </el-select>
@@ -131,7 +131,7 @@
                         </div>
                         <el-row>
                             <el-col :span="24" class="longInput">
-                                <el-input-number v-model="priceInfo.oldPrice" controls-position="right" size="small" :disabled="priceInfo.priceType==1"></el-input-number>                        
+                                <el-input-number v-model="priceInfo.oldPrice" controls-position="right" size="small" :disabled="priceInfo.priceType==1"></el-input-number>
                             </el-col>
                         </el-row>
                     </el-card>
@@ -142,15 +142,15 @@
                         <el-row>
                             <el-col :span="24">
                                 <b>A级:</b>
-                                <el-input-number v-model="priceInfo.levelPrice.A" controls-position="right" size="small" :disabled="priceInfo.priceType==2"></el-input-number> 
+                                <el-input-number v-model="priceInfo.levelPrice.A" controls-position="right" size="small" :disabled="priceInfo.priceType==2"></el-input-number>
                             </el-col>
                             <el-col :span="24" class="marginTop">
                                 <b>B级:</b>
-                                <el-input-number v-model="priceInfo.levelPrice.B" controls-position="right" size="small" :disabled="priceInfo.priceType==2"></el-input-number>                        
+                                <el-input-number v-model="priceInfo.levelPrice.B" controls-position="right" size="small" :disabled="priceInfo.priceType==2"></el-input-number>
                             </el-col>
                             <el-col :span="24" class="marginTop">
                                 <b>C级:</b>
-                                <el-input-number v-model="priceInfo.levelPrice.C" controls-position="right" size="small" :disabled="priceInfo.priceType==2"></el-input-number>                        
+                                <el-input-number v-model="priceInfo.levelPrice.C" controls-position="right" size="small" :disabled="priceInfo.priceType==2"></el-input-number>
                             </el-col>
                         </el-row>
                     </el-card>
@@ -158,7 +158,7 @@
                 <template v-else>
                     <el-row>
                         <el-col :span="24" class="marginTop">
-                            <el-input-number v-model="priceInfo.barrierPrice" controls-position="right" size="small"></el-input-number>                        
+                            <el-input-number v-model="priceInfo.barrierPrice" controls-position="right" size="small"></el-input-number>
                         </el-col>
                     </el-row>
                 </template>
@@ -609,8 +609,8 @@ export default {
         // 数据格式化
         setData(data){
             let obj = {
-                priceId: data.priceId, 
-                barrierId: data.barrierId, 
+                priceId: data.priceId,
+                barrierId: data.barrierId,
                 company: data.asName,
                 asrID: data.asrID,
                 city: data.city,
@@ -621,9 +621,9 @@ export default {
                 levelAprice: data.gradeA/100,
                 levelBprice: data.gradeB/100,
                 levelCprice: data.gradeC/100,
-                barrierPrice: data.barrierPrice/100, 
-            };  
-            return obj;                  
+                barrierPrice: data.barrierPrice/100,
+            };
+            return obj;
         },
         // 删除
         delOne(row, index){
@@ -798,7 +798,7 @@ export default {
     width: 100px;
 }
 
-/deep/ .radio_box .el-radio-button__orig-radio:checked+.el-radio-button__inner, 
+/deep/ .radio_box .el-radio-button__orig-radio:checked+.el-radio-button__inner,
 /deep/ .radio_box .el-radio-button__orig-radio:checked+.el-radio-button__inner,
 /deep/ .radio_box .el-radio-button--small .el-radio-button__inner{
     width: 100px !important;

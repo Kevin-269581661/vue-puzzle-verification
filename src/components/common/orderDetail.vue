@@ -354,7 +354,7 @@
                                 <el-table-column label="资源名称" min-width="16.1%" class-name="resName-wrap">
                                     <template slot-scope="scope">
                                         <div style="float:left;position: absolute;left: 0;top: 0" v-if="isHandleChange">
-                                            <div v-if="scope.row.isCurrNew" slot="reference" class="color-line"></div>
+                                            <div v-if="scope.row.isCurrNew&&scope.row.lState!=2" slot="reference" class="color-line"></div>
                                             <div v-if="scope.row.lState==2" slot="reference" class="color-line"
                                                  style="background-color: #FF763B"></div>
                                         </div>
@@ -824,6 +824,12 @@
                                 }
 
                             }
+                            let result = 0
+                            for(let data of this.changePriceData.orderCompanyList){
+                                result += data.AdDoorAdPrice+data.AdDoorMakePrice+data.BreakAdPrice+data.BreakMakePrice
+                            }
+                            console.log(result);
+                            obj.orderOldPrice = this.priceFormat(result)
                             obj.AdDoorAdPrice = obj.orderCompanyList[obj.priceCurrCompany].AdDoorAdPrice
                             obj.AdDoorMakePrice = obj.orderCompanyList[obj.priceCurrCompany].AdDoorMakePrice
                             obj.BreakAdPrice = obj.orderCompanyList[obj.priceCurrCompany].BreakAdPrice

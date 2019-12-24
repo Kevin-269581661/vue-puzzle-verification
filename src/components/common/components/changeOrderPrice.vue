@@ -121,6 +121,13 @@
         },
         mounted() {
             this.getInitData(this.changePriceData.priceCurrCompany)
+            //计算总额
+            let result = 0
+            for(let data of this.changePriceData.orderCompanyList){
+              result += data.AdDoorAdPrice+data.AdDoorMakePrice+data.BreakAdPrice+data.BreakMakePrice
+            }
+            console.log(result);
+            this.changePriceData.orderOldPrice = this.priceFormat(result)
 
         },
         methods: {
@@ -131,7 +138,12 @@
                 this.changePriceData.AdDoorMakePrice = this.changePriceData.orderCompanyList[index].AdDoorMakePrice
                 this.changePriceData.BreakAdPrice = this.changePriceData.orderCompanyList[index].BreakAdPrice
                 this.changePriceData.BreakMakePrice = this.changePriceData.orderCompanyList[index].BreakMakePrice
-                this.newPrice = this.priceFormat(this.changePriceData.AdDoorAdPrice + this.changePriceData.AdDoorMakePrice + this.changePriceData.BreakAdPrice + this.changePriceData.BreakMakePrice)
+                let result = 0
+                for(let data of this.changePriceData.orderCompanyList){
+                    result += data.AdDoorAdPrice+data.AdDoorMakePrice+data.BreakAdPrice+data.BreakMakePrice
+                }
+                this.newPrice = this.priceFormat(result)
+                // this.newPrice = this.priceFormat(this.changePriceData.AdDoorAdPrice + this.changePriceData.AdDoorMakePrice + this.changePriceData.BreakAdPrice + this.changePriceData.BreakMakePrice)
             },
             // 价格加上逗号
             priceFormat(price) {
@@ -186,7 +198,12 @@
                 this.changePriceData.orderCompanyList[index].AdDoorMakePrice = this.changePriceData.AdDoorMakePrice
                 this.changePriceData.orderCompanyList[index].BreakAdPrice = this.changePriceData.BreakAdPrice
                 this.changePriceData.orderCompanyList[index].BreakMakePrice = this.changePriceData.BreakMakePrice
-                this.newPrice = this.priceFormat(this.changePriceData.AdDoorAdPrice + this.changePriceData.AdDoorMakePrice + this.changePriceData.BreakAdPrice + this.changePriceData.BreakMakePrice)
+                let result = 0
+                for(let data of this.changePriceData.orderCompanyList){
+                    result += data.AdDoorAdPrice+data.AdDoorMakePrice+data.BreakAdPrice+data.BreakMakePrice
+                }
+                this.newPrice = this.priceFormat(result)
+                // this.newPrice = this.priceFormat(this.changePriceData.AdDoorAdPrice + this.changePriceData.AdDoorMakePrice + this.changePriceData.BreakAdPrice + this.changePriceData.BreakMakePrice)
             },
 
         }

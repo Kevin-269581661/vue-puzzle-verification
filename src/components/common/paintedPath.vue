@@ -1,7 +1,7 @@
 <template>
     <div class="ad_mediaDetail_wrap clearfix">
         <div class="ad_mediaDetail_nav">
-            <p><a href="#" style="color: #999">线路管理</a></p>
+            <p><a href="#">线路管理</a><em> / </em><a href="#">线路列表</a></p>
         </div>
         <div class="mediaList_wrap">
             <div class="mediaList_head">

@@ -628,7 +628,7 @@
                                 orderOldPrice: 0,
                                 orderCompanyList: [],
                                 priceCurrCompany: 0,
-                                handleTime:this.handleTime,
+                                handleTime:new Date().getTime(),
                                 apID:this.currApid,
                                 opType:1
                             }
@@ -666,6 +666,12 @@
                                 }
 
                             }
+                            let result = 0
+                            for(let data of this.changePriceData.orderCompanyList){
+                                result += data.AdDoorAdPrice+data.AdDoorMakePrice+data.BreakAdPrice+data.BreakMakePrice
+                            }
+                            console.log(result);
+                            obj.orderOldPrice = this.priceFormat(result)
                             obj.AdDoorAdPrice = obj.orderCompanyList[obj.priceCurrCompany].AdDoorAdPrice
                             obj.AdDoorMakePrice = obj.orderCompanyList[obj.priceCurrCompany].AdDoorMakePrice
                             obj.BreakAdPrice = obj.orderCompanyList[obj.priceCurrCompany].BreakAdPrice

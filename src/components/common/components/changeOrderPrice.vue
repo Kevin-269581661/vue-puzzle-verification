@@ -123,8 +123,8 @@
             this.getInitData(this.changePriceData.priceCurrCompany)
             //计算总额
             let result = 0
-            for(let data of this.changePriceData.orderCompanyList){
-              result += data.AdDoorAdPrice+data.AdDoorMakePrice+data.BreakAdPrice+data.BreakMakePrice
+            for (let data of this.changePriceData.orderCompanyList) {
+                result += data.AdDoorAdPrice + data.AdDoorMakePrice + data.BreakAdPrice + data.BreakMakePrice
             }
             console.log(result);
             this.changePriceData.orderOldPrice = this.priceFormat(result)
@@ -139,8 +139,8 @@
                 this.changePriceData.BreakAdPrice = this.changePriceData.orderCompanyList[index].BreakAdPrice
                 this.changePriceData.BreakMakePrice = this.changePriceData.orderCompanyList[index].BreakMakePrice
                 let result = 0
-                for(let data of this.changePriceData.orderCompanyList){
-                    result += data.AdDoorAdPrice+data.AdDoorMakePrice+data.BreakAdPrice+data.BreakMakePrice
+                for (let data of this.changePriceData.orderCompanyList) {
+                    result += data.AdDoorAdPrice + data.AdDoorMakePrice + data.BreakAdPrice + data.BreakMakePrice
                 }
                 this.newPrice = this.priceFormat(result)
                 // this.newPrice = this.priceFormat(this.changePriceData.AdDoorAdPrice + this.changePriceData.AdDoorMakePrice + this.changePriceData.BreakAdPrice + this.changePriceData.BreakMakePrice)
@@ -158,22 +158,25 @@
                         mark: this.changePriceData.handleTime,
                         opType: this.changePriceData.opType
                     }
-                    info.orderMoneyInfos = [
-                        {
-                            "rID": this.changePriceData.orderCompanyList[this.changePriceData.priceCurrCompany].rID,
-                            "asrID": this.changePriceData.orderCompanyList[this.changePriceData.priceCurrCompany].asrID,
-                            "pdType": 0,
-                            "pdAdFee": this.changePriceData.AdDoorAdPrice * 100,
-                            "pdAdMake": this.changePriceData.AdDoorMakePrice * 100,
-                        },
-                        {
-                            "rID": this.changePriceData.orderCompanyList[this.changePriceData.priceCurrCompany].rID,
-                            "asrID": this.changePriceData.orderCompanyList[this.changePriceData.priceCurrCompany].asrID,
-                            "pdType": 1,
-                            "pdAdFee": this.changePriceData.BreakAdPrice * 100,
-                            "pdAdMake": this.changePriceData.BreakMakePrice * 100,
-                        }
-                    ]
+                    for (let i = 0;i< this.changePriceData.orderCompanyList.length;i++) {
+                        let  arr = [
+                            {
+                                "rID": this.changePriceData.orderCompanyList[i].rID,
+                                "asrID": this.changePriceData.orderCompanyList[i].asrID,
+                                "pdType": 0,
+                                "pdAdFee":this.changePriceData.orderCompanyList[i].AdDoorAdPrice * 100,
+                                "pdAdMake": this.changePriceData.orderCompanyList[i].AdDoorMakePrice * 100,
+                            },
+                            {
+                                "rID": this.changePriceData.orderCompanyList[i].rID,
+                                "asrID": this.changePriceData.orderCompanyList[i].asrID,
+                                "pdType": 1,
+                                "pdAdFee": this.changePriceData.orderCompanyList[i].BreakAdPrice * 100,
+                                "pdAdMake": this.changePriceData.orderCompanyList[i].BreakMakePrice * 100,
+                            }
+                        ]
+                        info.orderMoneyInfos = info.orderMoneyInfos.concat(arr)
+                    }
                     api.postApi_json(this.apiVar.Advertisement + '/ChangeOrderMoney', JSON.stringify(info)).then(res => {
                         console.log(res.data)
                         if (res.data.SysCode == 200200) {
@@ -199,8 +202,8 @@
                 this.changePriceData.orderCompanyList[index].BreakAdPrice = this.changePriceData.BreakAdPrice
                 this.changePriceData.orderCompanyList[index].BreakMakePrice = this.changePriceData.BreakMakePrice
                 let result = 0
-                for(let data of this.changePriceData.orderCompanyList){
-                    result += data.AdDoorAdPrice+data.AdDoorMakePrice+data.BreakAdPrice+data.BreakMakePrice
+                for (let data of this.changePriceData.orderCompanyList) {
+                    result += data.AdDoorAdPrice + data.AdDoorMakePrice + data.BreakAdPrice + data.BreakMakePrice
                 }
                 this.newPrice = this.priceFormat(result)
                 // this.newPrice = this.priceFormat(this.changePriceData.AdDoorAdPrice + this.changePriceData.AdDoorMakePrice + this.changePriceData.BreakAdPrice + this.changePriceData.BreakMakePrice)

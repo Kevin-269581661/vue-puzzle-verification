@@ -128,11 +128,11 @@
             }
             console.log(result);
             this.changePriceData.orderOldPrice = this.priceFormat(result)
-
         },
         methods: {
             getInitData(index) {
                 console.log(index);
+                console.log(this.changePriceData.orderCompanyList)
                 this.changePriceData.priceCurrCompany = index
                 this.changePriceData.AdDoorAdPrice = this.changePriceData.orderCompanyList[index].AdDoorAdPrice
                 this.changePriceData.AdDoorMakePrice = this.changePriceData.orderCompanyList[index].AdDoorMakePrice
@@ -143,7 +143,6 @@
                     result += data.AdDoorAdPrice + data.AdDoorMakePrice + data.BreakAdPrice + data.BreakMakePrice
                 }
                 this.newPrice = this.priceFormat(result)
-                // this.newPrice = this.priceFormat(this.changePriceData.AdDoorAdPrice + this.changePriceData.AdDoorMakePrice + this.changePriceData.BreakAdPrice + this.changePriceData.BreakMakePrice)
             },
             // 价格加上逗号
             priceFormat(price) {

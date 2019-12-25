@@ -168,8 +168,7 @@
             custom-class="price-dialog-list"
             :visible.sync="changePriceModal"
             :before-close="cancelChangePrice">
-            <changeOrderPrice @cancel="cancelChangePrice" @done="doneChangePrice"
-                              :changePriceData="changePriceData"></changeOrderPrice>
+            <changeOrderPrice @cancel="cancelChangePrice" @done="doneChangePrice" :changePriceData="changePriceData"></changeOrderPrice>
         </el-dialog>
 
     </div>
@@ -270,7 +269,7 @@
                 },
                 priceData: '',
                 currApid:'',
-
+                handleTime:'',
 
             };
         },
@@ -594,7 +593,8 @@
                                         closeOnClickModal:false,
                                     }
                                 ).then(() => {
-                                    this.changePriceModal = true
+                                    this.handleTime = new Date().getTime()
+
                                     this.getOrderPriceDetail(row.apID)
                                 })
                                     .catch(() => {
@@ -612,8 +612,8 @@
                 });
             },
             //获取订单金额详情
-            getOrderPriceDetail(){
-                api.getApi(this.apiVar.Advertisement+"/GetAPD", {apid:this.currApid})
+            getOrderPriceDetail(apID){
+                api.getApi(this.apiVar.Advertisement+"/GetAPD", {apid:sessionStorage.getItem("order_apid")})
                     .then(res =>{
                         // console.log('test--', res.data);
                         if (!res.data.SysCode) {
@@ -628,9 +628,9 @@
                                 orderOldPrice: 0,
                                 orderCompanyList: [],
                                 priceCurrCompany: 0,
-                                handleTime:new Date().getTime(),
-                                apID:this.currApid,
-                                opType:1
+                                handleTime:this.handleTime,
+                                apID:apID,
+                                opType:2
                             }
                             for (let item of priceData) {
                                 let isHave = obj.orderCompanyList.some(key=>{
@@ -667,7 +667,7 @@
 
                             }
                             let result = 0
-                            for(let data of this.changePriceData.orderCompanyList){
+                            for(let data of obj.orderCompanyList){
                                 result += data.AdDoorAdPrice+data.AdDoorMakePrice+data.BreakAdPrice+data.BreakMakePrice
                             }
                             console.log(result);
@@ -679,6 +679,7 @@
 
                             console.log(obj);
                             this.changePriceData = obj
+                            this.changePriceModal = true
                         } else if (res.data.SysCode == 100302) {
                             this.loginTimeout();
                         } else {

@@ -825,7 +825,7 @@
 
                             }
                             let result = 0
-                            for(let data of this.changePriceData.orderCompanyList){
+                            for(let data of obj.orderCompanyList){
                                 result += data.AdDoorAdPrice+data.AdDoorMakePrice+data.BreakAdPrice+data.BreakMakePrice
                             }
                             console.log(result);

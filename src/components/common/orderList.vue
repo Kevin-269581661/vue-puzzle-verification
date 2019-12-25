@@ -613,7 +613,7 @@
             },
             //获取订单金额详情
             getOrderPriceDetail(apID){
-                api.getApi(this.apiVar.Advertisement+"/GetAPD", {apid:sessionStorage.getItem("order_apid")})
+                api.getApi(this.apiVar.Advertisement+"/GetAPD", {apid:apID})
                     .then(res =>{
                         // console.log('test--', res.data);
                         if (!res.data.SysCode) {

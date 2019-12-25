@@ -748,6 +748,26 @@
                 this.setPageNoAndTableDataAds()
                 this.getAdsRateFun()
             },
+            //
+            RadioTime(info,temp) {
+                let starTime = '',endTime = timeFormat.returnMonthCount(0,'-')
+                if(info === '最近三个月') {
+                    starTime = timeFormat.returnMonthCount(2,'-')
+                } else if (info === '最近半年') {
+                    starTime = timeFormat.returnMonthCount(5,'-')
+                }
+                if(temp === 'resRate') {
+                    // 社区上刊率列表
+                    this.resSearchDate = [starTime,endTime]
+                    this.setPageNoAndTableDataRes()
+                    this.getResRateFun()
+                } else if(temp === 'adsRate'){
+                    // 点位上刊率列表
+                    this.adsSearchDate = [starTime,endTime]
+                    this.setPageNoAndTableDataAds()
+                    this.getAdsRateFun()
+                }
+            },
             // 创建社区时间 - changes
             CreatDateChange(val){
                 console.log('----------------', val)

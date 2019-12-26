@@ -70,7 +70,10 @@
                             <strong  @click="moveMapByOnclickName(item,'onlineName')">{{item.title}}</strong>
                             <el-checkbox v-model="item.isSelect" @change="onlineCheckBox(item)"></el-checkbox>
                         </p>
-                        <p class="li_address">{{item.address}}</p>
+                        <p class="li_address" v-if="item.address && item.address.length < 20">{{item.address}}</p>
+                        <el-tooltip v-else class="item" effect="dark" :content="item.address" placement="top-start">
+                            <p class="li_address">{{item.address}}</p>
+                        </el-tooltip>
                     </li>
                 </ul>
                 <div class="search_bottom_btn">
@@ -1822,7 +1825,7 @@
                                 resultArray.push({
                                     id: results.getPoi(i).uid,
                                     title: results.getPoi(i).title,
-                                    address: results.getPoi(i).address,
+                                    address: results.getPoi(i).address || '--',
                                     city: results.getPoi(i).city,
                                     province: results.getPoi(i).province,
                                     point: results.getPoi(i).point,

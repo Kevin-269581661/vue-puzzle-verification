@@ -10,7 +10,7 @@
         </div>
         <!--左侧搜索-->
         <div class="left_search_box">
-            <el-input placeholder="请输入内容" v-model="selectName" v-show="!isOnlineSearch"
+            <el-input placeholder="请输入内容" v-model="selectName" v-show="!isOnlineSearch && !isMouseSearch"
                       @keydown.native="searchDown($event)"
                       class="input-with-select"
                       clearable
@@ -24,21 +24,22 @@
                         :value="item.value">
                     </el-option>
                 </el-select>
-                <i slot="suffix" class="el-input__icon el-icon-search" @click="searchFun"></i>
+                <i slot="append" class="el-icon-search" @click="searchFun"></i>
             </el-input>
-            <div class="search_body" v-show="(searchResList.length && activeSearchKind == '1') || isOnlineSearch">
-                <div class="search_result_btn" v-show="isOnlineSearch">
-                    <h4 class="result_title">框选结果</h4>
-                    <div class="result_btn_box">
-                        <span @click="setOnlineSearch">设置</span>
-                        <span @click="clearSearch">取消</span>
-                    </div>
+            <div class="search_result_btn" v-show="isOnlineSearch || isMouseSearch">
+                <h4 class="result_title">框选结果</h4>
+                <div class="result_btn_box">
+                    <span @click="setOnlineSearch" v-show="!isMouseSearch">设置</span>
+                    <span @click="clearSearch">取消</span>
                 </div>
+            </div>
+            <!--亲邻社区搜索结果-->
+            <div class="search_body" v-show="(searchResList.length && activeSearchKind == '1') || isOnlineSearch">
                 <ul class="search_ul">
                     <li class="search_li" v-for="(item,index) in searchResList" :key="index">
                         <p class="li_name">
-                            {{item.resName}}
-                            <span class="li_name_span" :class="item.isSelect ? 'li_name_span_active' : ''" @click="checkBoxFun(item)" v-show="reading">
+                            <strong @click="moveMapByOnclickName(item,'resName')">{{item.resName}}</strong>
+                            <span class="li_name_span" :class="item.isSelect ? 'li_name_span_active' : ''" @click="checkBoxFun(item)">
                                 <i v-show="item.isSelect" class="el-icon-minus"></i>
                                 <i v-show="!item.isSelect" class="el-icon-plus"></i>
                                 {{item.isSelect ? '取消' : '添加'}}
@@ -54,9 +55,12 @@
                     </li>
                 </ul>
                 <div class="search_bottom_btn">
-                    <el-button plain size="small" @click="selectAllFun" v-show="reading">添加全部</el-button>
+                    <el-button plain size="small" @click="selectAllFun" :loading="addAllLoading">
+                        {{addAllLoading ? '添加中' :'添加全部'}}
+                    </el-button>
                 </div>
             </div>
+            <!--在线搜索结果-->
             <div class="search_body" v-show="(activeSearchKind == '2' && !isOnlineSearch) && (searchOnlineLoading || searchOnlineList.length)"
                  v-loading="searchOnlineLoading"
                  element-loading-text="玩命加载中.."
@@ -64,7 +68,7 @@
                 <ul class="search_ul">
                     <li class="search_li" v-for="(item,index) in searchOnlineList" :key="index">
                         <p class="li_name li_name_online">
-                            {{item.title}}
+                            <strong  @click="moveMapByOnclickName(item,'onlineName')">{{item.title}}</strong>
                             <el-checkbox v-model="item.isSelect" @change="onlineCheckBox(item)"></el-checkbox>
                         </p>
                         <p class="li_address">{{item.address}}</p>
@@ -459,7 +463,7 @@
                 // 搜索到关键词
                 selectName: '',
                 // 搜索类型 1->亲邻社区，2->在线结果
-                activeSearchKind: '1',
+                activeSearchKind: '2',
                 selOptions: [
                     {
                         value: '1',
@@ -473,6 +477,8 @@
                 selectResList: [],
                 // 搜索的资源列表
                 searchResList: [],
+                // 添加全部时loading
+                addAllLoading: false,
                 /* 在线搜索 */
                 // 在线搜索到list
                 searchOnlineList:[],
@@ -495,7 +501,7 @@
                 // 标识在线搜索结果状态
                 isOnlineSearch: false,
                 // 收起/展开
-                showSelectList: true,
+                showSelectList: false,
                 // 是否显示小区详情
                 isShowInfo: false,
                 // 被点击的资源标注信息
@@ -586,6 +592,12 @@
                 mapLabel: null,
                 // 记录上一段线的距离
                 twoPointsLength: 0,
+                // 鼠标绘制到对象
+                mouseoverlay: '',
+                // 鼠标绘制结果状态
+                isMouseSearch: false,
+                // 自动测距的线条覆盖物
+                selfMotionPolylines: [],
                 // 小区资源提交成功
                 mapDialogVisible: false,
                 // 小区媒体列表弹出框
@@ -634,8 +646,7 @@
                 if (this.activeName === 'second') {
                     this.initMap();
                     this.getAreaList();
-                } else {
-                    console.log('地图已渲染')
+                    this.setLimitsDoorTypeAndTradingArea()
                 }
             },
             mapCity(newVal, oldVal){
@@ -680,19 +691,34 @@
                 let tradingAreas = []
                 let mTypes = []
                 for(let key of this.resInfo) {
-                    if(key.notPush) {
+                    // 广告限制
+                    if(key.notPush && !limits.some(item=>{
+                        if(item.value === key.notPush) {
+                            return true
+                        }
+                    })) {
                         limits.push({
                             value: key.notPush,
                             label: key.notPush
                         })
                     }
-                    if(key.tradingArea) {
+                    // 商圈
+                    if(key.tradingArea && !tradingAreas.some(item=>{
+                        if(item.value === key.tradingArea) {
+                            return true
+                        }
+                    })) {
                         tradingAreas.push({
-                            value: key.tradingAreas,
-                            label: key.tradingAreas
+                            value: key.tradingArea,
+                            label: key.tradingArea
                         })
                     }
-                    if(key.mType) {
+                    // 门体类型
+                    if(key.mType && !mTypes.some(item=>{
+                        if(item.value === key.mType) {
+                            return true
+                        }
+                    })) {
                         mTypes.push({
                             value: key.mType,
                             label: key.mType
@@ -803,15 +829,7 @@
                     this.$set(key, "isSelect", false);
                     let point = new BMap.Point(key.lng, key.lat);
                     let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
-                    let label = new BMap.Label(key.resName,{offset:new BMap.Size(4,-18)});
-                    label.setStyle({
-                        borderRadius: "3px",
-                        boxShadow: '0px 0px 6px 0px rgba(0,0,0,0.15)',
-                        border: 'none',
-                        background: 'rgba(255,255,255,1)',
-                        color: 'rgba(0,0,0,0.85)',
-                        padding: '3px 8px',
-                    });
+                    let label = this.setMarkerLabel(key.resName)
                     marker.setLabel(label);
                     marker.setTop(true);
                     marker.inCircleNum = 0
@@ -822,6 +840,19 @@
                     markerList.push(marker)
                 }
                 this.resMarkers = markerList
+            },
+            // 设置标注到label
+            setMarkerLabel(labelName) {
+                let label = new BMap.Label(labelName,{offset:new BMap.Size(4,-18)});
+                label.setStyle({
+                    borderRadius: "3px",
+                    boxShadow: '0px 0px 6px 0px rgba(0,0,0,0.15)',
+                    border: 'none',
+                    background: 'rgba(255,255,255,1)',
+                    color: 'rgba(0,0,0,0.85)',
+                    padding: '3px 8px',
+                });
+                return label
             },
             // 显示详情
             showInfo(info,point){
@@ -975,49 +1006,64 @@
                 this.onlineMarkers = []
                 let i = 0
                 for (let key of this.searchOnlineList) {
-                    if (i < 100) {
-                        let myIcon = new BMap.Icon(require('../../../assets/images/map/onlineIcon.png'), new BMap.Size(32,32),{
-                            anchor: new BMap.Size(16, 16)
+                    // 创建标注
+                    let marker = new BMap.Marker(
+                        key.point,
+                        {
+                            icon: new BMap.Icon(require('../../../assets/images/map/onlineIcon.png'),
+                                new BMap.Size(32, 32), { anchor: new BMap.Size(16, 16)})
                         });
-                        let marker = new BMap.Marker(key.point,{icon:myIcon});  // 创建标注
-                        marker.setTop(true);
-                        this.onlineMarkers.push(marker)
-                        this.resMap.addOverlay(marker);            // 将标注添加到地图中
-                        marker.addEventListener("click", () => {
-                            let content =
-                                "<div>" +
-                                "<p style='font:14px arial,sans-serif;margin:0;line-height:1.5;'>"
-                                + key.title + "</p>" +
-                                "<p style='font:14px arial,sans-serif;margin:0;line-height:1.5;'>" +
-                                "地址:" + key.address + "</p>" +
-                                "</div>";
-                            // 信息窗口
-                            let opts = {
-                                width: 0,
-                                height: 0,
-                                title: "",
-                                enableMessage: false    //设置允许信息窗发送短息
-                            }
-                            let infoWindow = new BMap.InfoWindow(content, opts);    // 创建信息窗口对象
-                            this.resMap.openInfoWindow(infoWindow, key.point);      //开启信息窗口
-                        });
-                    } else {
-                        break
+                    let label = this.setMarkerLabel(key.title)
+                    marker.setLabel(label);
+                    marker.setTop(true);
+                    marker.isSelect = false
+                    this.onlineMarkers.push(marker)
+                    this.resMap.addOverlay(marker);            // 将标注添加到地图中
+                    marker.addEventListener("click", () => {
+                        this.showOnlineDetail(key)
+                    });
+                    if (i > 100) {
+                        marker.hide()
                     }
                     i++
                 }
                 this.searchOnlineLoading = false
             },
+            // 显示在线搜索结果详情
+            showOnlineDetail(item) {
+                let content =
+                    "<div>" +
+                    "<p style='font:14px arial,sans-serif;margin:0;line-height:1.5;'>"
+                    + item.title + "</p>" +
+                    "<p style='font:14px arial,sans-serif;margin:0;line-height:1.5;'>" +
+                    "地址:" + item.address + "</p>" +
+                    "</div>";
+                // 信息窗口
+                let opts = {
+                    width: 0,
+                    height: 0,
+                    title: "",
+                    enableMessage: false    //设置允许信息窗发送短息
+                }
+                let infoWindow = new BMap.InfoWindow(content, opts);    // 创建信息窗口对象
+                this.resMap.openInfoWindow(infoWindow, item.point);      //开启信息窗口
+            },
             // 亲邻社区全选
             selectAllFun(){
-                for(let key of this.searchResList) {
-                    if(!key.isSelect) {
-                        key.isSelect = true
-                        this.selectResList.push(key)
-                        this.createCircle(key.resID, new BMap.Point(key.lng, key.lat))
+                this.addAllLoading = true
+                let timer = setTimeout(()=>{
+                    for(let key of this.searchResList) {
+                        if(!key.isSelect) {
+                            key.isSelect = true
+                            this.selectResList.push(key)
+                            this.createCircle(key.resID, new BMap.Point(key.lng, key.lat))
+                        }
                     }
-                }
-                console.log('全选',this.selectResList)
+                    this.addAllLoading = false
+                    this.showSelectList = true
+                    console.log('全选',this.selectResList,this.resMarkers[0].point.lng)
+                    clearTimeout(timer)
+                },10)
             },
             // 在线全选
             onlineSelectAll() {
@@ -1039,6 +1085,29 @@
                     }
                 }
             },
+            // 点击检索结果名称移动地图中心
+            moveMapByOnclickName(item,temp) {
+                // console.log('item',item)
+                if(temp === 'resName') {
+                    for(let key of this.resMarkers) {
+                        if(item.lng == key.point.lng && item.lat == key.point.lat) {
+                            //转到该点位置
+                            this.resMap.panTo(key.point);
+                            this.showInfo(item, key.point);
+                            break
+                        }
+                    }
+                } else if(temp === 'onlineName') {
+                    for(let key of this.onlineMarkers) {
+                        if(item.point.lng == key.point.lng && item.point.lat == key.point.lat) {
+                            this.resMap.panTo(key.point);
+                            key.show()
+                            this.showOnlineDetail(item)
+                            break;
+                        }
+                    }
+                }
+            },
             // 勾选/取消
             checkBoxFun(item) {
                 console.log('亲邻item', item)
@@ -1057,34 +1126,38 @@
             },
             // 添加到选中列表
             pushSelectList(item) {
-                this.selectResList.push(item)
+                let isHave = this.selectResList.some(key=>{
+                    if(key.resID == item.resID) {
+                        return true
+                    }
+                })
+                if(!isHave) {
+                    this.selectResList.push(item)
+                    this.showSelectList = true
+                }
             },
             // 在线勾选/取消
             onlineCheckBox(item) {
-                console.log('在线item', item)
-                for(let key of this.onlineMarkers) {
-                    if(key.point === item.point) {
-                        console.log('----')
-                        this.resMap.removeOverlay(key)
+                for (let key of this.onlineMarkers) {
+                    if (key.point.lat === item.point.lat && key.point.lng === item.point.lng) {
+                        let onlineIcon = ''
+                        if (item.isSelect) {
+                            key.isSelect = true
+                            onlineIcon = require('../../../assets/images/map/isActiveIcon.png')
+                        } else {
+                            key.isSelect = false
+                            onlineIcon = require('../../../assets/images/map/onlineIcon.png')
+                        }
+                        let myIcon = new BMap.Icon(
+                            onlineIcon,
+                            new BMap.Size(32, 32),
+                            {
+                                anchor: new BMap.Size(16, 16),
+                                imageSize: new BMap.Size(32, 32),    // 引用图片实际大小
+                            });
+                        key.setIcon(myIcon)
                     }
                 }
-                let onlineIcon =  ''
-                if(item.isSelect) {
-                    // 选中更换红色图标
-                    onlineIcon = require('../../../assets/images/map/isActiveIcon.png')
-                } else {
-                    onlineIcon = require('../../../assets/images/map/onlineIcon.png')
-                }
-                let myIcon = new BMap.Icon(
-                    onlineIcon,
-                    new BMap.Size(32,32),
-                    {
-                        anchor: new BMap.Size(16, 16),
-                        imageSize: new BMap.Size(32,32),    // 引用图片实际大小
-                    });
-                let marker = new BMap.Marker(item.point,{icon:myIcon});
-                marker.setTop(true);
-                this.resMap.addOverlay(marker);             // 将标注添加到地图中
             },
             // 画圆标识选中状态
             createCircle(id,point){
@@ -1134,11 +1207,21 @@
             changeInput() {
                 this.aroundSearchInfo.searchRadius = Number(this.aroundSearchInfo.searchRadius)
             },
+            // 隐藏没有勾选的在线结果标注
+            hideOnlineMarker() {
+                for (let key of this.onlineMarkers) {
+                    if(!key.isSelect) {
+                        key.hide()
+                    }
+                }
+            },
             // 周边搜索
             searchAround() {
+                // console.log('---------周边搜索------开始---------')
                 this.searchLoading = true
                 let timer = setTimeout(()=>{
                     this.searchResList = []
+                    this.isOnlineSearch = true
                     let radius = this.aroundSearchInfo.searchRadius * 1000
                     for (let key of this.selectOnlineList) {
                         let circle = new BMap.Circle(key.point, radius, {
@@ -1155,7 +1238,6 @@
                             this.ShowIntersectionInCircle(key, radius)
                         }
                         this.searchDialogVisible = false
-                        this.isOnlineSearch = true
                     }
                     if(this.aroundSearchInfo.searchRadio == 2) {
                         // 计算交集
@@ -1163,6 +1245,7 @@
                     }
                     // console.log('---------周边搜索------结束---------')
                     this.searchLoading = false
+                    this.hideOnlineMarker()
                     clearTimeout(timer)
                 },10)
             },
@@ -1273,28 +1356,73 @@
                         this.resMap.removeOverlay(akey);
                     }
                 }
+                this.initResMarkers()
+                this.selfMotionPolylines = []
+            },
+            // 恢复打点原始状态
+            initResMarkers() {
+                for (let key of this.resMarkers) {
+                    key.show()
+                    // 移除标识marker在圆内到标识
+                    if(key.inCircleNum) {
+                        key.inCircleNum = 0
+                        // 判断是否存在被自动测距修改过到label
+                        let labelName = key.getLabel().content
+                        if(labelName.includes('(') && labelName.includes(')')) {
+                            labelName = labelName.split('(')[0]
+                            key.getLabel().setContent(labelName)
+                        }
+                    }
+                    if (key.mapCenter) {
+                        key.mapCenter = ''
+                    }
+                }
             },
             // 取消在线搜索
             clearSearch() {
+                // 取消鼠标画圆
+                this.isMouseSearch = false
+                // 取消在线搜索结果
                 this.isOnlineSearch = false
                 let allOverlay = this.resMap.getOverlays();
                 for (let akey of allOverlay) {
                     akey.show()
-                    if (akey.toString() == "[object Circle]" || akey.toString() == "[object Polygon]") {
+                    if (akey.toString() == "[object Circle]" || akey.toString() == "[object Polygon]" || akey.toString() == "[object Polyline]") {
                         this.resMap.removeOverlay(akey);
                     }
                 }
+                this.searchResList = []
+                this.selfMotionPolylines = []
                 // 移除
                 for (let key of this.selectOnlineList) {
                     this.deleteCircle(key.id)
+                }
+                //
+                for (let rkey of this.resMarkers) {
+                    rkey.inCircleNum = 0
                 }
             },
             /**
              *  顶部过滤条件
              * */
+            // 头部筛选的时候需初始化左侧搜索、鼠标绘制
+            initOtherFilter() {
+                // 恢复鼠标绘制默认状态
+                for(let i in this.mouseType) {
+                    this.mouseType[i] = false
+                }
+                // this.isMultiPoint = false
+                this.isMouseSearch = false
+
+                // 清空左侧搜索
+                this.searchResList = []
+                this.searchOnlineList = []
+                this.activeSearchKind = '2'
+                this.isOnlineSearch = false
+            },
             // 中转判断
             filterResFun() {
-                this.searchOnlineList = []
+                this.initOtherFilter()
                 console.log('区域---', this.selectArea)
                 console.log('住户数---', this.houseNum)
                 console.log('楼盘价格---', this.buildPrice)
@@ -1395,10 +1523,7 @@
             },
             // 广告限制
             filterADLimit(limit) {
-                console.log('广告限制limit', limit) //
-                if (limit && limit.length) {
-                    this.filterResFun()
-                }
+                this.filterResFun()
             },
             // 住户数量过滤
             filterHouseNum() {
@@ -1479,6 +1604,7 @@
             },
             // 清空条件
             clearFilter() {
+                this.bType = ''
                 this.houseNum = ['', '']
                 this.buildNum = ['', '']
                 this.buildPrice = ['', '']
@@ -1488,7 +1614,26 @@
                 this.selectMediaLevel = ''
                 this.selectLimits = []
                 this.selectArea = []
+                this.selectTradingArea = ''
+                for(let key in this.filterData) {
+                    this.filterData[key] = false
+                }
+                this.initOtherFilter()
+                this.selectName = ''
                 this.filterResFun()
+            },
+            // 头部筛选的时候需初始化左侧搜索、鼠标绘制、多点辐射
+            initOtherFilter() {
+                // 恢复鼠标绘制默认状态
+                for(let i in this.mouseType) {
+                    this.mouseType[i] = false
+                }
+                this.isMouseSearch = false
+                // 清空左侧搜索
+                this.searchResList = []
+                this.searchOnlineList = []
+                this.activeSearchKind = '2'
+                this.isOnlineSearch = false
             },
             /**
              * 鼠标绘制
@@ -1535,10 +1680,12 @@
                         that.drawingManager.close()
                         if(e.drawingMode === 'circle') {
                             that.showResInPolygon('circle',e.overlay)
+                            that.removeLeftFilterInfo()
                         } else if(e.drawingMode === 'polygon') {
                             console.log('画多边形',overlay,e.overlay.getPath());
                             that.polygonPoint = e.overlay.getPath()
                             that.showResInPolygon('polygon',e.overlay)
+                            that.removeLeftFilterInfo()
                         } else if(e.drawingMode === 'polyline') {
                             that.isMouseLine = false
                             that.resMap.removeEventListener('mousemove',that.mapMouseMove,false)
@@ -1575,22 +1722,47 @@
                     });
                 }
             },
+            // 移除左侧搜索状态及结果
+            removeLeftFilterInfo() {
+                if (this.onlineMarkers.length) {
+                    for(let key of this.onlineMarkers) {
+                        this.resMap.removeOverlay(key)
+                    }
+                    this.onlineMarkers = []
+                    this.isOnlineSearch = false
+                    this.searchOnlineList = []
+                }
+            },
             // 打开绘制类型
             drawingMouse(temp) {
+                this.isMouseSearch = false
                 this.deleteDrawingOverlay()
                 if(temp === 'circle') {
                     this.drawingManager.open()
                     // this.drawingManager.enableCalculate()
                     this.drawingManager.setDrawingMode(BMAP_DRAWING_CIRCLE);
+                    this.initMouseActive(temp)
                 } else if(temp === 'polygon') {
                     this.drawingManager.open()
                     this.drawingManager.setDrawingMode(BMAP_DRAWING_POLYGON);
+                    this.initMouseActive(temp)
                 } else {
+                    // 线-测距
+                    this.LinePoints = []
+                    this.lineIndex++
                     this.drawingManager.open()
-                    // this.drawingManager.enableCalculate()
                     this.drawingManager.setDrawingMode(BMAP_DRAWING_POLYLINE);
                     this.isMouseLine = true
+                    this.mousePopover = false
+                    this.initMouseActive(temp)
                 }
+            },
+            // 初始化鼠标绘制选中状态
+            initMouseActive(temp) {
+                for(let i in this.mouseType) {
+                    this.mouseType[i] = false
+                }
+                temp ? this.mouseType[temp] = true : ''
             },
             // 画线时打点
             drawingLine(point) {
@@ -1609,7 +1781,7 @@
                     labelText = (Number(this.twoPointsLength) + radius).toFixed(2) + '公里'
                     this.twoPointsLength += radius
                 }
-                console.log('twoPointsLength----',this.twoPointsLength)
+                // console.log('twoPointsLength----',this.twoPointsLength)
                 let label = new BMap.Label(labelText,{offset:new BMap.Size(-20,-16)});
                 label.setStyle({
                     borderRadius: "3px",
@@ -1629,7 +1801,7 @@
                 if(this.isMouseLine && this.mouseLineStep) {
                     // console.log('鼠标移动----e',ev.point)
                     this.resMap.removeOverlay(this.mapLabel)
-                    let radius= this.resMap.getDistance(this.LinePoints[0], ev.point) /1000 + this.twoPointsLength;
+                    let radius= this.resMap.getDistance(this.LinePoints[this.mouseLineStep - 1], ev.point) /1000 + this.twoPointsLength;
                     //添加文字标签
                     let opts = {
                         position: ev.point,                 // 指定文本标注所在的地理位置（当前鼠标的位置）
@@ -1647,7 +1819,7 @@
             },
             // 显示多边形内的点位
             showResInPolygon(temp,overlay) {
-                let date1 = new Date();
+                console.time('显示多边形')
                 let allOverlay = this.resMap.getOverlays();
                 for(let key of this.resInfo) {
                     for (let akey of allOverlay) {
@@ -1679,9 +1851,9 @@
                         }
                     }
                 }
-                let date2 = new Date();
-                let haomiao = date2.getTime() - date1.getTime();
-                console.log('用时',haomiao/(1000*60))
+                this.isMouseSearch = true
+                this.activeSearchKind = '1'
+                console.timeEnd('显示多边形')
             },
             // 清除上一次的绘制
             deleteDrawingOverlay() {
@@ -1807,6 +1979,14 @@
         border: none;
     }
 
+    .left_search_box /deep/ .el-input-group__append{
+        position: relative;
+        top:-1px;
+        border: none;
+        cursor: pointer;
+        padding: 0 12px;
+    }
+
     .search_body {
         background: #fff;
         margin-top: 8px;
@@ -1822,6 +2002,7 @@
         line-height: 32px;
         font-size:14px;
         padding: 0 12px;
+        background: #fff;
     }
 
     .result_title {
@@ -1860,6 +2041,10 @@
         color: rgba(0, 0, 0, 0.85);
         position: relative;
         padding-right: 48px;
+    }
+
+    .li_name strong{
+        cursor: pointer;
     }
 
     .li_name_span{

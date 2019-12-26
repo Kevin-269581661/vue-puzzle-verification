@@ -4,8 +4,10 @@
             placement="bottom"
             v-model="showPopover"
             width="340"
-            class="popper"
-            trigger="click">
+            popper-class="message-popper"
+            trigger="click"
+            :loading="loading"
+        >
             <div>
                 <div class="tab-pane">
                     <span @click="handleClick('all')"
@@ -13,24 +15,26 @@
                     <span @click="handleClick('unread')" :class="activeName=='unread'?'active':''">未读({{messageList.unread}})</span>
                 </div>
                 <ul class="list-wrap" ref="scrollBox">
-                    <li v-if="activeName=='all'" v-for="(item,index) in messageList.list" :key="index" :class="messageList.readStatus==1?'readed':''"
+                    <li v-if="activeName=='all'" v-for="(item,index) in messageList.list" :key="index"
+                        :class="messageList.readStatus==1?'readed':''"
                         @click="read(item)">
                         <img v-if="item.messageType=='0'" src="../../../assets/images/media.png" alt="">
                         <img v-if="item.messageType=='2'" src="../../../assets/images/order.png" alt="">
                         <img v-if="item.messageType=='1'" src="../../../assets/images/editor.png" alt="">
-                        <div class="content" style="text-align: left">
+                        <div class="content" style="text-align: left;cursor: pointer">
                             <h5>{{item.title}}</h5>
                             <p v-html="item.messagePart1" style="text-align: left"></p>
                             <span>{{timeFormat(item.createTime*1)}}</span>
                         </div>
                         <div class="read-mask" v-if="item.status!=0"></div>
                     </li>
-                    <li v-if="activeName=='unread'" v-for="(item,index) in messageList.unreadlist" :key="index" :class="messageList.readStatus==1?'readed':''"
+                    <li v-if="activeName=='unread'" v-for="(item,index) in messageList.unreadlist" :key="index"
+                        :class="messageList.readStatus==1?'readed':''"
                         @click="read(item)">
                         <img v-if="item.messageType=='0'" src="../../../assets/images/media.png" alt="">
                         <img v-if="item.messageType=='2'" src="../../../assets/images/order.png" alt="">
                         <img v-if="item.messageType=='1'" src="../../../assets/images/editor.png" alt="">
-                        <div class="content">
+                        <div class="content" style="text-align: left;cursor: pointer">
                             <h5>{{item.title}}</h5>
                             <p v-html="item.messagePart1" style="text-align: left"></p>
                             <span>{{timeFormat(item.createTime*1)}}</span>
@@ -39,14 +43,15 @@
                     </li>
 
                 </ul>
-                <div class="messagelist-btn" @click="goMessageList">
-                    消息列表
+                <div class="messagelist-btn">
+                    <span @click="readAll">一键已读</span>
+                    <span @click="goMessageList">消息列表</span>
                 </div>
             </div>
-            <el-badge v-if="messageList.unread>0" slot="reference" :value="messageList.unread" :max="99">
-                <i class="el-icon-bell" style="color: #fff;font-size: 20px"></i>
+            <el-badge v-if="messageList.unread>0"  slot="reference" :value="messageList.unread" :max="99" >
+                <i class="el-icon-bell" style="color: #fff;font-size: 20px" @click="showPop"></i>
             </el-badge>
-            <i v-else slot="reference" class="el-icon-bell" style="color: #fff;font-size: 20px"></i>
+            <i v-else slot="reference" class="el-icon-bell" style="color: #fff;font-size: 20px" @click="showPop"></i>
         </el-popover>
     </div>
 </template>
@@ -62,17 +67,21 @@
                 page: 1,
                 maxPage: 0,
                 messageList: {
-                    unread: 1,
+                    unread: 0,
                     allTxt: 0,
                     list: [],
-                    unreadlist:[]
+                    unreadlist: []
                 },
                 sessionData: '',
                 // system: 'http://192.168.1.239:8021/system/message',
                 showPopover: false,
+                loading:true,
             }
         },
         methods: {
+            showPop(){
+              this.showPopover = !this.showPopover
+            },
             timeFormat(createTime) {
                 return timeFormat.timestampFormat(createTime)
             },
@@ -99,7 +108,7 @@
                 setTimeout(function () {
                     that.getUnreadCount()
                     that.getMessageList()
-                },50)
+                }, 50)
             },
             ///获取消息列表
             getMessageList() {
@@ -116,12 +125,13 @@
                         this.maxPage = res.data.data.totalPage
                         if (res.data.data.dataList.length > 0) {
                             for (let data of res.data.data.dataList) {
-                                if(this.activeName == 'unread'){
+                                if (this.activeName == 'unread') {
                                     this.messageList.unreadlist.push(data)
-                                }else{
+                                } else {
                                     this.messageList.list.push(data)
                                 }
                             }
+                            this.loading = false
                         }
                     }
                 })
@@ -143,12 +153,13 @@
                 api.postApi(this.apiVar.system + '/readMessage', {messageId: messageId}).then(res => {
                     // api.postApi(this.system + '/readMessage', {messageId: messageId}).then(res => {
                     if (res.data.SysCode == 200200) {
+                        this.page = 1
+                        that.messageList.list = []
+                        that.messageList.unreadlist = []
                         //操作成功
-                        item.status = 1
+                        // item.status = 1
                         setTimeout(() => {
-                            this.page = 1
-                            that.messageList.list = []
-                            that.messageList.unreadlist = []
+
                             that.getUnreadCount()
                             that.getMessageList()
                         }, 500)
@@ -157,10 +168,21 @@
             },
             //全部已读
             readAll() {
+                let that = this
+                this.loading = true
                 api.postApi(this.apiVar.system + '/readAllMessage').then(res => {
-                    // api.postApi(this.system + '/readAllMessage').then(res => {
                     if (res.data.SysCode == 200200) {
                         //操作成功
+                        this.page = 1
+                        // that.messageList.list = []
+                        for(let data of that.messageList.list){
+                            data.status =1
+                        }
+                        that.messageList.unreadlist = []
+                        setTimeout(() => {
+                            that.getUnreadCount()
+                            that.getMessageList()
+                        }, 1000)
                     } else {
                         Message.warning(res.data.MSG);
                     }
@@ -217,7 +239,7 @@
     .list-wrap {
         height: 430px;
         overflow-y: scroll;
-        padding: 0 12px;
+
     }
 
     /*!*滚动条*!*/
@@ -242,11 +264,11 @@
 
     .list-wrap li {
         display: flex;
-        padding: 10px 12px;
         box-sizing: border-box;
         border-bottom: 1px solid #E8E8E8;
-        cursor: pointer;
+        /*cursor: pointer;*/
         position: relative;
+        padding: 10px 24px;
     }
 
     .list-wrap .read-mask {
@@ -287,10 +309,12 @@
         color: rgba(82, 82, 83, 1);
         margin-bottom: 4px;
         margin-right: 5px;
+
     }
 
     .list-wrap li span {
         color: rgba(0, 0, 0, 0.45);
+        font-size: 12px;
     }
 
     .title {
@@ -316,11 +340,21 @@
     }
 
     .messagelist-btn {
-        text-align: center;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         color: #108EE9;
         cursor: pointer;
         border-top: 1px solid #E8E8E8;
-        padding-top: 12px;
+        height: 48px;
+    }
+    .messagelist-btn span{
+        line-height: 48px;
+        text-align: center;
+        width: 50%;
+    }
+    .messagelist-btn span:first-child {
+        border-right: 1px solid #E8E8E8;
     }
 
     .tab-pane {
@@ -336,8 +370,8 @@
     .tab-pane span {
         display: inline-block;
         width: 80px;
-        height: 34px;
-        line-height: 34px;
+        height: 46px;
+        line-height: 46px;
         text-align: center;
         cursor: pointer;
     }
@@ -350,24 +384,15 @@
 
 </style>
 <style>
-    .popper /deep/.el-badge__content{
-        background-color: #ff4141;
-        border-radius: 10px;
-        color: #fff;
-        display: inline-block;
-        font-size: 12px;
-        height: 12px;
-        line-height: 12px;
-        padding: 0px 6px;
-        text-align: center;
-        white-space: nowrap;
-        border: 1px solid #fff;
+    .message-popper {
+        padding: 0 !important;
+        position: absolute !important;
+        top: 42px !important;
+        right: 5%;
+        /*left: 1055px !important;*/
     }
-    .popper /deep/ .el-badge__content.is-fixed{
-        position: absolute;
-        top: 3px;
-        right: 20px;
-        -webkit-transform: translateY(-50%) translateX(100%);
-        transform: translateY(-50%) translateX(100%);
+    .message-popper .el-popper[x-placement^=bottom] .popper__arrow{
+        left: 49% !important;
     }
+
 </style>

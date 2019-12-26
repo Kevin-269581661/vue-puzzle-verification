@@ -16,31 +16,44 @@
                 </div>
             </el-menu-item>
             <el-menu-item index="/media">首页</el-menu-item>
-            <el-menu-item index="/media/mediaList">媒体管理</el-menu-item>
-            <el-menu-item index="/media/planList">方案管理</el-menu-item>
+
+            <el-submenu index="6" :show-timeout="80" popper-class="submenu">
+                <template slot="title">媒体管理</template>
+                <el-menu-item index="/media/mediaList">媒体列表</el-menu-item>
+                <el-menu-item index="/media/maintainList">媒体维护</el-menu-item>
+                <!--<el-menu-item index="/media/adsDialPlate" v-if="!isNation">点位表盘</el-menu-item>-->
+            </el-submenu>
+            <el-menu-item v-if="isNation" index="/media/planList">方案管理</el-menu-item>
+            <el-submenu v-if="!isNation" index="5" :show-timeout="80" popper-class="submenu">
+                <template slot="title">方案管理</template>
+                <el-menu-item index="/media/planList">方案列表</el-menu-item>
+                <el-menu-item index="/media/adsDialPlate">点位表盘</el-menu-item>
+            </el-submenu>
             <el-menu-item index="/media/orderList">订单管理</el-menu-item>
-            <el-menu-item index="/media/projectList">工程管理</el-menu-item>
-            <el-submenu index="7" :show-timeout="80">
-                <template slot="title">其他模块</template>
-                <el-menu-item index="/media/publishPriceList">刊例价</el-menu-item>
+            <!--<el-menu-item index="/media/projectList">工程管理</el-menu-item>-->
+            <el-submenu index="7" :show-timeout="80" popper-class="submenu">
+                <template slot="title">工程管理</template>
+                <el-menu-item index="/media/projectList">上画任务</el-menu-item>
+                <el-menu-item index="/media/paintedCount">上画统计</el-menu-item>
                 <el-menu-item index="/media/paintedPath" v-if="!isNation">线路管理</el-menu-item>
             </el-submenu>
-            <el-menu-item index="/media/photoGallery">案例库</el-menu-item>
-            <el-submenu index="8" :show-timeout="80">
-                <template slot="title">
-                    辅助资料
-                </template>
-                <!--<el-menu-item index="/media/questionAndAnswer">常见问题</el-menu-item>-->
-                <el-menu-item index="/media/compact">文件下载</el-menu-item>
-            </el-submenu>
-            <!--<el-menu-item index="/media/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>-->
-            <el-submenu index="10" :show-timeout="80" v-show="showQinlin">
+            <el-menu-item index="/media/photoGallery">图片库</el-menu-item>
+            <el-submenu index="10" :show-timeout="80" v-show="showQinlin" popper-class="submenu">
                 <template slot="title">亲邻智邻</template>
                 <el-menu-item index="/media/communityPortrait">社区画像</el-menu-item>
                 <el-menu-item index="/media/communityRank">社区排名</el-menu-item>
                 <el-menu-item index="" @click="goResContrastMap">资源对比</el-menu-item>
             </el-submenu>
-            <el-submenu index="9" class="user_center" popper-class="user_center_item" :show-timeout="80">
+            <el-submenu index="8" :show-timeout="80" popper-class="submenu two-word-submenu">
+                <template slot="title">
+                    更多
+                </template>
+                <el-menu-item index="/media/publishPriceList">刊例价</el-menu-item>
+                <el-menu-item index="/media/compact">资料下载</el-menu-item>
+            </el-submenu>
+            <!--<el-menu-item index="/media/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>-->
+
+            <el-submenu index="9" class="user_center" popper-class="user_center_item submenu" :show-timeout="80">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">
                     {{userName}}
@@ -189,14 +202,13 @@
                 if (path.includes('/mediaDetail') || path.includes('/mediaEdit') || path.includes('/mediaInput')) {
                     // 媒体管理
                     routePath = '/media/mediaList'
-                } else if (path.includes('/editPlan') || path.includes('/planDetail')
-                    || path.includes('/createPlan') || path.includes('/adsDialPlate')) {
+                } else if (path.includes('/editPlan') || path.includes('/planDetail') || path.includes('/createPlan')) {
                     // 方案管理
                     routePath = '/media/planList'
                 } else if (path.includes('/orderDetail')) {
                     // 订单管理
                     routePath = '/media/orderList'
-                } else if (path.includes('/projectDetail') || path.includes('/paintedCount')) {
+                } else if (path.includes('/projectDetail') ) {
                     // 工程管理
                     routePath = '/media/projectList'
                 } else {

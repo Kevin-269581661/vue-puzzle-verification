@@ -557,7 +557,8 @@
         watch: {
             IsAddAds: function(newVal,oldVal){
                 console.log('父组件相子组件传值',newVal,oldVal)
-
+                this.activeIndex = 0
+                this.getAdsParamsData= {}
                 this.IsAdd = newVal
                 this.IsAll = false
                 this.shopingList = []    // 获取获取方案信息
@@ -565,7 +566,7 @@
                 this.pageNo = 1;
                 // this.resetPlanList()
                 this.getInitData()
-                this.getAdList()
+                // this.getAdList()
             }
         },
         // directives: {
@@ -816,7 +817,7 @@
                             this.total = res.data.data.total
                             this.adsCount = res.data.data.adsCount
                             // this.pageNo++
-                            console.log(' this.pageNo++', this.pageNo)
+                            // console.log(' this.pageNo++', this.pageNo)
                             this.judgeByselect()
                         } else {
                             this.planList = []
@@ -830,6 +831,7 @@
             },
             // 接口数据转成table
             setTableDataADDoor(ADSdata){
+                // console.log(ADSdata);
                 // console.log('接口数据转成table当前时间',this.dateInput)
                 let i = 0
                 for(let key of ADSdata) {
@@ -1363,7 +1365,7 @@
             },
             // 根据购物车已有的mID对应AB面判断勾选
             judgeByselect() {
-                console.log('judgeByselect')
+                // console.log('judgeByselect')
                 this.currPageSelect = 0
                 if(this.shopingList.length > 0){
                     for (let i = 0; i < this.shopingList.length; i++){

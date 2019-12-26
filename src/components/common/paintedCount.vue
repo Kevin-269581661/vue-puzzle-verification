@@ -37,8 +37,16 @@
                         <el-button plain @click="reset()">重置</el-button>
                     </el-col>
                     <el-col :span="4" style="text-align: right">
-                        <el-button type="primary" @click="importList()" :loading="activeDownload">
-                            {{activeDownload ? '导出中' : '导出'}}</el-button>
+                        <!--<el-button type="primary" @click="importList()" :loading="activeDownload">-->
+                            <!--{{activeDownload ? '导出中' : '导出'}}</el-button>-->
+                        <el-dropdown>
+                        <el-button plain>
+                            操作<i class="el-icon-arrow-down el-icon--right"></i>
+                        </el-button>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item  @click.native.prevent="importList()">导出</el-dropdown-item>
+                        </el-dropdown-menu>
+                        </el-dropdown>
                     </el-col>
                 </el-row>
                 <div class="table_box">

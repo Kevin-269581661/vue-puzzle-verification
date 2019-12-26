@@ -415,7 +415,7 @@
         },
         watch: {
             quotationData: function(newVal,oldVal){
-                console.log('父组件相子组件传值',newVal,oldVal)
+                // console.log('父组件相子组件传值',newVal,oldVal)
                 // this.quotation = newVal.quotation;
                 this.quotation = JSON.parse(JSON.stringify(newVal.quotation))
                 this.isDetail = newVal.isDetail
@@ -423,7 +423,7 @@
             },
             copydata(){
                 if(this.quotationData.isDetail){
-                    console.log('copydata-----', this.copydata);
+                    // console.log('copydata-----', this.copydata);
                     if(this.ADPriceList.length){
                         this.setQuotateData()
                     }
@@ -437,7 +437,7 @@
             console.log('数据',this.quotationData)
             if(this.quotationData.quotation !== undefined){
                 this.quotation = JSON.parse(JSON.stringify(this.quotationData.quotation))
-                console.log('mounted',this.quotation)
+                // console.log('mounted',this.quotation)
                 this.isDetail = this.quotationData.isDetail
                 this.judgeIsDetail()
             }
@@ -465,7 +465,7 @@
                         "asrIDs": this.ridString
                     }
                 }
-                console.log('GetAdPriceByRids:params',params)
+                // console.log('GetAdPriceByRids:params',params)
                 api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('刊例价信息', res)
                     let ADPriceList = res.data
@@ -497,10 +497,11 @@
                 };
                 api.getApi(this.apiVar.Advertisement+"/GetAPD", info)
                     .then(res =>{
-                        console.log('test--', res.data);
+                        // console.log('test--', res.data);
                         if (!res.data.SysCode) {
                             let plandata = res.data;
                             this.planData = res.data
+                            sessionStorage.setItem('priceData',JSON.stringify(res.data))
                             for (let data of plandata) {
                                 if(!this.ridString.includes(data.asrID)){
                                     this.ridString += data.asrID + ','
@@ -553,7 +554,7 @@
                     } else if (item.pdType == 1) {
                         dataObj.priceMsg.roadGate = pObj;
                     }
-                    console.log('ddd---', dataObj);
+                    // console.log('ddd---', dataObj);
                     arr.push(dataObj);
                     // console.log('dfalsjfla---', arr);
                 }
@@ -597,9 +598,9 @@
                         }
                     }
                 }
-                console.log('报价单arr-----', arr)
+                // console.log('报价单arr-----', arr)
                 // 为每一条添加刊例价,广告费折扣百分比，制作费折扣百分比
-                console.log('城市刊例价adPrice',adPrice)
+                // console.log('城市刊例价adPrice',adPrice)
                 for (let ta of arr) {
                     // let rid = ta.rid.toString().substring(0, 4) + '00';
                     for (let adKey of adPrice){
@@ -612,7 +613,7 @@
                             ta.levelPrice = {A: adKey.gradeA / 100, B: adKey.gradeB / 100, C: adKey.gradeC / 100}
                             // 获取指定城市下所有点位的广告费
                             let adsPriceData =  this.getAllADSPrice(ta.city,ta.asrID)
-                            console.log('adsPriceData',adsPriceData)
+                            // console.log('adsPriceData',adsPriceData)
                             if (adsPriceData) {
                                 for (let key in ta.priceMsg) {
                                     if (key == 'adDoor') {
@@ -632,13 +633,13 @@
                     let asidRes = this.getSchedules(this.copydata);
                     // 整合排期信息并且渲染页面
                     this.setSchedules(arr, asidRes);
-                    console.log('setSchedules------', arr);
+                    // console.log('setSchedules------', arr);
                 }
-                console.log('arr----fda', arr);
+                // console.log('arr----fda', arr);
                 this.quotation = arr;
             },
             discountData(data, cityPriceInfo, adsPrice,type){
-                console.log('折扣计算data:',data,cityPriceInfo,type)
+                // console.log('折扣计算data:',data,cityPriceInfo,type)
                 if(type == 0){  // 广告门
                     data.adPrice = cityPriceInfo.adPrice / 100 // 刊例价(面/周)
                     let realPrice = Math.floor(adsPrice.adDoor * 100) / 100                  // 无折扣原价
@@ -646,17 +647,17 @@
                     if(cityPriceInfo.classified == 1 && cityPriceInfo.mediaClassifiedCondition &&cityPriceInfo.mediaClassifiedCondition.premium == 1 && adsPrice.isAllA){
                         // 溢价计算反推
                         let noPremiumPrice =  data.pdAdFee / 100 / (1 + cityPriceInfo.mediaClassifiedCondition.mediaClassifiedPremium.onlyAPremium / 100)
-                        console.log('noPremiumPrice',noPremiumPrice)
+                        // console.log('noPremiumPrice',noPremiumPrice)
                         discount = Math.floor((noPremiumPrice / realPrice ) * 10000 ) / 100
                     }else{
                         discount = Math.floor((data.pdAdFee / 100 / realPrice ) * 10000 ) / 100
                     }
                     // console.log(data.pdAdFee,realPrice)
-                    console.log('discount',discount)
+                    // console.log('discount',discount)
                     let ADMakeDiscount = data.pdNum ? Math.floor(data.pdAdMake/100 /(100 * data.pdNum) * 10000) / 100 : 100;
                     // let ADMakeDiscount = 0 ? Math.floor(data.pdAdMake/100 /(100 * 0) * 10000) / 100 : 100;
                     data.discount = isNaN(discount)? 0: (discount).toFixed(2); // 广告费折扣百分比
-                    console.log('ADMakeDiscount',ADMakeDiscount)
+                    // console.log('ADMakeDiscount',ADMakeDiscount)
                     data.makeDiscount = isNaN(ADMakeDiscount)? 0: (ADMakeDiscount).toFixed(2); // 制作费折扣百分比
                     data.ADPrice = data.adPrice ? this.priceFormat(data.adPrice) : 0
                     return data;
@@ -671,7 +672,7 @@
             // 获取指定城市下所有点位的广告费
             getAllADSPrice(cityName,asrID){
                 if(this.copydata.length){
-                    console.log('this.copydata',this.copydata,cityName,asrID)
+                    // console.log('this.copydata',this.copydata,cityName,asrID)
                     let priceData = {city: cityName,adDoor: 0,roadGate: 0,isAllA: true}
                     for(let key of this.copydata){
                         if(key.city == cityName && key.asrID == asrID){
@@ -797,7 +798,7 @@
             },
             // 整合排期信息
             setSchedules(arr, asidRes) {
-                console.log('test---set', arr, asidRes);
+                // console.log('test---set', arr, asidRes);
                 for (let arrData of arr) {
                     let obj = {
                         mVehicle: '广告门',
@@ -832,9 +833,9 @@
                             if (asid.mVehicle == '广告门') {
                                 obj.SM.push(ds + "-" + de +"("+ weekDays+',共'+ asid.mNum + "面)");
                                 obj.schedules.push(ds+'-'+de);
-                                console.log('obj.schedules', obj.schedules)
+                                // console.log('obj.schedules', obj.schedules)
                                 let schedul = this.DateDiff(ds, de,'/') + 1
-                                console.log('schedul', schedul)
+                                // console.log('schedul', schedul)
                                 let mNum = asid.mNum;
                                 obj.schedul.push({
                                     schedul: schedul,
@@ -844,7 +845,7 @@
                                 daoObj.schedules.push(ds+'-'+de);
                                 daoObj.SM.push(ds + "-" + de +"("+ weekDays+',共'+ asid.mNum + "面)");
                                 let schedul = this.DateDiff(ds, de,'/') + 1
-                                console.log('schedul', schedul)
+                                // console.log('schedul', schedul)
                                 let mNum = asid.mNum;
                                 daoObj.schedul.push({
                                     schedul: schedul,
@@ -863,7 +864,7 @@
                     let reaPrice = 0;
                     let adPrice = arrData.priceMsg.roadGate.adPrice;
                     let pdAdFee = arrData.priceMsg.roadGate.pdAdFee;
-                    console.log('arrData.priceMsg.roadGate.schedul', arrData.priceMsg.roadGate.schedul);
+                    // console.log('arrData.priceMsg.roadGate.schedul', arrData.priceMsg.roadGate.schedul);
                     for(let schItem of arrData.priceMsg.roadGate.schedul){
                         if (schItem.schedul > 30) {
                             let monthNum = parseInt(schItem.schedul / 30)
@@ -874,11 +875,11 @@
                             reaPrice += this.judgeDayNum(schItem.schedul, schItem.mNum, adPrice);
                         }
                     }
-                    console.log('reaPrice----', reaPrice);
+                    // console.log('reaPrice----', reaPrice);
                     arrData.priceMsg.roadGate.reaPrice = reaPrice;
                     let discount = pdAdFee/reaPrice;
                     arrData.priceMsg.roadGate.discount = isNaN(discount)?0:(discount).toFixed(0);
-                    console.log('arrdata----fdas', arrData);
+                    // console.log('arrdata----fdas', arrData);
                 }
 
                 return arr;
@@ -1752,10 +1753,12 @@
                 return iDays
             },
             // 返回两位小数
-            returnTwoFloat(num) {
-                // console.log('num',typeof(num),num)
+            returnTwoFloat(num,r) {
+                console.log('num',typeof(num),num,'r----',r)
                 if (!num) {
-                    return num
+                    return  num || 0
+                } else if(!isFinite(num)){
+                    return 0
                 } else {
                     return Number(num).toFixed(2)
                 }

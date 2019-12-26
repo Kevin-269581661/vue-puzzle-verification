@@ -2,7 +2,7 @@
     <div class="ad_mediaDetail_wrap clearfix">
         <div class="ad_mediaDetail_nav ">
             <p class="clearfix">
-                <a href="#" style="color: #999">工程管理</a>
+                <a href="#">工程管理</a><em> / </em><a href="#">上画任务</a>
             </p>
         </div>
         <div class="mediaList_wrap">
@@ -45,7 +45,7 @@
                     <el-col>
                         <el-button type="primary" @click="search()" :disabled="!isSearch">查询</el-button>
                         <el-button plain @click="reset()">重置</el-button>
-                        <el-button plain @click="paintedCount">上画统计</el-button>
+                        <!--<el-button plain @click="paintedCount">上画统计</el-button>-->
                     </el-col>
                 </el-row>
 

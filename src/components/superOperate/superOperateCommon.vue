@@ -16,37 +16,37 @@
                 </div>
             </el-menu-item>
             <el-menu-item index="/superOperate">首页</el-menu-item>
-            <el-submenu index="2" :show-timeout="80">
-                <template slot="title">常用模块</template>
-                <el-menu-item index="/superOperate/mediaList">媒体管理</el-menu-item>
-                <el-menu-item index="/superOperate/clientList">客户管理</el-menu-item>
-                <el-menu-item index="/superOperate/planList">方案管理</el-menu-item>
-                <el-menu-item index="/superOperate/orderList">订单管理</el-menu-item>
+            <el-submenu index="2" :show-timeout="80" popper-class="submenu">
+                <template slot="title">媒体管理</template>
+                <el-menu-item index="/superOperate/mediaList">媒体列表</el-menu-item>
+                <el-menu-item index="/superOperate/maintainList">媒体维护</el-menu-item>
             </el-submenu>
+            <el-menu-item index="/superOperate/clientList">客户管理</el-menu-item>
+            <el-menu-item index="/superOperate/planList">方案管理</el-menu-item>
+            <el-menu-item index="/superOperate/orderList">订单管理</el-menu-item>
             <el-menu-item index="/superOperate/dataAnalysis">经营分析</el-menu-item>
-            <el-submenu index="4" :show-timeout="80">
-                <template slot="title">其他模块</template>
-                <el-menu-item index="/superOperate/accountList">账号管理</el-menu-item>
-                <el-menu-item index="/superOperate/ADlimitList">广告限制</el-menu-item>
-                <el-menu-item index="/superOperate/companyList" v-if="showCompany">公司管理</el-menu-item>
-                <el-menu-item index="/superOperate/publishPriceList">刊例价</el-menu-item>
-            </el-submenu>
-            <el-menu-item index="/superOperate/photoGallery">案例库</el-menu-item>
+            <!--<el-menu-item index="/superOperate/companyList" v-if="showCompany">公司管理</el-menu-item>-->
+
             <!--<el-menu-item index="/superOperate/ADqinlinzk" v-if="showQinlin">智邻数图</el-menu-item>-->
-            <el-submenu index="7" :show-timeout="80">
-                <template slot="title">辅助资料</template>
-                <!--<el-menu-item index="/superOperate/questionAndAnswer">常见问题</el-menu-item>-->
-                <el-menu-item index="/superOperate/compact">文件下载</el-menu-item>
-            </el-submenu>
-            <el-menu-item index="/superOperate/tvOrderList">电视广告</el-menu-item>
-            <el-submenu index="8" :show-timeout="80" v-show="showQinlin">
+            <el-submenu index="8" :show-timeout="80" v-show="showQinlin" popper-class="submenu">
                 <template slot="title">亲邻智邻</template>
                 <el-menu-item index="/superOperate/communityPortrait">社区画像</el-menu-item>
                 <el-menu-item index="/superOperate/communityRank">社区排名</el-menu-item>
                 <el-menu-item index="" @click="goResContrastMap">资源对比</el-menu-item>
             </el-submenu>
-            <!--<el-menu-item index="/superOperate/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>-->
-            <el-submenu index="9" class="user_center" popper-class="user_center_item" :show-timeout="80">
+            <el-submenu index="7" :show-timeout="80" popper-class="submenu">
+                <template slot="title">系统管理</template>
+                <el-menu-item index="/superOperate/accountList">账号管理</el-menu-item>
+                <el-menu-item index="/superOperate/ADlimitList">广告限制</el-menu-item>
+                <el-menu-item index="/superOperate/publishPriceList">刊例价</el-menu-item>
+            </el-submenu>
+            <el-submenu index="10" :show-timeout="80" popper-class="submenu two-word-submenu">
+                <template slot="title">更多</template>
+                <el-menu-item index="/superOperate/photoGallery">图片库</el-menu-item>
+                <el-menu-item index="/superOperate/compact">资料下载</el-menu-item>
+                <el-menu-item index="/superOperate/tvOrderList">电视广告</el-menu-item>
+            </el-submenu>
+            <el-submenu index="9" class="user_center" popper-class="user_center_item submenu" :show-timeout="80" >
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">
                     {{userName}}
@@ -234,4 +234,6 @@
         border-radius: 50%;
         vertical-align: middle;
     }
+
+
 </style>

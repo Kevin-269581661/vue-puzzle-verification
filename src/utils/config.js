@@ -19,6 +19,7 @@ const apiRoot = {
     devURL: '"http://192.168.1.239/"',
     // testURL: '"http://192.168.1.239/"',
     testURL: '"https://test-qadn.qinlindmp.com/"',
+    // static
     grayURL: '"https://beta-qadn.qinlindmp.com/"',
     prodURL: '"https://www.qinlinad.com/"',
 };

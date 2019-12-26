@@ -1959,7 +1959,7 @@
                             this.dismantleVisible = true
                         } else {
                             this.roadGateMedia[i].roadGateForm.assetIdBolean = false
-                            this.editMState(val.mid, valArr, i)
+                            this.editMState(val.mid, valArr[0], i)
                         }
                     } else {
                         this.newMediaChangeMstatus(val.mediaType, valArr, i)

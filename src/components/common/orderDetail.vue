@@ -1488,7 +1488,7 @@
                     this.changePointPageFn()
                     // this.getSetPoint(type)
                 } else {
-                    this.getSetPoint()
+                    this.getSetPoint('type')
                 }
             },
             //重置

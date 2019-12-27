@@ -170,10 +170,10 @@
                                             <template v-if="scope.row.lState==2">
                                                 <span>{{scope.row.finishTimeRange}}</span>
                                                 <!--<el-tooltip placement="top">-->
-                                                    <!--<div slot="content">-->
-                                                        <!--<span>{{scope.row.timeRange}}</span>-->
-                                                    <!--</div>-->
-                                                    <!--<i class="el-icon-question"> </i>-->
+                                                <!--<div slot="content">-->
+                                                <!--<span>{{scope.row.timeRange}}</span>-->
+                                                <!--</div>-->
+                                                <!--<i class="el-icon-question"> </i>-->
                                                 <!--</el-tooltip>-->
                                             </template>
                                             <span v-else>{{scope.row.timeRange}}</span>
@@ -216,7 +216,9 @@
                     </el-tab-pane>
                     <el-tab-pane label="报价单" name="second">
                         <div>
-                            <ap-quotation ref="apQuotation" @detailInfo="setInfo" :quotationData="quotation" :copydata="copyAsidArr" :isorder="true" :shopingList="[]" class="price_quo"></ap-quotation>
+                            <ap-quotation ref="apQuotation" @detailInfo="setInfo" :quotationData="quotation"
+                                          :copydata="copyAsidArr" :isorder="true" :shopingList="[]"
+                                          class="price_quo"></ap-quotation>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane label="物料信息" name="third" :disabled="usableBtn">
@@ -247,7 +249,7 @@
                            top="6vh"
                            :close-on-press-escape="false"
                            :show-close="false">
-                    <add-ads  :IsAddAds="IsAddPoint" @ievent="ievent"></add-ads>
+                    <add-ads :IsAddAds="IsAddPoint" @ievent="ievent"></add-ads>
                     <span slot="footer" class="dialog-footer">
                         <el-button plain @click="cancelAddPoint" v-qadn-mta-h5="{id: 'a006_b011_c012_d009_bt154_ck08'}">取 消</el-button>
                         <el-button type="primary" @click="confirmAddPoint"
@@ -354,7 +356,8 @@
                                 <el-table-column label="资源名称" min-width="16.1%" class-name="resName-wrap">
                                     <template slot-scope="scope">
                                         <div style="float:left;position: absolute;left: 0;top: 0" v-if="isHandleChange">
-                                            <div v-if="scope.row.isCurrNew&&scope.row.lState!=2" slot="reference" class="color-line"></div>
+                                            <div v-if="scope.row.isCurrNew&&scope.row.lState!=2" slot="reference"
+                                                 class="color-line"></div>
                                             <div v-if="scope.row.lState==2" slot="reference" class="color-line"
                                                  style="background-color: #FF763B"></div>
                                         </div>
@@ -517,7 +520,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <no-search-result v-if="recordList.table.length==0" style="width: 100%;height: 100%;display: flex;flex-direction: column;justify-content: center;align-items: center;"></no-search-result>
+                            <no-search-result v-if="recordList.table.length==0"
+                                              style="width: 100%;height: 100%;display: flex;flex-direction: column;justify-content: center;align-items: center;"></no-search-result>
                         </div>
                     </div>
                     <span slot="footer" class="dialog-footer">
@@ -532,7 +536,8 @@
                     custom-class="price-dialog"
                     :visible.sync="changePriceModal"
                     :before-close="cancelChangePrice">
-                    <changeOrderPrice @cancel="cancelChangePrice" @done="doneChangePrice" :changePriceData="changePriceData"></changeOrderPrice>
+                    <changeOrderPrice @cancel="cancelChangePrice" @done="doneChangePrice"
+                                      :changePriceData="changePriceData"></changeOrderPrice>
                 </el-dialog>
             </div>
             <!-- 返回框 -->
@@ -603,9 +608,11 @@
                 planPanel: "first",
                 // 选点排期
                 setpointArr: [],
+                tempSetPointArr:[],
                 changePointArr: [],//更换点位列表
                 changePointloading: true,
                 currentPointArr: [],//选点排期列表
+                exportArr:[],
                 currPointloading: true,
                 copyAsidArr: [],
                 // addNewAdsNum: 0,    // 添加点位数
@@ -712,7 +719,7 @@
                         allPoint: 0,
                         stopPoint: 0,
                         newPoint: 0,
-                        normalPoint:0,
+                        normalPoint: 0,
                     },
                     table: []
                 },
@@ -727,10 +734,10 @@
                     orderOldPrice: 0,
                     orderCompanyList: [],
                     priceCurrCompany: 0,
-                    handleTime:'',
+                    handleTime: '',
                 },
                 isHandleChange: false,
-                handleTime:'',//换点操作和修改订单的时间戳
+                handleTime: '',//换点操作和修改订单的时间戳
             };
         },
         created() {
@@ -770,14 +777,14 @@
                 }
             },
             //获取订单金额详情
-            getOrderPriceDetail(){
-                api.getApi(this.apiVar.Advertisement+"/GetAPD", {apid:sessionStorage.getItem("order_apid")})
-                    .then(res =>{
+            getOrderPriceDetail() {
+                api.getApi(this.apiVar.Advertisement + "/GetAPD", {apid: sessionStorage.getItem("order_apid")})
+                    .then(res => {
                         // console.log('test--', res.data);
                         if (!res.data.SysCode) {
-                            sessionStorage.setItem('priceData',JSON.stringify(res.data))
+                            sessionStorage.setItem('priceData', JSON.stringify(res.data))
                             let priceData = res.data
-                            console.log('订单金额',priceData);
+                            console.log('订单金额', priceData);
                             let obj = {
                                 AdDoorAdPrice: 0,
                                 AdDoorMakePrice: 0,
@@ -786,31 +793,31 @@
                                 orderOldPrice: 0,
                                 orderCompanyList: [],
                                 priceCurrCompany: 0,
-                                handleTime:this.handleTime,
-                                apID:sessionStorage.getItem("order_apid"),
-                                opType:1
+                                handleTime: this.handleTime,
+                                apID: sessionStorage.getItem("order_apid"),
+                                opType: 1
                             }
                             for (let item of priceData) {
-                                let isHave = obj.orderCompanyList.some(key=>{
-                                    if(item.asrID==key.asrID&&item.rID==key.rID){
+                                let isHave = obj.orderCompanyList.some(key => {
+                                    if (item.asrID == key.asrID && item.rID == key.rID) {
                                         //obj.orderCompanyList里是否已有相同的公司和城市
                                         return true
                                     }
                                 })
-                                if(isHave) {
-                                    for(let data of obj.orderCompanyList){
-                                        if(item.asrID==data.asrID&&item.rID==data.rID){
-                                            let totalPrice = (data.pdAdFee+data.pdAdMake+item.pdAdFee+item.pdAdMake)/100
-                                            if(data.pdType==1){
-                                                data.BreakAdPrice = data.pdAdFee/100;
-                                                data.BreakMakePrice = data.pdAdMake/100;
-                                                data.AdDoorAdPrice = item.pdAdFee/100;
-                                                data.AdDoorMakePrice = item.pdAdMake/100;
-                                            }else{
-                                                data.BreakAdPrice = item.pdAdFee/100;
-                                                data.BreakMakePrice = item.pdAdMake/100;
-                                                data.AdDoorAdPrice = data.pdAdFee/100;
-                                                data.AdDoorMakePrice = data.pdAdMake/100;
+                                if (isHave) {
+                                    for (let data of obj.orderCompanyList) {
+                                        if (item.asrID == data.asrID && item.rID == data.rID) {
+                                            let totalPrice = (data.pdAdFee + data.pdAdMake + item.pdAdFee + item.pdAdMake) / 100
+                                            if (data.pdType == 1) {
+                                                data.BreakAdPrice = data.pdAdFee / 100;
+                                                data.BreakMakePrice = data.pdAdMake / 100;
+                                                data.AdDoorAdPrice = item.pdAdFee / 100;
+                                                data.AdDoorMakePrice = item.pdAdMake / 100;
+                                            } else {
+                                                data.BreakAdPrice = item.pdAdFee / 100;
+                                                data.BreakMakePrice = item.pdAdMake / 100;
+                                                data.AdDoorAdPrice = data.pdAdFee / 100;
+                                                data.AdDoorMakePrice = data.pdAdMake / 100;
                                             }
                                             data.orderOldPrice = this.priceFormat(totalPrice)
                                         }
@@ -825,8 +832,8 @@
 
                             }
                             let result = 0
-                            for(let data of obj.orderCompanyList){
-                                result += data.AdDoorAdPrice+data.AdDoorMakePrice+data.BreakAdPrice+data.BreakMakePrice
+                            for (let data of obj.orderCompanyList) {
+                                result += data.AdDoorAdPrice + data.AdDoorMakePrice + data.BreakAdPrice + data.BreakMakePrice
                             }
                             console.log(result);
                             obj.orderOldPrice = this.priceFormat(result)
@@ -880,7 +887,7 @@
                         cancelButtonText: "不修改",
                         dangerouslyUseHTMLString: true,
                         type: "success",
-                        closeOnClickModal:false,
+                        closeOnClickModal: false,
                     }
                 ).then(() => {
                     this.changePriceModal = true
@@ -916,7 +923,7 @@
                         }
                         let info = {
                             apID: this.orderDetail.apID,
-                            mark:this.handleTime,
+                            mark: this.handleTime,
                             orderNewAdsInfos: orderNewAdsInfos ? orderNewAdsInfos : [],
                             orderStoppedAdsInfos: orderStoppedAdsInfos ? orderStoppedAdsInfos : []
                         }
@@ -980,6 +987,7 @@
                 this.changePointloading = true;
                 this.pointCurrPage = page;
                 // this.getSetPoint('change')
+
                 this.changePointPageFn()
             },
             setInfo(data) {
@@ -990,7 +998,7 @@
             export2Excel(name) {
                 this.isDown = true;
                 let resultArr = [];
-                for (let data of this.currentPointArr) {
+                for (let data of this.exportArr) {
                     let obj = {
                         resName: data.resName,
                         city: data.city,
@@ -1160,7 +1168,7 @@
                             let initData = res.data;
                             let result = initData.adSpaceInfo;
                             // this.addNewAdsNum = res.data.isNewCount
-                            /*  for (let data of result) {
+                              for (let data of result) {
                                   let time = this.formatTime(data.lStar) + "-" + this.formatTime(data.lEnd);
                                   data.timeRange = time;
                                   let finishTimeRange = '';
@@ -1170,13 +1178,13 @@
                                   data.finishTimeRange = finishTimeRange;
                               }
                               // 选点排期
-                              this.copyAsidArr = JSON.parse(JSON.stringify(result));
-                              this.currentPointArr = result;
-                              // 城市筛选过滤
-                              this.filterCityData = filterFormat(result, "city");
-                              console.log('城市filter', this.filterCityData)
-                              this.filtersArea = filterFormat(result, "rName");
-                              this.filtersData = filterFormat(result, "timeRange");*/
+                              // this.copyAsidArr = JSON.parse(JSON.stringify(result));
+                              this.exportArr = result;
+                              // // 城市筛选过滤
+                              // this.filterCityData = filterFormat(result, "city");
+                              // console.log('城市filter', this.filterCityData)
+                              // this.filtersArea = filterFormat(result, "rName");
+                              // this.filtersData = filterFormat(result, "timeRange");
 
                             // 广告门物料信息
                             let mInfo = initData.gateMaterialInfo;
@@ -1271,6 +1279,7 @@
 
                             if (type && type == 'change') {
                                 this.setpointArr = result;
+                                this.tempSetPointArr = result
                                 this.changePointArr = result;
                                 //本次是否有新增
                                 for (let data of this.changePointInfo.addPointlist) {
@@ -1298,7 +1307,6 @@
                             this.loading = false;
                             this.maLoading = false;
                             this.changePointloading = false
-
 
 
                         } else {
@@ -1464,6 +1472,19 @@
                 // let keyword = this.keyword;
                 if (type == 'change') {
                     //更换点位
+                    let t = [...this.setpointArr];
+                    let arr = [];
+                    if (this.changeKeyword !== '') {
+                        for (let data of t) {
+                            if (data.resName.indexOf(this.changeKeyword) != -1) {
+                                console.log(data.resName, data.resName.indexOf(this.keyword.trim()));
+                                arr.push(data)
+                            }
+                        }
+                    }
+
+                    this.setpointArr = arr
+                    console.log(this.setpointArr);
                     this.changePointPageFn()
                     // this.getSetPoint(type)
                 } else {
@@ -1474,6 +1495,7 @@
             reset(type) {
                 if (type == 'change') {
                     this.changeKeyword = ''
+                    this.setpointArr = this.tempSetPointArr
                     // this.getSetPoint(type)
                     this.changePointPageFn()
                 } else {
@@ -1492,21 +1514,21 @@
                             allPoint: res.data.data.totalAdsCount,
                             stopPoint: res.data.data.stoppedAdsCount,
                             newPoint: res.data.data.newAdsCount,
-                            normalPoint:res.data.data.usingAdsCount
+                            normalPoint: res.data.data.usingAdsCount
                         }
                         let arr = []
-                        if(res.data.data.orderHistory.length){
-                            for(let data of res.data.data.orderHistory){
+                        if (res.data.data.orderHistory.length) {
+                            for (let data of res.data.data.orderHistory) {
                                 let obj = {
                                     ...data,
-                                    adsInfo:JSON.parse(data.adsInfo)
+                                    adsInfo: JSON.parse(data.adsInfo)
                                 }
                                 arr.push(obj)
                             }
                         }
-                        this.recordList.table =arr
+                        this.recordList.table = arr
 
-                    }else{
+                    } else {
                         Message.warning(res.data.MSG)
                     }
                 })
@@ -1681,7 +1703,7 @@
                                 cType: key.buildType,
                                 timeRange: key.schedules,
                                 hNum: key.houseNum,
-                                hPrice: key.buildPrice*100,
+                                hPrice: key.buildPrice * 100,
                                 fNum: key.buildNum,
                                 chDay: key.liveYear,
                                 notPush: key.adLimit,
@@ -1700,14 +1722,12 @@
                 }
                 let postData = {
                     apID: this.orderDetail.apID,
-                    mark:this.handleTime,
+                    mark: this.handleTime,
                     orderNewAdsInfos: arr,
-                    orderStoppedAdsInfos:[]
+                    orderStoppedAdsInfos: []
                 }
 
                 console.log('添加点位对话框确认按钮', this.changePointInfo.addPointlist)
-                // this.changePointPageFn()
-                // this.IsAddPoint = true
                 api.postApi_json(this.apiVar.Advertisement + '/UpdateOrder',
                     JSON.stringify(postData)).then(res => {
                     console.log('添加选点返回信息', res)
@@ -1715,7 +1735,7 @@
                     if (res.data.SysCode === 300500) {
                         Message.warning(res.data.MSG)
                     } else {
-                        if (res.data.SysCode !=200200) {
+                        if (res.data.SysCode != 200200) {
                             this.$message({
                                 message: '新增点位失败',
                                 type: 'warning'
@@ -1740,10 +1760,7 @@
                                 }
                             }
                             this.changePointPageFn()
-                            // this.changePointInfo.stopPointlist = []
-                            // this.changePointInfo.addPointlist = []
 
-                            // this.getMaterInfo('add')
                         }
                     }
                 })
@@ -1840,7 +1857,7 @@
                 Message.info("已取消操作");
             },
             //修改金额-成功
-            doneChangePrice(){
+            doneChangePrice() {
                 this.changePriceModal = false
                 this.changePriceData = {
                     AdDoorAdPrice: 0,

@@ -69,7 +69,7 @@
                                 </span>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item @click.native.prevent="showDetail(scope.row)">查看详情</el-dropdown-item>
-                                        <el-dropdown-item>导出线路</el-dropdown-item>
+                                        <!--<el-dropdown-item>导出线路</el-dropdown-item>-->
                                     </el-dropdown-menu>
                                 </el-dropdown>
                             </template>
@@ -228,7 +228,7 @@
             </div>
             <div slot="footer" class="dialog-footer path_detail_footer">
                 <el-button v-if="isEdit" @click="cancelEdit">取 消</el-button>
-                <el-button plain>导 出</el-button>
+                <!--<el-button plain>导 出</el-button>-->
                 <el-button plain v-if="!isEdit && showCreateBtn" @click="isEdit = true">编 辑</el-button>
                 <el-button plain @click="saveResToLine" :loading="saveLoading">{{isEdit ? '保 存' : '关 闭'}}
                 </el-button>

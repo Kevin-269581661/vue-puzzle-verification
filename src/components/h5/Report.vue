@@ -6,9 +6,9 @@
                     <div class="title">
                         <h1>{{report.apName}}{{stateToText(Info.name)}}报告
                             <span class="button_box">
-                                <el-button plain @click="showPptxDialog()" size="small" :loading="pptxLoading"
-                                           v-qadn-mta-h5="{id: 'a006_b011_c011_d000_bt140_ck05'}">导出PPTx</el-button>
-                                <!-- <el-button plain @click="getPTT()" size="small" :loading="pptLoading">导出PPT</el-button> -->
+                                <!--<el-button plain @click="showPptxDialog()" size="small" :loading="pptxLoading"-->
+                                           <!--v-qadn-mta-h5="{id: 'a006_b011_c011_d000_bt140_ck05'}">导出PPTx</el-button>-->
+                                 <el-button plain @click="getPTTx()" size="small" :loading="pptLoading" v-qadn-mta-h5="{id: 'a006_b011_c011_d000_bt140_ck05'}">导出PPTx</el-button>
                                 <el-button plain @click="getPDF()" size="small" :loading="pdfLoading"
                                            v-qadn-mta-h5="{id: 'a006_b011_c011_d000_bt142_ck05'}">导出PDF</el-button>
                             </span>
@@ -422,7 +422,7 @@
             // 获取pptx
             getPTTx() {
 
-                // this.getApiFun('/GetPPTXReport', this.pptLoading, 'pptx');
+                this.getApiFun('/GetPPTXReport', this.pptLoading, 'pptx');
             },
 
             // 获取ppt

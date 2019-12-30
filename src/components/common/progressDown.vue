@@ -41,11 +41,11 @@ export default {
                     }
                 }else{
                     clearInterval(this.myInterval);
-                    this.$message.warning(res.data.MSG);                                            
+                    this.$message.warning(res.data.MSG);
                 }
             }).catch(res =>{
                 console.log(res);
-                clearInterval(this.myInterval);                
+                clearInterval(this.myInterval);
             });
         },
         // 导出ppt/pdf
@@ -70,15 +70,15 @@ export default {
                         }
                     }else{
                         clearInterval(this.myInterval);
-                        this.$message.warning(resinfo.msg);                        
+                        this.$message.warning(resinfo.msg);
                     }
                 }else{
                     clearInterval(this.myInterval);
-                    this.$message.warning(res.data.MSG);                    
+                    this.$message.warning(res.data.MSG);
                 }
             }).catch(res =>{
                 console.log(res);
-                clearInterval(this.myInterval);                
+                clearInterval(this.myInterval);
             });
         },
     },

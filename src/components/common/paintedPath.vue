@@ -19,7 +19,7 @@
 
                     </li>
                     <li class="handel_ul_li handel_ul_li_Newbtn" v-if="showCreateBtn">
-                        <el-button plain style="width: 100px">导出全部线路</el-button>
+                        <el-button plain style="width: 100px" @click="exportPath('all')">导出全部线路</el-button>
                         <el-button plain @click="createPath">新建线路</el-button>
                     </li>
                 </div>
@@ -228,7 +228,7 @@
             </div>
             <div slot="footer" class="dialog-footer path_detail_footer">
                 <el-button v-if="isEdit" @click="cancelEdit">取 消</el-button>
-                <!--<el-button plain>导 出</el-button>-->
+                <el-button plain @click="exportPath('one')">导 出</el-button>
                 <el-button plain v-if="!isEdit && showCreateBtn" @click="isEdit = true">编 辑</el-button>
                 <el-button plain @click="saveResToLine" :loading="saveLoading">{{isEdit ? '保 存' : '关 闭'}}
                 </el-button>
@@ -846,6 +846,33 @@
                     showClose: true,
                 })
             },
+            //导出线路
+            exportPath(type){
+                let params = ''
+                if(type == 'all'){
+                    params = {
+                        uid: this.sessionData.uID,
+                        token: this.sessionData.token,
+                    }
+                }else{
+                    params = {
+                        uid: this.sessionData.uID,
+                        token: this.sessionData.token,
+                        lineId:this.detailLineId
+                    }
+                }
+                api.getApi_file(this.apiVar.engineer+'/downloadDetailExcel',params).then(res=>{
+                    let blob = new Blob([res.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
+                    let downloadElement = document.createElement('a');
+                    let href = window.URL.createObjectURL(blob); //创建下载的链接
+                    downloadElement.href = href;
+                    downloadElement.download = res.headers['content-disposition'].split('=')[1]; //下载后文件名
+                    document.body.appendChild(downloadElement);
+                    downloadElement.click(); //点击下载
+                    document.body.removeChild(downloadElement); //下载完成移除元素
+                    window.URL.revokeObjectURL(href); //释放掉blob对象
+                })
+            }
         },
     }
 </script>

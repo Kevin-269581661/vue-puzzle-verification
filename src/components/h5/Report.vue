@@ -6,9 +6,8 @@
                     <div class="title">
                         <h1>{{report.apName}}{{stateToText(Info.name)}}报告
                             <span class="button_box">
-                                <!--<el-button plain @click="showPptxDialog()" size="small" :loading="pptxLoading"-->
-                                           <!--v-qadn-mta-h5="{id: 'a006_b011_c011_d000_bt140_ck05'}">导出PPTx</el-button>-->
-                                 <el-button plain @click="getPTTx()" size="small" :loading="pptLoading" v-qadn-mta-h5="{id: 'a006_b011_c011_d000_bt140_ck05'}">导出PPTx</el-button>
+                                <el-button plain @click="showPptxDialog()" size="small" :loading="pptxLoading" v-qadn-mta-h5="{id: 'a006_b011_c011_d000_bt140_ck05'}">导出PPTx</el-button>
+                                 <!--<el-button plain @click="getPTTx()" size="small" :loading="pptLoading" v-qadn-mta-h5="{id: 'a006_b011_c011_d000_bt140_ck05'}">导出PPTx</el-button>-->
                                 <el-button plain @click="getPDF()" size="small" :loading="pdfLoading"
                                            v-qadn-mta-h5="{id: 'a006_b011_c011_d000_bt142_ck05'}">导出PDF</el-button>
                             </span>
@@ -215,15 +214,20 @@
                         <li>
                             <span>导出排版：</span>
                             <el-select class="pptx-select" v-model="pptxType" placeholder="请选择">
-                                <el-option value="1" label="2张/页"></el-option>
-                                <el-option value="2" label="3张/页"></el-option>
-                                <el-option value="3" label="4张/页"></el-option>
+                                <el-option value="2" label="2张/页"></el-option>
+                                <el-option value="3" label="3张/页"></el-option>
+                                <el-option value="4" label="4张/页"></el-option>
                             </el-select>
                         </li>
                         <!--存在多个档期时显示-->
-                        <li>
+                        <li v-if="Info.name!=='HH'">
                             <span>选择档期：</span>
-                            <div class="date-wrap"> <el-checkbox v-model="pptxDate">全部档期</el-checkbox></div>
+                            <div class="date-wrap">
+                                <el-checkbox  v-model="checkAllDate" @change="chooseAllDate">全部档期</el-checkbox>
+                                <el-checkbox-group class="date-group-wrap" v-model="checkPeriodArr" @change="chooseDate">
+                                    <el-checkbox v-for="(item,index) in periodArr" v-bind:key="index" :label="item"></el-checkbox>
+                                </el-checkbox-group>
+                            </div>
                         </li>
                     </ul>
                 </div>
@@ -309,8 +313,10 @@
         },
         data() {
             return {
-                pptxType: '1',//导出pptx类型
-                pptxDate:true,//导出pptx档期
+                pptxType: '2',//导出pptx排版类型
+                checkAllDate:true,//全部档期
+                checkPeriodArr:[],//导出pptx档期
+                periodArr:[],
                 pptxdialogVisible: false,
                 newDate: new Date().getFullYear(),
                 // 原数据存储
@@ -369,7 +375,11 @@
         created() {
             this.getRouter();
             this.getReportInfo();
+            this.getPeriod()
             // MtaH5.clickStat('a006_b011_c011_d000_bt000_sw01')
+        },
+        mounted(){
+
         },
         methods: {
             // 状态变中文
@@ -419,10 +429,38 @@
             showPptxDialog(){
                 this.pptxdialogVisible = true
             },
+            //获取排期
+            getPeriod(){
+                api.getApi(this.apiVar.Advertisement+'/GetAdLaunchPeriod',{key:this.Info.val}).then(res=>{
+                    if(res.data.SysCode=='200200'){
+                        this.periodArr = res.data.data
+                    }
+                })
+            },
+            //选择全部排期
+            chooseAllDate(){
+                if(this.checkAllDate){
+                    this.checkPeriodArr = []
+                }
+            },
+            //选择排期
+            chooseDate(){
+                // console.log(this.checkPeriodArr);
+                if(this.checkPeriodArr.length>0){
+                    this.checkAllDate = false
+                }else{
+                    this.checkAllDate = true
+                }
+            },
             // 获取pptx
             getPTTx() {
+                if(!this.checkAllDate&&this.checkPeriodArr.length==0){
+                    this.$message.error('请选择一个排期选项!')
+                }else{
+                    console.log(this.pptxType,this.checkAllDate, this.checkPeriodArr);
+                    this.getApiFun('/GetPPTXReport', this.pptLoading, 'pptx');
+                }
 
-                this.getApiFun('/GetPPTXReport', this.pptLoading, 'pptx');
             },
 
             // 获取ppt
@@ -440,10 +478,16 @@
                 let info = {
                     [name]: val
                 };
+                if(type == 'pptx'){
+                    if(this.checkPeriodArr.length>0){
+                        info.periods = this.checkPeriodArr.join(',')
+                    }
+                    info.photoCountPerPage = this.pptxType*1
+                }
                 const tempPage = window.open('', '_blank');
                 loading = true;
                 api.getApi(this.apiVar.Advertisement + apiName, info).then(res => {
-                    if (res.data.code == 300200) {
+                    if (res.data.SysCode == 300200) {
                         let downloadElement = document.createElement('a');
                         let href = res.data.data;
                         downloadElement.href = href;
@@ -457,6 +501,12 @@
                             downtype: 2,
                             key: val,
                         };
+                        if(type == 'pptx'){
+                            if(this.checkPeriodArr.length>0){
+                                fileInfo.periods = this.checkPeriodArr.join(',')
+                            }
+                            fileInfo.photoCountPerPage = this.pptxType*1
+                        }
                         fileInfo.type = this.stateToNum(type, name);
                         this.getFileProcessFun(tempPage, fileInfo);
                         loading = false;
@@ -1327,7 +1377,7 @@
 
     .pptx-dialog li{
         display: flex;
-        align-items: center;
+        /*align-items: center;*/
         margin-bottom: 16px;
     }
     .pptx-dialog li .date-wrap /deep/ .el-checkbox{
@@ -1339,6 +1389,11 @@
         align-items: center;
         padding: 0 8px;
         box-sizing: border-box;
+        margin-bottom: 10px;
+    }
+
+    .date-group-wrap /deep/ .el-checkbox{
+        margin-left: 0;
     }
     .pptx-dialog li .date-wrap /deep/ .el-checkbox.is-checked{
         border: 1px solid #1890ff;

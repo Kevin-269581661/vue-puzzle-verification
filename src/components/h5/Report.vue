@@ -220,7 +220,7 @@
                             </el-select>
                         </li>
                         <!--存在多个档期时显示-->
-                        <li v-if="Info.name!=='HH'">
+                        <li v-if="Info.name=='SK'||Info.name=='XK'">
                             <span>选择档期：</span>
                             <div class="date-wrap">
                                 <el-checkbox  v-model="checkAllDate" @change="chooseAllDate">全部档期</el-checkbox>

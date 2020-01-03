@@ -151,13 +151,13 @@
                                     </span>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item @click.native.prevent="preload(scope.row)"
-                                                          :disabled="scope.row.apState!==1|| (scope.row.apState==1 && !scope.row.canLock)" v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt043_ck04'}">预锁
+                                                          :disabled="isDisable||(scope.row.apState!==1|| (scope.row.apState==1 && !scope.row.canLock))" v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt043_ck04'}">预锁
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="release(scope.row)"
-                                                          :disabled="scope.row.apState!==1|| ( scope.row.apState!=1 &&  scope.row.apControlLevel !== 1)" v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt044_ck04'}">发布
+                                                          :disabled="isDisable||(scope.row.apState!==1|| ( scope.row.apState!=1 &&  scope.row.apControlLevel !== 1))" v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt044_ck04'}">发布
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="clearLock(scope.row)"
-                                                          :disabled="scope.row.apState!==1|| (scope.row.apState==1 && !scope.row.unLock)" v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt045_ck04'}">解除预锁
+                                                          :disabled="isDisable||(scope.row.apState!==1|| (scope.row.apState==1 && !scope.row.unLock))" v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt045_ck04'}">解除预锁
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="splitAdPlan(scope.row)"
                                                           v-if="scope.row.apControlLevel === 2 && sessionData.uType === 'BD'">
@@ -167,7 +167,6 @@
                                 </el-dropdown>
                             </template>
                         </el-table-column>
-
                         <div slot="empty">
                             <no-search-result></no-search-result>
                         </div>

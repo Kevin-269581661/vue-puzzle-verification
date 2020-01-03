@@ -769,6 +769,8 @@
                     allhouse: '',
                     allPic: '',
                 };
+                this.uploadImgArr = [];
+                this.constractArr = [];
                 this.searchFun();
             },
             searchImgChange() {

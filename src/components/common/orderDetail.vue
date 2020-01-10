@@ -1778,7 +1778,7 @@
                     apId: sessionStorage.getItem("order_apid")
                 };
                 api.getApi(this.apiVar.replace + '/report/list', info).then(res => {
-                    console.log(res);
+                    console.log('换画列表',res.data);
                     if (res.data.SysCode == 200200) {
                         this.painlist = res.data.data;
                         if (this.painlist.length) {
@@ -1790,19 +1790,24 @@
                 });
             },
             changePain() {
-                MessageBox.confirm(
-                    "注：换画时间需在对应点位排期时间内",
-                    "是否创建新的换画报告\n",
-                    {
-                        dangerouslyUseHTMLString: true,
-                        confirmButtonText: "确定",
-                        cancelButtonText: "取消",
-                        type: "warning"
-                    }
-                ).then(() => {
-                    this.getPainlist();
-                    this.addPainReport();
-                });
+                // MessageBox.confirm(
+                //     "注：换画时间需在对应点位排期时间内",
+                //     "是否创建新的换画报告\n",
+                //     {
+                //         dangerouslyUseHTMLString: true,
+                //         confirmButtonText: "确定",
+                //         cancelButtonText: "取消",
+                //         type: "warning"
+                //     }
+                // ).then(() => {
+                //     this.getPainlist();
+                //     this.addPainReport();
+                // });
+                this.showPain = true;
+                this.planPanel = 'sixth';
+                setTimeout(() => {
+                    this.fromType = !this.fromType;
+                }, 10);
             },
             // 新增换画报告
             addPainReport() {
@@ -1820,11 +1825,12 @@
                         };
                         api.postApi_json(this.apiVar.replace + '/report/add', painInfo).then(res => {
                             if (res.data.SysCode == 200200) {
-                                this.showPain = true;
-                                this.planPanel = 'sixth';
-                                setTimeout(() => {
-                                    this.fromType = !this.fromType;
-                                }, 10);
+                                sessFun.messageFun('success', '新增换画报告成功！');
+                                // this.showPain = true;
+                                // this.planPanel = 'sixth';
+                                // setTimeout(() => {
+                                //     this.fromType = !this.fromType;
+                                // }, 10);
                             } else {
                                 sessFun.messageFun('warning', res.data.msg);
                             }

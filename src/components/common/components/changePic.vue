@@ -45,7 +45,7 @@
                                :disabled="activePainIndex == painList.length-1"></el-button>
                 </div>
                 <div class="process">
-                    <el-button type="primary" @click="editReport()"
+                    <el-button type="primary" @click="editReport(true)"
                                v-qadn-mta-h5="{id: 'a006_b011_c013_d000_bt161_ck04'}">编辑报告
                     </el-button>
                     <span class="process_box">
@@ -298,7 +298,7 @@
             </div>
             <p style="text-align:center;margin-top:20px;">
                 <el-button plain size="small" @click="cancel()">取消</el-button>
-                <el-button type="primary" size="small" @click="saveAll()">保存</el-button>
+                <el-button type="primary" size="small" @click="saveAll()">确认</el-button>
             </p>
         </el-dialog>
         <!--编辑换画-->
@@ -610,6 +610,7 @@
                 isSearch: false,
                 // selectNum:0,//当前选择的点位
                 handleFlag:false,
+                isEdit:false,//是编辑或新增换画
             };
         },
         mounted() {
@@ -626,31 +627,22 @@
             fromType(newVal, oldVal) {
                 console.log(newVal, oldVal, 'fromtype---watch---');
                 this.getPainList().then(res => {
-                    let len = this.painList.length;
-                    this.activePainIndex = len - 1;
-                    this.dateRange = {
-                        beginDate: this.painList[this.activePainIndex].startDate,
-                        endDate: this.painList[this.activePainIndex].endDate
-                    };
-                    this.search();
-                    this.editReport();
+                    this.isShowPic = true
+                    // this.isEdit = false
+                    // this.searchInfoFun()
+                    // let len = this.painList.length;
+                    // this.activePainIndex = len - 1;
+                    // this.dateRange = {
+                    //     beginDate: this.painList[this.activePainIndex].startDate,
+                    //     endDate: this.painList[this.activePainIndex].endDate
+                    // };
+                    // this.search();
+                    this.editReport(false);
+
                 });
             },
         },
-        directives: {
-            loadmore: {
-                bind: function (el, binding) {
-                    const selectWrap = el.querySelector('.el-table__body-wrapper')
-                    selectWrap.addEventListener('scroll', function () {
-                        const scrollDistance = this.scrollHeight - this.scrollTop - this.clientHeight;
-                        // console.log('滚动的距离',scrollDistance)
-                        if (scrollDistance <= 100) {
-                            binding.value()
-                        }
-                    })
-                }
-            }
-        },
+
         methods: {
             // 改变页数
             sizeChange(pageVal) {
@@ -937,7 +929,7 @@
                         apId: sessionStorage.getItem('order_apid')
                     };
                     api.getApi(this.apiVar.replace + '/report/list', info).then(res => {
-                        console.log(res, 'SysCode---');
+                        console.log('换画报告列表---',res.data);
                         if (res.data.SysCode == 200200) {
                             this.painList = res.data.data.map(item => {
                                 return {
@@ -946,6 +938,7 @@
                                     name: item.replaceRecordName,
                                 };
                             });
+
                         } else {
                             sessFun.messageFun('warning', res.data.MSG);
                         }
@@ -1084,8 +1077,9 @@
                 this.search();
             },
             // 编辑报告
-            editReport() {
+            editReport(isEdit) {
                 this.isShowPic = true;
+                this.isEdit = isEdit
                 this.dialogPage = {
                     ...this.dialogPage,
                     currInfoPage: 1,
@@ -1119,17 +1113,19 @@
             },
             // 搜索数据格式化
             searchDataFormat() {
+                console.log(this.isEdit);
                 let {resName, picState, mapName} = this.dialogInfo;
                 let {currInfoPage, pageSize} = this.dialogPage;
                 let info = {
                     pageNum: currInfoPage,
                     pageSize: pageSize,
                     apId: sessionStorage.getItem('order_apid'),
-                    replaceRecordId: this.painList[this.activePainIndex].id,
+                    // replaceRecordId: this.painList[this.activePainIndex].id,
                     ...(resName.length && {resIds: resName}),
                     ...(mapName && {mapCenterInfo: mapName}),
                     ...(picState >= 0 && {replaceStatus: picState == 2 ? '' : picState})
                 };
+                info.replaceRecordId = !this.isEdit?'-1':this.painList[this.activePainIndex].id
                 return info;
             },
             //获取换画数据
@@ -1158,6 +1154,7 @@
                             };
                             // this.dialogPage.currInfoPage++;
                             this.selectioUpdate('all');
+
                         }
                     } else {
                         sessFun.messageFun('warning', res.data.MSG);
@@ -1566,35 +1563,77 @@
                 this.search();
             }
             ,
-            // 保存
+            // 确认-生成换画任务
             saveAll() {
                 console.log(this.handleFlag, this.shoplist);
 
                 if (this.handleFlag&&this.shoplist.length) {
-                    let result = [];
-                    for (let data of this.shoplist) {
-                        let obj = {
-                            ...data,
-                            status: data.replaceDate ? 1 : 0,
-                            replaceRecordId: this.painList[this.activePainIndex].id
-                        };
-                        result.push(obj);
-                    }
-                    api.postApi_json(this.apiVar.replace + '/report/saveDetailInfo', result).then(res => {
-                        console.log(res.data);
-                        if (res.data.SysCode == 200200) {
-                            this.isShowPic = false;
-                            sessFun.messageFun('success', res.data.MSG);
-                        } else {
-                            sessFun.messageFun('warning', res.data.MSG);
-                        }
-                        this.search();
-                    });
+                    // let result = [];
+                    // for (let data of this.shoplist) {
+                    //     let obj = {
+                    //         ...data,
+                    //         status: data.replaceDate ? 1 : 0,
+                    //         replaceRecordId: this.painList[this.activePainIndex].id
+                    //     };
+                    //     result.push(obj);
+                    // }
+                    // api.postApi_json(this.apiVar.replace + '/report/saveDetailInfo', result).then(res => {
+                    //     console.log(res.data);
+                    //     if (res.data.SysCode == 200200) {
+                    //         this.isShowPic = false;
+                    //         sessFun.messageFun('success', res.data.MSG);
+                    //     } else {
+                    //         sessFun.messageFun('warning', res.data.MSG);
+                    //     }
+                    //     this.search();
+                    // });
+                    this.addPainReport()
                 } else {
                     sessFun.messageFun('warning', '没有点位信息发生变更，请先对点位进行操作');
                 }
-            }
-            ,
+            },
+            addPainReport() {
+                let that = this
+                let len = this.painList.length;
+                let painInfo = {
+                    apId: this.orderDetail.apID,
+                    replaceRecordName: `换画${len + 1}`,
+                };
+                api.postApi_json(this.apiVar.replace + '/report/add', painInfo).then(res => {
+                    console.log(res.data)
+                    if (res.data.SysCode == 200200) {
+                        // sessFun.messageFun('success', '新增换画报告成功！');
+                        //保存
+                        let result = [];
+                        for (let data of this.shoplist) {
+                            let obj = {
+                                ...data,
+                                status: data.replaceDate ? 1 : 0,
+                                replaceRecordId: res.data.data
+                            };
+                            result.push(obj);
+                        }
+                        api.postApi_json(this.apiVar.replace + '/report/saveDetailInfo', result).then(res => {
+                            console.log(res.data);
+                            if (res.data.SysCode == 200200) {
+                                that.isShowPic = false;
+                                // that.$parent.getPainlist()
+                                setTimeout(()=>{
+                                    that.getPainList().then(res=>{
+                                        that.activePainIndex = that.painList.length-1
+                                    });
+                                },100)
+                                sessFun.messageFun('success', '新增换画报告成功！');
+                            } else {
+                                sessFun.messageFun('warning', res.data.MSG);
+                            }
+                            // this.search();
+                        });
+                    } else {
+                        sessFun.messageFun('warning', res.data.msg);
+                    }
+                });
+            },
             // 取消换画
             cancelPain(type) {
                 if (type == 'all') {

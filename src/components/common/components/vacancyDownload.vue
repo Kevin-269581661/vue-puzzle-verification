@@ -158,7 +158,7 @@ export default {
         },
         // 自定义日期按照小区
         dateRangeEmpty(){
-            this.postDownLoadNum(0);            
+            this.postDownLoadNum(0);
             let { city, daterange } = this.downLoadInfo;
             let loadingPoint = this.$loading({
                 lock: true,
@@ -273,23 +273,20 @@ export default {
             let dateArr = [];
             let request_times=this.downLoadInfo.city.length; //计算分几次请求
             let funcs=[]; //Promise.all要用到的参数, 存放每次请求的Promise对象
-
             for (let i=0; i<request_times; i++) { // 循环请求次数，构造请求的Promise对象并插入funcs数组
                 let func=new Promise((resolve, reject)=>{ //定义Promise并处理请求逻辑
                     let data=[];
+                    console.log(this.downLoadInfo.city[i]);
                     api.getApi(
-                        this.apiVar.jsonLink+this.downLoadInfo.city[i]+'.json'
+                        // this.apiVar.jsonLink+this.downLoadInfo.city[i]+'.json'
+                        this.apiVar.Advertisement+'/ExportHalfYearSpaceRes',{cityIds:this.downLoadInfo.city[i]}
                     ).then((response)=>{
                         console.log('response----', response.data);
-                        if (!response.data.SysCode) {
-                            if(response.data.length){
-                                let dataArr = response.data;
-                                data.push(dataArr);
-                                resolve(data);
-                            }else{
-                                resolve('');
-                            }
-                        } else {
+                        if(response.data.SysCode==200200){
+                            let dataArr = response.data.data[0];
+                            data.push(dataArr);
+                            resolve(data);
+                        }else{
                             resolve('');
                         }
                     }).catch((error) => {
@@ -298,7 +295,6 @@ export default {
                 });
                 funcs.push(func);
             }
-
             Promise.all(funcs).then((values) =>{ //使用Promise.all调用funcs里面的函数，并合并数据，最后给js-xlsx生成Excel
                 let resultValus = [];
                 for(let val of values){
@@ -306,6 +302,7 @@ export default {
                         resultValus.push(val);
                     }
                 }
+                // console.log(resultValus);
                 if(resultValus.length){
                     let returnobj = this.hasPointData(resultValus);
                     console.log('returnobj----', returnobj);
@@ -336,6 +333,7 @@ export default {
                     showList: [],
                 };
                 filenameArr.push(resObj.sheetName);
+                console.log(data)
                 for(let k = 0, kLen = data.length; k < kLen; k++){
                     for(let item of data[k]){
                         let dateArr = [];
@@ -390,7 +388,7 @@ export default {
         },
         // 自定义日期按照点位来导
         getDaterangeAds(info){
-            this.postDownLoadNum(1);            
+            this.postDownLoadNum(1);
             api.postApi(this.apiVar.Advertisement+'/ExportSpareAds', info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 300200){

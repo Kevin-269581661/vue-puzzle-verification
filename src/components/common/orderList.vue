@@ -60,7 +60,7 @@
                               element-loading-text="玩命加载中"
                               element-loading-spinner="el-icon-loading"
                               :default-sort="{prop: 'appTime', order: 'descending'}">
-                        <el-table-column label="订单名称" min-width="14.6%">
+                        <el-table-column label="订单名称" min-width="12.6%">
                             <template slot-scope="scope">
                                 <span style="color: #108ee9;cursor: pointer" @click="ToDetail(scope.row)">{{scope.row.apName}}</span>
                             </template>
@@ -93,6 +93,12 @@
                                 </div>
                             </template>
                         </el-table-column>
+                        <el-table-column v-show="role =='BD'" prop="realName" label="所有人" min-width="6.1%"
+                                         show-overflow-tooltip
+                                         :filters="filterRealName"
+                                         :filter-method="filterRealNameFun"
+                                         :filter-multiple="true">
+                        </el-table-column>
                         <el-table-column prop="appTime" label="发布日期" width="120px" sortable="custom"
                                          show-overflow-tooltip>
                             <template slot-scope="scope">
@@ -105,7 +111,7 @@
                                              :color="stateToText(scope.row.apState).color"></point-state>
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作" width="100px" v-if="!(role=='OP' || role=='AD')">
+                        <el-table-column label="操作" width="80px" v-if="!(role=='OP' || role=='AD' || role=='BD')">
                             <template slot-scope="scope">
                                 <el-dropdown size="small" trigger="click" placement="bottom-start">
                                     <span class="el-dropdown-link">
@@ -187,7 +193,8 @@
     import noSearchResult from "./components/noSearchResult.vue";
     import pointState from './components/pointState.vue';
     import changeOrderPrice from './components/changeOrderPrice.vue';
-
+    // 筛选过滤
+    import filterFormat from "../../commonFun/filterTableData.js";
     export default {
         name: "projectList",
         components: {
@@ -198,6 +205,8 @@
         },
         data() {
             return {
+                //过滤所有人
+                filterRealName: [],
                 // 搜索数据
                 searchInfo: {
                     // 搜索的select框
@@ -280,10 +289,28 @@
             if (this.isAll) {
                 this.getCompany();
             }
+            if(this.sessionData.uType =='BD'){
+                this.getSubSaleList()
+            }
             // 获得初始数据
             this.searchFun();
         },
         methods: {
+            //获取下级销售列表
+            getSubSaleList() {
+                api.getApi(this.apiVar.Advertisement + '/GetSubSaleList').then(res => {
+                    console.log(res.data);
+                    if (res.data.SysCode == 200200) {
+                        this.filterRealName = filterFormat(res.data.data, "realName",'uID');
+
+                    } else {
+                        this.messageFun('warning', res.data.MSG);
+                    }
+                });
+            },
+            filterRealNameFun(value, row) {
+                return row.realName === value;
+            },
             // 切换页码
             changePage(page) {
                 this.currPage = page;

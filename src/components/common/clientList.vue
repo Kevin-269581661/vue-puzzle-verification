@@ -44,7 +44,7 @@
 						</el-table-column>
 						<el-table-column prop="cBrand" label="公司品牌" min-width="12.1%" show-overflow-tooltip>
 						</el-table-column>
-						<el-table-column prop="puName" label="所有人" min-width="6.1%" show-overflow-tooltip>
+						<el-table-column prop="puName" label="所有人" min-width="6.1%" show-overflow-tooltip  :filters="filterRealName" :filter-method="filterRealNameFun" :filter-multiple="true">
 						</el-table-column>
 						<el-table-column prop="joinTime" label="创建日期" min-width="8.3%" sortable="custom">
 							<template slot-scope="scope">
@@ -88,6 +88,8 @@ import api from "../../api/api.js";
 import dateFormat from "../../commonFun/timeFormat.js";
 import sessFun from "../../commonFun/sessFun.js";
 import noSearchResult from "./components/noSearchResult.vue";
+// 筛选过滤
+import filterFormat from "../../commonFun/filterTableData.js";
 import {
     Row,
     Input,
@@ -143,16 +145,36 @@ export default {
             currentPlan: [],
             isSearch: true,
             isReset: true,
+            //过滤所有人
+            filterRealName: [],
         };
     },
     mounted: function() {
         this.getRole();
         if(this.sessionData.uType !='BD'){
             this.getCompany();
+        }else{
+            this.getSubSaleList()
         }
         this.searchFun();
+
     },
     methods: {
+        //获取下级销售列表
+        getSubSaleList() {
+            api.getApi(this.apiVar.Advertisement + '/GetSubSaleList').then(res => {
+                console.log(res.data);
+                if (res.data.SysCode == 200200) {
+                    this.filterRealName = filterFormat(res.data.data, "realName",'uID');
+
+                } else {
+                    this.messageFun('warning', res.data.MSG);
+                }
+            });
+        },
+        filterRealNameFun(value, row) {
+            return row.realName === value;
+        },
         // 切换页码
         changePage(page) {
             this.currPage = page;

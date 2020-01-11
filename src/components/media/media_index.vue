@@ -260,6 +260,10 @@ export default {
                     name: '本月录单点位数',
                     data: 437
                 },
+                {
+                    name:'禁用点位总数(面)',
+                    data:1
+                }
 			],
 			// 勋章排名
 			medalInfo: {
@@ -391,7 +395,8 @@ export default {
 					this.dataArr[0].data = resInfo.resCount;
 					this.dataArr[1].data = resInfo.createdAdPlanCount;
 					this.dataArr[2].data = resInfo.publishedAdPlanCount;
-					this.dataArr[3].data = resInfo.asCount;
+                    this.dataArr[3].data = resInfo.asCount;
+                    this.dataArr[4].data = resInfo.bannedAdsCount;
 
 					this.userInfo.endTime = timeFormat.toDate(resInfo.time, '/');
 				}else{

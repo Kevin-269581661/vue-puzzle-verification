@@ -728,7 +728,7 @@ export default {
                         this.setpointArr = result;
                         this.currentSetpoint = this.setpointArr;
                         // 城市筛选过滤
-                        this.filterCityData = filterFormat(result, "city");
+                       this.filterCityData = filterFormat(result, "city");
                         this.filtersArea = filterFormat(result, "rName");
                         this.filtersData = filterFormat(result, "timeRange");
                         // this.houselist = this.filterRes(result);

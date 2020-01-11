@@ -1,7 +1,7 @@
 <template>
     <div class="ad_mediaDetail_wrap clearfix">
         <div class="ad_mediaDetail_nav ">
-            <p class="clearfix"  v-if="!isNation">
+            <p class="clearfix" v-if="!isNation">
                 <a href="#" style="color: #999">方案管理</a><em> / </em><a href="#">方案列表</a></p>
             <p v-else><a href="#">方案管理</a></p>
         </div>
@@ -86,7 +86,10 @@
                             </template>
                         </el-table-column>
                         <el-table-column prop="realName" label="所有人" min-width="6.1%" v-if="!(role=='AD')"
-                                         show-overflow-tooltip>
+                                         show-overflow-tooltip
+                                         :filters="filterRealName"
+                                         :filter-method="filterRealNameFun"
+                                         :filter-multiple="true">
                         </el-table-column>
                         <el-table-column label="投放城市(点位面数,排期)"
                                          prop="cityArea"
@@ -151,13 +154,16 @@
                                     </span>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item @click.native.prevent="preload(scope.row)"
-                                                          :disabled="isDisable||(scope.row.apState!==1|| (scope.row.apState==1 && !scope.row.canLock))" v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt043_ck04'}">预锁
+                                                          :disabled="isDisable||(scope.row.apState!==1|| (scope.row.apState==1 && !scope.row.canLock))"
+                                                          v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt043_ck04'}">预锁
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="release(scope.row)"
-                                                          :disabled="isDisable||(scope.row.apState!==1|| ( scope.row.apState!=1 &&  scope.row.apControlLevel !== 1))" v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt044_ck04'}">发布
+                                                          :disabled="isDisable||(scope.row.apState!==1|| ( scope.row.apState!=1 &&  scope.row.apControlLevel !== 1))"
+                                                          v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt044_ck04'}">发布
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="clearLock(scope.row)"
-                                                          :disabled="isDisable||(scope.row.apState!==1|| (scope.row.apState==1 && !scope.row.unLock))" v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt045_ck04'}">解除预锁
+                                                          :disabled="isDisable||(scope.row.apState!==1|| (scope.row.apState==1 && !scope.row.unLock))"
+                                                          v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt045_ck04'}">解除预锁
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="splitAdPlan(scope.row)"
                                                           v-if="scope.row.apControlLevel === 2 && sessionData.uType === 'BD'">
@@ -255,7 +261,8 @@
     import downloadVacancy from "../../components/common/components/vacancyDownload.vue"
     import noSearchResult from "./components/noSearchResult.vue";
     import pointState from './components/pointState.vue';
-
+    // 筛选过滤
+    import filterFormat from "../../commonFun/filterTableData.js";
 
     import {
         Button,
@@ -372,6 +379,8 @@
                 isReset: true,
                 // 表格数据
                 currentPlan: [],
+                //过滤所有人
+                filterRealName: [],
                 // 权限城市过滤数组
                 filterCityData: [],
                 // 未完成方案提示
@@ -384,6 +393,7 @@
                 isOpenDownload: false,
                 // 判断是否为全国媒介
                 isNation: true,
+                isSale: false,//销售权限
             };
         },
         created() {
@@ -394,6 +404,9 @@
                 this.getCompany();
             }
             this.searchFun();
+            if (this.isSale) {
+                this.getSubSaleList()
+            }
         },
         methods: {
             // 切换页码
@@ -474,6 +487,21 @@
                     }
                 });
             },
+            //获取下级销售列表
+            getSubSaleList() {
+                api.getApi(this.apiVar.Advertisement + '/GetSubSaleList').then(res => {
+                    console.log(res.data);
+                    if (res.data.SysCode == 200200) {
+                        this.filterRealName = filterFormat(res.data.data, "realName",'uID');
+
+                    } else {
+                        this.messageFun('warning', res.data.MSG);
+                    }
+                });
+            },
+            filterRealNameFun(value, row) {
+                return row.realName === value;
+            },
             // 数据处理
             funcData(dataArr) {
                 let result = [];
@@ -529,6 +557,9 @@
                     if (this.sessionData.mediaManageLevel == 0) {
                         this.isNation = false
                     }
+                }
+                if (role == 'BD') {
+                    this.isSale = true
                 }
                 if (role != "BD" && role != "MD") {
                     this.showNewBtn = false;
@@ -834,9 +865,9 @@
                     } else {
                         this.messageFun('warning', '方案权限城市内您没有可以预锁的城市');
                     }
-                    if(this.isNation){
+                    if (this.isNation) {
                         this.dialogVisible = true;
-                    }else{
+                    } else {
                         //地方媒介
                         this.Ctrlloading = Loading.service(
                             {
@@ -899,9 +930,9 @@
                     this.isLock = false;
                     this.currentItem = row;
                     this.cityList = this.getCityList(row.cityArea);
-                    if(this.isNation){
+                    if (this.isNation) {
                         this.dialogVisible = true;
-                    }else{
+                    } else {
                         //地方媒介
                         this.Ctrlloading = Loading.service(
                             {
@@ -998,24 +1029,24 @@
                 api.postApi(this.apiVar.Advertisement + '/SetFangan', info).then(res => {
                     console.log(res.data);
                     if (res.data.SysCode == 300200) {
-             /*           for (let plandata of this.currentPlan) {
-                            if (plandata.apID == this.currentItem.apID) {
-                                for (let item of plandata.cityArea) {
-                                    if (info.asrIDs.includes(item.asrID)) {
-                                        for (let ridItem of arr) {
-                                            if (ridItem.asrID == item.asrID) {
-                                                let RemainDay = this.countDay(ridItem.pdStar);
-                                                item.RemainDay = RemainDay;
-                                                this.$set(item, 'RemainDay', RemainDay);
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                                break;
-                            }
-                        }
-                        this.currentPlan.push();*/
+                        /*           for (let plandata of this.currentPlan) {
+                                       if (plandata.apID == this.currentItem.apID) {
+                                           for (let item of plandata.cityArea) {
+                                               if (info.asrIDs.includes(item.asrID)) {
+                                                   for (let ridItem of arr) {
+                                                       if (ridItem.asrID == item.asrID) {
+                                                           let RemainDay = this.countDay(ridItem.pdStar);
+                                                           item.RemainDay = RemainDay;
+                                                           this.$set(item, 'RemainDay', RemainDay);
+                                                           break;
+                                                       }
+                                                   }
+                                               }
+                                           }
+                                           break;
+                                       }
+                                   }
+                                   this.currentPlan.push();*/
                         this.searchFun();
                         this.messageFun('success', res.data.MSG);
 
@@ -1052,19 +1083,19 @@
                 api.postApi(this.apiVar.Advertisement + '/ClFangan', info).then(res => {
                     console.log(res.data);
                     this.Ctrlloading.close();
-                   /* if (res.data.SysCode == 300200) {
-                        for (let plandata of this.currentPlan) {
-                            if (plandata.apID == this.currentItem.apID) {
-                                for (let item of plandata.cityArea) {
-                                    if (info.asrIDs.includes(item.asrID)) {
-                                        delete item.RemainDay;
-                                    }
-                                }
-                                break;
-                            }
-                        }
-                        this.currentPlan.push();
-                    }*/
+                    /* if (res.data.SysCode == 300200) {
+                         for (let plandata of this.currentPlan) {
+                             if (plandata.apID == this.currentItem.apID) {
+                                 for (let item of plandata.cityArea) {
+                                     if (info.asrIDs.includes(item.asrID)) {
+                                         delete item.RemainDay;
+                                     }
+                                 }
+                                 break;
+                             }
+                         }
+                         this.currentPlan.push();
+                     }*/
                     this.searchFun();
                     this.messageFun('success', res.data.MSG);
                 }).catch(err => {
@@ -1132,7 +1163,7 @@
                     start: this.currPage,
                     pagesize: this.pageSize
                 };
-                let {select, keyword, rangeDate, status, company, cityWord, Lock, orderby, desc,dateType} = this.searchInfo;
+                let {select, keyword, rangeDate, status, company, cityWord, Lock, orderby, desc, dateType} = this.searchInfo;
                 info = {
                     ...info,
                     ...(keyword && {keywordType: select, keyword}),
@@ -1167,10 +1198,10 @@
                     return a.asrID - b.asrID;
                 });
                 let asrIDarr = [];
-                obj.canLock = item.details.some( function( item, index ){
+                obj.canLock = item.details.some(function (item, index) {
                     return !item.RemainDay;
                 })
-                obj.unLock = item.details.some( function( item, index ){
+                obj.unLock = item.details.some(function (item, index) {
                     return item.RemainDay;
                 })
                 // console.log(obj.canLock); //false表示不能再预锁
@@ -1201,7 +1232,7 @@
                     company: '',
                     cityWord: '',
                     Lock: '',
-                    dateType:'0',
+                    dateType: '0',
                 };
 
                 this.currPage = 1;
@@ -1473,21 +1504,24 @@
     .unfinished_plan_li {
         line-height: 28px;
     }
-    .ad_pagination{
+
+    .ad_pagination {
         display: flex;
         justify-content: space-between;
     }
-    .ad_pagination p{
-        color:rgba(0,0,0,0.65);
+
+    .ad_pagination p {
+        color: rgba(0, 0, 0, 0.65);
         font-size: 12px;
     }
-    .ad_pagination span{
+
+    .ad_pagination span {
         display: inline-block;
-        width:16px;
-        height:16px;
-        background:rgba(230,247,255,1);
-        border-radius:2px;
-        border:1px solid rgba(145,213,255,1);
+        width: 16px;
+        height: 16px;
+        background: rgba(230, 247, 255, 1);
+        border-radius: 2px;
+        border: 1px solid rgba(145, 213, 255, 1);
         text-align: center;
         color: #1890ff;
         margin-right: 5px;

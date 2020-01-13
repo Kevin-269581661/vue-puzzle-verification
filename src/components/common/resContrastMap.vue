@@ -8,7 +8,7 @@
         <div id="resMap" ref="resMap">
         </div>
         <!--左上角下拉框-->
-        <div class="select-group">
+        <div class="left-top select-group">
             <!--城市-->
             <el-select v-model="selectCity" size="small" placeholder="请选择城市" @change="filterCity" filterable>
                 <el-option v-for="item in cityList" :key="item.value" :label="item.label"
@@ -26,13 +26,93 @@
             </el-select>
         </div>
         <!--右上角选择-->
-        <div class="radio-group">
+        <div class="right-top radio-group">
             <el-checkbox-group v-model="companyCheckbox">
-                <el-checkbox v-for="item in companyList" :label="item.value" :key="item.value" :class="item.color"
-                             @change="chooseCompany($event,item.value)" :disabled='item.count==0'>
+                <el-checkbox
+                    v-if="item.count>0"
+                    v-for="item in companyList"
+                    :label="item.value"
+                    :key="item.value"
+                    :class="[item.color,(flagSwitch&&flagCompany!==item.value&&item.value==1)?'analyze':'']"
+                    @change="chooseCompany($event,item.value)"
+                    :disabled='flagSwitch&&flagCompany!==item.value'>
                     {{item.name}}({{item.count}})
                 </el-checkbox>
             </el-checkbox-group>
+        </div>
+        <!--左下角重叠分析-->
+        <div class="left-bottom">
+            <div class="analyze-btn" @click="openAnalyze">
+                重叠分析
+                <span class="active_arrow" :class="showAnalyzeList ? '' : 'active_arrow_hide'">
+                    <i class="el-icon-d-arrow-left"></i>
+                </span>
+            </div>
+            <div class="analyze-content" v-show="showAnalyzeList">
+                <div class="content-wrap">
+                    <div class="content-top">
+                        <!--重叠标记开关-->
+                        <div class="flag-switch">
+                            <div class="switch">
+                                <span>重叠标记</span>
+                                <el-switch
+                                    @change = 'getOverlapData'
+                                    v-model="flagSwitch"
+                                    active-color="#9254DE"
+                                    inactive-color="#e8e8e8">
+                                </el-switch>
+                            </div>
+                            <div class="option">
+                                <el-select @change="selectAnalyzeCompany" v-model="flagCompany" placeholder="请选择">
+                                    <el-option
+                                        v-for="item in contendList"
+                                        :key="item.value"
+                                        :label="item.name"
+                                        :value="item.value"
+                                        v-if="item.count>0"
+                                    >
+                                    </el-option>
+                                </el-select>
+                            </div>
+                        </div>
+                        <!--数据-->
+                        <ul class="content-top-data">
+                            <li>
+                                <span>{{overlap.count}}</span>
+                                <span>重叠小区(个)</span>
+                            </li>
+                            <li>
+                                <span>{{overlap.rate}}%</span>
+                                <span>重叠率</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="content-list">
+                        <div class="community-list" v-for="(item,index) in communityList">
+                            <h5>{{item.comName}}</h5>
+                            <p>{{item.comAddress}}</p>
+                            <div class="info">
+                                <span>{{item.districtName}}</span>
+                                <span>{{item.hNum}}户</span>
+                                <span>¥{{item.price/100 || 0}}/m²</span>
+                                <span>{{item.chDay}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-bottom">
+                        <el-dropdown trigger="click">
+                            <el-button type="plain">
+                                导出<i class="el-icon-arrow-down el-icon--right"></i>
+                            </el-button>
+                            <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item>多方重叠分析</el-dropdown-item>
+                                <el-dropdown-item>重叠小区</el-dropdown-item>
+                                <el-dropdown-item>排除重叠小区</el-dropdown-item>
+                            </el-dropdown-menu>
+                        </el-dropdown>
+                    </div>
+                </div>
+            </div>
         </div>
         <!--底部右侧鼠标绘制-->
         <div class="bottom_right_control">
@@ -89,7 +169,7 @@
                 FZResData: [],
                 XCResData: [],
                 XYMResData: [],
-                KJResData:[],
+                KJResData: [],
                 //比例
                 scale: '5公里',
                 cityList: '',
@@ -108,7 +188,25 @@
                     {value: 3, name: '新潮', count: 0, color: 'orange'},
                     {value: 4, name: '祥云门', count: 0, color: 'green'},
                 ],
-                companyCheckbox: [1,2],
+                contendList: [],//竞媒
+                companyCheckbox: [1, 2],
+                showAnalyzeList: false,//是否展开重叠分析
+                flagSwitch: false,//重叠标记开关
+                flagCompany: 2,//重叠分析竞媒
+                overlap: {
+                    count: 0,
+                    rate: 0
+                },
+                overlapData:[],//重复的点数据
+                overlapCollection:[],//浮标
+                communityList: [{
+                    resName: '达利花园',
+                    address: '宝安区后端利达路3号',
+                    area: '宝安区',
+                    houseNum: '500',
+                    price: '50000',
+                    years: '2018年'
+                }]
 
             }
         },
@@ -175,7 +273,13 @@
                 if (this.companyCheckbox.length > 0) {
                     for (let data of this.companyCheckbox) {
                         // 设置地图显示的城市 此项是必须设置的
-                        this.getData(data)
+                        if(data!=1){
+                            this.getData(data)
+                        }else{
+                            setTimeout(()=>{
+                                that.getData(data)
+                            },1000)
+                        }
                     }
                 }
             },
@@ -210,6 +314,7 @@
             // 选择城市
             filterCity() {
                 // console.log('城市', this.selectCity)
+                let that = this
                 let city = areaPackage.CodeToText(this.selectCity)
                 this.resMap.setCurrentCity(city);
                 // 初始化地图,设置中心点坐标和地图级别
@@ -221,55 +326,91 @@
                 if (this.companyCheckbox.length > 0) {
                     for (let data of this.companyCheckbox) {
                         // 设置地图显示的城市 此项是必须设置的
-                        this.getData(data)
+                        if(data!=1){
+                            this.getData(data)
+                        }else{
+                            setTimeout(()=>{
+                                that.getData(data)
+                            },100)
+                        }
                     }
                 }
             },
             // 选择区域
             filterArea() {
+                let that = this
                 // console.log('区域', this.selectArea)
-               this.clearMarkers()
+                this.clearMarkers()
                 // this.getData()
                 if (this.companyCheckbox.length > 0) {
                     for (let data of this.companyCheckbox) {
-                        this.getData(data)
+                        if(data!=1){
+                            this.getData(data)
+                        }else{
+                            setTimeout(()=>{
+                                that.getData(data)
+                            },100)
+                        }
                     }
                 }
             },
             //清空marker
-            clearMarkers(){
+            clearMarkers() {
                 this.resMap.removeOverlay(this.QLpointCollection)
                 this.resMap.removeOverlay(this.FZpointCollection)
                 this.resMap.removeOverlay(this.XCpointCollection)
                 this.resMap.removeOverlay(this.XYMpointCollection)
                 this.resMap.removeOverlay(this.KJpointCollection)
+                this.resMap.removeOverlay(this.overlapCollection)
             },
             //选择资源类型
             filterResType() {
+                let that = this
                 this.clearMarkers()
                 if (this.companyCheckbox.length > 0) {
                     for (let data of this.companyCheckbox) {
-                        this.getData(data)
+                        if(data!=1){
+                            this.getData(data)
+                        }else{
+                            setTimeout(()=>{
+                                that.getData(data)
+                            },100)
+                        }
+
                     }
                 }
             },
             //选择公司
             chooseCompany(e, id) {
-                // console.log(e,id);
+                console.log(e,id);
+                let that = this
                 if (e) {
-                    this.getData(id)
+                    if(id!==1){
+                        this.resMap.removeOverlay(this.QLpointCollection)
+                        this.getData(id)
+                        setTimeout(()=>{
+                            that.getData(1)
+                        },100)
+
+                    }else{
+                        this.getData(id)
+                    }
+
                 } else {
                     if(id == 1){
                         this.resMap.removeOverlay(this.QLpointCollection)
-                    }else if(id == 2){
+                    } else if (id == 2) {
                         this.resMap.removeOverlay(this.FZpointCollection)
-                    }else if(id == 3){
+                    } else if (id == 3) {
                         this.resMap.removeOverlay(this.XCpointCollection)
-                    }else if(id == 4){
+                    } else if (id == 4) {
                         this.resMap.removeOverlay(this.XYMpointCollection)
-                    }else {
-                        this.resMap.removeOverlay(this.KJpointCollection)
-                    }
+                    } else if (id == 5) {
+                       this.resMap.removeOverlay(this.KJpointCollection)
+                   } else{
+                       this.resMap.removeOverlay(this.overlapCollection)
+
+                   }
                 }
             },
             //获取点位数据
@@ -298,13 +439,13 @@
                         } else if (companyId == 3) {
                             this.XCResData = result
                             this.addMarker(result, '#ffa940', companyId)
-                        } else if (companyId == 4){
+                        } else if (companyId == 4) {
                             this.XYMResData = result
                             this.addMarker(result, '#52c41a', companyId)
-                        } else {
-                            this.KJResData = result
-                            this.addMarker(result, '#15C4B2', companyId)
-                        }
+                        } else if (companyId == 5) {
+                             this.KJResData = result
+                             this.addMarker(result, '#15C4B2', companyId)
+                         }
                     } else {
                         this.$message.warning(res.data.MSG)
                     }
@@ -312,7 +453,7 @@
                 this.getCommunityCount(companyId)
             },
             //获取点位数量数据
-            getCommunityCount(companyId){
+            getCommunityCount(companyId) {
                 let info = {
                     cityCode: this.selectCity,
                 }
@@ -326,6 +467,7 @@
                     // console.log('数据', res.data)
                     if (res.data.SysCode == 200200) {
                         this.companyList = res.data.data
+                        this.contendList = res.data.data.slice(1)
 
                     } else {
                         this.$message.warning(res.data.MSG)
@@ -333,8 +475,7 @@
                 })
             },
             //添加标注
-            addMarker(arr, color,companyId) {
-
+            addMarker(arr, color, companyId) {
                 if (document.createElement('canvas').getContext) {  // 判断当前浏览器是否支持绘制海量点
                     var points = [];  // 添加海量点数据
                     for (let data of arr) {
@@ -357,12 +498,16 @@
                     } else if (companyId == 3) {
                         this.XCpointCollection = new BMap.PointCollection(points, options);  // 初始化PointCollection
                         this.resMap.addOverlay(this.XCpointCollection);  // 添加Overlay
-                    } else if(companyId == 4){
+                    } else if (companyId == 4) {
                         this.XYMpointCollection = new BMap.PointCollection(points, options);  // 初始化PointCollection
                         this.resMap.addOverlay(this.XYMpointCollection);  // 添加Overlay
-                    }else{
-                        this.KJpointCollection =  new BMap.PointCollection(points, options);  // 初始化PointCollection
+                    } else if(companyId == 5){
+                        this.KJpointCollection = new BMap.PointCollection(points, options);  // 初始化PointCollection
                         this.resMap.addOverlay(this.KJpointCollection);  // 添加Overlay
+                    } else{
+                        //覆盖点
+                        this.overlapCollection = new BMap.PointCollection(points, options);  // 初始化PointCollection
+                        this.resMap.addOverlay(this.overlapCollection);  // 添加Overlay
                     }
 
                     this.mapLoading = false
@@ -390,14 +535,91 @@
                         this.getArea(this.selectCity)
                         this.initMap()
                     } else {
-                        Message.warning(res.data.MSG);
+                        this.$message.warning(res.data.MSG);
                     }
                 });
             },
             //区域列表
             getArea(id) {
                 this.areaList = areaPackage.findArea(id)
-            }
+            },
+            //点击重叠分析
+            openAnalyze(){
+                this.showAnalyzeList = !this.showAnalyzeList
+                this.flagSwitch = true
+                this.getOverlapData(this.flagCompany)
+            },
+            //选择分析竞媒
+            selectAnalyzeCompany(){
+                console.log(this.flagCompany);
+                let that = this
+                this.companyCheckbox.splice(-1,1,this.flagCompany)
+                if(id!==1){
+                    this.resMap.removeOverlay(this.QLpointCollection)
+                    this.getOverlapData(this.flagCompany)
+                    setTimeout(()=>{
+                        that.getOverlapData(1)
+                    },100)
+
+                }else{
+                    this.getOverlapData(this.flagCompany)
+                }
+            },
+            //重叠分析数据
+            getOverlapData(companyId){
+                this.mapLoading = true
+                let info = {
+                    cityCode: this.selectCity,
+                    company: companyId
+                }
+                if (this.selectArea.length > 0) {
+                    info.districtCodes = this.selectArea.join(',')
+                }
+                if (this.selectResType != 0) {
+                    info.resType = this.selectResType
+                }
+                if(this.flagSwitch){
+                    api.getApi(this.apiVar.mapApi + '/resCompare/stackAnalyze', info).then(res => {
+                        console.log('覆盖分析数据',res.data)
+                        if(res.data.SysCode==200200){
+                            let qadnResList = res.data.data.qadnResList //亲邻
+                            let competitionList = res.data.data.competitionList  //竞媒
+                            let overlapList = res.data.data.overlapList //重叠
+                            //亲邻打点
+                            this.QLResData = qadnResList
+                            this.addMarker(qadnResList, '#FF3131', companyId)
+                            //覆盖点打点
+                            this.overlapData = overlapList
+                            this.addMarker(overlapList, '#9254DE', 99)
+                            //竞媒打点
+                            if (companyId == 2) {
+                                this.FZResData = competitionList
+                                this.addMarker(competitionList, '#318FFF', companyId)
+                            }else if (companyId == 3) {
+                                this.XCResData = competitionList
+                                this.addMarker(competitionList, '#ffa940', companyId)
+                            } else if (companyId == 4) {
+                                this.XYMResData = competitionList
+                                this.addMarker(competitionList, '#52c41a', companyId)
+                            } else if (companyId == 5) {
+                                this.KJResData = competitionList
+                                this.addMarker(competitionList, '#15C4B2', companyId)
+                            }
+                            //数据
+                            let obj = {
+                                count:overlapList.length,
+                                rate:(overlapList.length/(overlapList.length+qadnResList.length)).toFixed(4)*100
+                            }
+                            this.overlap = obj
+                            //覆盖小区列表
+                            this.communityList = overlapList
+
+                        }else{
+                            this.$message.warning(res.data.MSG)
+                        }
+                    })
+                }
+            },
         },
         mounted() {
             this.getCity()
@@ -407,6 +629,7 @@
 </script>
 
 <style scoped>
+
     .res-contrast-map {
         width: 100%;
         height: 100vh;
@@ -421,11 +644,182 @@
         z-index: 1;
     }
 
+    /*左下角重叠分析*/
+    .left-bottom {
+        position: fixed;
+        bottom: 16px;
+        left: 16px;
+    }
+
+    .analyze-btn {
+        width: 288px;
+        height: 32px;
+        line-height: 32px;
+        background: rgba(255, 255, 255, 1);
+        box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
+        color: rgba(0, 0, 0, 0.85);
+        font-size: 14px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .active_arrow {
+        width: 50px;
+        text-align: center;
+        color: rgba(0, 0, 0, 0.85);
+        font-size: 12px;
+    }
+
+    .active_arrow .el-icon-d-arrow-left {
+        transform: rotate(-90deg);
+    }
+
+    .active_arrow_hide .el-icon-d-arrow-left {
+        transform: rotate(90deg);
+    }
+
+    .analyze-content {
+        width: 288px;
+    }
+
+    .content-wrap {
+        border-top: 1px solid #E8E8E8;
+        border-bottom: 1px solid #E8E8E8;
+        box-sizing: border-box;
+        background: #fff;
+    }
+
+    .content-top{
+        padding:0 16px;
+        margin-top: 16px;
+    }
+    .flag-switch {
+        border-radius: 4px;
+        border: 1px solid rgba(232, 232, 232, 1);
+        width: 256px;
+        height: 112px;
+        padding: 15px 20px;
+        box-sizing: border-box;
+        margin-bottom: 15px;
+    }
+
+    .switch {
+        width: 100%;
+        height: 32px;
+        background: rgba(255, 255, 255, 1);
+        border-radius: 4px;
+        border: 1px solid rgba(217, 217, 217, 1);
+        display: flex;;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 8px;
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.85);
+        box-sizing: border-box;
+        margin-bottom: 15px;
+    }
+
+    .option {
+        width: 100%;
+        height: 32px;
+    }
+    .option /deep/ .el-input--suffix .el-input__inner, .option /deep/ .el-select {
+        width: 100%;
+        height: 32px;
+    }
+    .content-top-data{
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 16px;
+    }
+    .content-top-data li {
+        width:120px;
+        height:69px;
+        background:rgba(247,247,247,1);
+        border-radius:4px;
+        border:1px solid rgba(232,232,232,1);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .content-top-data li span:first-child{
+        color:rgba(0,0,0,0.85);
+        font-size: 24px;
+    }
+    .content-top-data li span:last-child{
+        color:rgba(0,0,0,0.65);
+        font-size: 14px;
+    }
+    .community-list{
+        border-top: 1px solid #E8E8E8;
+        padding: 16px;
+        box-sizing: border-box;
+
+    }
+    .content-list{
+        max-height: 408px;
+        overflow-y: scroll;
+        overflow-x: hidden !important;
+    }
+    /*滚动条*/
+
+   .content-list::-webkit-scrollbar {
+        width: 4px;
+        height: 8px;
+        background: #e8e8e8;
+    }
+
+    .content-list::-webkit-scrollbar-thumb {
+        /*滚动条里面小方块*/
+        border-radius: 0px;
+        -webkit-box-shadow: inset 0 0 0px rgba(0, 0, 0, 0.2);
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    .content-list::-webkit-scrollbar-track {
+        /*滚动条里面轨道*/
+        -webkit-box-shadow: inset 0 0 0px rgba(0, 0, 0, 0);
+        border-radius: 0;
+        background: #fafafa;
+    }
+
+    .community-list h5{
+        color:rgba(0,0,0,0.85);
+        font-size: 18px;
+        font-weight: bold;
+    }
+    .community-list p{
+        color:rgba(0,0,0,0.65);
+        font-size: 14px;
+        margin-top: 4px;
+        margin-bottom: 4px;
+    }
+    .info span{
+        background:rgba(0,0,0,0.06);
+        border-radius:2px;
+        padding: 2px 6px;
+        color:rgba(0,0,0,0.35);
+        font-size: 12px;
+    }
+    .content-wrap .content-bottom{
+        text-align: center;
+        border-top: 1px solid #E8E8E8;
+        padding: 8px 16px;
+        box-sizing: border-box;
+    }
+    .content-bottom button{
+        width: 74px;
+        height: 32px;
+    }
+
+
     /*左上角下拉框*/
     .select-group {
         position: fixed;
-        top: 32px;
-        left: 32px;
+        top: 16px;
+        left: 16px;
         height: 42px;
         max-width: 905px;
     }
@@ -441,7 +835,8 @@
         border: 1px solid #fff;
         font-size: 14px;
     }
-    .select-group /deep/ .el-select .el-tag{
+
+    .select-group /deep/ .el-select .el-tag {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
@@ -452,8 +847,8 @@
     /*右上角*/
     .radio-group {
         position: fixed;
-        top: 32px;
-        right: 32px;
+        top: 16px;
+        right: 16px;
         height: 32px;
         line-height: 32px;
         box-sizing: border-box;
@@ -481,61 +876,72 @@
     }
 
     .red /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner {
-        background-color: rgba(255,49,49,0.8);
-        border-color: rgba(255,49,49,0.8);
-    }
-    .blue /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner {
-        background-color: rgba(49,143,255,0.8);
-        border-color: rgba(49,143,255,0.8);
+        background-color: rgba(255, 49, 49, 0.8);
+        border-color: rgba(255, 49, 49, 0.8);
     }
 
+    .blue /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+        background-color: rgba(49, 143, 255, 0.8);
+        border-color: rgba(49, 143, 255, 0.8);
+    }
 
     .orange /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner {
-        background-color: rgba(255,169,64,0.8);
-        border-color: rgba(255,169,64,0.8);
+        background-color: rgba(255, 169, 64, 0.8);
+        border-color: rgba(255, 169, 64, 0.8);
     }
+
     .green /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner {
-        background-color: rgba(82,196,26,0.8);
-        border-color: rgba(82,196,26,0.8);
+        background-color: rgba(82, 196, 26, 0.8);
+        border-color: rgba(82, 196, 26, 0.8);
     }
+
     .lakeBlue /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner {
-        background-color:rgba(21, 196, 178, 0.8);
+        background-color: rgba(21, 196, 178, 0.8);
         border-color: rgba(21, 196, 178, 0.8);
     }
 
     .red /deep/ .el-checkbox__inner {
-        background-color: rgba(255,49,49,0.2);
-        border-color: rgba(255,49,49,0.2);
+        background-color: rgba(255, 49, 49, 0.2);
+        border-color: rgba(255, 49, 49, 0.2);
     }
+
     .blue /deep/ .el-checkbox__inner {
-        background-color: rgba(49,143,255,0.2);
-        border-color: rgba(49,143,255,0.2);
+        background-color: rgba(49, 143, 255, 0.2);
+        border-color: rgba(49, 143, 255, 0.2);
     }
+
     .orange /deep/ .el-checkbox__inner {
-        background-color: rgba(255,169,64,0.2);
-        border-color: rgba(255,169,64,0.2);
+        background-color: rgba(255, 169, 64, 0.2);
+        border-color: rgba(255, 169, 64, 0.2);
     }
+
     .green /deep/ .el-checkbox__inner {
-        background-color: rgba(82,196,26,0.2);
-        border-color: rgba(82,196,26,0.2);
+        background-color: rgba(82, 196, 26, 0.2);
+        border-color: rgba(82, 196, 26, 0.2);
     }
+
     .lakeBlue /deep/ .el-checkbox__inner {
         background-color: rgba(21, 196, 178, 0.2);
         border-color: rgba(21, 196, 178, 0.2);
+    }
+    .red /deep/ .el-checkbox__input.is-disabled + span.el-checkbox__label{
+        color: rgba(0,0,0,0.65);
     }
 
     .red /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .blue /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .orange /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .green /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .lakeBlue /deep/ .el-checkbox__input.is-focus .el-checkbox__inner {
         border-color: transparent;
     }
-    .red /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner, .blue /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner, .orange /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner, .lakeBlue /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner , .green /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner {
+
+    .red /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner,.blue /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner, .orange /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner, .lakeBlue /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner, .green /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner {
         background-color: #edf2fc;
         border-color: #dcdfe6;
     }
+
     /*底部右侧控件*/
     .bottom_right_control {
         position: fixed;
         bottom: 16px;
-        right: 24px;
+        right: 16px;
         width: 265px;
     }
 
@@ -583,8 +989,15 @@
         color: rgba(0, 0, 0, 0.85);
         cursor: pointer;
     }
-    .radio-group /deep/  .el-checkbox__input.is-disabled+span.el-checkbox__label{
+
+    .radio-group /deep/ .el-checkbox__input.is-disabled + span.el-checkbox__label {
         color: #c0c4cc !important;
     }
-
+    .analyze.red /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner{
+        background-color: rgba(255, 49, 49, 0.8);
+        border-color: rgba(255, 49, 49, 0.8);
+    }
+    .analyze.red /deep/ .el-checkbox__input.is-disabled + span.el-checkbox__label {
+        color: rgba(0,0,0,0.85) !important;
+    }
 </style>

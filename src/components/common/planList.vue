@@ -85,12 +85,17 @@
                                 <span>&yen;{{scope.row.apTotal?priceFormat(scope.row.apTotal/100):0}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="realName" label="所有人" min-width="6.1%" v-if="!(role=='AD')"
+                        <el-table-column prop="realName" label="所有人" min-width="6.1%" v-if="!(role=='AD')&&role!='BD'"
+                                         show-overflow-tooltip
+                                        >
+                        </el-table-column>
+                        <el-table-column prop="realName" label="所有人" min-width="6.1%" v-if="role=='BD'"
                                          show-overflow-tooltip
                                          :filters="filterRealName"
                                          :filter-method="filterRealNameFun"
                                          :filter-multiple="true">
                         </el-table-column>
+
                         <el-table-column label="投放城市(点位面数,排期)"
                                          prop="cityArea"
                                          min-width="25.8%">

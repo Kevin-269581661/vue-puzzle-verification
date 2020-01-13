@@ -93,11 +93,13 @@
                                 </div>
                             </template>
                         </el-table-column>
-                        <el-table-column v-show="role =='BD'" prop="realName" label="所有人" min-width="6.1%"
+                        <el-table-column prop="realName" label="所有人" min-width="6.1%"
                                          show-overflow-tooltip
                                          :filters="filterRealName"
                                          :filter-method="filterRealNameFun"
-                                         :filter-multiple="true">
+                                         :filter-multiple="true"
+                                         v-if="role === 'BD'"
+                        >
                         </el-table-column>
                         <el-table-column prop="appTime" label="发布日期" width="120px" sortable="custom"
                                          show-overflow-tooltip>
@@ -111,7 +113,7 @@
                                              :color="stateToText(scope.row.apState).color"></point-state>
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作" width="80px" v-if="!(role=='OP' || role=='AD' || role=='BD')">
+                        <el-table-column label="操作" width="80px" v-if="role!=='OP' && role!=='AD' && role!=='BD'">
                             <template slot-scope="scope">
                                 <el-dropdown size="small" trigger="click" placement="bottom-start">
                                     <span class="el-dropdown-link">
@@ -242,7 +244,7 @@
                 // 权限城市过滤数组
                 filterCityData: [],
                 // 角色
-                role: "",
+                role: "BD",
                 isAll: false,
                 //加载中
                 loading: true,
@@ -282,9 +284,11 @@
 
             };
         },
-        mounted() {
+        created(){
             // 获取角色
             this.getRole();
+        },
+        mounted() {
             this.getFanCity();
             if (this.isAll) {
                 this.getCompany();

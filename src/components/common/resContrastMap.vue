@@ -33,9 +33,9 @@
                     v-for="item in companyList"
                     :label="item.value"
                     :key="item.value"
-                    :class="[item.color,(flagSwitch&&flagCompany!==item.value&&item.value==1)?'analyze':'']"
+                    :class="[item.color]"
                     @change="chooseCompany($event,item.value)"
-                    :disabled='flagSwitch&&flagCompany!==item.value'>
+                    :disabled='flagSwitch&&flagCompany!==item.value&&item.value!==1'>
                     {{item.name}}({{item.count}})
                 </el-checkbox>
             </el-checkbox-group>
@@ -382,18 +382,35 @@
             },
             //选择公司
             chooseCompany(e, id) {
-                console.log(e,id);
+                console.log(e,id,this.companyCheckbox);
                 let that = this
                 if (e) {
                     if(id!==1){
                         this.resMap.removeOverlay(this.QLpointCollection)
-                        this.getData(id)
-                        setTimeout(()=>{
-                            that.getData(1)
-                        },100)
+                        //是否覆盖分析
+                        if(this.flagSwitch){
+                            this.getOverlapData(id)
+                        }else{
+                            this.getData(id)
+                        }
+                        //亲邻层级最高
+                        if(this.companyCheckbox.includes(1)){
+                            setTimeout(()=>{
+                                if(this.flagSwitch){
+                                    this.getOverlapData(false)
+                                }else{
+                                    that.getData(1)
+                                }
 
+                            },100)
+                        }
                     }else{
-                        this.getData(id)
+                        if(this.flagSwitch){
+                            // this.getOverlapData(id)
+                            this.addMarker(this.QLResData, '#FF3131', id)
+                        }else{
+                            this.getData(id)
+                        }
                     }
 
                 } else {
@@ -545,22 +562,35 @@
             },
             //点击重叠分析
             openAnalyze(){
+                let that = this
                 this.showAnalyzeList = !this.showAnalyzeList
-                this.flagSwitch = true
-                this.getOverlapData(this.flagCompany)
+                this.flagSwitch = this.showAnalyzeList
+                this.clearMarkers()
+                if(this.showAnalyzeList){
+                    this.getOverlapData(this.flagCompany)
+                }else{
+                    if (this.companyCheckbox.length > 0) {
+                        for (let data of this.companyCheckbox) {
+                            if(data!=1){
+                                this.getData(data)
+                            }else{
+                                setTimeout(()=>{
+                                    that.getData(data)
+                                },100)
+                            }
+                        }
+                    }
+                }
+
             },
             //选择分析竞媒
             selectAnalyzeCompany(){
                 console.log(this.flagCompany);
                 let that = this
                 this.companyCheckbox.splice(-1,1,this.flagCompany)
-                if(id!==1){
-                    this.resMap.removeOverlay(this.QLpointCollection)
+                if(this.flagCompany!==1){
+                    this.clearMarkers()
                     this.getOverlapData(this.flagCompany)
-                    setTimeout(()=>{
-                        that.getOverlapData(1)
-                    },100)
-
                 }else{
                     this.getOverlapData(this.flagCompany)
                 }
@@ -585,12 +615,6 @@
                             let qadnResList = res.data.data.qadnResList //亲邻
                             let competitionList = res.data.data.competitionList  //竞媒
                             let overlapList = res.data.data.overlapList //重叠
-                            //亲邻打点
-                            this.QLResData = qadnResList
-                            this.addMarker(qadnResList, '#FF3131', companyId)
-                            //覆盖点打点
-                            this.overlapData = overlapList
-                            this.addMarker(overlapList, '#9254DE', 99)
                             //竞媒打点
                             if (companyId == 2) {
                                 this.FZResData = competitionList
@@ -605,6 +629,12 @@
                                 this.KJResData = competitionList
                                 this.addMarker(competitionList, '#15C4B2', companyId)
                             }
+                            //亲邻打点
+                            this.QLResData = qadnResList
+                            this.addMarker(qadnResList, '#FF3131', companyId)
+                            //覆盖点打点
+                            this.overlapData = overlapList
+                            this.addMarker(overlapList, '#9254DE', 99)
                             //数据
                             let obj = {
                                 count:overlapList.length,
@@ -875,27 +905,27 @@
         border: none;
     }
 
-    .red /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+    .red /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner, .analyze.red /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner {
         background-color: rgba(255, 49, 49, 0.8);
         border-color: rgba(255, 49, 49, 0.8);
     }
 
-    .blue /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+    .blue /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner, .analyze.blue /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner {
         background-color: rgba(49, 143, 255, 0.8);
         border-color: rgba(49, 143, 255, 0.8);
     }
 
-    .orange /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+    .orange /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner, .analyze.orange /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner {
         background-color: rgba(255, 169, 64, 0.8);
         border-color: rgba(255, 169, 64, 0.8);
     }
 
-    .green /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+    .green /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner, .analyze.green /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner{
         background-color: rgba(82, 196, 26, 0.8);
         border-color: rgba(82, 196, 26, 0.8);
     }
 
-    .lakeBlue /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+    .lakeBlue /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner,  .analyze.lakeBlue /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner {
         background-color: rgba(21, 196, 178, 0.8);
         border-color: rgba(21, 196, 178, 0.8);
     }
@@ -993,11 +1023,8 @@
     .radio-group /deep/ .el-checkbox__input.is-disabled + span.el-checkbox__label {
         color: #c0c4cc !important;
     }
-    .analyze.red /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner{
-        background-color: rgba(255, 49, 49, 0.8);
-        border-color: rgba(255, 49, 49, 0.8);
-    }
-    .analyze.red /deep/ .el-checkbox__input.is-disabled + span.el-checkbox__label {
+
+    .analyze /deep/ .el-checkbox__input.is-disabled + span.el-checkbox__label {
         color: rgba(0,0,0,0.85) !important;
     }
 </style>

@@ -56,7 +56,7 @@
                             <div class="switch">
                                 <span>重叠标记</span>
                                 <el-switch
-                                    @change = "openAnalyze"
+                                    @change = "changeSwitch"
                                     v-model="flagSwitch"
                                     active-color="#9254DE"
                                     inactive-color="#e8e8e8">
@@ -94,7 +94,7 @@
                             <div class="info">
                                 <span>{{item.districtName}}</span>
                                 <span>{{item.hNum}}户</span>
-                                <span>¥{{item.price/100 || 0}}/m²</span>
+                                <span>¥{{item.hPrice/100 || 0}}/m²</span>
                                 <span>{{item.chDay}}</span>
                             </div>
                         </div>
@@ -330,15 +330,18 @@
                 this.selectArea = [];
                 this.getArea(this.selectCity)
                 console.log(this.companyCheckbox);
-                if (this.companyCheckbox.length > 0) {
-                    for (let data of this.companyCheckbox) {
-                        // 设置地图显示的城市 此项是必须设置的
-                        if(data!=1){
-                            this.getData(data)
-                        }else{
-                            setTimeout(()=>{
-                                that.getData(data)
-                            },100)
+                if(this.flagSwitch){
+                    this.getOverlapData(this.companyCheckbox[1])
+                }else{
+                    if (this.companyCheckbox.length > 0) {
+                        for (let data of this.companyCheckbox) {
+                            if(data!=1){
+                                this.getData(data)
+                            }else{
+                                setTimeout(()=>{
+                                    that.getData(data)
+                                },100)
+                            }
                         }
                     }
                 }
@@ -349,21 +352,25 @@
                 // console.log('区域', this.selectArea)
                 this.clearMarkers()
                 // this.getData()
-                if (this.companyCheckbox.length > 0) {
-                    for (let data of this.companyCheckbox) {
-                        if(data!=1){
-                            this.getData(data)
-                        }else{
-                            setTimeout(()=>{
-                                that.getData(data)
-                            },100)
+                if(this.flagSwitch){
+                    this.getOverlapData(this.companyCheckbox[1])
+                }else{
+                    if (this.companyCheckbox.length > 0) {
+                        for (let data of this.companyCheckbox) {
+                            if(data!=1){
+                                this.getData(data)
+                            }else{
+                                setTimeout(()=>{
+                                    that.getData(data)
+                                },100)
+                            }
                         }
                     }
                 }
+
             },
             //清空marker
             clearMarkers() {
-
                 this.resMap.removeOverlay(this.QLpointCollection)
                 this.resMap.removeOverlay(this.FZpointCollection)
                 this.resMap.removeOverlay(this.XCpointCollection)
@@ -375,16 +382,19 @@
             filterResType() {
                 let that = this
                 this.clearMarkers()
-                if (this.companyCheckbox.length > 0) {
-                    for (let data of this.companyCheckbox) {
-                        if(data!=1){
-                            this.getData(data)
-                        }else{
-                            setTimeout(()=>{
-                                that.getData(data)
-                            },100)
+                if(this.flagSwitch){
+                    this.getOverlapData(this.companyCheckbox[1])
+                }else{
+                    if (this.companyCheckbox.length > 0) {
+                        for (let data of this.companyCheckbox) {
+                            if(data!=1){
+                                this.getData(data)
+                            }else{
+                                setTimeout(()=>{
+                                    that.getData(data)
+                                },100)
+                            }
                         }
-
                     }
                 }
             },
@@ -394,19 +404,38 @@
                 let that = this
                 if (e) {
                     if(id!==1){
+                        this.clearMarkers()
                         //是否覆盖分析
                         if(this.flagSwitch){
-                            this.getOverlapData(id)
+                            if(id==2){
+                                this.addMarker(this.FZResData, '#318FFF', id)
+                            }else if(id==3){
+                                this.addMarker(this.XCResData, '#ffa940', id)
+                            }else if(id == 4){
+                                this.addMarker(this.XYMResData, '#52c41a', id)
+                            }else if(id ==5){
+                                this.addMarker(this.KJResData, '#15C4B2', id)
+                            }
+                            this.addMarker(this.overlapData, '#9254DE', 99)
                         }else{
-                            this.getData(id)
+                            if (this.companyCheckbox.length > 0) {
+                                for (let data of this.companyCheckbox) {
+                                    if (data != 1) {
+                                        this.getData(data)
+                                    } else {
+                                        setTimeout(() => {
+                                            that.getData(data)
+                                        }, 100)
+                                    }
+                                }
+                            }
                         }
                         //亲邻层级最高
                         if(this.companyCheckbox.includes(1)){
                             setTimeout(()=>{
                                 if(this.flagSwitch){
-                                    this.getOverlapData(false)
-                                }else{
-                                    that.getData(1)
+                                    this.addMarker(this.QLResData, '#FF3131', 1)
+                                    this.addMarker(this.overlapData, '#9254DE', 99)
                                 }
 
                             },100)
@@ -414,8 +443,9 @@
                     }else{
                         if(this.flagSwitch){
                             this.addMarker(this.QLResData, '#FF3131', id)
+                            this.addMarker(this.overlapData, '#9254DE', 99)
                         }else{
-                            this.getData(id)
+                            this.addMarker(this.QLResData, '#FF3131', id)
                         }
                     }
 
@@ -562,13 +592,37 @@
             },
             //点击重叠分析
             openAnalyze(){
-                this.clearMarkers()
                 this.companyCheckbox = [1,this.flagCompany]
                 let that = this
                 this.showAnalyzeList = !this.showAnalyzeList
-                this.flagSwitch = this.showAnalyzeList
-                if(this.showAnalyzeList){
+                if(this.showAnalyzeList&&!this.flagSwitch){
+                    this.clearMarkers()
+                    this.flagSwitch = true
+                    this.changeSwitch()
+                    // this.getOverlapData(this.flagCompany)
+                }
+                // else{
+                //     if (this.companyCheckbox.length > 0) {
+                //         for (let data of this.companyCheckbox) {
+                //             if(data!=1){
+                //                 this.getData(data)
+                //             }else{
+                //                 setTimeout(()=>{
+                //                     that.getData(data)
+                //                 },100)
+                //             }
+                //         }
+                //     }
+                // }
+
+            },
+            //重叠标记开关
+            changeSwitch(){
+                let that = this
+                this.clearMarkers()
+                if(this.flagSwitch){
                     this.getOverlapData(this.flagCompany)
+                    // this.addMarker(this.overlapData, '#9254DE', 99)
                 }else{
                     if (this.companyCheckbox.length > 0) {
                         for (let data of this.companyCheckbox) {
@@ -582,25 +636,22 @@
                         }
                     }
                 }
-
             },
             //选择分析竞媒
             selectAnalyzeCompany(){
-                console.log(this.flagCompany);
+                // console.log(this.flagCompany);
                 let that = this
                 this.clearMarkers()
-                this.companyCheckbox.splice(-1,1,this.flagCompany)
+                this.companyCheckbox = [1,this.flagCompany]
                 if(this.flagCompany!==1){
-                    console.log(1)
                     this.getOverlapData(this.flagCompany)
                 }else{
-                    console.log(2)
                     this.getOverlapData(this.flagCompany)
                 }
             },
             //重叠分析数据
             getOverlapData(companyId){
-                console.log('公司id',companyId);
+                // console.log('公司id',companyId);
                 this.clearMarkers()
                 this.mapLoading = true
                 let info = {

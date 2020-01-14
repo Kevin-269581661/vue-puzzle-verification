@@ -139,6 +139,7 @@
     // 时间格式化
     import dateFormat from "../../commonFun/timeFormat.js";
     import sessFun from "../../commonFun/sessFun.js";
+    import timeFormat from "../../commonFun/timeFormat";
 
     export default {
         name: "resContrastMap",
@@ -730,7 +731,7 @@
                         let downloadElement = document.createElement('a');
                         let href = window.URL.createObjectURL(blob); //创建下载的链接
                         downloadElement.href = href;
-                        downloadElement.download = res.headers['content-disposition'].split('=')[1]; //下载后文件名
+                        downloadElement.download = '资源对比叠加分析'+this.formatTime(new Date())+'.xlsx'; //下载后文件名
                         document.body.appendChild(downloadElement);
                         downloadElement.click(); //点击下载
                         document.body.removeChild(downloadElement); //下载完成移除元素
@@ -741,7 +742,6 @@
         },
         mounted() {
             this.getCity()
-
         }
     }
 </script>

@@ -56,7 +56,7 @@
                             <div class="switch">
                                 <span>重叠标记</span>
                                 <el-switch
-                                    @change = 'getOverlapData'
+                                    @change = "openAnalyze"
                                     v-model="flagSwitch"
                                     active-color="#9254DE"
                                     inactive-color="#e8e8e8">
@@ -105,9 +105,9 @@
                                 导出<i class="el-icon-arrow-down el-icon--right"></i>
                             </el-button>
                             <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item>多方重叠分析</el-dropdown-item>
-                                <el-dropdown-item>重叠小区</el-dropdown-item>
-                                <el-dropdown-item>排除重叠小区</el-dropdown-item>
+                                <el-dropdown-item  @click.native.prevent="exportFun(3)" command="3">多方重叠分析</el-dropdown-item>
+                                <el-dropdown-item  @click.native.prevent="exportFun(1)" command="1">重叠小区</el-dropdown-item>
+                                <el-dropdown-item  @click.native.prevent="exportFun(2)" command="2">排除重叠小区</el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
                     </div>
@@ -136,6 +136,9 @@
 <script>
     import api from "../../api/api"
     import areaPackage from "../../commonFun/areaPackage_new";
+    // 时间格式化
+    import dateFormat from "../../commonFun/timeFormat.js";
+    import sessFun from "../../commonFun/sessFun.js";
 
     export default {
         name: "resContrastMap",
@@ -211,6 +214,10 @@
             }
         },
         methods: {
+            // 时间格式规范预锁
+            formatTime(val) {
+                return dateFormat.toDate(val, '/');
+            },
             // 初始化地图
             initMap() {
                 let that = this
@@ -356,6 +363,7 @@
             },
             //清空marker
             clearMarkers() {
+
                 this.resMap.removeOverlay(this.QLpointCollection)
                 this.resMap.removeOverlay(this.FZpointCollection)
                 this.resMap.removeOverlay(this.XCpointCollection)
@@ -386,7 +394,6 @@
                 let that = this
                 if (e) {
                     if(id!==1){
-                        this.resMap.removeOverlay(this.QLpointCollection)
                         //是否覆盖分析
                         if(this.flagSwitch){
                             this.getOverlapData(id)
@@ -406,7 +413,6 @@
                         }
                     }else{
                         if(this.flagSwitch){
-                            // this.getOverlapData(id)
                             this.addMarker(this.QLResData, '#FF3131', id)
                         }else{
                             this.getData(id)
@@ -424,9 +430,6 @@
                         this.resMap.removeOverlay(this.XYMpointCollection)
                     } else if (id == 5) {
                        this.resMap.removeOverlay(this.KJpointCollection)
-                   } else{
-                       this.resMap.removeOverlay(this.overlapCollection)
-
                    }
                 }
             },
@@ -494,20 +497,17 @@
             //添加标注
             addMarker(arr, color, companyId) {
                 if (document.createElement('canvas').getContext) {  // 判断当前浏览器是否支持绘制海量点
-                    var points = [];  // 添加海量点数据
+                    let points = [];  // 添加海量点数据
                     for (let data of arr) {
                         points.push(new window.BMap.Point(data.lng, data.lat));
                     }
-                    var options = {
+                    let options = {
                         size: BMAP_POINT_SIZE_SMALL,
                         shape: BMAP_POINT_SHAPE_CIRCLE,
                         color: color
                     }
                     if (companyId == 1) {
                         this.QLpointCollection = new BMap.PointCollection(points, options);  // 初始化PointCollection
-                        this.QLpointCollection.addEventListener('click', function (e) {
-                            // 监听点击事件
-                        });
                         this.resMap.addOverlay(this.QLpointCollection);  // 添加Overlay
                     } else if (companyId == 2) {
                         this.FZpointCollection = new BMap.PointCollection(points, options);  // 初始化PointCollection
@@ -562,10 +562,11 @@
             },
             //点击重叠分析
             openAnalyze(){
+                this.clearMarkers()
+                this.companyCheckbox = [1,this.flagCompany]
                 let that = this
                 this.showAnalyzeList = !this.showAnalyzeList
                 this.flagSwitch = this.showAnalyzeList
-                this.clearMarkers()
                 if(this.showAnalyzeList){
                     this.getOverlapData(this.flagCompany)
                 }else{
@@ -587,16 +588,20 @@
             selectAnalyzeCompany(){
                 console.log(this.flagCompany);
                 let that = this
+                this.clearMarkers()
                 this.companyCheckbox.splice(-1,1,this.flagCompany)
                 if(this.flagCompany!==1){
-                    this.clearMarkers()
+                    console.log(1)
                     this.getOverlapData(this.flagCompany)
                 }else{
+                    console.log(2)
                     this.getOverlapData(this.flagCompany)
                 }
             },
             //重叠分析数据
             getOverlapData(companyId){
+                console.log('公司id',companyId);
+                this.clearMarkers()
                 this.mapLoading = true
                 let info = {
                     cityCode: this.selectCity,
@@ -629,16 +634,18 @@
                                 this.KJResData = competitionList
                                 this.addMarker(competitionList, '#15C4B2', companyId)
                             }
+
                             //亲邻打点
                             this.QLResData = qadnResList
-                            this.addMarker(qadnResList, '#FF3131', companyId)
+                            this.addMarker(qadnResList, '#FF3131', 1)
                             //覆盖点打点
                             this.overlapData = overlapList
                             this.addMarker(overlapList, '#9254DE', 99)
-                            //数据
+                            //重叠小区和重重复率
+                            let rate = overlapList.length / (overlapList.length + qadnResList.length)
                             let obj = {
                                 count:overlapList.length,
-                                rate:(overlapList.length/(overlapList.length+qadnResList.length)).toFixed(4)*100
+                                rate:(rate*100).toFixed(2)
                             }
                             this.overlap = obj
                             //覆盖小区列表
@@ -650,6 +657,36 @@
                     })
                 }
             },
+            //导出
+            exportFun(exportType){
+                let params = {
+                    cityCode: this.selectCity,
+                    company: this.flagCompany,
+                    exportType:exportType
+                }
+                if (this.selectArea.length > 0) {
+                    params.districtCodes = this.selectArea.join(',')
+                }
+                if (this.selectResType != 0) {
+                    params.resType = this.selectResType
+                }
+                api.getApi_file(this.apiVar.mapApi + '/resCompare/exportStackAnalyze',params).then(res=>{
+                    console.log('导出',res.headers)
+                    if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
+                        sessFun.loginTimeout()
+                    } else{
+                        let blob = new Blob([res.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
+                        let downloadElement = document.createElement('a');
+                        let href = window.URL.createObjectURL(blob); //创建下载的链接
+                        downloadElement.href = href;
+                        downloadElement.download = res.headers['content-disposition'].split('=')[1]; //下载后文件名
+                        document.body.appendChild(downloadElement);
+                        downloadElement.click(); //点击下载
+                        document.body.removeChild(downloadElement); //下载完成移除元素
+                        window.URL.revokeObjectURL(href); //释放掉blob对象
+                    }
+                })
+            }
         },
         mounted() {
             this.getCity()

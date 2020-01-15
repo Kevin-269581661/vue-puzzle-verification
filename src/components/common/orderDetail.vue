@@ -241,7 +241,10 @@
                         </div>
                     </el-tab-pane>
                 </el-tabs>
-
+                <!--换画弹框-->
+                <div class="changepic_box" v-if="showPainModal">
+                    <change-pic :type="3" :planPanel="planPanel" :from-type="fromType" :order-detail="orderDetail" @toSixthTab="toSixthTab()"></change-pic>
+                </div>
                 <!--添加点位对话框-->
                 <el-dialog title="添加点位"
                            :visible.sync="dialogAddPoint"
@@ -710,6 +713,7 @@
                 // 换画
                 showPain: false,
                 fromType: false,
+                showPainModal:false,
                 // 换画列表
                 painlist: [],
                 //点位更改记录
@@ -1789,28 +1793,26 @@
                     }
                 });
             },
-            changePain() {
-                // MessageBox.confirm(
-                //     "注：换画时间需在对应点位排期时间内",
-                //     "是否创建新的换画报告\n",
-                //     {
-                //         dangerouslyUseHTMLString: true,
-                //         confirmButtonText: "确定",
-                //         cancelButtonText: "取消",
-                //         type: "warning"
-                //     }
-                // ).then(() => {
-                //     this.getPainlist();
-                //     this.addPainReport();
-                // });
-                this.showPain = true;
+            //跳到换画tab
+            toSixthTab(){
                 this.planPanel = 'sixth';
+            },
+            //点击换画
+            changePain() {
+                if(this.painlist.length>0){
+                    this.showPainModal = false
+                    //跳到换画报告tab
+                    this.showPain = true;
+                    this.planPanel = 'sixth';
+                }else{
+                    this.showPainModal = true;
+                }
                 setTimeout(() => {
                     this.fromType = !this.fromType;
                 }, 10);
             },
             // 新增换画报告
-            addPainReport() {
+           /* addPainReport() {
                 let info = {
                     apId: sessionStorage.getItem("order_apid")
                 };
@@ -1839,7 +1841,7 @@
                         sessFun.messageFun('warning', res.data.msg);
                     }
                 });
-            },
+            },*/
             // 操作提示统一方法
             messageFun(mesType, mes) {
                 this.$message({

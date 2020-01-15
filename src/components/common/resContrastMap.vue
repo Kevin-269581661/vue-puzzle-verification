@@ -330,9 +330,10 @@
                 this.clearMarkers()
                 this.selectArea = [];
                 this.getArea(this.selectCity)
-                console.log(this.companyCheckbox);
+                // console.log(this.companyCheckbox);
                 if(this.flagSwitch){
-                    this.getOverlapData(this.companyCheckbox[1])
+                    this.getOverlapData(this.flagCompany)
+                    this.companyCheckbox.push(this.flagCompany)
                 }else{
                     if (this.companyCheckbox.length > 0) {
                         for (let data of this.companyCheckbox) {
@@ -354,7 +355,8 @@
                 this.clearMarkers()
                 // this.getData()
                 if(this.flagSwitch){
-                    this.getOverlapData(this.companyCheckbox[1])
+                    this.getOverlapData(this.flagCompany)
+                    this.companyCheckbox.push(this.flagCompany)
                 }else{
                     if (this.companyCheckbox.length > 0) {
                         for (let data of this.companyCheckbox) {
@@ -384,7 +386,8 @@
                 let that = this
                 this.clearMarkers()
                 if(this.flagSwitch){
-                    this.getOverlapData(this.companyCheckbox[1])
+                    this.getOverlapData(this.flagCompany)
+                    this.companyCheckbox.push(this.flagCompany)
                 }else{
                     if (this.companyCheckbox.length > 0) {
                         for (let data of this.companyCheckbox) {
@@ -602,19 +605,7 @@
                     this.changeSwitch()
                     // this.getOverlapData(this.flagCompany)
                 }
-                // else{
-                //     if (this.companyCheckbox.length > 0) {
-                //         for (let data of this.companyCheckbox) {
-                //             if(data!=1){
-                //                 this.getData(data)
-                //             }else{
-                //                 setTimeout(()=>{
-                //                     that.getData(data)
-                //                 },100)
-                //             }
-                //         }
-                //     }
-                // }
+
 
             },
             //重叠标记开关

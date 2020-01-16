@@ -434,6 +434,7 @@
                             } else if (id == 5) {
                                 this.addMarker(this.KJResData, '#15C4B2', id)
                             }
+                            this.addMarker(this.QLResData, '#FF3131', 1)
                             this.addMarker(this.overlapData, '#9254DE', 99)
                         } else {
                             if (this.companyCheckbox.length > 0) {
@@ -448,17 +449,9 @@
                                 }
                             }
                         }
-                        //亲邻层级最高
-                        if (this.companyCheckbox.includes(1)) {
-                            setTimeout(() => {
-                                if (this.flagSwitch) {
-                                    this.addMarker(this.QLResData, '#FF3131', 1)
-                                    this.addMarker(this.overlapData, '#9254DE', 99)
-                                }
 
-                            }, 100)
-                        }
                     } else {
+                        this.resMap.removeOverlay(this.overlapCollection)
                         if (this.flagSwitch) {
                             this.addMarker(this.QLResData, '#FF3131', id)
                             this.addMarker(this.overlapData, '#9254DE', 99)

@@ -681,15 +681,16 @@
                     // 上下刊报告列表
                     this.searchFun();
                 } else if (type == 3) {
-                    // 获取换画名称列表
-                    this.getPainList().then(res => {
-                        this.dateRange = {
-                            beginDate: this.painList[this.activePainIndex].startDate,
-                            endDate: this.painList[this.activePainIndex].endDate
-                        };
-                        // 换画报告列表
-                        this.search();
-                    });
+                    // // 获取换画名称列表
+                    // this.getPainList().then(res => {
+                    //     this.dateRange = {
+                    //         beginDate: this.painList[this.activePainIndex].startDate,
+                    //         endDate: this.painList[this.activePainIndex].endDate
+                    //     };
+                    //
+                    // });
+                    // 换画报告列表
+                    this.search();
                 }
             },
             // 获取城市区域
@@ -1144,6 +1145,10 @@
                             let dataInfo = res.data.data;
                             // 物料信息弹出框的选点信息
                             let dataArr = dataInfo.dataList;
+                            this.dateRange = {
+                                beginDate: dataInfo.dataList[0].beginDate,
+                                endDate: dataInfo.dataList[0].endDate
+                            };
                             // this.pointArr = this.pointArr.concat(this.formatData(dataArr));
                             this.pointArr = this.formatData(dataArr)
 

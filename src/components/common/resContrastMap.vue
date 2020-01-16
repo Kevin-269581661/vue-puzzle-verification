@@ -333,7 +333,7 @@
                 // console.log(this.companyCheckbox);
                 if(this.flagSwitch){
                     this.getOverlapData(this.flagCompany)
-                    this.companyCheckbox.push(this.flagCompany)
+                    this.companyCheckbox = [1,this.flagCompany]
                 }else{
                     if (this.companyCheckbox.length > 0) {
                         for (let data of this.companyCheckbox) {
@@ -356,7 +356,7 @@
                 // this.getData()
                 if(this.flagSwitch){
                     this.getOverlapData(this.flagCompany)
-                    this.companyCheckbox.push(this.flagCompany)
+                    this.companyCheckbox = [1,this.flagCompany]
                 }else{
                     if (this.companyCheckbox.length > 0) {
                         for (let data of this.companyCheckbox) {
@@ -387,7 +387,7 @@
                 this.clearMarkers()
                 if(this.flagSwitch){
                     this.getOverlapData(this.flagCompany)
-                    this.companyCheckbox.push(this.flagCompany)
+                    this.companyCheckbox = [1,this.flagCompany]
                 }else{
                     if (this.companyCheckbox.length > 0) {
                         for (let data of this.companyCheckbox) {
@@ -699,6 +699,7 @@
                         }
                     })
                 }
+                this.getCommunityCount(companyId)
             },
             //导出
             exportFun(exportType){
@@ -868,7 +869,7 @@
 
     }
     .content-list{
-        max-height: 408px;
+        max-height: 259px;
         overflow-y: scroll;
         overflow-x: hidden !important;
     }
@@ -1105,5 +1106,16 @@
 
     .analyze /deep/ .el-checkbox__input.is-disabled + span.el-checkbox__label {
         color: rgba(0,0,0,0.85) !important;
+    }
+    /*1440*/
+    @media screen and (min-width: 1440px) {
+
+    }
+
+    /*1920*/
+    @media screen and (min-width: 1920px) {
+
+
+
     }
 </style>

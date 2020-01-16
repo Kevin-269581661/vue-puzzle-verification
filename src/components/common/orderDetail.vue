@@ -237,13 +237,13 @@
                     </el-tab-pane>
                     <el-tab-pane label="换画报告" name="sixth" v-if="showPain">
                         <div class="changepic_box" v-show="planPanel=='sixth'">
-                            <change-pic :type="3" :from-type="fromType" :order-detail="orderDetail"></change-pic>
+                            <change-pic :type="3" :firstTime="false" :from-type="fromType" :order-detail="orderDetail"></change-pic>
                         </div>
                     </el-tab-pane>
                 </el-tabs>
                 <!--换画弹框-->
                 <div class="changepic_box" v-if="showPainModal">
-                    <change-pic :type="3" :planPanel="planPanel" :from-type="fromType" :order-detail="orderDetail" @toSixthTab="toSixthTab()"></change-pic>
+                    <change-pic :firstTime="showPainModal" :type="3" :planPanel="planPanel" :from-type="fromType" :order-detail="orderDetail" @toSixthTab="toSixthTab()" @hidePainModal="hidePainModal()"></change-pic>
                 </div>
                 <!--添加点位对话框-->
                 <el-dialog title="添加点位"
@@ -713,6 +713,7 @@
                 // 换画
                 showPain: false,
                 fromType: false,
+                //第一次增加换画
                 showPainModal:false,
                 // 换画列表
                 painlist: [],
@@ -1796,6 +1797,10 @@
             //跳到换画tab
             toSixthTab(){
                 this.planPanel = 'sixth';
+            },
+            //隐藏
+            hidePainModal(){
+                this.showPainModal = false
             },
             //点击换画
             changePain() {

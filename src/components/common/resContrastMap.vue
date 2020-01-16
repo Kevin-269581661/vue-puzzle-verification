@@ -56,7 +56,7 @@
                             <div class="switch">
                                 <span>重叠标记</span>
                                 <el-switch
-                                    @change = "changeSwitch"
+                                    @change="changeSwitch"
                                     v-model="flagSwitch"
                                     active-color="#9254DE"
                                     inactive-color="#e8e8e8">
@@ -105,9 +105,12 @@
                                 导出<i class="el-icon-arrow-down el-icon--right"></i>
                             </el-button>
                             <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item  @click.native.prevent="exportFun(3)" command="3">多方重叠分析</el-dropdown-item>
-                                <el-dropdown-item  @click.native.prevent="exportFun(1)" command="1">重叠小区</el-dropdown-item>
-                                <el-dropdown-item  @click.native.prevent="exportFun(2)" command="2">排除重叠小区</el-dropdown-item>
+                                <el-dropdown-item @click.native.prevent="exportFun(3)" command="3">多方重叠分析
+                                </el-dropdown-item>
+                                <el-dropdown-item @click.native.prevent="exportFun(1)" command="1">重叠小区
+                                </el-dropdown-item>
+                                <el-dropdown-item @click.native.prevent="exportFun(2)" command="2">排除重叠小区
+                                </el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
                     </div>
@@ -201,8 +204,8 @@
                     count: 0,
                     rate: 0
                 },
-                overlapData:[],//重复的点数据
-                overlapCollection:[],//浮标
+                overlapData: [],//重复的点数据
+                overlapCollection: [],//浮标
                 communityList: [{
                     resName: '达利花园',
                     address: '宝安区后端利达路3号',
@@ -281,12 +284,12 @@
                 if (this.companyCheckbox.length > 0) {
                     for (let data of this.companyCheckbox) {
                         // 设置地图显示的城市 此项是必须设置的
-                        if(data!=1){
+                        if (data != 1) {
                             this.getData(data)
-                        }else{
-                            setTimeout(()=>{
+                        } else {
+                            setTimeout(() => {
                                 that.getData(data)
-                            },1000)
+                            }, 1000)
                         }
                     }
                 }
@@ -331,18 +334,18 @@
                 this.selectArea = [];
                 this.getArea(this.selectCity)
                 // console.log(this.companyCheckbox);
-                if(this.flagSwitch){
+                if (this.flagSwitch) {
                     this.getOverlapData(this.flagCompany)
-                    this.companyCheckbox = [1,this.flagCompany]
-                }else{
+                    this.companyCheckbox = [1, this.flagCompany]
+                } else {
                     if (this.companyCheckbox.length > 0) {
                         for (let data of this.companyCheckbox) {
-                            if(data!=1){
+                            if (data != 1) {
                                 this.getData(data)
-                            }else{
-                                setTimeout(()=>{
+                            } else {
+                                setTimeout(() => {
                                     that.getData(data)
-                                },100)
+                                }, 100)
                             }
                         }
                     }
@@ -354,18 +357,21 @@
                 // console.log('区域', this.selectArea)
                 this.clearMarkers()
                 // this.getData()
-                if(this.flagSwitch){
-                    this.getOverlapData(this.flagCompany)
-                    this.companyCheckbox = [1,this.flagCompany]
-                }else{
+                if (this.flagSwitch) {
+                    setTimeout(() => {
+                        that.getOverlapData(this.flagCompany)
+                    }, 500)
+
+                    this.companyCheckbox = [1, this.flagCompany]
+                } else {
                     if (this.companyCheckbox.length > 0) {
                         for (let data of this.companyCheckbox) {
-                            if(data!=1){
+                            if (data != 1) {
                                 this.getData(data)
-                            }else{
-                                setTimeout(()=>{
+                            } else {
+                                setTimeout(() => {
                                     that.getData(data)
-                                },100)
+                                }, 200)
                             }
                         }
                     }
@@ -374,29 +380,34 @@
             },
             //清空marker
             clearMarkers() {
-                this.resMap.removeOverlay(this.QLpointCollection)
-                this.resMap.removeOverlay(this.FZpointCollection)
-                this.resMap.removeOverlay(this.XCpointCollection)
-                this.resMap.removeOverlay(this.XYMpointCollection)
-                this.resMap.removeOverlay(this.KJpointCollection)
-                this.resMap.removeOverlay(this.overlapCollection)
+                let promise = new Promise((resolve, reject) => {
+                    this.resMap.removeOverlay(this.QLpointCollection)
+                    this.resMap.removeOverlay(this.FZpointCollection)
+                    this.resMap.removeOverlay(this.XCpointCollection)
+                    this.resMap.removeOverlay(this.XYMpointCollection)
+                    this.resMap.removeOverlay(this.KJpointCollection)
+                    this.resMap.removeOverlay(this.overlapCollection)
+                    resolve();
+                });
+                return promise;
+
             },
             //选择资源类型
             filterResType() {
                 let that = this
                 this.clearMarkers()
-                if(this.flagSwitch){
+                if (this.flagSwitch) {
                     this.getOverlapData(this.flagCompany)
-                    this.companyCheckbox = [1,this.flagCompany]
-                }else{
+                    this.companyCheckbox = [1, this.flagCompany]
+                } else {
                     if (this.companyCheckbox.length > 0) {
                         for (let data of this.companyCheckbox) {
-                            if(data!=1){
+                            if (data != 1) {
                                 this.getData(data)
-                            }else{
-                                setTimeout(()=>{
+                            } else {
+                                setTimeout(() => {
                                     that.getData(data)
-                                },100)
+                                }, 100)
                             }
                         }
                     }
@@ -404,24 +415,24 @@
             },
             //选择公司
             chooseCompany(e, id) {
-                console.log(e,id,this.companyCheckbox);
+                console.log(e, id, this.companyCheckbox);
                 let that = this
                 if (e) {
-                    if(id!==1){
+                    if (id !== 1) {
                         this.clearMarkers()
                         //是否覆盖分析
-                        if(this.flagSwitch){
-                            if(id==2){
+                        if (this.flagSwitch) {
+                            if (id == 2) {
                                 this.addMarker(this.FZResData, '#318FFF', id)
-                            }else if(id==3){
+                            } else if (id == 3) {
                                 this.addMarker(this.XCResData, '#ffa940', id)
-                            }else if(id == 4){
+                            } else if (id == 4) {
                                 this.addMarker(this.XYMResData, '#52c41a', id)
-                            }else if(id ==5){
+                            } else if (id == 5) {
                                 this.addMarker(this.KJResData, '#15C4B2', id)
                             }
                             this.addMarker(this.overlapData, '#9254DE', 99)
-                        }else{
+                        } else {
                             if (this.companyCheckbox.length > 0) {
                                 for (let data of this.companyCheckbox) {
                                     if (data != 1) {
@@ -435,26 +446,26 @@
                             }
                         }
                         //亲邻层级最高
-                        if(this.companyCheckbox.includes(1)){
-                            setTimeout(()=>{
-                                if(this.flagSwitch){
+                        if (this.companyCheckbox.includes(1)) {
+                            setTimeout(() => {
+                                if (this.flagSwitch) {
                                     this.addMarker(this.QLResData, '#FF3131', 1)
                                     this.addMarker(this.overlapData, '#9254DE', 99)
                                 }
 
-                            },100)
+                            }, 100)
                         }
-                    }else{
-                        if(this.flagSwitch){
+                    } else {
+                        if (this.flagSwitch) {
                             this.addMarker(this.QLResData, '#FF3131', id)
                             this.addMarker(this.overlapData, '#9254DE', 99)
-                        }else{
+                        } else {
                             this.addMarker(this.QLResData, '#FF3131', id)
                         }
                     }
 
                 } else {
-                    if(id == 1){
+                    if (id == 1) {
                         this.resMap.removeOverlay(this.QLpointCollection)
                     } else if (id == 2) {
                         this.resMap.removeOverlay(this.FZpointCollection)
@@ -463,8 +474,8 @@
                     } else if (id == 4) {
                         this.resMap.removeOverlay(this.XYMpointCollection)
                     } else if (id == 5) {
-                       this.resMap.removeOverlay(this.KJpointCollection)
-                   }
+                        this.resMap.removeOverlay(this.KJpointCollection)
+                    }
                 }
             },
             //获取点位数据
@@ -497,9 +508,9 @@
                             this.XYMResData = result
                             this.addMarker(result, '#52c41a', companyId)
                         } else if (companyId == 5) {
-                             this.KJResData = result
-                             this.addMarker(result, '#15C4B2', companyId)
-                         }
+                            this.KJResData = result
+                            this.addMarker(result, '#15C4B2', companyId)
+                        }
                     } else {
                         this.$message.warning(res.data.MSG)
                     }
@@ -552,10 +563,10 @@
                     } else if (companyId == 4) {
                         this.XYMpointCollection = new BMap.PointCollection(points, options);  // 初始化PointCollection
                         this.resMap.addOverlay(this.XYMpointCollection);  // 添加Overlay
-                    } else if(companyId == 5){
+                    } else if (companyId == 5) {
                         this.KJpointCollection = new BMap.PointCollection(points, options);  // 初始化PointCollection
                         this.resMap.addOverlay(this.KJpointCollection);  // 添加Overlay
-                    } else{
+                    } else {
                         //覆盖点
                         this.overlapCollection = new BMap.PointCollection(points, options);  // 初始化PointCollection
                         this.resMap.addOverlay(this.overlapCollection);  // 添加Overlay
@@ -595,11 +606,11 @@
                 this.areaList = areaPackage.findArea(id)
             },
             //点击重叠分析
-            openAnalyze(){
-                this.companyCheckbox = [1,this.flagCompany]
+            openAnalyze() {
+                this.companyCheckbox = [1, this.flagCompany]
                 let that = this
                 this.showAnalyzeList = !this.showAnalyzeList
-                if(this.showAnalyzeList&&!this.flagSwitch){
+                if (this.showAnalyzeList && !this.flagSwitch) {
                     this.clearMarkers()
                     this.flagSwitch = true
                     this.changeSwitch()
@@ -609,104 +620,108 @@
 
             },
             //重叠标记开关
-            changeSwitch(){
+            changeSwitch() {
                 let that = this
                 this.clearMarkers()
-                if(this.flagSwitch){
+                if (this.flagSwitch) {
+                    //打开
                     this.getOverlapData(this.flagCompany)
+                    this.companyCheckbox = [1, this.flagCompany]
                     // this.addMarker(this.overlapData, '#9254DE', 99)
-                }else{
+                } else {
+                    //关闭
+                    this.resMap.removeOverlay(this.overlapCollection)
                     if (this.companyCheckbox.length > 0) {
                         for (let data of this.companyCheckbox) {
-                            if(data!=1){
+                            if (data != 1) {
                                 this.getData(data)
-                            }else{
-                                setTimeout(()=>{
+                            } else {
+                                setTimeout(() => {
                                     that.getData(data)
-                                },100)
+                                }, 100)
                             }
                         }
                     }
                 }
             },
             //选择分析竞媒
-            selectAnalyzeCompany(){
+            selectAnalyzeCompany() {
                 // console.log(this.flagCompany);
                 let that = this
-                this.clearMarkers()
-                this.companyCheckbox = [1,this.flagCompany]
-                if(this.flagCompany!==1){
+                this.companyCheckbox = [1, this.flagCompany]
+                if (this.flagCompany !== 1) {
                     this.getOverlapData(this.flagCompany)
-                }else{
+                } else {
                     this.getOverlapData(this.flagCompany)
                 }
             },
             //重叠分析数据
-            getOverlapData(companyId){
+            getOverlapData(companyId) {
+                let that = this
                 // console.log('公司id',companyId);
                 this.clearMarkers()
-                this.mapLoading = true
+                that.mapLoading = true
                 let info = {
-                    cityCode: this.selectCity,
+                    cityCode: that.selectCity,
                     company: companyId
                 }
-                if (this.selectArea.length > 0) {
-                    info.districtCodes = this.selectArea.join(',')
+                if (that.selectArea.length > 0) {
+                    info.districtCodes = that.selectArea.join(',')
                 }
-                if (this.selectResType != 0) {
-                    info.resType = this.selectResType
+                if (that.selectResType != 0) {
+                    info.resType = that.selectResType
                 }
-                if(this.flagSwitch){
-                    api.getApi(this.apiVar.mapApi + '/resCompare/stackAnalyze', info).then(res => {
-                        console.log('覆盖分析数据',res.data)
-                        if(res.data.SysCode==200200){
+                if (that.flagSwitch) {
+                    api.getApi(that.apiVar.mapApi + '/resCompare/stackAnalyze', info).then(res => {
+                        console.log('覆盖分析数据', res.data)
+                        if (res.data.SysCode == 200200) {
                             let qadnResList = res.data.data.qadnResList //亲邻
                             let competitionList = res.data.data.competitionList  //竞媒
                             let overlapList = res.data.data.overlapList //重叠
                             //竞媒打点
                             if (companyId == 2) {
-                                this.FZResData = competitionList
-                                this.addMarker(competitionList, '#318FFF', companyId)
-                            }else if (companyId == 3) {
-                                this.XCResData = competitionList
-                                this.addMarker(competitionList, '#ffa940', companyId)
+                                that.FZResData = competitionList
+                                that.addMarker(competitionList, '#318FFF', companyId)
+                            } else if (companyId == 3) {
+                                that.XCResData = competitionList
+                                that.addMarker(competitionList, '#ffa940', companyId)
                             } else if (companyId == 4) {
-                                this.XYMResData = competitionList
-                                this.addMarker(competitionList, '#52c41a', companyId)
+                                that.XYMResData = competitionList
+                                that.addMarker(competitionList, '#52c41a', companyId)
                             } else if (companyId == 5) {
-                                this.KJResData = competitionList
-                                this.addMarker(competitionList, '#15C4B2', companyId)
+                                that.KJResData = competitionList
+                                that.addMarker(competitionList, '#15C4B2', companyId)
                             }
 
                             //亲邻打点
-                            this.QLResData = qadnResList
-                            this.addMarker(qadnResList, '#FF3131', 1)
+                            that.QLResData = qadnResList
+                            that.addMarker(qadnResList, '#FF3131', 1)
                             //覆盖点打点
-                            this.overlapData = overlapList
-                            this.addMarker(overlapList, '#9254DE', 99)
+                            that.overlapData = overlapList
+                            that.addMarker(overlapList, '#9254DE', 99)
                             //重叠小区和重重复率
                             let rate = overlapList.length / (overlapList.length + qadnResList.length)
                             let obj = {
-                                count:overlapList.length,
-                                rate:(rate*100).toFixed(2)
+                                count: overlapList.length,
+                                rate: (rate * 100).toFixed(2)
                             }
-                            this.overlap = obj
+                            that.overlap = obj
                             //覆盖小区列表
-                            this.communityList = overlapList
+                            that.communityList = overlapList
 
-                        }else{
-                            this.$message.warning(res.data.MSG)
+                        } else {
+                            that.$message.warning(res.data.MSG)
                         }
                     })
                 }
-                this.getCommunityCount(companyId)
+                that.getCommunityCount(companyId)
             },
             //导出
-            exportFun(exportType){
+            exportFun(exportType) {
                 let params = {
                     cityCode: this.selectCity,
                     company: this.flagCompany,
-                    exportType:exportType
+                    exportType: exportType
                 }
                 if (this.selectArea.length > 0) {
                     params.districtCodes = this.selectArea.join(',')
@@ -714,16 +729,16 @@
                 if (this.selectResType != 0) {
                     params.resType = this.selectResType
                 }
-                api.getApi_file(this.apiVar.mapApi + '/resCompare/exportStackAnalyze',params).then(res=>{
-                    console.log('导出',res.headers)
+                api.getApi_file(this.apiVar.mapApi + '/resCompare/exportStackAnalyze', params).then(res => {
+                    console.log('导出', res.headers)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         sessFun.loginTimeout()
-                    } else{
+                    } else {
                         let blob = new Blob([res.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
                         let downloadElement = document.createElement('a');
                         let href = window.URL.createObjectURL(blob); //创建下载的链接
                         downloadElement.href = href;
-                        downloadElement.download = '资源对比叠加分析'+this.formatTime(new Date())+'.xlsx'; //下载后文件名
+                        downloadElement.download = '资源对比叠加分析' + this.formatTime(new Date()) + '.xlsx'; //下载后文件名
                         document.body.appendChild(downloadElement);
                         downloadElement.click(); //点击下载
                         document.body.removeChild(downloadElement); //下载完成移除元素
@@ -800,10 +815,11 @@
         background: #fff;
     }
 
-    .content-top{
-        padding:0 16px;
+    .content-top {
+        padding: 0 16px;
         margin-top: 16px;
     }
+
     .flag-switch {
         border-radius: 4px;
         border: 1px solid rgba(232, 232, 232, 1);
@@ -834,48 +850,56 @@
         width: 100%;
         height: 32px;
     }
+
     .option /deep/ .el-input--suffix .el-input__inner, .option /deep/ .el-select {
         width: 100%;
         height: 32px;
     }
-    .content-top-data{
+
+    .content-top-data {
         display: flex;
         justify-content: space-between;
         margin-bottom: 16px;
     }
+
     .content-top-data li {
-        width:120px;
-        height:69px;
-        background:rgba(247,247,247,1);
-        border-radius:4px;
-        border:1px solid rgba(232,232,232,1);
+        width: 120px;
+        height: 69px;
+        background: rgba(247, 247, 247, 1);
+        border-radius: 4px;
+        border: 1px solid rgba(232, 232, 232, 1);
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
     }
-    .content-top-data li span:first-child{
-        color:rgba(0,0,0,0.85);
+
+    .content-top-data li span:first-child {
+        color: rgba(0, 0, 0, 0.85);
         font-size: 24px;
     }
-    .content-top-data li span:last-child{
-        color:rgba(0,0,0,0.65);
+
+    .content-top-data li span:last-child {
+        color: rgba(0, 0, 0, 0.65);
         font-size: 14px;
     }
-    .community-list{
+
+    .community-list {
         border-top: 1px solid #E8E8E8;
         padding: 16px;
         box-sizing: border-box;
 
     }
-    .content-list{
+
+    .content-list {
         max-height: 259px;
         overflow-y: scroll;
         overflow-x: hidden !important;
     }
+
     /*滚动条*/
 
-   .content-list::-webkit-scrollbar {
+    .content-list::-webkit-scrollbar {
         width: 4px;
         height: 8px;
         background: #e8e8e8;
@@ -895,35 +919,38 @@
         background: #fafafa;
     }
 
-    .community-list h5{
-        color:rgba(0,0,0,0.85);
+    .community-list h5 {
+        color: rgba(0, 0, 0, 0.85);
         font-size: 18px;
         font-weight: bold;
     }
-    .community-list p{
-        color:rgba(0,0,0,0.65);
+
+    .community-list p {
+        color: rgba(0, 0, 0, 0.65);
         font-size: 14px;
         margin-top: 4px;
         margin-bottom: 4px;
     }
-    .info span{
-        background:rgba(0,0,0,0.06);
-        border-radius:2px;
+
+    .info span {
+        background: rgba(0, 0, 0, 0.06);
+        border-radius: 2px;
         padding: 2px 6px;
-        color:rgba(0,0,0,0.35);
+        color: rgba(0, 0, 0, 0.35);
         font-size: 12px;
     }
-    .content-wrap .content-bottom{
+
+    .content-wrap .content-bottom {
         text-align: center;
         border-top: 1px solid #E8E8E8;
         padding: 8px 16px;
         box-sizing: border-box;
     }
-    .content-bottom button{
+
+    .content-bottom button {
         width: 74px;
         height: 32px;
     }
-
 
     /*左上角下拉框*/
     .select-group {
@@ -1000,12 +1027,12 @@
         border-color: rgba(255, 169, 64, 0.8);
     }
 
-    .green /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner, .analyze.green /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner{
+    .green /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner, .analyze.green /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner {
         background-color: rgba(82, 196, 26, 0.8);
         border-color: rgba(82, 196, 26, 0.8);
     }
 
-    .lakeBlue /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner,  .analyze.lakeBlue /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner {
+    .lakeBlue /deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .red /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner, .analyze.lakeBlue /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner {
         background-color: rgba(21, 196, 178, 0.8);
         border-color: rgba(21, 196, 178, 0.8);
     }
@@ -1034,15 +1061,16 @@
         background-color: rgba(21, 196, 178, 0.2);
         border-color: rgba(21, 196, 178, 0.2);
     }
-    .red /deep/ .el-checkbox__input.is-disabled + span.el-checkbox__label{
-        color: rgba(0,0,0,0.65);
+
+    .red /deep/ .el-checkbox__input.is-disabled + span.el-checkbox__label {
+        color: rgba(0, 0, 0, 0.65);
     }
 
     .red /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .blue /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .orange /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .green /deep/ .el-checkbox__input.is-focus .el-checkbox__inner, .lakeBlue /deep/ .el-checkbox__input.is-focus .el-checkbox__inner {
         border-color: transparent;
     }
 
-    .red /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner,.blue /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner, .orange /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner, .lakeBlue /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner, .green /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner {
+    .red /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner, .blue /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner, .orange /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner, .lakeBlue /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner, .green /deep/ .el-checkbox__input.is-disabled .el-checkbox__inner {
         background-color: #edf2fc;
         border-color: #dcdfe6;
     }
@@ -1105,17 +1133,7 @@
     }
 
     .analyze /deep/ .el-checkbox__input.is-disabled + span.el-checkbox__label {
-        color: rgba(0,0,0,0.85) !important;
-    }
-    /*1440*/
-    @media screen and (min-width: 1440px) {
-
+        color: rgba(0, 0, 0, 0.85) !important;
     }
 
-    /*1920*/
-    @media screen and (min-width: 1920px) {
-
-
-
-    }
 </style>

@@ -56,7 +56,7 @@
                 </div>
             </div>
             <!-- 搜索 -->
-            <div class="search_pic">
+            <div class="search_pic" v-if="!firstTime">
                 <el-row :gutter="32">
                     <el-col>
                         <span>媒体类型:</span>
@@ -90,7 +90,7 @@
         </template>
 
         <!-- 图片列表 -->
-        <div class="imgs_box">
+        <div class="imgs_box" v-if="!firstTime">
             <div class="imgs_point">
                 <div class="point_item" v-for="(item, index) of imageArr" :key="index">
                     <div class="detail_top">
@@ -159,14 +159,14 @@
 
         <!-- 分页 -->
         <div class="pager">
-            <el-pagination v-if="pageInfo.paginationShow" background :current-page.sync="pageInfo.currPage"
+            <el-pagination v-if="pageInfo.paginationShow&&!firstTime" background :current-page.sync="pageInfo.currPage"
                            :page-sizes="[6, 12]" :page-size="pageInfo.pageSize"
                            layout="sizes, prev, pager, next, jumper" :total="pageInfo.totalNum"
                            @size-change="sizeChange" @current-change='changePage'>
             </el-pagination>
         </div>
 
-        <div class="up-report-bottom">
+        <div class="up-report-bottom" v-if="!firstTime">
             <el-button plain @click="downloadImg()" :loading="downLoading"
                        v-qadn-mta-h5="{id: type == 1 ? 'a006_b011_c009_d000_bt130_ck05' : type == 2 ? 'a006_b011_c010_d000_bt136_ck05' : 'a006_b011_c013_d000_bt157_ck05'}">
                 导出图片
@@ -186,7 +186,7 @@
         </div>
 
         <!-- 换画弹出框 -->
-        <el-dialog title="选择换画点位" :visible.sync="isShowPic">
+        <el-dialog title="选择换画点位" :visible.sync="isShowPic" :show-close="false">
             <el-row class="dialog_pic">
                 <span>资源名称:</span>
                 <el-select v-model="dialogInfo.resName" multiple filterable placeholder="请输入资源名称" size="small">
@@ -438,6 +438,9 @@
             },
             planPanel:{
                 type:String,
+            },
+            firstTime:{
+                type: Boolean
             }
         },
         data() {
@@ -519,7 +522,7 @@
                     currPage: 1,
                     totalNum: 0,
                     pageSize: 6,
-                    loading: true,
+                    loading: false,
                 },
                 // 图片列表
                 imageArr: [],
@@ -682,15 +685,13 @@
                     this.searchFun();
                 } else if (type == 3) {
                     // // 获取换画名称列表
-                    // this.getPainList().then(res => {
-                    //     this.dateRange = {
-                    //         beginDate: this.painList[this.activePainIndex].startDate,
-                    //         endDate: this.painList[this.activePainIndex].endDate
-                    //     };
-                    //
-                    // });
-                    // 换画报告列表
-                    this.search();
+                    this.getPainList().then(res => {
+                        // 换画报告列表
+                        if(this.painList.length>0){
+                            this.search();
+                        }
+                    });
+
                 }
             },
             // 获取城市区域
@@ -699,7 +700,7 @@
                     apId: sessionStorage.getItem('order_apid'),
                 };
                 api.getApi(this.apiVar.replace + "/plan/region", info).then(res => {
-                    console.log(res);
+                    console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         let resArr = res.data.data;
                         let result = this.formatCitys(resArr);
@@ -740,7 +741,7 @@
                 };
                 console.log(info);
                 api.getApi(this.apiVar.replace + '/plan/resInfo', info).then(res => {
-                    console.log(res);
+                    console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         let result = res.data.data.map(item => {
                             return {
@@ -848,6 +849,7 @@
             },
             // 上下刊报告列表
             getImgInfo(params) {
+                this.pageInfo.loading = true;
                 api.postApi(this.apiVar.Advertisement + "/GetImg", params)
                     .then(res => {
                         if (!res.data.SysCode) {
@@ -955,8 +957,9 @@
             },
             // 获取换画报告列表
             getData(params) {
+                this.pageInfo.loading = true
                 api.postApi_json(this.apiVar.replace + "/report/detailInfo", params).then(res => {
-                    console.log(res);
+                    console.log('换画报告列表',res.data);
                     if (res.data.SysCode == 200200) {
                         let dataInfo = res.data.data;
                         let percent = dataInfo.totalSize ? Number(((dataInfo.businessItem.adsWithReplacePics / dataInfo.totalSize) * 100).toFixed(2)) : 0;
@@ -1569,6 +1572,7 @@
                 this.isShowPic = false;
                 this.shoplist = [];
                 this.selectList = [];
+                this.$emit('hidePainModal','false');
                 // this.selectNum = 0;
                 // this.search();
             }

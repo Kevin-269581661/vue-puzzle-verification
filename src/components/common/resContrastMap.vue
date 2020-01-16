@@ -16,7 +16,7 @@
             </el-select>
             <!--区域-->
             <el-select v-model="selectArea" size="small" placeholder="请选择区域" collapse-tags multiple clearable
-                       @change="filterArea">
+                       @visible-change="filterArea">
                 <el-option v-for="item in areaList" :key="item.rID" :label="item.rName" :value="item.rID"></el-option>
             </el-select>
             <!--资源类型-->
@@ -289,7 +289,7 @@
                         } else {
                             setTimeout(() => {
                                 that.getData(data)
-                            }, 1000)
+                            }, 300)
                         }
                     }
                 }
@@ -345,37 +345,40 @@
                             } else {
                                 setTimeout(() => {
                                     that.getData(data)
-                                }, 100)
+                                }, 300)
                             }
                         }
                     }
                 }
             },
             // 选择区域
-            filterArea() {
-                let that = this
-                // console.log('区域', this.selectArea)
-                this.clearMarkers()
-                // this.getData()
-                if (this.flagSwitch) {
-                    setTimeout(() => {
-                        that.getOverlapData(this.flagCompany)
-                    }, 500)
+            filterArea(e) {
+               if(!e){
+                   //下拉框关闭时请求
+                   let that = this
+                   // console.log('区域', this.selectArea)
+                   this.clearMarkers()
+                   // this.getData()
+                   if (this.flagSwitch) {
+                       setTimeout(() => {
+                           that.getOverlapData(this.flagCompany)
+                       }, 500)
 
-                    this.companyCheckbox = [1, this.flagCompany]
-                } else {
-                    if (this.companyCheckbox.length > 0) {
-                        for (let data of this.companyCheckbox) {
-                            if (data != 1) {
-                                this.getData(data)
-                            } else {
-                                setTimeout(() => {
-                                    that.getData(data)
-                                }, 200)
-                            }
-                        }
-                    }
-                }
+                       this.companyCheckbox = [1, this.flagCompany]
+                   } else {
+                       if (this.companyCheckbox.length > 0) {
+                           for (let data of this.companyCheckbox) {
+                               if (data != 1) {
+                                   this.getData(data)
+                               } else {
+                                   setTimeout(() => {
+                                       that.getData(data)
+                                   }, 300)
+                               }
+                           }
+                       }
+                   }
+               }
 
             },
             //清空marker
@@ -407,7 +410,7 @@
                             } else {
                                 setTimeout(() => {
                                     that.getData(data)
-                                }, 100)
+                                }, 300)
                             }
                         }
                     }
@@ -440,7 +443,7 @@
                                     } else {
                                         setTimeout(() => {
                                             that.getData(data)
-                                        }, 100)
+                                        }, 300)
                                     }
                                 }
                             }
@@ -638,7 +641,7 @@
                             } else {
                                 setTimeout(() => {
                                     that.getData(data)
-                                }, 100)
+                                }, 300)
                             }
                         }
                     }

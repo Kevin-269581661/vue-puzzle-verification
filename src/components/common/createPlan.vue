@@ -3280,11 +3280,12 @@
             },
             // 判断地图权限
             judgeMapSelect() {
-                if (this.sessionData.rela == '直营') {
-                    this.isMapKind = true
-                } else {
-                    this.mapAD()
-                }
+                this.isMapKind = true
+                // if (this.sessionData.rela == '直营') {
+                //     this.isMapKind = true
+                // } else {
+                //     this.mapAD()
+                // }
             },
             // 选择地图类型
             selectMap() {

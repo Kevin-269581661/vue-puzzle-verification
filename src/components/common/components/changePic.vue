@@ -1570,25 +1570,6 @@
                 console.log(this.handleFlag, this.shoplist);
 
                 if (this.handleFlag&&this.shoplist.length) {
-                    // let result = [];
-                    // for (let data of this.shoplist) {
-                    //     let obj = {
-                    //         ...data,
-                    //         status: data.replaceDate ? 1 : 0,
-                    //         replaceRecordId: this.painList[this.activePainIndex].id
-                    //     };
-                    //     result.push(obj);
-                    // }
-                    // api.postApi_json(this.apiVar.replace + '/report/saveDetailInfo', result).then(res => {
-                    //     console.log(res.data);
-                    //     if (res.data.SysCode == 200200) {
-                    //         this.isShowPic = false;
-                    //         sessFun.messageFun('success', res.data.MSG);
-                    //     } else {
-                    //         sessFun.messageFun('warning', res.data.MSG);
-                    //     }
-                    //     this.search();
-                    // });
                     this.addPainReport()
                 } else {
                     sessFun.messageFun('warning', '没有点位信息发生变更，请先对点位进行操作');

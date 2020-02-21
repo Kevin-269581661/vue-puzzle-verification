@@ -54,7 +54,10 @@
                     </li>
                 </ul>
                 <div class="search_bottom_btn">
-                    <el-button plain size="small" @click="selectAllFun" :loading="addAllLoading">
+                    <el-button plain size="small" v-if="isOnlineSearch&&userInfo.rela=='直营'" @click="getCoverAnalysis">
+                        覆盖分析
+                    </el-button>
+                    <el-button type="primary" size="small" @click="selectAllFun" :loading="addAllLoading">
                         {{addAllLoading ? '添加中' :'添加全部'}}
                     </el-button>
                 </div>
@@ -583,6 +586,23 @@
                 <el-button plain size="small" @click="cancelMoreRaiation">取 消</el-button>
             </div>
         </el-dialog>
+        <!--覆盖分析-->
+        <el-dialog
+            title="覆盖分析"
+            :visible.sync="coverAnalysisVisible"
+            width="380px"
+            class="cover-analysis-visible"
+            >
+            <ul class="cover-analysisi-data-ul">
+                <li v-for="item in coverAnalysisData">
+                    <span>{{item.count}}</span>
+                    <p>{{item.companyName}}</p>
+                </li>
+            </ul>
+            <span slot="footer" class="dialog-footer">
+    <el-button plain @click="coverAnalysisVisible = false">关闭</el-button>
+  </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -607,6 +627,7 @@
         },
         data() {
             return{
+                userInfo:'',
                 // 路由参数
                 routeQuery:{},
                 // 获取资源到参数
@@ -814,9 +835,14 @@
                 moreRadiationIndex: 0,
                 // 检索中
                 loadingMore: false,
+                //覆盖分析
+                coverAnalysisVisible:false,
+                coverAnalysisData:[{companyName:'亲邻',count:0}],
+                selectPointType:0,//0：中心点选点，1：辐射圈选点，2：范围选点（圆形）3：范围选点（多边形）
             }
         },
         mounted() {
+            this.userInfo = JSON.parse(sessionStorage.getItem('session_data'))
             this.getSessionData()
             window.onload = this.initMap()
             if(this.$route.path.includes('shareRes')) {
@@ -1273,6 +1299,7 @@
                                 BMAP_DRAWING_RECTANGLE      // 画矩形
                             ]
                         },
+                        enableCalculate: false,          //计算绘制结果 当绘制线的时候返回距离、绘制多边形、圆、矩形时候返回面积，单位为米
                         circleOptions: styleOptions,    // 圆的样式
                         polylineOptions: styleOptions,  // 线的样式
                         polygonOptions: styleOptions,   // 多边形的样式
@@ -1282,7 +1309,8 @@
                     //添加鼠标绘制工具监听事件，用于获取绘制结果
                     this.drawingManager.addEventListener("overlaycomplete", function(e) {
                         // console.log(e.drawingMode);
-                        // console.log(e.overlay);
+                        console.log(e.overlay);
+                        console.log(e.overlay.getPath());
                         // console.log(e.calculate);
                         // console.log(e.label);
                         that.mouseoverlay =  e.overlay
@@ -1480,7 +1508,7 @@
                     }
                     this.isMouseSearch = true
                     this.activeSearchKind = '1'
-                    // console.log('isMouseSearch',this.isMouseSearch)
+                    // console.log('searchResList',this.searchResList)
                     showLoading.close()
                     console.timeEnd('显示多边形')
                     clearTimeout(timer)
@@ -1898,6 +1926,41 @@
                 let infoWindow = new BMap.InfoWindow(content, opts);    // 创建信息窗口对象
                 this.resMap.openInfoWindow(infoWindow, item.point);      //开启信息窗口
             },
+            //覆盖分析
+            getCoverAnalysis(){
+                this.coverAnalysisVisible = true
+                this.coverAnalysisData = [{companyName:'亲邻',count:''}]
+                // console.log('交集2并集1',this.aroundSearchInfo.searchRadio);
+                // console.log('选择的中心点',this.selectOnlineList);
+                // console.log('辐射范围',this.aroundSearchInfo.searchRadius * 1000);
+                let info = {
+                    type:this.aroundSearchInfo.searchRadio,
+                    "cityId":this.adListParams.rid,
+                    "centerPoints":[
+                        {
+                            "lng":116.364105,
+                            "lat":39.926415,
+                            "radius":3000
+                        }
+                    ]
+                }
+                info.centerPoints = this.selectOnlineList.map(item=>{
+                    return {
+                        lng:item.point.lng,
+                        lat:item.point.lat,
+                        radius:this.aroundSearchInfo.searchRadius * 1000
+                    }
+                })
+                console.log(info);
+                api.postApi_json(this.apiVar.mapApi+'/resCompare/stackAnalyzeByCenterPoint',info).then(res=>{
+                    if(res.data.SysCode == 200200){
+                        this.coverAnalysisData[0].count = this.searchResList.length
+                         this.coverAnalysisData = this.coverAnalysisData.concat(res.data.data)
+                    }else{
+                        this.$message.warning(res.data.MSG)
+                    }
+                })
+            },
             // 亲邻社区全选
             selectAllFun(){
                 this.addAllLoading = true
@@ -2090,7 +2153,7 @@
             },
             // 周边搜索
             searchAround() {
-                // console.log('---------周边搜索------开始---------')
+                console.log('---------周边搜索------开始---------')
                 this.searchLoading = true
                 this.removeAreaLabels()
                 let timer = setTimeout(()=>{
@@ -2126,6 +2189,7 @@
             // 并集显示圆半径内的小区
             showResInCircle(data,radius) {
                 console.time('圆半径内小区')
+                console.log(data, radius);
                 let point = data.point
                 for (let rkey of this.resMarkers) {
                     let distance = this.resMap.getDistance(point, rkey.point)
@@ -3541,6 +3605,32 @@
         .active_ul{
             height: 100px;
         }
+    }
+    .cover-analysis-visible /deep/.el-dialog__body{
+        padding: 16px 24px;
+    }
+    .cover-analysisi-data-ul{
+        display: flex;
+        justify-content: space-between;
+    }
+    .cover-analysisi-data-ul li{
+        width: 100px;
+        height: 69px;
+        background:rgba(247,247,247,1);
+        border-radius:4px;
+        border:1px solid rgba(232,232,232,1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .cover-analysisi-data-ul li span{
+        color:rgba(0,0,0,0.85);
+        font-size: 24px;
+    }
+    .cover-analysisi-data-ul li p{
+        color:rgba(0,0,0,0.65);
+        font-size: 14px;
     }
 </style>
 <style>

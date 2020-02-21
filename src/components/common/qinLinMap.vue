@@ -1741,16 +1741,20 @@
                 for(let key of centerInfoList) {
                     let point = new BMap.Point(key.lng, key.lat)
                     let circle = new BMap.Circle(point, key.radius * 1000, {
-                        strokeColor: colors[key.group % 6], //'rgba(24,144,255,1)',
-                        fillColor: '',//'rgba(24,144,255,0.15)',
+                        strokeColor: colors[key.group % 6],
+                        fillColor: '',
                         strokeWeight: 2,
                         fillOpacity: 1,
                         strokeOpacity: 1
                     });
                     this.resMap.addOverlay(circle);
-                    this.multiPointMarkerList.push(circle)
-                    let myIcon = new BMap.Icon(require('../../assets/images/map/onlineIcon.png'), new BMap.Size(32,32),{
-                        anchor: new BMap.Size(16, 16)
+                    this.multiPointMarkerList.push(circle);
+                    //
+                    // let myIcon = new BMap.Icon(require('require('../../assets/images/map/onlineIcon.png''), new BMap.Size(34,34),{
+                    //     anchor: new BMap.Size(16, 16)
+                    // });
+                    let myIcon = new BMap.Icon(require('../../assets/images/map/mult-icon.png'), new BMap.Size(34,34),{
+                        anchor: new BMap.Size(17, 17)
                     });
                     let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
                     marker.setTop(true);

@@ -2638,8 +2638,8 @@
                     }
                     require.ensure([], () => {
                         const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
-                        const tHeader = ['资源名称', '市', '区域', '详细地址','商圈','楼栋数量', '住户数量/办公室数量','楼盘价格','楼盘类型/写字楼类型','入住年份/建成年份','广告限制','媒体备注', '媒体数量（门）','可用媒体数量（面）','地图中心点'];
-                        const filterVal = ['resName', 'city', 'rName', 'resAddress','tradingArea', 'fNum',  'hNum',  'hPrice','cType', 'chDay','notPush', 'mRemark','mediaNum','spareAdsCount','mapCenter'];
+                        const tHeader = ['资源名称', '市', '区域', '详细地址','商圈','楼栋数量', '住户数量/办公室数量','楼盘价格','楼盘类型/写字楼类型','入住年份/建成年份','广告限制','媒体备注','地图中心点', '媒体数量（门）','可用媒体数量（面）'];
+                        const filterVal = ['resName', 'city', 'rName', 'resAddress','tradingArea', 'fNum',  'hNum',  'hPrice','cType', 'chDay','notPush', 'mRemark','mapCenter','mediaNum','spareAdsCount'];
                         const list = resultArr;
                         const data = this.formatJson(filterVal, list);
                         export_json_to_excel(tHeader, data, name);

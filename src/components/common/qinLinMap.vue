@@ -2210,12 +2210,8 @@
             },
             // 周边搜索
             searchAround() {
-<<<<<<< HEAD
-                console.log('---------周边搜索------开始---------')
                 this.searchLoading = true
-=======
                 // console.log('---------周边搜索------开始---------')
-                this.searchLoading = true;
                 let allOverlay = this.resMap.getOverlays();
                 for (let akey of allOverlay) {
                     if (akey.toString() == "[object Circle]" || akey.toString() == "[object Polygon]" || akey.toString() == "[object Polyline]") {
@@ -2223,7 +2219,6 @@
                     }
                 }
                 this.selfMotionPolylines = []
->>>>>>> dev
                 this.removeAreaLabels()
                 let timer = setTimeout(()=>{
                     this.searchResList = []

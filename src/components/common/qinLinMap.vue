@@ -2614,7 +2614,11 @@
                         let centerArr = []
                         if(data.mapCenter) {
                             for(let key of data.mapCenter) {
-                                centerArr.push(key.centerName + '-' + key.centerAddress + '-' + key.distance + '米')
+                                let temp = key.centerName + '-' + key.centerAddress + '-' + key.distance + '米'
+                                if(!centerArr.includes(temp)) {
+                                    centerArr.push(temp)
+                                }
+                                // centerArr.push(key.centerName + '-' + key.centerAddress + '-' + key.distance + '米')
                             }
                         }
                         let obj = {

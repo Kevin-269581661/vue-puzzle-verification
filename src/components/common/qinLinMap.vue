@@ -2156,6 +2156,9 @@
                     }
                 }
                 this.selfMotionPolylines = []
+                if(this.aroundSearchInfo.searchRadio == 2) {
+                    this.initResMarkers();
+                }
                 this.removeAreaLabels()
                 let timer = setTimeout(()=>{
                     this.searchResList = []

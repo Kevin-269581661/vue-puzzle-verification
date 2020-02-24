@@ -44,7 +44,7 @@
                                 {{item.isSelect ? '取消' : '添加'}}
                             </span>
                         </p>
-                        <p class="li_address">{{item.resAddress || '--'}}</p>
+                        <p class="li_address" @click="moveMapByOnclickName(item,'resName')">{{item.resAddress || '--'}}</p>
                         <p>
                             <span class="li_p_span">{{item.districtName}}</span>
                             <span class="li_p_span">{{item.hNum || '--'}}户</span>
@@ -70,12 +70,12 @@
                 <ul class="search_ul">
                     <li class="search_li" v-for="(item,index) in searchOnlineList" :key="index">
                         <p class="li_name li_name_online">
-                            <strong  @click="moveMapByOnclickName(item,'onlineName')">{{item.title}}</strong>
+                            <strong @click="moveMapByOnclickName(item,'onlineName')">{{item.title}}</strong>
                             <el-checkbox v-model="item.isSelect" @change="onlineCheckBox(item)"></el-checkbox>
                         </p>
-                        <p class="li_address" v-if="item.address && item.address.length < 20">{{item.address}}</p>
+                        <p class="li_address" v-if="item.address && item.address.length < 20" @click="moveMapByOnclickName(item,'onlineName')">{{item.address}}</p>
                         <el-tooltip v-else class="item" effect="dark" :content="item.address" placement="top-start">
-                            <p class="li_address">{{item.address}}</p>
+                            <p class="li_address" @click="moveMapByOnclickName(item,'onlineName')">{{item.address}}</p>
                         </el-tooltip>
                     </li>
                 </ul>
@@ -285,7 +285,7 @@
                 <el-switch
                     v-model="isClustererOpen"
                     active-color="rgba(24, 144, 255, 1)"
-                    inactive-color="#ff4949"
+
                     :disabled="disabledSwitch"
                     @change="changeClustererOpen">
                 </el-switch>
@@ -648,7 +648,8 @@
                 isClustererOpen: true,
                 // 聚合开关禁用-防止连续开与关的动作
                 disabledSwitch: false,
-                markerIcon: require('../../assets/images/map/markerIcon.png'),
+                // markerIcon: require('../../assets/images/map/markerIcon.png'),
+                markerIcon: require('../../assets/images/map/marker_red.png'),
                 resMarkers: [],
                 // 非多点辐射时的markers
                 beforeResMarkes: [],
@@ -1045,7 +1046,8 @@
                     // mType: this.selectDoorType,
                     mVehicle: this.selectMediaType,
                     grade: this.selectMediaLevel,
-                    groupByDistrict: 1  // 1按地区分组
+                    groupByDistrict: 1,  // 1按地区分组
+                    distance: null       // 半径
                 }
                 if(this.sessionData.uType === 'SM') {
                     delete params.suID
@@ -1096,7 +1098,7 @@
             creatAreaMarker() {
                 this.resInfo = []
                 let markerList = [];
-                let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(16,16),{
+                let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(39,25),{
                     anchor: new BMap.Size(8, 8)
                 });
                 let lableList = []
@@ -1104,7 +1106,8 @@
                     let label = new BMap.Label(
                         key.districtName + `<br/>` + key.resList.length,
                         {
-                            offset:new BMap.Size(4,-18),
+                            // offset:new BMap.Size(4,-18),
+                            offset:new BMap.Size(22,2),
                             position : new BMap.Point(key.averageLng,key.averageLat)
                         });
                     label.setStyle({
@@ -1115,7 +1118,7 @@
                         lineHeight: '20px',
                         boxShadow: '0px 0px 6px 0px rgba(0,0,0,0.15)',
                         border: '3px solid rgba(255, 255, 255, 0.3)',
-                        background: 'rgba(24,144,255,1)',
+                        background: '#F56251',//'rgba(24,144,255,1)',
                         color: 'rgba(255,255,255,1)',
                         padding: '16px 4px',
                         // cursor: 'pointer'
@@ -1150,6 +1153,7 @@
                 this.$set(resKey, "isSelect", false);
                 let point = new BMap.Point(Number(resKey.lng), Number(resKey.lat));
                 let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
+                // let marker = new BMap.Marker(point);  // 创建标注
                 let label = this.setMarkerLabel(resKey.resName)
                 marker.setLabel(label);
                 marker.setTop(true);
@@ -1157,6 +1161,9 @@
                 marker.inCircleNum = 0
                 marker.resID = resKey.resID
                 marker.rid = resKey.districtId
+                marker.addEventListener("click",()=>{
+                    this.showInfo(resKey,point)
+                });
                 label.addEventListener("click",()=>{
                     this.showInfo(resKey,point)
                 });
@@ -1189,15 +1196,21 @@
                 }
             },
             // 设置标注到label
-            setMarkerLabel(labelName) {
-                let label = new BMap.Label(labelName,{offset:new BMap.Size(4,-18)});
+            setMarkerLabel(labelName,temp) {
+                let label = new BMap.Label(
+                        labelName,
+                        {
+                            // offset:new BMap.Size(4,-18)
+                            offset: temp === 'online' ? new BMap.Size(28,2) : new BMap.Size(22,2),
+                        }
+                );
                 label.setStyle({
                     borderRadius: "3px",
                     boxShadow: '0px 0px 6px 0px rgba(0,0,0,0.15)',
                     border: 'none',
                     background: 'rgba(255,255,255,1)',
                     color: 'rgba(0,0,0,0.85)',
-                    padding: '3px 8px',
+                    padding: '4px 8px',
                 });
                 return label
             },
@@ -1584,7 +1597,9 @@
                             this.selfMotionPolylines.push(polyline);
                             // 更换标注的label
                             for (let rkey of this.resMarkers) {
-                                if (rkey.point.lng == key.lng && rkey.point.lat == key.lat) {
+                                // if (rkey.point.lng == key.lng && rkey.point.lat == key.lat) {
+                                if(rkey.resID === key.resID) {
+                                    key.distance = distance
                                     let labelName = key.resName + '(' + distance + '米)'
                                     rkey.getLabel().setContent(labelName)
                                 }
@@ -1699,7 +1714,7 @@
                     "centerInfoList": this.setCenterInfos()
                 }
                 console.log('params',params)
-                let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(16,16),{
+                let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(39,25),{
                     anchor: new BMap.Size(8, 8)
                 });
                 api.postApi_json(this.apiVar.mapApi + '/multiPointAnalyze',params).then(res=>{
@@ -1711,15 +1726,20 @@
                         this.resInfo = res.data.data.map(item =>{
                             this.$set(item, "isSelect", false);
                             // 将标注添加到地图中
-                            let marker = this.creatMarker(item,myIcon)
+                            let marker = this.creatMarker(item,myIcon);
+                            marker.resID = item.resID;
                             this.resMap.addOverlay(marker);
-                            this.multiPointMarkerList.push(marker)
+                            this.multiPointMarkerList.push(marker);
+                            let point = new BMap.Point(item.lng, item.lat);
                             item.mapCenter = item.centerList.map(key =>{
+                                let centerPoint = new BMap.Point(key.lng, key.lat);
+                                let distance = this.resMap.getDistance(point, centerPoint);
                                 return {
                                     centerAddress: key.address || '',
                                     city: key.city || '',
-                                    point: new BMap.Point(key.lng, key.lat),
-                                    centerName: key.name || ''
+                                    point: centerPoint,//new BMap.Point(key.lng, key.lat),
+                                    centerName: key.name || '',
+                                    distance: distance.toFixed(0)
                                 }
                             })
                             this.searchResList.push(item)
@@ -1752,16 +1772,20 @@
                 for(let key of centerInfoList) {
                     let point = new BMap.Point(key.lng, key.lat)
                     let circle = new BMap.Circle(point, key.radius * 1000, {
-                        strokeColor: colors[key.group % 6], //'rgba(24,144,255,1)',
-                        fillColor: '',//'rgba(24,144,255,0.15)',
+                        strokeColor: colors[key.group % 6],
+                        fillColor: '',
                         strokeWeight: 2,
                         fillOpacity: 1,
                         strokeOpacity: 1
                     });
                     this.resMap.addOverlay(circle);
-                    this.multiPointMarkerList.push(circle)
-                    let myIcon = new BMap.Icon(require('../../assets/images/map/onlineIcon.png'), new BMap.Size(32,32),{
-                        anchor: new BMap.Size(16, 16)
+                    this.multiPointMarkerList.push(circle);
+                    //
+                    // let myIcon = new BMap.Icon(require('require('../../assets/images/map/onlineIcon.png''), new BMap.Size(34,34),{
+                    //     anchor: new BMap.Size(16, 16)
+                    // });
+                    let myIcon = new BMap.Icon(require('../../assets/images/map/mult-icon.png'), new BMap.Size(34,34),{
+                        anchor: new BMap.Size(17, 17)
                     });
                     let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
                     marker.setTop(true);
@@ -1877,7 +1901,7 @@
                     pageCapacity: 50
                 };
                 let local = new BMap.LocalSearch(this.resMap, options);
-                local.search(this.selectName);
+                local.search(this.routeQuery.city + this.selectName);
             },
             // 在线结果打点
             onlineResultsMarker() {
@@ -1888,15 +1912,18 @@
                     let marker = new BMap.Marker(
                         key.point,
                         {
-                            icon: new BMap.Icon(require('../../assets/images/map/onlineIcon.png'),
+                            icon: new BMap.Icon(require('../../assets/images/map/mult-icon.png'), // onlineIcon
                                 new BMap.Size(32, 32), { anchor: new BMap.Size(16, 16)})
                         });
-                    let label = this.setMarkerLabel(key.title)
+                    let label = this.setMarkerLabel(key.title,'online')
                     marker.setLabel(label);
                     marker.setTop(true);
                     marker.isSelect = false
                     this.onlineMarkers.push(marker)
                     this.resMap.addOverlay(marker);            // 将标注添加到地图中
+                    label.addEventListener("click", () => {
+                        this.showOnlineDetail(key)
+                    });
                     marker.addEventListener("click", () => {
                         this.showOnlineDetail(key)
                     });
@@ -1969,7 +1996,8 @@
                         if(!key.isSelect) {
                             key.isSelect = true
                             this.selectResList.push(key)
-                            this.createCircle(key.resID, new BMap.Point(key.lng, key.lat))
+                            // this.createCircle(key.resID, new BMap.Point(key.lng, key.lat))
+                            this.changeLabel(key,1);
                             this.judgeMarkerShow(key.lng,key.lat)
                         }
                     }
@@ -2047,7 +2075,7 @@
             },
             // 勾选/取消
             checkBoxFun(item) {
-                console.log('亲邻item', item)
+                console.log('亲邻item', item);
                 if (item.isSelect) {
                     // 取消选定
                     this.deleteRes(item)
@@ -2055,9 +2083,11 @@
                     // 选定
                     let point = new BMap.Point(item.lng, item.lat);
                     // 圈起标识
-                    this.createCircle(item.resID, point)
-                    this.judgeMarkerShow(item.lng, item.lat)
-                    item.isSelect = true
+                    // this.createCircle(item.resID, point);
+                    // 修改label背景色
+                    this.changeLabel(item,1);
+                    this.judgeMarkerShow(item.lng, item.lat);
+                    item.isSelect = true;
                     // 添加到选中列表
                     this.pushSelectList(item)
                 }
@@ -2072,6 +2102,32 @@
                 if(!isHave) {
                     this.selectResList.push(item)
                     this.showSelectList = true
+                }
+            },
+            // 修改label背景色 setMoreRadiation
+            changeLabel(item,active){
+                let bg = 'rgba(255,255,255,1)';
+                let col = 'rgba(0,0,0,0.85)';
+                let markers = this.resMarkers;
+                if(active === 1) {
+                    bg = 'rgba(219,65,57,1)';
+                    col = 'rgba(255,255,255,1)'
+                }
+                // 多点辐射
+                if(this.isMultiPoint) {
+                    markers = this.multiPointMarkerList
+                }
+                for (let rkey of markers) {
+                    if (rkey.resID === item.resID) {
+                        rkey.getLabel().setStyle({
+                            borderRadius: "3px",
+                            boxShadow: '0px 0px 6px 0px rgba(0,0,0,0.15)',
+                            border: 'none',
+                            background: bg,
+                            color: col,
+                            padding: '4px 8px',
+                        })
+                    }
                 }
             },
             // 画圆标识选中状态
@@ -2106,22 +2162,23 @@
             onlineCheckBox(item) {
                 for (let key of this.onlineMarkers) {
                     if (key.point.lat === item.point.lat && key.point.lng === item.point.lng) {
-                        let onlineIcon = ''
+                        // let onlineIcon = ''
                         if (item.isSelect) {
                             key.isSelect = true
-                            onlineIcon = require('../../assets/images/map/isActiveIcon.png')
+                            // onlineIcon = require('../../assets/images/map/isActiveIcon.png')
                         } else {
                             key.isSelect = false
-                            onlineIcon = require('../../assets/images/map/onlineIcon.png')
+                            // onlineIcon = require('../../assets/images/map/mult-icon.png')
+                            // onlineIcon = require('../../assets/images/map/onlineIcon.png')
                         }
-                        let myIcon = new BMap.Icon(
-                            onlineIcon,
-                            new BMap.Size(32, 32),
-                            {
-                                anchor: new BMap.Size(16, 16),
-                                imageSize: new BMap.Size(32, 32),    // 引用图片实际大小
-                            });
-                        key.setIcon(myIcon)
+                        // let myIcon = new BMap.Icon(
+                        //     onlineIcon,
+                        //     new BMap.Size(32, 32),
+                        //     {
+                        //         anchor: new BMap.Size(16, 16),
+                        //         imageSize: new BMap.Size(32, 32),    // 引用图片实际大小
+                        //     });
+                        // key.setIcon(myIcon)
                     }
                 }
             },
@@ -2153,8 +2210,20 @@
             },
             // 周边搜索
             searchAround() {
+<<<<<<< HEAD
                 console.log('---------周边搜索------开始---------')
                 this.searchLoading = true
+=======
+                // console.log('---------周边搜索------开始---------')
+                this.searchLoading = true;
+                let allOverlay = this.resMap.getOverlays();
+                for (let akey of allOverlay) {
+                    if (akey.toString() == "[object Circle]" || akey.toString() == "[object Polygon]" || akey.toString() == "[object Polyline]") {
+                        this.resMap.removeOverlay(akey);
+                    }
+                }
+                this.selfMotionPolylines = []
+>>>>>>> dev
                 this.removeAreaLabels()
                 let timer = setTimeout(()=>{
                     this.searchResList = []
@@ -2212,7 +2281,8 @@
                                     centerAddress: data.address || '',
                                     city: data.city || '',
                                     point: data.point || '',
-                                    centerName: data.title || ''
+                                    centerName: data.title || '',
+                                    distance: distance.toFixed(0)
                                 }
                                 if (flag) {
                                     // 多中心点保存
@@ -2243,7 +2313,8 @@
                             centerAddress: data.address || '',
                             city: data.city || '',
                             point: data.point || '',
-                            centerName: data.title || ''
+                            centerName: data.title || '',
+                            distance: distance.toFixed(0)
                         }
                         rkey.mapCenter ? rkey.mapCenter.push(centerInfo) : rkey.mapCenter = [centerInfo]
                         rkey.show()
@@ -2284,14 +2355,14 @@
             setOnlineSearch() {
                 this.searchDialogVisible = true
                 // 移除
-                let allOverlay = this.resMap.getOverlays();
-                for (let akey of allOverlay) {
-                    if (akey.toString() == "[object Circle]" || akey.toString() == "[object Polygon]" || akey.toString() == "[object Polyline]") {
-                        this.resMap.removeOverlay(akey);
-                    }
-                }
-                this.initResMarkers()
-                this.selfMotionPolylines = []
+                // let allOverlay = this.resMap.getOverlays();
+                // for (let akey of allOverlay) {
+                //     if (akey.toString() == "[object Circle]" || akey.toString() == "[object Polygon]" || akey.toString() == "[object Polyline]") {
+                //         this.resMap.removeOverlay(akey);
+                //     }
+                // }
+                // this.initResMarkers();
+                // this.selfMotionPolylines = []
             },
             // 取消在线搜索
             clearSearch() {
@@ -2526,7 +2597,8 @@
              **/
             // 删除选中社区
             deleteRes(item) {
-                this.deleteCircle(item.resID)
+                // this.deleteCircle(item.resID)
+                this.changeLabel(item,0);
                 item.isSelect = false
                 for (let i = 0; i < this.selectResList.length; i++) {
                     if (this.selectResList[i].resID === item.resID) {
@@ -2545,7 +2617,8 @@
             deleteAll() {
                 for (let key of this.selectResList) {
                     key.isSelect = false
-                    this.deleteCircle(key.resID)
+                    // this.deleteCircle(key.resID)
+                    this.changeLabel(key,0);
                     for(let resKey of this.resInfo) {
                         if(key.resID === resKey.resID) {
                             resKey.isSelect = false
@@ -2607,6 +2680,12 @@
                     let name = '资源列表' + timeString
                     let resultArr = [];
                     for(let data of this.selectResList) {
+                        let centerArr = []
+                        if(data.mapCenter) {
+                            for(let key of data.mapCenter) {
+                                centerArr.push(key.centerName + '-' + key.centerAddress + '-' + key.distance + '米')
+                            }
+                        }
                         let obj = {
                             resName: data.resName,
                             city: this.routeQuery.city,
@@ -2621,14 +2700,15 @@
                             notPush: data.adLimit || '',
                             mRemark: data.mRemark || '',
                             mediaNum: data.mediaCount || '',
-                            spareAdsCount: data.spareAdsCount || ''
+                            spareAdsCount: data.spareAdsCount || '',
+                            mapCenter: centerArr.join(';')
                         };
                         resultArr.push(obj);
                     }
                     require.ensure([], () => {
                         const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
-                        const tHeader = ['资源名称', '市', '区域', '详细地址','商圈','楼栋数量', '住户数量/办公室数量','楼盘价格','楼盘类型/写字楼类型','入住年份/建成年份','广告限制','媒体备注', '媒体数量（门）','可用媒体数量（面）'];
-                        const filterVal = ['resName', 'city', 'rName', 'resAddress','tradingArea', 'fNum',  'hNum',  'hPrice','cType', 'chDay','notPush', 'mRemark','mediaNum','spareAdsCount'];
+                        const tHeader = ['资源名称', '市', '区域', '详细地址','商圈','楼栋数量', '住户数量/办公室数量','楼盘价格','楼盘类型/写字楼类型','入住年份/建成年份','广告限制','媒体备注','地图中心点', '媒体数量（门）','可用媒体数量（面）'];
+                        const filterVal = ['resName', 'city', 'rName', 'resAddress','tradingArea', 'fNum',  'hNum',  'hPrice','cType', 'chDay','notPush', 'mRemark','mapCenter','mediaNum','spareAdsCount'];
                         const list = resultArr;
                         const data = this.formatJson(filterVal, list);
                         export_json_to_excel(tHeader, data, name);
@@ -2840,6 +2920,8 @@
 
     .li_name strong{
         cursor: pointer;
+        display: inline-block;
+        width: 100%;
     }
 
     .li_name_span{
@@ -2880,6 +2962,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        cursor: pointer;
     }
 
     .li_p_span {

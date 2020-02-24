@@ -1,7 +1,7 @@
 <template>
     <div class="info_box clearfix">
         <el-row justify="space-between" style="padding: 25px 0;">
-            <el-col :span="10" class="img_col">
+            <el-col :span="8" class="img_col">
                 <el-row>
                     <el-col :span="5">
                         <img :src="userInfo.avator" alt="" class="img_box">
@@ -20,7 +20,7 @@
                     </el-col>
                 </el-row>
             </el-col>
-            <el-col :span="14" class="col_style">
+            <el-col :span="16" class="col_style">
                 <dl v-for="(item, index) of dataArr" :key="index" class="dl_style">
                     <dt>{{item.name}}</dt>
                     <dd v-if="item.name === '当月成交金额'">¥{{priceFormat(item.data)}}</dd>

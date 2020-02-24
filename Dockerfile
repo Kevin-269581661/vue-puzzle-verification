@@ -12,5 +12,6 @@ ADD ./external /usr/share/nginx/html
 # ADD ./shoucecases /usr/share/nginx/html/shoucecases
 
 COPY ./default.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80

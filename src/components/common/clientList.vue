@@ -173,7 +173,8 @@ export default {
             });
         },
         filterRealNameFun(value, row) {
-            return row.realName === value;
+            // console.log(row, value);
+            return row.puName === value;
         },
         // 切换页码
         changePage(page) {

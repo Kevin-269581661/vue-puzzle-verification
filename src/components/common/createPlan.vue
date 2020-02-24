@@ -1560,7 +1560,7 @@
                 _gap_time: 0,
                 // 地图类型
                 isMapKind: false,
-                selectMapKind: 1,
+                selectMapKind: 2,
                 ActiveMapType: 1,
                 // 亲邻地图
                 mapAdsList: [],
@@ -3280,11 +3280,12 @@
             },
             // 判断地图权限
             judgeMapSelect() {
-                if (this.sessionData.rela == '直营') {
-                    this.isMapKind = true
-                } else {
-                    this.mapAD()
-                }
+                this.isMapKind = true
+                // if (this.sessionData.rela == '直营') {
+                //     this.isMapKind = true
+                // } else {
+                //     this.mapAD()
+                // }
             },
             // 选择地图类型
             selectMap() {
@@ -4323,7 +4324,7 @@
                     }
                     if (key.centerInfos && key.centerInfos.length) {
                         for (let item of key.centerInfos) {
-                            adInfo.mapCenter += item.centerName + '-' + item.centerAddress + ','
+                            adInfo.mapCenter += item.centerName + '-' + item.centerAddress + '-' + item.distance + '米,'
                         }
                     }
                     if (this.qinLinJudgeHaveDiffAD(adInfo, 'mapAds')) {
@@ -4363,7 +4364,7 @@
                                     let centerName = '';
                                     if (ADData.reference && ADData.reference.length) {
                                         for (let key of ADData.reference) {
-                                            let keyCenter = key.centerName + '-' + key.centerAddress
+                                            let keyCenter = key.centerName + '-' + key.centerAddress + '-' + key.distance + '米';
                                             if (!shopArr[i].mapCenter.includes(keyCenter)) {
                                                 centerName += keyCenter + ','
                                             }

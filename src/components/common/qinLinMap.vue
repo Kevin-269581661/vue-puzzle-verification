@@ -819,7 +819,7 @@
         },
         mounted() {
             this.getSessionData()
-            window.onload = this.initMap()
+            window.onload = this.initMap();
             if(this.$route.path.includes('shareRes')) {
                 this.isShare = true
                 this.getShareResList()
@@ -1058,10 +1058,12 @@
                 for (let key of this.selectResList) {
                     for (let rKey of this.resInfo) {
                         if (key.resID === rKey.resID) {
-                            let point = new BMap.Point(key.lng, key.lat);
+                            // let point = new BMap.Point(key.lng, key.lat);
                             // 圈起标识
-                            this.createCircle(key.resID,point)
-                            rKey.isSelect = true
+                            // this.createCircle(key.resID,point);
+                            // 修改label背景色
+                            this.changeLabel(key,1);
+                            rKey.isSelect = true;
                             break
                         }
                     }
@@ -1549,8 +1551,12 @@
             selfMotionDistance() {
                 // console.log('自动测距------')
                 console.time('自动测距')
-                this.mousePopover = false
-                let isMapCenter = false
+                this.mousePopover = false;
+                let isMapCenter = false;
+                let markers = this.resMarkers
+                if(this.isMultiPoint) {
+                    markers = this.multiPointMarkerList
+                }
                 for (let key of this.searchResList) {
                     if (key.mapCenter) {
                         isMapCenter = true
@@ -1568,7 +1574,7 @@
                             this.resMap.addOverlay(polyline);
                             this.selfMotionPolylines.push(polyline);
                             // 更换标注的label
-                            for (let rkey of this.resMarkers) {
+                            for (let rkey of markers) {
                                 // if (rkey.point.lng == key.lng && rkey.point.lat == key.lat) {
                                 if(rkey.resID === key.resID) {
                                     key.distance = distance
@@ -2041,7 +2047,7 @@
                     this.showSelectList = true
                 }
             },
-            // 修改label背景色 setMoreRadiation
+            // 修改label背景色 setMoreRadiation multiPointMarkerList
             changeLabel(item,active){
                 let bg = 'rgba(255,255,255,1)';
                 let col = 'rgba(0,0,0,0.85)';
@@ -2145,21 +2151,24 @@
                     }
                 }
             },
-            // 周边搜索
-            searchAround() {
-                // console.log('---------周边搜索------开始---------')
-                this.searchLoading = true;
+            //
+            initSearchOnline() {
+                // 移除
                 let allOverlay = this.resMap.getOverlays();
                 for (let akey of allOverlay) {
                     if (akey.toString() == "[object Circle]" || akey.toString() == "[object Polygon]" || akey.toString() == "[object Polyline]") {
                         this.resMap.removeOverlay(akey);
                     }
                 }
+                this.initResMarkers();
                 this.selfMotionPolylines = []
-                if(this.aroundSearchInfo.searchRadio == 2) {
-                    this.initResMarkers();
-                }
-                this.removeAreaLabels()
+            },
+            // 周边搜索
+            searchAround() {
+                // console.log('---------周边搜索------开始---------')
+                this.searchLoading = true;
+                this.initSearchOnline();
+                this.removeAreaLabels();
                 let timer = setTimeout(()=>{
                     this.searchResList = []
                     this.isOnlineSearch = true
@@ -2288,15 +2297,6 @@
             // 重新设置在线搜索
             setOnlineSearch() {
                 this.searchDialogVisible = true
-                // 移除
-                // let allOverlay = this.resMap.getOverlays();
-                // for (let akey of allOverlay) {
-                //     if (akey.toString() == "[object Circle]" || akey.toString() == "[object Polygon]" || akey.toString() == "[object Polyline]") {
-                //         this.resMap.removeOverlay(akey);
-                //     }
-                // }
-                // this.initResMarkers();
-                // this.selfMotionPolylines = []
             },
             // 取消在线搜索
             clearSearch() {
@@ -2311,10 +2311,14 @@
                     this.searchResList = []
                     this.mouseType.morePoint = false
                     // 移除覆盖物
+                    for(let key of this.selfMotionPolylines) {
+                        this.resMap.removeOverlay(key)
+                    }
                     for(let key of this.multiPointMarkerList) {
                         this.resMap.removeOverlay(key)
                     }
-                    this.multiPointMarkerList = []
+                    this.multiPointMarkerList = [];
+                    this.selfMotionPolylines = []
                     // 恢复多点辐射前的社区list
                     for(let key of this.resAreaList) {
                         for(let resKey of key.resList) {
@@ -2322,9 +2326,14 @@
                         }
                     }
                     this.transfersShowOverlay()
+                    this.judgeByselect()
+
                 } else {
+                    console.log('周边搜索取消--');
                     // 周边搜索
+                    this.initSearchOnline();
                     this.initOnlineSearchBefor()
+
                 }
             },
             // 在线搜索取消-恢复框选前
@@ -2332,19 +2341,19 @@
                 this.isOnlineSearch = false
                 this.searchResList = []
                 // 清除圆覆盖物
-                let allOverlay = this.resMap.getOverlays();
-                for (let akey of allOverlay) {
-                    if (akey.toString() == "[object Circle]" || akey.toString() == "[object Polygon]" || akey.toString() == "[object Polyline]") {
-                        this.resMap.removeOverlay(akey);
-                    }
-                }
+                // let allOverlay = this.resMap.getOverlays();
+                // for (let akey of allOverlay) {
+                //     if (akey.toString() == "[object Circle]" || akey.toString() == "[object Polygon]" || akey.toString() == "[object Polyline]") {
+                //         this.resMap.removeOverlay(akey);
+                //     }
+                // }
                 // 根据地图等级进行显示
                 this.transfersShowOverlay()
                 // 移除
                 for (let key of this.selectOnlineList) {
                     this.deleteCircle(key.id)
                 }
-                this.selfMotionPolylines = []
+                // this.selfMotionPolylines = []
                 // 显示被隐藏的在线搜索结果标注
                 this.onlineMarkers.forEach((item, index) => {
                     if (index < 100 || item.isSelect) {
@@ -2357,7 +2366,7 @@
             // 恢复打点原始状态
             initResMarkers() {
                 for (let key of this.resMarkers) {
-                    key.show()
+                    key.show();
                     // 移除标识marker在圆内到标识
                     if(key.inCircleNum) {
                         key.inCircleNum = 0
@@ -3576,7 +3585,7 @@
         z-index: 99;
         bottom:2px;
         right: 24px;
-        width: 363px;
+        width: 382px;
         padding: 1px 4px;
         font-size: 12px;
         color: rgba(0,0,0,0.65);

@@ -1696,7 +1696,8 @@
             },
             // 跳转来源于首页地图选点-设置部分默认数据
             setDataByIndex() {
-                this.indexData = JSON.parse(sessionStorage.getItem('indexData'))
+                this.indexData = JSON.parse(sessionStorage.getItem('indexData'));
+                this.ActiveMapType = this.indexData.activeMapType;
                 // this.mapADList = this.indexData.mapADList
                 this.dialogTableVisible = true
                 if (this.saleManageLevel == 1) {

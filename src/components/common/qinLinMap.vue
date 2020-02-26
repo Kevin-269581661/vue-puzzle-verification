@@ -388,6 +388,18 @@
                 </el-button>
             </div>
         </div>
+        <!-- 在线结果标注 -->
+        <div class="online_info_window" ref="onlineInfoWindow" v-show="isShowOnlineInfo">
+            <div class="online_info_content">
+                <p>{{onlineDetail.title}}</p>
+                <p>{{onlineDetail.address}}</p>
+            </div>
+            <div class="online_info_footer">
+                <el-button size="small" type="primary" @click="onlineCenterBtn(onlineDetail)"> <!---->
+                    {{onlineDetail.isSelect ? '取消待选' : '加入待选'}}
+                </el-button>
+            </div>
+        </div>
         <!--在线搜索框选条件-->
         <el-dialog
             title="框选条件"
@@ -691,6 +703,9 @@
                 isShowInfo: false,
                 // 被点击的资源标注信息
                 showResInfo:{},
+                // 被点击的在线搜索中心点信息
+                onlineDetail:{},
+                isShowOnlineInfo: false,
                 /*顶部过滤条件*/
                 popoverShow:{
                     hNum: false,
@@ -1575,10 +1590,15 @@
                             this.selfMotionPolylines.push(polyline);
                             // 更换标注的label
                             for (let rkey of markers) {
-                                // if (rkey.point.lng == key.lng && rkey.point.lat == key.lat) {
                                 if(rkey.resID === key.resID) {
-                                    key.distance = distance
-                                    let labelName = key.resName + '(' + distance + '米)'
+                                    key.distance = distance;
+                                    // let labelName = key.resName + '(' + distance + '米)';
+                                    let labelName = rkey.getLabel().content;
+                                    if(labelName.includes('(') && labelName.includes(')')) {
+                                        labelName = labelName.substring(0,labelName.length - 1) + ',' + distance + '米)'
+                                    } else {
+                                        labelName = key.resName + '(' + distance + '米)';
+                                    }
                                     rkey.getLabel().setContent(labelName)
                                 }
                             }
@@ -1896,7 +1916,7 @@
                     let label = this.setMarkerLabel(key.title,'online')
                     marker.setLabel(label);
                     marker.setTop(true);
-                    marker.isSelect = false
+                    marker.isSelect = false;
                     this.onlineMarkers.push(marker)
                     this.resMap.addOverlay(marker);            // 将标注添加到地图中
                     label.addEventListener("click", () => {
@@ -1912,24 +1932,25 @@
                 }
                 this.searchOnlineLoading = false
             },
-            // 显示在线搜索结果详情
+            // 显示在线搜索结果详情 resInfoWindow
             showOnlineDetail(item) {
-                let content =
-                    "<div>" +
-                    "<p style='font:14px arial,sans-serif;margin:0;line-height:1.5;'>"
-                    + item.title + "</p>" +
-                    "<p style='font:14px arial,sans-serif;margin:0;line-height:1.5;'>" +
-                    "地址:" + item.address + "</p>" +
-                    "</div>";
+                this.onlineDetail = item;
+                let content = this.$refs.onlineInfoWindow;
                 // 信息窗口
                 let opts = {
-                    width: 0,
-                    height: 0,
+                    width: 188,
+                    height: 0,             // 信息窗口高度
                     title: "",
                     enableMessage: false    //设置允许信息窗发送短息
                 }
                 let infoWindow = new BMap.InfoWindow(content, opts);    // 创建信息窗口对象
                 this.resMap.openInfoWindow(infoWindow, item.point);      //开启信息窗口
+                this.isShowOnlineInfo = true
+            },
+            // 详情里的选定、取消
+            onlineCenterBtn(item) {
+                item.isSelect = !item.isSelect;
+                this.onlineCheckBox(item)
             },
             // 亲邻社区全选
             selectAllFun(){
@@ -3294,6 +3315,23 @@
         background: #fff;
     }
 
+    /*在线搜索中心点标注*/
+    .online_info_content {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .online_info_content p:nth-child(1) {
+        color: rgba(0,0,0,0.85);
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+
+    .online_info_footer {
+        text-align: right;
+    }
+
     /*底部右侧控件*/
     .bottom_right_control{
         position: fixed;
@@ -3585,7 +3623,7 @@
         z-index: 99;
         bottom:2px;
         right: 24px;
-        width: 382px;
+        width: 362px;
         padding: 1px 4px;
         font-size: 12px;
         color: rgba(0,0,0,0.65);

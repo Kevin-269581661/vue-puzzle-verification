@@ -54,8 +54,8 @@
                 </li>
                 <li>
                     <span>地图类型：</span>
-                    <el-radio v-model="ActiveMapType" :label="1">旧版地图</el-radio>
                     <el-radio v-model="ActiveMapType" :label="2">新版地图</el-radio>
+                    <el-radio v-model="ActiveMapType" :label="1">旧版地图</el-radio>
                 </li>
             </ul>
             <div slot="footer" class="dialog-footer">

@@ -602,7 +602,7 @@
         <el-dialog
             title="覆盖分析"
             :visible.sync="coverAnalysisVisible"
-            width="380px"
+            width="500px"
             class="cover-analysis-visible"
             >
             <ul class="cover-analysisi-data-ul">

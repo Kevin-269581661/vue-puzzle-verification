@@ -1596,7 +1596,7 @@
                 console.time('自动测距')
                 this.mousePopover = false;
                 let isMapCenter = false;
-                let markers = this.resMarkers
+                let markers = this.resMarkers;
                 if(this.isMultiPoint) {
                     markers = this.multiPointMarkerList
                 }
@@ -1620,10 +1620,11 @@
                             for (let rkey of markers) {
                                 if(rkey.resID === key.resID) {
                                     key.distance = distance;
-                                    // let labelName = key.resName + '(' + distance + '米)';
                                     let labelName = rkey.getLabel().content;
                                     if(labelName.includes('(') && labelName.includes(')')) {
-                                        labelName = labelName.substring(0,labelName.length - 1) + ',' + distance + '米)'
+                                        if(!labelName.includes(distance)) {
+                                            labelName = labelName.substring(0,labelName.length - 1) + ',' + distance + '米)'
+                                        }
                                     } else {
                                         labelName = key.resName + '(' + distance + '米)';
                                     }
@@ -2677,7 +2678,7 @@
                 console.log('选定提交小区资源IDparams',params)
                 api.postApi_json(this.apiVar.mapApi + '/adsList',params).then(res=>{
                     console.log('res',res)
-                    if(res.data.SysCode === 200200) {
+                    if(res.data.SysCode === 200200 && res.data.data) {
                         localStorage.setItem('qinlinMapCode',res.data.data)
                         this.mapDialogVisible = true
                     } else {

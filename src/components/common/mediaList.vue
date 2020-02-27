@@ -56,7 +56,7 @@
                         <el-button plain @click="importMedia" v-if="showImportBtn">导入媒体</el-button>
                        <!-- <el-button plain @click="maintain" v-if="!showImportBtn"
                                    v-qadn-mta-h5="{id: 'a002_b000_c000_d000_bt018_ck03'}">维护管理</el-button>-->
-                        <el-button plain @click="exportRes" v-if="!showImportBtn">资源导出</el-button>
+<!--                        <el-button plain @click="exportRes" v-if="!showImportBtn">资源导出</el-button>-->
                     </li>
                     <li class="handel_ul_li push_map_btn">
                         <el-button plain @click="showPushMap" v-if="showImportBtn">推送地图</el-button>

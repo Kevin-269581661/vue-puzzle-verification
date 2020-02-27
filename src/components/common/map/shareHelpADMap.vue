@@ -1985,10 +1985,12 @@
                             for (let rkey of this.resMarkers) {
                                 if(rkey.resID === key.resID) {
                                     key.distance = distance;
-                                    // let labelName = key.resName + '(' + distance + '米)';
                                     let labelName = rkey.getLabel().content;
                                     if(labelName.includes('(') && labelName.includes(')')) {
-                                        labelName = labelName.substring(0,labelName.length - 1) + ',' + distance + '米)'
+                                        if(!labelName.includes(distance)) {
+                                            labelName = labelName.substring(0,labelName.length - 1) + ',' + distance + '米)'
+                                        }
+                                        // labelName = labelName.substring(0,labelName.length - 1) + ',' + distance + '米)'
                                     } else {
                                         labelName = key.resName + '(' + distance + '米)';
                                     }

@@ -52,10 +52,15 @@
                         </el-option>
                     </el-select>
                 </li>
+                <li>
+                    <span>地图类型：</span>
+                    <el-radio v-model="ActiveMapType" :label="2">新版地图</el-radio>
+                    <el-radio v-model="ActiveMapType" :label="1">旧版地图</el-radio>
+                </li>
             </ul>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="mapDialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="getMapInfo">确 定</el-button>
+                <el-button type="primary" @click="confirmMap">确 定</el-button>
             </div>
         </el-dialog>
         <!-- 销售确认已提交地图点位框 -->
@@ -112,6 +117,9 @@
                 confirmVisible: false,
                 // 空位导出
                 isOpenDownload: false,
+                // 地图类型
+                isMapKind: false,
+                ActiveMapType: 2,
             }
         },
         mounted(){
@@ -164,8 +172,7 @@
                     }
                 }
             },
-            // 获取mapid并打开地图选点新窗口
-            getMapInfo(){
+            confirmMap() {
                 console.log('选择的城市',this.mapCity,'选择的时间段',this.dateInput)
                 if(!this.dateInput.length){
                     this.messageFun('warning','请选择时间')
@@ -175,6 +182,15 @@
                     this.messageFun('warning','请选择城市')
                     return
                 }
+                console.log('ActiveMapType',this.ActiveMapType);
+                if(this.ActiveMapType == 1) {
+                    this.getMapInfo()
+                } else if(this.ActiveMapType == 2){
+                    this.setMapParams()
+                }
+            },
+            // 获取mapid并打开地图选点新窗口
+            getMapInfo(){
                 let params = {
                     token: this.sessionData.token,
                     uid: this.sessionData.uID,
@@ -211,28 +227,74 @@
                     console.log('error', err)
                 })
             },
+            // 设置地图选点参数
+            setMapParams() {
+                this.mapParams = {
+                    rid: this.mapCity,
+                    city:  this.mapCityName,
+                    ls: this.dateInput[0],
+                    le: this.dateInput[1],
+                };
+
+                let url = '';
+                if(window.location.hostname == 'localhost') {
+                    url = window.location.host + '/ADResourceMap/chooseRes?city=' + this.mapParams.city
+                } else {
+                    url = this.apiVar.qadnUrl + '/ADResourceMap/chooseRes?city=' + this.mapParams.city
+                }
+                // 角色
+                if (this.sessionData.uType === 'BD') {
+                    url = url + '&flag=' + true;
+                    this.confirmVisible = true;
+                    localStorage.removeItem('qinlinMapCode');
+                    localStorage.setItem('mapParams', JSON.stringify({
+                        rid: this.mapParams.rid,
+                        ls: this.dateInput[0],
+                        le: this.dateInput[1],
+                        suID: this.sessionData.uID,
+                    }));
+                } else if (this.sessionData.uType === 'SM') {
+                    url = url + '&flag=' + false
+                }
+                this.mapDialogVisible = false
+                window.open(url);
+
+            },
             // 判断是否已提交地图选择点位,并跳转到创建方案页面
             getMapAdsAndGotoPlan(){
-                api.getApi(this.apiVar.Map + '/checkMapSelect',{uid: this.sessionData.uID,token: this.sessionData.token}).then(res =>{
-                    console.log('用户是否选点的接口', res)
-                    if(res.data.SysCode == '200200'){
-                        let resData = res.data.data
-                        if (resData.isSelect) {
-                            this.confirmVisible = false
-                            let indexData = {
-                                dateInput: this.dateInput,
-                                rid: this.mapCity.toString(),
-                                city: this.mapCityName,
+                let indexData = {
+                    dateInput: this.dateInput,
+                    rid: this.mapCity.toString(),
+                    city: this.mapCityName,
+                    activeMapType: this.ActiveMapType
+                }
+                if (this.ActiveMapType === 1) {
+                    api.getApi(this.apiVar.Map + '/checkMapSelect',{uid: this.sessionData.uID,token: this.sessionData.token}).then(res =>{
+                        console.log('用户是否选点的接口', res)
+                        if(res.data.SysCode == '200200'){
+                            let resData = res.data.data
+                            if (resData.isSelect) {
+                                this.confirmVisible = false
+                                sessionStorage.setItem('indexData', JSON.stringify(indexData));
+                                this.$router.push('./sale/createPlan?from=index');
+                            }else{
+                                this.messageFun('warning','您在地图未提交点位')
                             }
-                            sessionStorage.setItem('indexData', JSON.stringify(indexData));
-                            this.$router.push('./sale/createPlan?from=index');
                         }else{
-                            this.messageFun('warning','您在地图未提交点位')
+                            this.messageFun('warning',res.data.MSG)
                         }
-                    }else{
-                        this.messageFun('warning',res.data.MSG)
+                    })
+                } else {
+                    let code = localStorage.getItem(`qinlinMapCode`)
+                    if(code) {
+                        this.confirmVisible = false;
+                        sessionStorage.setItem('indexData', JSON.stringify(indexData));
+                        this.$router.push('./sale/createPlan?from=index');
+                    } else {
+                        sessFun.messageFun('warning','您在地图未提交点位')
                     }
-                })
+                }
+
             },
             // 操作提示统一方法
             messageFun(mesType,mes){

@@ -10,7 +10,8 @@
     "lint": "eslint --ext .js,.vue src",
     "build": "cross-env NODE_ENV=production env_config=prod node build/build.js",
     "build--test": "cross-env NODE_ENV=testing env_config=test node build/build.js",
-    "build--gray": "cross-env NODE_ENV=graying env_config=gray node build/build.js"
+    "build--gray": "cross-env NODE_ENV=graying env_config=gray node build/build.js",
+      "build--prod": "cross-env NODE_ENV=production env_config=prod node build/build.js"
   },
   "dependencies": {
     "axios": "0.18.0",

@@ -577,9 +577,9 @@
                 }
 
             },
-            // 获取城市
+            // 获取权限城市
             getCity() {
-                api.postApi(this.apiVar.Advertisement + '/GetAuthorCity').then(res => {
+                api.postApi(this.apiVar.mapApi + '/resCompare/authorCity').then(res => {
                     console.log(res.data);
                     if (res.data.SysCode == 300200) {
                         let resinfo = res.data.data;

@@ -7,28 +7,47 @@
             <template>
                 <el-radio-group v-model="publishSearchInfo.mediaType" size="medium" @change="changeMedia()"
                                 class="radio_style">
-                    <el-radio-button label="广告门"></el-radio-button>
-                    <el-radio-button label="道闸"></el-radio-button>
+                    <el-radio-button label="广告门">广告门({{publishNumInfo.currNum}}/{{publishNumInfo.totalNum}})</el-radio-button>
+                    <el-radio-button label="道闸">道闸</el-radio-button>
                 </el-radio-group>
                 <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
             </template>
 
             <div class="up-loader-header">
-                <el-cascader :options="publishSearchInfo.citys" v-model="publishSearchInfo.citySelect"
-                             @change="searchImgChange()" filterable>
-                </el-cascader>
-                <el-select placeholder="请选择资源" filterable v-model="publishSearchInfo.allhouse" @change="searchImg()">
-                    <el-option v-for="(item, index) of publishSearchInfo.allResource" :key="index" :label="item.resName"
-                               :value="item.value"></el-option>
-                </el-select>
-                <el-select placeholder="请选择监播图" v-model="publishSearchInfo.allPic" @change="searchImg()">
-                    <el-option label="已上传" value="2"></el-option>
-                    <el-option label="未上传" value="3"></el-option>
-                </el-select>
-                <div class="progress">
-                    <el-progress :percentage="publishNumInfo.percent" :text-inside="true"></el-progress>
-                    <span>{{ publishNumInfo.currNum }} / {{ publishNumInfo.totalNum }}</span>
+                <div>
+                    <span>城市区域：</span>
+                    <el-cascader placeholder="请选择城市区域" :options="publishSearchInfo.citys" v-model="publishSearchInfo.citySelect"
+                                 @change="searchImgChange()" filterable>
+                    </el-cascader>
                 </div>
+                <div>
+                    <span>资源名称：</span>
+                    <el-select placeholder="请选择资源名称" filterable v-model="publishSearchInfo.allhouse" @change="searchImg()">
+                        <el-option v-for="(item, index) of publishSearchInfo.allResource" :key="index" :label="item.resName"
+                                   :value="item.value"></el-option>
+                    </el-select>
+                </div>
+               <div>
+                   <span>监播状态：</span>
+                   <el-select placeholder="请选择监播状态" v-model="publishSearchInfo.allPic" @change="searchImg()">
+                       <el-option label="全部" value="1"></el-option>
+                       <el-option label="已上传" value="2"></el-option>
+                       <el-option label="未上传" value="3"></el-option>
+                   </el-select>
+               </div>
+                <div>
+                    <span>投放状态：</span>
+                    <el-select placeholder="请选择投放状态" v-model="publishSearchInfo.status" @change="searchImg()">
+                        <el-option label="全部" value="1"></el-option>
+                        <el-option label="已上传" value="2"></el-option>
+                        <el-option label="未上传" value="3"></el-option>
+                    </el-select>
+                </div>
+                <el-button type="plain">重置</el-button>
+                <!--<div class="progress">-->
+                    <!--<el-progress :percentage="publishNumInfo.percent" :text-inside="true"></el-progress>-->
+                    <!--<span>{{ publishNumInfo.currNum }} / {{ publishNumInfo.totalNum }}</span>-->
+                <!--</div>-->
             </div>
         </template>
         <!-- 换画报告 -->
@@ -450,11 +469,13 @@
                     // 媒体类型
                     mediaType: '广告门',
                     // 城市选择
-                    citySelect: [],
+                    citySelect: ['全部'],
                     // 资源选择
-                    allhouse: '',
+                    allhouse: '全部',
                     // 监播图选择
-                    allPic: '',
+                    allPic: '1',
+                    //投放状态
+                    status: '1',
                     // 搜索列表
                     // 城市列表
                     citys: [],
@@ -750,6 +771,10 @@
                                 value: item.resID,
                             };
                         });
+                        result.unshift({
+                            value: "全部",
+                            label: "全部"
+                        })
                         this.searchInfo.resArr = result;
                         this.publishSearchInfo.allResource = result;
                     } else {
@@ -772,6 +797,7 @@
             },
             searchImgChange() {
                 let {citySelect} = this.publishSearchInfo;
+                // console.log(citySelect);
                 if (citySelect[0] == "全部") {
                     this.publishSearchInfo = {
                         ...this.publishSearchInfo,
@@ -788,6 +814,7 @@
             // 上下刊搜索图片
             searchImg() {
                 let {citySelect, allhouse, allPic} = this.publishSearchInfo;
+                // console.log(allPic);
                 if (citySelect.length || allhouse || allPic) {
                     this.pageInfo.currPage = 1;
                     this.searchFun();
@@ -825,13 +852,11 @@
                     mVehicle: mediaType,
                 };
 
-                if (allPic) {
-                    if (allPic == '2') {
-                        info.hasUpload = "true";
-                    }
-                    if (allPic == '3') {
-                        info.hasUpload = "false";
-                    }
+                if (allPic == '2') {
+                    info.hasUpload = "true";
+                }
+                if (allPic == '3') {
+                    info.hasUpload = "false";
                 }
                 if (citySelect.length) {
                     if (citySelect[0] == '全部') {
@@ -841,7 +866,7 @@
                         info.district = citySelect[1];
                     }
                 }
-                if (allhouse) {
+                if (allhouse!=='全部') {
                     info.resid = allhouse;
                 }
                 console.log('type---', info);
@@ -2116,6 +2141,13 @@
 
     .up-loader-header {
         position: relative;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .up-loader-header>div>span{
+        color:rgba(0,0,0,0.85);
+        font-size: 14px;
     }
 
     .progress {
@@ -2124,7 +2156,7 @@
 
     /deep/ .up-loader-header .el-input__inner {
         height: 32px;
-        width: 180px;
+        width: 172px;
     }
 
     .progress span {
@@ -2654,6 +2686,10 @@
 
         .point_item {
             margin: 0 36px 16px;
+        }
+        /deep/ .up-loader-header .el-input__inner {
+            height: 32px;
+            width: 312px;
         }
     }
 </style>

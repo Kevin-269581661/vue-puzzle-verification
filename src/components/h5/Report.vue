@@ -219,8 +219,14 @@
                                 <el-option value="4" label="4张/页"></el-option>
                             </el-select>
                         </li>
+                        <li>
+                            <span>导出条件：</span>
+                            <el-select class="pptx-select" v-model="pptxFilter" placeholder="(选填)选择其他导出条件">
+                                <el-option value="0" label="剔除被终止点位"></el-option>
+                            </el-select>
+                        </li>
                         <!--存在多个档期时显示-->
-                        <li v-if="Info.name=='SK'||Info.name=='XK'">
+                        <li v-if="(Info.name=='SK'||Info.name=='XK')&&periodArr.length>1">
                             <span>选择档期：</span>
                             <div class="date-wrap">
                                 <el-checkbox  v-model="checkAllDate" @change="chooseAllDate">全部档期</el-checkbox>
@@ -314,6 +320,7 @@
         data() {
             return {
                 pptxType: '2',//导出pptx排版类型
+                pptxFilter:'',//导出pptx条件
                 checkAllDate:true,//全部档期
                 checkPeriodArr:[],//导出pptx档期
                 periodArr:[],
@@ -457,7 +464,7 @@
                 if(!this.checkAllDate&&this.checkPeriodArr.length==0){
                     this.$message.error('请选择一个排期选项!')
                 }else{
-                    console.log(this.pptxType,this.checkAllDate, this.checkPeriodArr);
+                    console.log(this.pptxType,this.checkAllDate, this.checkPeriodArr,this.pptxFilter);
                     this.getApiFun('/GetPPTXReport', this.pptLoading, 'pptx');
                 }
 
@@ -482,6 +489,7 @@
                     if(this.checkPeriodArr.length>0){
                         info.periods = this.checkPeriodArr.join(',')
                     }
+                    info.exportAllPoint = this.pptxFilter==0?0:1
                     info.photoCountPerPage = this.pptxType*1
                 }
                 const tempPage = window.open('', '_blank');
@@ -1390,6 +1398,9 @@
         padding: 0 8px;
         box-sizing: border-box;
         margin-bottom: 10px;
+    }
+    .pptx-dialog /deep/ .el-dialog__body{
+        padding-bottom: 0;
     }
 
     .date-group-wrap /deep/ .el-checkbox{

@@ -7,8 +7,8 @@
             <template>
                 <el-radio-group v-model="publishSearchInfo.mediaType" size="medium" @change="changeMedia()"
                                 class="radio_style">
-                    <el-radio-button label="广告门">广告门({{publishNumInfo.currNum}}/{{publishNumInfo.totalNum}})</el-radio-button>
-                    <el-radio-button label="道闸">道闸</el-radio-button>
+                    <el-radio-button label="广告门">广告门({{publishNumInfo.door.hasPhotoCount}}/{{publishNumInfo.door.totalCount}})</el-radio-button>
+                    <el-radio-button label="道闸">道闸({{publishNumInfo.barrier.hasPhotoCount}}/{{publishNumInfo.barrier.totalCount}})</el-radio-button>
                 </el-radio-group>
                 <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
             </template>
@@ -37,10 +37,10 @@
                </div>
                 <div>
                     <span>投放状态：</span>
-                    <el-select placeholder="请选择投放状态" v-model="publishSearchInfo.status" @change="searchImg()">
-                        <el-option label="全部" value="1"></el-option>
-                        <el-option label="已上传" value="2"></el-option>
-                        <el-option label="未上传" value="3"></el-option>
+                    <el-select placeholder="请选择投放状态" v-model="publishSearchInfo.lState" @change="searchImg()">
+                        <el-option label="全部" value="0"></el-option>
+                        <el-option label="正常" value="1"></el-option>
+                        <el-option label="终止" value="2"></el-option>
                     </el-select>
                 </div>
                 <el-button type="plain">重置</el-button>
@@ -68,9 +68,9 @@
                                v-qadn-mta-h5="{id: 'a006_b011_c013_d000_bt161_ck04'}">编辑报告
                     </el-button>
                     <span class="process_box">
-                        <el-progress :percentage="publishNumInfo.percent" :text-inside="true"
+                        <el-progress :percentage="publishNumInfo.changePic.percent" :text-inside="true"
                                      :stroke-width="16"></el-progress>
-                        {{ publishNumInfo.currNum }} / {{ publishNumInfo.totalNum}}
+                        {{ publishNumInfo.changePic.currNum }} / {{ publishNumInfo.changePic.totalNum}}
                     </span>
                 </div>
             </div>
@@ -475,7 +475,7 @@
                     // 监播图选择
                     allPic: '1',
                     //投放状态
-                    status: '1',
+                    lState: '0',
                     // 搜索列表
                     // 城市列表
                     citys: [],
@@ -495,9 +495,20 @@
 
                 // 上下刊以及换画百分比数量等
                 publishNumInfo: {
-                    percent: 0,
-                    currNum: 0,
-                    totalNum: 0,
+                    "door": {
+                        "totalCount": 0,
+                        "hasPhotoCount": 0
+                    },
+                    "barrier": {
+                        "totalCount": 0,
+                        "hasPhotoCount": 0
+                    },
+                    "changePic":{
+                        percent: 0,
+                        currNum: 0,
+                        totalNum: 0,
+                    }
+
                 },
                 // 换画名称列表
                 painList: [],
@@ -655,15 +666,6 @@
                 console.log(newVal, oldVal, 'fromtype---watch---');
                 this.getPainList().then(res => {
                     this.isShowPic = true
-                    // this.isEdit = false
-                    // this.searchInfoFun()
-                    // let len = this.painList.length;
-                    // this.activePainIndex = len - 1;
-                    // this.dateRange = {
-                    //     beginDate: this.painList[this.activePainIndex].startDate,
-                    //     endDate: this.painList[this.activePainIndex].endDate
-                    // };
-                    // this.search();
                     this.editReport(false);
 
                 });
@@ -829,10 +831,13 @@
                 let info = {};
                 if (this.type == 1) {
                     info = this.searchFormat('SK');
+                    // info = this.getImgCount('SK');
                 } else if (this.type == 2) {
                     info = this.searchFormat('XK');
+                    // info = this.getImgCount('XK');
                 }
                 this.getImgInfo(info);
+                this.getImgCount()
                 this.$nextTick(function () {
                     this.pageInfo.paginationShow = true;
                 });
@@ -841,7 +846,7 @@
             searchFormat(type) {
                 let {uID, token} = this.sessionData;
                 let {currPage, pageSize} = this.pageInfo;
-                let {mediaType, citySelect, allhouse, allPic} = this.publishSearchInfo;
+                let {mediaType, citySelect, allhouse, allPic,lState} = this.publishSearchInfo;
                 let info = {
                     uid: uID,
                     token: token,
@@ -858,6 +863,9 @@
                 if (allPic == '3') {
                     info.hasUpload = "false";
                 }
+                if(lState!='0'){
+                    info.lState = lState
+                }
                 if (citySelect.length) {
                     if (citySelect[0] == '全部') {
                         // this.searchFun();
@@ -872,6 +880,24 @@
                 console.log('type---', info);
                 return info;
             },
+            //图片数量
+            getImgCount() {
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    apId: sessionStorage.getItem('order_apid'),
+                    pType: this.type==1?'SK':'XK',
+                }
+                api.postApi(this.apiVar.Advertisement + "/GetImgCount", params).then(res=>{
+                    if (!res.data.SysCode) {
+                        this.publishNumInfo.door = res.data.door
+                        this.publishNumInfo.barrier = res.data.barrier
+                    } else {
+                        sessFun.messageFun('warning', res.data.MSG);
+                    }
+
+                })
+            },
             // 上下刊报告列表
             getImgInfo(params) {
                 this.pageInfo.loading = true;
@@ -881,12 +907,6 @@
                             console.log(res.data);
                             let dataInfo = res.data;
                             let percent = dataInfo.totalCount ? Number(((dataInfo.hasPhotoCount / dataInfo.totalCount) * 100).toFixed(2)) : 0;
-                            this.publishNumInfo = {
-                                percent: percent,
-                                currNum: dataInfo.hasPhotoCount,
-                                totalNum: dataInfo.totalCount,
-                            };
-
                             this.pageInfo = {
                                 ...this.pageInfo,
                                 ...({totalNum: dataInfo.searchCount}),
@@ -988,7 +1008,7 @@
                     if (res.data.SysCode == 200200) {
                         let dataInfo = res.data.data;
                         let percent = dataInfo.totalSize ? Number(((dataInfo.businessItem.adsWithReplacePics / dataInfo.totalSize) * 100).toFixed(2)) : 0;
-                        this.publishNumInfo = {
+                        this.publishNumInfo.changePic = {
                             percent: percent,
                             currNum: dataInfo.businessItem.adsWithReplacePics,
                             totalNum: dataInfo.totalSize,

@@ -489,7 +489,7 @@
                     if(this.checkPeriodArr.length>0){
                         info.periods = this.checkPeriodArr.join(',')
                     }
-                    info.exportAllPoint = this.pptxFilter==0?0:1
+                    info.exportAllPoint = this.pptxFilter==='0'?0:1
                     info.photoCountPerPage = this.pptxType*1
                 }
                 const tempPage = window.open('', '_blank');

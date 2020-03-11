@@ -435,6 +435,7 @@
             },
             showPptxDialog(){
                 this.pptxdialogVisible = true
+                this.pptxFilter = ''
             },
             //获取排期
             getPeriod(){
@@ -469,7 +470,6 @@
                 }
 
             },
-
             // 获取ppt
             getPTT() {
                 this.getApiFun('/GetPPTReport', this.pptLoading, 'ppt');

@@ -2114,11 +2114,20 @@
              */
             // 导出图片包
             downloadImg() {
-                if (!this.publishNumInfo.currNum) {
-                    sessFun.messageFun('warning', '暂无图片记录');
-                    return;
-                }
                 let type = this.type;
+                if (type == 1 || type == 2) {
+                    // 上下刊报告列表
+                    if (this.publishNumInfo.door.hasPhotoCount==0&&this.publishNumInfo.barrier.hasPhotoCount==0) {
+                        sessFun.messageFun('warning', '暂无图片记录');
+                        return;
+                    }
+                } else if (type == 3) {
+                    // 换画报告列表
+                    if (!this.publishNumInfo.changePic.currNum) {
+                        sessFun.messageFun('warning', '暂无图片记录');
+                        return;
+                    }
+                }
                 let info = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,

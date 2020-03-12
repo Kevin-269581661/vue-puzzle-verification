@@ -796,12 +796,7 @@
             // 修改媒体类型
             changeMedia() {
                 this.pageInfo.currPage = 1;
-                this.publishSearchInfo = {
-                    ...this.publishSearchInfo,
-                    citySelect: [],
-                    allhouse: '',
-                    allPic: '',
-                };
+                this. resetSearch('sxk')
                 this.uploadImgArr = [];
                 this.constractArr = [];
                 this.searchFun();
@@ -809,13 +804,7 @@
             searchImgChange() {
                 let {citySelect} = this.publishSearchInfo;
                 // console.log(citySelect);
-                if (citySelect[0] == "全部") {
-                    this.publishSearchInfo = {
-                        ...this.publishSearchInfo,
-                        allhouse: '',
-                        allPic: '',
-                    };
-                } else {
+                if (citySelect[0] !== "全部") {
                     let cityId = citySelect[0];
                     let areaId = citySelect[1];
                     this.getResArr(cityId, areaId);

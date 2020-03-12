@@ -39,11 +39,11 @@
                     <span>投放状态：</span>
                     <el-select placeholder="请选择投放状态" v-model="publishSearchInfo.lState" @change="searchImg()">
                         <el-option label="全部" value="0"></el-option>
-                        <el-option label="正常" value="1"></el-option>
-                        <el-option label="终止" value="2"></el-option>
+                        <el-option label="正常投放" value="1"></el-option>
+                        <el-option label="终止投放" value="2"></el-option>
                     </el-select>
                 </div>
-                <el-button type="plain">重置</el-button>
+                <el-button type="plain" @click="resetSearch('sxk')">重置</el-button>
                 <!--<div class="progress">-->
                     <!--<el-progress :percentage="publishNumInfo.percent" :text-inside="true"></el-progress>-->
                     <!--<span>{{ publishNumInfo.currNum }} / {{ publishNumInfo.totalNum }}</span>-->
@@ -76,35 +76,36 @@
             </div>
             <!-- 搜索 -->
             <div class="search_pic" v-if="!firstTime">
-                <el-row :gutter="32">
-                    <el-col>
+                <div class="up-loader-header">
+                    <div>
                         <span>媒体类型:</span>
                         <el-select v-model="searchInfo.mediaType" placeholder="请选择媒体类型" @change="search()" size="small">
                             <el-option v-for="item of searchInfo.mediaTypeArr" :key="item.value" :label="item.label"
                                        :value="item.value"></el-option>
                         </el-select>
-                    </el-col>
-                    <el-col>
+                    </div>
+                    <div>
                         <span>城市区域:</span>
                         <el-cascader :options="searchInfo.citys" v-model="searchInfo.city" placeholder="请选择城市区域"
                                      filterable size="small" @change="painCityChange()"></el-cascader>
-                    </el-col>
-                    <el-col>
+                    </div>
+                    <div>
                         <span>资源名称:</span>
                         <el-select v-model="searchInfo.resName" placeholder="请选择资源名称" @change="search()" size="small"
                                    filterable>
                             <el-option v-for="item of searchInfo.resArr" :key="item.value" :label="item.label"
                                        :value="item.value"></el-option>
                         </el-select>
-                    </el-col>
-                    <el-col>
+                    </div>
+                    <div>
                         <span>监播状态:</span>
                         <el-select v-model="searchInfo.status" placeholder="请选择监播状态" @change="search()" size="small">
                             <el-option v-for="item of searchInfo.statusArr" :key="item.value" :label="item.label"
                                        :value="item.value"></el-option>
                         </el-select>
-                    </el-col>
-                </el-row>
+                    </div>
+                    <el-button type="plain" @click="resetSearch('hh')">重置</el-button>
+                </div>
             </div>
         </template>
 
@@ -516,13 +517,17 @@
                 activePainIndex: 0,
                 // 搜索信息
                 searchInfo: {
-                    mediaType: "",
-                    city: [],
-                    resName: "",
-                    status: "",
+                    mediaType: "全部",
+                    city: ['全部'],
+                    resName: "全部",
+                    status: "全部",
                     // 搜索列表数据
                     // 媒体类型
                     mediaTypeArr: [
+                        {
+                            label: "全部",
+                            value: 0
+                        },
                         {
                             label: "广告门",
                             value: 1
@@ -538,6 +543,10 @@
                     resArr: [],
                     // 状态
                     statusArr: [
+                        {
+                            label: "全部",
+                            value: 0
+                        },
                         {
                             label: "已上传",
                             value: 1
@@ -837,7 +846,6 @@
                     // info = this.getImgCount('XK');
                 }
                 this.getImgInfo(info);
-                this.getImgCount()
                 this.$nextTick(function () {
                     this.pageInfo.paginationShow = true;
                 });
@@ -880,6 +888,31 @@
                 console.log('type---', info);
                 return info;
             },
+            //重置
+            resetSearch(type){
+                if(type=='sxk'){
+                    this.publishSearchInfo = {
+                        ...this.publishSearchInfo,
+                        citySelect: ['全部'],
+                        // 资源选择
+                        allhouse: '全部',
+                        // 监播图选择
+                        allPic: '1',
+                        //投放状态
+                        lState: '0',
+                    };
+
+                }else{
+                    this.searchInfo = {
+                        ...this.searchInfo,
+                        mediaType: "全部",
+                        city: ['全部'],
+                        resName: "全部",
+                        status: "全部",
+                    }
+                }
+                this.getImgArr();
+            },
             //图片数量
             getImgCount() {
                 let params = {
@@ -906,6 +939,11 @@
                         if (!res.data.SysCode) {
                             console.log(res.data);
                             let dataInfo = res.data;
+                            if (dataInfo.totalCount == 0) {
+                                sessFun.messageFun('warning', '暂无数据');
+                            }else{
+                                this.getImgCount()
+                            }
                             let percent = dataInfo.totalCount ? Number(((dataInfo.hasPhotoCount / dataInfo.totalCount) * 100).toFixed(2)) : 0;
                             this.pageInfo = {
                                 ...this.pageInfo,
@@ -923,9 +961,6 @@
                             }
                             this.imageArr = dataInfo.dataList;
                             this.checkImgStatus();
-                            if (dataInfo.totalCount == 0) {
-                                sessFun.messageFun('warning', '暂无数据');
-                            }
                         } else {
                             sessFun.messageFun('warning', res.data.MSG);
                         }
@@ -1053,9 +1088,7 @@
                 if (city[0] == "全部") {
                     this.searchInfo = {
                         ...this.searchInfo,
-                        city: [],
-                        resName: "",
-                        status: "",
+                        city: ['全部'],
                     };
                 } else {
                     let cityId = city[0];
@@ -1086,11 +1119,25 @@
                     replaceRecordId: this.painList.length ? this.painList[this.activePainIndex].id : '',
                     pageNum: currPage,
                     pageSize: pageSize,
-                    ...(mediaType && {mType: mediaType == 1 ? 0 : 1}),
-                    ...(city.length && {districtId: city[1]}),
-                    ...(resName && {resIds: [resName]}),
-                    ...(status && {reportStatus: status == 1 ? 1 : 0})
+                    // ...(mediaType && {mType: mediaType == 1 ? 0 : 1}),
+                    // ...(city.length && {districtId: city[1]}),
+                    // ...(resName && {resIds: [resName]}),
+                    // ...(status && {reportStatus: status == 1 ? 1 : 0})
                 };
+                console.log(mediaType, city, resName, status);
+                if (mediaType!=='全部'&&mediaType!='0') {
+                    info.mType = mediaType == 1 ? 0 : 1
+                }
+                if (city[0]!='全部') {
+                    info.districtId = city[1]
+                }
+                if (resName!=='全部') {
+                    info.resIds = [resName]
+                }
+                if (status!=='全部'&&mediaType!='0') {
+                    info.reportStatus = status == 1 ? 1 : 0
+                }
+                console.log(info);
                 return info;
             },
             // 点击左边
@@ -1661,6 +1708,7 @@
                                     //创建第一个换画报告，在父组件添加tab
                                     that.$parent.getPainlist()
                                     that.$emit('toSixthTab','sixth');
+                                    this.$emit('hidePainModal','false');
                                 }
                                 setTimeout(()=>{
                                     that.getPainList().then(res=>{

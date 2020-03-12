@@ -514,6 +514,7 @@
                                 fileInfo.periods = this.checkPeriodArr.join(',')
                             }
                             fileInfo.photoCountPerPage = this.pptxType*1
+                            fileInfo.exportAllPoint = this.pptxFilter==='0'?0:1
                         }
                         fileInfo.type = this.stateToNum(type, name);
                         this.getFileProcessFun(tempPage, fileInfo);

@@ -1120,10 +1120,10 @@
                 if (city[0]!='全部') {
                     info.districtId = city[1]
                 }
-                if (resName!=='全部') {
+                if (resName!=='全部'&&resName!='') {
                     info.resIds = [resName]
                 }
-                if (status!=='全部'&&mediaType!='0') {
+                if (status!=='全部'&&status!='') {
                     info.reportStatus = status == 1 ? 1 : 0
                 }
                 console.log(info);
@@ -1697,16 +1697,20 @@
                                     //创建第一个换画报告，在父组件添加tab
                                     that.$parent.getPainlist()
                                     that.$emit('toSixthTab','sixth');
-                                    this.$emit('hidePainModal','false');
                                 }
                                 setTimeout(()=>{
                                     that.getPainList().then(res=>{
                                         that.activePainIndex = that.painList.length-1
+                                        let info = that.searchPointFormat();
+                                        that.getData(info);
+                                        this.$emit('hidePainModal','false');
                                     });
+
                                 },100)
                                  //添加换画报告tab
                                 // that.$parent.getPainlist()
                                 sessFun.messageFun('success', '新增换画报告成功！');
+
                             } else {
                                 sessFun.messageFun('warning', res.data.MSG);
                             }

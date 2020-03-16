@@ -35,6 +35,8 @@
                             <el-button type="plain" @click="changePain()" v-if="role=='MD'"
                                        v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt110_ck04'}">换画
                             </el-button>
+                            <!--<el-button type="primary" :disabled="usableBtn"-->
+                            <!--v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0" @click="changePoint" v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}">换点</el-button>-->
                             <el-button type="primary"
                                        v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0"
                                        @click="changePoint" v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}">换点
@@ -114,10 +116,25 @@
                                     <el-table-column label="资源名称" min-width="16.1%" class-name="resName-wrap">
                                         <template slot-scope="scope">
                                             <div style="float:left;position: absolute;left: 0;top: 0">
-
+                                                <!--<el-popover v-show="scope.row.isNew"-->
+                                                <!--placement="top-start"-->
+                                                <!--title="新增时间"-->
+                                                <!--width="200"-->
+                                                <!--trigger="hover"-->
+                                                <!--:content="formatToTime(scope.row.lSetTime)">-->
+                                                <!--<span slot="reference" style="font-size: 18px;color: red">*</span>-->
                                                 <div v-if="scope.row.isNew" slot="reference" class="color-line"></div>
+                                                <!--</el-popover>-->
+                                                <!--<el-popover v-show="scope.row.lState==2"-->
+                                                <!--placement="top-start"-->
+                                                <!--title="终止时间"-->
+                                                <!--width="200"-->
+                                                <!--trigger="hover"-->
+                                                <!--:content="formatToTime(scope.row.lSetTime)">-->
+                                                <!--<span slot="reference" style="font-size: 18px;color: red">*</span>-->
                                                 <div v-if="scope.row.lState==2" slot="reference" class="color-line"
                                                      style="background-color: #FF763B"></div>
+                                                <!--</el-popover>-->
                                             </div>
                                             <span>{{scope.row.resName||'--'}}</span>
                                         </template>
@@ -152,14 +169,29 @@
                                         <template slot-scope="scope">
                                             <template v-if="scope.row.lState==2">
                                                 <span>{{scope.row.finishTimeRange}}</span>
+                                                <!--<el-tooltip placement="top">-->
+                                                <!--<div slot="content">-->
+                                                <!--<span>{{scope.row.timeRange}}</span>-->
+                                                <!--</div>-->
+                                                <!--<i class="el-icon-question"> </i>-->
+                                                <!--</el-tooltip>-->
                                             </template>
                                             <span v-else>{{scope.row.timeRange}}</span>
                                         </template>
                                     </el-table-column>
+                                    <!-- <el-table-column label="操作" min-width="4.3%" v-if="showHandel">
+                                         <template slot-scope="scope">
+                                             <span style="color:#999;cursor: pointer;" v-if="scope.row.lState==2">终止</span>
+                                             <span style="color:#409EFF;cursor: pointer;" v-else @click="disContinue(scope.row)"
+                                                   v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt151_ck05'}">终止</span>
+                                         </template>
+                                     </el-table-column>-->
+
                                     <div slot="empty">
                                         <no-search-result></no-search-result>
                                     </div>
                                 </el-table>
+                                <!--<p style="font-size: 12px;color: #666666;margin-top: 10px">提示：带*号的为新增点位</p>-->
                                 <div class="table-bottom-tip">
                                     <div style="display: flex">
                                         <p><span style="background-color: #1890ff" class="color-line"></span>新增点位</p>
@@ -1141,23 +1173,23 @@
                             let initData = res.data;
                             let result = initData.adSpaceInfo;
                             // this.addNewAdsNum = res.data.isNewCount
-                              for (let data of result) {
-                                  let time = this.formatTime(data.lStar) + "-" + this.formatTime(data.lEnd);
-                                  data.timeRange = time;
-                                  let finishTimeRange = '';
-                                  if (data.lState == 2) {
-                                      finishTimeRange = this.formatTime(data.lStar) + "-" + this.formatTime(data.lSetTime);
-                                  }
-                                  data.finishTimeRange = finishTimeRange;
-                              }
-                              // 选点排期
-                              // this.copyAsidArr = JSON.parse(JSON.stringify(result));
-                              this.exportArr = result;
-                              // // 城市筛选过滤
-                              // this.filterCityData = filterFormat(result, "city");
-                              // console.log('城市filter', this.filterCityData)
-                              // this.filtersArea = filterFormat(result, "rName");
-                              // this.filtersData = filterFormat(result, "timeRange");
+                            for (let data of result) {
+                                let time = this.formatTime(data.lStar) + "-" + this.formatTime(data.lEnd);
+                                data.timeRange = time;
+                                let finishTimeRange = '';
+                                if (data.lState == 2) {
+                                    finishTimeRange = this.formatTime(data.lStar) + "-" + this.formatTime(data.lSetTime);
+                                }
+                                data.finishTimeRange = finishTimeRange;
+                            }
+                            // 选点排期
+                            // this.copyAsidArr = JSON.parse(JSON.stringify(result));
+                            this.exportArr = result;
+                            // // 城市筛选过滤
+                            // this.filterCityData = filterFormat(result, "city");
+                            // console.log('城市filter', this.filterCityData)
+                            // this.filtersArea = filterFormat(result, "rName");
+                            // this.filtersData = filterFormat(result, "timeRange");
 
                             // 广告门物料信息
                             let mInfo = initData.gateMaterialInfo;
@@ -1764,12 +1796,11 @@
             },
             //跳到换画tab
             toSixthTab(){
-                this.showPain = true;
                 this.planPanel = 'sixth';
             },
             //隐藏
             hidePainModal(){
-                this.showPainModal = false;
+                this.showPainModal = false
             },
             //点击换画
             changePain() {
@@ -1779,6 +1810,7 @@
                     this.showPain = true;
                     this.planPanel = 'sixth';
                 }else{
+                    //第一次
                     this.showPainModal = true;
                 }
                 setTimeout(() => {
@@ -1786,36 +1818,36 @@
                 }, 10);
             },
             // 新增换画报告
-           /* addPainReport() {
-                let info = {
-                    apId: sessionStorage.getItem("order_apid")
-                };
-                api.getApi(this.apiVar.replace + '/report/list', info).then(res => {
-                    console.log(res);
-                    if (res.data.SysCode == 200200) {
-                        this.painlist = res.data.data;
-                        let len = this.painlist.length;
-                        let painInfo = {
-                            apId: this.orderDetail.apID,
-                            replaceRecordName: `换画${len + 1}`,
-                        };
-                        api.postApi_json(this.apiVar.replace + '/report/add', painInfo).then(res => {
-                            if (res.data.SysCode == 200200) {
-                                sessFun.messageFun('success', '新增换画报告成功！');
-                                // this.showPain = true;
-                                // this.planPanel = 'sixth';
-                                // setTimeout(() => {
-                                //     this.fromType = !this.fromType;
-                                // }, 10);
-                            } else {
-                                sessFun.messageFun('warning', res.data.msg);
-                            }
-                        });
-                    } else {
-                        sessFun.messageFun('warning', res.data.msg);
-                    }
-                });
-            },*/
+            /* addPainReport() {
+                 let info = {
+                     apId: sessionStorage.getItem("order_apid")
+                 };
+                 api.getApi(this.apiVar.replace + '/report/list', info).then(res => {
+                     console.log(res);
+                     if (res.data.SysCode == 200200) {
+                         this.painlist = res.data.data;
+                         let len = this.painlist.length;
+                         let painInfo = {
+                             apId: this.orderDetail.apID,
+                             replaceRecordName: `换画${len + 1}`,
+                         };
+                         api.postApi_json(this.apiVar.replace + '/report/add', painInfo).then(res => {
+                             if (res.data.SysCode == 200200) {
+                                 sessFun.messageFun('success', '新增换画报告成功！');
+                                 // this.showPain = true;
+                                 // this.planPanel = 'sixth';
+                                 // setTimeout(() => {
+                                 //     this.fromType = !this.fromType;
+                                 // }, 10);
+                             } else {
+                                 sessFun.messageFun('warning', res.data.msg);
+                             }
+                         });
+                     } else {
+                         sessFun.messageFun('warning', res.data.msg);
+                     }
+                 });
+             },*/
             // 操作提示统一方法
             messageFun(mesType, mes) {
                 this.$message({

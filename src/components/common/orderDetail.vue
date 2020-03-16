@@ -242,7 +242,7 @@
                     </el-tab-pane>
                 </el-tabs>
                 <!--换画弹框-->
-                <div class="changepic_box" v-if="showPainModal">
+                <div class="changepic_box FIRSTTIME" v-if="showPainModal">
                     <change-pic :firstTime="showPainModal" :type="3" :planPanel="planPanel" :from-type="fromType" :order-detail="orderDetail" @toSixthTab="toSixthTab()" @hidePainModal="hidePainModal()"></change-pic>
                 </div>
                 <!--添加点位对话框-->
@@ -1810,6 +1810,7 @@
                     this.showPain = true;
                     this.planPanel = 'sixth';
                 }else{
+                    this.showPain = false;
                     //第一次
                     this.showPainModal = true;
                 }

@@ -855,6 +855,8 @@
                 coverAnalysisVisible:false,
                 coverAnalysisData:[{companyName:'亲邻',count:0}],
                 selectPointType:0,//0：中心点选点，1：辐射圈选点，2：范围选点（圆形）3：范围选点（多边形）
+                // 鼠标画圆时的圆半径label
+                circleLabel:''
             }
         },
         mounted() {
@@ -1338,15 +1340,16 @@
                     let that = this
                     //添加鼠标绘制工具监听事件，用于获取绘制结果
                     this.drawingManager.addEventListener("overlaycomplete", function(e) {
-                        // console.log(e.drawingMode);
+                        console.log('----',e);
                         console.log(e.overlay);
                         console.log(e.overlay.getPath());
-                        // console.log(e.calculate);
-                        // console.log(e.label);
+
                         that.mouseoverlay =  e.overlay
                         that.drawingManager.close()
                         if(e.drawingMode === 'circle') {
-                            that.showResInPolygon('circle',e.overlay)
+                            that.drawingManager.disableCalculate();
+                            that.showResInPolygon('circle',e.overlay);
+                            that.showCircleRadius(e);
                             that.removeLeftFilterInfo()
                         } else if(e.drawingMode === 'polygon') {
                             that.polygonPoint = e.overlay.getPath()
@@ -1405,9 +1408,9 @@
                     sessFun.messageFun('warning','当前为多点辐射状态，请取消后再进行其它绘制操作！')
                     return
                 }
-                this.initMouseDrawing()
-                this.isMouseSearch = false
-                this.deleteDrawingOverlay()
+                this.initMouseDrawing();
+                this.isMouseSearch = false;
+                this.deleteDrawingOverlay();
                 if (temp === 'polyline') {
                     // 线-测距
                     this.LinePoints = []
@@ -1419,7 +1422,8 @@
                     this.initMouseActive(temp)
                 } else if (temp === 'circle') {
                     // 圆
-                    this.drawingManager.open()
+                    this.drawingManager.open();
+                    this.drawingManager.enableCalculate();
                     this.drawingManager.setDrawingMode(BMAP_DRAWING_CIRCLE);
                     this.initMouseActive(temp)
                 } else if (temp === 'polygon') {
@@ -1435,7 +1439,6 @@
                     sessFun.messageFun('warning', '点击异常！')
                 }
             },
-            //
             // 初始化鼠标绘制选中状态
             initMouseActive(temp) {
                 for(let i in this.mouseType) {
@@ -1496,6 +1499,23 @@
                     console.log('-----e')
                 }
             },
+            // 由圆面积转变成显示半径
+            showCircleRadius(e) {
+                // console.log(e.calculate);
+                // console.log(e.label);
+                this.circleLabel = e.label;
+                let radius = e.calculate ? Math.sqrt(e.calculate / Math.PI).toFixed() : '';
+                console.log('圆半径为--',radius);
+                this.circleLabel.setStyle({
+                    borderRadius: "3px",
+                    boxShadow: '0px 0px 6px 0px rgba(0,0,0,0.15)',
+                    border: "1px solid #ccc",
+                    background: 'rgba(255,255,255,1)',
+                    color: 'rgba(0,0,0,0.85)',
+                    padding: '2px 4px'
+                });
+                this.circleLabel.setContent(radius + '米')
+            },
             // 显示多边形内的点位
             showResInPolygon(temp, overlay) {
                 let showLoading = this.$loading({
@@ -1504,13 +1524,13 @@
                     spinner: 'el-icon-loading',
                     background: 'rgba(0, 0, 0, 0.7)'
                 });
-                console.time('显示多边形')
-                this.removeAreaLabels()
+                // console.time('显示多边形');
+                this.removeAreaLabels();
                 //  异步保证showLoading能出现，其他方法暂时无法实现（async/await、this.$nextTick）
                 let timer = setTimeout(() => {
-                    this.markerClusterer ? this.markerClusterer.clearMarkers() : ''
+                    this.markerClusterer ? this.markerClusterer.clearMarkers() : '';
                     for (let akey of this.resMarkers) {
-                        let isShow = ''
+                        let isShow = '';
                         if (temp === 'circle') {
                             isShow = BMapLib.GeoUtils.isPointInCircle(akey.point, overlay)
                         } else if (temp === 'polygon') {
@@ -1520,43 +1540,44 @@
                             akey.hide()
                         } else {
                             this.isClusterer ? this.resMap.addOverlay(akey) : '';   // 将标注添加到地图中
-                            akey.show()
+                            akey.show();
                             let flag = this.searchResList.some(item => {
                                 if (akey.resID === item.resID) {
                                     return true
                                 }
-                            })
+                            });
                             if (!flag) {
                                 for (let key of this.resInfo) {
                                     if (key.resID === akey.resID) {
-                                        this.searchResList.push(key)
+                                        this.searchResList.push(key);
                                         break
                                     }
                                 }
                             }
                         }
                     }
-                    this.isMouseSearch = true
-                    this.activeSearchKind = '1'
+                    this.isMouseSearch = true;
+                    this.activeSearchKind = '1';
                     // console.log('searchResList',this.searchResList)
-                    showLoading.close()
-                    console.timeEnd('显示多边形')
+                    showLoading.close();
+                    // console.timeEnd('显示多边形');
                     clearTimeout(timer)
                 }, 20)
             },
             // 清除上一次的绘制
             deleteDrawingOverlay() {
-                console.log('--清除上一次的绘制--',this.resMarkers)
-                this.resMap.removeOverlay(this.mouseoverlay)
-                this.searchResList = []
+                console.log('--清除上一次的绘制--',this.resMarkers);
+                this.resMap.removeOverlay(this.mouseoverlay);
+                this.resMap.removeOverlay(this.circleLabel);
+                this.searchResList = [];
                 this.transfersShowOverlay()
             },
             // 聚合开关
             changeClustererOpen() {
-                this.disabledSwitch = true
-                this.transfersShowOverlay()
+                this.disabledSwitch = true;
+                this.transfersShowOverlay();
                 let timer = setTimeout(()=>{
-                    this.disabledSwitch = false
+                    this.disabledSwitch = false;
                     clearTimeout(timer)
                 },800)
             },
@@ -2388,14 +2409,14 @@
             clearSearch() {
                 if(this.isMouseSearch) {
                     // 取消鼠标画圆
-                    this.isMouseSearch = false
-                    this.deleteDrawingOverlay()
+                    this.isMouseSearch = false;
+                    this.deleteDrawingOverlay();
                     this.initMouseActive()
                 } else if(this.isMultiPoint) {
                     // 叠加分析
-                    this.isMultiPoint = false
-                    this.searchResList = []
-                    this.mouseType.morePoint = false
+                    this.isMultiPoint = false;
+                    this.searchResList = [];
+                    this.mouseType.morePoint = false;
                     // 移除覆盖物
                     for(let key of this.selfMotionPolylines) {
                         this.resMap.removeOverlay(key)
@@ -2404,14 +2425,14 @@
                         this.resMap.removeOverlay(key)
                     }
                     this.multiPointMarkerList = [];
-                    this.selfMotionPolylines = []
+                    this.selfMotionPolylines = [];
                     // 恢复多点辐射前的社区list
                     for(let key of this.resAreaList) {
                         for(let resKey of key.resList) {
                             this.resInfo.push(resKey)
                         }
                     }
-                    this.transfersShowOverlay()
+                    this.transfersShowOverlay();
                     this.judgeByselect()
 
                 } else {
@@ -2424,8 +2445,8 @@
             },
             // 在线搜索取消-恢复框选前
             initOnlineSearchBefor() {
-                this.isOnlineSearch = false
-                this.searchResList = []
+                this.isOnlineSearch = false;
+                this.searchResList = [];
                 // 清除圆覆盖物
                 // let allOverlay = this.resMap.getOverlays();
                 // for (let akey of allOverlay) {
@@ -2434,7 +2455,7 @@
                 //     }
                 // }
                 // 根据地图等级进行显示
-                this.transfersShowOverlay()
+                this.transfersShowOverlay();
                 // 移除
                 for (let key of this.selectOnlineList) {
                     this.deleteCircle(key.id)

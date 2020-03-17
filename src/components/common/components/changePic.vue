@@ -1120,10 +1120,10 @@
                 if (city[0]!='全部') {
                     info.districtId = city[1]
                 }
-                if (resName!=='全部') {
+                if (resName!=='全部'&&resName!='') {
                     info.resIds = [resName]
                 }
-                if (status!=='全部'&&mediaType!='0') {
+                if (status!=='全部'&&status!='') {
                     info.reportStatus = status == 1 ? 1 : 0
                 }
                 console.log(info);
@@ -1660,10 +1660,14 @@
             ,
             // 确认-生成换画任务
             saveAll() {
-                console.log(this.handleFlag, this.shoplist);
-
+                console.log(this.handleFlag, this.shoplist,this.isEdit);
                 if (this.handleFlag&&this.shoplist.length) {
-                    this.addPainReport()
+                    if(this.isEdit){
+                        this.editPainReport()
+                    }else{
+                        this.addPainReport()
+                    }
+
                 } else {
                     sessFun.messageFun('warning', '没有点位信息发生变更，请先对点位进行操作');
                 }
@@ -1697,16 +1701,20 @@
                                     //创建第一个换画报告，在父组件添加tab
                                     that.$parent.getPainlist()
                                     that.$emit('toSixthTab','sixth');
-                                    this.$emit('hidePainModal','false');
                                 }
                                 setTimeout(()=>{
                                     that.getPainList().then(res=>{
                                         that.activePainIndex = that.painList.length-1
+                                        let info = that.searchPointFormat();
+                                        that.getData(info);
+                                        this.$emit('hidePainModal','false');
                                     });
+
                                 },100)
                                  //添加换画报告tab
                                 // that.$parent.getPainlist()
                                 sessFun.messageFun('success', '新增换画报告成功！');
+
                             } else {
                                 sessFun.messageFun('warning', res.data.MSG);
                             }
@@ -1716,6 +1724,31 @@
                         sessFun.messageFun('warning', res.data.msg);
                     }
                 });
+            },
+            editPainReport() {
+                if (this.handleFlag&&this.shoplist.length) {
+                    let result = [];
+                    for (let data of this.shoplist) {
+                        let obj = {
+                            ...data,
+                            status: data.replaceDate ? 1 : 0,
+                            replaceRecordId: this.painList[this.activePainIndex].id
+                        };
+                        result.push(obj);
+                    }
+                    api.postApi_json(this.apiVar.replace + '/report/saveDetailInfo', result).then(res => {
+                        console.log(res.data);
+                        if (res.data.SysCode == 200200) {
+                            this.isShowPic = false;
+                            sessFun.messageFun('success', res.data.MSG);
+                        } else {
+                            sessFun.messageFun('warning', res.data.MSG);
+                        }
+                        this.search();
+                    });
+                } else {
+                    sessFun.messageFun('warning', '没有点位信息发生变更，请先对点位进行操作');
+                }
             },
             // 取消换画
             cancelPain(type) {

@@ -56,9 +56,10 @@
                             </div>
                             <el-row class="button_row">
                                 <el-col>
-                                   <!-- <el-button type="primary" class="map" icon="el-icon-location-outline" @click="mapAD"-->
-                                    <el-button type="primary" class="map" icon="el-icon-location-outline" @click="judgeMapSelect"
-                                               v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt050_ck03'}">地图</el-button>
+                                    <el-button type="primary" class="map" icon="el-icon-location-outline"
+                                               @click="setMapParams"
+                                               v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt050_ck03'}">地图
+                                    </el-button>
                                     <el-dropdown>
                                         <el-button type="success" class="importXle">
                                             导入<i class="el-icon-arrow-down el-icon--right"></i>
@@ -2379,6 +2380,8 @@
             },
             // 设置地图选点参数
             setMapParams() {
+                localStorage.removeItem('qinlinMapCode');
+                this.ActiveMapType = 2;
                 this.mapParams = {
                     rid: this.activeCityData.rid,
                     city: this.activeCityData.rName,

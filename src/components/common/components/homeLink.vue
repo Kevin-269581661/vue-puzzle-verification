@@ -52,11 +52,11 @@
                         </el-option>
                     </el-select>
                 </li>
-                <li>
-                    <span>地图类型：</span>
-                    <el-radio v-model="ActiveMapType" :label="2">新版地图</el-radio>
-                    <el-radio v-model="ActiveMapType" :label="1">旧版地图</el-radio>
-                </li>
+<!--                <li>-->
+<!--                    <span>地图类型：</span>-->
+<!--                    <el-radio v-model="ActiveMapType" :label="2">新版地图</el-radio>-->
+<!--                    <el-radio v-model="ActiveMapType" :label="1">旧版地图</el-radio>-->
+<!--                </li>-->
             </ul>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="mapDialogVisible = false">取 消</el-button>
@@ -183,11 +183,13 @@
                     return
                 }
                 console.log('ActiveMapType',this.ActiveMapType);
-                if(this.ActiveMapType == 1) {
-                    this.getMapInfo()
-                } else if(this.ActiveMapType == 2){
-                    this.setMapParams()
-                }
+                this.setMapParams();
+                this.ActiveMapType = 2
+                // if(this.ActiveMapType == 1) {
+                //     this.getMapInfo()
+                // } else if(this.ActiveMapType == 2){
+                //     this.setMapParams()
+                // }
             },
             // 获取mapid并打开地图选点新窗口
             getMapInfo(){
@@ -256,7 +258,7 @@
                 } else if (this.sessionData.uType === 'SM') {
                     url = url + '&flag=' + false
                 }
-                this.mapDialogVisible = false
+                this.mapDialogVisible = false;
                 window.open(url);
 
             },

@@ -2699,8 +2699,8 @@
                 console.log('选定提交小区资源IDparams',params)
                 api.postApi_json(this.apiVar.mapApi + '/adsList',params).then(res=>{
                     console.log('res',res)
-                    if(res.data.SysCode === 200200 && res.data.data) {
-                        localStorage.setItem('qinlinMapCode',res.data.data)
+                    if(res.data.SysCode === 200200) {
+                        // localStorage.setItem('qinlinMapCode',res.data.data)
                         this.mapDialogVisible = true
                     } else {
                         sessFun.messageFun('warning', res.data.MSG || '小区提交失败')

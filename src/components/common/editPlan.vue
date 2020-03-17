@@ -4227,25 +4227,20 @@
                         spinner: 'el-icon-loading',
                         background: 'rgba(0, 0, 0, 0.7)'
                     });
-                    let params = {
-                        code: localStorage.getItem(`qinlinMapCode`)
-                    };
-                    if(params.code) {
-                        api.getApi(this.apiVar.mapApi + '/adsListByCode',params).then(res=>{
-                            console.log('res-----',res);
-                            if(res.data.SysCode === 200200) {
-                                this.mapAdsList = res.data.data;
-                                this.setMapAdsListInShopCar();
-                                localStorage.removeItem('qinlinMapCode')
-                            } else {
-                                this.getMapLoading.close();
-                                sessFun.messageFun('warning','数据获取异常')
-                            }
-                        })
-                    } else {
+                    api.getApi(this.apiVar.mapApi + '/adsListByUid',{}).then(res=>{
+                        console.log('res-----',res);
+                        if(res.data.SysCode === 200200) {
+                            this.mapAdsList = res.data.data;
+                            this.setMapAdsListInShopCar();
+                            localStorage.removeItem('qinlinMapCode')
+                        } else {
+                            this.getMapLoading.close();
+                            sessFun.messageFun('warning',res.data.MSG || '数据获取异常')
+                        }
+                    }).catch(err =>{
                         this.getMapLoading.close();
-                        sessFun.messageFun('warning','请在地图选择社区并提交')
-                    }
+                        sessFun.messageFun('warning', '数据接口异常')
+                    })
                 }
             },
             // 根据地图选点返回的数据，设置成购物车所需的数据格式 （无忧地图）

@@ -285,14 +285,28 @@
                         }
                     })
                 } else {
-                    let code = localStorage.getItem(`qinlinMapCode`)
-                    if(code) {
-                        this.confirmVisible = false;
-                        sessionStorage.setItem('indexData', JSON.stringify(indexData));
-                        this.$router.push('./sale/createPlan?from=index');
-                    } else {
-                        sessFun.messageFun('warning','您在地图未提交点位')
-                    }
+                    api.getApi(this.apiVar.mapApi + '/checkAdsCacheExist').then(res=>{
+                        if(res.data.SysCode == 200200) {
+                            let resData = res.data.data;
+                            if (resData === 1) {
+                                this.confirmVisible = false;
+                                sessionStorage.setItem('indexData', JSON.stringify(indexData));
+                                this.$router.push('./sale/createPlan?from=index');
+                            }else{
+                                this.messageFun('warning','您在地图未提交点位')
+                            }
+                        } else {
+                            this.messageFun('warning',res.data.MSG)
+                        }
+                    })
+                    // let code = localStorage.getItem(`qinlinMapCode`)
+                    // if(code) {
+                    //     this.confirmVisible = false;
+                    //     sessionStorage.setItem('indexData', JSON.stringify(indexData));
+                    //     this.$router.push('./sale/createPlan?from=index');
+                    // } else {
+                    //     sessFun.messageFun('warning','您在地图未提交点位')
+                    // }
                 }
 
             },

@@ -62,7 +62,7 @@
                         <el-button plain v-if="showNewBtn" @click="isOpenDownload=true" class="marginR"
                                    v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt041_ck04'}">导空位
                         </el-button>
-                        <el-button plain @click="exportRes" >资源导出</el-button>
+                        <el-button plain @click="exportRes" v-if="isShowExportBtn">资源导出</el-button>
                         <!--<el-button plain v-if="!isNation" @click="goToDiaPlate" class="marginR"
                                    v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt042_ck03'}">点位表盘
                         </el-button>-->
@@ -444,6 +444,7 @@
                 role: "",
                 //   判断是否有发布，预锁解锁等功能
                 isDisable: true,
+                isShowExportBtn: false, //资源导出按钮
                 //加载中
                 loading: true,
                 currentItem: {},
@@ -680,6 +681,11 @@
                 }
                 if (role == "BD" && (this.sessionData.saleManageLevel === 0 || this.sessionData.saleManageLevel === 1)) {
                     this.isNation = false
+                }
+                if(this.sessionData.rela == "直营"){
+                    this.isShowExportBtn = true
+                }else{
+                    this.isShowExportBtn = false
                 }
             },
             // 状态转换成文本

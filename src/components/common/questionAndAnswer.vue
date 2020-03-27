@@ -166,6 +166,7 @@
                                        }
 
                                        if (data.path == '合同下载') {
+                                           //获取a标签<a ......></a> 之间的内容
                                            var re = /<a[^>]*href=['"]([^"]*)['"][^>]*>(.*?)<\/a>/g;
                                            // console.log(re.exec(data.answer)[2]);
                                            obj.answer = re.exec(item)[2].split(keyword).join("<em class='f-color'>" + keyword + "</em>")

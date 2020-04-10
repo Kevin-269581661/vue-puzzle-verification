@@ -1,9 +1,10 @@
 <template>
     <div class="third-wrap box-wrap">
         <div class="table_wrap">
-            <p class="search-row">
+            <p class="search-row" style="float: right;">
+                <el-button v-if="orderApType==1" type="" size="small" @click="uploadMaterial()">下载物料素材</el-button>
                 <el-button type="primary" size="small" @click="uploadMater()" v-show="isOrder"
-                           v-qadn-mta-h5="{id: 'a006_b011_c008_d000_bt123_ck04'}">添加上画信息
+                           v-qadn-mta-h5="{id: 'a006_b011_c008_d000_bt123_ck04'}">添加物料信息
                 </el-button>
             </p>
             <el-radio-group v-model="mediaType" size="medium">
@@ -360,7 +361,8 @@
                 MaterDetailModal: false,
                 // selectNum:0,//勾选的个数
                 hasMaterialCount: 0,//已备注的数量
-                oneEditInfo: {remark: '',imgUrl:''}
+                oneEditInfo: {remark: '',imgUrl:''},
+                orderApType :''
             }
         },
         directives: {
@@ -378,11 +380,10 @@
             }
         },
         created() {
-            console.log('material-----', this.material);
-            console.log('material-----', this.daomater);
             this.sessionData = sessFun.getSess();
             this.materialInfo = this.material;
             this.daomaterInfo = this.daomater;
+            this.orderApType = sessionStorage.getItem("order_apSrc");
         },
         methods: {
 
@@ -422,6 +423,25 @@
                 this.selectList = []
                 this.searchInfoFun();
                 this.getMapCenter();
+            },
+
+            // 下载物料素材
+            uploadMaterial(){
+                let params = {
+                    orderId: sessionStorage.getItem("order_apid")
+                };
+                api.getApi(this.apiVar.qadnUrl + "/advertisement/DownloadMaterial",params)
+                    .then(res => {
+                        console.log(res)
+                        console.log(res.data.data)
+                        if(res.data.data){
+                            window.open(res.data.data)
+                        }else{
+                            Message.warning("无素材！！！");
+                        }
+                    }).catch(err => {
+                        console.log(err)
+                });
             },
 
             // 改变每页条数

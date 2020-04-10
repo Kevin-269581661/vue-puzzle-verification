@@ -74,6 +74,7 @@
                               element-loading-spinner="el-icon-loading">
                         <el-table-column prop="apName" label="方案名称" min-width="14.9%">
                             <template slot-scope="scope">
+                                <span class="u-bk-btn" v-if="scope.row.apSrc!=0">贝壳</span>
                                 <span style="color: #108ee9;cursor: pointer" @click="ToDetail(scope.row)">{{scope.row.apName}}</span>
                             </template>
                         </el-table-column>
@@ -602,7 +603,6 @@
             //获取下级销售列表
             getSubSaleList() {
                 api.getApi(this.apiVar.Advertisement + '/GetSubSaleList').then(res => {
-                    console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         this.filterRealName = filterFormat(res.data.data, "realName",'uID');
 
@@ -1298,6 +1298,7 @@
             // 设置表格数据
             setTableData(item) {
                 let obj = {
+                    apSrc:item.src,
                     adcID: item.adcID,
                     apID: item.apID,
                     apName: item.apName || '',
@@ -1861,6 +1862,15 @@
     /deep/ .Import_dialog .el-upload-dragger img{
         width: 28px;
         height: 30px;
+    }
+    .u-bk-btn{
+        padding: 0 3px;
+        width:30px;
+        height:16px;
+        background:rgba(24,144,255,1);
+        border-radius:2px;
+        color: #fff;
+        font-size: 12px;
     }
 </style>
 

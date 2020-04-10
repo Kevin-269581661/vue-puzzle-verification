@@ -62,6 +62,7 @@
                               :default-sort="{prop: 'appTime', order: 'descending'}">
                         <el-table-column label="订单名称" min-width="12.6%">
                             <template slot-scope="scope">
+                                <span class="u-bk-btn" v-if="scope.row.apSrc!=0">贝壳</span>
                                 <span style="color: #108ee9;cursor: pointer" @click="ToDetail(scope.row)">{{scope.row.apName}}</span>
                             </template>
                         </el-table-column>
@@ -491,6 +492,7 @@
             // 设置表格数据
             setTableData(item) {
                 let obj = {
+                    apSrc:item.src,
                     adcID: item.adcID,
                     apID: item.apID,
                     apName: item.apName || '',
@@ -530,11 +532,13 @@
                 console.log(this.role);
                 if (this.role == 'AD') {
                     sessionStorage.setItem("ADorder_apid", row.apID);
+                    sessionStorage.setItem("ADorder_apSrc", row.apSrc);
                     this.$router.push("./ADorderDetail");
                 } else {
                     sessionStorage.setItem('change_point', 'no');
                     sessionStorage.setItem('order_citylist', JSON.stringify(row.companyList));
                     sessionStorage.setItem("order_apid", row.apID);
+                    sessionStorage.setItem("order_apSrc", row.apSrc);
                     this.$router.push("./orderDetail");
                 }
             },
@@ -1084,5 +1088,14 @@
     }
     .price-dialog-list .price-dialog .num-input-wrap span {
         top: 2px !important;
+    }
+    .u-bk-btn{
+        padding: 0 3px;
+        width:30px;
+        height:16px;
+        background:rgba(24,144,255,1);
+        border-radius:2px;
+        color: #fff;
+        font-size: 12px;
     }
 </style>

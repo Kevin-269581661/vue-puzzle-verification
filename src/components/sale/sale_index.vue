@@ -626,9 +626,7 @@
                 if (item) {
                     this.uploadEvent(2,item.name)
                     item.descTooltip = false
-                   setTimeout(()=>{
-                       window.open(item.link, '_blank')
-                   },10)
+                    window.open(item.link, '_blank')
                 } else {
                     this.uploadEvent(2,'home')
                     window.open('https://apps.qinlinad.com', '_blank')

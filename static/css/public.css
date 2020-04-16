@@ -148,50 +148,7 @@
     color: #108EE9;
 }
 
-/*1366*/
 
-@media screen and (min-width: 1366px) {
-    .ad_index_panel li {
-        width: 295px;
-        height: 166px;
-        margin-left: 21px;
-        float: left;
-        position: relative;
-        background: #ffffff;
-        box-shadow: 0 2px 8px 1px rgba(0, 0, 0, 0.08);
-        border-radius: 4px;
-    }
-}
-
-/*1440*/
-
-@media screen and (min-width: 1440px) {
-    .ad_index_panel li {
-        width: 295px;
-        height: 166px;
-        margin-left: 46px;
-        float: left;
-        position: relative;
-        background: #ffffff;
-        box-shadow: 0 2px 8px 1px rgba(0, 0, 0, 0.08);
-        border-radius: 4px;
-    }
-}
-
-/*1920*/
-
-@media screen and (min-width: 1920px) {
-    .ad_index_panel li {
-        width: 295px;
-        height: 166px;
-        margin-left: 45px;
-        float: left;
-        position: relative;
-        background: #ffffff;
-        box-shadow: 0 2px 8px 1px rgba(0, 0, 0, 0.08);
-        border-radius: 4px;
-    }
-}
 /*运营首页以及广告主首页内容---结束*/
 
 .ad_main {
@@ -311,5 +268,155 @@
     min-width: 88px;
     text-align: center;
 }
+/*应用中心*/
+.desc-tooltip.el-tooltip__popper.is-dark{
+    max-width: 308px;
+    line-height: 22px;
+    background:rgba(0,0,0,0.75)!important;
+}
+.app-center-item {
+    border: 1px solid rgba(230, 231, 233, 1);
+    margin: 24px 0;
+}
 
+.app-center-item .h2_style {
+    width: 100%;
+    box-sizing: border-box;
+    cursor: pointer;
+}
 
+.app-center-item .h2_style /deep/ [class*=" el-icon-"], [class^=el-icon-] {
+    color: rgba(38, 38, 38, 1);
+    font-weight: bold;
+}
+
+.app-center-item ul {
+    display: flex;
+    flex-wrap: wrap;
+    background: #fff;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+.app-center-item li {
+    border: 1px solid rgba(230, 231, 233, 1);
+    border-top: none;
+    border-left: none;
+    display: flex;
+    padding: 32px;
+    box-sizing: border-box;
+    /*align-items: center;*/
+    width: 25%;
+    height: 128px;
+    margin-bottom: -1px;
+    cursor: pointer;
+}
+.app-center-item li .item-right{
+    width: 80%;
+}
+.app-center-item li:nth-child(4n) {
+    border-right: none;
+}
+
+.app-center-item li img {
+    width: 64px;
+    height: 64px;
+    margin-right: 15px;
+}
+
+.app-center-item li h5 {
+    font-size: 18px;
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.85);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.app-center-item li p {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.65);
+    margin-top: 4px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    width:167px;
+    line-height:18px;
+}
+
+.app-center-item .slide {
+    width: 100%;
+    background: #fff;
+    border-top: 1px solid rgba(230, 231, 233, 1);
+    height: 42px;
+    color: rgba(140, 140, 140, 1);
+    text-align: center;
+    line-height: 42px;
+    cursor: pointer;
+    font-size: 14px;
+}
+.app-center-item .slide .el-icon-d-arrow-left{
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.app-center-item .slide .up /deep/ .el-icon-d-arrow-left{
+    color: rgba(140, 140, 140, 1);
+    transform: rotateZ(90deg);
+}
+.app-center-item .slide .down /deep/ .el-icon-d-arrow-left{
+    color: rgba(140, 140, 140, 1);
+    transform: rotateZ(-90deg);
+}
+
+/*1366*/
+
+@media screen and (min-width: 1366px) {
+    .ad_index_panel li {
+        width: 295px;
+        height: 166px;
+        margin-left: 21px;
+        float: left;
+        position: relative;
+        background: #ffffff;
+        box-shadow: 0 2px 8px 1px rgba(0, 0, 0, 0.08);
+        border-radius: 4px;
+    }
+}
+
+/*1440*/
+
+@media screen and (min-width: 1420px) {
+    .ad_index_panel li {
+        width: 295px;
+        height: 166px;
+        margin-left: 46px;
+        float: left;
+        position: relative;
+        background: #ffffff;
+        box-shadow: 0 2px 8px 1px rgba(0, 0, 0, 0.08);
+        border-radius: 4px;
+    }
+    .app-center-item li p {
+        width: 100%;
+    }
+}
+
+/*1920*/
+
+@media screen and (min-width: 1900px) {
+    .ad_index_panel li {
+        width: 295px;
+        height: 166px;
+        margin-left: 45px;
+        float: left;
+        position: relative;
+        background: #ffffff;
+        box-shadow: 0 2px 8px 1px rgba(0, 0, 0, 0.08);
+        border-radius: 4px;
+    }
+    .app-center-item li p {
+        width: 100%;
+    }
+}

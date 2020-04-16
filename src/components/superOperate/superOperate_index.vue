@@ -17,6 +17,27 @@
                 </div>
             </div>
         </div>
+        <div class="app-center-item" id="appCenter">
+            <!--isPlatform-->
+            <h2 class="h2_style" @click="goToPage()">应用中心 <i class="el-icon-arrow-right"></i></h2>
+            <ul :style="{height:isSlideDown?'254px':'381px'}">
+                <li v-for="item in appCenter" @click="goToPage(item.linkUrl,item.name)">
+                    <div class="item-left">
+                        <img :src="item.imgUrl" alt="">
+                    </div>
+                    <div class="item-right">
+                        <h5>{{item.title}}</h5>
+                        <el-tooltip popper-class="desc-tooltip" effect="dark" :content="item.desc" placement="top">
+                            <p>{{item.desc}}</p>
+                        </el-tooltip>
+                    </div>
+                </li>
+            </ul>
+            <div class="slide" @click="slideAppCenterItem">
+                <span class="down" v-if="isSlideDown">展开 <i class="el-icon-d-arrow-left"></i> </span>
+                <span class="up" v-else>收起 <i class="el-icon-d-arrow-left"></i> </span>
+            </div>
+        </div>
         <div class="SM_order_price" v-if="isRetailCompany">
             <div class="order_price_date">
                 <el-date-picker
@@ -241,6 +262,7 @@
     import sessFun from '../../commonFun/sessFun.js'
     import api from "../../api/api";
     import indexIsDateFirst from '../../commonFun/indexIsDateFirst.js';
+    import appCenter from '../../commonFun/json/appCenter.json';
 
     export default {
         name: "admin_index",
@@ -477,6 +499,9 @@
                 ],
                 //登录用户所在公司的荣誉
                 companyHonor:[],
+                // 应用中心
+                appCenter: '',
+                isSlideDown: true,
             }
         },
         components: {
@@ -494,6 +519,9 @@
             document.body.addEventListener("resize", () => {
                this.realTimeChangeEcharteWidth()
             });
+            //用户中心
+            this.appCenter = appCenter
+            this.uploadEvent(1)
         },
         methods: {
             // 获取浏览器session数据及权限设置
@@ -1386,6 +1414,88 @@
                     showClose: true,
                 })
             },
+            // 应用中心的展开和收起
+            slideAppCenterItem() {
+                this.isSlideDown = !this.isSlideDown
+                if(!this.isSlideDown){
+                    this.uploadEvent(1)
+                }
+
+            },
+            // 应用中心跳转
+            goToPage(link,name) {
+                if (link&&name) {
+                    this.uploadEvent(2,name)
+                    window.open(link, '_blank')
+                } else {
+                    this.uploadEvent(2,'home')
+                    window.open('https://apps.qinlinad.com', '_blank')
+
+                }
+
+            },
+            getUuid() {
+                let s = [];
+                let hexDigits = "0123456789abcdef";
+                for (let i = 0; i < 36; i++) {
+                    s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+                }
+                s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+                s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+                s[8] = s[13] = s[18] = s[23] = "-";
+                let uuid = s.join("");
+                return uuid;
+            },
+            // 用户中心事件上报 1展示2点击
+            uploadEvent(type,name){
+                this.$nextTick(function() {
+                    //用户中心渲染完成
+                    // console.log('用户中心渲染完成')
+                    let params = []
+                    if(type==1){
+                        //展现
+                        for(let i=0;i<this.appCenter.length;i++){
+                            if(this.isSlideDown){
+                                if(i<8){
+                                    let obj = {
+                                        "userId":this.sessionData.uID,
+                                        "behaviorTime":timeFormat.toDateTime(new Date()),
+                                        "componentName":this.appCenter[i].name,
+                                        "requestId":this.getUuid(),
+                                        "type":type
+                                    }
+                                    params.push(obj)
+                                }
+                            }else{
+                                if(i>7){
+                                    let obj = {
+                                        "userId":this.sessionData.uID,
+                                        "behaviorTime":timeFormat.toDateTime(new Date()),
+                                        "componentName":this.appCenter[i].name,
+                                        "requestId":this.getUuid(),
+                                        "type":type
+                                    }
+                                    params.push(obj)
+                                }
+                            }
+                        }
+                    }else{
+                        //点击
+                        let obj = {
+                            "userId":this.sessionData.uID,
+                            "behaviorTime":timeFormat.toDateTime(new Date()),
+                            "componentName":name,
+                            "requestId":this.getUuid(),
+                            "type":type
+                        }
+                        params.push(obj)
+                    }
+                    console.log(params)
+                    api.postApi(this.apiVar.UCAPI+'/UserStaticReport',{userStatics:JSON.stringify(params)}).then(res=>{
+                        // console.log('UserStaticReport---',res.data);
+                    })
+                });
+            }
         }
     };
 

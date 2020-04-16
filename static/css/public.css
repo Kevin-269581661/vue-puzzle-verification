@@ -282,6 +282,8 @@
 .app-center-item .h2_style {
     width: 100%;
     box-sizing: border-box;
+}
+.app-center-item .h2_style span{
     cursor: pointer;
 }
 

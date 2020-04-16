@@ -25,7 +25,7 @@
             </div>
             <div class="app-center-item" id="appCenter">
                 <!--isPlatform-->
-                <h2 class="h2_style" @click="goToPage()">应用中心 <i class="el-icon-arrow-right"></i></h2>
+                <h2 class="h2_style"><span @click="goToPage()">应用中心 <i class="el-icon-arrow-right"></i></span></h2>
                 <ul :style="{height:isSlideDown?'254px':'381px'}">
                     <li v-for="item in appCenter" @click="goToPage(item.linkUrl,item.name)">
                         <div class="item-left">

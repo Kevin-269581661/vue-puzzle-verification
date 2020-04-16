@@ -340,8 +340,9 @@
     color: rgba(0, 0, 0, 0.65);
     margin-top: 4px;
     display: -webkit-box;
+    /*! autoprefixer: off */
     -webkit-box-orient: vertical;
-    box-orient: vertical;
+    /* autoprefixer: on */
     -webkit-line-clamp: 2;
     overflow: hidden;
     width:167px;

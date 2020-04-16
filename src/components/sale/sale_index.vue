@@ -27,13 +27,13 @@
                 <!--isPlatform-->
                 <h2 class="h2_style"><span @click="goToPage()">应用中心 <i class="el-icon-arrow-right"></i></span></h2>
                 <ul :style="{height:isSlideDown?'254px':'381px'}">
-                    <li v-for="item in appCenter" @click="goToPage(item.linkUrl,item.name)">
+                    <li v-for="item in appCenter" @click="goToPage(item)">
                         <div class="item-left">
                             <img :src="item.imgUrl" alt="">
                         </div>
                         <div class="item-right">
                             <h5>{{item.title}}</h5>
-                            <el-tooltip popper-class="desc-tooltip" effect="dark" :content="item.desc" placement="top">
+                            <el-tooltip popper-class="desc-tooltip" effect="dark" :content="item.desc" placement="top" v-model="item.descTooltip">
                                 <p>{{item.desc}}</p>
                             </el-tooltip>
                         </div>
@@ -294,6 +294,7 @@
                 // 应用中心
                 appCenter: '',
                 isSlideDown: true,
+
 
             }
         },
@@ -621,16 +622,17 @@
 
             },
             // 应用中心跳转
-            goToPage(link,name) {
-                if (link&&name) {
-                    this.uploadEvent(2,name)
-                    window.open(link, '_blank')
+            goToPage(item) {
+                if (item) {
+                    this.uploadEvent(2,item.name)
+                    item.descTooltip = false
+                   setTimeout(()=>{
+                       window.open(item.link, '_blank')
+                   },10)
                 } else {
                     this.uploadEvent(2,'home')
                     window.open('https://apps.qinlinad.com', '_blank')
-
                 }
-
             },
             getUuid() {
                 let s = [];

@@ -346,7 +346,9 @@
     width:167px;
     line-height:18px;
 }
-
+.app-center-item li p:focus{
+    outline: none;
+}
 .app-center-item .slide {
     width: 100%;
     background: #fff;

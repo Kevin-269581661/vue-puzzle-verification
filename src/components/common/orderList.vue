@@ -62,7 +62,7 @@
                               :default-sort="{prop: 'appTime', order: 'descending'}">
                         <el-table-column label="订单名称" min-width="12.6%">
                             <template slot-scope="scope">
-                                <span class="u-bk-btn" v-if="scope.row.apSrc!=0">贝壳</span>
+<!--                                 <span class="u-bk-btn" v-if="scope.row.apSrc!=0">贝壳</span> -->
                                 <span style="color: #108ee9;cursor: pointer" @click="ToDetail(scope.row)">{{scope.row.apName}}</span>
                             </template>
                         </el-table-column>

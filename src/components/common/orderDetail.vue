@@ -395,31 +395,9 @@
                                 <el-table-column prop="timeRange" label="排期" min-width="14.2%" :filters="filtersData"
                                                  :filter-method="filterTimeRange" show-overflow-tooltip>
                                     <template slot-scope="scope">
-                                        <!--<template v-if="scope.row.lState==2">-->
-                                        <!--<span>{{scope.row.finishTimeRange}}</span>-->
-                                        <!--<el-tooltip placement="top">-->
-                                        <!--<div slot="content">-->
-                                        <!--<span>{{scope.row.timeRange}}</span>-->
-                                        <!--</div>-->
-                                        <!--<i class="el-icon-question"> </i>-->
-                                        <!--</el-tooltip>-->
-                                        <!--</template>-->
                                         <span>{{scope.row.timeRange}}</span>
                                     </template>
                                 </el-table-column>
-                                <!-- <el-table-column label="操作" min-width="4.3%">
-                                     <template slot-scope="scope">
-                                         <span style="color:#409EFF;cursor: pointer;"
-                                               v-if="scope.row.lState==2" @click="restoreState(scope.row)">恢复</span>
-                                         <span style="color:#409EFF;cursor: pointer;" v-if="scope.row.isNew"
-                                               @click="deleteAdd(scope.row)">删除</span>
-                                         <span style="color:#409EFF;cursor: pointer;"
-                                               v-if="scope.row.lState!=2&&!scope.row.isNew"
-                                               @click="disContinue(scope.row)"
-                                               v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt151_ck05'}">终止</span>
-                                     </template>
-                                 </el-table-column>-->
-
                                 <div slot="empty">
                                     <no-search-result></no-search-result>
                                 </div>
@@ -1549,6 +1527,7 @@
             },
             // 排期筛选
             filterTimeRange(value, row) {
+                console.log(value);
                 return row.timeRange === value;
             },
             // 取消修改合同编号

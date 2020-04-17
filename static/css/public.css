@@ -287,7 +287,7 @@
     cursor: pointer;
 }
 
-.app-center-item .h2_style /deep/ [class*=" el-icon-"], [class^=el-icon-] {
+.app-center-item .h2_style /deep/ .el-icon-arrow-right {
     color: rgba(38, 38, 38, 1);
     font-weight: bold;
 }

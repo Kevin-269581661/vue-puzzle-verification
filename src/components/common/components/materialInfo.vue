@@ -2,7 +2,7 @@
     <div class="third-wrap box-wrap">
         <div class="table_wrap">
             <p class="search-row" style="float: right;">
-<!--                 <el-button v-if="orderApType==1" type="" size="small" @click="uploadMaterial()">下载物料素材</el-button> -->
+                <el-button v-if="orderApType==1" type="" size="small" @click="uploadMaterial()">下载物料素材</el-button>
                 <el-button type="primary" size="small" @click="uploadMater()" v-show="isOrder"
                            v-qadn-mta-h5="{id: 'a006_b011_c008_d000_bt123_ck04'}">添加物料信息
                 </el-button>

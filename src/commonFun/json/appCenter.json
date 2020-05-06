@@ -86,5 +86,13 @@
         "link":"https://apps.qinlinad.com/house.html",
         "name":"house",
         "descTooltip":false
+    },
+    {
+        "title":"周边资源导出",
+        "desc":"根据客户需要的中心点与半径距离，批量、快捷且高效的导出周边满足要求的资源信息",
+        "imgUrl":"../../../static/images/appCenter/resource.png",
+        "link":"https://apps.qinlinad.com/resource.html",
+        "name":"resource",
+        "descTooltip":false
     }
 ]

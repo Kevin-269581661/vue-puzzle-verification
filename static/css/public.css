@@ -366,11 +366,11 @@
     font-weight: normal;
 }
 
-.app-center-item .slide .up /deep/ .el-icon-d-arrow-left{
+.app-center-item .slide .up .el-icon-d-arrow-left{
     color: rgba(140, 140, 140, 1);
     transform: rotateZ(90deg);
 }
-.app-center-item .slide .down /deep/ .el-icon-d-arrow-left{
+.app-center-item .slide .down .el-icon-d-arrow-left{
     color: rgba(140, 140, 140, 1);
     transform: rotateZ(-90deg);
 }

@@ -212,17 +212,32 @@
                 <div>
                     <ul>
                         <li>
+                            <span>选择模板：</span>
+                            <el-select class="pptx-select" v-model="templateType" placeholder="请选择" @change="templateChange">
+                                <el-option value="1" label="通用模板"></el-option>
+                                <el-option value="2" label="定制模板"></el-option>
+                            </el-select>
+                        </li>
+                        <!-- 判断是否已开通定制模板 -->
+                        <li v-if="templateType == 2">
+                            <el-alert
+                                type="warning"
+                                show-icon
+                                title=""
+                                :closable="false"
+                                class="report-alert"
+                            >
+                                <div>
+                                    贵司尚未定制专属模板，请<a href="https://apps.qinlinad.com/pptVIP.html" target="_blank" style="color: #1890FFFF;">点击定制</a>
+                                </div>
+                            </el-alert>
+                        </li>
+                        <li v-if="templateType == 1">
                             <span>导出排版：</span>
                             <el-select class="pptx-select" v-model="pptxType" placeholder="请选择">
                                 <el-option value="2" label="2张/页"></el-option>
                                 <el-option value="3" label="3张/页"></el-option>
                                 <el-option value="4" label="4张/页"></el-option>
-                            </el-select>
-                        </li>
-                        <li>
-                            <span>导出条件：</span>
-                            <el-select class="pptx-select" v-model="pptxFilter" placeholder="(选填)选择其他导出条件">
-                                <el-option value="0" label="剔除被终止点位"></el-option>
                             </el-select>
                         </li>
                         <!--存在多个档期时显示-->
@@ -234,6 +249,12 @@
                                     <el-checkbox v-for="(item,index) in periodArr" v-bind:key="index" :label="item"></el-checkbox>
                                 </el-checkbox-group>
                             </div>
+                        </li>
+                        <li>
+                            <span>导出条件：</span>
+                            <el-select class="pptx-select" v-model="pptxFilter" placeholder="(选填)选择其他导出条件">
+                            <el-option value="0" label="剔除被终止点位"></el-option>
+                            </el-select>
                         </li>
                     </ul>
                 </div>
@@ -319,6 +340,7 @@
         },
         data() {
             return {
+                templateType: '',//模板类型
                 pptxType: '2',//导出pptx排版类型
                 pptxFilter:'',//导出pptx条件
                 checkAllDate:true,//全部档期
@@ -382,11 +404,12 @@
         created() {
             this.getRouter();
             this.getReportInfo();
-            this.getPeriod()
+            this.getPeriod();
+            this.getTemplateOptions();
             // MtaH5.clickStat('a006_b011_c011_d000_bt000_sw01')
         },
         mounted(){
-
+            this.templateType = localStorage.getItem('templateType') || '';
         },
         methods: {
             // 状态变中文
@@ -437,6 +460,10 @@
                 this.pptxdialogVisible = true
                 this.pptxFilter = ''
             },
+            // 缓存模板选项
+            templateChange(value) {
+                localStorage.setItem('templateType', value);
+            },
             //获取排期
             getPeriod(){
                 api.getApi(this.apiVar.Advertisement+'/GetAdLaunchPeriod',{key:this.Info.val}).then(res=>{
@@ -460,8 +487,30 @@
                     this.checkAllDate = true
                 }
             },
+            // 获取模板种类
+            getTemplateOptions() {
+                /*let info = {
+
+                }
+                api.getApi(this.apiVar.replace + "/report/h5Detail", info).then(res => {
+                    if (res.data.SysCode == 300200) {
+
+                    } else {
+
+                    }
+                });*/
+            },
             // 获取pptx
             getPTTx() {
+                // 定制模板导出时未开通提示
+                /*if(this.templateType == 2) {
+                    this.$message({
+                        showClose: true,
+                        message: '贵司尚未定制专属模板，不能导出',
+                        type: 'error'
+                    });
+                    return
+                }*/
                 if(!this.checkAllDate&&this.checkPeriodArr.length==0){
                     this.$message.error('请选择一个排期选项!')
                 }else{
@@ -489,6 +538,7 @@
                     if(this.checkPeriodArr.length>0){
                         info.periods = this.checkPeriodArr.join(',')
                     }
+                    info.isCustomize = this.templateType == 2 ? 1 : 0
                     info.exportAllPoint = this.pptxFilter==='0'?0:1
                     info.photoCountPerPage = this.pptxType*1
                 }
@@ -513,6 +563,7 @@
                             if(this.checkPeriodArr.length>0){
                                 fileInfo.periods = this.checkPeriodArr.join(',')
                             }
+                            fileInfo.isCustomize = this.templateType == 2 ? 1 : 0
                             fileInfo.photoCountPerPage = this.pptxType*1
                             fileInfo.exportAllPoint = this.pptxFilter==='0'?0:1
                         }
@@ -1400,7 +1451,7 @@
         box-sizing: border-box;
         margin-bottom: 10px;
     }
-    .pptx-dialog /deep/ .el-dialog__body{
+    /deep/ .pptx-dialog .el-dialog__body{
         padding-bottom: 0;
     }
 
@@ -1413,6 +1464,11 @@
     .pptx-select /deep/ .el-input--suffix .el-input__inner{
         width: 272px;
         height: 32px;
+    }
+
+    /deep/ .report-alert .el-alert__icon{
+        width: 14px;
+        font-size: 14px !important;
     }
 </style>
 

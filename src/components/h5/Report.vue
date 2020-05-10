@@ -214,12 +214,12 @@
                         <li>
                             <span>选择模板：</span>
                             <el-select class="pptx-select" v-model="templateType" placeholder="请选择" @change="templateChange">
-                                <el-option value="1" label="通用模板"></el-option>
-                                <el-option value="2" label="定制模板"></el-option>
+                                <el-option value="0" label="通用模板"></el-option>
+                                <el-option value="1" label="定制模板"></el-option>
                             </el-select>
                         </li>
                         <!-- 判断是否已开通定制模板 -->
-                        <li v-if="templateType == 2">
+                        <li v-if="!isCustomize && templateType > 0">
                             <el-alert
                                 type="warning"
                                 show-icon
@@ -232,7 +232,7 @@
                                 </div>
                             </el-alert>
                         </li>
-                        <li v-if="templateType == 1">
+                        <li v-if="templateType == 0">
                             <span>导出排版：</span>
                             <el-select class="pptx-select" v-model="pptxType" placeholder="请选择">
                                 <el-option value="2" label="2张/页"></el-option>
@@ -340,7 +340,9 @@
         },
         data() {
             return {
-                templateType: '',//模板类型
+                isCustomize: false,//是否开通自定义模板，
+                customizeCode: 0,//为0时为普通模板，大于0自定义模板
+                templateType: '-1',//模板类型
                 pptxType: '2',//导出pptx排版类型
                 pptxFilter:'',//导出pptx条件
                 checkAllDate:true,//全部档期
@@ -409,7 +411,7 @@
             // MtaH5.clickStat('a006_b011_c011_d000_bt000_sw01')
         },
         mounted(){
-            this.templateType = localStorage.getItem('templateType') || '';
+            this.templateType = localStorage.getItem('templateType') || '-1';
         },
         methods: {
             // 状态变中文
@@ -489,28 +491,41 @@
             },
             // 获取模板种类
             getTemplateOptions() {
-                /*let info = {
-
-                }
-                api.getApi(this.apiVar.replace + "/report/h5Detail", info).then(res => {
-                    if (res.data.SysCode == 300200) {
-
+                let _this = this
+                // 目前当前公司自定义模板只有一个，前端设计也是如此
+                let info = {}
+                api.getApi(this.apiVar.Advertisement + "/GetCustomizeReports", info).then(res => {
+                    console.log(res);
+                    if (!res.data.SysCode) {
+                        if (!!res.data.customList && Array.isArray(res.data.customList)) {
+                            if(res.data.customList.length == 0) {
+                                _this.isCustomize = false
+                            } else {
+                                _this.isCustomize = true
+                                _this.customizeCode = res.customList[0].code || 0
+                            }
+                        }
                     } else {
-
+                        Message.warning(res.data.MSG);
                     }
-                });*/
+                }).catch(err => {
+                    console.log(err);
+                }).finally(() => {
+                    /*_this.isCustomize = true
+                    _this.customizeCode = 1*/
+                });
             },
             // 获取pptx
             getPTTx() {
                 // 定制模板导出时未开通提示
-                /*if(this.templateType == 2) {
+                if(this.templateType > 0 && this.isCustomize == false) {
                     this.$message({
                         showClose: true,
                         message: '贵司尚未定制专属模板，不能导出',
                         type: 'error'
                     });
                     return
-                }*/
+                }
                 if(!this.checkAllDate&&this.checkPeriodArr.length==0){
                     this.$message.error('请选择一个排期选项!')
                 }else{
@@ -538,7 +553,7 @@
                     if(this.checkPeriodArr.length>0){
                         info.periods = this.checkPeriodArr.join(',')
                     }
-                    info.isCustomize = this.templateType == 2 ? 1 : 0
+                    info.customizeCode = this.templateType == 1 ? this.customizeCode : 0
                     info.exportAllPoint = this.pptxFilter==='0'?0:1
                     info.photoCountPerPage = this.pptxType*1
                 }
@@ -563,7 +578,7 @@
                             if(this.checkPeriodArr.length>0){
                                 fileInfo.periods = this.checkPeriodArr.join(',')
                             }
-                            fileInfo.isCustomize = this.templateType == 2 ? 1 : 0
+                            fileInfo.customizeCode = this.templateType == 1 ? this.customizeCode : 0
                             fileInfo.photoCountPerPage = this.pptxType*1
                             fileInfo.exportAllPoint = this.pptxFilter==='0'?0:1
                         }

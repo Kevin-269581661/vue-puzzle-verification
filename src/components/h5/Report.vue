@@ -232,7 +232,7 @@
                                 </div>
                             </el-alert>
                         </li>
-                        <li v-if="templateType == 0">
+                        <li v-if="templateType !== null && templateType == 0">
                             <span>导出排版：</span>
                             <el-select class="pptx-select" v-model="pptxType" placeholder="请选择">
                                 <el-option value="2" label="2张/页"></el-option>
@@ -342,7 +342,7 @@
             return {
                 isCustomize: false,//是否开通自定义模板，
                 customizeCode: 0,//为0时为普通模板，大于0自定义模板
-                templateType: '-1',//模板类型
+                templateType: null,//模板类型
                 pptxType: '2',//导出pptx排版类型
                 pptxFilter:'',//导出pptx条件
                 checkAllDate:true,//全部档期
@@ -411,7 +411,8 @@
             // MtaH5.clickStat('a006_b011_c011_d000_bt000_sw01')
         },
         mounted(){
-            this.templateType = localStorage.getItem('templateType') || '-1';
+            // 缓存不存在时为null
+            this.templateType = localStorage.getItem('templateType');
         },
         methods: {
             // 状态变中文
@@ -491,18 +492,22 @@
             },
             // 获取模板种类
             getTemplateOptions() {
-                let _this = this
                 // 目前当前公司自定义模板只有一个，前端设计也是如此
-                let info = {}
+                let _this = this
+                let name = this.Info.name.toString().toLowerCase();
+                let val = this.Info.val;
+                let info = {
+                    [name]: val
+                };
                 api.getApi(this.apiVar.Advertisement + "/GetCustomizeReports", info).then(res => {
-                    console.log(res);
                     if (!res.data.SysCode) {
                         if (!!res.data.customList && Array.isArray(res.data.customList)) {
-                            if(res.data.customList.length == 0) {
+                            if(res.data.customList.length == 0 || res.data.customList[0].type != 1) {
                                 _this.isCustomize = false
                             } else {
+                                // type： 0pdf, 1pptx
                                 _this.isCustomize = true
-                                _this.customizeCode = res.customList[0].code || 0
+                                _this.customizeCode = res.data.customList[0].code || 0
                             }
                         }
                     } else {
@@ -510,9 +515,6 @@
                     }
                 }).catch(err => {
                     console.log(err);
-                }).finally(() => {
-                    /*_this.isCustomize = true
-                    _this.customizeCode = 1*/
                 });
             },
             // 获取pptx
@@ -525,7 +527,11 @@
                         type: 'error'
                     });
                     return
+                }else if(this.templateType === null) {
+                    this.$message.error('请选择模板!')
+                    return
                 }
+
                 if(!this.checkAllDate&&this.checkPeriodArr.length==0){
                     this.$message.error('请选择一个排期选项!')
                 }else{

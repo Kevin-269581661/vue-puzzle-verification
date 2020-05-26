@@ -1521,8 +1521,7 @@
                     }
                     let rids = ridsArr.join(',');
                     let sess = this.sessionData;
-                    let info = `?uid=${sess.uID}&token=${
-                        sess.token}&suId=${this.BDData.uid}&rids=${rids}&excludedApId=${this.activeAdPlan ? this.activeAdPlan : ''}`;
+                    let info = `?uid=${sess.uID}&token=${sess.token}&suId=${this.BDData.uid}&rids=${rids}&excludedApId=${this.activeAdPlan ? this.activeAdPlan : ''}`;
                     let formData = new FormData();
                     formData.append('file', this.fileData[0]);
                     if (this.importType == '2') {

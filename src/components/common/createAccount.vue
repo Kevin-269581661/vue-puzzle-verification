@@ -627,7 +627,7 @@
                                     role: result.uType,
                                     boss: result.puName ? result.puName : "",
                                     position: result.position ? result.position : "",
-                                    engineerLevel: result.engineerLevel ? result.engineerLevel : "",
+                                    engineerLevel: result.engineerLevel,
                                     mediaPermission: result.mediaPermission==-1 ? [0,1] : [result.mediaPermission],
                                     phone: result.phone?result.phone:'',
                                     division: result.division ? result.division : "",

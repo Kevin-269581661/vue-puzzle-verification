@@ -400,14 +400,17 @@
                     this.isSM = true;
                     this.isSale = false;
                     this.isMedia = false;
+                    this.haveEPPerssion = false;
                 }else if(val ==='BD'){
                     this.isSale = true;
                     this.isMedia = false;
                     this.isSM = false;
+                    this.haveEPPerssion = false;
                 }else if(val == 'MD'){
                     this.isMedia = true;
                     this.isSale = false;
                     this.isSM = false;
+                    this.haveEPPerssion = false;
                 }else if(val == 'EP'&&this.sessionData.uType=='SM'&&this.sessionData.asrID==11){
                     // 是否有新增工程类别和媒体权限的权限
                     this.haveEPPerssion = true;
@@ -415,6 +418,7 @@
                     this.isMedia = false;
                     this.isSale = false;
                     this.isSM = false;
+                    this.haveEPPerssion = false;
                 }
                 if(this.isSale){
                     this.getRoleCity();

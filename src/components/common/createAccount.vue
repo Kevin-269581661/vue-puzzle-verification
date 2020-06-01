@@ -230,7 +230,7 @@
                     boss: "",
                     position: "",
                     engineerLevel:'',
-                    mediaPermission:'',
+                    mediaPermission:[''],
                     phone: "",
                     division: "",
                     email: "",

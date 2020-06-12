@@ -179,7 +179,9 @@
                                 this.$router.push('/operate')
                             } else if (userMsg.uType === 'SA') {
                                 this.$router.push('/admin')
-                            } else {
+                            } else if (userMsg.uType === 'EP') {
+                                this.$router.push('/engineer/orderList')
+                            }  else {
                                 Message({
                                     message: '账号角色权限异常',
                                     type: 'warning'
@@ -311,6 +313,8 @@
                             this.$router.push('/adOwner')
                         } else if (isLogin.uType === 'SA') {
                             this.$router.push('/admin')
+                        } else if (isLogin.uType === 'EP') {
+                            this.$router.push('/engineer/orderList')
                         } else {
                             Message({
                                 message: '账号角色权限异常',

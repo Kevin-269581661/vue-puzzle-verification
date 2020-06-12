@@ -96,6 +96,10 @@ const visitFrequency = () => import('../components/adOwner/visitFrequency.vue')
 const hotSource = () => import('../components/adOwner/hotSource.vue')
 
 
+//工程
+const engineerCommon = () => import('../components/engineer/engineerCommon.vue')
+
+
 
 
 //亲邻科技上刊报告
@@ -295,6 +299,19 @@ export default new Router({
                 {path: '/adOwner/communityPortrait',component: communityPortrait},
                 {path: '/adOwner/communityRank',component: communityRank},
                 {path: '/adOwner/portraitDetail',component: portraitDetail},
+            ]
+        },
+        
+        //工程
+        {
+            path: '/',
+            component: engineerCommon,
+            children: [
+                {path: '/engineer/orderList', component: orderList},
+                {path: '/engineer/myInfo', component: myInfo},
+                {path: '/engineer/orderDetail', component: orderDetail},
+                {path: '/engineer/messageList', name: 'messageList', component: messageList},
+                {path: '/engineer/questionAndAnswer', component: questionAndAnswer}
             ]
         },
         //404

@@ -144,7 +144,7 @@
                             </label>
                             <div class="icon_box" v-if="showPreImg === img.pID">
                                 <p class="img_box_icon">
-                                    <i class="el-icon-search" @click="handlePictureCardPreview(img.pURL)"></i>
+                                    <i class="el-icon-search" @click="handlePictureCardPreview(img.pURL, img.realName, img.pUTime)"></i>
                                     <i class="el-icon-star-off" v-if="!img.isCollection"
                                        @click="saveImgFun(item, imgIndex)"></i>
                                     <i v-if="img.isCollection" class="el-icon-star-on icon_save"
@@ -428,6 +428,8 @@
         <!-- 图片查看显示 -->
         <el-dialog :visible.sync="dialogVisible" class="imgPreview" top="10vh">
             <img :src="dialogImageUrl" alt="暂无图片"/>
+            <span>上传者：{{dialogRealName}}</span>
+            <span>上传时间：{{dialogPUTime}}</span>
         </el-dialog>
     </div>
 </template>
@@ -619,6 +621,8 @@
                 // 图片放大弹出框
                 dialogVisible: false,
                 dialogImageUrl: "",
+                dialogRealName: "",
+                dialogPUTime: "",
                 // 上传图片以及换画日期弹出框
                 isShowEdit: false,
                 // 上传图片地址
@@ -940,8 +944,8 @@
                             };
                             for (let data of dataInfo.dataList) {
                                 for (let item of data.photoList) {
-                                    item.name = item.pID + '.png',
-                                        item.url = item.pURL;
+                                    item.name = item.pID + '.png';
+                                    item.url = item.pURL;
                                     item.pID = item.pID;
                                     item.isCollection = false
                                 }
@@ -2086,9 +2090,11 @@
             }
             ,
             // 查看预览图片
-            handlePictureCardPreview(file) {
+            handlePictureCardPreview(file, realName, pUTime) {
                 console.log(file);
                 this.dialogImageUrl = file;
+                this.dialogRealName = realName;
+                this.dialogPUTime = pUTime;
                 this.dialogVisible = true;
             }
             ,
@@ -2717,6 +2723,11 @@
         max-width: 100%;
         width: auto;
         height: 550px;
+    }
+
+    .imgPreview span{
+        display: block;
+        text-align: left;
     }
 
     .table-wrap img {

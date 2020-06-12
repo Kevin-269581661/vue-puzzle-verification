@@ -32,6 +32,16 @@
                                 <el-option v-for="item in roleArr" :key="item.value" :value="item.value" :label="item.label"></el-option>
                             </el-select>
                         </el-form-item>
+                        <template v-if="isEP">
+                            <!-- 工程人员后台权限 -->
+                            <el-form-item label="后台权限:">
+                                <el-switch v-model="accountForm.backstagePermission" :active-value="1" :inactive-value="0" active-color="#13ce66" :disabled="!showBackstagePermission"></el-switch>
+                                <el-tooltip placement="top" v-if="showBackstagePermission">
+                                    <div slot="content">贵司尚未开通。<a class="learn-more">了解该功能</a></div>
+                                    <img class="question-icon" src="../../assets/images/question_icon.png" />
+                                </el-tooltip>
+                            </el-form-item>
+                        </template>
                         <template v-if="type==0 && isSM">
                             <el-form-item label="可开通全国销售">
                                 <el-switch v-model="accountForm.saleManageLevel" :active-value="1" :inactive-value="0" active-color="#13ce66"></el-switch>
@@ -202,7 +212,8 @@
                     email: "",
                     saleManageLevel: "",
                     mediaManageLevel: "",
-                    roleCity: []
+                    roleCity: [],
+                    backstagePermission: 0
                 },
                 // 权限城市数组
                 roleCityArr:[],
@@ -277,10 +288,13 @@
                 sessionData:'',
                 // 登录者的公司属性(0平台商，1媒体主)
                 type: '',
-                // 是否选择了媒介或者销售
+                // 是否选择了媒介或者销售或者工程
                 isSale: false,
                 isMedia: false,
                 isSM: false,
+                isEP: false,
+                // 是否显示后台权限开关提示: 了解更多
+                showBackstagePermission: false,
                 // 销售类型
                 saleKind: [
                     {
@@ -338,6 +352,11 @@
                                     label: data.asName,
                                     value: data.asrID,
                                 };
+                                // customFunctionList: [{type: 3, typeValue: "工程人员登陆后台权限"}]
+                                let tempFunArr = data.customFunctionList;
+                                Array.isArray(tempFunArr) && tempFunArr.find(item => {
+                                    item.type == 3
+                                }) && (obj.backstagePermission = 1)
                                 result.push(obj);
                             }
                             this.companyArr = result;
@@ -363,18 +382,27 @@
                     this.isSM = true;
                     this.isSale = false;
                     this.isMedia = false;
+                    this.isEP = false;
                 }else if(val ==='BD'){
                     this.isSale = true;
                     this.isMedia = false;
                     this.isSM = false;
+                    this.isEP = false;
                 }else if(val == 'MD'){
                     this.isMedia = true;
+                    this.isSale = false;
+                    this.isSM = false;
+                    this.isEP = false;
+                }else if(val == 'EP'){
+                    this.isEP = true;
+                    this.isMedia = false;
                     this.isSale = false;
                     this.isSM = false;
                 }else{
                     this.isMedia = false;
                     this.isSale = false;
                     this.isSM = false;
+                    this.isEP = false;
                 }
                 if(this.isSale){
                     this.getRoleCity();
@@ -382,7 +410,12 @@
             },
             // 选择公司
             companyChange(val){
-                console.log(val);
+                if(this.companyArr.find(item=>item.value===val&&item.backstagePermission==1)) {
+                    this.showBackstagePermission = false
+                } else {
+                    this.showBackstagePermission = true
+                }
+                console.log(val, this.showBackstagePermission);
             },
             // 输入账号获取上级信息(远程搜索)
             querySearchAsync(queryString, callback) {
@@ -470,6 +503,9 @@
                 };
                 if (actFrom.puID) {
                     account.puid = actFrom.puID;
+                }
+                if(actFrom.backstagePermission) {
+                    account.backstagePermission = actFrom.backstagePermission;
                 }
                 if(this.isEdit){
                     account.uID = actFrom.uID;
@@ -584,6 +620,7 @@
                                     roleCity: result.authorCity ? result.authorCity.split(','): [],
                                     saleManageLevel: result.saleManageLevel?result.saleManageLevel:0,
                                     mediaManageLevel: result.mediaManageLevel?result.mediaManageLevel:0,
+                                    backstagePermission: result.backstagePermission?result.backstagePermission:0,
                                 }
                                 console.log('editInfo-----', editInfo);
                                 this.accountForm = editInfo;
@@ -699,6 +736,20 @@
     /deep/ .el-popper[x-placement^="bottom"] {
         margin-top: 3px !important;
         top: 200px !important;
+    }
+
+    .learn-more {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .question-icon {
+        display: inline-flex;
+        vertical-align: middle;
+        width: 20px;
+        height: 20px;
+        margin-left: 5px;
+        filter: brightness(0.8);
     }
 </style>
 

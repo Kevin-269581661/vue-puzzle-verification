@@ -76,7 +76,8 @@
                                     </el-button>
                                     <!--<el-button type="primary" @click="showAddPointDialog" v-show="showHandel" v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt150_ck04'}">添加点位</el-button>-->
                                     <el-button style="float: right;position: relative;top: 2px;margin-left: 3px" plain
-                                               type="default" @click="getPointRecord">更改记录
+                                               type="default" v-if="(role!='EP')"
+                                               @click="getPointRecord">更改记录
                                     </el-button>
                                     <el-button plain type="default" icon="el-icon-download"
                                                @click="export2Excel(orderDetail.apName)" :disabled="isDown"
@@ -214,7 +215,7 @@
                             </div>
                         </div>
                     </el-tab-pane>
-                    <el-tab-pane label="报价单" name="second">
+                    <el-tab-pane v-if="role != 'EP'" label="报价单" name="second">
                         <div>
                             <ap-quotation ref="apQuotation" @detailInfo="setInfo" :quotationData="quotation"
                                           :copydata="copyAsidArr" :isorder="true" :shopingList="[]"

@@ -1,4 +1,5 @@
 <script>
+import sessFun from "../../../commonFun/sessFun.js";
 export default {
     props:{
         detail:{
@@ -12,8 +13,11 @@ export default {
     },
     data(){
         return{
-
+            role: ''
         }
+    },
+    created() {
+        this.getRole();
     },
     methods:{
         // 去重城市
@@ -45,6 +49,11 @@ export default {
                 }
             }
         },
+        // 获取用户角色
+        getRole() {
+            this.sessionData = sessFun.getSess();
+            this.role = this.sessionData.uType || '';
+        },
     },
 }
 </script>
@@ -61,7 +70,7 @@ export default {
                         <span>联系人：</span>
                         <em>{{detail.cuName}}</em>
                     </li>
-                    <li>
+                    <li v-if="role != 'EP'">
                         <el-tooltip placement="top" width="200" trigger="hover" effect="dark" style="margin-left:-16px;">
                             <div slot="content" style="display:flex;">
                                 <p class="tooltip_p">
@@ -90,7 +99,7 @@ export default {
                         <span>投放城市：</span>
                         <em>{{filter(detail.rIDs)}}</em>
                     </li>
-                    <li>
+                    <li v-if="role != 'EP'">
                         <span>资源置换：</span>
                         <em>¥ {{detail.pdSendFee}}</em>
                     </li>
@@ -102,7 +111,7 @@ export default {
                         <span>方案备注：</span>
                         <em>{{detail.apRemark}}</em>
                     </li> -->
-                    <li>
+                    <li v-if="role != 'EP'">
                         <span>其他费用：</span>
                         <em>¥ {{detail.pdOtherFee}}</em>
                     </li>
@@ -113,7 +122,7 @@ export default {
                     <dt>状态</dt>
                     <dd>{{stateToText(detail.apState)}}</dd>
                 </dl>
-                <dl>
+                <dl v-if="role != 'EP'">
                     <dt>方案金额</dt>
                     <dd>¥ {{detail.Total}}</dd>
                 </dl>

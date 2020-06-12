@@ -70,9 +70,9 @@
                         </el-table-column>
                         <el-table-column prop="bTitle" label="品牌名称" min-width="8%" show-overflow-tooltip>
                         </el-table-column>
-                        <el-table-column prop="apQC" label="合同编号" width="180px">
+                        <el-table-column prop="apQC" label="合同编号" v-if="role!=='EP'" width="180px">
                         </el-table-column>
-                        <el-table-column prop="apTotal" sortable="custom" label="订单总价" width="120px" align="right">
+                        <el-table-column prop="apTotal" sortable="custom" label="订单总价" width="120px" align="right" v-if="role !== 'EP'">
                             <template slot-scope="scope">
                                 <span>&yen;{{(scope.row.apTotal)?priceFormat(scope.row.apTotal/100):0}}</span>
                             </template>
@@ -99,7 +99,17 @@
                                          :filters="filterRealName"
                                          :filter-method="filterRealNameFun"
                                          :filter-multiple="true"
-                                         v-if="role === 'BD'"
+                                         v-if="role === 'BD' || role === 'EP'"
+                        >
+                        </el-table-column>
+                        <el-table-column prop="skProgress" label="上刊进度"
+                                         show-overflow-tooltip
+                                         v-if="role === 'EP'"
+                        >
+                        </el-table-column>
+                        <el-table-column prop="xkProgress" label="下刊进度"
+                                         show-overflow-tooltip
+                                         v-if="role === 'EP'"
                         >
                         </el-table-column>
                         <el-table-column prop="appTime" label="发布日期" width="120px" sortable="custom"
@@ -114,7 +124,7 @@
                                              :color="stateToText(scope.row.apState).color"></point-state>
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作" width="80px" v-if="role!=='OP' && role!=='AD' && role!=='BD'">
+                        <el-table-column label="操作" width="80px" v-if="role!=='OP' && role!=='AD' && role!=='BD' && role!=='EP'">
                             <template slot-scope="scope">
                                 <el-dropdown size="small" trigger="click" placement="bottom-start">
                                     <span class="el-dropdown-link">
@@ -504,6 +514,8 @@
                     cName: item.cName || '',
                     realName: item.realName || '',
                     companyList: [],
+                    skProgress: item.skProgress || '',
+                    xkProgress: item.xkProgress || ''
                 };
                 for (let data of item.companyList) {
                     let objItem = {

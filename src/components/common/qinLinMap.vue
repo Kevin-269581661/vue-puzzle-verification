@@ -279,6 +279,11 @@
         </div>
         <!--底部右侧鼠标绘制-->
         <div class="bottom_right_control">
+            <!--更多功能-->
+            <div class="more_nav" @click="goToPage">
+                <img src="../../assets/images/map/circle.png" alt="">
+                <span>更多</span>
+            </div>
             <!--聚合开关-->
             <div class="switch_box">
                 聚合
@@ -2874,6 +2879,11 @@
                 sessFun.messageFun('success','复制成功')
                 this.copyDialogVisible = false
             },
+            // 应用中心跳转
+            goToPage() {
+                // this.uploadEvent(2,item.name)
+                window.open('https://apps.qinlinad.com/dmp.html', '_blank')
+            },
         },
     }
 </script>
@@ -3423,7 +3433,29 @@
         position: fixed;
         bottom: 24px;
         right: 24px;
-        width: 370px;
+        width: 460px;
+    }
+
+    .more_nav {
+        float: left;
+        width: 90px;
+        height: 32px;
+        background: rgba(255,255,255,1);
+        box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.12);
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 400;
+        color: rgba(24,144,255,1);
+        line-height: 32px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .more_nav img {
+        width:11px;
+        height:12px;
+        margin-right: 4px;
+        background:rgba(24,144,255,1);
     }
 
     .switch_box{

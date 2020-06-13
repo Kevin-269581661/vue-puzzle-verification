@@ -7,7 +7,10 @@
             <!--媒体信息-->
             <div class="ad_mediaInfo">
                 <div class="ad_mediaInfo_head">
-                    <h2>{{resData.resName}}</h2>
+                    <div class="u-title">
+                        <h2>{{resData.resName}}</h2>
+                        <span class="refresh">（更新时间：354天前 <a class="refresh-nav">更新</a>）</span>
+                    </div>
                     <div class="ad_mediaInfo_head_btn">
                         <el-button plain size="mini" @click="edit('add')" v-if="haveEdit"
                                    v-qadn-mta-h5="{id: 'a002_b005_c000_d000_bt027_ck03'}">添加媒体</el-button>
@@ -985,13 +988,25 @@
         flex-flow: row;
     }
 
-    .ad_mediaInfo_head h2{
+    .ad_mediaInfo_head .u-title{
+        display: flex;
         font-size: 20px;
         color: #2C313C;
         font-weight: bold;
         padding-left: 30px;
+        margin-left: 8px;
         height: 24px;
         flex: 1;
+    }
+    .ad_mediaInfo_head .refresh{
+        font-size:14px;
+        font-weight:400;
+        color:rgba(0,0,0,0.45);
+        line-height:28px;
+    }
+    .ad_mediaInfo_head .refresh-nav{
+        color: #1890FF;
+        cursor: pointer;
     }
     .ad_mediaInfo_head_btn{
         width: 270px;

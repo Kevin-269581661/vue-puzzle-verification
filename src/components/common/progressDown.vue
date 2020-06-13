@@ -2,6 +2,7 @@
     <div class="down_page">
         <el-progress :width="120" type="circle" :percentage="currper" :status="currper==100?'success':''"></el-progress>
         <p class="text_style">{{currper==100?'生成完成，请在下载工具里查看文件':'正在生成中，请等待…'}}</p>
+        <span v-if="currper<100" class="nav">已耗时 {{Math.ceil(second/60)}} 分钟，<span class="nav-text">立即加速</span></span>
         <div class="file_style" v-if="currper == 100">
             <img src="../../assets/images/downfile.png" alt="">
         </div>
@@ -16,6 +17,7 @@ export default {
         return{
             currper: 0,
             myInterval: '',
+            second: 0
         }
     },
     methods:{
@@ -100,6 +102,7 @@ export default {
                     this.getPPTProcess();
                 }
             }, 1)
+            this.second = this.second+5
         }, 5000);
     },
     destroyed(){
@@ -117,6 +120,16 @@ export default {
     font-size: 14px;
     color: rgba(0,0,0,0.65);
     margin-top: 8px;
+    margin-bottom: 8px;
+}
+.nav{
+    font-size:14px;
+    font-weight:400;
+    color:rgba(0,0,0,0.65);
+    line-height:22px;
+}
+.nav-text{
+    color: #4AA6FC;
 }
 .file_style{
     position: absolute;

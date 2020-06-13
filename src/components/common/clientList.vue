@@ -8,6 +8,7 @@
 		<div class="mediaList_wrap">
 			<div class="mediaList_head">
 				<h2>客户列表</h2>
+                <span class="nav-text">如何更高效化的管理您的客户？</span>
 			</div>
 			<div class="mediaList_container">
                 <div class="flex_box">
@@ -443,5 +444,19 @@ export default {
 
 /deep/ .el-input-group--prepend .el-input__inner {
     width: 185px;
+}
+
+.mediaList_head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.mediaList_head .nav-text{
+    margin-right: 16px;
+    font-size:14px;
+    font-weight:400;
+    color:rgba(24,144,255,1);
+    line-height:20px;
 }
 </style>

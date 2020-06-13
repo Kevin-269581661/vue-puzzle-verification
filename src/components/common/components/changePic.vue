@@ -428,8 +428,16 @@
         <!-- 图片查看显示 -->
         <el-dialog :visible.sync="dialogVisible" class="imgPreview" top="10vh">
             <img :src="dialogImageUrl" alt="暂无图片"/>
-            <span>上传者：{{dialogRealName}}</span>
-            <span>上传时间：{{dialogPUTime}}</span>
+            <ul class="u-comment">
+                <li>
+                    <img src="../../../assets/images/usericon.png" />
+                    <span>上传用户：{{dialogRealName}}</span>
+                </li>
+                <li>
+                    <img src="../../../assets/images/clock.png" />
+                    <span>上传时间：{{dialogPUTime}}</span>
+                </li>
+            </ul>
         </el-dialog>
     </div>
 </template>
@@ -2725,9 +2733,25 @@
         height: 550px;
     }
 
-    .imgPreview span{
-        display: block;
+    .imgPreview .u-comment{
+        margin-top: 20px;
         text-align: left;
+    }
+
+    .imgPreview .u-comment li{
+        display: flex;
+        align-items: center;
+        height: 20px;
+        line-height: 20px;
+        margin-top: 8px;
+        font-size:14px;
+        color:rgba(0,0,0,0.65);
+    }
+
+    .imgPreview .u-comment img {
+        width: 16px;
+        height: 16px;
+        margin-right: 4px;
     }
 
     .table-wrap img {

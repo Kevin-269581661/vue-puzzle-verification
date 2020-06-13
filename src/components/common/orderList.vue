@@ -102,12 +102,12 @@
                                          v-if="role === 'BD' || role === 'EP'"
                         >
                         </el-table-column>
-                        <el-table-column prop="skProgress" label="上刊进度"
+                        <el-table-column prop="skProgress" label="上刊进度" width="100px"
                                          show-overflow-tooltip
                                          v-if="role === 'EP'"
                         >
                         </el-table-column>
-                        <el-table-column prop="xkProgress" label="下刊进度"
+                        <el-table-column prop="xkProgress" label="下刊进度" width="100px"
                                          show-overflow-tooltip
                                          v-if="role === 'EP'"
                         >

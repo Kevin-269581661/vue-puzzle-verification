@@ -105,7 +105,7 @@
                 </div>
             </el-card>
         </div>
-        <div class="ads_analysis_box">
+        <div class="ads_analysis_box" style="position: ralative;">
             <div class="thr-tabs">
                 <el-tabs v-model="thirdActiveName" type="card" @tab-click="handleClick()">
                     <el-tab-pane label="社区上刊率" name="first">
@@ -386,8 +386,8 @@
                         </div>
                     </el-tab-pane>
                 </el-tabs>
-                <a>如何提高每个点位的收益?</a>
             </div>
+            <a class="nav-text">如何提高每个点位的收益?</a>
         </div>
     </div>
 </template>
@@ -1315,5 +1315,14 @@
         overflow-y: auto;
         min-height: 371px;
         height: 371px;
+    }
+
+    .nav-text{
+        position: absolute;
+        right: 16px;
+        top: 0;
+        line-height: 40px;
+        font-size:14px;
+        color:rgba(24,144,255,1);
     }
 </style>

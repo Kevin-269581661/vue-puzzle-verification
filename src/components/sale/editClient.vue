@@ -13,6 +13,7 @@
                 <div class="content_top_wrap">
                     <div class="content_top_head">
                         <h2>客户信息</h2>
+                        <a class="nav-text" href="https://apps.qinlinad.com/advertisers.html" target="_blank">如让广告主更加了解您的服务？</a>
                     </div>
                     <div class="content_top_form_wrap">
                         <el-form :model="clientForm" status-icon :rules="clientRules" ref="clientForm" label-width="100px" class="demo-ruleForm">
@@ -861,6 +862,9 @@ export default {
     }
 
     .content_top_wrap .content_top_head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         width: 100%;
         height: 35px;
         border-bottom: 1px solid #dedede;
@@ -987,5 +991,13 @@ export default {
 
     /deep/ .el-textarea__inner{
         min-height: 83px !important;
+    }
+
+    .content_top_head .nav-text{
+        margin-right: 16px;
+        font-size: 14px;
+        color: #1890FF;
+        line-height: 20px;
+        cursor: pointer;
     }
 </style>

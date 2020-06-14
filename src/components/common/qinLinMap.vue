@@ -63,6 +63,11 @@
                 </div>
             </div>
             <!--在线搜索结果-->
+            <div class="u-nav" v-show="(showNavBox && activeSearchKind == '2' && !isOnlineSearch) && (searchOnlineLoading || searchOnlineList.length)">
+                <i class="el-icon-info"></i>
+                <span>试试更高效的周边导出功能<a class="nav-text" href="https://apps.qinlinad.com/resource.html" target="_blank">查看</a></span>
+                <i class="el-icon-close" @click="showNavBox = false"></i>
+            </div>
             <div class="search_body" v-show="(activeSearchKind == '2' && !isOnlineSearch) && (searchOnlineLoading || searchOnlineList.length)"
                  v-loading="searchOnlineLoading"
                  element-loading-text="玩命加载中.."
@@ -277,13 +282,13 @@
                 <el-button type="primary" size="small" @click="pushMapRes" v-if="isCommit">选定</el-button>
             </div>
         </div>
+        <!--更多功能-->
+        <div class="more_nav">
+            <img src="../../assets/images/map/circle.png" alt="">
+            <a href="https://apps.qinlinad.com/map.html" target="_blank">更多功能</a>
+        </div>
         <!--底部右侧鼠标绘制-->
         <div class="bottom_right_control">
-            <!--更多功能-->
-            <div class="more_nav" @click="goToPage">
-                <img src="../../assets/images/map/circle.png" alt="">
-                <span>更多</span>
-            </div>
             <!--聚合开关-->
             <div class="switch_box">
                 聚合
@@ -861,7 +866,9 @@
                 coverAnalysisData:[{companyName:'亲邻',count:0}],
                 selectPointType:0,//0：中心点选点，1：辐射圈选点，2：范围选点（圆形）3：范围选点（多边形）
                 // 鼠标画圆时的圆半径label
-                circleLabel:''
+                circleLabel:'',
+                // 显示导出周边资源
+                showNavBox: true
             }
         },
         mounted() {
@@ -2879,11 +2886,6 @@
                 sessFun.messageFun('success','复制成功')
                 this.copyDialogVisible = false
             },
-            // 应用中心跳转
-            goToPage() {
-                // this.uploadEvent(2,item.name)
-                window.open('https://apps.qinlinad.com/dmp.html', '_blank')
-            },
         },
     }
 </script>
@@ -2942,6 +2944,38 @@
         font-size:14px;
         padding: 0 12px;
         background: #fff;
+    }
+
+    .u-nav {
+        height: 32px;
+        margin-top: 6px;
+        font-size: 14px;
+        color:rgba(0,0,0,0.65);
+        line-height: 32px;
+        background: rgba(230,247,255,1);
+        border-radius: 4px;
+        border: 1px solid rgba(145,213,255,1);
+    }
+
+    .u-nav /deep/ .el-icon-info {
+        margin: auto 7px auto 17px;
+        color: #1890FF;
+    }
+
+    .u-nav .nav-text {
+        width: 28px;
+        height: 22px;
+        font-size: 14px;
+        margin: 0 11px 0 8px;
+        color: rgba(24,144,255,1);
+        line-height: 32px;
+    }
+
+    .u-nav /deep/ .el-icon-close {
+        width: 8px;
+        height: 8px;
+        margin-right: 14px;
+        color: #00000073;
     }
 
     .result_title {
@@ -3437,7 +3471,9 @@
     }
 
     .more_nav {
-        float: left;
+        position: fixed;
+        bottom: 24px;
+        right: 500px;
         width: 90px;
         height: 32px;
         background: rgba(255,255,255,1);

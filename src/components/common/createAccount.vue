@@ -35,7 +35,7 @@
                         <template v-if="isEP">
                             <!-- 工程人员后台权限 -->
                             <el-form-item label="后台权限:">
-                                <el-switch v-model="accountForm.backstagePermission" :active-value="1" :inactive-value="0" active-color="#13ce66" :disabled="!showBackstagePermission"></el-switch>
+                                <el-switch v-model="accountForm.backstagePermission" :active-value="1" :inactive-value="0" active-color="#13ce66" :disabled="showBackstagePermission"></el-switch>
                                 <el-tooltip placement="top" v-if="showBackstagePermission">
                                     <div slot="content">贵司尚未开通。<a class="learn-more">了解该功能</a></div>
                                     <img class="question-icon" src="../../assets/images/question_icon.png" />
@@ -355,7 +355,7 @@
                                 // customFunctionList: [{type: 3, typeValue: "工程人员登陆后台权限"}]
                                 let tempFunArr = data.customFunctionList;
                                 Array.isArray(tempFunArr) && tempFunArr.find(item => {
-                                    item.type == 3
+                                    return item.type == 3
                                 }) && (obj.backstagePermission = 1)
                                 result.push(obj);
                             }
@@ -410,7 +410,9 @@
             },
             // 选择公司
             companyChange(val){
-                if(this.companyArr.find(item=>item.value===val&&item.backstagePermission==1)) {
+                if(this.companyArr.find(item=>{
+                    return item.value==val&&item.backstagePermission==1
+                })) {
                     this.showBackstagePermission = false
                 } else {
                     this.showBackstagePermission = true

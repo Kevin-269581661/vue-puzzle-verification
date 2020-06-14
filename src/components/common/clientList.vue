@@ -8,7 +8,7 @@
 		<div class="mediaList_wrap">
 			<div class="mediaList_head">
 				<h2>客户列表</h2>
-                <span class="nav-text">如何更高效化的管理您的客户？</span>
+                <a class="nav-text" href="https://apps.qinlinad.com/crm.html" target="_blank">如何更高效化的管理您的客户？</a>
 			</div>
 			<div class="mediaList_container">
                 <div class="flex_box">
@@ -454,9 +454,9 @@ export default {
 
 .mediaList_head .nav-text{
     margin-right: 16px;
-    font-size:14px;
-    font-weight:400;
-    color:rgba(24,144,255,1);
-    line-height:20px;
+    font-size: 14px;
+    color: #1890FF;
+    line-height: 20px;
+    cursor: pointer;
 }
 </style>

@@ -9,7 +9,7 @@
                 <div class="ad_mediaInfo_head">
                     <div class="u-title">
                         <h2>{{resData.resName}}</h2>
-                        <span class="refresh">（更新时间：354天前 <a class="refresh-nav">更新</a>）</span>
+                        <span class="refresh">（更新时间：354天前 <a class="refresh-nav" href="https://apps.qinlinad.com/house.html" target="_blank">更新</a>）</span>
                     </div>
                     <div class="ad_mediaInfo_head_btn">
                         <el-button plain size="mini" @click="edit('add')" v-if="haveEdit"

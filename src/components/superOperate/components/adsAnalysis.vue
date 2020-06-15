@@ -1071,6 +1071,7 @@
 <style scoped>
     /*点位分析*/
     .ads_analysis_box{
+        position: relative;
         margin-bottom: 16px;
     }
 

@@ -37,7 +37,7 @@
                             <el-form-item label="后台权限:">
                                 <el-switch v-model="accountForm.backstagePermission" :active-value="1" :inactive-value="0" active-color="#13ce66" :disabled="showBackstagePermission"></el-switch>
                                 <el-tooltip placement="top" v-if="showBackstagePermission">
-                                    <div slot="content">贵司尚未开通。<a class="learn-more">了解该功能</a></div>
+                                    <div slot="content">贵司尚未开通。<a class="learn-more" href="https://apps.qinlinad.com/resource.html" target="_blank">了解该功能</a></div>
                                     <img class="question-icon" src="../../assets/images/question_icon.png" />
                                 </el-tooltip>
                             </el-form-item>
@@ -294,7 +294,7 @@
                 isSM: false,
                 isEP: false,
                 // 是否显示后台权限开关提示: 了解更多
-                showBackstagePermission: false,
+                showBackstagePermission: true,
                 // 销售类型
                 saleKind: [
                     {
@@ -742,6 +742,7 @@
 
     .learn-more {
         text-decoration: underline;
+        color: #fff;
         cursor: pointer;
     }
 

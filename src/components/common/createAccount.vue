@@ -516,8 +516,8 @@
                 if (actFrom.puID) {
                     account.puid = actFrom.puID;
                 }
-                if(actFrom.backstagePermission) {
-                    account.backstagePermission = actFrom.backstagePermission;
+                if(actFrom.role == 'EP') {
+                    account.backstagePermission = actFrom.backstagePermission || 0;
                 }
                 if(this.isEdit){
                     account.uID = actFrom.uID;
@@ -636,6 +636,7 @@
                                 }
                                 console.log('editInfo-----', editInfo);
                                 this.accountForm = editInfo;
+                                result.asrID && this.companyChange(result.asrID)
                                 this.roleSelect(editInfo.role);
                             }else{
                                 Message.warning(res.data.MSG);

@@ -387,7 +387,7 @@
                     </el-tab-pane>
                 </el-tabs>
             </div>
-            <a class="nav-text">如何提高每个点位的收益?</a>
+            <a class="nav-text" href="https://apps.qinlinad.com/contract.html" target="_blank">如何提高每个点位的收益?</a>
         </div>
     </div>
 </template>

@@ -37,7 +37,7 @@
                             <el-form-item label="后台权限:">
                                 <el-switch v-model="accountForm.backstagePermission" :active-value="1" :inactive-value="0" active-color="#13ce66" :disabled="showBackstagePermission"></el-switch>
                                 <el-tooltip placement="top" v-if="showBackstagePermission">
-                                    <div slot="content">贵司尚未开通。<a class="learn-more" href="https://apps.qinlinad.com/resource.html" target="_blank">了解该功能</a></div>
+                                    <div slot="content">贵司尚未开通。<a class="learn-more" href="https://apps.qinlinad.com/engineer.html" target="_blank">了解该功能</a></div>
                                     <img class="question-icon" src="../../assets/images/question_icon.png" />
                                 </el-tooltip>
                             </el-form-item>
@@ -338,15 +338,15 @@
             // 公司数据
             getCompany(){
                 let sess = this.sessionData;
-                if(sess.ascType == 0){
-                    let info = {
-                        uid: sess.uID,
-                        token: sess.token,
-                    };
-                    api.getApi(this.apiVar.UCAPI+'/getCompany', info).then(res =>{
-                        console.log(res.data);
-                        if(res.data.SysCode == 200200){
-                            let result = [];
+                let info = {
+                    uid: sess.uID,
+                    token: sess.token,
+                };
+                api.getApi(this.apiVar.UCAPI+'/getCompany', info).then(res =>{
+                    console.log(res.data);
+                    if(res.data.SysCode == 200200){
+                        let result = [];
+                        if(sess.ascType == 0) {
                             for(let data of res.data.data){
                                 let obj = {
                                     label: data.asName,
@@ -360,20 +360,29 @@
                                 result.push(obj);
                             }
                             this.companyArr = result;
-                        }else{
-                            Message.warning(res.data.MSG);
+                        }else {
+                            let obj = {
+                                label: data.asName,
+                                value: data.asrID,
+                            };
+                            for(let data of res.data.data){
+                                if(sess.asrID == data.asrID && data.type == 3) {
+                                    obj.backstagePermission = 1;
+                                }
+                                this.companyArr = [
+                                    {
+                                        label: sess.asName,
+                                        value: sess.asrID
+                                    }
+                                ];
+                            }
                         }
-                    }).catch(err=>{
-                        console.log(err);
-                    });
-                }else{
-                    this.companyArr = [
-                        {
-                            label: sess.asName,
-                            value: sess.asrID
-                        }
-                    ];
-                }
+                    }else{
+                        Message.warning(res.data.MSG);
+                    }
+                }).catch(err=>{
+                    console.log(err);
+                });
             },
             // 选择角色
             roleSelect(val){
@@ -415,6 +424,7 @@
                 })) {
                     this.showBackstagePermission = false
                 } else {
+                    this.accountForm.backstagePermission = 0
                     this.showBackstagePermission = true
                 }
                 console.log(val, this.showBackstagePermission);

@@ -9,7 +9,7 @@
                 <div class="ad_mediaInfo_head">
                     <div class="u-title">
                         <h2>{{resData.resName}}</h2>
-                        <span class="refresh">（更新时间：354天前 <a class="refresh-nav" href="https://apps.qinlinad.com/house.html" target="_blank">更新</a>）</span>
+                        <span class="refresh">（更新时间：{{resData.updateRecord}}<a class="refresh-nav" href="https://apps.qinlinad.com/house.html" target="_blank"> 更新</a>）</span>
                     </div>
                     <div class="ad_mediaInfo_head_btn">
                         <el-button plain size="mini" @click="edit('add')" v-if="haveEdit"
@@ -568,6 +568,7 @@
                                 cityId: resData.cityId,
                                 city: resData.city,
                                 cityArea: resData.district,
+                                updateRecord: resData.updateRecord,         // 小区信息更新时间
                                 // 房价网信息
                                 resAlias: resData.alias,                                  // 资源别名
                                 addressAlias: resData.addressAlias,                          // 地址别名

@@ -284,8 +284,8 @@
         </div>
         <!--更多功能-->
         <div class="more_nav">
-            <img src="../../assets/images/map/circle.png" alt="">
-            <a href="https://apps.qinlinad.com/map.html" target="_blank">更多功能</a>
+            <img src="../../assets/images/map/up.png" alt="">
+            <a class="nav-text" href="https://apps.qinlinad.com/map.html" target="_blank">更多功能</a>
         </div>
         <!--底部右侧鼠标绘制-->
         <div class="bottom_right_control">
@@ -3476,22 +3476,25 @@
         right: 500px;
         width: 90px;
         height: 32px;
+        display: flex;
+        align-items: center;
         background: rgba(255,255,255,1);
         box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.12);
         border-radius: 4px;
-        font-size: 14px;
-        font-weight: 400;
-        color: rgba(24,144,255,1);
-        line-height: 32px;
         text-align: center;
         cursor: pointer;
     }
 
+    .more_nav .nav-text {
+        line-height: 32px;
+        font-size: 14px;
+        color: #1890FF;
+    }
+
     .more_nav img {
-        width:11px;
-        height:12px;
-        margin-right: 4px;
-        background:rgba(24,144,255,1);
+        width:16px;
+        height:16px;
+        margin: 0 2px 0 9px;
     }
 
     .switch_box{

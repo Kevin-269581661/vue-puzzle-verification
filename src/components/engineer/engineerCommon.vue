@@ -15,6 +15,7 @@
                     <img src="../../assets/images/logo.png" alt="">
                 </div>
             </el-menu-item>
+            <el-menu-item index="/engineer/orderList">首页</el-menu-item>
             <el-submenu index="7" :show-timeout="80" v-show="showQinlin">
                 <template slot="title">亲邻智邻</template>
                 <el-menu-item index="/engineer/communityPortrait">社区画像</el-menu-item>

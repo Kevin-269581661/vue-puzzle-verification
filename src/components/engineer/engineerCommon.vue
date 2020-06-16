@@ -16,13 +16,7 @@
                 </div>
             </el-menu-item>
             <el-menu-item index="/engineer/orderList">首页</el-menu-item>
-            <el-submenu index="7" :show-timeout="80" v-show="showQinlin">
-                <template slot="title">亲邻智邻</template>
-                <el-menu-item index="/engineer/communityPortrait">社区画像</el-menu-item>
-                <el-menu-item index="/engineer/communityRank">社区排名</el-menu-item>
-                <el-menu-item index="" @click="goResContrastMap">资源对比</el-menu-item>
-            </el-submenu>
-            <el-submenu index="9" class="user_center" show-timeout="80">
+            <el-submenu index="9" class="user_center" :show-timeout="80">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">
                     {{userName}}

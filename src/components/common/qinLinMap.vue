@@ -3467,13 +3467,13 @@
         position: fixed;
         bottom: 24px;
         right: 24px;
-        width: 460px;
+        width: 370px;
     }
 
     .more_nav {
         position: fixed;
         bottom: 24px;
-        right: 500px;
+        right: 402px;
         width: 90px;
         height: 32px;
         display: flex;
@@ -3494,7 +3494,7 @@
     .more_nav img {
         width:16px;
         height:16px;
-        margin: 0 2px 0 9px;
+        margin: 0 2px 0 6px;
     }
 
     .switch_box{

@@ -359,22 +359,18 @@
                             }
                             this.companyArr = result;
                         }else {
+                            let data = res.data.data;
                             let obj = {
-                                label: data.asName,
-                                value: data.asrID,
-                            };
-                            for(let data of res.data.data){
-                                if(sess.asrID == data.asrID && data.type == 3) {
-                                    obj.backstagePermission = 1;
-                                }
-                                this.companyArr = [
-                                    {
-                                        label: sess.asName,
-                                        value: sess.asrID
-                                    }
-                                ];
-                            }
+                                    label: data.asName,
+                                    value: data.asrID,
+                                };
+                            let tempFunArr = data.customFunctionList;
+                            Array.isArray(tempFunArr) && tempFunArr.find(item => {
+                                    return item.type == 3
+                            }) && (obj.backstagePermission = 1)
+                            result.push(obj);
                         }
+                        this.companyArr = result;
                     }else{
                         Message.warning(res.data.MSG);
                     }

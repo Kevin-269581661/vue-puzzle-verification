@@ -307,6 +307,7 @@ export default new Router({
             path: '/',
             component: engineerCommon,
             children: [
+                {path: '/engineer', component: orderList},
                 {path: '/engineer/orderList', component: orderList},
                 {path: '/engineer/myInfo', component: myInfo},
                 {path: '/engineer/orderDetail', component: orderDetail},

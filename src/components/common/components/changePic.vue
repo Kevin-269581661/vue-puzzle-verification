@@ -145,7 +145,7 @@
                             <div class="icon_box" v-if="showPreImg === img.pID">
                                 <p class="img_box_icon">
                                     <i class="el-icon-search" @click="handlePictureCardPreview(img.pURL, img.realName, img.pUTime)"></i>
-                                    <i class="el-icon-star-off" v-if="!img.isCollection"
+                                    <i class="el-icon-star-off" v-if="!img.isCollection&&sessionData.uType!='EP'"
                                        @click="saveImgFun(item, imgIndex)"></i>
                                     <i v-if="img.isCollection" class="el-icon-star-on icon_save"
                                        @click="cancelImgFun(item, imgIndex)"></i>

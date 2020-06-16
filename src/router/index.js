@@ -304,15 +304,14 @@ export default new Router({
         
         //工程
         {
-            path: '/',
+            path: '/engineer',
             component: engineerCommon,
             children: [
-                {path: '/engineer', component: orderList},
-                {path: '/orderList', component: orderList},
-                {path: '/myInfo', component: myInfo},
+                { path: '', component: orderList },
+                {path: '/engineer/myInfo', component: myInfo},
                 {path: '/orderDetail', component: orderDetail},
                 {path: '/messageList', name: 'messageList', component: messageList},
-                {path: '/myInfo/questionAndAnswer', component: questionAndAnswer}
+                {path: '/engineer/questionAndAnswer', component: questionAndAnswer}
             ]
         },
         //404

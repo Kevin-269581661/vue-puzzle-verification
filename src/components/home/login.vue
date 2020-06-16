@@ -314,7 +314,7 @@
                         } else if (isLogin.uType === 'SA') {
                             this.$router.push('/admin')
                         } else if (isLogin.uType === 'EP') {
-                            this.$router.push('/engineer/orderList')
+                            this.$router.push('/engineer')
                         } else {
                             Message({
                                 message: '账号角色权限异常',

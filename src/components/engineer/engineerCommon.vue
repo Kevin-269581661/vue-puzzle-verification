@@ -21,7 +21,7 @@
                     <img class="user_avator" :src="avator" alt="">
                     {{userName}}
                 </template>
-                <el-menu-item index="/myInfo">个人中心</el-menu-item>
+                <el-menu-item index="/engineer/myInfo">个人中心</el-menu-item>
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
                 <el-menu-item index="/login">退出登陆</el-menu-item>
             </el-submenu>

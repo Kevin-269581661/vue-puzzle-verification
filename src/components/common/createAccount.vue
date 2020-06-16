@@ -293,8 +293,6 @@
                 isMedia: false,
                 isSM: false,
                 isEP: false,
-                // 是否显示后台权限开关提示: 了解更多
-                showBackstagePermission: true,
                 // 销售类型
                 saleKind: [
                     {
@@ -427,7 +425,6 @@
                     this.accountForm.backstagePermission = 0
                     this.showBackstagePermission = true
                 }
-                console.log(val, this.showBackstagePermission);
             },
             // 输入账号获取上级信息(远程搜索)
             querySearchAsync(queryString, callback) {
@@ -636,7 +633,6 @@
                                 }
                                 console.log('editInfo-----', editInfo);
                                 this.accountForm = editInfo;
-                                result.asrID && this.companyChange(result.asrID)
                                 this.roleSelect(editInfo.role);
                             }else{
                                 Message.warning(res.data.MSG);
@@ -690,6 +686,25 @@
                     this.accountForm.roleCity = ['0'];
                 }
             },
+        },
+        computed: {
+            showBackstagePermission: {
+                get(){
+                    if(this.companyArr.find(item=>{
+                        return item.value==this.accountForm.company&&item.backstagePermission==1
+                    })) {
+                        console.log('找到---')
+                        return false
+                    } else {
+                        console.log('没有找到---')
+                        return true
+                    }
+                },
+                set(newValue){
+                    return newValue
+                }
+                
+            }
         }
     };
 </script>

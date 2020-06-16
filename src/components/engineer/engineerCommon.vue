@@ -15,13 +15,13 @@
                     <img src="../../assets/images/logo.png" alt="">
                 </div>
             </el-menu-item>
-            <el-menu-item index="/engineer/orderList">首页</el-menu-item>
+            <el-menu-item index="/engineer">首页</el-menu-item>
             <el-submenu index="9" class="user_center" :show-timeout="80">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">
                     {{userName}}
                 </template>
-                <el-menu-item index="/engineer/myInfo">个人中心</el-menu-item>
+                <el-menu-item index="/myInfo">个人中心</el-menu-item>
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
                 <el-menu-item index="/login">退出登陆</el-menu-item>
             </el-submenu>

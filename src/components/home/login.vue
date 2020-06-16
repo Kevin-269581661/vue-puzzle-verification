@@ -180,7 +180,7 @@
                             } else if (userMsg.uType === 'SA') {
                                 this.$router.push('/admin')
                             } else if (userMsg.uType === 'EP') {
-                                this.$router.push('/engineer/orderList')
+                                this.$router.push('/engineer')
                             }  else {
                                 Message({
                                     message: '账号角色权限异常',

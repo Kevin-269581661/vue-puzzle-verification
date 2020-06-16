@@ -308,11 +308,11 @@ export default new Router({
             component: engineerCommon,
             children: [
                 {path: '/engineer', component: orderList},
-                {path: '/engineer/orderList', component: orderList},
-                {path: '/engineer/myInfo', component: myInfo},
-                {path: '/engineer/orderDetail', component: orderDetail},
-                {path: '/engineer/messageList', name: 'messageList', component: messageList},
-                {path: '/engineer/questionAndAnswer', component: questionAndAnswer}
+                {path: '/orderList', component: orderList},
+                {path: '/myInfo', component: myInfo},
+                {path: '/orderDetail', component: orderDetail},
+                {path: '/messageList', name: 'messageList', component: messageList},
+                {path: '/myInfo/questionAndAnswer', component: questionAndAnswer}
             ]
         },
         //404

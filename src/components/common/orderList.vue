@@ -99,7 +99,7 @@
                                          :filters="filterRealName"
                                          :filter-method="filterRealNameFun"
                                          :filter-multiple="true"
-                                         v-if="role === 'BD' || role === 'EP'"
+                                         v-if="role === 'BD'"
                         >
                         </el-table-column>
                         <el-table-column prop="realName" label="所有人" min-width="6.1%"

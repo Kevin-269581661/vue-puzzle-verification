@@ -31,7 +31,7 @@
             <div class="app-center-item" id="appCenter">
                 <!--isPlatform-->
                 <h2 class="h2_style"><span @click="goToPage()">应用中心 <i class="el-icon-arrow-right"></i></span></h2>
-                <ul :style="{height:isSlideDown?'254px':'381px'}">
+                <ul :style="{height:isSlideDown?'254px':'510px'}">
                     <li v-for="item in appCenter" @click="goToPage(item)">
                         <div class="item-left">
                             <img :src="item.imgUrl" alt="">

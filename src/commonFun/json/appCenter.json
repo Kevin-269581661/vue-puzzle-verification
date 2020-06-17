@@ -96,7 +96,7 @@
         "descTooltip":false
     },
     {
-        "title":"工程后台登入功能",
+        "title":"工程后台",
         "desc":"工程人员可登入系统后台，进行监播图查看验收并迅速对问题图片进行追责等",
         "imgUrl":"../../../static/images/appCenter/engineer.png",
         "link":"https://apps.qinlinad.com/engineer.html",

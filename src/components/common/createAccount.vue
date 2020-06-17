@@ -48,7 +48,7 @@
                             </el-select>
                         </el-form-item>
                         <el-form-item label="媒体权限" prop="mediaPermission" v-if="haveEPPerssion">
-                            <el-select multiple v-model="accountForm.mediaPermission" placeholder="请选择媒体权限"@change="mediaAccessSelect" size="small">
+                            <el-select multiple v-model="accountForm.mediaPermission" placeholder="请选择媒体权限" @change="mediaAccessSelect" size="small">
                                 <el-option v-for="item in mediaPermissionArr" :key="item.value" :value="item.value" :label="item.label"></el-option>
                             </el-select>
                         </el-form-item>
@@ -435,6 +435,7 @@
                     this.isSale = false;
                     this.isSM = false;
                     this.isEP = false;
+                    this.haveEPPerssion = false;
                 }else if(val == 'EP'){
                     this.isEP = true;
                     this.isMedia = false;

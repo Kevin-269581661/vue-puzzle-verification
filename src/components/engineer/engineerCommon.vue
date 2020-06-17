@@ -15,13 +15,13 @@
                     <img src="../../assets/images/logo.png" alt="">
                 </div>
             </el-menu-item>
-            <el-menu-item index="/engineer">首页</el-menu-item>
+            <el-menu-item index="/f_engineer/orderList">首页</el-menu-item>
             <el-submenu index="9" class="user_center" :show-timeout="80">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">
                     {{userName}}
                 </template>
-                <el-menu-item index="/engineer/myInfo">个人中心</el-menu-item>
+                <el-menu-item index="/f_engineer/myInfo">个人中心</el-menu-item>
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
                 <el-menu-item index="/login">退出登陆</el-menu-item>
             </el-submenu>
@@ -36,7 +36,7 @@
         <!--尾部-->
         <div class="ad_index_footer clearfix">
             <p><img src="../../assets/images/home_icon.png" alt="">
-                <router-link to="/engineer"> 回到首页</router-link>
+                <router-link to="/f_engineer/orderList"> 回到首页</router-link>
                 | Copyright &copy;{{newDate}} 亲邻科技线上产品部
             </p>
         </div>

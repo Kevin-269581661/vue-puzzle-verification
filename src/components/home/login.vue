@@ -180,7 +180,7 @@
                             } else if (userMsg.uType === 'SA') {
                                 this.$router.push('/admin')
                             } else if (userMsg.uType === 'EP') {
-                                this.$router.push('/f_engineer')
+                                this.$router.push('/f_engineer/orderList')
                             }  else {
                                 Message({
                                     message: '账号角色权限异常',
@@ -314,7 +314,7 @@
                         } else if (isLogin.uType === 'SA') {
                             this.$router.push('/admin')
                         } else if (isLogin.uType === 'EP') {
-                            this.$router.push('/f_engineer')
+                            this.$router.push('/f_engineer/orderList')
                         } else {
                             Message({
                                 message: '账号角色权限异常',

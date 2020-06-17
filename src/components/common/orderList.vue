@@ -102,6 +102,11 @@
                                          v-if="role === 'BD' || role === 'EP'"
                         >
                         </el-table-column>
+                        <el-table-column prop="realName" label="所有人" min-width="6.1%"
+                                         show-overflow-tooltip
+                                         v-if="role === 'EP'"
+                        >
+                        </el-table-column>
                         <el-table-column prop="skProgress" label="上刊进度" width="100px"
                                          show-overflow-tooltip
                                          v-if="role === 'EP'"

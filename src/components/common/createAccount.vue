@@ -42,6 +42,16 @@
                                 </el-tooltip>
                             </el-form-item>
                         </template>
+                        <el-form-item label="工程类别" prop="engineerLevel" v-if="haveEPPerssion">
+                            <el-select v-model="accountForm.engineerLevel" placeholder="请选择工程类别" @change="engineerCategorySelect" size="small">
+                                <el-option v-for="item in engineerLevelArr" :key="item.value" :value="item.value" :label="item.label"></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="媒体权限" prop="mediaPermission" v-if="haveEPPerssion">
+                            <el-select multiple v-model="accountForm.mediaPermission" placeholder="请选择媒体权限"@change="mediaAccessSelect" size="small">
+                                <el-option v-for="item in mediaPermissionArr" :key="item.value" :value="item.value" :label="item.label"></el-option>
+                            </el-select>
+                        </el-form-item>
                         <template v-if="type==0 && isSM">
                             <el-form-item label="可开通全国销售">
                                 <el-switch v-model="accountForm.saleManageLevel" :active-value="1" :inactive-value="0" active-color="#13ce66"></el-switch>
@@ -199,6 +209,28 @@
                         value: 2
                     },
                 ],
+                //工程类别
+                engineerLevelArr: [
+                    {
+                        label: '工程总监',
+                        value: 1
+                    },
+                    {
+                        label: '运维人员',
+                        value: 0
+                    },
+                ],
+                //媒体权限
+                mediaPermissionArr: [
+                    {
+                        label: '广告门',
+                        value: 0
+                    },
+                    {
+                        label: '道闸',
+                        value: 1
+                    },
+                ],
                 //表单
                 accountForm: {
                     account: "",
@@ -207,6 +239,8 @@
                     company: '',
                     boss: "",
                     position: "",
+                    engineerLevel:'',
+                    mediaPermission:[''],
                     phone: "",
                     division: "",
                     email: "",
@@ -246,6 +280,8 @@
                     role: [
                         {required: true, message: "角色不能为空", trigger: "blur"}
                     ],
+                    engineerLevel:[{required: true, message: "工程类别不能为空", trigger: "blur"}],
+                    mediaPermission:[{required: true, message: "媒体权限不能为空", trigger: "blur"}],
                     company: [
                         {
                             required: true,
@@ -293,6 +329,7 @@
                 isMedia: false,
                 isSM: false,
                 isEP: false,
+                haveEPPerssion: false,
                 // 销售类型
                 saleKind: [
                     {
@@ -386,11 +423,13 @@
                     this.isSale = false;
                     this.isMedia = false;
                     this.isEP = false;
+                    this.haveEPPerssion = false;
                 }else if(val ==='BD'){
                     this.isSale = true;
                     this.isMedia = false;
                     this.isSM = false;
                     this.isEP = false;
+                    this.haveEPPerssion = false;
                 }else if(val == 'MD'){
                     this.isMedia = true;
                     this.isSale = false;
@@ -401,15 +440,28 @@
                     this.isMedia = false;
                     this.isSale = false;
                     this.isSM = false;
+                    this.haveEPPerssion = false;
+                }else if(val == 'EP'&&this.sessionData.uType=='SM'&&this.sessionData.asrID==11){
+                    // 是否有新增工程类别和媒体权限的权限
+                    this.haveEPPerssion = true;
                 }else{
                     this.isMedia = false;
                     this.isSale = false;
                     this.isSM = false;
                     this.isEP = false;
+                    this.haveEPPerssion = false;
                 }
                 if(this.isSale){
                     this.getRoleCity();
                 }
+            },
+            // 选择工程类型
+            engineerCategorySelect(val){
+
+            },
+            // 选择媒体权限
+            mediaAccessSelect(val){
+
             },
             // 选择公司
             companyChange(val){
@@ -498,6 +550,8 @@
                     utype: actFrom.role,
                     division: actFrom.division,
                     position: actFrom.position,
+                    engineerLevel: actFrom.engineerLevel,
+                    mediaPermission: actFrom.mediaPermission.length>1 ? -1 : actFrom.mediaPermission[0],
                     phone: actFrom.phone,
                     email: actFrom.email,
                     puid: "",
@@ -618,6 +672,8 @@
                                     role: result.uType,
                                     boss: result.puName ? result.puName : "",
                                     position: result.position ? result.position : "",
+                                    engineerLevel: result.engineerLevel,
+                                    mediaPermission: result.mediaPermission==-1 ? [0,1] : [result.mediaPermission],
                                     phone: result.phone?result.phone:'',
                                     division: result.division ? result.division : "",
                                     email: result.email ? result.email : "",

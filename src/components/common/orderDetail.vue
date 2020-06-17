@@ -2011,7 +2011,7 @@
         padding: 24px 32px;
         background: #ffffff;
         /* border: 1px solid #dedede; */
-        height: 145px;
+        /* height: 145px; */
         position: relative;
     }
 

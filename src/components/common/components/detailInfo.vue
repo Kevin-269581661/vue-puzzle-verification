@@ -132,6 +132,8 @@ export default {
 </template>
 <style scoped>
 .plan-detail {
+    display: flex;
+    justify-content: space-between;
     font-size: 14px;
     color: #333333;
     padding-left: 41px;
@@ -147,12 +149,12 @@ export default {
     float: left;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: flex-start;
 }
 
 .plan-detail-left ul li {
     float: left;
-    width: calc(33% - 16px);
+    width: calc(33.3% - 16px);
     margin: 0 16px 12px 0;
 }
 

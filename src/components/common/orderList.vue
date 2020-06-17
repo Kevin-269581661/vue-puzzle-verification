@@ -209,7 +209,7 @@
     // 筛选过滤
     import filterFormat from "../../commonFun/filterTableData.js";
     export default {
-        name: "orderList",
+        name: "projectList",
         components: {
             applyphoto,
             noSearchResult,

@@ -188,10 +188,17 @@
                                 })
                             }
                         } else {
-                            Message({
-                                message: '用户名或密码错误！',
-                                type: 'warning'
-                            })
+                            if(userMsg.SysCode=='400403') {
+                                Message({
+                                    message: '账号角色权限不足',
+                                    type: 'warning'
+                                })
+                            } else {
+                                Message({
+                                    message: '用户名或密码错误！',
+                                    type: 'warning'
+                                })
+                            }
                             this.loading.close()
                         }
                     } else {

@@ -436,7 +436,7 @@
                     this.isSM = false;
                     this.isEP = false;
                     this.haveEPPerssion = false;
-                }else if(val == 'EP'&&this.sessionData.uType=='SM'&&this.sessionData.asrID==2){
+                }else if(val == 'EP'&&this.sessionData.uType=='SM'&&this.sessionData.asrID==11){
                     this.isEP = true;
                     this.isMedia = false;
                     this.isSale = false;

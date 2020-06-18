@@ -179,7 +179,7 @@
                                 this.$router.push('/operate')
                             } else if (userMsg.uType === 'SA') {
                                 this.$router.push('/admin')
-                            } else if (userMsg.uType === 'EP') {
+                            } else if (userMsg.uType === 'EP' && userMsg.backstagePermission == 1) {
                                 this.$router.push('/f_engineer/orderList')
                             }  else {
                                 Message({
@@ -321,6 +321,7 @@
                         } else if (isLogin.uType === 'SA') {
                             this.$router.push('/admin')
                         } else if (isLogin.uType === 'EP') {
+                            // 是否开通后台权限由小程序端判断
                             this.$router.push('/f_engineer/orderList')
                         } else {
                             Message({

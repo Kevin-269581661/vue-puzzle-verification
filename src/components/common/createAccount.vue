@@ -750,10 +750,8 @@
                     if(this.companyArr.find(item=>{
                         return item.value==this.accountForm.company&&item.backstagePermission==1
                     })) {
-                        console.log('找到---')
                         return false
                     } else {
-                        console.log('没有找到---')
                         return true
                     }
                 },

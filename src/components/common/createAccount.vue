@@ -394,7 +394,7 @@
                                 }) && (obj.backstagePermission = 1)
                                 result.push(obj);
                             }
-                            this.companyArr = result;
+                            // this.companyArr = result;
                         }else {
                             let data = res.data.data;
                             let obj = {
@@ -436,15 +436,19 @@
                     this.isSM = false;
                     this.isEP = false;
                     this.haveEPPerssion = false;
+                }else if(val == 'EP'&&this.sessionData.uType=='SM'&&this.sessionData.asrID==2){
+                    this.isEP = true;
+                    this.isMedia = false;
+                    this.isSale = false;
+                    this.isSM = false;
+                    // 是否有新增工程类别和媒体权限的权限
+                    this.haveEPPerssion = true;
                 }else if(val == 'EP'){
                     this.isEP = true;
                     this.isMedia = false;
                     this.isSale = false;
                     this.isSM = false;
                     this.haveEPPerssion = false;
-                }else if(val == 'EP'&&this.sessionData.uType=='SM'&&this.sessionData.asrID==11){
-                    // 是否有新增工程类别和媒体权限的权限
-                    this.haveEPPerssion = true;
                 }else{
                     this.isMedia = false;
                     this.isSale = false;

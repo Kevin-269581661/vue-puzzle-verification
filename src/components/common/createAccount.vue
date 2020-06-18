@@ -556,7 +556,7 @@
                     division: actFrom.division,
                     position: actFrom.position,
                     engineerLevel: actFrom.engineerLevel,
-                    mediaPermission: actFrom.mediaPermission.length>1 ? -1 : (actFrom.mediaPermission[0] || ''),
+                    mediaPermission: actFrom.mediaPermission.length>1 ? -1 : (actFrom.mediaPermission[0]==undefined?'':actFrom.mediaPermission[0]),
                     phone: actFrom.phone,
                     email: actFrom.email,
                     puid: "",

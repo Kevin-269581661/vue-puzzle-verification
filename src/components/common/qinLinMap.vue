@@ -1544,10 +1544,20 @@
                     for (let akey of this.resMarkers) {
                         let isShow = '';
                         if (temp === 'circle') {
+                            let c = new BMap.Point(overlay.point.lng, overlay.point.lat); //圆心
+                            let circle = new BMap.Circle(c, overlay.Da);//测试圆
+                            let pt = new BMap.Point(akey.point.lng, akey.point.lat);//测试点
+                            isShow = BMapLib.GeoUtils.isPointInCircle(pt, circle)
+                        } else if (temp === 'polygon') {
+                            let pt = new BMap.Point(akey.point.lng, akey.point.lat);//测试点
+                            let polygon = new BMap.Polygon(overlay.ao);
+                            isShow = BMapLib.GeoUtils.isPointInPolygon(pt, polygon)
+                        }
+                        /* if (temp === 'circle') {
                             isShow = BMapLib.GeoUtils.isPointInCircle(akey.point, overlay)
                         } else if (temp === 'polygon') {
                             isShow = BMapLib.GeoUtils.isPointInPolygon(akey.point, overlay)
-                        }
+                        } */
                         if (!isShow) {
                             akey.hide()
                         } else {

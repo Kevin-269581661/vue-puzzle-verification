@@ -1550,7 +1550,8 @@
                             isShow = BMapLib.GeoUtils.isPointInCircle(pt, circle)
                         } else if (temp === 'polygon') {
                             let pt = new BMap.Point(akey.point.lng, akey.point.lat);//测试点
-                            let polygon = new BMap.Polygon(overlay.ao);
+                            // let polygon = new BMap.Polygon(overlay.ao);
+                            let polygon = new BMap.Polygon(overlay.getPath());
                             isShow = BMapLib.GeoUtils.isPointInPolygon(pt, polygon)
                         }
                         /* if (temp === 'circle') {

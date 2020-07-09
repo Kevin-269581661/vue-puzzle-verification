@@ -26,6 +26,7 @@
                                                  class="plan-select"
                                                  placeholder="选择地区"
                                                  :clearable="true"
+                                                 @change="handleCity"
                                                  change-on-select filterable>
                                     </el-cascader>
                                 </el-col>
@@ -275,7 +276,12 @@
             // 获取城市
             getAllCity() {
                 this.citys = areaPackage_new.cityArea();
-                console.log(this.citys);
+            },
+            // 城市下拉改变时，省份不选中
+            handleCity(val) {
+                if(Array.isArray(val) && val.length == 1) {
+                    this.searchInfo.citySelect = []
+                }
             },
             // 选择行业
             handleChange(val) {

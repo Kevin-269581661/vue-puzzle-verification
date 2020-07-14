@@ -251,11 +251,11 @@
             </el-select>
             <!--终端型号-->
             <el-select v-if="systemSource===1" placeholder="终端型号" size="small" v-model="selectMachineType" v-show="showMore"
-                       collapse-tags
-                       multiple
-                       clearable
-                       @clear="transfersFun()"
-                       @visible-change="reSearch">
+                    collapse-tags
+                    multiple
+                    clearable
+                    @clear="transfersFun()"
+                    @visible-change="reSearch">
                 <el-option
                     v-for="(item, index) in machineTypeList"
                     :key="index"
@@ -1186,7 +1186,11 @@
                     })
                     Array.from(resSet).join(',');
                     let params = {
-                        resIDs: Array.from(resSet).join(',')
+                        resIDs: Array.from(resSet).join(','),
+                        startTime: this.adListParams.ls,
+                        endTime: this.adListParams.le,
+                        playSecond: this.adListParams.playSecond,
+                        playCount: this.adListParams.playCount
                     }
                     return new Promise((resolve, reject) => {
                         api.getApi('/QFAD/getSelectedCommunity',params).then(res=>{
@@ -3431,7 +3435,7 @@
                 let params = {
                     resIDs: arr.join(',')
                 }
-                api.postApi('/QFAD/shareCode',params).then(res=>{
+                api.postApi(mapConfig.apiVar.mapApi + '/shareCode',params).then(res=>{
                     if(res.data.SysCode === 200200) { // ADResourcesMap/shareRes
                         if(this.systemSource === 0) {
                             this.shareUrl = this.apiVar.qadnUrl + '/ADResourcesMap/shareRes?city='+ this.routeQuery.city +'&code=' + res.data.data
@@ -4001,6 +4005,22 @@
 
     .top_filter_box /deep/ .el-select__tags{
         max-width: 110px !important;
+    }
+    /* .top_filter_box /deep/ .el-tag--mini {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+    } */
+
+    .top_filter_box /deep/ .el-select__tags-text {
+        max-width: 72px;
+        /* text-overflow: ellipsis; */
+        overflow: hidden;
+        display: inline-flex;
+    }
+
+    .top_filter_box /deep/ .el-select__tags > span {
+        display: flex;
     }
 
     .top_filter_box /deep/ .el-button.top_filter_btn{

@@ -94,7 +94,7 @@
         </div>
         <!--顶部过滤条件-->
         <div class="top_filter_box">
-            <!--区域-->
+            <!--QADN区域-->
             <el-select v-if="systemSource===0" v-model="selectArea" size="small" placeholder="请选择"
                        collapse-tags
                        multiple
@@ -112,8 +112,9 @@
                 ref="cascader"
                 placeholder="省市"
                 size="small"
-                :props="areaProps"
+                v-model="citySelect"
                 :show-all-levels="false"
+                :options="areaListLevel2"
                 @change="changeCity"
                 filterable>
             </el-cascader>
@@ -254,7 +255,7 @@
                        multiple
                        clearable
                        @clear="transfersFun()"
-                       @change="filterMachineType">
+                       @visible-change="reSearch">
                 <el-option
                     v-for="(item, index) in machineTypeList"
                     :key="index"
@@ -267,8 +268,8 @@
                        clearable
                        @clear="transfersFun()"
                        @change="filterExcludeType">
-                <el-option label="排除小区" value="1"></el-option>
-                <el-option label="排除点位" value="2"></el-option>
+                <el-option label="排除同行小区" value="1"></el-option>
+                <el-option label="排除同行点位" value="2"></el-option>
             </el-select>
             <!--媒体类型-->
             <el-select v-if="systemSource===0" placeholder="媒体类型" size="small" v-model="selectDoorType" v-show="showMore"
@@ -795,20 +796,14 @@
                             show-overflow-tooltip
                             min-width="140">
                             <template slot-scope="scope">
-                                <el-tooltip v-if="scope.row.mapCenter"
-                                            :content="scope.row.mapCenter"
-                                            placement="bottom-start"
-                                            :visible-arrow="false">
-                                    <span>{{scope.row.mapCenter || '--' }}</span>
-                                </el-tooltip>
-                                <span v-else> {{ scope.row.mapCenter || '--' }} </span>
+                                <span>{{scope.row.mapCenter || '--' }}</span>
                             </template>
                         </el-table-column>
                     </el-table>
                     <div class="custom-foot">
                         <span class="warningInfo">已勾选<span class="selected-num">{{selectedAll.length || 0}}</span>个点位</span>
                         <el-button size="small" plain style="margin: 0 17px 0 auto;" @click="dialogTableVisible = false">
-                            关闭
+                            取消
                         </el-button>
                         <el-button size="small" :disabled="selectedAll.length == 0" plain @click="confirm">
                             确定添加
@@ -818,18 +813,19 @@
             </template>
         </el-dialog>
         <!--城市选择弹框-->
-        <el-dialog title="请先选择城市" width="322px" custom-class="city_dialog" :visible.sync="dialogCity">
+        <el-dialog title="请先选择城市" width="322px" custom-class="city_dialog" :showClose="false" :closeOnClickModal="false" :closeOnPressEscape="false" :visible.sync="dialogCity">
             <el-cascader
                 ref="cascader"
                 placeholder="省市"
                 size="small"
-                :props="areaProps"
+                v-model="citySelect"
                 :show-all-levels="false"
+                :options="areaListLevel2"
                 @change="changeCity"
                 filterable>
             </el-cascader>
             <div slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="confirmCity">确 定</el-button>
+                <el-button :disabled="citySelect.length != 2" type="primary" @click="confirmCity">确 定</el-button>
             </div>
         </el-dialog>
     </div>
@@ -865,42 +861,7 @@
             let _this = this;
             return{
                 systemSource: mapConfig.system,
-                currentAreaArr: [],
-                areaProps: {
-                    lazy: true,
-                    lazyLoad ( node, resolve) {
-                        const {root, level } = node;
-                        setTimeout(() => {
-                            if(root) {
-                                // _this.areaList.forEach(item => item.leaf = false)
-                                const nodes = _this.areaList.map(item => {
-                                    return {
-                                        value: item.value,
-                                        label: item.label,
-                                    }
-                                })
-                                resolve(nodes);
-                            } else {
-                                if(level == 1) {
-                                    const nodes = _this.areaList.find((item) => {
-                                        return item.value == node.value
-                                    }).children.map(item => {
-                                        return {
-                                            value: item.value,
-                                            label: item.label,
-                                            leaf: true
-                                        }
-                                    })
-                                    resolve(nodes)
-                                } else {
-                                    resolve()
-                                }
-                            }
-                        // 通过调用resolve将子节点数据返回，通知组件数据加载完成
-                        // resolve(nodes);
-                        }, 1000);
-                    }
-                },
+                citySelect: [],
                 userInfo:'',
                 // 路由参数
                 routeQuery:{},
@@ -1006,7 +967,9 @@
                 },
                 // 显示更多过滤条件
                 showMore: false,
-                // 区域下拉
+                // 区域下拉两级结构
+                areaListLevel2: [],
+                // 区域下拉三级结构
                 areaList: [],
                 // 选择到区域
                 selectArea: [],
@@ -1142,12 +1105,15 @@
             }
         },
         created() {
+            this.adListParams = JSON.parse(localStorage.getItem(mapConfig.mapParams))
             if(mapConfig.system===0) {
                 mapConfig.apiVar.Media = this.apiVar.Media;
                 mapConfig.apiVar.mapApi = this.apiVar.mapApi;
             } else if(mapConfig.system===1) {
                 mapConfig.apiVar.Media = '/QFAD';
                 mapConfig.apiVar.mapApi = '/QFAD';
+                // 分享页不调用改函数
+                !this.$route.path.includes('shareRes') && this.selectedListToResList()
             }
         },
         mounted() {
@@ -1164,10 +1130,13 @@
                 if(this.systemSource === 1) {
                     // QFAD可以切换省份，所以不以路由参数显示地图
                     if(this.adListParams.rid) {
+                        this.adListParams.provinceId && this.adListParams.rid && (this.citySelect = [this.adListParams.provinceId, this.adListParams.rid])
                         // QFAD获取权限城市
                         this.getAreaList();
                         // 获取小区数据
                         this.getResList();
+                        // 获取楼盘类型
+                        this.getBuildList()
                         // 获取终端类型（eg:QLG19-C215）
                         this.getMachineType()
                         // 获取商圈list
@@ -1175,7 +1144,7 @@
                     } else {
                         // QFAD获取权限城市
                         this.getAreaList().then((res)=>{
-                            this.dialogCity = true
+                            res && (this.dialogCity = true)
                         });
                     }
 
@@ -1193,10 +1162,58 @@
                 }
             }
         },
+        computed: {
+            currentAreaArr: function(){
+                // val[0]: 省，val[1]: 市
+                let val = this.citySelect;
+                if(this.areaList.length>0 && this.citySelect.length == 2) {
+                    return this.areaList.find(item=>item.value == val[0]).children.find(item=>item.value == val[1]).children;
+                } else {
+                    return []
+                }
+            }
+        },
         methods:{
+            // 将点位数据转换成小区数据，并去重,放入资源列表
+            selectedListToResList() {
+                let selectedListTemp = this.adListParams.selectedList;
+                if(Array.isArray(selectedListTemp) && selectedListTemp.length > 0) {
+                    let resSet = new Set;
+                    selectedListTemp.forEach(item=> {
+                        if(item.communityId && !resSet.has(item.communityId)) {
+                            resSet.add(item.communityId);
+                        }
+                    })
+                    Array.from(resSet).join(',');
+                    let params = {
+                        resIDs: Array.from(resSet).join(',')
+                    }
+                    return new Promise((resolve, reject) => {
+                        api.getApi('/QFAD/getSelectedCommunity',params).then(res=>{
+                            if (res.data.SysCode === 200200) {
+                                // 地图外已选点位所在小区
+                                let resListSelected = res.data.data || [];
+                                // 异步情况下，资源列表可能存在数据
+                                let resLisArr = this.selectResList.reduce((accumulator, currentValue)=>{
+                                    accumulator.push(currentValue.resID || '')
+                                }, [])
+                                resListSelected.forEach(item=>{
+                                    if(item.resID && !resLisArr.includes(item.resID)) {
+                                        this.selectResList.push(item);
+                                    }
+                                })
+                                this.showSelectList = true;
+                            } else {
+                                sessFun.messageFun('warning', '已选资源获取异常！')
+                                resolve(false);
+                            }
+                            
+                        }).catch(() => resolve(false))
+                    });
+                }
+            },
             // 获取缓存数据
             getSessionData() {
-                this.adListParams = JSON.parse(localStorage.getItem(mapConfig.mapParams))
                 this.routeQuery = this.$route.query
                 // 判断是否是超管访问，超管无提交资源权限
                 if(this.routeQuery.flag === 'true') {
@@ -1214,7 +1231,25 @@
                     api.getApi('/QFAD/cityInfoList',params).then(res=>{
                         if (res.data.SysCode === 200200) {
                             this.areaList = res.data.data
-                            resolve(true);
+                            try {
+                                this.areaListLevel2 = res.data.data.map(item=>{
+                                    let obj = {
+                                        label: item.label,
+                                        value: item.value
+                                    }
+                                    
+                                    obj.children = item.children.map(childrenItem=>{
+                                        return {
+                                            label: childrenItem.label,
+                                            value: childrenItem.value
+                                        }
+                                    })
+                                    return obj;
+                                })
+                                resolve(true);
+                            } catch (error) {
+                                console.error(error)
+                            }
                         } else {
                             sessFun.messageFun('warning', '权限城市获取异常！')
                             resolve(false);
@@ -1247,6 +1282,24 @@
                     }
                 })
             },
+            // QFAD 获取楼盘类型
+            getBuildList() {
+                let params = {
+                    cityId: this.adListParams.rid
+                }
+                api.getApi(mapConfig.apiVar.mapApi + '/buildingTypeList',params).then(res=>{
+                    if (res.data.SysCode === 200200) {
+                        this.buildTypeList = (res.data.data || []).map((item)=>{
+                            return {
+                                buildlabel: item,
+                                buildValue: item
+                            }
+                        })
+                    } else {
+                        sessFun.messageFun('warning', '楼盘类型获取异常！')
+                    }
+                })
+            },  
             // 获取商圈
             getTradingArea() {
                 let params = {
@@ -1286,8 +1339,8 @@
                     if (res.data.SysCode === 200200) {
                         this.machineTypeList = res.data.data.map((item)=>{
                             return {
-                                value: item.deviceModelText,
-                                label: item.deviceModelText
+                                value: item.deviceModel,
+                                text: item.deviceModelText
                             }
                         })
                     } else {
@@ -1418,7 +1471,7 @@
                     params.playSecond = this.adListParams.playSecond;
                     params.playCount = this.adListParams.playCount;
                     // 设备类型多选
-                    params.selectMachineType = this.selectMachineType.join(',');
+                    params.deviceModels = this.selectMachineType.join(',');
                 }
                 if(this.selectExcludeType) {
                     switch(this.selectExcludeType){
@@ -1505,9 +1558,10 @@
                         lineHeight: '20px',
                         boxShadow: '0px 0px 6px 0px rgba(0,0,0,0.15)',
                         border: '3px solid rgba(255, 255, 255, 0.3)',
-                        background: '#F56251',//'rgba(24,144,255,1)',
+                        background: '#F56251',
                         color: 'rgba(255,255,255,1)',
                         padding: '16px 4px',
+                        'box-sizing': 'content-box'
                         // cursor: 'pointer'
                     });
                     label.rid = key.districtId
@@ -1628,8 +1682,7 @@
                 }
                 if(this.isShare) {
                     params.shareCode = this.routeQuery.code
-                }
-                if(this.selectExcludeType) {
+                } else if(this.selectExcludeType) {
                     params.startTime = this.adListParams.ls;
                     params.endTime = this.adListParams.le;
                     switch(this.selectExcludeType){
@@ -2938,36 +2991,61 @@
                 // console.log('QFAD选择城市', val, this.$refs['cascader'].getCheckedNodes())
                 if(Array.isArray(val) &&　val.length == 2) {
                     // val[0]: 省，val[1]: 市
-                    this.currentAreaArr = this.areaList.find(item=>item.value == val[0]).children.find(item=>item.value == val[1]).children;
                     if(this.adListParams.rid != val[1]) {
+                        let moveToCity = '';
+                        this.areaListLevel2.forEach((currentValue) => {
+                            if(currentValue.value === val[0]) {
+                                currentValue.children.forEach((childCurrentValue) => {
+                                    childCurrentValue.value === val[1] && (moveToCity = childCurrentValue.label || '')
+                                })
+                            }
+                             
+                        })
+                        this.adListParams.city = moveToCity;
                         this.adListParams.rid = val[1]
                         // 重新获取商圈
                         this.getTradingArea()
+                        // 重新获取楼盘类型
+                        this.getBuildList()
                         // 清空区县
                         this.selectArea = []
-                        // 移动地图
-                        let moveToCity = this.$refs['cascader'].getCheckedNodes()[0].label || ''
-                        this.adListParams.city = moveToCity;
-                        if(moveToCity) {
+                        if(this.dialogCity == false && this.adListParams.city) {
+                            // 移动地图
                             let storageMapParams = JSON.parse(localStorage.getItem('mapParams'))
                             storageMapParams.rid = this.adListParams.rid
                             storageMapParams.city = this.adListParams.city
                             localStorage.setItem('mapParams', JSON.stringify(storageMapParams));
-                            this.resMap.setCurrentCity(moveToCity)
-                            this.resMap.centerAndZoom(moveToCity, 11);
+                            this.resMap.setCurrentCity(this.adListParams.city)
+                            this.resMap.centerAndZoom(this.adListParams.city, 11);
+                            this.transfersFun()
                         }
                     }
                 }
             },
             // 对话框中选择城市
             confirmCity() {
-                // 获取小区数据
-                this.getResList();
-                // 获取终端类型（eg:QLG19-C215）
-                this.getMachineType()
-                // 获取商圈list
-                this.getTradingArea();
-                this.dialogCity = false;
+                if(this.citySelect.length == 2) {
+                    // 移动地图
+                    if(this.adListParams.city) {
+                        let storageMapParams = JSON.parse(localStorage.getItem('mapParams'))
+                        storageMapParams.rid = this.adListParams.rid
+                        storageMapParams.city = this.adListParams.city
+                        localStorage.setItem('mapParams', JSON.stringify(storageMapParams));
+                        this.resMap.setCurrentCity(this.adListParams.city)
+                        this.resMap.centerAndZoom(this.adListParams.city, 11);
+                    }
+                    // 获取小区数据
+                    this.getResList();
+                    // 获取楼盘类型
+                    this.getBuildList()
+                    // 获取终端类型（eg:QLG19-C215）
+                    this.getMachineType()
+                    // 获取商圈list
+                    this.getTradingArea();
+                    this.dialogCity = false;
+                } else {
+                    sessFun.messageFun('warning','请选择城市')
+                }
             },
             // 区域
             filterArea(val) {
@@ -2978,7 +3056,7 @@
                 }
                 
             },
-            // 区县下拉关闭时重新获取点位
+            // 区县（终端类型）下拉关闭时重新获取点位
             reSearch(flag) {
                 !flag&&this.transfersFun()
             },
@@ -3051,9 +3129,9 @@
                 }
             },
             // 终端类型
-            filterMachineType() {
-                    this.transfersFun()
-            },
+            // filterMachineType() {
+            //         this.transfersFun()
+            // },
             // 排除同行
             filterExcludeType() {
                 if(this.selectExcludeType) {
@@ -3248,7 +3326,7 @@
                         if(this.systemSource === 0) {
                             obj.city = this.routeQuery.city
                         } else if(this.systemSource === 1) {
-                            obj.city = this.adListParams.city
+                            obj.city = data.cityName
                         }
                         resultArr.push(obj);
                     }
@@ -3258,8 +3336,8 @@
                         const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
                         if(this.systemSource === 1) {
                             // QFAD
-                            tHeader = ['资源名称', '市', '区域', '详细地址','商圈','楼栋数量', '住户数量/办公室数量','楼盘价格','楼盘类型/写字楼类型','入住年份/建成年份','地图中心点', '媒体数量（门）'];
-                            filterVal = ['resName', 'city', 'rName', 'resAddress','tradingArea', 'fNum',  'hNum',  'hPrice','cType', 'chDay','mapCenter','mediaNum'];
+                            tHeader = ['资源名称', '城市', '区县', '详细地址','商圈','楼栋数量', '住户数量/办公室数量','楼盘价格','楼盘类型/写字楼类型','入住年份/建成年份','地图中心点', '媒体数量'];
+                            filterVal = ['resName', 'city', 'rName', 'resAddress','tradingArea', 'fNum',  'hNum',  'hPrice','cType', 'chDay','mapCenter','spareAdsCount'];
                         } else if(this.systemSource === 0) {
                             tHeader = ['资源名称', '市', '区域', '详细地址','商圈','楼栋数量', '住户数量/办公室数量','楼盘价格','楼盘类型/写字楼类型','入住年份/建成年份','广告限制','媒体备注','地图中心点', '媒体数量（门）','可用媒体数量（面）'];
                             filterVal = ['resName', 'city', 'rName', 'resAddress','tradingArea', 'fNum',  'hNum',  'hPrice','cType', 'chDay','notPush', 'mRemark','mapCenter','mediaNum','spareAdsCount'];
@@ -3358,7 +3436,7 @@
                         if(this.systemSource === 0) {
                             this.shareUrl = this.apiVar.qadnUrl + '/ADResourcesMap/shareRes?city='+ this.routeQuery.city +'&code=' + res.data.data
                         } else if(this.systemSource === 1) {
-                            this.shareUrl = 'http://' + window.location.host + '/map/ADResourceMap/shareRes?city='+ this.adListParams.city +'&code=' + res.data.data
+                            this.shareUrl = `${window.location.protocol}//${window.location.host}/f_map/ADResourceMap/shareRes?city=${this.adListParams.city}&code=${res.data.data}`;
                         }
                         this.copyDialogVisible = true
                     } else {
@@ -3388,7 +3466,8 @@
                 });
                 api.getApi('/QFAD/adsListByUid',{}).then(res=>{
                     if(res.data.SysCode === 200200 && Array.isArray(res.data.data)) {
-                        let tempData = res.data.data.concat(this.adListParams.selectedList || []);
+                        // let tempData = res.data.data.concat(this.adListParams.selectedList || []);
+                        let tempData = res.data.data || [];
                         let idSet = new Set()
                         this.shopShowList = tempData.filter(item=>{
                             // 去重
@@ -3396,6 +3475,12 @@
                                 idSet.add(item.id);
                                 if(!item.areaString) {
                                     item.areaString = item.province + '-' + item.city + '-' + item.area;
+                                }
+                                if(Array.isArray(item.centerInfos) && item.centerInfos.length > 0) {
+                                    item.mapCenter = item.centerInfos.reduce((res, current)=>{
+                                        return `${res}${current.centerName || ''}-${current.centerAddress || ''}-${
+                                            current.distance || ''}米;`
+                                    }, '')
                                 }
                                 return true
                             }
@@ -3426,16 +3511,24 @@
             // 快速选点下拉
             containNuminRes(num) {
                 if(num == 3) {
-                    // 排除同行所在点位
-                    this.shopShowList = this.shopShowList.filter((item) => {
-                        return (item.industryIdList || []).includes(this.adListParams.adSystemId[this.adListParams.adSystemId.length-1])
-                    })
+                    let len = this.shopShowList.length;
+                    if(len > 0) {
+                        // 排除同行所在点位
+                        this.shopShowList.forEach((item) => {
+                            if(!(item.industryIdList || []).includes(this.adListParams.adSystemId[this.adListParams.adSystemId.length-1])) {
+                                this.$refs.mapMultipleTable.toggleRowSelection(item, false);
+                            }
+                        })
+                    }
+                    if(this.selectedAll.length === len) {
+                        sessFun.messageFun('warning', '无同行所在点位！')
+                    }
                 } else if(num < 3) {
                     // 同资源保留个数
-                    let resultArr = this.funToArr(this.shopShowList, 'id');
+                    let len = this.shopShowList.length;
+                    let resultArr = this.funToArr(this.shopShowList, 'communityId');
                     resultArr = this.resRandomNum(resultArr, num);
                     this.shopShowList = resultArr;
-                    let len = this.shopShowList.length;
                     if (resultArr.length) {
                         // this.getResultData(resultArr);
                         if (len != resultArr.length) {
@@ -3753,6 +3846,10 @@
     .around_search_body >div{
         display: flex;
         margin-bottom:16px;
+    }
+
+    .around_search_body /deep/ .el-radio {
+        margin: 0;
     }
 
     .p_span{
@@ -4180,6 +4277,7 @@
         width: 35%;
         height: 20px;
         background: #fff;
+        box-sizing: content-box;
         box-shadow:0px 0px 8px 0px rgba(0,0,0,0.12);
         border-radius:4px;
         float: right;

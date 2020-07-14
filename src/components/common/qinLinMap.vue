@@ -2378,7 +2378,7 @@
             // 在线搜索
             onlineSearchFun(){
                 this.searchOnlineLoading = true
-                console.log('在线搜索----')
+                console.log('在线搜索----', this.selectName)
                 let resultArray = []
                 let options = {
                     onSearchComplete: (results) => {
@@ -2773,6 +2773,7 @@
                     this.searchLoading = false
                     this.hideOnlineMarker()
                     clearTimeout(timer)
+                    this.isMultiPoint = true
                 },10)
             },
             // 并集显示圆半径内的小区

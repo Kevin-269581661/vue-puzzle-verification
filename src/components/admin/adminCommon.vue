@@ -25,6 +25,10 @@
                 <el-menu-item index="/admin/communityPortrait">社区画像</el-menu-item>
                 <el-menu-item index="/admin/communityRank">社区排名</el-menu-item>
             </el-submenu>
+            <el-submenu index="7" :show-timeout="80" popper-class="submenu">
+                <template slot="title">系统管理</template>
+                <el-menu-item index="/admin/ADlimitList">广告限制</el-menu-item>
+            </el-submenu>
             <el-submenu index="6" class="user_center" popper-class="user_center_item" show-timeout="80">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">

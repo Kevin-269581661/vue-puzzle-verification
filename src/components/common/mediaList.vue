@@ -1033,6 +1033,9 @@
                     this.mediaState.BDisable = false
                 }
             },
+            // 判断当前删除媒体是否被订单占用
+            // 判断当前删除媒体是否被方案占用
+            // 
             // 判断当前删除的媒体所在小区是否只有一个媒体
             judgeResHaveMediaNum(){
                 let judgeLoading = this.$loading({

@@ -15,6 +15,7 @@ const NotFountPage = () => import('../components/common/NotFoundPage.vue')
 //管理员
 const admin = () => import('../components/admin/adminCommon.vue')
 const SMqinlinzk = () => import('../components/admin/SMqinlinzk.vue')
+const ADlimitList = () => import('../components/admin/ADlimitList.vue')
 
 // 空点导出
 const emptyPoint = () => import('../components/common/downEmptyPoint.vue')
@@ -58,7 +59,6 @@ const mapMessage = () => import('../components/common/mapMessage.vue')
 
 //超级运营
 const adminIndex = () => import('../components/superOperate/superOperate_index.vue')
-const ADlimitList = () => import('../components/superOperate/ADlimitList.vue')
 const superOperateCommon = () => import('../components/superOperate/superOperateCommon.vue')
 const dataAnalysis = () => import('../components/superOperate/dataAnalysis.vue')
 const communityPortrait = () => import('../components/superOperate/communityPortrait')
@@ -138,6 +138,7 @@ export default new Router({
                 {path: '/admin/mediaDetail', component: mediaDetail},
                 {path: '/admin/companyList', component: companyList},
                 {path: '/admin/myInfo', component: myInfo},
+                {path: '/admin/ADlimitList', component: ADlimitList},
             ]
         },
         //超级运营
@@ -146,7 +147,6 @@ export default new Router({
             component: superOperateCommon,
             children: [
                 {path: '/superOperate', component: adminIndex},
-                {path: '/superOperate/ADlimitList', component: ADlimitList},
                 // {path: '/superOperate/mediaInput', component: mediaInput},
                 {path: '/superOperate/mediaList', component: mediaList},
                 {path: '/superOperate/mediaDetail', component: mediaDetail},

@@ -1839,6 +1839,10 @@
             },
             // 打开绘制类型
             drawingMouse(temp) {
+                if(this.isOnlineSearch) {
+                    sessFun.messageFun('warning','当前为周边选点状态，请取消后再进行其它绘制操作！')
+                    return
+                }
                 if(this.isMultiPoint && temp !== 'polyline') {
                     sessFun.messageFun('warning','当前为多点辐射状态，请取消后再进行其它绘制操作！')
                     return
@@ -2166,7 +2170,7 @@
                             pageCapacity: 100
                         };
                         let local = new BMap.LocalSearch(this.resMap,options)
-                        local.search(this.$route.query.city || this.adListParams.city + query)
+                        local.search((this.$route.query.city || this.adListParams.city) + query)
                     }
 
                 } else {
@@ -2773,7 +2777,6 @@
                     this.searchLoading = false
                     this.hideOnlineMarker()
                     clearTimeout(timer)
-                    this.isMultiPoint = true
                 },10)
             },
             // 并集显示圆半径内的小区

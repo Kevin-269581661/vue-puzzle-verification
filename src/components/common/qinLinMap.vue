@@ -48,7 +48,7 @@
                         <p>
                             <span class="li_p_span">{{item.districtName}}</span>
                             <span class="li_p_span">{{item.hNum || '--'}}户</span>
-                            <span class="li_p_span">&yen;{{item.hPrice / 100}}/m<sup>2</sup></span>
+                            <span class="li_p_span">&yen;{{item.hPrice / 100}}/m&sup2</span>
                             <span class="li_p_span" style="margin-right: 0">{{item.chDay}}年</span>
                         </p>
                     </li>
@@ -190,7 +190,7 @@
                         <el-button type="primary" class="popover_btn" @click="filterHouseNum()" >确 定</el-button>
                     </div>
                 </div>
-                <el-button plain slot="reference" class="otherBtn top_btn" :class="filterData.hNum ? 'filter_btn' : ''">
+                <el-button v-show="showMore" plain slot="reference" class="otherBtn top_btn" :class="filterData.hNum ? 'filter_btn' : ''">
                     {{filterData.hNum ? (houseNum[0] + '户-' + houseNum[1]) + '户' : '住户数量'}}
                     <i class="el-icon-arrow-down icon_arrow" v-show="!popoverShow.hNum"></i>
                     <i class="el-icon-arrow-up icon_arrow" v-show="popoverShow.hNum"></i>
@@ -219,7 +219,7 @@
                         </el-button>
                     </div>
                 </div>
-                <el-button plain slot="reference" class="otherBtn top_btn" :class="filterData.lYear ? 'filter_btn' : ''">
+                <el-button v-show="showMore" plain slot="reference" class="otherBtn top_btn" :class="filterData.lYear ? 'filter_btn' : ''">
                     {{filterData.lYear ? (liveYear[0] + '-' + liveYear[1]) : '入住年份'}}
                     <i class="el-icon-arrow-down icon_arrow" v-show="!popoverShow.lYear"></i>
                     <i class="el-icon-arrow-up icon_arrow" v-show="popoverShow.lYear"></i>
@@ -728,7 +728,8 @@
                         :data="shopShowList"
                         row-key='id'
                         @selection-change="shopRowClick"
-                        style="width: 100%">
+                        max-height="500"
+                        style="width: 100%; overflow-y: auto;">
                         <el-table-column
                             type="selection"
                             :reserve-selection="true"
@@ -1166,11 +1167,15 @@
             currentAreaArr: function(){
                 // val[0]: 省，val[1]: 市
                 let val = this.citySelect;
+                let res = []
                 if(this.areaList.length>0 && this.citySelect.length == 2) {
-                    return this.areaList.find(item=>item.value == val[0]).children.find(item=>item.value == val[1]).children;
-                } else {
-                    return []
+                    let city = this.areaList.find(item=>item.value == val[0]);
+                    if(city) {
+                        let  Area = city.children.find(item=>item.value == val[1]);
+                        Area && (res = Area.children);
+                    }
                 }
+                return res
             }
         },
         methods:{
@@ -2421,9 +2426,9 @@
                 };
                 let local = new BMap.LocalSearch(this.resMap, options);
                 if(this.systemSource === 0) {
-                    local.search(this.routeQuery.city + this.selectName);
+                    local.search(`${this.routeQuery.city} ${this.selectName}`);
                 } else if(this.systemSource === 1) {
-                    local.search(this.adListParams.city + this.selectName);
+                    local.search(`${this.adListParams.city} ${this.selectName}`);
                 }
             },
             // 在线结果打点
@@ -3019,11 +3024,13 @@
                         this.selectArea = []
                         if(this.dialogCity == false && this.adListParams.city) {
                             // 移动地图
-                            let storageMapParams = JSON.parse(localStorage.getItem('mapParams'))
-                            storageMapParams.rid = this.adListParams.rid
-                            storageMapParams.city = this.adListParams.city
+                            let storageMapParams = JSON.parse(localStorage.getItem('mapParams'));
+                            storageMapParams.rid = this.adListParams.rid;
+                            storageMapParams.city = this.adListParams.city;
+                            // 保留城市id,用已填充刷新时的城市筛选
+                            val[0] && (storageMapParams.provinceId = val[0]);
                             localStorage.setItem('mapParams', JSON.stringify(storageMapParams));
-                            this.resMap.setCurrentCity(this.adListParams.city)
+                            this.resMap.setCurrentCity(this.adListParams.city);
                             this.resMap.centerAndZoom(this.adListParams.city, 11);
                             this.transfersFun()
                         }
@@ -3501,6 +3508,8 @@
                             this.shopShowList.forEach(row => {
                                 if(this.adListParams.selectedList.some(item=>item.id === row.id)) {
                                     this.$refs.mapMultipleTable.toggleRowSelection(row, true);
+                                } else {
+                                    this.$refs.mapMultipleTable.toggleRowSelection(row, false);
                                 }
                             })
                         })
@@ -3523,7 +3532,7 @@
                     if(len > 0) {
                         // 排除同行所在点位
                         this.shopShowList.forEach((item) => {
-                            if(!(item.industryIdList || []).includes(this.adListParams.adSystemId[this.adListParams.adSystemId.length-1])) {
+                            if((item.industryIdList || []).includes(this.adListParams.adSystemId[this.adListParams.adSystemId.length-1])) {
                                 this.$refs.mapMultipleTable.toggleRowSelection(item, false);
                             }
                         })
@@ -3536,7 +3545,13 @@
                     let len = this.shopShowList.length;
                     let resultArr = this.funToArr(this.shopShowList, 'communityId');
                     resultArr = this.resRandomNum(resultArr, num);
-                    this.shopShowList = resultArr;
+                    this.shopShowList.forEach((item) => {
+                        if(resultArr.some(resItem => item.id === resItem.id)) {
+                            this.$refs.mapMultipleTable.toggleRowSelection(item, true);
+                        } else {
+                            this.$refs.mapMultipleTable.toggleRowSelection(item, false);
+                        }
+                    })
                     if (resultArr.length) {
                         // this.getResultData(resultArr);
                         if (len != resultArr.length) {
@@ -3765,6 +3780,8 @@
         cursor: pointer;
         display: inline-block;
         width: 100%;
+        font-size: 16px;
+        color: #000000d9;
     }
 
     .li_name_span{
@@ -3788,7 +3805,7 @@
     }
 
     .li_name_span_active{
-        color: #D9D9D9;
+        color: #909399;
         border:1px solid rgba(217,217,217,1)
     }
 
@@ -3813,7 +3830,7 @@
         padding: 2px 6px;
         background:rgba(0,0,0,0.06);
         border-radius: 2px;
-        margin-right: 2px;
+        margin-right: 6px;
         color:rgba(0,0,0,0.35);
         font-size: 12px;
     }
@@ -4029,9 +4046,12 @@
 
     .top_filter_box /deep/ .el-button.top_filter_btn{
         min-width: 72px;
-        margin-left: 0;
         border: none;
         box-shadow:0px 0px 8px 0px rgba(0,0,0,0.12);
+    }
+    .top_filter_box /deep/ .el-button--small {
+        font-size: 14px;
+        color: #000000a6;
     }
 
     /*  底部选中 */
@@ -4117,12 +4137,12 @@
     }
 
     .active_bottom_btn /deep/ .el-button{
-        margin-left: 32px;
+        margin-left: 22px;
         min-width: 64px;
     }
 
     .active_bottom_btn span{
-        margin-left: 8px;
+        margin-left: 18px;
         cursor:pointer;
     }
 
@@ -4238,7 +4258,7 @@
         position: fixed;
         bottom: 24px;
         right: 24px;
-        width: 370px;
+        width: 400px;
     }
 
     .action-box {
@@ -4254,7 +4274,7 @@
     .more_nav {
         position: fixed;
         bottom: 24px;
-        right: 504px;
+        right: 440px;
         width: 90px;
         height: 32px;
     }
@@ -4275,7 +4295,7 @@
         position: fixed;
         display: block;
         bottom: 24px;
-        right: 402px;
+        right: 546px;
         width: 96px;
         height: 32px;
         line-height: 32px;
@@ -4285,11 +4305,11 @@
 
     .switch_box{
         float: left;
-        width: 26%;
+        width: 24%;
         height: 32px;
         background: #fff;
         text-align: center;
-        margin-right: 2%;
+        margin-right: 4%;
         border-radius:4px;
         font-size: 14px;
         color: rgba(0,0,0,0.65);
@@ -4298,7 +4318,7 @@
     }
 
     .scale_control {
-        width: 35%;
+        width: 34%;
         height: 20px;
         background: #fff;
         box-sizing: content-box;
@@ -4344,10 +4364,10 @@
     }
 
     .mouse_control {
-        width: 35%;
+        width: 34%;
         height: 32px;
         float: left;
-        margin-right: 2%;
+        margin-right: 4%;
         background: #fff;
         box-shadow:0px 0px 8px 0px rgba(0,0,0,0.12);
         border-radius:4px;

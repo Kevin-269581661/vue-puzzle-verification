@@ -166,7 +166,7 @@
                                         </template>
                                     </el-table-column>
                                     <el-table-column prop="timeRange" label="排期" min-width="14.2%"
-                                                     :filters="filtersData" :filter-method="filterTimeRange">
+                                                     :filters="scheduleList" :filter-method="filterTimeRange">
                                         <template slot-scope="scope">
                                             <template v-if="scope.row.lState==2">
                                                 <span>{{scope.row.finishTimeRange}}</span>
@@ -607,6 +607,8 @@
                 filterCityData: [],
                 // 地区过滤结果
                 filtersArea: [],
+                // 当前计划排期区间列表
+                scheduleList: [],
                 // 排期时间过滤
                 filtersData: [],
                 //选点排期资源名称搜索
@@ -729,6 +731,7 @@
                 this.changePoint();
             } else {
                 this.getSetPoint();
+                this.getScheduleList()
             }
             // 根据角色判断是否有修改合同编号的权限
             this.getRole();
@@ -1214,6 +1217,24 @@
                         this.loading = false;
                         this.maLoading = false;
                         console.log(res);
+                    });
+            },
+            // 获取当前用户所有的排期区间列表
+            getScheduleList() {
+                let apID = sessionStorage.getItem("order_apid");
+                let info = {
+                    apID
+                };
+                api.getApi(this.apiVar.Advertisement + "/GetAdLaunchDateList", info)
+                    .then(res => {
+                        console.log(res.data);
+                        if (res.data.SysCode == 200200) {
+                            this.scheduleList = (res.data.data || []).map(item=>{return {text: item, value: item}})
+                        } else {
+                            Message.warning(res.data.MSG);
+                        }
+                    })
+                    .catch(res => {
                     });
             },
             //获取选点排期

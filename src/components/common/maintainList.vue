@@ -66,7 +66,7 @@
                                    v-qadn-mta-h5="{id: 'a003_b000_c000_d000_bt034_ck01'}">搜索
                         </el-button>
                         <el-button @click="reset()" v-qadn-mta-h5="{id: 'a003_b000_c000_d000_bt035_ck02'}">重置</el-button>
-                        <!--<el-button @click="downLoad()">一键导出</el-button>-->
+                        <el-button @click="downLoad()">一键导出</el-button>
                     </el-col>
                 </el-row>
 
@@ -817,7 +817,38 @@
             },
             // 导出
             downLoad() {
-                Message.warning("该功能尚未完善");
+                let session = this.sessionData;
+                let info = {
+                    uid: session.uID,
+                    token: session.token,
+                };
+                let {resName, assetTag, type, districtId, status, date, userId} = this.searchInfo;
+                let params = {
+                    ...info,
+                    ...(districtId && {cityId: districtId[0]}),
+                    ...(districtId.length > 1 && {districtId: districtId[1]}),
+                    ...(type && {type: type}),
+                    ...(assetTag && {assetTag: assetTag}),
+                    ...(resName && {resName: resName}),
+                    ...(status && {status: status}),
+                    ...(date && {startTime: timeFormat.toDate(date[0], '-'), endTime: timeFormat.toDate(date[1], '-')}),
+                    ...(userId && {userId: userId}),
+                };
+                api.getApi_file('/mediaService/exportRMList', params).then(res => {
+                    let blob = new Blob([res.data], {type: 'application/ms-download;charset=utf-8'});
+                    let downloadElement = document.createElement('a');
+                    let href = window.URL.createObjectURL(blob);    //创建下载的链接
+                    downloadElement.href = href;
+                    downloadElement.download = '维护记录-' + new Date().getFullYear() + (new Date().getMonth() + 1) + new Date().getDate() + new Date().getHours() + new Date().getMinutes() + new Date().getSeconds() + '.xls'; //下载后文件名
+                    document.body.appendChild(downloadElement);
+                    downloadElement.click();                        //点击下载
+                    document.body.removeChild(downloadElement);     //下载完成移除元素
+                    window.URL.revokeObjectURL(href);               //释放掉blob对象
+                    // if (res.data.SysCode == 200200) {
+                    // } else {
+                    //     Message.warning(res.data.MSG);
+                    // }
+                });
             },
             // 重置
             reset() {

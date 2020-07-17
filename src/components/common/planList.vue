@@ -172,10 +172,13 @@
                                                           :disabled="isDisable||(scope.row.apState!==1|| (scope.row.apState==1 && !scope.row.unLock))"
                                                           v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt045_ck04'}">解除预锁
                                         </el-dropdown-item>
-                                        <el-dropdown-item @click.native.prevent="splitAdPlan(scope.row)"
-                                                          v-if="scope.row.apControlLevel === 2 && sessionData.uType === 'BD'">
+                                        <el-dropdown-item @click.native.prevent="splitAdPlan(scope.row)">
                                             拆单
                                         </el-dropdown-item>
+                                        <!-- <el-dropdown-item @click.native.prevent="splitAdPlan(scope.row)"
+                                                          v-if="scope.row.apControlLevel === 2 && sessionData.uType === 'BD'">
+                                            拆单
+                                        </el-dropdown-item> -->
                                     </el-dropdown-menu>
                                 </el-dropdown>
                             </template>
@@ -1075,6 +1078,23 @@
             },
             // KA方案拆分
             splitAdPlan(row) {
+                this.$confirm('该方案中的XX市-XX小区-XXX点位已被当地删除，请确认当前的点位信息与数量，是否确定拆单？', '确认拆单', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    // 方案拆单
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消拆单'
+                    });          
+                });
+                return
                 let params = {
                     apID: row.apID
                 }

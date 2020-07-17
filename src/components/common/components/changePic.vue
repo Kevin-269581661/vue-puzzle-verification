@@ -941,10 +941,11 @@
                             console.log(res.data);
                             let dataInfo = res.data;
                             if (dataInfo.totalCount == 0) {
-                                sessFun.messageFun('warning', '暂无数据');
+                                sessFun.messageFun('warning', `${params.mVehicle || ''}暂无数据`);
                             }else{
-                                this.getImgCount()
+                                // this.getImgCount()
                             }
+                            this.getImgCount()
                             let percent = dataInfo.totalCount ? Number(((dataInfo.hasPhotoCount / dataInfo.totalCount) * 100).toFixed(2)) : 0;
                             this.pageInfo = {
                                 ...this.pageInfo,

@@ -54,7 +54,7 @@
                     </li>
                 </ul>
                 <div class="search_bottom_btn">
-                    <el-button plain size="small" v-if="isOnlineSearch&&userInfo.rela=='直营'" @click="getCoverAnalysis">
+                    <el-button plain size="small" v-if="isOnlineSearch&&sessionData.rela=='直营'" @click="getCoverAnalysis">
                         覆盖分析
                     </el-button>
                     <el-button type="primary" size="small" @click="selectAllFun" :loading="addAllLoading">
@@ -327,7 +327,7 @@
                 <span @click="resShare" v-if="isCommit"><i class="el-icon-share"></i>分享</span>
                 <span @click="exportExcel"><i class="el-icon-download"></i>下载</span>
                 <span @click="deleteAll"><i class="el-icon-delete"></i>清空</span>
-                <el-button type="primary" size="small" @click="pushMapRes" v-if="isCommit">选定</el-button>
+                <el-button type="primary" size="small" @click="pushMapRes" v-if="isCommit" :loading="pullPoints">选定</el-button>
             </div>
         </div>
         <!--更多功能-->
@@ -487,7 +487,7 @@
             custom-class="map_dialog">
             <div class="around_search_body">
                 <div>
-                    <span class="p_span">框选方式：</span>
+                    <!-- <span class="p_span">框选方式：</span> -->
                     <div>
                         <el-radio v-model="aroundSearchInfo.searchRadio" :label="1">辐射圈并集</el-radio>
                         <el-popover
@@ -516,11 +516,11 @@
                     </div>
                 </div>
                 <div>
-                    <span class="p_span">框选范围：</span>
-                    <el-slider class="p_slider" v-model="aroundSearchInfo.searchRadius"></el-slider>
-                    <el-input class="radius_input" placeholder="请输入半径" size="small"
+                    <span class="p_span">框选半径：</span>
+                    <el-slider :step="0.5" :max="20" :show-input="true" class="p_slider" input-size="mini" v-model="aroundSearchInfo.searchRadius"></el-slider>
+                    <!-- <el-input class="radius_input" placeholder="请输入半径" size="small"
                               @change="changeInput"
-                              v-model="aroundSearchInfo.searchRadius"></el-input>
+                              v-model="aroundSearchInfo.searchRadius"></el-input> -->
                     <span>km</span>
                 </div>
             </div>
@@ -729,7 +729,7 @@
                         row-key='id'
                         @selection-change="shopRowClick"
                         max-height="500"
-                        style="width: 100%; overflow-y: auto;">
+                        style="width: 100%;">
                         <el-table-column
                             type="selection"
                             :reserve-selection="true"
@@ -863,13 +863,13 @@
             return{
                 systemSource: mapConfig.system,
                 citySelect: [],
-                userInfo:'',
+                // userInfo:'',
                 // 路由参数
                 routeQuery:{},
                 // 获取资源到参数
                 adListParams: {},
                 // 登录信息
-                sessionData: JSON.parse(sessionStorage.getItem(mapConfig.userInfo)), // sessFun.getSess(),
+                sessionData: JSON.parse(sessionStorage.getItem(mapConfig.userInfo)) || {}, // sessFun.getSess(),
                 // 判断来源
                 isShare: false,
                 // 当前地图资源是否可提交
@@ -1095,6 +1095,8 @@
                 showNavBox: true,
                 // 已选点位弹框
                 dialogTableVisible: false,
+                // 选定按钮防止双击，添加加载状态
+                pullPoints: false,
                 // 快速选点下拉选中值
                 eventType: '',
                 // 已选点位表格数据源
@@ -1118,7 +1120,7 @@
             }
         },
         mounted() {
-            this.userInfo = JSON.parse(sessionStorage.getItem(mapConfig.userInfo))
+            // this.userInfo = JSON.parse(sessionStorage.getItem(mapConfig.userInfo))
             this.getSessionData()
             window.onload = this.initMap();
             if(this.$route.path.includes('shareRes')) {
@@ -1817,14 +1819,16 @@
                             that.$set(label,'lineIndex',that.lineIndex)
                             that.resMap.addOverlay(label)
                             that.mouseType.polyline = false
-                            // console.log('label----',label)
                             label.addEventListener("click", (ev) => {
+                                // 移除本次绘制的线条
                                 that.resMap.removeOverlay(e.overlay)
                                 for (let key of that.lineMarkers) {
                                     if (ev.target.lineIndex === key.lineIndex) {
+                                        // 移除该次绘制的标注
                                         that.resMap.removeOverlay(key)
                                     }
                                 }
+                                // 移除当前label（关闭）
                                 that.resMap.removeOverlay(ev.target)
                             });
                         }
@@ -2019,11 +2023,24 @@
                     clearTimeout(timer)
                 }, 20)
             },
+            // 清除手动测距覆盖物
+            deleteManualRanging() {
+                this.lineMarkers.forEach(item => {
+                    this.resMap.removeOverlay(item);
+                })
+                let allOverlay = this.resMap.getOverlays();
+                for (let akey of allOverlay) {
+                    if (akey.content == '关闭') {
+                        this.resMap.removeOverlay(akey);
+                    }
+                }
+            },
             // 清除上一次的绘制
             deleteDrawingOverlay() {
                 console.log('--清除上一次的绘制--',this.resMarkers);
                 this.resMap.removeOverlay(this.mouseoverlay);
                 this.resMap.removeOverlay(this.circleLabel);
+                this.deleteManualRanging()
                 this.searchResList = [];
                 this.transfersShowOverlay()
             },
@@ -2279,6 +2296,7 @@
                         this.activeSearchKind = '1'
                         // 辐射点打点、画圆
                         this.setMultiPointMarker(params.centerInfoList)
+                        this.judgeByselect()
                         this.isMoreCenterPointVisible = false
                         if (!this.resInfo.length) {
                             sessFun.messageFun('warning', '暂无匹配数据')
@@ -2523,10 +2541,17 @@
                     for(let key of this.searchResList) {
                         if(!key.isSelect) {
                             key.isSelect = true
-                            this.selectResList.push(key)
-                            // this.createCircle(key.resID, new BMap.Point(key.lng, key.lat))
-                            this.changeLabel(key,1);
-                            this.judgeMarkerShow(key.lng,key.lat)
+                            let isHave = this.selectResList.some(item=>{
+                                if(key.resID == item.resID) {
+                                    return true
+                                }
+                            })
+                            if(!isHave) {
+                                this.selectResList.push(key)
+                                // this.createCircle(key.resID, new BMap.Point(key.lng, key.lat))
+                                this.changeLabel(key,1);
+                                this.judgeMarkerShow(key.lng,key.lat)
+                            }
                         }
                     }
                     this.addAllLoading = false
@@ -2753,6 +2778,7 @@
                 // console.log('---------周边搜索------开始---------')
                 this.searchLoading = true;
                 this.initSearchOnline();
+                this.deleteManualRanging();
                 this.removeAreaLabels();
                 let timer = setTimeout(()=>{
                     this.searchResList = []
@@ -3276,8 +3302,10 @@
                     params.playSecond = this.adListParams.playSecond;
                     params.playCount = this.adListParams.playCount;
                 }
+                this.pullPoints = true;
                 api.postApi_json(mapConfig.apiVar.mapApi + '/adsList',params).then(res=>{
                     if(res.data.SysCode === 200200) {
+                        this.pullPoints = false
                         // localStorage.setItem('qinlinMapCode',res.data.data)
                         if(this.systemSource === 0) {
                             this.mapDialogVisible = true
@@ -3285,9 +3313,11 @@
                             this.getMapADList()
                         }
                     } else {
+                        this.pullPoints = false
                         sessFun.messageFun('warning', res.data.MSG || '小区提交失败')
                     }
                 }).catch(err=>{
+                    this.pullPoints = false
                     sessFun.messageFun('warning','小区提交异常')
                 })
             },
@@ -3668,7 +3698,9 @@
         left: 32px;
         box-shadow:0px 0px 8px 0px rgba(0,0,0,0.12);
     }
-
+    /deep/ .el-input-number__decrease:hover, .el-input-number__increase:hover {
+        color: unset !important;
+    }
     /deep/ .el-input__inner{
         border: none;
         border-left: 1px solid rgba(232,232,232,1);

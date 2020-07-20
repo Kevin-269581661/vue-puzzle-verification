@@ -3357,6 +3357,7 @@
                     rid: this.activeCityData.rid,
                     ls: this.dateInput[0],
                     le: this.dateInput[1],
+                    adSystemId: [this.industryID],
                     suID: this.BDData.uid,
                 }));
                 let url = '';
@@ -4883,7 +4884,6 @@
             // 打开购物车则计算连排门信息
             computeConnectAdData() {
                 let date1 = new Date();
-                console.log('this.industryID', this.industryID)
                 let shopData = this.shopingList
                 let shopDataLength = shopData.length
                 for (let i = 0; i < shopDataLength; i++) {

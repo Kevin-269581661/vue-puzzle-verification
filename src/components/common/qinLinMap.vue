@@ -517,10 +517,12 @@
                 </div>
                 <div>
                     <span class="p_span">框选半径：</span>
-                    <el-slider :step="0.5" :max="20" :show-input="true" class="p_slider" input-size="mini" v-model="aroundSearchInfo.searchRadius"></el-slider>
+                    <el-slider :step="0.5" :max="20" class="p_slider" v-model="aroundSearchInfo.searchRadius"></el-slider>
+                    <!-- <el-slider :step="0.5" :max="20" :show-input="true" class="p_slider" input-size="mini" input-controls-position="right" v-model="aroundSearchInfo.searchRadius"></el-slider> -->
                     <!-- <el-input class="radius_input" placeholder="请输入半径" size="small"
                               @change="changeInput"
                               v-model="aroundSearchInfo.searchRadius"></el-input> -->
+                    <el-input-number class="custom-input-num" size="mini" v-model="aroundSearchInfo.searchRadius" controls-position="right" :step="0.5" :min="1" :max="20"></el-input-number>
                     <span>km</span>
                 </div>
             </div>
@@ -3902,6 +3904,7 @@
 
     .around_search_body >div{
         display: flex;
+        align-items: center;
         margin-bottom:16px;
     }
 
@@ -3921,6 +3924,25 @@
 
     .p_slider /deep/ .el-slider__runway{
         margin: 6px 0;
+    }
+
+    .p_slider /deep/ .el-slider__input {
+        width: 86px;
+    }
+
+    .custom-input-num {
+        width: 60px;
+        margin: 0 4px 0 12px;
+    }
+
+    /deep/ .el-input-number--mini .el-input-number__decrease, /deep/ .el-input-number--mini .el-input-number__increase {
+        width: 22px;
+    }
+
+    /deep/ .el-input-number.is-controls-right .el-input__inner {
+        border: 1px solid #dcdfe6;
+        padding-left: 0px !important;
+        padding-right: 22px !important;
     }
 
     .radius_input{
@@ -3952,13 +3974,13 @@
     }
 
     .top_filter_box /deep/ .el-select{
-        width: 145px;
+        width: 164px;
         margin-bottom: 8px;
         box-shadow:0px 0px 8px 0px rgba(0,0,0,0.12)
     }
 
     .top_filter_box /deep/ .el-cascader{
-        width: 145px;
+        width: 164px;
         margin-bottom: 8px;
         box-shadow:0px 0px 8px 0px rgba(0,0,0,0.12)
     }
@@ -4008,7 +4030,7 @@
         border-radius: 4px;
         color:rgba(0,0,0,0.35);
         min-width: 110px;
-        width: 145px;
+        width: 164px;
         margin-bottom: 8px;
         box-shadow:0px 0px 8px 0px rgba(0,0,0,0.12);
         border: none;
@@ -4173,6 +4195,10 @@
         min-width: 64px;
     }
 
+    .active_bottom_btn span:first-child {
+        margin-left: 8px;
+    }
+
     .active_bottom_btn span{
         margin-left: 18px;
         cursor:pointer;
@@ -4306,7 +4332,7 @@
     .more_nav {
         position: fixed;
         bottom: 24px;
-        right: 440px;
+        right: 552px;
         width: 90px;
         height: 32px;
     }
@@ -4327,7 +4353,7 @@
         position: fixed;
         display: block;
         bottom: 24px;
-        right: 546px;
+        right: 440px;
         width: 96px;
         height: 32px;
         line-height: 32px;

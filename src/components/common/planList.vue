@@ -172,13 +172,10 @@
                                                           :disabled="isDisable||(scope.row.apState!==1|| (scope.row.apState==1 && !scope.row.unLock))"
                                                           v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt045_ck04'}">解除预锁
                                         </el-dropdown-item>
-                                        <el-dropdown-item @click.native.prevent="splitAdPlan(scope.row)">
-                                            拆单
-                                        </el-dropdown-item>
-                                        <!-- <el-dropdown-item @click.native.prevent="splitAdPlan(scope.row)"
+                                        <el-dropdown-item @click.native.prevent="splitAdPlan(scope.row)"
                                                           v-if="scope.row.apControlLevel === 2 && sessionData.uType === 'BD'">
                                             拆单
-                                        </el-dropdown-item> -->
+                                        </el-dropdown-item>
                                     </el-dropdown-menu>
                                 </el-dropdown>
                             </template>
@@ -1076,36 +1073,57 @@
                 });
 
             },
-            // KA方案拆分
-            splitAdPlan(row) {
-                this.$confirm('该方案中的XX市-XX小区-XXX点位已被当地删除，请确认当前的点位信息与数量，是否确定拆单？', '确认拆单', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    // 方案拆单
-                    this.$message({
-                        type: 'success',
-                        message: '删除成功!'
-                    });
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消拆单'
-                    });          
-                });
-                return
+            // 检查当前拆分方案是否有点位被删除
+            checkPoin(row) {
                 let params = {
                     apID: row.apID
                 }
-                api.getApi(this.apiVar.Advertisement + '/SplitAdPlan', params).then(res => {
-                    console.log('方案拆分res', res)
-                    if (res.data.SysCode === 200200) {
-                        sessFun.messageFun('success', '拆分成功')
-                        this.searchFun()
-                    } else {
-                        sessFun.messageFun('warning', res.data.MSG || '方案异常')
+                return new Promise((resolve, reject) => {
+                    api.getApi(this.apiVar.Advertisement + '/BeforeSplitAdPlanCheck', params).then(res => {
+                        console.log('检查点位是否被占用', res)
+                        if (res.data.SysCode === 200200) {
+                            resolve(true)
+                        } else if (res.data.SysCode === 200500) {
+                            this.$confirm(`${res.data.data}`, '确认拆单', {
+                                confirmButtonText: '确定',
+                                cancelButtonText: '取消',
+                                type: 'warning'
+                            }).then(() => {
+                                // 方案拆单
+                                resolve(true)
+                            }).catch(() => {
+                                this.$message({
+                                    type: 'info',
+                                    message: '已取消拆单'
+                                });
+                                resolve(false)
+                            });
+                        } else {
+                            sessFun.messageFun('warning', res.data.MSG || '检查占用点位异常')
+                            resolve(false)
+                        }
+                    })
+                }).catch(() => resolve(false))
+            },
+            // KA方案拆分
+            splitAdPlan(row) {
+                this.checkPoin(row).then(res=>{
+                    if(res === true) {
+                        let params = {
+                            apID: row.apID
+                        }
+                        api.getApi(this.apiVar.Advertisement + '/SplitAdPlan', params).then(res => {
+                            console.log('方案拆分res', res)
+                            if (res.data.SysCode === 200200) {
+                                sessFun.messageFun('success', '拆分成功')
+                                this.searchFun()
+                            } else {
+                                sessFun.messageFun('warning', res.data.MSG || '方案异常')
+                            }
+                        })
                     }
+                }).catch(error=> {
+
                 })
             },
             cancelLock() {

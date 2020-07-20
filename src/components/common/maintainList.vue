@@ -818,13 +818,12 @@
             // 导出
             downLoad() {
                 let session = this.sessionData;
-                let info = {
-                    uid: session.uID,
-                    token: session.token,
-                };
+                // let info = {
+                //     uid: session.uID,
+                //     token: session.token,
+                // };
                 let {resName, assetTag, type, districtId, status, date, userId} = this.searchInfo;
                 let params = {
-                    ...info,
                     ...(districtId && {cityId: districtId[0]}),
                     ...(districtId.length > 1 && {districtId: districtId[1]}),
                     ...(type && {type: type}),
@@ -834,7 +833,7 @@
                     ...(date && {startTime: timeFormat.toDate(date[0], '-'), endTime: timeFormat.toDate(date[1], '-')}),
                     ...(userId && {userId: userId}),
                 };
-                api.getApi_file('/mediaService/exportRMList', params).then(res => {
+                api.getApi_file('/mediaService/api/v2/exportRMList', params).then(res => {
                     let blob = new Blob([res.data], {type: 'application/ms-download;charset=utf-8'});
                     let downloadElement = document.createElement('a');
                     let href = window.URL.createObjectURL(blob);    //创建下载的链接

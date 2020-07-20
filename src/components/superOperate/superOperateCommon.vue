@@ -37,7 +37,7 @@
             <el-submenu index="7" :show-timeout="80" popper-class="submenu">
                 <template slot="title">系统管理</template>
                 <el-menu-item index="/superOperate/accountList">账号管理</el-menu-item>
-                <el-menu-item index="/superOperate/ADlimitList">广告限制</el-menu-item>
+                <!-- <el-menu-item index="/superOperate/ADlimitList">广告限制</el-menu-item> -->
                 <el-menu-item index="/superOperate/publishPriceList">刊例价</el-menu-item>
             </el-submenu>
             <el-submenu index="10" :show-timeout="80" popper-class="submenu two-word-submenu">

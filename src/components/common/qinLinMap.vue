@@ -488,7 +488,7 @@
             <div class="around_search_body">
                 <div>
                     <!-- <span class="p_span">框选方式：</span> -->
-                    <div>
+                    <!-- <div>
                         <el-radio v-model="aroundSearchInfo.searchRadio" :label="1">辐射圈并集</el-radio>
                         <el-popover
                             placement="top"
@@ -500,8 +500,8 @@
                             </div>
                             <i slot="reference" class="el-icon-question" style="color: #dfdfdf;margin-right: 12px"></i>
                         </el-popover>
-                    </div>
-                    <div>
+                    </div> -->
+                    <!-- <div>
                         <el-radio v-model="aroundSearchInfo.searchRadio" :label="2">辐射圈交集</el-radio>
                         <el-popover
                             placement="top"
@@ -513,7 +513,7 @@
                             </div>
                             <i slot="reference" class="el-icon-question" style="color: #dfdfdf"></i>
                         </el-popover>
-                    </div>
+                    </div> -->
                 </div>
                 <div>
                     <span class="p_span">框选半径：</span>
@@ -2385,6 +2385,10 @@
                     sessFun.messageFun('warning','请输入关键字！')
                     return
                 }
+                // 仍在加载中返回
+                if(this.searchOnlineLoading) {
+                    return
+                }
                 if(this.activeSearchKind == '1') {
                     // 亲邻社区搜索
                     this.searchResList = this.resInfo.filter((item,index) => {
@@ -2795,11 +2799,13 @@
                             strokeOpacity: 1
                         });
                         this.resMap.addOverlay(circle);
-                        if(this.aroundSearchInfo.searchRadio == 1) {
+                        // 只做并集查询
+                        this.showResInCircle(key, radius)
+                        /* if(this.aroundSearchInfo.searchRadio == 1) {
                             this.showResInCircle(key, radius)
                         } else if (this.aroundSearchInfo.searchRadio == 2) {
                             this.ShowIntersectionInCircle(key, radius)
-                        }
+                        } */
                         this.searchDialogVisible = false
                     }
                     if(this.aroundSearchInfo.searchRadio == 2) {

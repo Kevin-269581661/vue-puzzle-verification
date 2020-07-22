@@ -1899,7 +1899,7 @@
             // 画线时打点
             drawingLine(point) {
                 console.log('画线时打点----')
-                let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(39,25),{
+                let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(19,25),{
                     anchor: new BMap.Size(8, 8)
                 });
                 let marker = new BMap.Marker(point,{icon:myIcon});  // 创建标注
@@ -2257,7 +2257,7 @@
                     params.playSecond = this.adListParams.playSecond;
                     params.playCount = this.adListParams.playCount;
                 }
-                let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(39,25),{
+                let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(19,25),{
                     anchor: new BMap.Size(8, 8)
                 });
                 api.postApi_json(mapConfig.apiVar.mapApi + '/multiPointAnalyze',params).then(res=>{

@@ -1551,7 +1551,7 @@
             creatAreaMarker() {
                 this.resInfo = []
                 let markerList = [];
-                let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(39,25),{
+                let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(19,25),{
                     anchor: new BMap.Size(8, 8)
                 });
                 let lableList = []

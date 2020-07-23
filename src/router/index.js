@@ -312,7 +312,8 @@ export default new Router({
                 {path: '/f_engineer/myInfo', component: myInfo},
                 {path: '/f_engineer/orderDetail', component: orderDetail},
                 {path: '/f_engineer/messageList', name: 'messageList', component: messageList},
-                {path: '/f_engineer/questionAndAnswer', component: questionAndAnswer}
+                {path: '/f_engineer/questionAndAnswer', component: questionAndAnswer},
+                {path: '/f_engineer/maintainList', component: maintainList},
             ]
         },
         //404

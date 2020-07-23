@@ -16,6 +16,7 @@
                 </div>
             </el-menu-item>
             <el-menu-item index="/f_engineer/orderList">首页</el-menu-item>
+            <el-menu-item index="/f_engineer/maintainList">媒体维护</el-menu-item>
             <el-submenu index="9" class="user_center" :show-timeout="80">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">

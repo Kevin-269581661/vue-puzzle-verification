@@ -4187,6 +4187,9 @@
     }
 
     .active_bottom_btn {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
         padding: 0 8px;
         font-weight:400;
         color:rgba(0,0,0,0.65);
@@ -4197,16 +4200,16 @@
     }
 
     .active_bottom_btn /deep/ .el-button{
-        margin-left: 22px;
+        /* margin-left: 22px; */
         min-width: 64px;
     }
 
     .active_bottom_btn span:first-child {
-        margin-left: 8px;
+        /* margin-left: 8px; */
     }
 
     .active_bottom_btn span{
-        margin-left: 18px;
+        /* margin-left: 18px; */
         cursor:pointer;
     }
 

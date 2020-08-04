@@ -2176,14 +2176,22 @@
                                     // console.log(results.getPoi);
                                     for (let i = 0; i < results.getCurrentNumPois(); i++) {
                                         //在当前页面下获取页面中的内容
-                                        resultArray.push({
-                                            id: results.getPoi(i).uid,
-                                            title: results.getPoi(i).title,
-                                            address: results.getPoi(i).address,
-                                            city: results.getPoi(i).city,
-                                            province: results.getPoi(i).province,
-                                            point: results.getPoi(i).point,
-                                        })
+                                        let tempPoi = results.getPoi(i);
+                                        if(tempPoi) {
+                                            try {
+                                                //在当前页面下获取页面中的内容
+                                                resultArray.push({
+                                                    id: tempPoi.uid,
+                                                    title: tempPoi.title,
+                                                    address: tempPoi.address || '--',
+                                                    city: tempPoi.city,
+                                                    province: tempPoi.province,
+                                                    point: tempPoi.point,
+                                                })
+                                            } catch (error) {
+                                                console.error(totalResults,totalPages,currPage,results.getCurrentNumPois(), i, tempPoi);
+                                            }
+                                        }
                                     }
                                     this.loadingMore = false
                                     this.moreRadiationInfo[this.moreRadiationIndex].searchOptions = resultArray
@@ -2421,17 +2429,23 @@
                             let totalPages = results.getNumPages();
                             let currPage = results.getPageIndex();// 获取当前是第几页数据
                             for (let i = 0; i < results.getCurrentNumPois(); i++) {
-                                //在当前页面下获取页面中的内容
-                                resultArray.push({
-                                    id: results.getPoi(i).uid,
-                                    title: results.getPoi(i).title,
-                                    address: results.getPoi(i).address || '--',
-                                    city: results.getPoi(i).city,
-                                    province: results.getPoi(i).province,
-                                    point: results.getPoi(i).point,
-                                    isSelect:false,
-
-                                })
+                                let tempPoi = results.getPoi(i);
+                                if(tempPoi) {
+                                    try {
+                                        //在当前页面下获取页面中的内容
+                                        resultArray.push({
+                                            id: tempPoi.uid,
+                                            title: tempPoi.title,
+                                            address: tempPoi.address || '--',
+                                            city: tempPoi.city,
+                                            province: tempPoi.province,
+                                            point: tempPoi.point,
+                                            isSelect:false
+                                        })
+                                    } catch (error) {
+                                        console.error(totalResults,totalPages,currPage,results.getCurrentNumPois(), i, tempPoi);
+                                    }
+                                }
                             }
                             if (currPage < totalPages - 1) {
                                 // 遍历到最后一页之后不再进行下一页搜索，此时，已经获取到全部的搜索结果

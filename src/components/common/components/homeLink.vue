@@ -257,6 +257,13 @@
                     }));
                 } else if (this.sessionData.uType === 'SM') {
                     url = url + '&flag=' + false
+                    localStorage.removeItem('qinlinMapCode');
+                    localStorage.setItem('mapParams', JSON.stringify({
+                        rid: this.mapParams.rid,
+                        ls: this.dateInput[0],
+                        le: this.dateInput[1],
+                        suID: this.sessionData.uID,
+                    }));
                 }
                 this.mapDialogVisible = false;
                 window.open(url);

@@ -1362,21 +1362,21 @@
                 //楼盘类型
                 buildType: [
                     {buildlabel: '高端住宅', buildValue: '高端住宅'},
-                    {buildlabel: '中端住宅', buildValue: '中端住宅'},
                     {buildlabel: '普通住宅', buildValue: '普通住宅'},
                     {buildlabel: '单体楼', buildValue: '单体楼'},
                     {buildlabel: '别墅', buildValue: '别墅'},
                     {buildlabel: '洋房', buildValue: '洋房'},
-                    {buildlabel: '商住', buildValue: '商住'}
+                    {buildlabel: '商住或商用', buildValue: '商住或商用'},
+                    {buildlabel: '公共场所', buildValue: '公共场所'}
                 ],
                 village: [               // 社区
                     {buildlabel: '高端住宅', buildValue: '高端住宅'},
-                    {buildlabel: '中端住宅', buildValue: '中端住宅'},
                     {buildlabel: '普通住宅', buildValue: '普通住宅'},
                     {buildlabel: '单体楼', buildValue: '单体楼'},
                     {buildlabel: '别墅', buildValue: '别墅'},
                     {buildlabel: '洋房', buildValue: '洋房'},
-                    {buildlabel: '商住', buildValue: '商住'}
+                    {buildlabel: '商住或商用', buildValue: '商住或商用'},
+                    {buildlabel: '公共场所', buildValue: '公共场所'}
                 ],
                 officeBuilding: [           // 写字楼类型
                     {buildValue: '单纯性写字楼', buildlabel: '单纯性写字楼'},

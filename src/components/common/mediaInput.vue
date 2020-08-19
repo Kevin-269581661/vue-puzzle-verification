@@ -1189,7 +1189,8 @@
                     {label: '单体楼', value: '单体楼'},
                     {label: '别墅', value: '别墅'},
                     {label: '洋房', value: '洋房'},
-                    {label: '商住', value: '商住'},
+                    {label: '商住或商用', value: '商住或商用'},
+                    {label: '公共场所', value: '公共场所'}
                 ],
                 officeBuilding: [           // 写字楼类型
                     {lable: '单纯性写字楼', value: '单纯性写字楼'},
@@ -1202,7 +1203,8 @@
                     {label: '单体楼', value: '单体楼'},
                     {label: '别墅', value: '别墅'},
                     {label: '洋房', value: '洋房'},
-                    {label: '商住', value: '商住'},
+                    {label: '商住或商用', value: '商住或商用'},
+                    {label: '公共场所', value: '公共场所'},
                 ],
                 selectedOptions: [],        // 城市默认选项
                 PathHaveEdit: false,        // 新建/编辑

@@ -59,7 +59,7 @@
                               v-loading="loading"
                               element-loading-text="玩命加载中"
                               element-loading-spinner="el-icon-loading"
-                              :default-sort="{prop: 'appTime', order: 'descending'}">
+                              >
                         <el-table-column label="订单名称" min-width="12.6%">
                             <template slot-scope="scope">
                                 <span class="u-bk-btn" v-if="scope.row.apSrc!=0">贝壳</span>

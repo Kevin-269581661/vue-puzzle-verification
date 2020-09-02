@@ -3388,7 +3388,9 @@
                             mRemark: data.mRemark || '',
                             mediaNum: data.mediaCount || '',
                             spareAdsCount: data.spareAdsCount || '',
-                            mapCenter: centerArr.join(';')
+                            mapCenter: centerArr.join(';'),
+                            allFeedback: data.allFeedback,
+                            allTrafficState: data.allTrafficState
                         };
                         if(this.systemSource === 0) {
                             obj.city = this.routeQuery.city
@@ -3408,6 +3410,10 @@
                         } else if(this.systemSource === 0) {
                             tHeader = ['资源名称', '市', '区域', '详细地址','商圈','楼栋数量', '住户数量/办公室数量','楼盘价格','楼盘类型/写字楼类型','入住年份/建成年份','广告限制','媒体备注','地图中心点', '媒体数量（门）','可用媒体数量（面）'];
                             filterVal = ['resName', 'city', 'rName', 'resAddress','tradingArea', 'fNum',  'hNum',  'hPrice','cType', 'chDay','notPush', 'mRemark','mapCenter','mediaNum','spareAdsCount'];
+                            if(this.sessionData.customPermission.patrolPermission) {
+                                tHeader.push('巡点问题', '通行情况');
+                                filterVal.push('feedback', 'trafficState')
+                            }
                         }
                         const list = resultArr;
                         const data = this.formatJson(filterVal, list);

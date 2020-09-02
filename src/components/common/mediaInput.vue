@@ -299,7 +299,43 @@
                             <el-form-item label="小区照片" class="baseInfo"></el-form-item>
                             <el-row :gutter="76" class="from_row">
                                 <el-col :span="6">
-                                    <el-form-item label="" prop="mImg" class="left_form_item">
+                                    <el-form-item v-if="customPermission.patrolPermission" label="" prop="mImg" class="left_form_item">
+                                        <div class="upload_img_wrap" style="width: 120px;">
+                                            <el-upload
+                                                :action="doUpload"
+                                                list-type="picture-card"
+                                                :file-list="resUpdata"
+                                                :on-success="handleDownSuccess"
+                                                :on-preview="handlePictureCardPreview_res"
+                                                :before-upload="beforeUpload_res"
+                                                :on-remove="handleRemoveR">
+                                                <i class="el-icon-plus"></i>
+                                            </el-upload>
+                                            <!-- <el-upload
+                                                :action="doUpload"
+                                                list-type="picture-card"
+                                                :file-list="resUpdata"
+                                                :on-success="handleDownSuccess"
+                                                :on-preview="handlePictureCardPreview_res"
+                                                :before-upload="beforeUpload_res"
+                                                :on-remove="handleRemoveR">
+                                                <i class="el-icon-plus"></i>
+                                            </el-upload>
+                                            <el-upload
+                                                :action="doUpload"
+                                                list-type="picture-card"
+                                                :on-success="handleDownSuccess"
+                                                :on-preview="handlePictureCardPreview_res"
+                                                :before-upload="beforeUpload_res"
+                                                :on-remove="handleRemoveR">
+                                                <i class="el-icon-plus"></i>
+                                            </el-upload> -->
+                                            <el-dialog :visible.sync="resImgDialog">
+                                                <img width="100%" :src="resImgUrl" alt="">
+                                            </el-dialog>
+                                        </div>
+                                    </el-form-item>
+                                    <el-form-item v-else label="" prop="mImg" class="left_form_item">
                                         <div class="upload_img_wrap" style="width: 120px;">
                                             <el-upload
                                                 :action="doUpload"
@@ -1280,10 +1316,12 @@
                 isShowTag: true,
                 // 修改媒体状态时的行数据
                 rowData: {},
-                changeBeforMediaState: ''
+                changeBeforMediaState: '',
+                customPermission: {},  //巡点权限
             };
         },
         mounted: function () {
+            this.customPermission = this.sessionData.customPermission;
             this.resUpdata = []
             this.ShowRegion()
             this.editFun()       // 编辑方法
@@ -2268,8 +2306,13 @@
             // 资源图片上传成功
             handleDownSuccess(res) {
                 console.log('上传资源图片', res)
-                this.recForm.fullViewUrl = res[0].pURL
-                console.log('this.recForm',this.recForm)
+                if(this.recForm.fullViewUrl) {
+                    this.recForm.fullViewUrl = this.recForm.fullViewUrl + ',' + res[0].pURL
+                } else {
+                    this.recForm.fullViewUrl = res[0].pURL
+                }
+                // this.recForm.fullViewUrl = res[0].pURL
+                console.log('this.recForm',this.recForm, this.recForm.fullViewUrl)
             },
             // 删除原资源图片，进行重新选择
             handleRemoveR(file, fileList) {
@@ -2836,8 +2879,10 @@
             constructResImg() {
                 console.log('资源图片',this.recForm.fullViewUrl)
                 if(this.recForm.fullViewUrl !== '' && this.recForm.fullViewUrl !== undefined && this.recForm.fullViewUrl !== null){
-                    let resImg = {name: '资源图片', url: this.recForm.fullViewUrl}
-                    this.resUpdata.push(resImg)
+                    this.recForm.fullViewUrl.split(',').forEach(item=>{
+                        let resImg = {name: '资源图片', url: item}
+                        this.resUpdata.push(resImg)
+                    })
                 }else{
                     let uid = this.sessionData.uID
                     let params = {

@@ -521,6 +521,24 @@
                                     </template>
                                 </el-table-column>
                                 <el-table-column
+                                    label="巡点问题"
+                                    align="right"
+                                    min-width="110"
+                                    v-if="customPermission.patrolPermission">
+                                    <template slot-scope="scope">
+                                        {{ scope.row.feedback || '--' }}
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                    label="通行情况"
+                                    align="right"
+                                    min-width="110"
+                                    v-if="customPermission.patrolPermission">
+                                    <template slot-scope="scope">
+                                        {{ scope.row.trafficState || '--' }}
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
                                     fixed="right"
                                     prop="schedules"
                                     label="排期"
@@ -629,6 +647,12 @@
                                                             <div class="shopList_adLimit">
                                                                 <span>{{ props.row.adLimit }}</span>
                                                             </div>
+                                                        </el-form-item>
+                                                        <el-form-item label="巡点问题：" v-if="customPermission.patrolPermission">
+                                                            <span class="shopList_adLimit">{{ props.row.feedback }}</span>
+                                                        </el-form-item>
+                                                        <el-form-item label="通行情况：" v-if="customPermission.patrolPermission">
+                                                            <span class="shopList_adLimit">{{ props.row.trafficState }}</span>
                                                         </el-form-item>
                                                     </el-form>
                                                 </template>
@@ -1417,6 +1441,7 @@
                 currPageSelect:0,
                 currPageAsLength:0,
                 adsCount:0,//总可选点位
+                customPermission: {},  //巡点权限
             };
         },
         mounted() {
@@ -2034,6 +2059,7 @@
             // 获取浏览器session数据
             getsessionData() {
                 this.sessionData = sessFun.getSess();
+                this.customPermission = this.sessionData.customPermission;
                 if (this.sessionData.uType === 'BD') {
                     this.BDData.realName = this.sessionData.username //sessionStorage.getItem('username')
                     this.planForm.ownerSales = this.BDData.realName
@@ -2496,6 +2522,8 @@
                                 houseNum: key.hNum,
                                 buildPrice: key.hPrice/100,
                                 mediaName: key.mTitle || '',
+                                trafficState: key.trafficState ? key.trafficState : '--',
+                                feedback: key.feedback ? key.feedback : '--',
                                 buildNum: key.fNum,
                                 schedules: this.dateInput[0] + '-' + this.dateInput[1],
                                 tradingArea: key.tradingArea,
@@ -5101,6 +5129,8 @@
                                     houseNum: data.hNum,
                                     buildPrice: data.hPrice / 100,
                                     mediaName: data.mTitle || '',
+                                    feedback: data.feedback || '--',
+                                    trafficState: data.trafficState || '--',
                                     mVehicle: data.mVehicle,
                                     buildNum: data.fNum,
                                     schedules: data.schedules,

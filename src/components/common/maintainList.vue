@@ -135,6 +135,18 @@
                             </template>
                         </el-table-column>
                         <el-table-column
+                            prop="trafficState"
+                            label="通行情况"
+                            min-width="170"
+                            class="tar"
+                            :show-overflow-tooltip="true"
+                            v-if="customPermission.patrolPermission"
+                        >
+                            <template slot-scope="scope">
+                                <span>{{scope.row.trafficState||'--'}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
                             prop="issueRecord"
                             label="问题记录"
                             min-width="170"
@@ -392,6 +404,7 @@
                     mediaName: '媒体名称',
                     assetTag: '资产编号',
                     issueRecord: '问题记录',
+                    trafficState: '通行情况',
                     feedback:'处理记录'
                 }],
                 //所在区域
@@ -441,6 +454,7 @@
                 },
                 logsId: [],
                 multipleSelection: '',//选中的表格数据
+                customPermission: {},  //巡点权限
             };
         },
         mounted: function () {
@@ -666,6 +680,7 @@
             getRole() {
                 this.sessionData = sessFun.getSess();
                 let role = this.sessionData.uType;
+                this.customPermission = this.sessionData.customPermission;
                 console.log(role);
             },
             // 搜索数据格式化
@@ -779,6 +794,7 @@
                     mediaName: item.mTitle,
                     cityName: item.cityName,
                     area: item.districtName,
+                    trafficState: item.trafficState ? item.trafficState : '--',
                     issueRecord: item.remark ? item.remark : '--',
                     feedback: item.feedback ? item.feedback : '--',
                     updateTime: item.updateTime ? item.updateTime : '---',
@@ -833,6 +849,9 @@
                     ...(date && {startTime: timeFormat.toDate(date[0], '-'), endTime: timeFormat.toDate(date[1], '-')}),
                     ...(userId && {userId: userId}),
                 };
+                if(this.sessionData.customPermission.patrolPermission) {
+                    params.isCustom = 1;
+                }
                 api.getApi_file('/mediaService/api/v2/exportRMList', params).then(res => {
                     let blob = new Blob([res.data], {type: 'application/ms-download;charset=utf-8'});
                     let downloadElement = document.createElement('a');

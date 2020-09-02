@@ -181,6 +181,10 @@ export default {
                     if(res.data.length){
                         let returnobj = this.formatData(res.data);
                         let head = [ '省份', '城市', '区域', '资源名称','商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '车位数', '车流量', '人流量', '广告限制', '点位备注', '媒体数量(面)'];
+                        let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
+                        if(customPermission && customPermission.patrolPermission) {
+                            head.push('巡点问题', '通行情况');
+                        }
                         let allHead = head.concat([info.startTime+'-'+info.endTime]);
                         let filename = returnobj.city.join('-')+'-'+ info.startTime+'~'+info.endTime+'空位表';
                         sheetExcel.toDownload(allHead, returnobj.arr, filename);
@@ -230,7 +234,9 @@ export default {
                         notPush: item.allNotPush || '--',
                         remark: item.allremark || '--',
                         adsNum: item.adsNum || 0,
-                        [this.downLoadInfo.daterange[0]+'-'+this.downLoadInfo.daterange[1]]: item.DateInfo.adsNum || 0
+                        [this.downLoadInfo.daterange[0]+'-'+this.downLoadInfo.daterange[1]]: item.DateInfo.adsNum || 0,
+                        allFeedBack: item.allFeedBack,
+                        allTrafficState: item.allTrafficState,
                     };
                     resObj.showList.push(obj);
                 }
@@ -308,6 +314,10 @@ export default {
                     console.log('returnobj----', returnobj);
                     let date = returnobj.date;
                     let head = [ '省份', '城市', '区域', '资源名称','商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '广告限制', '点位备注', '媒体数量(面)'];
+                    let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
+                    if(customPermission && customPermission.patrolPermission) {
+                        head.push('巡点问题', '通行情况');
+                    }
                     let allHead = head.concat(date);
                     let filename = returnobj.filename+'-'+ date[0].substring(0, 10)+'~'+date[date.length-1].substring(11)+'空位表';
                     sheetExcel.toDownload(allHead, returnobj.arr, filename);
@@ -354,6 +364,8 @@ export default {
                             notPush: item.allNotPush || '',
                             remark: item.allremark || '',
                             adsNum: item.adsNum,
+                            allFeedBack: item.allFeedBack,
+                            allTrafficState: item.allTrafficState
                         };
                         let showData = item.DateInfo.sort(this.sortDate);
                         console.log('showData',showData)
@@ -405,6 +417,10 @@ export default {
                             let returnobj = this.formatDataAds(resinfo.data, date);
                             console.log('returnobj-----', returnobj);
                             let head = ['资源名称', '省份', '城市', '区域', '商圈', '媒体名称', '媒介载体', '资产编号', '门体类型', '投放面', '媒体等级', '广告限制', '点位备注', '广告尺寸/图片尺寸', '画面尺寸/灯箱尺寸', '详细地址', '楼盘类型', '楼盘价格', '楼栋数量', '入住时间', '小区户数', '人流量', '车位数', '车流量', '空闲日期'];
+                            let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
+                            if(customPermission && customPermission.patrolPermission) {
+                                head.push('巡点问题', '通行情况');
+                            }
                             let filename = returnobj.city.join('-')+'-'+ date +'空位表';
                             sheetExcel.toDownload(head, returnobj.arr, filename);
                         }else{
@@ -461,7 +477,9 @@ export default {
                             peopleFlow: item.peopleFlow || '--',
                             parkSpaceNum: item.parkSpaceNum ||'--',
                             carFlow: item.carFlow || '--',
-                            date: date
+                            date: date,
+                            feedback: item.feedback,
+                            trafficState: item.trafficState,
                         };
                         resObj.showList.push(obj);
                     }

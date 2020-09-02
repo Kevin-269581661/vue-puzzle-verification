@@ -651,6 +651,22 @@
                                     </template>
                                 </el-table-column>
                                 <el-table-column
+                                    label="巡点问题"
+                                    align="right"
+                                    min-width="110">
+                                    <template slot-scope="scope">
+                                        {{ scope.row.feedback || '--' }}
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                    label="通行情况"
+                                    align="right"
+                                    min-width="110">
+                                    <template slot-scope="scope">
+                                        {{ scope.row.trafficState || '--' }}
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
                                     fixed="right"
                                     prop="schedules"
                                     label="排期"
@@ -752,6 +768,16 @@
                                                     <el-form-item label="广告限制：">
                                                         <div class="shopList_adLimit">
                                                             <span>{{ props.row.adLimit }}</span>
+                                                        </div>
+                                                    </el-form-item>
+                                                    <el-form-item label="巡点问题">
+                                                        <div class="shopList_adLimit">
+                                                            <span>{{ props.row.feedback }}</span>
+                                                        </div>
+                                                    </el-form-item>
+                                                    <el-form-item label="通行情况">
+                                                        <div class="shopList_adLimit">
+                                                            <span>{{ props.row.trafficState }}</span>
                                                         </div>
                                                     </el-form-item>
                                                 </el-form>
@@ -3083,6 +3109,8 @@
                         peopleFlow: key.peopleFlow,
                         buildNum: key.fNum,
                         schedules: this.dateInput[0] + '-' + this.dateInput[1],
+                        feedback: key.feedback || '--',
+                        trafficState: key.trafficState || '--',
                         tradingArea: key.tradingArea || '',
                         assetTag: key.assetTag || '',
                         liveYear: key.chDay,

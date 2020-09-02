@@ -54,6 +54,12 @@
                                                 <el-form-item label="广告限制：">
                                                     <span>{{ props.row.notPush }}</span>
                                                 </el-form-item>
+                                                <el-form-item label="巡点问题：" v-if="customPermission.patrolPermission">
+                                                    <span class="ellipsis-td">{{ props.row.feedback }}</span>
+                                                </el-form-item>
+                                                <el-form-item label="通行情况：" v-if="customPermission.patrolPermission">
+                                                    <span class="ellipsis-td">{{ props.row.trafficState }}</span>
+                                                </el-form-item>
                                             </el-form>
                                         </template>
                                     </el-table-column>
@@ -165,6 +171,7 @@ export default {
             loading: true,
             maLoading: true,
             role: "",
+            customPermission: {},
             // 方案详情
             planDetail: {
                 AdDoor:{},
@@ -231,6 +238,8 @@ export default {
                     notPush: data.notPush,
                     mRemark: data.mRemark,
                     resAddress: data.resAddress,
+                    feedback: data.feedback,
+                    trafficState: data.trafficState,
                 };
                 resultArr.push(obj);
             }
@@ -238,6 +247,10 @@ export default {
                 const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
                 const tHeader = ['资源名称', '市', '区域', '媒介载体', '媒体名称', '资产编号', '投放面', '投放日期', '终止日期', '商圈', '楼盘类型/写字楼类型', '楼盘价格', '住户数量/办公室数量', '楼栋数量', '入住年份/建成年份', '广告尺寸/画面尺寸', '可视画面/灯箱尺寸', '广告限制', '媒体备注', '详细地址'];
                 const filterVal = ['resName', 'city', 'rName', 'mVehicle', 'mTitle', 'assetTag', 'asLab', 'timeRange', 'finishTimeRange', 'tradingArea', 'cType', 'hPrice', 'hNum', 'fNum', 'chDay', 'adSize', 'adViewSize', 'notPush', 'mRemark', 'resAddress'];
+                if(this.customPermission.patrolPermission) {
+                    tHeader.push('巡点问题', '通行情况');
+                    filterVal.push('feedback', 'trafficState')
+                }
                 const list = resultArr;
                 const data = this.formatJson(filterVal, list);
                 export_json_to_excel(tHeader, data, name);
@@ -478,6 +491,7 @@ export default {
         getRole() {
             this.sessionData = sessFun.getSess();
             this.role = this.sessionData.uType;
+            this.customPermission = this.sessionData.customPermission;
         },
         filterCity(value, row) {
             return row.city === value;
@@ -493,6 +507,12 @@ export default {
 </script>
 
 <style scoped>
+.ellipsis-td {
+    width: 132px;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+}
 /*状态行*/
 /deep/ .el-table .warning-row {
     background: #fff1f1;

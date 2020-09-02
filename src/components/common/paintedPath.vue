@@ -138,10 +138,18 @@
         </el-dialog>
         <!--详情弹出框-->
         <el-dialog
-            :title="activePathName"
             :visible.sync="detailDialogVisible"
             class="path_detail"
             width="65%">
+            <div slot="title">
+                <div v-if="isEdit &&　editRoute">
+                    <el-input style="width: 180px;" size="small" v-model="newRouteName" placeholder="请输入内容"></el-input>
+                    <el-button type="primary" size="mini" @click="submitRouteName">确认</el-button>
+                    <el-button size="mini" @click="editRoute=false">取消</el-button>
+                </div>
+                <span v-else>{{activePathName}}</span>
+                <i v-if="isEdit && !editRoute" class="edit-route el-icon-edit" @click="editRouteName"></i>
+            </div>
             <div class="path_detail_box">
                 <el-table
                     v-loading="pathDetaiLoading"
@@ -262,6 +270,8 @@
                 }
             };
             return {
+                editRoute: false,
+                newRouteName: '',
                 // 用户登录信息
                 sessionData: '',
                 // 页码及条数
@@ -350,6 +360,27 @@
             this.getCity()
         },
         methods: {
+            // 保存修改后的路线名称
+            submitRouteName() {
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    lineId: this.detailLineId,
+                    lineName: this.newRouteName
+                }
+                api.postApi(this.apiVar.engineer +'/edit', params).then(res => {
+                    if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
+                        this.editRoute = false;
+                        this.activePathName = this.newRouteName;
+                    } else {
+                        this.messageFun('warning', res.data.MSG);
+                    }
+                })
+            },
+            editRouteName() {
+                this.editRoute = true;
+                this.newRouteName = this.activePathName;
+            },
             getSessionData() {
                 this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
                 if (this.sessionData.mediaManageLevel == 1) {
@@ -878,6 +909,9 @@
 </script>
 
 <style scoped>
+    .edit-route {
+        cursor: pointer;
+    }
     /*搜索条件*/
     .handel_ul_li {
         margin-right: 32px;

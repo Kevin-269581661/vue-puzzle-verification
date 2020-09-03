@@ -367,7 +367,12 @@
         <!--资源图片模态框-->
         <el-dialog
             :visible.sync="ResImgDialogVisible">
-            <img class="resImg" :src='ResImgSrc' alt="资源图片">
+            <el-carousel class="resImg">
+                <el-carousel-item v-for="item in ResImgSrc" :key="item">
+                    <img class="resImg" :src='item' alt="资源图片">
+                </el-carousel-item>
+            </el-carousel>
+            <!-- <img class="resImg" :src='ResImgSrc' alt="资源图片"> -->
         </el-dialog>
         <!--媒体图片模态框-->
         <el-dialog
@@ -452,7 +457,7 @@
                 roadGateList:[],    // 道闸媒体
                 res_village: {hType: '楼盘类型', hNum: '住户数量', joinTime: '入住年份'},
                 ResImgDialogVisible: false,     // 显示资源图片
-                ResImgSrc: '',
+                ResImgSrc: [],
                 mediaImgDialogVisible: false,
                 mediaImgSrc: [],
                 mediaImgTitle:'',       // 当前图片的媒体名称
@@ -659,10 +664,10 @@
             // 点击查看显示该资源的图片
             showResImg() {
                 console.log('点击查看资源图片')
-                if (this.ResImgSrc !== '') {
+                if (this.ResImgSrc.length > 0) {
                     this.ResImgDialogVisible = true
                 } else if (this.resData.fullViewUrl !== '' && this.resData.fullViewUrl !== undefined && this.resData.fullViewUrl !== null) {
-                    this.ResImgSrc = this.resData.fullViewUrl
+                    this.ResImgSrc = this.resData.fullViewUrl.split(',');
                     this.ResImgDialogVisible = true
                 } else {
                     let uid = this.sessionData.uID
@@ -676,9 +681,12 @@
                         console.log('资源图片的信息', res)
                         if (res.data.length === 0) {
                             sessFun.messageFun('warning', '暂时没有该资源的图片!')
-                        } else {
-                            this.ResImgSrc = res.data[0].pURL
-                            this.ResImgDialogVisible = true
+                        } else if(Array.isArray(res.data)) {
+                            // this.ResImgSrc = res.data[0].pURL
+                            // this.ResImgDialogVisible = true
+                            res.data.forEach(item=>{
+                                item.pURL && this.ResImgSrc.push(item.pURL)
+                            })
                         }
                     }).catch(err => {
                         console.log('error', err)
@@ -966,6 +974,10 @@
         max-width: 100%;
         width: auto;
         height: 550px;
+        
+    }
+    /deep/ .el-carousel__container {
+        height: 100% ;
     }
     /deep/ .el-dialog{
         width: 670px;

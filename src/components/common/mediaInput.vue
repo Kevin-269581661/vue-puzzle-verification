@@ -298,43 +298,54 @@
                             </el-row>
                             <el-form-item label="小区照片" class="baseInfo"></el-form-item>
                             <el-row :gutter="76" class="from_row">
-                                <el-col :span="6">
-                                    <el-form-item v-if="customPermission.patrolPermission" label="" prop="mImg" class="left_form_item">
-                                        <div class="upload_img_wrap" style="width: 120px;">
-                                            <el-upload
-                                                :action="doUpload"
-                                                list-type="picture-card"
-                                                :file-list="resUpdata"
-                                                :on-success="handleDownSuccess"
-                                                :on-preview="handlePictureCardPreview_res"
-                                                :before-upload="beforeUpload_res"
-                                                :on-remove="handleRemoveR">
-                                                <i class="el-icon-plus"></i>
-                                            </el-upload>
-                                            <!-- <el-upload
-                                                :action="doUpload"
-                                                list-type="picture-card"
-                                                :file-list="resUpdata"
-                                                :on-success="handleDownSuccess"
-                                                :on-preview="handlePictureCardPreview_res"
-                                                :before-upload="beforeUpload_res"
-                                                :on-remove="handleRemoveR">
-                                                <i class="el-icon-plus"></i>
-                                            </el-upload>
-                                            <el-upload
-                                                :action="doUpload"
-                                                list-type="picture-card"
-                                                :on-success="handleDownSuccess"
-                                                :on-preview="handlePictureCardPreview_res"
-                                                :before-upload="beforeUpload_res"
-                                                :on-remove="handleRemoveR">
-                                                <i class="el-icon-plus"></i>
-                                            </el-upload> -->
-                                            <el-dialog :visible.sync="resImgDialog">
-                                                <img width="100%" :src="resImgUrl" alt="">
-                                            </el-dialog>
-                                        </div>
-                                    </el-form-item>
+                                <el-col :span="24">
+                                    <el-row v-if="customPermission.patrolPermission" type="flex" >
+                                            <el-form-item label="" prop="mImg" class="left_form_item" style="width: 120px;">
+                                                <div class="upload_img_wrap" style="width: 120px;">
+                                                    <el-upload
+                                                        :action="doUpload"
+                                                        list-type="picture-card"
+                                                        :file-list="resUpdata[0]?[resUpdata[0]]:[]"
+                                                        :on-success="handleDownSuccess"
+                                                        :on-preview="handlePictureCardPreview_res"
+                                                        :before-upload="beforeUpload_res"
+                                                        :on-remove="handleRemoveR">
+                                                        <i class="el-icon-plus"></i>
+                                                    </el-upload>
+                                                    <el-dialog :visible.sync="resImgDialog">
+                                                        <img width="100%" :src="resImgUrl" alt="">
+                                                    </el-dialog>
+                                                </div>
+                                            </el-form-item>
+                                            <el-form-item label="" prop="mImg" class="left_form_item" style="width: 120px;">
+                                                <div class="upload_img_wrap" style="width: 120px;">
+                                                    <el-upload
+                                                        :action="doUpload"
+                                                        list-type="picture-card"
+                                                        :file-list="resUpdata[1]?[resUpdata[1]]:[]"
+                                                        :on-success="handleDownSuccess"
+                                                        :on-preview="handlePictureCardPreview_res"
+                                                        :before-upload="beforeUpload_res"
+                                                        :on-remove="handleRemoveR">
+                                                        <i class="el-icon-plus"></i>
+                                                    </el-upload>
+                                                </div>
+                                            </el-form-item>
+                                            <el-form-item label="" prop="mImg" class="left_form_item" style="width: 120px;">
+                                                <div class="upload_img_wrap" style="width: 120px;">
+                                                    <el-upload
+                                                        :action="doUpload"
+                                                        list-type="picture-card"
+                                                        :file-list="resUpdata[2]?[resUpdata[2]]:[]"
+                                                        :on-success="handleDownSuccess"
+                                                        :on-preview="handlePictureCardPreview_res"
+                                                        :before-upload="beforeUpload_res"
+                                                        :on-remove="handleRemoveR">
+                                                        <i class="el-icon-plus"></i>
+                                                    </el-upload>
+                                                </div>
+                                            </el-form-item>
+                                    </el-row>
                                     <el-form-item v-else label="" prop="mImg" class="left_form_item">
                                         <div class="upload_img_wrap" style="width: 120px;">
                                             <el-upload
@@ -2311,13 +2322,18 @@
                 } else {
                     this.recForm.fullViewUrl = res[0].pURL
                 }
-                // this.recForm.fullViewUrl = res[0].pURL
                 console.log('this.recForm',this.recForm, this.recForm.fullViewUrl)
             },
             // 删除原资源图片，进行重新选择
             handleRemoveR(file, fileList) {
-                console.log('删除或修改了资源图片', file, fileList)
-                this.recForm.fullViewUrl = ''
+                console.log('删除或修改了资源图片', file, fileList);
+                if(this.recForm.fullViewUrl && file.url) {
+                    let tempPicArr = this.recForm.fullViewUrl.split(',');
+                    let resArr = tempPicArr.filter(item=>{
+                        return file.url != item
+                    });
+                    this.recForm.fullViewUrl = resArr.join(',');
+                }
             },
             // 资源图片放大
             handlePictureCardPreview_res(file) {
@@ -2879,7 +2895,7 @@
             constructResImg() {
                 console.log('资源图片',this.recForm.fullViewUrl)
                 if(this.recForm.fullViewUrl !== '' && this.recForm.fullViewUrl !== undefined && this.recForm.fullViewUrl !== null){
-                    this.recForm.fullViewUrl.split(',').forEach(item=>{
+                    this.recForm.fullViewUrl.split(',').forEach((item, index)=>{
                         let resImg = {name: '资源图片', url: item}
                         this.resUpdata.push(resImg)
                     })
@@ -2893,12 +2909,19 @@
                     }
                     api.getApi(this.apiVar.UCAPI + '/GetImg', params).then(res => {
                         console.log('资源图片的信息', res)
+                        this.resUpdata = [];
                         if (res.data.length === 0) {
                             console.log('暂时没有该资源的图片')
-                        } else {
-                            let resImg = {name: res.data[0].pAlt, url: res.data[0].pURL}
-                            this.resUpdata.push(resImg)
-                            this.recForm.fullViewUrl = res.data[0].pURL
+                        } else if(Array.isArray(res.data)) {
+                            res.data.forEach(item=>{
+                                let resImg = {name: item.pAlt, url: item.pURL}
+                                this.resUpdata.push(resImg)
+                                if(this.recForm.fullViewUrl) {
+                                    this.recForm.fullViewUrl = this.recForm.fullViewUrl + ',' + item.pURL
+                                } else {
+                                    this.recForm.fullViewUrl = item.pURL
+                                }
+                            })
                         }
                     }).catch(err => {
                         console.log('error', err)

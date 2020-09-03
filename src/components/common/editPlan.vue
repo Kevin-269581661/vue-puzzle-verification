@@ -648,10 +648,12 @@
                                                                 <span>{{ props.row.adLimit }}</span>
                                                             </div>
                                                         </el-form-item>
-                                                        <el-form-item label="巡点问题：" v-if="customPermission.patrolPermission">
+                                                    </el-form>
+                                                    <el-form v-if="customPermission.patrolPermission" label-position="left" inline class="demo-table-expand">
+                                                        <el-form-item label="巡点问题：">
                                                             <span class="shopList_adLimit">{{ props.row.feedback }}</span>
                                                         </el-form-item>
-                                                        <el-form-item label="通行情况：" v-if="customPermission.patrolPermission">
+                                                        <el-form-item label="通行情况：">
                                                             <span class="shopList_adLimit">{{ props.row.trafficState }}</span>
                                                         </el-form-item>
                                                     </el-form>

@@ -651,6 +651,7 @@
                                     </template>
                                 </el-table-column>
                                 <el-table-column
+                                    v-if="customPermission.patrolPermission"
                                     label="巡点问题"
                                     align="right"
                                     min-width="110">
@@ -659,6 +660,7 @@
                                     </template>
                                 </el-table-column>
                                 <el-table-column
+                                    v-if="customPermission.patrolPermission"
                                     label="通行情况"
                                     align="right"
                                     min-width="110">
@@ -770,12 +772,14 @@
                                                             <span>{{ props.row.adLimit }}</span>
                                                         </div>
                                                     </el-form-item>
-                                                    <el-form-item label="巡点问题">
+                                                </el-form>
+                                                <el-form v-if="customPermission.patrolPermission" label-position="left" inline class="demo-table-expand">
+                                                    <el-form-item label="巡点问题：">
                                                         <div class="shopList_adLimit">
                                                             <span>{{ props.row.feedback }}</span>
                                                         </div>
                                                     </el-form-item>
-                                                    <el-form-item label="通行情况">
+                                                    <el-form-item label="通行情况：">
                                                         <div class="shopList_adLimit">
                                                             <span>{{ props.row.trafficState }}</span>
                                                         </div>
@@ -1596,6 +1600,8 @@
                 currPageAsLength: 0,//当前页面可选的点位总数
                 currPageSelect: 0,//当前页面已选择的点位数
                 adsCount:0,//总可选点位
+                // 定制权限
+                customPermission: {},
 
 
             };
@@ -1678,6 +1684,7 @@
             getsessionData() {
                 this.sessionData = sessFun.getSess();
                 let sess = this.sessionData;
+                this.customPermission = sess.customPermission;
                 if ((sess.uType == 'BD' && sess.saleManageLevel == 1) || (sess.uType == 'MD' && sess.mediaManageLevel == 1)) {
                     this.isShowHalfYear = true;
                 }
@@ -3109,8 +3116,8 @@
                         peopleFlow: key.peopleFlow,
                         buildNum: key.fNum,
                         schedules: this.dateInput[0] + '-' + this.dateInput[1],
-                        feedback: key.feedback || '--',
-                        trafficState: key.trafficState || '--',
+                        feedback: key.feedback || '--',            // 巡点定制（亲粤邻）
+                        trafficState: key.trafficState || '--',    // 巡点定制（亲粤邻）
                         tradingArea: key.tradingArea || '',
                         assetTag: key.assetTag || '',
                         liveYear: key.chDay,
@@ -4343,6 +4350,8 @@
                         mVehicle: key.mVehicle,
                         buildNum: key.fNum,
                         schedules: this.dateInput[0] + '-' + this.dateInput[1],
+                        feedback: key.feedback || '--',          // 巡点定制（亲粤邻）
+                        trafficState: key.trafficState || '--',  // 巡点定制（亲粤邻）
                         tradingArea: key.tradingArea,
                         assetTag: key.assetTag,
                         liveYear: key.chDay,
@@ -5053,6 +5062,8 @@
                     mediaRemark: info.mediaRemark,
                     buildNum: info.buildNum,
                     schedules: info.schedules,
+                    feedback: info.feedback || '--',            // 巡点定制（亲粤邻）
+                    trafficState: info.trafficState || '--',    // 定制巡点（亲粤邻）
                     tradingArea: info.tradingArea,
                     assetTag: info.assetTag,
                     liveYear: info.liveYear,

@@ -5117,7 +5117,8 @@
                                     // asID: '',
                                     pbStar: data.pbStar,
                                     pbEnd: data.pbEnd,
-                                    rid: data.rID.toString().substring(0, 4) + '00', //
+                                    // rid: data.rID.toString().substring(0, 4) + '00', //
+                                    rid: data.cityId ? data.cityId : (data.rID.toString().substring(0, 4) + '00') ,
                                     resID: data.resID,
                                     mID: data.mID,
                                     asIDs: data.asID,

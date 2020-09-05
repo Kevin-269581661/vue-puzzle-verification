@@ -416,6 +416,25 @@
                                     </template>
                                 </el-table-column>
                                 <el-table-column
+                                    label="巡点问题"
+                                    align="right"
+                                    min-width="110"
+                                    show-overflow-tooltip
+                                    v-if="customPermission.patrolPermission">
+                                    <template slot-scope="scope">
+                                        {{ scope.row.feedback || '--' }}
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                    label="通行情况"
+                                    align="right"
+                                    min-width="110"
+                                    v-if="customPermission.patrolPermission">
+                                    <template slot-scope="scope">
+                                        {{ scope.row.trafficState || '--' }}
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
                                     label="资产编号"
                                     min-width="160"
                                     prop="assetTag"
@@ -518,24 +537,6 @@
                                     min-width="110">
                                     <template slot-scope="scope">
                                         {{ scope.row.carFlow || '--' }}
-                                    </template>
-                                </el-table-column>
-                                <el-table-column
-                                    label="巡点问题"
-                                    align="right"
-                                    min-width="110"
-                                    v-if="customPermission.patrolPermission">
-                                    <template slot-scope="scope">
-                                        {{ scope.row.feedback || '--' }}
-                                    </template>
-                                </el-table-column>
-                                <el-table-column
-                                    label="通行情况"
-                                    align="right"
-                                    min-width="110"
-                                    v-if="customPermission.patrolPermission">
-                                    <template slot-scope="scope">
-                                        {{ scope.row.trafficState || '--' }}
                                     </template>
                                 </el-table-column>
                                 <el-table-column

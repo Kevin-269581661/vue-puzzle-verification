@@ -342,6 +342,8 @@
                 detailResLoading: true,
                 // 编辑状态
                 isEdit: false,
+                // 线路详情
+                activeLineInfo: null,
                 // 线路详情的名称
                 activePathName: '',
                 // 新增行下标
@@ -372,6 +374,8 @@
                     if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
                         this.editRoute = false;
                         this.activePathName = this.newRouteName;
+                        // 更改表格中线路名称
+                        this.activeLineInfo.lineName = this.newRouteName;
                     } else {
                         this.messageFun('warning', res.data.MSG);
                     }
@@ -566,6 +570,7 @@
             },
             // 查看详情 detailList
             showDetail(row) {
+                this.activeLineInfo = row
                 this.activePathName = row.lineName
                 this.detailLineId = row.lineId
                 this.detailList = []
@@ -743,7 +748,7 @@
             changeArea(row) {
                 this.regionID = row.regionId
                 this.resList = []
-                this.getResList(row.cityId)
+                this.getResList(row.cityId=this.activeLineInfo.cityId)
                 // 重新选择区域则初始化行数据
                 this.clearRowData(row)
                 row.regionId = this.regionID
@@ -897,7 +902,7 @@
                     let downloadElement = document.createElement('a');
                     let href = window.URL.createObjectURL(blob); //创建下载的链接
                     downloadElement.href = href;
-                    downloadElement.download = res.headers['content-disposition'].split('=')[1]; //下载后文件名
+                    downloadElement.download = decodeURIComponent(res.headers['content-disposition']).split('=')[1]; //下载后文件名
                     document.body.appendChild(downloadElement);
                     downloadElement.click(); //点击下载
                     document.body.removeChild(downloadElement); //下载完成移除元素

@@ -112,6 +112,14 @@
                                                     <span>{{ props.row.notPush || '--'}}</span>
                                                 </el-form-item>
                                             </el-form>
+                                            <el-form v-if="customPermission.patrolPermission" label-position="left" inline class="demo-table-expand">
+                                                <el-form-item label="巡点问题：">
+                                                    <span class="ellipsis-td">{{ props.row.feedback || '--' }}</span>
+                                                </el-form-item>
+                                                <el-form-item label="通行情况：">
+                                                    <span class="ellipsis-td">{{ props.row.trafficState || '--' }}</span>
+                                                </el-form-item>
+                                            </el-form>
                                         </template>
                                     </el-table-column>
                                     <el-table-column label="资源名称" min-width="16.1%" class-name="resName-wrap">
@@ -355,6 +363,14 @@
                                                 <span>{{ props.row.notPush || '--'}}</span>
                                             </el-form-item>
                                         </el-form>
+                                        <el-form v-if="customPermission.patrolPermission" label-position="left" inline class="demo-table-expand">
+                                            <el-form-item label="巡点问题：">
+                                                <span class="ellipsis-td">{{ props.row.feedback || '--' }}</span>
+                                            </el-form-item>
+                                            <el-form-item label="通行情况：">
+                                                <span class="ellipsis-td">{{ props.row.trafficState || '--' }}</span>
+                                            </el-form-item>
+                                        </el-form>
                                     </template>
                                 </el-table-column>
                                 <el-table-column label="资源名称" min-width="16.1%" class-name="resName-wrap">
@@ -580,6 +596,7 @@
                 maLoading: true,
                 // 判断
                 role: "",
+                customPermission: {},
                 // 订单详情头部
                 orderDetail: {
                     AdDoor: {},
@@ -1007,6 +1024,8 @@
                         notPush: data.notPush,
                         mRemark: data.mRemark,
                         resAddress: data.resAddress,
+                        feedback: data.feedback,
+                        trafficState: data.trafficState,
                     };
                     resultArr.push(obj);
                 }
@@ -1015,6 +1034,10 @@
                     const {export_json_to_excel} = require('../../vendorExcel/Export2Excel');
                     const tHeader = ['资源名称', '市', '区域', '媒介载体', '媒体名称', '资产编号', '投放面', '投放日期', '终止日期', '商圈', '楼盘类型/写字楼类型', '楼盘价格', '住户数量/办公室数量', '楼栋数量', '入住年份/建成年份', '广告尺寸/画面尺寸', '可视画面/灯箱尺寸', '广告限制', '媒体备注', '详细地址'];
                     const filterVal = ['resName', 'city', 'rName', 'mVehicle', 'mTitle', 'assetTag', 'asLab', 'timeRange', 'finishTimeRange', 'tradingArea', 'cType', 'hPrice', 'hNum', 'fNum', 'chDay', 'adSize', 'adViewSize', 'notPush', 'mRemark', 'resAddress'];
+                    if(this.customPermission.patrolPermission) {
+                        tHeader.push('巡点问题', '通行情况');
+                        filterVal.push('feedback', 'trafficState')
+                    }
                     const list = resultArr;
                     const data = this.formatJson(filterVal, list);
                     export_json_to_excel(tHeader, data, name);
@@ -1035,6 +1058,7 @@
             // 获取角色
             getRole() {
                 this.sessionData = sessFun.getSess();
+                this.customPermission = this.sessionData.customPermission;
                 this.role = this.sessionData.uType;
             },
             // tab点击
@@ -1895,6 +1919,12 @@
 </script>
 
 <style scoped>
+    .ellipsis-td {
+        width: 132px;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+    }
     /*选点排期列表底部提示*/
     .table-bottom-tip {
         display: flex;

@@ -251,7 +251,7 @@ export default {
                 const filterVal = ['resName', 'city', 'rName', 'mVehicle', 'mTitle', 'assetTag', 'asLab', 'timeRange', 'finishTimeRange', 'tradingArea', 'cType', 'hPrice', 'hNum', 'fNum', 'chDay', 'adSize', 'adViewSize', 'notPush', 'mRemark', 'resAddress'];
                 if(this.customPermission.patrolPermission) {
                     tHeader.push('巡点问题', '通行情况');
-                    filterVal.push('feedback', 'trafficState')
+                    filterVal.push('feedback', 'trafficState');
                 }
                 const list = resultArr;
                 const data = this.formatJson(filterVal, list);

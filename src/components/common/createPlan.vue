@@ -546,6 +546,25 @@
                                     </template>
                                 </el-table-column>
                                 <el-table-column
+                                    v-if="customPermission.patrolPermission"
+                                    label="巡点问题"
+                                    align="right"
+                                    min-width="110"
+                                    show-overflow-tooltip>
+                                    <template slot-scope="scope">
+                                        {{ scope.row.feedback || '--' }}
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                    v-if="customPermission.patrolPermission"
+                                    label="通行情况"
+                                    align="right"
+                                    min-width="110">
+                                    <template slot-scope="scope">
+                                        {{ scope.row.trafficState || '--' }}
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
                                     label="资产编号"
                                     min-width="160"
                                     prop="assetTag"
@@ -648,24 +667,6 @@
                                     min-width="110">
                                     <template slot-scope="scope">
                                         {{ scope.row.carFlow || '--' }}
-                                    </template>
-                                </el-table-column>
-                                <el-table-column
-                                    v-if="customPermission.patrolPermission"
-                                    label="巡点问题"
-                                    align="right"
-                                    min-width="110">
-                                    <template slot-scope="scope">
-                                        {{ scope.row.feedback || '--' }}
-                                    </template>
-                                </el-table-column>
-                                <el-table-column
-                                    v-if="customPermission.patrolPermission"
-                                    label="通行情况"
-                                    align="right"
-                                    min-width="110">
-                                    <template slot-scope="scope">
-                                        {{ scope.row.trafficState || '--' }}
                                     </template>
                                 </el-table-column>
                                 <el-table-column
@@ -2549,6 +2550,9 @@
                 let arr = this.excelData(this.shopingList)
                 let allHead = ['资源名称', '市', '区', '商圈', '资源地址', '楼盘价格', '入住年份', '住户数量', '出入口', '楼栋数量', '楼盘（写字楼）类型', '地图中心点', '可选面数', '投放排期'];
                 let head = ['在线协同选点链接(可地图查看社区)  ' + this.shareADUrl, '', '', '', '', '', '', '', '', '', '', '', ''];
+                if(this.customPermission.patrolPermission) {
+                    allHead.push('巡点问题', '通行情况');
+                }
                 sheetExcel.toDownload(allHead, arr, this.planForm.planName + '点位表', head);
             },
             // 处理数据
@@ -2582,6 +2586,8 @@
                         map: data.mapCenter,
                         adsNum: 1,
                         timeRange: '',
+                        feedback: data.feedback,
+                        trafficState: data.trafficState,
                     };
                     for (let date of dateArr) {
                         if (data.schedules == date.sheetName) {
@@ -3494,6 +3500,8 @@
                                 houseNum: key.hNum,
                                 buildPrice: key.hPrice / 100,
                                 mediaName: key.mTitle,
+                                feedback: key.feedback || '--',          // 巡点定制（亲粤邻）
+                                trafficState: key.trafficState || '--',  // 巡点定制（亲粤邻）
                                 buildNum: key.fNum,
                                 schedules: this.dateInput[0] + '-' + this.dateInput[1],
                                 tradingArea: key.tradingArea,

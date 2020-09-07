@@ -3389,7 +3389,7 @@
                             mediaNum: data.mediaCount || '',
                             spareAdsCount: data.spareAdsCount || '',
                             mapCenter: centerArr.join(';'),
-                            allFeedback: data.allFeedback,
+                            allRemark: data.allRemark,
                             allTrafficState: data.allTrafficState
                         };
                         if(this.systemSource === 0) {
@@ -3412,7 +3412,7 @@
                             filterVal = ['resName', 'city', 'rName', 'resAddress','tradingArea', 'fNum',  'hNum',  'hPrice','cType', 'chDay','notPush', 'mRemark','mapCenter','mediaNum','spareAdsCount'];
                             if(this.sessionData.customPermission.patrolPermission) {
                                 tHeader.push('巡点问题', '通行情况');
-                                filterVal.push('feedback', 'trafficState')
+                                filterVal.push('remark', 'trafficState')
                             }
                         }
                         const list = resultArr;

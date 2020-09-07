@@ -57,7 +57,7 @@
                                             </el-form>
                                             <el-form v-if="customPermission.patrolPermission" label-position="left" inline class="demo-table-expand">
                                                 <el-form-item label="巡点问题：">
-                                                    <span class="ellipsis-td">{{ props.row.feedback }}</span>
+                                                    <span class="ellipsis-td">{{ props.row.remark }}</span>
                                                 </el-form-item>
                                                 <el-form-item label="通行情况：">
                                                     <span class="ellipsis-td">{{ props.row.trafficState }}</span>
@@ -240,7 +240,7 @@ export default {
                     notPush: data.notPush,
                     mRemark: data.mRemark,
                     resAddress: data.resAddress,
-                    feedback: data.feedback,
+                    remark: data.remark,
                     trafficState: data.trafficState,
                 };
                 resultArr.push(obj);
@@ -251,7 +251,7 @@ export default {
                 const filterVal = ['resName', 'city', 'rName', 'mVehicle', 'mTitle', 'assetTag', 'asLab', 'timeRange', 'finishTimeRange', 'tradingArea', 'cType', 'hPrice', 'hNum', 'fNum', 'chDay', 'adSize', 'adViewSize', 'notPush', 'mRemark', 'resAddress'];
                 if(this.customPermission.patrolPermission) {
                     tHeader.push('巡点问题', '通行情况');
-                    filterVal.push('feedback', 'trafficState');
+                    filterVal.push('remark', 'trafficState');
                 }
                 const list = resultArr;
                 const data = this.formatJson(filterVal, list);

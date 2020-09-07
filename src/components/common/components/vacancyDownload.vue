@@ -235,7 +235,7 @@ export default {
                         remark: item.allremark || '--',
                         adsNum: item.adsNum || 0,
                         [this.downLoadInfo.daterange[0]+'-'+this.downLoadInfo.daterange[1]]: item.DateInfo.adsNum || 0,
-                        allFeedBack: item.allFeedBack,
+                        allRemark: item.allRemark,
                         allTrafficState: item.allTrafficState,
                     };
                     resObj.showList.push(obj);
@@ -364,7 +364,7 @@ export default {
                             notPush: item.allNotPush || '',
                             remark: item.allremark || '',
                             adsNum: item.adsNum,
-                            allFeedBack: item.allFeedBack,
+                            allRemark: item.allRemark,
                             allTrafficState: item.allTrafficState
                         };
                         let showData = item.DateInfo.sort(this.sortDate);
@@ -478,7 +478,7 @@ export default {
                             parkSpaceNum: item.parkSpaceNum ||'--',
                             carFlow: item.carFlow || '--',
                             date: date,
-                            feedback: item.feedback,
+                            remark: item.remark,
                             trafficState: item.trafficState,
                         };
                         resObj.showList.push(obj);

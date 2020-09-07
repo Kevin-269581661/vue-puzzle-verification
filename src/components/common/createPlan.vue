@@ -552,7 +552,7 @@
                                     min-width="110"
                                     show-overflow-tooltip>
                                     <template slot-scope="scope">
-                                        {{ scope.row.feedback || '--' }}
+                                        {{ scope.row.remark || '--' }}
                                     </template>
                                 </el-table-column>
                                 <el-table-column
@@ -777,7 +777,7 @@
                                                 <el-form v-if="customPermission.patrolPermission" label-position="left" inline class="demo-table-expand">
                                                     <el-form-item label="巡点问题：">
                                                         <div class="shopList_adLimit">
-                                                            <span>{{ props.row.feedback }}</span>
+                                                            <span>{{ props.row.remark }}</span>
                                                         </div>
                                                     </el-form-item>
                                                     <el-form-item label="通行情况：">
@@ -2586,7 +2586,7 @@
                         map: data.mapCenter,
                         adsNum: 1,
                         timeRange: '',
-                        feedback: data.feedback,
+                        remark: data.remark,
                         trafficState: data.trafficState,
                     };
                     for (let date of dateArr) {
@@ -3122,7 +3122,7 @@
                         peopleFlow: key.peopleFlow,
                         buildNum: key.fNum,
                         schedules: this.dateInput[0] + '-' + this.dateInput[1],
-                        feedback: key.feedback || '--',            // 巡点定制（亲粤邻）
+                        remark: key.remark || '--',            // 巡点定制（亲粤邻）
                         trafficState: key.trafficState || '--',    // 巡点定制（亲粤邻）
                         tradingArea: key.tradingArea || '',
                         assetTag: key.assetTag || '',
@@ -3500,7 +3500,7 @@
                                 houseNum: key.hNum,
                                 buildPrice: key.hPrice / 100,
                                 mediaName: key.mTitle,
-                                feedback: key.feedback || '--',          // 巡点定制（亲粤邻）
+                                remark: key.remark || '--',          // 巡点定制（亲粤邻）
                                 trafficState: key.trafficState || '--',  // 巡点定制（亲粤邻）
                                 buildNum: key.fNum,
                                 schedules: this.dateInput[0] + '-' + this.dateInput[1],
@@ -4358,7 +4358,7 @@
                         mVehicle: key.mVehicle,
                         buildNum: key.fNum,
                         schedules: this.dateInput[0] + '-' + this.dateInput[1],
-                        feedback: key.feedback || '--',          // 巡点定制（亲粤邻）
+                        remark: key.remark || '--',          // 巡点定制（亲粤邻）
                         trafficState: key.trafficState || '--',  // 巡点定制（亲粤邻）
                         tradingArea: key.tradingArea,
                         assetTag: key.assetTag,
@@ -5070,7 +5070,7 @@
                     mediaRemark: info.mediaRemark,
                     buildNum: info.buildNum,
                     schedules: info.schedules,
-                    feedback: info.feedback || '--',            // 巡点定制（亲粤邻）
+                    remark: info.remark || '--',            // 巡点定制（亲粤邻）
                     trafficState: info.trafficState || '--',    // 定制巡点（亲粤邻）
                     tradingArea: info.tradingArea,
                     assetTag: info.assetTag,

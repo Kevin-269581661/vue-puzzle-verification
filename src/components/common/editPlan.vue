@@ -422,7 +422,7 @@
                                     show-overflow-tooltip
                                     v-if="customPermission.patrolPermission">
                                     <template slot-scope="scope">
-                                        {{ scope.row.feedback || '--' }}
+                                        {{ scope.row.remark || '--' }}
                                     </template>
                                 </el-table-column>
                                 <el-table-column
@@ -652,7 +652,7 @@
                                                     </el-form>
                                                     <el-form v-if="customPermission.patrolPermission" label-position="left" inline class="demo-table-expand">
                                                         <el-form-item label="巡点问题：">
-                                                            <span class="shopList_adLimit">{{ props.row.feedback }}</span>
+                                                            <span class="shopList_adLimit">{{ props.row.remark }}</span>
                                                         </el-form-item>
                                                         <el-form-item label="通行情况：">
                                                             <span class="shopList_adLimit">{{ props.row.trafficState }}</span>
@@ -2526,7 +2526,7 @@
                                 buildPrice: key.hPrice/100,
                                 mediaName: key.mTitle || '',
                                 trafficState: key.trafficState ? key.trafficState : '--',
-                                feedback: key.feedback ? key.feedback : '--',
+                                remark: key.remark ? key.remark : '--',
                                 buildNum: key.fNum,
                                 schedules: this.dateInput[0] + '-' + this.dateInput[1],
                                 tradingArea: key.tradingArea,
@@ -5133,7 +5133,7 @@
                                     houseNum: data.hNum,
                                     buildPrice: data.hPrice / 100,
                                     mediaName: data.mTitle || '',
-                                    feedback: data.feedback || '--',
+                                    remark: data.remark || '--',
                                     trafficState: data.trafficState || '--',
                                     mVehicle: data.mVehicle,
                                     buildNum: data.fNum,

@@ -754,7 +754,9 @@
                                             <template slot-scope="props">
                                                 <el-form label-position="left" inline class="demo-table-expand">
                                                     <el-form-item label="商圈：">
-                                                        <span>{{ props.row.tradingArea}}</span>
+                                                        <div class="shopList_adLimit" style="width: 80px;">
+                                                            <span>{{ props.row.tradingArea}}</span>
+                                                        </div>
                                                     </el-form-item>
                                                     <el-form-item label="小区户数：">
                                                         <span>{{ props.row.houseNum }}</span>
@@ -763,7 +765,9 @@
                                                         <span>&yen;{{ props.row.buildPrice}}</span>
                                                     </el-form-item>
                                                     <el-form-item label="资产编号：">
-                                                        <span>{{ props.row.assetTag }}</span>
+                                                        <div class="shopList_adLimit" style="width: 80px;">
+                                                            <span>{{ props.row.assetTag }}</span>
+                                                        </div>
                                                     </el-form-item>
                                                     <el-form-item label="入住年份：">
                                                         <span>{{ props.row.liveYear }}</span>

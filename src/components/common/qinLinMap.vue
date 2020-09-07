@@ -1477,7 +1477,7 @@
                     mVehicle: this.selectMediaType,
                     grade: this.selectMediaLevel,
                     groupByDistrict: 1,  // 1按地区分组
-                    distance: null       // 半径
+                    distance: null       // 半径,
                 }
                 if(this.systemSource === 1) {
                     // QFAD广告播放时长和次数
@@ -3412,7 +3412,7 @@
                             filterVal = ['resName', 'city', 'rName', 'resAddress','tradingArea', 'fNum',  'hNum',  'hPrice','cType', 'chDay','notPush', 'mRemark','mapCenter','mediaNum','spareAdsCount'];
                             if(this.sessionData.customPermission.patrolPermission) {
                                 tHeader.push('巡点问题', '通行情况');
-                                filterVal.push('remark', 'trafficState')
+                                filterVal.push('allRemark', 'allTrafficState')
                             }
                         }
                         const list = resultArr;

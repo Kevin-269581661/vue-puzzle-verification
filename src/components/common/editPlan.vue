@@ -631,7 +631,7 @@
                                                     <el-form label-position="left" inline class="demo-table-expand">
                                                         <el-form-item label="商圈：">
                                                             <div class="shopList_adLimit" style="width: 80px;">
-                                                              <span class="shopList_adLimit">{{ props.row.tradingArea}}</span>
+                                                                <span class="shopList_adLimit">{{ props.row.tradingArea}}</span>
                                                             </div>
                                                         </el-form-item>
                                                         <el-form-item label="小区户数：">
@@ -641,7 +641,9 @@
                                                             <span>&yen;{{ props.row.buildPrice}}</span>
                                                         </el-form-item>
                                                         <el-form-item label="资产编号：">
-                                                            <span>{{ props.row.assetTag }}</span>
+                                                            <div class="shopList_adLimit" style="width: 80px;">
+                                                                <span>{{ props.row.assetTag }}</span>
+                                                            </div>
                                                         </el-form-item>
                                                         <el-form-item label="入住年份：">
                                                             <span>{{ props.row.liveYear }}</span>
@@ -4013,6 +4015,9 @@
                     mediaLevel: info.mediaLevel,        // 媒体等级
                     asrID: info.asrID,                // 所属公司id
                     asName: info.asName,                // 所属公司名称
+                    asName: info.asName,
+                    remark: info.remark,
+                    trafficState: info.trafficState || '',
                 }
                 return selectInfo
             },

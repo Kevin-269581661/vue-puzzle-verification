@@ -540,6 +540,24 @@
                                     </template>
                                 </el-table-column>
                                 <el-table-column
+                                    label="巡点问题"
+                                    align="right"
+                                    min-width="110"
+                                    v-if="customPermission.patrolPermission">
+                                    <template slot-scope="scope">
+                                        {{ scope.row.feedback || '--' }}
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                    label="通行情况"
+                                    align="right"
+                                    min-width="110"
+                                    v-if="customPermission.patrolPermission">
+                                    <template slot-scope="scope">
+                                        {{ scope.row.trafficState || '--' }}
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
                                     fixed="right"
                                     prop="schedules"
                                     label="排期"
@@ -652,6 +670,12 @@
                                                             <div class="shopList_adLimit">
                                                                 <span>{{ props.row.adLimit }}</span>
                                                             </div>
+                                                        </el-form-item>
+                                                        <el-form-item label="巡点问题：" v-if="customPermission.patrolPermission">
+                                                            <span class="shopList_adLimit">{{ props.row.feedback }}</span>
+                                                        </el-form-item>
+                                                        <el-form-item label="通行情况：" v-if="customPermission.patrolPermission">
+                                                            <span class="shopList_adLimit">{{ props.row.trafficState }}</span>
                                                         </el-form-item>
                                                     </el-form>
                                                     <el-form v-if="customPermission.patrolPermission" label-position="left" inline class="demo-table-expand">

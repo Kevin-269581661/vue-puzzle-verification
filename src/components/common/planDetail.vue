@@ -54,12 +54,6 @@
                                                 <el-form-item label="广告限制：">
                                                     <span>{{ props.row.notPush }}</span>
                                                 </el-form-item>
-                                                <el-form-item label="巡点问题：" v-if="customPermission.patrolPermission">
-                                                    <span class="ellipsis-td">{{ props.row.feedback }}</span>
-                                                </el-form-item>
-                                                <el-form-item label="通行情况：" v-if="customPermission.patrolPermission">
-                                                    <span class="ellipsis-td">{{ props.row.trafficState }}</span>
-                                                </el-form-item>
                                             </el-form>
                                             <el-form v-if="customPermission.patrolPermission" label-position="left" inline class="demo-table-expand">
                                                 <el-form-item label="巡点问题：">

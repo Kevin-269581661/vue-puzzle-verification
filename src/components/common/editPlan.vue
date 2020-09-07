@@ -630,7 +630,9 @@
                                                 <template slot-scope="props">
                                                     <el-form label-position="left" inline class="demo-table-expand">
                                                         <el-form-item label="商圈：">
-                                                            <span class="shopList_adLimit">{{ props.row.tradingArea}}</span>
+                                                            <div class="shopList_adLimit" style="width: 80px;">
+                                                              <span class="shopList_adLimit">{{ props.row.tradingArea}}</span>
+                                                            </div>
                                                         </el-form-item>
                                                         <el-form-item label="小区户数：">
                                                             <span>{{ props.row.houseNum}}</span>
@@ -2220,6 +2222,8 @@
                         asrID: key.asrID,                         // 所属公司id
                         checkBox: {A: false, B: false,ABC:false},
                         box: {A: false, B: false},
+                        remark: key.remark,
+                        trafficState: key.trafficState
                     }
                     if (key.mVehicle === '道闸') {
                         adObj.adPrice = key.asPrice / 100

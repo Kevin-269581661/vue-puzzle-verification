@@ -234,9 +234,9 @@ export default {
                         notPush: item.allNotPush || '--',
                         remark: item.allremark || '--',
                         adsNum: item.adsNum || 0,
-                        [this.downLoadInfo.daterange[0]+'-'+this.downLoadInfo.daterange[1]]: item.DateInfo.adsNum || 0,
                         allRemark: item.allRemark,
                         allTrafficState: item.allTrafficState,
+                        [this.downLoadInfo.daterange[0]+'-'+this.downLoadInfo.daterange[1]]: item.DateInfo.adsNum || 0,
                     };
                     resObj.showList.push(obj);
                 }

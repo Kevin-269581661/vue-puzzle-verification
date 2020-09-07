@@ -630,7 +630,7 @@
                                                 <template slot-scope="props">
                                                     <el-form label-position="left" inline class="demo-table-expand">
                                                         <el-form-item label="商圈：">
-                                                            <span>{{ props.row.tradingArea}}</span>
+                                                            <span class="shopList_adLimit">{{ props.row.tradingArea}}</span>
                                                         </el-form-item>
                                                         <el-form-item label="小区户数：">
                                                             <span>{{ props.row.houseNum}}</span>
@@ -646,7 +646,7 @@
                                                         </el-form-item>
                                                         <el-form-item label="广告限制：">
                                                             <div class="shopList_adLimit">
-                                                                <span>{{ props.row.adLimit }}广告限制：广告限制：广告限制：广告限制：</span>
+                                                                <span>{{ props.row.adLimit }}</span>
                                                             </div>
                                                         </el-form-item>
                                                     </el-form>
@@ -655,7 +655,7 @@
                                                             <span class="shopList_adLimit">{{ props.row.remark }}</span>
                                                         </el-form-item>
                                                         <el-form-item label="通行情况：">
-                                                            <span class="shopList_adLimit">{{ props.row.trafficState }}</span>
+                                                            <span class="shopList_adLimit">{{ props.row.trafficState || '--' }}</span>
                                                         </el-form-item>
                                                     </el-form>
                                                 </template>
@@ -2530,8 +2530,8 @@
                                 houseNum: key.hNum,
                                 buildPrice: key.hPrice/100,
                                 mediaName: key.mTitle || '',
-                                trafficState: key.trafficState ? key.trafficState : '--',
-                                remark: key.remark ? key.remark : '--',
+                                trafficState: key.trafficState ? key.trafficState : '',
+                                remark: key.remark ? key.remark : '',
                                 buildNum: key.fNum,
                                 schedules: this.dateInput[0] + '-' + this.dateInput[1],
                                 tradingArea: key.tradingArea,
@@ -5140,8 +5140,8 @@
                                     houseNum: data.hNum,
                                     buildPrice: data.hPrice / 100,
                                     mediaName: data.mTitle || '',
-                                    remark: data.remark || '--',
-                                    trafficState: data.trafficState || '--',
+                                    remark: data.remark || '',
+                                    trafficState: data.trafficState || '',
                                     mVehicle: data.mVehicle,
                                     buildNum: data.fNum,
                                     schedules: data.schedules,

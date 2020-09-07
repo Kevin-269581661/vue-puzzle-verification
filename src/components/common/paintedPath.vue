@@ -364,6 +364,10 @@
         methods: {
             // 保存修改后的路线名称
             submitRouteName() {
+                if(!this.newRouteName) {
+                    this.messageFun('warning', '线路名称不能为空哦~');
+                    return
+                }
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
@@ -660,6 +664,7 @@
                                 this.detailDeletRow('2', row.resourceId)
                                 this.messageFun('success', '删除成功')
                                 this.getTableList();
+                                this.getResList(row.cityId=this.activeLineInfo.cityId);
                             } else {
                                 this.messageFun('warning', res.data.MSG)
                             }

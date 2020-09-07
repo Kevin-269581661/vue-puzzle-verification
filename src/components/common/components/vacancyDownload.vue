@@ -465,7 +465,7 @@ export default {
                             asLab: item.asLab,
                             grade: item.grade || '--',
                             notPush: item.allNotPush || '--',
-                            remark: item.allremark || '--',
+                            allremark: item.allremark || '--',
                             adSize: item.adSize || '--',
                             adViewSize: item.adViewSize || '--',
                             resAddress: item.resAddress || '--',
@@ -478,8 +478,8 @@ export default {
                             parkSpaceNum: item.parkSpaceNum ||'--',
                             carFlow: item.carFlow || '--',
                             date: date,
-                            remark: item.remark,
-                            trafficState: item.trafficState,
+                            remark: item.remark || '--',
+                            trafficState: item.trafficState || '--',
                         };
                         resObj.showList.push(obj);
                     }

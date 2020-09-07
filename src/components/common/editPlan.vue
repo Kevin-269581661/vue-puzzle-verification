@@ -646,7 +646,7 @@
                                                         </el-form-item>
                                                         <el-form-item label="广告限制：">
                                                             <div class="shopList_adLimit">
-                                                                <span>{{ props.row.adLimit }}</span>
+                                                                <span>{{ props.row.adLimit }}广告限制：广告限制：广告限制：广告限制：</span>
                                                             </div>
                                                         </el-form-item>
                                                     </el-form>
@@ -1963,6 +1963,9 @@
                 console.log('this.shopingList---', this.shopingList);
                 let arr = this.excelData(this.shopingList)
                 let allHead = ['资源名称',	'市', '区',	'商圈', '资源地址',	'楼盘价格',	'入住年份',	'住户数量',	'出入口', '楼栋数量', '楼盘（写字楼）类型',	'地图中心点', '可选面数' ,'投放排期'];
+                if(this.customPermission.patrolPermission) {
+                    allHead.push('巡点问题', '通行情况');
+                }
                 if(this.shareADUrl){
                     let head = ['在线协同选点链接(可地图查看社区)  '+this.shareADUrl, '', '', '', '', '', '', '', '', '', '', '', ''];
                     sheetExcel.toDownload(allHead, arr, this.planForm.planName+'点位表', head);
@@ -2001,6 +2004,8 @@
                         map: data.mapCenter,
                         adsNum: 1,
                         timeRange: '',
+                        remark: data.remark,
+                        trafficState: data.trafficState,
                     };
                     for(let date of dateArr){
                         if(data.schedules == date.sheetName){
@@ -4460,6 +4465,8 @@
                         mVehicle: key.mVehicle,
                         buildNum: key.fNum,
                         schedules: this.dateInput[0] + '-' + this.dateInput[1],
+                        remark: data.remark || "",
+                        trafficState: key.trafficState || "",
                         tradingArea: key.tradingArea,
                         assetTag: key.assetTag,
                         liveYear: key.chDay,

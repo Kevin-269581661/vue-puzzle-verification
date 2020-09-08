@@ -1315,7 +1315,7 @@
                 }
                 // 设置排期
                 this.dateRange = {
-                    beginDate: item.startDate,
+                    beginDate: item.beginDate,
                     endDate: item.endDate
                 };
                 // console.log(item,this.oneEditInfo);
@@ -1544,6 +1544,26 @@
             showUpload() {
                 this.imgUrl = []
                 if (this.selectList.length) {
+                    let start = this.selectList[0].beginDate,
+                        end = this.selectList[0].endDate;
+                    try {
+                        this.selectList.forEach(item=>{
+                            if(item.beginDate && item.endDate) {
+                                if(Date.parse(item.beginDate) < Date.parse(start)) {
+                                    start = item.beginDate;
+                                }
+                                if(Date.parse(item.endDate) > Date.parse(end)) {
+                                    end = item.endDate;
+                                }
+                            }
+                        })
+                        this.dateRange = {
+                            beginDate: start,
+                            endDate: end
+                        };
+                    } catch (error) {
+                        console.log('换画日期错误', error)
+                    }
                     this.isShowEdit = true;
                     this.allEditInfo = {
                         date: "",

@@ -1933,6 +1933,12 @@
                             allTrafficState: item.allTrafficState,
                             [this.emptyRange[0] + '-' + this.emptyRange[1]]: item.DateInfo.adsNum || 0
                         };
+                        let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
+                        // 无巡点权限(亲粤邻之外的公司)
+                        if(!(customPermission && customPermission.patrolPermission)) {
+                            delete obj.allRemark
+                            delete obj.allTrafficState
+                        }
                         resObj.showList.push(obj);
                     }
                     result.push(resObj);
@@ -2076,9 +2082,12 @@
                                 notPush: item.allNotPush || '',
                                 remark: item.allremark || '',
                                 adsNum: item.adsNum,
-                                allRemark: item.allRemark,
-                                allTrafficState: item.allTrafficState
                             };
+                            let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
+                            if(customPermission && customPermission.patrolPermission) {
+                                obj.allRemark = item.allRemark;
+                                obj.allTrafficState = item.allTrafficState;
+                            }
                             let showData = item.DateInfo.sort(this.sortDate);
                             for (let date of showData) {
                                 dateArr.push(timeFormat.toDate(date.starDate, '/') + '-' + timeFormat.toDate(date.endDate, '/'));

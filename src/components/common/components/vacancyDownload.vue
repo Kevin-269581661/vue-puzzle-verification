@@ -238,6 +238,12 @@ export default {
                         allTrafficState: item.allTrafficState,
                         [this.downLoadInfo.daterange[0]+'-'+this.downLoadInfo.daterange[1]]: item.DateInfo.adsNum || 0,
                     };
+                    let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
+                    // 无巡点权限(亲粤邻之外的公司)
+                    if(!(customPermission && customPermission.patrolPermission)) {
+                        delete obj.allRemark
+                        delete obj.allTrafficState
+                    }
                     resObj.showList.push(obj);
                 }
                 result.push(resObj);
@@ -363,10 +369,13 @@ export default {
                             chDay: item.chDay,
                             notPush: item.allNotPush || '',
                             remark: item.allremark || '',
-                            adsNum: item.adsNum,
-                            allRemark: item.allRemark,
-                            allTrafficState: item.allTrafficState
+                            adsNum: item.adsNum
                         };
+                        let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
+                        if(customPermission && customPermission.patrolPermission) {
+                            obj.allRemark = item.allRemark;
+                            obj.allTrafficState = item.allTrafficState;
+                        }
                         let showData = item.DateInfo.sort(this.sortDate);
                         console.log('showData',showData)
                         for(let date of showData){
@@ -478,9 +487,12 @@ export default {
                             parkSpaceNum: item.parkSpaceNum ||'--',
                             carFlow: item.carFlow || '--',
                             date: date,
-                            remark: item.remark || '--',
-                            trafficState: item.trafficState || '--',
                         };
+                        let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
+                        if(customPermission && customPermission.patrolPermission) {
+                            obj.remark = item.remark || ''
+                            obj.trafficState = item.trafficState || ''
+                        }
                         resObj.showList.push(obj);
                     }
                     result.push(resObj);

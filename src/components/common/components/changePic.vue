@@ -1242,10 +1242,10 @@
                             let dataInfo = res.data.data;
                             // 物料信息弹出框的选点信息
                             let dataArr = dataInfo.dataList;
-                            this.dateRange = {
-                                beginDate: dataInfo.dataList[0].beginDate,
-                                endDate: dataInfo.dataList[0].endDate
-                            };
+                            // this.dateRange = {
+                            //     beginDate: dataInfo.dataList[0].beginDate,
+                            //     endDate: dataInfo.dataList[0].endDate
+                            // };
                             // this.pointArr = this.pointArr.concat(this.formatData(dataArr));
                             this.pointArr = this.formatData(dataArr)
 
@@ -1313,6 +1313,11 @@
                     }
 
                 }
+                // 设置排期
+                this.dateRange = {
+                    beginDate: item.startDate,
+                    endDate: item.endDate
+                };
                 // console.log(item,this.oneEditInfo);
                 this.changePicDetailModal = true
                 this.changePicDetailInfo = item

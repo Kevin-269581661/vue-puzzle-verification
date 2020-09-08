@@ -238,7 +238,7 @@
                 <el-button v-if="isEdit" @click="cancelEdit">取 消</el-button>
                 <el-button v-if="!isEdit" plain @click="exportPath('one')">导 出</el-button>
                 <el-button plain v-if="!isEdit && showCreateBtn" @click="isEdit = true">编 辑</el-button>
-                <el-button plain @click="saveResToLine" :loading="saveLoading">{{isEdit ? '保 存' : '关 闭'}}
+                <el-button plain :disabled="saveDisable" @click="saveResToLine" :loading="saveLoading">{{isEdit ? '保 存' : '关 闭'}}
                 </el-button>
             </div>
         </el-dialog>
@@ -360,6 +360,16 @@
             this.getTableList()
             // 获取城市列表
             this.getCity()
+        },
+        computed: {
+            saveDisable() {
+                for (let key of this.detailList) {
+                    if (key.isInput && key.resourceId) {
+                        return false
+                    }
+                }
+                return true
+            }
         },
         methods: {
             // 保存修改后的路线名称
@@ -563,7 +573,6 @@
                             });
                         }
                         this.resList = resArr;
-                        console.log('this.resList', this.resList)
                         this.resLoading = false
                         this.detailResLoading = false
                     } else {

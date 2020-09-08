@@ -4474,7 +4474,7 @@
                         mVehicle: key.mVehicle,
                         buildNum: key.fNum,
                         schedules: this.dateInput[0] + '-' + this.dateInput[1],
-                        remark: data.remark || "",
+                        remark: key.remark || "",
                         trafficState: key.trafficState || "",
                         tradingArea: key.tradingArea,
                         assetTag: key.assetTag,

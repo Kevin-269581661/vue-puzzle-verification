@@ -621,7 +621,6 @@ export default {
 			let isHad = arr.filter(item =>{
 				return item>0;
 			});
-			console.log(isHad, 'ishhhh----');
 			return isHad.length==0?false:true;
 		},
 		getLinePer(){

@@ -663,6 +663,11 @@
                             :remote-method="remoteMethod"
                             :loading="loadingMore"
                             @focus="moreRadiationIndex = index">
+                            <div class="extra-option " v-if="item.searchOptions.length > 0">
+                                共{{item.searchOptions.length}}个搜索结果
+                                <el-button size="mini" @click="selectAllOption(item)">全 选</el-button>
+                            </div>
+                            <div class="place-view" v-if="item.searchOptions.length > 0"></div>
                             <el-option
                                 v-for="key in item.searchOptions"
                                 :key="key.id"
@@ -2315,6 +2320,14 @@
                         sessFun.messageFun('warning', res.data.MSG || '接口异常')
                     }
                     this.isMoreRadiation = false
+                })
+            },
+            // 辐射圈检索结果全选
+            selectAllOption(radiationInfo) {
+                radiationInfo.searchValue = radiationInfo.searchOptions.map(item=>{
+                    if(item.id) {
+                        return item.id;
+                    }
                 })
             },
             // 辐射点打点、画圆
@@ -4607,6 +4620,39 @@
     .more_radiation_select{
         float: left;
         margin-right: 14px;
+    }
+    .extra-option {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: 10px 20px;
+        height: 40px;
+        line-height: 40px;
+        padding: 0 20px;
+        background: rgba(232,232,232,1);
+        z-index: 100;
+    }
+    .place-view {
+        height: 40px;
+    }
+    .more_radiation_select /deep/ .el-select__tags {
+        width: calc(100% - 4px);
+        max-width: unset !important;
+        max-height: 100px;
+        overflow-y: auto;
+    }
+
+    .more_radiation_select /deep/ .el-select__tags::-webkit-scrollbar {
+        width: 4px;
+        height: 8px;
+        background: #FAFAFA;
+    }
+
+    .more_radiation_select /deep/ .el-select__tags::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        background:rgba(216,216,216,1);
+        border-radius: 2px;
     }
 
     .map_dialog_li /deep/ .el-input__inner{

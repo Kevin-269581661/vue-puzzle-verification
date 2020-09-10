@@ -487,35 +487,6 @@
             custom-class="map_dialog">
             <div class="around_search_body">
                 <div>
-                    <!-- <span class="p_span">框选方式：</span> -->
-                    <!-- <div>
-                        <el-radio v-model="aroundSearchInfo.searchRadio" :label="1">辐射圈并集</el-radio>
-                        <el-popover
-                            placement="top"
-                            width="240"
-                            trigger="hover">
-                            <div class="popover_map_info">
-                                <p>辐射圈范围内覆盖的全部点位均会被筛选出来，如下图示:</p>
-                                <img src="../../assets/images/map/unionset.png" alt="">
-                            </div>
-                            <i slot="reference" class="el-icon-question" style="color: #dfdfdf;margin-right: 12px"></i>
-                        </el-popover>
-                    </div> -->
-                    <!-- <div>
-                        <el-radio v-model="aroundSearchInfo.searchRadio" :label="2">辐射圈交集</el-radio>
-                        <el-popover
-                            placement="top"
-                            width="240"
-                            trigger="hover">
-                            <div class="popover_map_info">
-                                <p>多个辐射圈相交部分范围内的全部点位均会被筛选出来，如下图示:</p>
-                                <img src="../../assets/images/map/intersection.png" alt="">
-                            </div>
-                            <i slot="reference" class="el-icon-question" style="color: #dfdfdf"></i>
-                        </el-popover>
-                    </div> -->
-                </div>
-                <div>
                     <span class="p_span">框选半径：</span>
                     <el-slider :step="0.5" :max="20" class="p_slider" v-model="aroundSearchInfo.searchRadius"></el-slider>
                     <!-- <el-slider :step="0.5" :max="20" :show-input="true" class="p_slider" input-size="mini" input-controls-position="right" v-model="aroundSearchInfo.searchRadius"></el-slider> -->

@@ -35,7 +35,7 @@
                     <el-tab-pane label="选点排期" name="first">
                         <div class="first-wrap box-wrap">
                             <div class="table_wrap">
-                                <el-table border :data="setpointArr" style="width: 100%" :default-sort="{prop: 'recName', order: 'descending'}"  v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
+                                <el-table border :data="currentPagination" style="width: 100%" max-height="500"> :default-sort="{prop: 'recName', order: 'descending'}"  v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                                     <el-table-column type="expand">
                                         <template slot-scope="props">
                                             <el-form label-position="left" inline class="demo-table-expand">
@@ -106,6 +106,16 @@
                                         </template>
                                     </el-table-column>
                                 </el-table>
+                                <el-pagination
+                                    @size-change="handleSizeChange"
+                                    @current-change="handleCurrentChange"
+                                    :current-page="currentPage"
+                                    :page-sizes="[50, 100, 200, 300]"
+                                    :page-size="pageSize"
+                                    style="text-align: right; margin-top: 10px;"
+                                    layout="total, sizes, prev, pager, next, jumper"
+                                    :total="totalNum"> 
+                                </el-pagination>
                             </div>
                         </div>
                     </el-tab-pane>
@@ -200,7 +210,11 @@ export default {
             filtersData: [],
             // 地区过滤结果
             filtersArea: [],
-            planPanel: "first"
+            planPanel: "first",
+            // 分页时页面条目数量
+            pageSize: 100,
+            currentPage: 1,
+            totalNum: 0
         };
     },
     created() {
@@ -209,7 +223,22 @@ export default {
         // 获取选点排期数据
         this.getInitData();
     },
+    computed: {
+        currentPagination() {
+            this.totalNum = this.setpointArr.length;
+                // pageNums = parseInt(tempLen / this.pageSize);
+            return this.setpointArr.slice((this.currentPage-1)*this.pageSize, this.currentPage*this.pageSize)
+        }
+    },
     methods: {
+        handleSizeChange(val) {
+            console.log(`每页 ${val} 条`);
+            this.pageSize = val;
+        },
+        handleCurrentChange(val) {
+            console.log(`当前页: ${val}`);
+            this.currentPage = val;
+        },
         setInfo(data){
            console.log('defail------data', data);
             this.priceSheet = data;
@@ -702,7 +731,7 @@ export default {
 /deep/ .table_wrap .el-table__body-wrapper{
     min-height: auto;
 }
-.box-wrap, #pane-second{
+#pane-second{
     margin-bottom: 32px;
 }
 </style>

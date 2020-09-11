@@ -114,7 +114,7 @@
                                     :page-size="pageSize"
                                     style="text-align: right; margin-top: 10px;"
                                     layout="total, sizes, prev, pager, next, jumper"
-                                    :total="totalNum"> 
+                                    :total="totalNum">
                                 </el-pagination>
                             </div>
                         </div>
@@ -226,21 +226,17 @@ export default {
     computed: {
         currentPagination() {
             this.totalNum = this.setpointArr.length;
-                // pageNums = parseInt(tempLen / this.pageSize);
-            return this.setpointArr.slice((this.currentPage-1)*this.pageSize, this.currentPage*this.pageSize)
+            return this.setpointArr.slice((this.currentPage-1)*this.pageSize, this.currentPage*this.pageSize);
         }
     },
     methods: {
         handleSizeChange(val) {
-            console.log(`每页 ${val} 条`);
             this.pageSize = val;
         },
         handleCurrentChange(val) {
-            console.log(`当前页: ${val}`);
             this.currentPage = val;
         },
         setInfo(data){
-           console.log('defail------data', data);
             this.priceSheet = data;
         },
         // 导出excel
@@ -317,10 +313,8 @@ export default {
             // apid        int             公司对应方案apID
             api.getApi(this.apiVar.Advertisement+"/GetFanganInfo", info)
                 .then(res => {
-                    console.log('resdata---', res.data);
                     if (res.data.SysCode == 200200) {
                         let info = res.data.data;
-                        console.log('info---apTotal', info.apTotal);
                         this.planDetail = {
                             adcID: info.adcID,
                             apID: info.apID,
@@ -351,7 +345,6 @@ export default {
                                 pdOtherFee: this.priceFormat(info.barrier.adOtherFee/100),
                             },
                         };
-                        console.log('this.plandetail---', this.planDetail);
                         // 选点排期
                         this.getSetPoint();
                     } else{
@@ -386,7 +379,6 @@ export default {
             // apid        int             公司对应方案apID
             api.getApi(apiUrl, info)
                 .then(res => {
-                    console.log(res.data);
                     if (!res.data.SysCode) {
                         let initData = res.data;
                         let resInfo = initData.adSpaceInfo;
@@ -508,7 +500,6 @@ export default {
                 apid: apid,
             };
             api.postApi(this.apiVar.Advertisement+"/CheckLock", info).then(res =>{
-                console.log(res.data);
                 if(!res.data.SysCode){
                     if(!res.data.IsLock){
                         this.$router.push("./editPlan");

@@ -622,7 +622,7 @@
                                             border
                                             :row-class-name="tableRowClassName"
                                             :highlight-current-row="true"
-                                            :data="shopShowList"
+                                            :data="currentPagination"
                                             @row-click="shopRowClick"
                                             style="width: 100%"
                                             id="shopCarTable">
@@ -736,20 +736,31 @@
                                                 </template>
                                             </el-table-column>
                                         </el-table>
-
-                                        <p class="warningInfo">
-                                            <span style="background: rgba(255,0,0,0.08)" class="warningInfoColor"></span>
-                                            <span class="warningInfoName">被占点位</span>
-                                            <span style="background: rgba(255,199,0,0.10)" class="warningInfoColor"></span>
-                                            <span class="warningInfoName">连排门、同行资源回避、同行媒体回避</span>
-                                        </p>
+                                        <div class="row-table-bottom">
+                                            <p class="warningInfo">
+                                                <span style="background: rgba(255,0,0,0.08)" class="warningInfoColor"></span>
+                                                <span class="warningInfoName">被占点位</span>
+                                                <span style="background: rgba(255,199,0,0.10)" class="warningInfoColor"></span>
+                                                <span class="warningInfoName">连排门、同行资源回避、同行媒体回避</span>
+                                            </p>
+                                            <el-pagination
+                                                @size-change="handleSizeChange"
+                                                @current-change="handleCurrentChange"
+                                                :current-page="currentPage"
+                                                :page-sizes="[10, 20, 50,100,500]"
+                                                :page-size="cartPageSize"
+                                                class="cart-pagination"
+                                                layout="total, sizes, prev, pager, next, jumper"
+                                                :total="totalNum">
+                                            </el-pagination>
+                                        </div>
                                     </div>
 
-                                    <div style="text-align: center;margin-bottom: 10px">
-                                        <el-button style="margin-top: 12px;" @click="goBack" type="primary"
+                                    <div style="text-align: center; margin-top: 10px">
+                                        <el-button @click="goBack" type="primary"
                                                    v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt071_ck08'}">返回
                                         </el-button>
-                                        <el-button style="margin-top: 12px;" @click="next" type="primary"
+                                        <el-button @click="next" type="primary"
                                                    v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt072_ck03'}">下一步
                                         </el-button>
                                     </div>
@@ -1449,6 +1460,10 @@
                 currPageAsLength:0,
                 adsCount:0,//总可选点位
                 customPermission: {},  //巡点权限
+                // 分页时页面条目数量
+                cartPageSize: 10,
+                currentPage: 1,
+                totalNum: 0
             };
         },
         mounted() {
@@ -1504,8 +1519,18 @@
                 }
                 return num;
             },
+            currentPagination() {
+                this.totalNum = this.shopShowList.length;
+                return this.shopShowList.slice((this.currentPage-1)*this.cartPageSize, this.currentPage*this.cartPageSize);
+            }
         },
         methods: {
+            handleSizeChange(val) {
+                this.cartPageSize = val;
+            },
+            handleCurrentChange(val) {
+                this.currentPage = val;
+            },
             // 导入方案弹出框
             importFanan(type){
                 if(type == 'res'){
@@ -5513,6 +5538,12 @@
         margin-right: 7px !important;
     }
 
+    .row-table-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
     /*购物车提示信息*/
     .warningInfoColor{
         display: inline-block;
@@ -5525,6 +5556,10 @@
     .warningInfo .warningInfoName{
         color: #333;
         font-size: 12px;
+    }
+    /* 购物车表格分页 */
+    .cart-pagination /deep/ .el-input__inner{
+        width: 100%;
     }
     /*状态行*/
     /deep/ .el-table .warning-row {
@@ -6042,7 +6077,7 @@
 
     .step2 /deep/ .el-dialog {
         width: 1100px;
-        height: 680px;
+        height: 700px;
     }
 
     .step3 /deep/ .el-dialog {

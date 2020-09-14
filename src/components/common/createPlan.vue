@@ -870,15 +870,27 @@
                                             </template>
                                         </el-table-column>
                                     </el-table>
-                                    <p class="warningInfo">
-                                        <span style="background: rgba(255,0,0,0.08)" class="warningInfoColor"></span>
-                                        <span class="warningInfoName">被占点位</span>
-                                        <span style="background: rgba(255,199,0,0.10)" class="warningInfoColor"></span>
-                                        <span class="warningInfoName">连排门、同行资源回避、同行媒体回避</span>
-                                    </p>
+                                    <div class="row-table-bottom">
+                                        <p class="warningInfo">
+                                            <span style="background: rgba(255,0,0,0.08)" class="warningInfoColor"></span>
+                                            <span class="warningInfoName">被占点位</span>
+                                            <span style="background: rgba(255,199,0,0.10)" class="warningInfoColor"></span>
+                                            <span class="warningInfoName">连排门、同行资源回避、同行媒体回避</span>
+                                        </p>
+                                        <el-pagination
+                                            @size-change="handleSizeChange"
+                                            @current-change="handleCurrentChange"
+                                            :current-page="currentPage"
+                                            :page-sizes="[10, 20, 50,100,500]"
+                                            :page-size="cartPageSize"
+                                            class="cart-pagination"
+                                            layout="total, sizes, prev, pager, next, jumper"
+                                            :total="totalNum">
+                                        </el-pagination>
+                                    </div>
 
-                                    <div style="text-align: center;margin-bottom: 10px">
-                                        <el-button style="margin-top: 12px;" @click="next" type="primary"
+                                    <div style="text-align: center; margin-top: 10px;">
+                                        <el-button @click="next" type="primary"
                                                    v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt072_ck03'}">下一步
                                         </el-button>
                                     </div>
@@ -1607,6 +1619,10 @@
                 adsCount:0,//总可选点位
                 // 定制权限
                 customPermission: {},
+                // 购物车分页时页面条目数量
+                cartPageSize: 10,
+                currentPage: 1,
+                totalNum: 0
 
 
             };
@@ -1651,8 +1667,18 @@
                 }
                 return this.shopingList.length
             },
+            currentPagination() {
+                this.totalNum = this.shopShowList.length;
+                return this.shopShowList.slice((this.currentPage-1)*this.cartPageSize, this.currentPage*this.cartPageSize);
+            }
         },
         methods: {
+            handleSizeChange(val) {
+                this.cartPageSize = val;
+            },
+            handleCurrentChange(val) {
+                this.currentPage = val;
+            },
             // 分页
             changePage(val) {
                 // console.log('当前页',val)

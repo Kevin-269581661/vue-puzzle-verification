@@ -756,7 +756,7 @@
                                         </div>
                                     </div>
 
-                                    <div style="text-align: center; margin-top: 10px">
+                                    <div style="text-align: center; margin-top: 10px;">
                                         <el-button @click="goBack" type="primary"
                                                    v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt071_ck08'}">返回
                                         </el-button>
@@ -1460,7 +1460,7 @@
                 currPageAsLength:0,
                 adsCount:0,//总可选点位
                 customPermission: {},  //巡点权限
-                // 分页时页面条目数量
+                // 购物车分页时页面条目数量
                 cartPageSize: 10,
                 currentPage: 1,
                 totalNum: 0

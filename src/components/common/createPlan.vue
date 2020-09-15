@@ -745,7 +745,7 @@
 
                                     <el-table
                                         border
-                                        :data="shopShowList"
+                                        :data="currentPagination"
                                         :default-sort="{prop: 'mID', order: 'descending'}"
                                         :row-class-name="tableRowClassName"
                                         @row-click="shopRowClick"
@@ -1623,8 +1623,6 @@
                 cartPageSize: 10,
                 currentPage: 1,
                 totalNum: 0
-
-
             };
         },
         mounted() {
@@ -5793,6 +5791,13 @@
         margin-right: 7px !important;
     }
 
+    .row-table-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+
     /*购物车提示信息*/
     .warningInfoColor {
         display: inline-block;
@@ -5805,6 +5810,11 @@
     .warningInfo .warningInfoName {
         color: #333;
         font-size: 12px;
+    }
+
+    /* 购物车表格分页 */
+    .cart-pagination /deep/ .el-input__inner{
+        width: 100%;
     }
 
     /*状态行*/

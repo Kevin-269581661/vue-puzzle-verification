@@ -63,8 +63,25 @@
                     @change="changeMonthToCompare('end')">
                 </el-date-picker>
             </div>
-            <el-tabs style="height: 440px;border: 1px solid #e5e6e9;" v-model="activeTabsName" @tab-click="tabHandleClick">
+            <el-tabs style="height: 480px;border: 1px solid #e5e6e9;" v-model="activeTabsName" @tab-click="tabHandleClick">
                 <el-tab-pane label="成交金额" name="price">
+                    <div style="margin-top: 8px">
+                        <el-radio-group v-model="radioAmount" size="mini" @change="switchRadioAmount">
+                            <el-radio-button label="签约额"></el-radio-button>
+                            <el-radio-button label="执行额"></el-radio-button>
+                        </el-radio-group>
+                        <el-tooltip content="Top center" placement="top">
+                            <ul slot="content">
+                                <li>
+                                    签约额：均为合同金额，未扣除总部收益部分
+                                </li>
+                                <li>
+                                    执行额：该外地执行额仅统计投放在直营城市中的点位
+                                </li>
+                            </ul>
+                            <img class="quesition-icon" src="../../assets/images/question_icon.png" />
+                        </el-tooltip>
+                    </div>
                    <div id="price_bar_box"
                         v-loading="priceBoxLoading"
                         element-loading-text="玩命加载中.."
@@ -403,11 +420,23 @@
                 // 金额图表数据
                 priceBoxLoading: false,     // 金额总数图标loading
                 turnoverDataShow: {
-                    priceData: [],
                     cityName: [],
-                    compareDataByDate: [],
+                    sourceData: {
+                        nativePriceArr: [],
+                        nationwidePriceArr: []
+                    },
+                    compareData: {
+                        nativePriceArr: [],
+                        nationwidePriceArr: []
+                    },
                     turnoverTitle: ['订单金额']
                 },
+                // turnoverDataShow: {
+                //     priceData: [],
+                //     cityName: [],
+                //     compareDataByDate: [],
+                //     turnoverTitle: ['订单金额']
+                // },
                 turnoverDateMonth: ['2019-03', ''],
                 // 订单数柱状图echarts
                 orderEcharts: '',
@@ -502,6 +531,7 @@
                 // 应用中心
                 appCenter: '',
                 isSlideDown: true,
+                radioAmount: '签约额'
             }
         },
         components: {
@@ -733,7 +763,8 @@
                 if (this.turnoverCompare) {
                     this.changeMonthToCompare('end')
                 } else {
-                    this.turnoverDataShow.compareDataByDate = []
+                    this.turnoverDataShow.compareData = []
+                    // this.turnoverDataShow.compareDataByDate = []
                     this.DateMonth[1] = ''
                     this.setTurnoverBar()
                 }
@@ -813,26 +844,104 @@
                 api.getApi(this.apiVar.Count + '/GetOrderIncomeByMonth',params).then(res=>{
                     // console.log('成交金额接口',res)
                     if(res.data !== '' && res.data !== null && res.data !== undefined){
-                        let dataArr = res.data
-                        let priceData = []
-                        let cityName = []
-                        let compareDataByDate = []
-                        for(let key of dataArr){
-                            // 是否来自对比
-                            if (isCompare) {
-                                compareDataByDate.push(Math.floor(key.orderIncomeInfo[0].increment / 10000) * 100)
-                            } else {
-                                cityName.push(key.asName.substring(0,key.asName.length-6))
-                                priceData.push(Math.floor(key.orderIncomeInfo[0].increment / 10000) * 100)
-                            }
+                        // let dataArr = res.data
+                        
+                        let dataArr = {
+                            "sourceData": [
+                                {
+                                    "name": "北京",
+                                    "contractPrice": {
+                                    "nativePrice": 33,
+                                    "nationwidePrice": 44
+                                    },
+                                    "executePrice": {
+                                    "nativePrice": 33,
+                                    "nationwidePrice": 44
+                                    }
+                                },
+                                {
+                                    "name": "广州",
+                                    "contractPrice": {
+                                    "nativePrice": 33,
+                                    "nationwidePrice": 44
+                                    },
+                                    "executePrice": {
+                                    "nativePrice": 33,
+                                    "nationwidePrice": 44
+                                    }
+                                }
+                                ],
+                                "compareData": [
+                                {
+                                    "name": "北京",
+                                    "contractPrice": {
+                                    "nativePrice": 33,
+                                    "nationwidePrice": 44
+                                    },
+                                    "executePrice": {
+                                    "nativePrice": 33,
+                                    "nationwidePrice": 44
+                                    }
+                                },
+                                {
+                                    "name": "广州",
+                                    "contractPrice": {
+                                    "nativePrice": 33,
+                                    "nationwidePrice": 44
+                                    },
+                                    "executePrice": {
+                                    "nativePrice": 33,
+                                    "nationwidePrice": 44
+                                    }
+                                }
+                            ]
                         }
+                        // 将数据转成柱形图所需数组格式
+                        let cityName = [],
+                            sourceData = {
+                                nativePriceArr: [],
+                                nationwidePriceArr: []
+                            },
+                            compareData = {
+                                nativePriceArr: [],
+                                nationwidePriceArr: []
+                            };
+                        dataArr['sourceData'].forEach(item=>{
+                            cityName.push(item.name);
+                            sourceData.nativePriceArr.push(item.contractPrice.nativePrice);
+                            sourceData.nationwidePriceArr.push(item.contractPrice.nationwidePrice);
+                        });
+                        dataArr['compareData'].forEach(item=>{
+                            // cityName.push(item.name);
+                            compareData.nativePriceArr.push(item.executePrice.nativePrice);
+                            compareData.nationwidePriceArr.push(item.executePrice.nationwidePrice);
+                        })
+                        // let sourceData = dataArr['2020-08'];
+                        // let compareData = dataArr['2020-09'];
+                        // let priceData = []
+                        // let cityName = []
+                        // let compareDataByDate = []
+                        // for(let key of dataArr){
+                        //     // 是否来自对比
+                        //     if (isCompare) {
+                        //         compareDataByDate.push(Math.floor(key.orderIncomeInfo[0].increment / 10000) * 100)
+                        //     } else {
+                        //         cityName.push(key.asName.substring(0,key.asName.length-6))
+                        //         priceData.push(Math.floor(key.orderIncomeInfo[0].increment / 10000) * 100)
+                        //     }
+                        // }
                         if (isCompare){
-                            this.turnoverDataShow.compareDataByDate = compareDataByDate
+                            // this.turnoverDataShow.compareDataByDate = compareDataByDate
                         } else {
-                            this.turnoverDataShow.cityName = cityName
-                            this.turnoverDataShow.priceData = priceData
+                            // this.turnoverDataShow.cityName = cityName
+                            // this.turnoverDataShow.priceData = priceData
                             this.setOrderCountData(endTime, false)
                         }
+                        this.turnoverDataShow = {
+                            cityName: cityName,
+                            sourceData: sourceData,
+                            compareData: compareData,
+                        };
                         // console.log('this.turnoverDataShow',this.turnoverDataShow)
                         // 销售金额柱状图
                         this.setTurnoverBar()
@@ -841,6 +950,10 @@
                         this.messageFun('warning','暂无数据')
                     }
                 })
+            },
+            // 切换签约额和执行额（单选）
+            switchRadioAmount(val) {
+                this.setTurnoverBar()
             },
             // 获取订单数量总量增量 GetOrderCountByMonth
             setOrderCountData(endTime,isCompare){
@@ -884,17 +997,220 @@
             },
             // 金额图表
             setTurnoverBar() {
+                // console.log('this.turnoverDataShow', this.turnoverDataShow)
+                this.turnoverEcharts = this.$echarts.init(this.$refs.turnoverDataBar);
+                let that = this
+                // 第二个参数为true,不会和之前的option合并
+                this.turnoverEcharts.setOption({
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                            type: 'shadow',        // 默认为直线，可选为：'line' | 'shadow'
+                            shadowStyle: {
+                                shadowColor: '#f5f5f5'
+                            }
+                        },
+                        backgroundColor: '#FFFFFF',
+                        padding: 0,
+                        borderColor: '#dddddd',
+                        borderWidth: 1,
+                        formatter: function (params) {
+                            console.log(params)
+                            let eleStr = '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
+                                    '<span>' + '类目' + '</span>' + '<span>' + (that.radioAmount || '') +
+                                    '</span>' + '</p>' + '<br/>';
+                            params.forEach(item=>{
+                                eleStr += '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; ">' +
+                                    '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: ' + item.color + ';margin-right: 5px"></i>' + item.seriesName + '</span>' + that.priceFormat(item.data) + '</p>';
+                            })
+                            if(that.radioAmount === '签约额') {
+                                // 本地单签约额、全国单签约额
+
+                            } else if(that.radioAmount === '执行额') {
+                                // 本地单执行额、本地全国单执行额、全国单外地执行额
+
+                            }
+                            return eleStr;
+                            /* if (params.length == 3 || params.length == 6) {
+                                return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
+                                    '<span>' + '类目' + '</span>' + '<span>' + (that.radioAmount || '') +
+                                    '</span>' + '</p>' + '<br/>' +
+                                    '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; ">' +
+                                    '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: rgba(24, 144, 255, 1);margin-right: 5px"></i>' + params[0].seriesName + '</span>' + that.priceFormat(params[0].data) + '</p>' + '</br>' +
+                                    '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; margin-top: -20px">' +
+                                    '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: rgba(54, 207, 201, 1);margin-right: 5px"></i>' + params[1].seriesName + '</span>' + that.priceFormat(params[1].data) + '</p>' + '</br>' +
+                                    '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; margin-top: -20px">' +
+                                    '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: rgba(255, 145, 24, 1);margin-right: 5px"></i>' + params[1].seriesName + '</span>' + that.priceFormat(params[2].data) + '</p>'
+                            } else if(params.length == 2 || params.length == 4) {
+                                return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
+                                    '<span>' + '类目' + '</span>' + '<span>' + (that.radioAmount || '') +
+                                    '</span>' + '</p>' + '<br/>' +
+                                    '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; ">' +
+                                    '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: rgba(24, 144, 255, 1);margin-right: 5px"></i>' + params[0].seriesName + '</span>' + that.priceFormat(params[0].data) + '</p>' + '</br>' +
+                                    '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; margin-top: -20px">' +
+                                    '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: rgba(255, 145, 24, 1);margin-right: 5px"></i>' + params[1].seriesName + '</span>' + that.priceFormat(params[1].data) + '</p>'
+                            } */
+                        },
+                    },
+                    legend: {
+                        top: 'bottom',
+                        left: 'center',
+                        icon: 'circle',
+                        itemHeight: 8,
+                        itemWidth: 8,
+                        data: that.radioAmount === '签约额' ? ['本地单签约额', '全国单签约额'] : ['本地单执行额', '本地全国单执行额', '全国单外地执行额']
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '7%',
+                        x: 100,     //控制x轴文字与底部的距离
+                        y2: 200,    // y2可以控制倾斜的文字与最右边的距离，放置倾斜的文字超过显示区域
+                        containLabel: true
+                    },
+                    xAxis: [
+                        {
+                            type: 'category',
+                            data: this.turnoverDataShow.cityName,
+                            axisTick: {
+                                alignWithLabel: true
+                            },
+                            axisLabel: {
+                                //坐标轴刻度标签
+                                margin: 7, //刻度标签与轴线之间的距离
+                                interval: 0,    //强制文字产生间隔
+                                // rotate: 25,     //文字逆时针旋转25°
+                                textStyle: {
+                                    fontFamily: "DINPro-Regular",
+                                    color: "#2C313C" //坐标轴刻度文字的颜色
+                                }
+                            },
+                            axisLine: {
+                                //坐标轴线条相关设置(颜色等)
+                                lineStyle: {
+                                    color: "#E8E8E8"
+                                }
+                            },
+                        }
+                    ],
+                    yAxis: [
+                        {
+                            type: 'value',
+                            axisLine: {
+                                //坐标轴线条相关设置(颜色等)
+                                lineStyle: {
+                                    color: "#E8E8E8"
+                                }
+                            },
+                            axisLabel: {
+                                //坐标轴刻度标签
+                                margin: 7, //刻度标签与轴线之间的距离
+                                textStyle: {
+                                    fontFamily: "DINPro-Regular",
+                                    color: "#2C313C" //坐标轴刻度文字的颜色
+                                }
+                            },
+                            splitLine: {
+                                lineStyle: {
+                                    color: "#E8E8E8",
+                                    type: "dashed"
+                                }
+                            }
+                        }
+                    ],
+                    series: that.radioAmount === '签约额' ?
+                    [
+                        {
+                            color: 'rgba(24, 144, 255, 1)',
+                            name: '本地单签约额',
+                            type: 'bar',
+                            barWidth: '10%',
+                            data: this.turnoverDataShow.sourceData.nativePriceArr,
+                        },
+                        {
+                            color: 'rgba(255, 145, 24, 1)',
+                            name: '全国单签约额',
+                            type: 'bar',
+                            barWidth: '10%',
+                            data: this.turnoverDataShow.sourceData.nationwidePriceArr,
+                        },
+                        {
+                            color: 'rgba(24, 144, 255, 0.35)',
+                            name: '本地单签约额',
+                            type: 'bar',
+                            barWidth: '10%',
+                            data: this.turnoverDataShow.compareData.nativePriceArr,
+                        },
+                        {
+                            color: 'rgba(255, 145, 24, 0.35)',
+                            name: '全国单签约额',
+                            type: 'bar',
+                            barWidth: '10%',
+                            data: this.turnoverDataShow.compareData.nationwidePriceArr,
+                        }
+                    ]
+                    :
+                    [
+                        {
+                            color: 'rgba(24, 144, 255, 1)',
+                            name: '本地单执行额',
+                            type: 'bar',
+                            barWidth: '10%',
+                            data: this.turnoverDataShow.sourceData.nativePriceArr,
+                        },
+                        {
+                            color: 'rgba(54, 207, 201, 1)',
+                            name: '本地全国单执行额',
+                            type: 'bar',
+                            barWidth: '10%',
+                            data: this.turnoverDataShow.sourceData.nationwidePriceArr,
+                        },
+                        {
+                            color: 'rgba(255, 145, 24, 1)',
+                            name: '全国单外地执行额',
+                            type: 'bar',
+                            barWidth: '10%',
+                            data: this.turnoverDataShow.sourceData.nationwidePriceArr,
+                        },
+                        {
+                            color: 'rgba(24, 144, 255, 0.35)',
+                            name: '本地单执行额',
+                            type: 'bar',
+                            barWidth: '10%',
+                            data: this.turnoverDataShow.compareData.nativePriceArr,
+                        },
+                        {
+                            color: 'rgba(54, 207, 201, 0.35)',
+                            name: '本地全国单执行额',
+                            type: 'bar',
+                            barWidth: '10%',
+                            data: this.turnoverDataShow.compareData.nationwidePriceArr,
+                        },
+                        {
+                            color: 'rgba(255, 145, 24, 0.35)',
+                            name: '全国单外地执行额',
+                            type: 'bar',
+                            barWidth: '10%',
+                            data: this.turnoverDataShow.compareData.nationwidePriceArr,
+                        }
+                    ]
+                }, true);
+                window.addEventListener("resize", ()=> {
+                    this.turnoverEcharts.resize();
+                })
+            },
+            setTurnoverBarBak() {
                 this.turnoverEcharts = this.$echarts.init(this.$refs.turnoverDataBar);
                 let that = this
                 this.turnoverEcharts.setOption({
-                    title: {
-                        text: '成交金额',
-                        textStyle: {      //主标题
-                            "fontSize": 14,
-                            "fontWeight": 'bolder',
-                            "color": '#000'
-                        },
-                    },
+                    // title: {
+                    //     text: '成交金额',
+                    //     textStyle: {      //主标题
+                    //         "fontSize": 14,
+                    //         "fontWeight": 'bolder',
+                    //         "color": '#000'
+                    //     },
+                    // },
                     tooltip: {
                         trigger: 'axis',
                         axisPointer: {            // 坐标轴指示器，坐标轴触发有效
@@ -995,6 +1311,13 @@
                             type: 'bar',
                             barWidth: '10%',
                             data: this.turnoverDataShow.priceData,
+                        },
+                        {
+                            color: '#BDDEFD',
+                            name: this.turnoverDateMonth[1],
+                            type: 'bar',
+                            barWidth: '10%',
+                            data: this.turnoverDataShow.compareDataByDate,
                         },
                         {
                             color: '#BDDEFD',
@@ -1568,6 +1891,22 @@
     /deep/ .SM_order_price .el-tabs__content{
         padding: 0 40px 20px 40px;
     }
+
+    /deep/ .question-popover2 {
+        width: 352px;
+        height: 54px;
+        background: rgba(0, 0, 0, 0.75);
+        box-shadow: 0px 9px 28px 8px rgba(0, 0, 0, 0.05), 0px 6px 16px 0px rgba(0, 0, 0, 0.08), 0px 3px 6px -4px rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
+    }
+
+    .quesition-icon {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        filter: brightness(0.75);
+    }
+
     .turnover_charts,.order_charts{
         /*width: 1200px;*/
         height: 360px;

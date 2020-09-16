@@ -72,10 +72,10 @@
                         </el-radio-group>
                         <el-tooltip content="Top center" placement="top">
                             <ul slot="content">
-                                <li>
+                                <li style="line-height: 20px;">
                                     签约额：均为合同金额，未扣除总部收益部分
                                 </li>
-                                <li>
+                                <li style="line-height: 20px;">
                                     执行额：该外地执行额仅统计投放在直营城市中的点位
                                 </li>
                             </ul>

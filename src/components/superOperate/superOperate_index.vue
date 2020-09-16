@@ -422,12 +422,20 @@
                 turnoverDataShow: {
                     cityName: [],
                     sourceData: {
-                        nativePriceArr: [],
-                        nationwidePriceArr: []
+                        dateMonth: '',
+                        nativeContractPrice: [],
+                        nativeExecutePrice: [],
+                        nationwideContractPrice: [],
+                        nationwideExecutePrice: [],
+                        nonNativeExecutePrice: []
                     },
                     compareData: {
-                        nativePriceArr: [],
-                        nationwidePriceArr: []
+                        dateMonth: '',
+                        nativeContractPrice: [],
+                        nativeExecutePrice: [],
+                        nationwideContractPrice: [],
+                        nationwideExecutePrice: [],
+                        nonNativeExecutePrice: []
                     },
                     turnoverTitle: ['订单金额']
                 },
@@ -832,104 +840,53 @@
             // 成交金额接口 GetOrderIncomeByMonth
             setOrderIncomeData(endTime,isCompare){
                 // console.log('成交金额endTime',endTime)
-                let starTimeSub = endTime.substring(0,7) + '-01'
-                let params = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token,
-                    // asrIDs: this.returnAsrID(this.sessionData.asrID),
-                    onStart: starTimeSub,
-                    onEnd: this.returnDate(endTime),
-                }
-                // console.log('成交金额接口参数',params,isCompare)
-                api.getApi(this.apiVar.Count + '/GetOrderIncomeByMonth',params).then(res=>{
-                    // console.log('成交金额接口',res)
+                let portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo')) || [],
+                    startDate = this.DateMonth[0],
+                    endDate = this.DateMonth[1],
+                    params = {
+                        uid: this.sessionData.uID,
+                        token: this.sessionData.token,
+                        startDate: startDate + '-01',
+                        endDate: endDate ? (endDate + '-01') : '',
+                        asrIds: portraitInfo.map(item=>item.asrId).join(',') || '1,2,3,4,5,6,7'
+                    };
+                api.getApi('/report/api/v1/getAscrPrice', params).then(res=>{
                     if(res.data !== '' && res.data !== null && res.data !== undefined){
-                        // let dataArr = res.data
-                        
-                        let dataArr = {
-                            "sourceData": [
-                                {
-                                    "name": "北京",
-                                    "contractPrice": {
-                                    "nativePrice": 33,
-                                    "nationwidePrice": 44
-                                    },
-                                    "executePrice": {
-                                    "nativePrice": 33,
-                                    "nationwidePrice": 44
-                                    }
-                                },
-                                {
-                                    "name": "广州",
-                                    "contractPrice": {
-                                    "nativePrice": 33,
-                                    "nationwidePrice": 44
-                                    },
-                                    "executePrice": {
-                                    "nativePrice": 33,
-                                    "nationwidePrice": 44
-                                    }
-                                }
-                                ],
-                                "compareData": [
-                                {
-                                    "name": "北京",
-                                    "contractPrice": {
-                                    "nativePrice": 33,
-                                    "nationwidePrice": 44
-                                    },
-                                    "executePrice": {
-                                    "nativePrice": 33,
-                                    "nationwidePrice": 44
-                                    }
-                                },
-                                {
-                                    "name": "广州",
-                                    "contractPrice": {
-                                    "nativePrice": 33,
-                                    "nationwidePrice": 44
-                                    },
-                                    "executePrice": {
-                                    "nativePrice": 33,
-                                    "nationwidePrice": 44
-                                    }
-                                }
-                            ]
-                        }
+                        let resData = res.data.data
                         // 将数据转成柱形图所需数组格式
                         let cityName = [],
                             sourceData = {
-                                nativePriceArr: [],
-                                nationwidePriceArr: []
+                                dateMonth: startDate || '',
+                                nativeContractPrice: [],
+                                nativeExecutePrice: [],
+                                nationwideContractPrice: [],
+                                nationwideExecutePrice: [],
+                                nonNativeExecutePrice: []
                             },
                             compareData = {
-                                nativePriceArr: [],
-                                nationwidePriceArr: []
+                                dateMonth: endDate || '',
+                                nativeContractPrice: [],
+                                nativeExecutePrice: [],
+                                nationwideContractPrice: [],
+                                nationwideExecutePrice: [],
+                                nonNativeExecutePrice: []
                             };
-                        dataArr['sourceData'].forEach(item=>{
+                        (resData[params.startDate.slice(0,7)] || []).forEach(item=>{
                             cityName.push(item.name);
-                            sourceData.nativePriceArr.push(item.contractPrice.nativePrice);
-                            sourceData.nationwidePriceArr.push(item.contractPrice.nationwidePrice);
+                            sourceData.nativeContractPrice.push(item.contractPrice.nativePrice);
+                            sourceData.nativeExecutePrice.push(item.executePrice.nativePrice);
+                            sourceData.nationwideContractPrice.push(item.contractPrice.nationwidePrice);
+                            sourceData.nationwideExecutePrice.push(item.executePrice.nationwidePrice);
+                            sourceData.nonNativeExecutePrice.push(item.executePrice.nonNativePrice || 0);
                         });
-                        dataArr['compareData'].forEach(item=>{
+                        (resData[params.endDate.slice(0,7)] || []).forEach(item=>{
                             // cityName.push(item.name);
-                            compareData.nativePriceArr.push(item.executePrice.nativePrice);
-                            compareData.nationwidePriceArr.push(item.executePrice.nationwidePrice);
+                            compareData.nativeContractPrice.push(item.contractPrice.nativePrice);
+                            compareData.nativeExecutePrice.push(item.executePrice.nativePrice);
+                            compareData.nationwideContractPrice.push(item.contractPrice.nationwidePrice);
+                            compareData.nationwideExecutePrice.push(item.executePrice.nationwidePrice);
+                            compareData.nonNativeExecutePrice.push(item.executePrice.nonNativePrice || 0);
                         })
-                        // let sourceData = dataArr['2020-08'];
-                        // let compareData = dataArr['2020-09'];
-                        // let priceData = []
-                        // let cityName = []
-                        // let compareDataByDate = []
-                        // for(let key of dataArr){
-                        //     // 是否来自对比
-                        //     if (isCompare) {
-                        //         compareDataByDate.push(Math.floor(key.orderIncomeInfo[0].increment / 10000) * 100)
-                        //     } else {
-                        //         cityName.push(key.asName.substring(0,key.asName.length-6))
-                        //         priceData.push(Math.floor(key.orderIncomeInfo[0].increment / 10000) * 100)
-                        //     }
-                        // }
                         if (isCompare){
                             // this.turnoverDataShow.compareDataByDate = compareDataByDate
                         } else {
@@ -938,11 +895,44 @@
                             this.setOrderCountData(endTime, false)
                         }
                         this.turnoverDataShow = {
-                            cityName: cityName,
+                            cityName: cityName.length > 0 ? cityName : portraitInfo.map(item=>item.asrName),
                             sourceData: sourceData,
                             compareData: compareData,
                         };
                         // console.log('this.turnoverDataShow',this.turnoverDataShow)
+                        // 销售金额柱状图
+                        this.setTurnoverBar()
+                        this.priceBoxLoading = false
+                    } else {
+                        this.messageFun('warning','暂无数据')
+                    }
+                })
+            },
+            setOrderIncomeDataBak(endTime,isCompare){
+                let starTimeSub = endTime.substring(0,7) + '-01'
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    asrIDs: this.returnAsrID(this.sessionData.asrID),
+                    onStart: starTimeSub,
+                    onEnd: this.returnDate(endTime),
+                }
+                api.getApi(this.apiVar.Count + '/GetOrderIncomeByMonth',params).then(res=>{
+                    // console.log('成交金额接口',res)
+                    if(res.data !== '' && res.data !== null && res.data !== undefined){
+                        let dataArr = res.data
+                        let priceData = []
+                        let cityName = []
+                        let compareDataByDate = []
+                        for(let key of dataArr){
+                            // 是否来自对比
+                            if (isCompare) {
+                                compareDataByDate.push(Math.floor(key.orderIncomeInfo[0].increment / 10000) * 100)
+                            } else {
+                                cityName.push(key.asName.substring(0,key.asName.length-6))
+                                priceData.push(Math.floor(key.orderIncomeInfo[0].increment / 10000) * 100)
+                            }
+                        }
                         // 销售金额柱状图
                         this.setTurnoverBar()
                         this.priceBoxLoading = false
@@ -997,7 +987,7 @@
             },
             // 金额图表
             setTurnoverBar() {
-                // console.log('this.turnoverDataShow', this.turnoverDataShow)
+                console.log('this.turnoverDataShow', this.turnoverDataShow)
                 this.turnoverEcharts = this.$echarts.init(this.$refs.turnoverDataBar);
                 let that = this
                 // 第二个参数为true,不会和之前的option合并
@@ -1015,41 +1005,32 @@
                         borderColor: '#dddddd',
                         borderWidth: 1,
                         formatter: function (params) {
-                            console.log(params)
-                            let eleStr = '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
+                            // console.log(params)
+                            let eleStr = ''
+                            if(params.length == 4 || params.length == 6) {
+                                let paramsHalfLen = params.length / 2;
+                                eleStr = '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 320px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
+                                    '<span>' + '类目' + '</span>' + 
+                                    '<span>' + '时间' + '</span>' + 
+                                    '<span>' + (that.radioAmount || '') +'</span>' + 
+                                    '</p>' + '<br/>';
+                                params.forEach((item, index)=>{
+                                    let dateMonthStr = paramsHalfLen < index+1 ? that.turnoverDataShow.compareData.dateMonth : that.turnoverDataShow.sourceData.dateMonth;
+                                    eleStr += '<p style="display: flex; justify-content: space-between; padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; ">' +
+                                              '<span style="width: 130px; white-space: nowrap;"><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: ' + item.color + ';margin-right: 5px"></i>' + item.seriesName + '</span>' + 
+                                              '<span style="flex-grow: 1;">' + dateMonthStr + '</span>' + 
+                                              that.priceFormat(item.data) + '</p>';
+                                })
+                            } else {
+                                eleStr = '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
                                     '<span>' + '类目' + '</span>' + '<span>' + (that.radioAmount || '') +
                                     '</span>' + '</p>' + '<br/>';
-                            params.forEach(item=>{
-                                eleStr += '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; ">' +
+                                params.forEach(item=>{
+                                    eleStr += '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; ">' + 
                                     '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: ' + item.color + ';margin-right: 5px"></i>' + item.seriesName + '</span>' + that.priceFormat(item.data) + '</p>';
-                            })
-                            if(that.radioAmount === '签约额') {
-                                // 本地单签约额、全国单签约额
-
-                            } else if(that.radioAmount === '执行额') {
-                                // 本地单执行额、本地全国单执行额、全国单外地执行额
-
+                                })
                             }
                             return eleStr;
-                            /* if (params.length == 3 || params.length == 6) {
-                                return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
-                                    '<span>' + '类目' + '</span>' + '<span>' + (that.radioAmount || '') +
-                                    '</span>' + '</p>' + '<br/>' +
-                                    '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; ">' +
-                                    '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: rgba(24, 144, 255, 1);margin-right: 5px"></i>' + params[0].seriesName + '</span>' + that.priceFormat(params[0].data) + '</p>' + '</br>' +
-                                    '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; margin-top: -20px">' +
-                                    '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: rgba(54, 207, 201, 1);margin-right: 5px"></i>' + params[1].seriesName + '</span>' + that.priceFormat(params[1].data) + '</p>' + '</br>' +
-                                    '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; margin-top: -20px">' +
-                                    '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: rgba(255, 145, 24, 1);margin-right: 5px"></i>' + params[1].seriesName + '</span>' + that.priceFormat(params[2].data) + '</p>'
-                            } else if(params.length == 2 || params.length == 4) {
-                                return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
-                                    '<span>' + '类目' + '</span>' + '<span>' + (that.radioAmount || '') +
-                                    '</span>' + '</p>' + '<br/>' +
-                                    '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; ">' +
-                                    '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: rgba(24, 144, 255, 1);margin-right: 5px"></i>' + params[0].seriesName + '</span>' + that.priceFormat(params[0].data) + '</p>' + '</br>' +
-                                    '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; margin-top: -20px">' +
-                                    '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: rgba(255, 145, 24, 1);margin-right: 5px"></i>' + params[1].seriesName + '</span>' + that.priceFormat(params[1].data) + '</p>'
-                            } */
                         },
                     },
                     legend: {
@@ -1125,28 +1106,28 @@
                             name: '本地单签约额',
                             type: 'bar',
                             barWidth: '10%',
-                            data: this.turnoverDataShow.sourceData.nativePriceArr,
+                            data: this.turnoverDataShow.sourceData.nativeContractPrice,
                         },
                         {
                             color: 'rgba(255, 145, 24, 1)',
                             name: '全国单签约额',
                             type: 'bar',
                             barWidth: '10%',
-                            data: this.turnoverDataShow.sourceData.nationwidePriceArr,
+                            data: this.turnoverDataShow.sourceData.nationwideContractPrice,
                         },
                         {
                             color: 'rgba(24, 144, 255, 0.35)',
                             name: '本地单签约额',
                             type: 'bar',
                             barWidth: '10%',
-                            data: this.turnoverDataShow.compareData.nativePriceArr,
+                            data: this.turnoverDataShow.compareData.nativeContractPrice,
                         },
                         {
                             color: 'rgba(255, 145, 24, 0.35)',
                             name: '全国单签约额',
                             type: 'bar',
                             barWidth: '10%',
-                            data: this.turnoverDataShow.compareData.nationwidePriceArr,
+                            data: this.turnoverDataShow.compareData.nationwideContractPrice,
                         }
                     ]
                     :
@@ -1156,42 +1137,42 @@
                             name: '本地单执行额',
                             type: 'bar',
                             barWidth: '10%',
-                            data: this.turnoverDataShow.sourceData.nativePriceArr,
+                            data: this.turnoverDataShow.sourceData.nativeExecutePrice,
                         },
                         {
                             color: 'rgba(54, 207, 201, 1)',
                             name: '本地全国单执行额',
                             type: 'bar',
                             barWidth: '10%',
-                            data: this.turnoverDataShow.sourceData.nationwidePriceArr,
+                            data: this.turnoverDataShow.sourceData.nationwideExecutePrice,
                         },
                         {
                             color: 'rgba(255, 145, 24, 1)',
                             name: '全国单外地执行额',
                             type: 'bar',
                             barWidth: '10%',
-                            data: this.turnoverDataShow.sourceData.nationwidePriceArr,
+                            data: this.turnoverDataShow.sourceData.nonNativeExecutePrice,
                         },
                         {
                             color: 'rgba(24, 144, 255, 0.35)',
                             name: '本地单执行额',
                             type: 'bar',
                             barWidth: '10%',
-                            data: this.turnoverDataShow.compareData.nativePriceArr,
+                            data: this.turnoverDataShow.compareData.nativeExecutePrice,
                         },
                         {
                             color: 'rgba(54, 207, 201, 0.35)',
                             name: '本地全国单执行额',
                             type: 'bar',
                             barWidth: '10%',
-                            data: this.turnoverDataShow.compareData.nationwidePriceArr,
+                            data: this.turnoverDataShow.compareData.nationwideExecutePrice,
                         },
                         {
                             color: 'rgba(255, 145, 24, 0.35)',
                             name: '全国单外地执行额',
                             type: 'bar',
                             barWidth: '10%',
-                            data: this.turnoverDataShow.compareData.nationwidePriceArr,
+                            data: this.turnoverDataShow.compareData.nonNativeExecutePrice,
                         }
                     ]
                 }, true);

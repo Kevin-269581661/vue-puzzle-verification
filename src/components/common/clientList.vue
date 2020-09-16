@@ -30,7 +30,8 @@
                     <el-button plain @click="newClient()" v-if="showNewBtn" class="marginR" v-qadn-mta-h5="{id: 'a001_b000_c000_d000_bt003_ck03'}">新建</el-button>
                 </div>
 				<div class="table_wrap">
-					<el-table border :data="currentPlan" @sort-change="sortChange" v-loading="loading" element-loading-text="玩命加载中..." element-loading-spinner="el-icon-loading" style="width: 100%" :default-sort="{prop: 'joinTime', order: 'descending'}">
+					<!-- <el-table border :data="currentPlan" @sort-change="sortChange" v-loading="loading" element-loading-text="玩命加载中..." element-loading-spinner="el-icon-loading" style="width: 100%" :default-sort="{prop: 'joinTime', order: 'descending'}"> -->
+					<el-table border :data="currentPlan" @sort-change="sortChange" v-loading="loading" element-loading-text="玩命加载中..." element-loading-spinner="el-icon-loading" style="width: 100%">
 						<el-table-column prop="realName" label="联系人" min-width="6%" show-overflow-tooltip>
 						</el-table-column>
 						<!--<el-table-column prop="clientRName" label="所在地" min-width="7.2%">-->

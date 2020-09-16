@@ -253,6 +253,23 @@
             };
         },
         created() {
+            let sourceCollectSelectInfo = JSON.parse(sessionStorage.getItem('collectSelectInfo')) || {};
+            let sourceGallerySelectInfo = JSON.parse(sessionStorage.getItem('gallerySelectInfo')) || {};
+            let _this = this;
+            Object.assign(this.collectSelectInfo, sourceCollectSelectInfo);
+            Object.assign(this.gallerySelectInfo, sourceGallerySelectInfo);
+            this.searchInfo = JSON.parse(JSON.stringify(this.gallerySelectInfo));
+            window.addEventListener("beforeunload", function(e) {
+                // e.preventDefault();
+                // e.returnValue = "";
+                if (_this.activeName == 'first') {
+                    sessionStorage.setItem('gallerySelectInfo', JSON.stringify(_this.searchInfo));
+                    sessionStorage.setItem('collectSelectInfo', JSON.stringify(_this.collectSelectInfo));
+                } else if (_this.activeName == 'second') {
+                    sessionStorage.setItem('gallerySelectInfo', JSON.stringify(_this.gallerySelectInfo));
+                    sessionStorage.setItem('collectSelectInfo', JSON.stringify(_this.searchInfo));
+                }
+            });
             this.getSessionData();
             // 行业
             this.getIndustry();
@@ -285,7 +302,6 @@
             },
             // 选择行业
             handleChange(val) {
-                console.log("industryIdArr---------", val);
                 this.industryIdArr = val;
             },
             // 获取所有行业信息

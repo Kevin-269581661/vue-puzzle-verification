@@ -198,7 +198,10 @@
 
             }
         },
-        mounted(){
+        created() {
+            this.industryIdArr = JSON.parse(sessionStorage.getItem('photoGalleryIndustryIdArr')) || [];
+        },
+        mounted() {
             this.getSessionData()
             this.getIndustry()
             this.getIndustryImgList()
@@ -268,7 +271,7 @@
             },
             // 选择行业
             handleChange(val){
-                console.log('val',val)
+                sessionStorage.setItem('photoGalleryIndustryIdArr', JSON.stringify(this.industryIdArr))
             },
             // 搜索
             searchFun(){

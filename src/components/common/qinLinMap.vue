@@ -636,7 +636,7 @@
                             @focus="moreRadiationIndex = index">
                             <div class="extra-option " v-if="item.searchOptions.length > 0">
                                 共{{item.searchOptions.length}}个搜索结果
-                                <el-button size="mini" @click="selectAllOption(item)">全 选</el-button>
+                                <el-button size="mini" @click="selectAllOption(item)">{{selectAllStatus?'取消全选':'全 选'}}</el-button>
                             </div>
                             <div class="place-view" v-if="item.searchOptions.length > 0"></div>
                             <el-option
@@ -1057,6 +1057,8 @@
                         query: '',          // 检索的条件
                     }
                 ],
+                // 多点辐射全选
+                selectAllStatus: false,
                 // 缓存多点辐射时的覆盖物
                 multiPointMarkerList:[],
                 // 当前点击的行
@@ -2295,11 +2297,17 @@
             },
             // 辐射圈检索结果全选
             selectAllOption(radiationInfo) {
-                radiationInfo.searchValue = radiationInfo.searchOptions.map(item=>{
-                    if(item.id) {
-                        return item.id;
-                    }
-                })
+                if(this.selectAllStatus) {
+                    radiationInfo.searchValue = [];
+                    this.selectAllStatus = false;
+                } else {
+                    radiationInfo.searchValue = radiationInfo.searchOptions.map(item=>{
+                        if(item.id) {
+                            return item.id;
+                        }
+                    });
+                    this.selectAllStatus = true;
+                }
             },
             // 辐射点打点、画圆
             setMultiPointMarker(centerInfoList) {
@@ -4594,13 +4602,16 @@
     }
     .extra-option {
         position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         top: 0;
         left: 0;
         right: 0;
         padding: 10px 20px;
         height: 40px;
         line-height: 40px;
-        padding: 0 20px;
+        padding: 0 10px 0 20px;
         background: rgba(232,232,232,1);
         z-index: 100;
     }

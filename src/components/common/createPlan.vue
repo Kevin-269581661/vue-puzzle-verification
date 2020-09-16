@@ -1299,8 +1299,8 @@
             };
             let validateName = (rule, value, callback) => {
                 if (value) {
-                    if (value.match(/^\s+$/)) {
-                        callback(new Error('方案名称不能为空格'));
+                    if (value.match(/\s/)) {
+                        callback(new Error('方案名称不能带有空格'));
                     } else {
                         callback();
                     }

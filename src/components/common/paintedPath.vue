@@ -374,6 +374,7 @@
         methods: {
             // 保存修改后的路线名称
             submitRouteName() {
+                this.newRouteName = this.newRouteName.trim();
                 if(!this.newRouteName) {
                     this.messageFun('warning', '线路名称不能为空哦~');
                     return
@@ -382,7 +383,7 @@
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                     lineId: this.detailLineId,
-                    lineName: this.newRouteName
+                    lineName: this.newRouteName.trim()
                 }
                 api.postApi(this.apiVar.engineer +'/edit', params).then(res => {
                     if (res.data.SysCode == 200200 || res.data.MSG === "成功") {

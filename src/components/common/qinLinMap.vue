@@ -640,8 +640,8 @@
                             </div>
                             <div class="place-view" v-if="item.searchOptions.length > 0"></div>
                             <el-option
-                                v-for="key in item.searchOptions"
-                                :key="key.id"
+                                v-for="(key, index) in item.searchOptions"
+                                :key="index"
                                 :label="key.title"
                                 :value="key.id">
                                 <div slot="">
@@ -2152,6 +2152,10 @@
                                 // 判断状态是否正确
                                 if (local.getStatus() == 0){
                                     // console.log(results.getPoi);
+                                    let totalResults = results.getNumPois();
+                                    let totalPages = results.getNumPages();
+                                    let currPage = results.getPageIndex();// 获取当前是第几页数据
+                                    
                                     for (let i = 0; i < results.getCurrentNumPois(); i++) {
                                         //在当前页面下获取页面中的内容
                                         let tempPoi = results.getPoi(i);
@@ -2171,16 +2175,22 @@
                                             }
                                         }
                                     }
-                                    this.loadingMore = false
-                                    this.moreRadiationInfo[this.moreRadiationIndex].searchOptions = resultArray
+                                    if (currPage < totalPages - 1) {
+                                        // 遍历到最后一页之后不再进行下一页搜索，此时，已经获取到全部的搜索结果
+                                        local.gotoPage(results.getPageIndex() + 1);
+                                    } else {
+                                        this.loadingMore = false
+                                        this.moreRadiationInfo[this.moreRadiationIndex].searchOptions = resultArray
+                                    }
                                 } else {
                                     console.log('没有搜索到该关键词！')
                                 }
                             },
-                            pageCapacity: 100
+                            pageCapacity: 50
                         };
                         let local = new BMap.LocalSearch(this.resMap,options)
-                        local.search((this.$route.query.city || this.adListParams.city) + query)
+                        local.search(`${this.$route.query.city || this.adListParams.city} ${query}`)
+                        // local.search((this.$route.query.city || this.adListParams.city) + query)
                     }
 
                 } else {
@@ -4612,7 +4622,8 @@
         height: 40px;
         line-height: 40px;
         padding: 0 10px 0 20px;
-        background: rgba(232,232,232,1);
+        background: #fff;
+        border-bottom: 1px solid #e4e7ed;
         z-index: 100;
     }
     .place-view {
@@ -4787,8 +4798,13 @@
     }
 
     .radiation_select_popper .el-select-dropdown__item{
-        height: 56px;
+        height: 55px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
 
+    .radiation_select_popper .el-select-dropdown__item p:first-child{
+        line-height: 25px;
     }
 
     .radiation_select_popper .select_address{

@@ -232,6 +232,18 @@
                                 </div>
                             </el-alert>
                         </li>
+                        <!-- 南宁定制不用选择导出排版 -->
+                        <!-- 亲粤邻定制 -->
+                        <li v-if="templateType !== null && templateType == 1">
+                            <span>导出排版：</span>
+                            <el-select class="pptx-select" v-model="pptxType" placeholder="请选择">
+                                <el-option value="2" label="2张/(点*页)"></el-option>
+                                <el-option value="3" label="3张/(点*页)"></el-option>
+                                <el-option value="4" label="4张/(点*页)"></el-option>
+                                <el-option value="2pointPerPage" label="2点位/页"></el-option>
+                            </el-select>
+                        </li>
+                        <!-- 通用模板 -->
                         <li v-if="templateType !== null && templateType == 0">
                             <span>导出排版：</span>
                             <el-select class="pptx-select" v-model="pptxType" placeholder="请选择">
@@ -252,8 +264,8 @@
                         </li>
                         <li>
                             <span>导出条件：</span>
-                            <el-select class="pptx-select" v-model="pptxFilter" placeholder="(选填)选择其他导出条件">
-                            <el-option value="0" label="剔除被终止点位"></el-option>
+                            <el-select multiple class="pptx-select" v-model="pptxFilter" placeholder="(选填)选择其他导出条件" @change="changeCondition">
+                                <el-option v-for="(item, index) in conditionArr" :key="index" :value="index" :label="item"></el-option>
                             </el-select>
                         </li>
                     </ul>
@@ -344,7 +356,7 @@
                 customizeCode: 0,//为0时为普通模板，大于0自定义模板
                 templateType: null,//模板类型
                 pptxType: '2',//导出pptx排版类型
-                pptxFilter:'',//导出pptx条件
+                pptxFilter: [],//导出pptx条件
                 checkAllDate:true,//全部档期
                 checkPeriodArr:[],//导出pptx档期
                 periodArr:[],
@@ -402,6 +414,18 @@
                 pptLoading: false,
                 pdfLoading: false,
             };
+        },
+        computed: {
+            conditionArr() {
+                if(this.pptxType == '2pointPerPage') {
+                    this.pptxFilter = this.pptxFilter.filter(item=>{
+                        return item*1 === 0
+                    });
+                    return ['剔除被终止点位'];
+                } else {
+                    return ['剔除被终止点位', '推荐理由', '楼盘信息'];
+                }
+            }
         },
         created() {
             this.getRouter();
@@ -461,7 +485,7 @@
             },
             showPptxDialog(){
                 this.pptxdialogVisible = true
-                this.pptxFilter = ''
+                this.pptxFilter = []
             },
             // 缓存模板选项
             templateChange(value) {
@@ -480,6 +504,10 @@
                 if(this.checkAllDate){
                     this.checkPeriodArr = []
                 }
+            },
+            // 选择排版
+            changeCondition(val) {
+                console.log(val)
             },
             //选择排期
             chooseDate(){
@@ -502,12 +530,12 @@
                 api.getApi(this.apiVar.Advertisement + "/GetCustomizeReports", info).then(res => {
                     if (!res.data.SysCode) {
                         if (!!res.data.customList && Array.isArray(res.data.customList)) {
-                            if(res.data.customList.length == 0 || res.data.customList[0].type != 1) {
+                            if(res.data.customList.length == 0 || res.data.customList[0].code < 1) {
                                 _this.isCustomize = false
                             } else {
                                 // type： 0pdf, 1pptx
                                 _this.isCustomize = true
-                                _this.customizeCode = res.data.customList[0].code || 0
+                                _this.customizeCode = res.data.customList[0].code
                             }
                         }
                     } else {
@@ -560,8 +588,14 @@
                         info.periods = this.checkPeriodArr.join(',')
                     }
                     info.customizeCode = this.templateType == 1 ? this.customizeCode : 0
-                    info.exportAllPoint = this.pptxFilter==='0'?0:1
-                    info.photoCountPerPage = this.pptxType*1
+                    info.exportAllPoint = (this.pptxFilter.indexOf('0') != -1)?0:1
+                    if(this.pptxType == '2pointPerPage') {
+                        // 定制2点位/页
+                        info.pagePointCnt = 2;
+                        info.photoCountPerPage = 4;
+                    } else {
+                        info.photoCountPerPage = this.pptxType*1
+                    }
                 }
                 const tempPage = window.open('', '_blank');
                 loading = true;
@@ -585,8 +619,15 @@
                                 fileInfo.periods = this.checkPeriodArr.join(',')
                             }
                             fileInfo.customizeCode = this.templateType == 1 ? this.customizeCode : 0
-                            fileInfo.photoCountPerPage = this.pptxType*1
-                            fileInfo.exportAllPoint = this.pptxFilter==='0'?0:1
+                            
+                            if(this.pptxType == '2pointPerPage') {
+                                // 定制2点位/页
+                                fileInfo.pagePointCnt = 2;
+                                fileInfo.photoCountPerPage = 4;
+                            } else {
+                                fileInfo.photoCountPerPage = this.pptxType*1
+                            }
+                            fileInfo.exportAllPoint = (this.pptxFilter.indexOf('0') != -1)?0:1
                         }
                         fileInfo.type = this.stateToNum(type, name);
                         this.getFileProcessFun(tempPage, fileInfo);

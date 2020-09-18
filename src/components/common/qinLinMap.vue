@@ -2247,7 +2247,12 @@
                     "endTime": this.adListParams.le,
                     "type": this.aroundSearchInfo.searchRadio,
                     "cityId": this.adListParams.rid,
+                    "suID": this.adListParams.suID,
                     "centerInfoList": this.setCenterInfos()
+                }
+                // QFAD || QADN
+                if((this.systemSource === 1 && this.sessionData.userType === 1) || (this.systemSource === 0 && this.sessionData.uType === 'SM')) {
+                    delete params.suID
                 }
                 if(this.systemSource === 1) {
                     params.playSecond = this.adListParams.playSecond;

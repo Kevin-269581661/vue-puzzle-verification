@@ -884,6 +884,7 @@
                                             :current-page="currentPage"
                                             :page-sizes="[10, 20, 50,100,500]"
                                             :page-size="cartPageSize"
+                                            :pager-count="5"
                                             class="cart-pagination"
                                             layout="total, sizes, prev, pager, next, jumper"
                                             :total="totalNum">
@@ -6351,7 +6352,7 @@
 
     .step2 /deep/ .el-dialog {
         width: 1100px;
-        height: 680px;
+        min-height: 680px;
     }
 
     .step3 /deep/ .el-dialog {

@@ -878,6 +878,7 @@
                                             <span class="warningInfoName">连排门、同行资源回避、同行媒体回避</span>
                                         </p>
                                         <el-pagination
+                                            background
                                             @size-change="handleSizeChange"
                                             @current-change="handleCurrentChange"
                                             :current-page="currentPage"

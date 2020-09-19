@@ -234,7 +234,7 @@
                         </li>
                         <!-- 南宁定制不用选择导出排版 -->
                         <!-- 亲粤邻定制 -->
-                        <li v-if="templateType !== null && templateType == 1">
+                        <li v-if="templateType !== null && templateType == 1 && customizeCode == '2'">
                             <span>导出排版：</span>
                             <el-select class="pptx-select" v-model="pptxType" placeholder="请选择">
                                 <el-option value="2" label="2张/(点*页)"></el-option>
@@ -530,6 +530,7 @@
                 api.getApi(this.apiVar.Advertisement + "/GetCustomizeReports", info).then(res => {
                     if (!res.data.SysCode) {
                         if (!!res.data.customList && Array.isArray(res.data.customList)) {
+                            // 公司下面有不同的定制模板，通过code来区分,
                             if(res.data.customList.length == 0 || res.data.customList[0].code < 1) {
                                 _this.isCustomize = false
                             } else {
@@ -589,6 +590,15 @@
                     }
                     info.customizeCode = this.templateType == 1 ? this.customizeCode : 0
                     info.exportAllPoint = (this.pptxFilter.indexOf('0') != -1)?0:1
+                    // customizeCode: 2 亲粤邻定制模板
+                    this.customizeCode == '2' && (info.customCondition = this.pptxFilter.reduce((accumulator, currentValue) => {
+                        if(currentValue > 0) {
+                            return accumulator!==''?(accumulator + ',' + currentValue):currentValue
+                        } else {
+                                return accumulator
+                            }
+                    }, ''))
+                    console.log('定制---', info.customCondition)
                     if(this.pptxType == '2pointPerPage') {
                         // 定制2点位/页
                         info.pagePointCnt = 2;
@@ -628,6 +638,13 @@
                                 fileInfo.photoCountPerPage = this.pptxType*1
                             }
                             fileInfo.exportAllPoint = (this.pptxFilter.indexOf('0') != -1)?0:1
+                            this.customizeCode == '2' && (fileInfo.customCondition = this.pptxFilter.reduce((accumulator, currentValue) => {
+                                if(currentValue > 0) {
+                                    return accumulator!==''?(accumulator + ',' + currentValue):currentValue
+                                } else {
+                                        return accumulator
+                                    }
+                            }, ''))
                         }
                         fileInfo.type = this.stateToNum(type, name);
                         this.getFileProcessFun(tempPage, fileInfo);

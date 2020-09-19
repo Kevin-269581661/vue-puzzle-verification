@@ -84,6 +84,7 @@
                                                v-qadn-mta-h5="{id: 'a006_b011_c006_d000_bt122_ck05'}"
                                                style="position: relative;top: 2px;float: right;margin-right: 3px">导出
                                     </el-button>
+                                    <el-button style="position: relative;top: 2px;float: right;margin-right: 3px" @click="showRecommendation">推荐理由</el-button>
 
                                 </el-col>
                             </el-row>
@@ -447,6 +448,82 @@
 
                     </div>
                 </el-dialog>
+                <!-- 推荐理由弹框 -->
+                <el-dialog
+                    title="推荐理由"
+                    width="768px"
+                    top="20vh"
+                    :visible.sync="recommendationModal"
+                    >
+                    <el-dialog
+                        width="448px"
+                        title="批量修改推荐理由"
+                        :visible.sync="recommendationInnerModal"
+                        append-to-body
+                        :show-close="false"
+                        class="export-dialog"
+                    >
+                        <div class="step-text">第一步：下载模板并按要求完善推荐理由</div>
+                        <div class="export_step_box">
+                            <img src="../../assets/images/export.png" alt="">
+                            《QADN-数据导入-模板》
+                            <a :href ='apiVar.qadnUrl + "/importTemplate/手动录入推荐理由.xlsx"'
+                            download="数据导入模板.xlsx" class="downloag_btn" @click="dowmLoadFun">点击下载<i class="el-icon-download"></i></a>
+                        </div>
+                        <div class="step-text">第二步：上传编辑好的Excle表格</div>
+                        <div>
+                            <el-upload
+                                ref="exportRes"
+                                drag
+                                :action="exportAction"
+                                :show-file-list="true"
+                                :on-change="exportUploadFile"
+                                :on-remove="exportFileRemove"
+                                :auto-upload="false"
+                                :limit="1"
+                                :multiple="false">
+                                <img src="../../assets/images/export.png" alt="">
+                                <div class="el-upload__text">点击或将文件拖拽到这里上传</div>
+                            </el-upload>
+                        </div>
+                        <div slot="footer" class="export-footer">
+                            <el-button size="small" plain  @click="recommendationInnerModal=false">取 消</el-button>
+                            <!-- <el-button class="export-btn" size="small" type="primary" :loading="isBroundImport"> -->
+                            <el-button class="export-btn" size="small" type="primary" @click="commitFile">
+                               提 交
+                            </el-button>
+                        </div>
+                    </el-dialog>
+                    <el-table
+                        :data="recommendationList"
+                        border
+                        style="width: 100%">
+                        <el-table-column
+                            prop="resName"
+                            label="小区名称"
+                            min-width="6%">
+                        </el-table-column>
+                        <el-table-column
+                            prop="city"
+                            label="城市"
+                            min-width="6%">
+                        </el-table-column>
+                        <el-table-column
+                            prop="district"
+                            label="区域"
+                            min-width="6%">
+                        </el-table-column>
+                        <el-table-column
+                            prop="recommendReason"
+                            label="推荐理由"
+                            min-width="6%">
+                        </el-table-column>
+                    </el-table>
+                    <div slot="footer" class="dialog-footer">
+                        <el-button plain @click="recommendationModal=false">关 闭</el-button>
+                        <el-button type="primary" @click="recommendationInnerModal = true" style="width: 102px; height: 32px;">更改推荐理由</el-button>
+                    </div>
+                </el-dialog>
                 <!--点位更改记录对话框-->
                 <el-dialog
                     title="点位更改记录"
@@ -523,8 +600,8 @@
                         </div>
                     </div>
                     <span slot="footer" class="dialog-footer">
-    <el-button @click="dialogChangePointRecord = false">关 闭</el-button>
-  </span>
+                        <el-button @click="dialogChangePointRecord = false">关 闭</el-button>
+                    </span>
                 </el-dialog>
                 <!--修改订单金额-->
                 <el-dialog
@@ -715,6 +792,12 @@
                 showPainModal:false,
                 // 换画列表
                 painlist: [],
+                // 推荐理由弹框
+                recommendationModal: false,
+                recommendationInnerModal: false,
+                recommendationList: [],
+                exportAction: '/advertisement/RecommendReasonImport',
+                exportFileData: [],
                 //点位更改记录
                 dialogChangePointRecord: false,
                 recordList: {
@@ -1532,6 +1615,46 @@
                     this.getSetPoint()
                 }
 
+            },
+            // 推荐理由
+            // showRecommendation() {
+            //     this.recommendationModal = true;
+            // },
+            // 导入模版下载
+            dowmLoadFun(event) {
+                // 阻止冒泡事件
+                event.stopPropagation();
+            },
+            exportUploadFile(file, fileList) {
+                this.exportFileData = [file];
+            },
+            commitFile() {
+                let formData = new FormData();
+                formData.append('file', this.exportFileData[0].raw);
+                // 上传文件
+                api.postExportFile(this.exportAction + '?apID=' + this.orderDetail.apID, formData, 'blob').then(res => {
+                    
+                }).catch(res => {
+                    console.log(res);
+                });
+            },
+            exportFileRemove(file, fileList){
+                console.log(file, fileList);
+                this.exportFileData = fileList
+            },
+            // 获取该订单小区推荐理由
+            // getRecommendationList() {
+            showRecommendation() {
+                this.recommendationModal = true
+                api.getApi(this.apiVar.Advertisement + "/GetResRecommendReason?apID=" + this.orderDetail.apID).then(res => {
+                    console.log(res.data)
+                    if (res.data.SysCode == 200200) {
+                        this.recommendationList = res.data.data
+
+                    } else {
+                        Message.warning(res.data.MSG)
+                    }
+                })
             },
             //查询点位更新记录
             getPointRecord() {
@@ -2445,6 +2568,77 @@
 
     .record-table-wrap /deep/ .el-table__body-wrapper, .el-table__empty-block {
         min-height: 40px;
+    }
+
+    /* 推荐理由弹框 */
+    .export_step_box {
+        border: 1px dashed rgba(218,218,218,1);
+        padding: 12px 18px;
+        color: rgba(102,102,102,1);
+        font-size: 15px;
+        position: relative;
+    }
+    .export_step_box:hover {
+        cursor: pointer;
+        border-color: #409EFF;
+    }
+    .export-dialog /deep/ .el-dialog__header{
+        padding: 12px 24px 0;
+    }
+    .export-dialog /deep/ .el-dialog__title {
+        font-size: 16px;
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.85);
+        line-height: 24px;
+    }
+    .export-dialog /deep/ .el-dialog__body{
+        padding: 0px 24px 24px;
+    }
+    .step-text {
+        margin: 16px 0;
+        font-size: 14px;
+        font-family: PingFangSC-Medium, PingFang SC;
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.85);
+        line-height: 24px;
+    }
+    .export-footer {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+    .export-footer .export-btn {
+        margin-left: 8px;
+    }
+    .export_step_box img{
+        width: 24px;
+        height: 27px;
+        vertical-align: middle;
+    }
+    .downloag_btn{
+        position: absolute;
+        right: 18px;
+        top: 14px;
+        cursor: pointer;
+        color:rgba(102,102,102,1);
+    }
+    /deep/ .el-upload--text {
+        width: 100%;
+    }
+    /deep/ .el-upload--text .el-upload-list__item{
+        width: 100%;
+    }
+
+    /deep/ .el-upload--text .el-upload-dragger{
+        padding-top: 9%;
+        width: 100%;
+        height: 135px;
+        background: rgba(0, 0, 0, 0.06);
+    }
+
+    /deep/ .el-upload--text .el-upload-dragger img{
+        width: 28px;
+        height: 30px;
     }
 
 </style>

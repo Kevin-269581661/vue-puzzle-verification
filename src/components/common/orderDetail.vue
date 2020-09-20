@@ -489,14 +489,16 @@
                         <div slot="footer" class="export-footer">
                             <el-button size="small" plain  @click="recommendationInnerModal=false">取 消</el-button>
                             <!-- <el-button class="export-btn" size="small" type="primary" :loading="isBroundImport"> -->
-                            <el-button class="export-btn" size="small" type="primary" @click="commitFile">
+                            <el-button class="export-btn" size="small" type="primary" @click="commitFile" :loading="uploadLoading">
                                提 交
                             </el-button>
                         </div>
                     </el-dialog>
                     <el-table
-                        :data="recommendationList"
+                        :data="currentPagination"
                         border
+                        v-loading="tableLoading"
+                        max-height="500"
                         style="width: 100%">
                         <el-table-column
                             prop="resName"
@@ -516,9 +518,22 @@
                         <el-table-column
                             prop="recommendReason"
                             label="推荐理由"
+                            show-overflow-tooltip
                             min-width="6%">
                         </el-table-column>
                     </el-table>
+                    <el-pagination
+                        background
+                        @size-change="handleSizeChange"
+                        @current-change="handleCurrentChange"
+                        :current-page="recommendationCurrentPage"
+                        :page-sizes="[10, 20, 50, 100]"
+                        :page-size="recommendationPageSize"
+                        :pager-count="5"
+                        layout="total, sizes, prev, pager, next, jumper"
+                        :total="recommendationTotalNum"
+                        style="text-align: right; margin-top: 16px;">
+                    </el-pagination>
                     <div slot="footer" class="dialog-footer">
                         <el-button plain @click="recommendationModal=false">关 闭</el-button>
                         <el-button type="primary" @click="recommendationInnerModal = true" style="width: 102px; height: 32px;">更改推荐理由</el-button>
@@ -795,7 +810,9 @@
                 // 推荐理由弹框
                 recommendationModal: false,
                 recommendationInnerModal: false,
+                uploadLoading: false,
                 recommendationList: [],
+                tableLoading: false,
                 exportAction: '/advertisement/RecommendReasonImport',
                 exportFileData: [],
                 //点位更改记录
@@ -824,6 +841,10 @@
                 },
                 isHandleChange: false,
                 handleTime: '',//换点操作和修改订单的时间戳
+                // 推荐理由分页时页面条目数量
+                recommendationPageSize: 10,
+                recommendationCurrentPage: 1,
+                recommendationTotalNum: 0
             };
         },
         created() {
@@ -845,6 +866,12 @@
                 this.getPainlist();
             }
             this.getOrderPriceDetail()
+        },
+        computed: {
+            currentPagination() {
+                this.recommendationTotalNum = this.recommendationList.length;
+                return this.recommendationList.slice((this.recommendationCurrentPage-1)*this.recommendationPageSize, this.recommendationCurrentPage*this.recommendationPageSize);
+            }
         },
         methods: {
             //初始化各项数据
@@ -1616,10 +1643,6 @@
                 }
 
             },
-            // 推荐理由
-            // showRecommendation() {
-            //     this.recommendationModal = true;
-            // },
             // 导入模版下载
             dowmLoadFun(event) {
                 // 阻止冒泡事件
@@ -1629,31 +1652,50 @@
                 this.exportFileData = [file];
             },
             commitFile() {
+                if(Array.isArray(this.exportFileData) && this.exportFileData.length == 0) {
+                    sessFun.messageFun('warning', '请先上传excel文件哦~')
+                    return
+                }
                 let formData = new FormData();
                 formData.append('file', this.exportFileData[0].raw);
                 // 上传文件
-                api.postExportFile(this.exportAction + '?apID=' + this.orderDetail.apID, formData, 'blob').then(res => {
-                    
+                this.uploadLoading = true
+                api.postUpload_file(this.exportAction + '?apID=' + this.orderDetail.apID, formData).then(res => {
+                    if (res.data.SysCode == 200200) {
+                        this.recommendationInnerModal=false
+                        this.showRecommendation()
+                    } else {
+                        sessFun.messageFun('warning', res.data.MSG)
+                    }
                 }).catch(res => {
                     console.log(res);
+                }).finally(_=>{
+                    this.uploadLoading = false
                 });
+            },
+            // 推荐理由表格分页
+            handleSizeChange(val) {
+                this.recommendationPageSize = val;
+            },
+            handleCurrentChange(val) {
+                this.recommendationCurrentPage = val;
             },
             exportFileRemove(file, fileList){
                 console.log(file, fileList);
                 this.exportFileData = fileList
             },
             // 获取该订单小区推荐理由
-            // getRecommendationList() {
             showRecommendation() {
                 this.recommendationModal = true
+                this.tableLoading = true
                 api.getApi(this.apiVar.Advertisement + "/GetResRecommendReason?apID=" + this.orderDetail.apID).then(res => {
-                    console.log(res.data)
                     if (res.data.SysCode == 200200) {
-                        this.recommendationList = res.data.data
-
+                        this.recommendationList = res.data.data || []
                     } else {
                         Message.warning(res.data.MSG)
                     }
+                }).finally(_=>{
+                    this.tableLoading = false
                 })
             },
             //查询点位更新记录

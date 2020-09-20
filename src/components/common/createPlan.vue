@@ -2320,6 +2320,9 @@
                             asName: info.asName || '',         // 点位所属公司名称
                             asrID: info.asrID,                 // 所属公司id
                         };
+                        if (this.customPermission.pptPermission && this.customPermission.pptPermission.gzqylPermission == '1') {
+                            importInfo.recommendReason = data.recommendReason;  //  亲粤邻定制：推荐理由
+                        }
                         if (info.mVehicle == '广告门') {
                             let asLabsArr = importInfo.asLabs.split(',');
                             let asIDArr = importInfo.asIDs.toString().split(',');
@@ -5518,6 +5521,9 @@
                                 pbEnd: key.schedules.split('-')[1],
                                 mapCenterName: key.mapCenter,
                                 pbSetTime: pbSetTime,
+                            }
+                            if (this.customPermission.pptPermission && this.customPermission.pptPermission.gzqylPermission == '1') {
+                                adsInfo.recommendReason = key.recommendReason || key.mapCenter || '';  //  亲粤邻定制：推荐理由
                             }
                             if (cKey.pdType == 0 && key.mVehicle === '广告门') {
                                 arr.push(adsInfo)

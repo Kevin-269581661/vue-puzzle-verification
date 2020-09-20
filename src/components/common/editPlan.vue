@@ -1703,6 +1703,9 @@
                             asName: info.asName || '',         // 点位所属公司名称
                             asrID: info.asrID,                 // 所属公司id
                         };
+                        if (this.customPermission.pptPermission && this.customPermission.pptPermission.gzqylPermission == '1') {
+                            importInfo.recommendReason = data.recommendReason;  //  亲粤邻定制：推荐理由
+                        }
                         if(info.mVehicle == '广告门'){
                             let asLabsArr = importInfo.asLabs.split(',');
                             let asIDArr = importInfo.asIDs.toString().split(',');
@@ -3454,15 +3457,18 @@
                 for (let key of this.shopingList) {
                     for (let detailKey of cityDetailList) {
                         if (key.city === detailKey.city && key.asrID == detailKey.asrID) {
-                                let adsData = {
-                                    asID: key.asID,
-                                    pdID: detailKey.pdID,
-                                    pbStar: key.schedules.split('-')[0],
-                                    pbEnd: key.schedules.split('-')[1],
-                                    uID: this.sessionData.uID,
-                                    pbSetTime: pbSetTime,
-                                    mapCenterName: key.mapCenter
-                                }
+                            let adsData = {
+                                asID: key.asID,
+                                pdID: detailKey.pdID,
+                                pbStar: key.schedules.split('-')[0],
+                                pbEnd: key.schedules.split('-')[1],
+                                uID: this.sessionData.uID,
+                                pbSetTime: pbSetTime,
+                                mapCenterName: key.mapCenter,
+                            }
+                            if (this.customPermission.pptPermission && this.customPermission.pptPermission.gzqylPermission == '1') {
+                                adsData.recommendReason = key.recommendReason || key.mapCenter || '';  //  亲粤邻定制：推荐理由
+                            }
                             if (key.mVehicle === '广告门' && detailKey.pdType === 0) {
                                 detailKey.abList.push(adsData)
                                 break

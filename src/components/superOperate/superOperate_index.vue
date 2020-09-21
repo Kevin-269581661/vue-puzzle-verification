@@ -872,7 +872,7 @@
                                 nonNativeExecutePrice: []
                             };
                         (resData[params.startDate.slice(0,7)] || []).forEach(item=>{
-                            cityName.push(item.name);
+                            cityName.push(item.name.replace(/(?<=邻).+/, ''));
                             sourceData.nativeContractPrice.push(item.contractPrice.nativePrice);
                             sourceData.nativeExecutePrice.push(item.executePrice.nativePrice);
                             sourceData.nationwideContractPrice.push(item.contractPrice.nationwidePrice);
@@ -987,7 +987,7 @@
             },
             // 金额图表
             setTurnoverBar() {
-                console.log('this.turnoverDataShow', this.turnoverDataShow)
+                // console.log('this.turnoverDataShow', this.turnoverDataShow)
                 this.turnoverEcharts = this.$echarts.init(this.$refs.turnoverDataBar);
                 let that = this
                 // 第二个参数为true,不会和之前的option合并

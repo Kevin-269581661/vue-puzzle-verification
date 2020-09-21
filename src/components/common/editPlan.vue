@@ -3464,10 +3464,11 @@
                                 pbEnd: key.schedules.split('-')[1],
                                 uID: this.sessionData.uID,
                                 pbSetTime: pbSetTime,
+                                resID: key.resID,
                                 mapCenterName: key.mapCenter,
                             }
                             if (this.customPermission.pptPermission && this.customPermission.pptPermission.gzqylPermission == '1') {
-                                adsData.recommendReason = key.recommendReason || key.mapCenter || '';  //  亲粤邻定制：推荐理由
+                                adsData.recommendReason = key.recommendReason || '';  //  亲粤邻定制：推荐理由
                             }
                             if (key.mVehicle === '广告门' && detailKey.pdType === 0) {
                                 detailKey.abList.push(adsData)

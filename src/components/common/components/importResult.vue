@@ -275,6 +275,7 @@ export default {
                     adSize: key.adSize || '',
                     picSize: key.picSize || '',
                     mapCenter: key.reference || '',      // 地图中心点
+                    recommendReason: key.recommendReason || '', //  亲粤邻定制：推荐理由
                     address: key.resAddress || '',
                     dNum: key.dNum || '',               // 出入口数
                     connID: key.connID || '',           // 连排门id
@@ -499,6 +500,7 @@ export default {
                 liveYear: info.liveYear,
                 adLimit: info.adLimit,
                 mapCenter: info.reference || '',      // 地图中心点
+                recommendReason: info.recommendReason || '', //  亲粤邻定制：推荐理由
                 address: info.address || '',
                 dNum: info.dNum || '',       // 出入口数
                 A_B: letter,

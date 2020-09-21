@@ -5502,7 +5502,8 @@
                         city: ADBData[j].city,
                         pdID: ADBData[j].pdID,
                         pdType: ADBData[j].pdType,
-                        asrID: ADBData[j].asrID
+                        asrID: ADBData[j].asrID,
+                        apID: ADBData[j].apID,
                     }
                     cityArr.push(cityObj)
                 }
@@ -5515,15 +5516,17 @@
                         if (key.city == cKey.city && key.asrID == cKey.asrID) {
                             let adsInfo = {
                                 uID: this.sessionData.uID,
+                                apID: cKey.apID,
                                 asID: key.asID,
                                 pdID: cKey.pdID,
                                 pbStar: key.schedules.split('-')[0],
                                 pbEnd: key.schedules.split('-')[1],
                                 mapCenterName: key.mapCenter,
+                                resID: key.resID,
                                 pbSetTime: pbSetTime,
                             }
                             if (this.customPermission.pptPermission && this.customPermission.pptPermission.gzqylPermission == '1') {
-                                adsInfo.recommendReason = key.recommendReason || key.mapCenter || '';  //  亲粤邻定制：推荐理由
+                                adsInfo.recommendReason = key.recommendReason || '';  //  亲粤邻定制：推荐理由
                             }
                             if (cKey.pdType == 0 && key.mVehicle === '广告门') {
                                 arr.push(adsInfo)

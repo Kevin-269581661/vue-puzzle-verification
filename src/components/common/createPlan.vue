@@ -6318,7 +6318,7 @@
     }
 
     /deep/ .car-list .el-table__body-wrapper {
-        min-height: 380px;
+        min-height: 300px;
         max-height: 360px;
     }
 

@@ -40,28 +40,53 @@
         </div>
         <div class="SM_order_price" v-if="isRetailCompany">
             <div class="order_price_date">
-                <el-date-picker
-                    v-model="DateMonth[0]"
-                    type="month"
-                    size="mini"
-                    value-format="yyyy-MM"
-                    format="yyyy-MM"
-                    :clearable="false"
-                    placeholder="选择月"
-                    :picker-options="priceDate"
-                    @change="changeMonthToCompare('start')">
-                </el-date-picker>
-                <el-checkbox v-model="turnoverCompare" @change="compareRadio">对比</el-checkbox>
-                <el-date-picker
-                    v-model="DateMonth[1]"
-                    type="month"
-                    size="mini"
-                    value-format="yyyy-MM"
-                    format="yyyy-MM"
-                    placeholder="选择月"
-                    :picker-options="priceDate"
-                    @change="changeMonthToCompare('end')">
-                </el-date-picker>
+                <el-radio-group v-model="amountForm.periodType" size="mini" @change="switchpPeriodType">
+                    <el-radio-button label="compareWeek">按周</el-radio-button>
+                    <el-radio-button label="compareMonth">按月</el-radio-button>
+                </el-radio-group>
+                <template v-if="amountForm.periodType=='compareWeek'">
+                    <el-date-picker
+                        v-model="amountForm.compareWeek.compareSourceDate"
+                        type="week"
+                        size="mini"
+                        format="yyyy 第 WW 周"
+                        placeholder="选择周"
+                        @change="changeMonthToCompare('start')">
+                    </el-date-picker>
+                    <el-checkbox v-model="turnoverCompare" @change="compareRadio">对比</el-checkbox>
+                    <el-date-picker
+                        v-model="amountForm.compareWeek.compareTargetDate"
+                        type="week"
+                        size="mini"
+                        format="yyyy 第 WW 周"
+                        placeholder="选择周"
+                        @change="changeMonthToCompare('end')">
+                    </el-date-picker>
+                </template>
+                <template v-else>
+                    <el-date-picker
+                        v-model="amountForm.compareMonth.compareSourceDate"
+                        type="month"
+                        size="mini"
+                        value-format="yyyy-MM"
+                        format="yyyy-MM"
+                        :clearable="false"
+                        placeholder="选择月"
+                        :picker-options="priceDate"
+                        @change="changeMonthToCompare('start')">
+                    </el-date-picker>
+                    <el-checkbox v-model="turnoverCompare" @change="compareRadio">对比</el-checkbox>
+                    <el-date-picker
+                        v-model="amountForm.compareMonth.compareTargetDate"
+                        type="month"
+                        size="mini"
+                        value-format="yyyy-MM"
+                        format="yyyy-MM"
+                        placeholder="选择月"
+                        :picker-options="priceDate"
+                        @change="changeMonthToCompare('end')">
+                    </el-date-picker>
+                </template>
             </div>
             <el-tabs style="height: 480px;border: 1px solid #e5e6e9;" v-model="activeTabsName" @tab-click="tabHandleClick">
                 <el-tab-pane label="成交金额" name="price">
@@ -539,7 +564,19 @@
                 // 应用中心
                 appCenter: '',
                 isSlideDown: true,
-                radioAmount: '签约额'
+                radioAmount: '签约额',
+                amountForm: {
+                    periodType: 'compareMonth',
+                    compareMonth: {
+                        compareSourceDate: '',
+                        compareTargetDate: ''
+                    },
+                    compareWeek: {
+                        compareSourceDate: '',
+                        compareTargetDate: ''
+
+                    }
+                }
             }
         },
         components: {
@@ -632,13 +669,14 @@
                         this.isOneDay = true
                         this.nowMonth = timeFormat.returnMonthCount(1, '-').substring(0, 7)
                     } else {
-                        // 记录当前的月份
+                        // 记录当前的月份 eg：2020-09
                         this.isOneDay = false
                         this.nowMonth = endTime.substring(0, 7)
                     }
                     // console.log('this.nowMonth', this.nowMonth)
                     //　订单金额初始化日期
                     this.turnoverDateMonth = [this.nowMonth]
+                    this.amountForm.compareMonth.compareSourceDate = this.nowMonth
                     //　订单数量初始化日期
                     this.orderDateMonth = [this.nowMonth]
                     // 表头日期
@@ -766,48 +804,96 @@
             },
             // 对比checkbox
             compareRadio() {
-                // console.log('turnoverCompare', this.turnoverCompare)
-                // 判断是否勾选
-                if (this.turnoverCompare) {
-                    this.changeMonthToCompare('end')
+                if(this.amountForm.periodType == 'compareWeek') {
+                    if (this.turnoverCompare) {
+                        // 判断是否勾选
+                        this.changeMonthToCompare('end')
+                    } else {
+                        this.turnoverDataShow.compareData = []
+                        this.amountForm.compareWeek.compareTargetDate = ''
+                        this.setTurnoverBar()
+                    }
                 } else {
-                    this.turnoverDataShow.compareData = []
-                    // this.turnoverDataShow.compareDataByDate = []
-                    this.DateMonth[1] = ''
-                    this.setTurnoverBar()
+                    // 按月
+                    if (this.turnoverCompare) {
+                        // 判断是否勾选
+                        this.changeMonthToCompare('end')
+                    } else {
+                        this.turnoverDataShow.compareData = []
+                        this.amountForm.compareMonth.compareTargetDate = ''
+                        // this.DateMonth[1] = ''
+                        this.setTurnoverBar()
+                    }
                 }
             },
             // 成交金额/订单数 - 月份对比方法
             changeMonthToCompare(comefrom) {
+                console.log('zhou', comefrom,this.DateWeek)
                 // 对比已勾选
                 if (this.activeTabsName === 'price') {
-                    if (comefrom === 'start') {
-                        // let endTime = this.returnDate(this.DateMonth[0])
-                        if (this.DateMonth[0] == this.DateMonth[1]) {
-                            this.messageFun('warning', '请选择不一样的月份')
-                            this.DateMonth  = this.turnoverDateMonth.concat()
-                        } else {
-                            this.setOrderIncomeData(this.DateMonth[0], false)
-                            this.turnoverDateMonth = this.DateMonth.concat()
+                    // if (comefrom === 'start') {
+                        let tempPeriodType = this.amountForm.periodType,
+                            tempCompareSourceDate = this.amountForm[tempPeriodType].compareSourceDate,
+                            tempCompareTargetDate = this.amountForm[tempPeriodType].compareTargetDate;
+                        
+                        if (tempCompareSourceDate == tempCompareTargetDate) {
+                            this.messageFun('warning', '请选择不一样的时间进行对比')
+                            // this.DateMonth  = this.turnoverDateMonth.concat()
+                        } else if(this.turnoverCompare && tempCompareSourceDate && tempCompareTargetDate) {
+                                this.setOrderIncomeData(tempCompareSourceDate, true)
+                        } else if(comefrom == 'start') {
+                                this.setOrderIncomeData(tempCompareSourceDate, false)
                         }
-                    } else if (comefrom === 'end') {
-                        // 是否已勾选对比
-                        if (this.turnoverCompare) {
-                            // 判断是否两边月份是否为空
-                            if (this.DateMonth[0] && this.DateMonth[1]) {
-                                if (this.DateMonth[0] == this.DateMonth[1]) {
-                                    this.messageFun('warning', '请选择不一样的月份')
-                                    this.DateMonth[1] = timeFormat.returnMonthCount(0, '-')
-                                } else {
-                                    // let endTime = this.returnDate(this.DateMonth[1])
-                                    this.setOrderIncomeData(this.DateMonth[1], true)
-                                    this.turnoverDateMonth = this.DateMonth.concat()
-                                }
-                            }
-                        } else {
-                            // this.messageFun('warning','请勾选对比')
-                        }
-                    }
+                            // this.setOrderIncomeData(this.DateMonth[0], false)
+                            // this.turnoverDateMonth = this.DateMonth.concat()
+                        
+                        // if(this.amountForm.periodType == 'compareMonth') {
+                        //     if (this.DateMonth[0] == this.DateMonth[1]) {
+                        //         this.messageFun('warning', '请选择不一样的月份')
+                        //         this.DateMonth  = this.turnoverDateMonth.concat()
+                        //     } else {
+                        //         this.setOrderIncomeData(this.DateMonth[0], false)
+                        //         this.turnoverDateMonth = this.DateMonth.concat()
+                        //     }
+                        // } else {
+                        //     if (this.DateWeek[0] == this.DateWeek[1]) {
+                        //         this.messageFun('warning', '请选择不同的周数')
+                        //         this.DateWeek  = this.turnoverDateWeek.concat()
+                        //     } else {
+                        //         this.setOrderIncomeData(this.DateWeek[0], false)
+                        //         this.turnoverDateWeek = this.DateWeek.concat()
+                        //     }
+                        // }
+                        
+                    // } else if (comefrom === 'end') {
+                    //     // 是否已勾选对比
+                    //     if (this.turnoverCompare) {
+                    //         if(this.amountForm.periodType == 'compareMonth') {
+                    //             // 判断是否两边月份是否为空
+                    //             if (this.DateMonth[0] && this.DateMonth[1]) {
+                    //                 if (this.DateMonth[0] == this.DateMonth[1]) {
+                    //                     this.messageFun('warning', '请选择不一样的月份')
+                    //                     this.DateMonth[1] = timeFormat.returnMonthCount(0, '-')
+                    //                 } else {
+                    //                     this.setOrderIncomeData(this.DateMonth[1], true)
+                    //                     this.turnoverDateMonth = this.DateMonth.concat()
+                    //                 }
+                    //             }
+                    //         } else {
+                    //             if (this.DateWeek[0] && this.DateWeek[1]) {
+                    //                 if (this.DateWeek[0] == this.DateWeek[1]) {
+                    //                     this.messageFun('warning', '请选择不同周数')
+                    //                     this.DateWeek[1] = timeFormat.returnMonthCount(0, '-')
+                    //                 } else {
+                    //                     this.setOrderIncomeData(this.DateWeek[1], true)
+                    //                     this.turnoverDateWeek = this.DateWeek.concat()
+                    //                 }
+                    //             }
+                    //         }
+                    //     } else {
+                    //         // this.messageFun('warning','请勾选对比')
+                    //     }
+                    // }
                 } else if (this.activeTabsName === 'order'){
                     if (comefrom === 'start'){
                         if (this.DateMonth[0] == this.DateMonth[1]) {
@@ -839,10 +925,10 @@
             },
             // 成交金额接口 GetOrderIncomeByMonth
             setOrderIncomeData(endTime,isCompare){
-                // console.log('成交金额endTime',endTime)
+                console.log('成交金额endTime',endTime,isCompare)
                 let portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo')) || [],
-                    startDate = this.DateMonth[0],
-                    endDate = this.DateMonth[1],
+                    startDate = this.amountForm.compareMonth.compareSourceDate,
+                    endDate = this.amountForm.compareMonth.compareTargetDate,
                     params = {
                         uid: this.sessionData.uID,
                         token: this.sessionData.token,
@@ -850,7 +936,10 @@
                         endDate: endDate ? (endDate + '-01') : '',
                         asrIds: portraitInfo.map(item=>item.asrId).join(',') || '1,2,3,4,5,6,7'
                     };
-                api.getApi('/report/api/v1/getAscrPrice', params).then(res=>{
+                if(isCompare == false) {
+                    params.endDate = ''
+                }
+                api.getApi('/report/api/v1/getMonthAscrPrice', params).then(res=>{
                     if(res.data !== '' && res.data !== null && res.data !== undefined){
                         let resData = res.data.data
                         // 将数据转成柱形图所需数组格式
@@ -859,33 +948,37 @@
                                 dateMonth: startDate || '',
                                 nativeContractPrice: [],
                                 nativeExecutePrice: [],
+                                nativeNationwideExecutePrice: [],
                                 nationwideContractPrice: [],
                                 nationwideExecutePrice: [],
-                                nonNativeExecutePrice: []
+                                nationwideBillExecutePrice: []
                             },
                             compareData = {
                                 dateMonth: endDate || '',
                                 nativeContractPrice: [],
                                 nativeExecutePrice: [],
+                                nativeNationwideExecutePrice: [],
                                 nationwideContractPrice: [],
                                 nationwideExecutePrice: [],
-                                nonNativeExecutePrice: []
+                                nationwideBillExecutePrice: []
                             };
                         (resData[params.startDate.slice(0,7)] || []).forEach(item=>{
                             cityName.push(item.name.replace(/(?<=邻).+/, ''));
-                            sourceData.nativeContractPrice.push(item.contractPrice.nativePrice);
-                            sourceData.nativeExecutePrice.push(item.executePrice.nativePrice);
-                            sourceData.nationwideContractPrice.push(item.contractPrice.nationwidePrice);
-                            sourceData.nationwideExecutePrice.push(item.executePrice.nationwidePrice);
-                            sourceData.nonNativeExecutePrice.push(item.executePrice.nonNativePrice || 0);
+                            sourceData.nativeContractPrice.push(item.nativeContractPrice);
+                            sourceData.nativeExecutePrice.push(item.nativeExecutePrice);
+                            sourceData.nativeNationwideExecutePrice.push(item.nativeNationwideExecutePrice);
+                            sourceData.nationwideContractPrice.push(item.nationwideContractPrice);
+                            sourceData.nationwideExecutePrice.push(item.nationwideExecutePrice);
+                            sourceData.nationwideBillExecutePrice.push(item.nationwideBillExecutePrice || 0);
                         });
                         (resData[params.endDate.slice(0,7)] || []).forEach(item=>{
                             // cityName.push(item.name);
-                            compareData.nativeContractPrice.push(item.contractPrice.nativePrice);
-                            compareData.nativeExecutePrice.push(item.executePrice.nativePrice);
-                            compareData.nationwideContractPrice.push(item.contractPrice.nationwidePrice);
-                            compareData.nationwideExecutePrice.push(item.executePrice.nationwidePrice);
-                            compareData.nonNativeExecutePrice.push(item.executePrice.nonNativePrice || 0);
+                            compareData.nativeContractPrice.push(item.nativeContractPrice);
+                            compareData.nativeExecutePrice.push(item.nativeExecutePrice);
+                            compareData.nativeNationwideExecutePrice.push(item.nativeNationwideExecutePrice);
+                            compareData.nationwideContractPrice.push(item.nationwideContractPrice);
+                            compareData.nationwideExecutePrice.push(item.nationwideExecutePrice);
+                            compareData.nationwideBillExecutePrice.push(item.nationwideBillExecutePrice || 0);
                         })
                         if (isCompare){
                             // this.turnoverDataShow.compareDataByDate = compareDataByDate
@@ -940,6 +1033,10 @@
                         this.messageFun('warning','暂无数据')
                     }
                 })
+            },
+            // 按周或者按月
+            switchpPeriodType(val) {
+                console.log('zhouhuozheyue', val)
             },
             // 切换签约额和执行额（单选）
             switchRadioAmount(val) {
@@ -1039,7 +1136,7 @@
                         icon: 'circle',
                         itemHeight: 8,
                         itemWidth: 8,
-                        data: that.radioAmount === '签约额' ? ['本地单签约额', '全国单签约额'] : ['本地单执行额', '本地全国单执行额', '全国单外地执行额']
+                        data: that.radioAmount === '签约额' ? ['本地单签约额', '全国单签约额'] : ['本地单执行额', '本地全国单执行额', '全国单接单执行额', '全国单发单执行额']
                     },
                     grid: {
                         left: '3%',
@@ -1140,18 +1237,25 @@
                             data: this.turnoverDataShow.sourceData.nativeExecutePrice,
                         },
                         {
-                            color: 'rgba(54, 207, 201, 1)',
+                            color: 'rgba(19, 194, 194, 1)',
                             name: '本地全国单执行额',
+                            type: 'bar',
+                            barWidth: '10%',
+                            data: this.turnoverDataShow.sourceData.nativeNationwideExecutePrice,
+                        },
+                        {
+                            color: 'rgba(250, 140, 22, 1)',
+                            name: '全国单接单执行额',
                             type: 'bar',
                             barWidth: '10%',
                             data: this.turnoverDataShow.sourceData.nationwideExecutePrice,
                         },
                         {
-                            color: 'rgba(255, 145, 24, 1)',
+                            color: 'rgba(82, 196, 26, 1)',
                             name: '全国单外地执行额',
                             type: 'bar',
                             barWidth: '10%',
-                            data: this.turnoverDataShow.sourceData.nonNativeExecutePrice,
+                            data: this.turnoverDataShow.sourceData.nationwideBillExecutePrice,
                         },
                         {
                             color: 'rgba(24, 144, 255, 0.35)',
@@ -1161,154 +1265,28 @@
                             data: this.turnoverDataShow.compareData.nativeExecutePrice,
                         },
                         {
-                            color: 'rgba(54, 207, 201, 0.35)',
+                            color: 'rgba(19, 194, 194, 0.35)',
                             name: '本地全国单执行额',
+                            type: 'bar',
+                            barWidth: '10%',
+                            data: this.turnoverDataShow.compareData.nativeNationwideExecutePrice,
+                        },
+                        {
+                            color: 'rgba(250, 140, 22, 0.35)',
+                            name: '全国单接单执行额',
                             type: 'bar',
                             barWidth: '10%',
                             data: this.turnoverDataShow.compareData.nationwideExecutePrice,
                         },
                         {
-                            color: 'rgba(255, 145, 24, 0.35)',
+                            color: 'rgba(82, 196, 26, 0.35)',
                             name: '全国单外地执行额',
                             type: 'bar',
                             barWidth: '10%',
-                            data: this.turnoverDataShow.compareData.nonNativeExecutePrice,
+                            data: this.turnoverDataShow.compareData.nationwideBillExecutePrice,
                         }
                     ]
                 }, true);
-                window.addEventListener("resize", ()=> {
-                    this.turnoverEcharts.resize();
-                })
-            },
-            setTurnoverBarBak() {
-                this.turnoverEcharts = this.$echarts.init(this.$refs.turnoverDataBar);
-                let that = this
-                this.turnoverEcharts.setOption({
-                    // title: {
-                    //     text: '成交金额',
-                    //     textStyle: {      //主标题
-                    //         "fontSize": 14,
-                    //         "fontWeight": 'bolder',
-                    //         "color": '#000'
-                    //     },
-                    // },
-                    tooltip: {
-                        trigger: 'axis',
-                        axisPointer: {            // 坐标轴指示器，坐标轴触发有效
-                            type: 'shadow',        // 默认为直线，可选为：'line' | 'shadow'
-                            shadowStyle: {
-                                shadowColor: '#f5f5f5'
-                            }
-                        },
-                        backgroundColor: '#FFFFFF',
-                        padding: 0,
-                        borderColor: '#dddddd',
-                        borderWidth: 1,
-                        formatter: function (params) {
-                            if (params.length >= 2) {
-                                return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
-                                    '<span>' + '时间' + '</span>' + '<span>' + '数值' +
-                                    '</span>' + '</p>' + '<br/>' +
-                                    '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; ">' +
-                                    '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' + params[0].seriesName + '</span>' + that.priceFormat(params[0].data) + '</p>' + '</br>' +
-                                    '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; margin-top: -20px">' +
-                                    '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #BDDEFD;margin-right: 5px"></i>' + params[1].seriesName + '</span>' + that.priceFormat(params[1].data) + '</p>'
-                            } else {
-                                return '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 200px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
-                                    '<span>' + '时间' + '</span>' + '<span>' + '数值' +
-                                    '</span>' + '</p>' + '<br/>' +
-                                    '<p style="display: flex; justify-content: space-between;padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; ">' +
-                                    '<span><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: #4AA6FC;margin-right: 5px"></i>' + params[0].seriesName + '</span>' + that.priceFormat(params[0].data) + '</p>'
-                            }
-                        },
-                    },
-                    legend: {
-                        top: 'bottom',
-                        left: 'center',
-                        data: this.turnoverDateMonth
-                    },
-                    grid: {
-                        left: '3%',
-                        right: '4%',
-                        bottom: '7%',
-                        x: 100,     //控制x轴文字与底部的距离
-                        y2: 200,    // y2可以控制倾斜的文字与最右边的距离，放置倾斜的文字超过显示区域
-                        containLabel: true
-                    },
-                    xAxis: [
-                        {
-                            type: 'category',
-                            data: this.turnoverDataShow.cityName,
-                            axisTick: {
-                                alignWithLabel: true
-                            },
-                            axisLabel: {
-                                //坐标轴刻度标签
-                                margin: 7, //刻度标签与轴线之间的距离
-                                interval: 0,    //强制文字产生间隔
-                                // rotate: 25,     //文字逆时针旋转25°
-                                textStyle: {
-                                    fontFamily: "DINPro-Regular",
-                                    color: "#2C313C" //坐标轴刻度文字的颜色
-                                }
-                            },
-                            axisLine: {
-                                //坐标轴线条相关设置(颜色等)
-                                lineStyle: {
-                                    color: "#E8E8E8"
-                                }
-                            },
-                        }
-                    ],
-                    yAxis: [
-                        {
-                            type: 'value',
-                            axisLine: {
-                                //坐标轴线条相关设置(颜色等)
-                                lineStyle: {
-                                    color: "#E8E8E8"
-                                }
-                            },
-                            axisLabel: {
-                                //坐标轴刻度标签
-                                margin: 7, //刻度标签与轴线之间的距离
-                                textStyle: {
-                                    fontFamily: "DINPro-Regular",
-                                    color: "#2C313C" //坐标轴刻度文字的颜色
-                                }
-                            },
-                            splitLine: {
-                                lineStyle: {
-                                    color: "#E8E8E8",
-                                    type: "dashed"
-                                }
-                            }
-                        }
-                    ],
-                    series: [
-                        {
-                            color: '#4AA6FC',
-                            name: this.turnoverDateMonth[0],
-                            type: 'bar',
-                            barWidth: '10%',
-                            data: this.turnoverDataShow.priceData,
-                        },
-                        {
-                            color: '#BDDEFD',
-                            name: this.turnoverDateMonth[1],
-                            type: 'bar',
-                            barWidth: '10%',
-                            data: this.turnoverDataShow.compareDataByDate,
-                        },
-                        {
-                            color: '#BDDEFD',
-                            name: this.turnoverDateMonth[1],
-                            type: 'bar',
-                            barWidth: '10%',
-                            data: this.turnoverDataShow.compareDataByDate,
-                        }
-                    ]
-                });
                 window.addEventListener("resize", ()=> {
                     this.turnoverEcharts.resize();
                 })

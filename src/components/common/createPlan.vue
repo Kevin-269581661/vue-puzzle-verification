@@ -1131,9 +1131,14 @@
                         :http-request="uploadFile"
                         :on-remove="fileRemove"
                         :multiple="false">
-                        <a v-if="importType=='1'" :href='this.apiVar.qadnUrl + "/importTemplate/resTemplate.xlsx"'
+                        <a v-if="importType=='1' && customPermission.pptPermission && customPermission.pptPermission.gzqylPermission == '1'" :href='this.apiVar.qadnUrl + "/importTemplate/广州亲粤邻小区导入定制模板.xlsx"'
                            download="小区导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
-                        <a v-if="importType=='2'" :href='this.apiVar.qadnUrl + "/importTemplate/adsTemplate.xlsx"'
+                        <a v-else-if="importType=='1'" :href='this.apiVar.qadnUrl + "/importTemplate/resTemplate.xlsx"'
+                           download="小区导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
+
+                        <a v-if="importType=='2' && customPermission.pptPermission && customPermission.pptPermission.gzqylPermission == '1'" :href='this.apiVar.qadnUrl + "/importTemplate/广州亲粤邻点位导入定制模板.xlsx"'
+                           download="点位导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
+                        <a v-else-if="importType=='2'" :href='this.apiVar.qadnUrl + "/importTemplate/adsTemplate.xlsx"'
                            download="点位导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
                         <el-button plain icon="el-icon-upload2" size="small" class="fileButton">上传文件</el-button>
                     </el-upload>

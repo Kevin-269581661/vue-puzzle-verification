@@ -40,54 +40,80 @@
         </div>
         <div class="SM_order_price" v-if="isRetailCompany">
             <div class="order_price_date">
-                <el-radio-group v-model="amountForm.periodType" size="mini" @change="switchpPeriodType">
-                    <el-radio-button label="compareWeek">按周</el-radio-button>
-                    <el-radio-button label="compareMonth">按月</el-radio-button>
-                </el-radio-group>
-                <template v-if="amountForm.periodType=='compareWeek'">
-                    <el-date-picker
-                        v-model="amountForm.compareWeek.compareSourceDate"
-                        type="week"
-                        size="mini"
-                        format="yyyy 第 WW 周"
-                        placeholder="选择周"
-                        :picker-options="priceDate"
-                        @change="changeMonthToCompare('start')">
-                    </el-date-picker>
-                    <el-checkbox v-model="turnoverCompare" @change="compareRadio">对比</el-checkbox>
-                    <el-date-picker
-                        v-model="amountForm.compareWeek.compareTargetDate"
-                        type="week"
-                        size="mini"
-                        format="yyyy 第 WW 周"
-                        placeholder="选择周"
-                        :picker-options="priceDate"
-                        @change="changeMonthToCompare('end')">
-                    </el-date-picker>
+                <template v-if="activeTabsName == 'price'">
+                    <el-radio-group v-model="amountForm.periodType" size="mini" @change="switchpPeriodType">
+                        <el-radio-button label="compareWeek">按周</el-radio-button>
+                        <el-radio-button label="compareMonth">按月</el-radio-button>
+                    </el-radio-group>
+                    <template v-if="amountForm.periodType=='compareWeek'">
+                        <el-date-picker
+                            v-model="amountForm.compareWeek.compareSourceDate"
+                            type="week"
+                            size="mini"
+                            format="yyyy 第 WW 周"
+                            placeholder="选择周"
+                            :picker-options="priceDate"
+                            @change="changeMonthToCompare('start')">
+                        </el-date-picker>
+                        <el-checkbox v-model="turnoverCompare" @change="compareRadio">对比</el-checkbox>
+                        <el-date-picker
+                            v-model="amountForm.compareWeek.compareTargetDate"
+                            type="week"
+                            size="mini"
+                            format="yyyy 第 WW 周"
+                            placeholder="选择周"
+                            :picker-options="priceDate"
+                            @change="changeMonthToCompare('end')">
+                        </el-date-picker>
+                    </template>
+                    <template v-else>
+                        <el-date-picker
+                            v-model="amountForm.compareMonth.compareSourceDate"
+                            type="month"
+                            size="mini"
+                            value-format="yyyy-MM"
+                            format="yyyy-MM"
+                            :clearable="false"
+                            placeholder="选择月"
+                            :picker-options="priceDate"
+                            @change="changeMonthToCompare('start')">
+                        </el-date-picker>
+                        <el-checkbox v-model="turnoverCompare" @change="compareRadio">对比</el-checkbox>
+                        <el-date-picker
+                            v-model="amountForm.compareMonth.compareTargetDate"
+                            type="month"
+                            size="mini"
+                            value-format="yyyy-MM"
+                            format="yyyy-MM"
+                            placeholder="选择月"
+                            :picker-options="priceDate"
+                            @change="changeMonthToCompare('end')">
+                        </el-date-picker>
+                    </template>
                 </template>
-                <template v-else>
+                <template v-if="activeTabsName == 'order'">
                     <el-date-picker
-                        v-model="amountForm.compareMonth.compareSourceDate"
-                        type="month"
-                        size="mini"
-                        value-format="yyyy-MM"
-                        format="yyyy-MM"
-                        :clearable="false"
-                        placeholder="选择月"
-                        :picker-options="priceDate"
-                        @change="changeMonthToCompare('start')">
-                    </el-date-picker>
-                    <el-checkbox v-model="turnoverCompare" @change="compareRadio">对比</el-checkbox>
-                    <el-date-picker
-                        v-model="amountForm.compareMonth.compareTargetDate"
-                        type="month"
-                        size="mini"
-                        value-format="yyyy-MM"
-                        format="yyyy-MM"
-                        placeholder="选择月"
-                        :picker-options="priceDate"
-                        @change="changeMonthToCompare('end')">
-                    </el-date-picker>
+                            v-model="DateMonth[0]"
+                            type="month"
+                            size="mini"
+                            value-format="yyyy-MM"
+                            format="yyyy-MM"
+                            :clearable="false"
+                            placeholder="选择月"
+                            :picker-options="priceDate"
+                            @change="changeMonthToCompare('start')">
+                        </el-date-picker>
+                        <el-checkbox v-model="turnoverCompare" @change="compareRadio">对比</el-checkbox>
+                        <el-date-picker
+                            v-model="DateMonth[1]"
+                            type="month"
+                            size="mini"
+                            value-format="yyyy-MM"
+                            format="yyyy-MM"
+                            placeholder="选择月"
+                            :picker-options="priceDate"
+                            @change="changeMonthToCompare('end')">
+                        </el-date-picker>
                 </template>
             </div>
             <el-tabs style="height: 480px;border: 1px solid #e5e6e9;" v-model="activeTabsName" @tab-click="tabHandleClick">
@@ -686,6 +712,7 @@
                     this.DateMonth = [this.nowMonth]
                     // 成交金额接口
                     this.setOrderIncomeData(this.nowMonth, false)
+                    this.setOrderCountData(this.nowMonth, false)
                 }
                 // 是否平台商
                 if (this.isPlatform) {
@@ -824,7 +851,7 @@
                     } else {
                         this.turnoverDataShow.compareData = []
                         this.amountForm.compareMonth.compareTargetDate = ''
-                        // this.DateMonth[1] = ''
+                        this.DateMonth[1] = ''
                         this.setTurnoverBar()
                     }
                 }

@@ -51,6 +51,7 @@
                         size="mini"
                         format="yyyy 第 WW 周"
                         placeholder="选择周"
+                        :picker-options="priceDate"
                         @change="changeMonthToCompare('start')">
                     </el-date-picker>
                     <el-checkbox v-model="turnoverCompare" @change="compareRadio">对比</el-checkbox>
@@ -60,6 +61,7 @@
                         size="mini"
                         format="yyyy 第 WW 周"
                         placeholder="选择周"
+                        :picker-options="priceDate"
                         @change="changeMonthToCompare('end')">
                     </el-date-picker>
                 </template>
@@ -677,6 +679,7 @@
                     //　订单金额初始化日期
                     this.turnoverDateMonth = [this.nowMonth]
                     this.amountForm.compareMonth.compareSourceDate = this.nowMonth
+                    this.amountForm.compareWeek.compareSourceDate = new Date()
                     //　订单数量初始化日期
                     this.orderDateMonth = [this.nowMonth]
                     // 表头日期
@@ -828,7 +831,7 @@
             },
             // 成交金额/订单数 - 月份对比方法
             changeMonthToCompare(comefrom) {
-                console.log('zhou', comefrom,this.DateWeek)
+                console.log('zhou', comefrom, this.amountForm[this.amountForm.periodType].compareSourceDate)
                 // 对比已勾选
                 if (this.activeTabsName === 'price') {
                     // if (comefrom === 'start') {
@@ -929,6 +932,7 @@
                 let portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo')) || [],
                     startDate = this.amountForm.compareMonth.compareSourceDate,
                     endDate = this.amountForm.compareMonth.compareTargetDate,
+                    apiUrl = '/report/api/v1/getMonthAscrPrice',
                     params = {
                         uid: this.sessionData.uID,
                         token: this.sessionData.token,
@@ -936,10 +940,15 @@
                         endDate: endDate ? (endDate + '-01') : '',
                         asrIds: portraitInfo.map(item=>item.asrId).join(',') || '1,2,3,4,5,6,7'
                     };
+                if(this.amountForm.periodType == 'compareWeek') {
+                    params.startDate = timeFormat.toDate(this.amountForm.compareWeek.compareSourceDate),
+                    params.endDate = timeFormat.toDate(this.amountForm.compareWeek.compareTargetDate),
+                    apiUrl = '/report/api/v1/getWeekAscrPrice'
+                }
                 if(isCompare == false) {
                     params.endDate = ''
                 }
-                api.getApi('/report/api/v1/getMonthAscrPrice', params).then(res=>{
+                api.getApi(apiUrl, params).then(res=>{
                     if(res.data !== '' && res.data !== null && res.data !== undefined){
                         let resData = res.data.data
                         // 将数据转成柱形图所需数组格式
@@ -961,8 +970,10 @@
                                 nationwideContractPrice: [],
                                 nationwideExecutePrice: [],
                                 nationwideBillExecutePrice: []
-                            };
-                        (resData[params.startDate.slice(0,7)] || []).forEach(item=>{
+                            },
+                            beginDateIndex = this.amountForm.periodType == 'compareWeek' ? params.startDate : params.startDate.slice(0,7),
+                            endDateIndex = this.amountForm.periodType == 'compareWeek' ? params.startDate : params.startDate.slice(0,7);
+                        (resData[beginDateIndex] || []).forEach(item=>{
                             cityName.push(item.name.replace(/(?<=邻).+/, ''));
                             sourceData.nativeContractPrice.push(item.nativeContractPrice);
                             sourceData.nativeExecutePrice.push(item.nativeExecutePrice);
@@ -971,7 +982,7 @@
                             sourceData.nationwideExecutePrice.push(item.nationwideExecutePrice);
                             sourceData.nationwideBillExecutePrice.push(item.nationwideBillExecutePrice || 0);
                         });
-                        (resData[params.endDate.slice(0,7)] || []).forEach(item=>{
+                        (resData[endDateIndex] || []).forEach(item=>{
                             // cityName.push(item.name);
                             compareData.nativeContractPrice.push(item.nativeContractPrice);
                             compareData.nativeExecutePrice.push(item.nativeExecutePrice);
@@ -985,14 +996,15 @@
                         } else {
                             // this.turnoverDataShow.cityName = cityName
                             // this.turnoverDataShow.priceData = priceData
-                            this.setOrderCountData(endTime, false)
+
+                            // this.setOrderCountData(endTime, false)
                         }
                         this.turnoverDataShow = {
                             cityName: cityName.length > 0 ? cityName : portraitInfo.map(item=>item.asrName),
                             sourceData: sourceData,
                             compareData: compareData,
                         };
-                        // console.log('this.turnoverDataShow',this.turnoverDataShow)
+                        console.log('this.turnoverDataShow',this.turnoverDataShow)
                         // 销售金额柱状图
                         this.setTurnoverBar()
                         this.priceBoxLoading = false
@@ -1037,6 +1049,7 @@
             // 按周或者按月
             switchpPeriodType(val) {
                 console.log('zhouhuozheyue', val)
+                this.changeMonthToCompare('start')
             },
             // 切换签约额和执行额（单选）
             switchRadioAmount(val) {
@@ -1104,7 +1117,7 @@
                         formatter: function (params) {
                             // console.log(params)
                             let eleStr = ''
-                            if(params.length == 4 || params.length == 6) {
+                            if(params.length == 4 || params.length == 8) {
                                 let paramsHalfLen = params.length / 2;
                                 eleStr = '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 320px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
                                     '<span>' + '类目' + '</span>' + 
@@ -1252,7 +1265,7 @@
                         },
                         {
                             color: 'rgba(82, 196, 26, 1)',
-                            name: '全国单外地执行额',
+                            name: '全国单发单执行额',
                             type: 'bar',
                             barWidth: '10%',
                             data: this.turnoverDataShow.sourceData.nationwideBillExecutePrice,
@@ -1280,7 +1293,7 @@
                         },
                         {
                             color: 'rgba(82, 196, 26, 0.35)',
-                            name: '全国单外地执行额',
+                            name: '全国单发单执行额',
                             type: 'bar',
                             barWidth: '10%',
                             data: this.turnoverDataShow.compareData.nationwideBillExecutePrice,

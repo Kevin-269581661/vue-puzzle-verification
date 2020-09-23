@@ -84,7 +84,7 @@
                                                v-qadn-mta-h5="{id: 'a006_b011_c006_d000_bt122_ck05'}"
                                                style="position: relative;top: 2px;float: right;margin-right: 3px">导出
                                     </el-button>
-                                    <el-button style="position: relative;top: 2px;float: right;margin-right: 3px" @click="showRecommendation">推荐理由</el-button>
+                                    <el-button v-if="customPermission.pptPermission.gzqylPermission" style="position: relative;top: 2px;float: right;margin-right: 3px" @click="showRecommendation">推荐理由</el-button>
 
                                 </el-col>
                             </el-row>

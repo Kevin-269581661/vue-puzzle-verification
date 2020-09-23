@@ -713,7 +713,7 @@
                     // 表头日期
                     this.DateMonth = [this.nowMonth]
                     // 成交金额接口
-                    this.setOrderIncomeData(this.nowMonth, false)
+                    this.setOrderIncomeData()
                     this.setOrderCountData(this.nowMonth, false)
                 }
                 // 是否平台商
@@ -867,10 +867,8 @@
                     // 周对比时，返回的时间戳不一定是用户所点击的那天
                     if (tempCompareSourceDate == tempCompareTargetDate || (this.amountForm.periodType == 'compareWeek' && this.$refs.weekSource.displayValue == this.$refs.weekTarget.displayValue)) {
                         this.messageFun('warning', '请选择不一样的时间进行对比')
-                    } else if(this.turnoverCompare && tempCompareSourceDate && tempCompareTargetDate) {
-                        this.setOrderIncomeData(tempCompareSourceDate, true)
-                    } else if(comefrom == 'start') {
-                        this.setOrderIncomeData(tempCompareSourceDate, false)
+                    } else if(this.turnoverCompare && tempCompareSourceDate && tempCompareTargetDate || comefrom == 'start') {
+                        this.setOrderIncomeData()
                     }
                 } else if (this.activeTabsName === 'order'){
                     if (comefrom === 'start'){
@@ -902,7 +900,7 @@
                 }
             },
             // 成交金额接口 GetOrderIncomeByMonth
-            setOrderIncomeData(endTime,isCompare){
+            setOrderIncomeData(){
                 let portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo')) || [],
                     startDate = this.amountForm.compareMonth.compareSourceDate,
                     endDate = this.amountForm.compareMonth.compareTargetDate,
@@ -911,16 +909,13 @@
                         uid: this.sessionData.uID,
                         token: this.sessionData.token,
                         startDate: startDate + '-01',
-                        endDate: endDate ? (endDate + '-01') : '',
+                        endDate: (this.turnoverCompare && endDate) ? (endDate + '-01') : '',
                         asrIds: portraitInfo.map(item=>item.asrId).join(',') || '1,2,3,4,5,6,7'
                     };
                 if(this.amountForm.periodType == 'compareWeek') {
                     params.startDate = timeFormat.toDate(this.amountForm.compareWeek.compareSourceDate),
                     params.endDate = timeFormat.toDate(this.amountForm.compareWeek.compareTargetDate),
                     apiUrl = '/report/api/v1/getWeekAscrPrice'
-                }
-                if(isCompare == false) {
-                    params.endDate = ''
                 }
                 api.getApi(apiUrl, params).then(res=>{
                     if(res.data !== '' && res.data !== null && res.data !== undefined){

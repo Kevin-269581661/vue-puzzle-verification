@@ -417,7 +417,7 @@
         },
         computed: {
             conditionArr() {
-                if(this.pptxType == '2pointPerPage' || !this.isCustomize) {
+                if(this.pptxType == '2pointPerPage' || !this.isCustomize || this.templateType < 1) {
                     this.pptxFilter = this.pptxFilter.filter(item=>{
                         return item*1 === 0
                     });

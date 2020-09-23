@@ -850,10 +850,14 @@
                     if (this.turnoverCompare) {
                         // 判断是否勾选
                         this.changeMonthToCompare('end')
+                    } else if(this.activeTabsName == 'order') {
+                        this.DateMonth[1] = ''
+                        this.orderDateMonth[1] = ''
+                        this.orderDataShow.compareDataByDate = []
+                        this.setOrderBar()
                     } else {
                         this.turnoverDataShow.compareData = []
                         this.amountForm.compareMonth.compareTargetDate = ''
-                        this.DateMonth[1] = ''
                         this.setTurnoverBar()
                     }
                 }
@@ -1056,7 +1060,6 @@
                                     if(that.amountForm.periodType == 'compareWeek') {
                                         dateMonthStr = paramsHalfLen < index+1 ? that.$refs.weekTarget.displayValue : that.$refs.weekSource.displayValue;
                                     } else {
-                                        // dateMonthStr = paramsHalfLen < index+1 ? that.turnoverDataShow.compareData.dateMonth : that.turnoverDataShow.sourceData.dateMonth;
                                         dateMonthStr = paramsHalfLen < index+1 ? that.amountForm.compareMonth.compareTargetDate : that.amountForm.compareMonth.compareSourceDate;
                                     }
                                     dateMonthStr = '<span style="flex-grow: 1;">' + dateMonthStr + '</span>';
@@ -1359,7 +1362,7 @@
                             data: this.orderDataShow.compareDataByDate,
                         }
                     ]
-                });
+                }, true);
             },
             // 获取业绩排行 GetAchievementRankList
             setBDonRunway(){

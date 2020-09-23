@@ -6332,8 +6332,8 @@
     }
 
     /deep/ .car-list .el-table__body-wrapper {
-        min-height: 300px;
-        max-height: 360px;
+        min-height: 382px;
+        max-height: 402px;
     }
 
     /*滚动条*/

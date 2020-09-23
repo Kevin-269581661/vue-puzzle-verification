@@ -47,6 +47,7 @@
                     </el-radio-group>
                     <template v-if="amountForm.periodType=='compareWeek'">
                         <el-date-picker
+                            ref="weekSource"
                             v-model="amountForm.compareWeek.compareSourceDate"
                             type="week"
                             size="mini"
@@ -57,6 +58,7 @@
                         </el-date-picker>
                         <el-checkbox v-model="turnoverCompare" @change="compareRadio">对比</el-checkbox>
                         <el-date-picker
+                            ref="weekTarget"
                             v-model="amountForm.compareWeek.compareTargetDate"
                             type="week"
                             size="mini"
@@ -858,72 +860,18 @@
             },
             // 成交金额/订单数 - 月份对比方法
             changeMonthToCompare(comefrom) {
-                console.log('zhou', comefrom, this.amountForm[this.amountForm.periodType].compareSourceDate)
-                // 对比已勾选
                 if (this.activeTabsName === 'price') {
-                    // if (comefrom === 'start') {
-                        let tempPeriodType = this.amountForm.periodType,
-                            tempCompareSourceDate = this.amountForm[tempPeriodType].compareSourceDate,
-                            tempCompareTargetDate = this.amountForm[tempPeriodType].compareTargetDate;
-                        
-                        if (tempCompareSourceDate == tempCompareTargetDate) {
-                            this.messageFun('warning', '请选择不一样的时间进行对比')
-                            // this.DateMonth  = this.turnoverDateMonth.concat()
-                        } else if(this.turnoverCompare && tempCompareSourceDate && tempCompareTargetDate) {
-                                this.setOrderIncomeData(tempCompareSourceDate, true)
-                        } else if(comefrom == 'start') {
-                                this.setOrderIncomeData(tempCompareSourceDate, false)
-                        }
-                            // this.setOrderIncomeData(this.DateMonth[0], false)
-                            // this.turnoverDateMonth = this.DateMonth.concat()
-                        
-                        // if(this.amountForm.periodType == 'compareMonth') {
-                        //     if (this.DateMonth[0] == this.DateMonth[1]) {
-                        //         this.messageFun('warning', '请选择不一样的月份')
-                        //         this.DateMonth  = this.turnoverDateMonth.concat()
-                        //     } else {
-                        //         this.setOrderIncomeData(this.DateMonth[0], false)
-                        //         this.turnoverDateMonth = this.DateMonth.concat()
-                        //     }
-                        // } else {
-                        //     if (this.DateWeek[0] == this.DateWeek[1]) {
-                        //         this.messageFun('warning', '请选择不同的周数')
-                        //         this.DateWeek  = this.turnoverDateWeek.concat()
-                        //     } else {
-                        //         this.setOrderIncomeData(this.DateWeek[0], false)
-                        //         this.turnoverDateWeek = this.DateWeek.concat()
-                        //     }
-                        // }
-                        
-                    // } else if (comefrom === 'end') {
-                    //     // 是否已勾选对比
-                    //     if (this.turnoverCompare) {
-                    //         if(this.amountForm.periodType == 'compareMonth') {
-                    //             // 判断是否两边月份是否为空
-                    //             if (this.DateMonth[0] && this.DateMonth[1]) {
-                    //                 if (this.DateMonth[0] == this.DateMonth[1]) {
-                    //                     this.messageFun('warning', '请选择不一样的月份')
-                    //                     this.DateMonth[1] = timeFormat.returnMonthCount(0, '-')
-                    //                 } else {
-                    //                     this.setOrderIncomeData(this.DateMonth[1], true)
-                    //                     this.turnoverDateMonth = this.DateMonth.concat()
-                    //                 }
-                    //             }
-                    //         } else {
-                    //             if (this.DateWeek[0] && this.DateWeek[1]) {
-                    //                 if (this.DateWeek[0] == this.DateWeek[1]) {
-                    //                     this.messageFun('warning', '请选择不同周数')
-                    //                     this.DateWeek[1] = timeFormat.returnMonthCount(0, '-')
-                    //                 } else {
-                    //                     this.setOrderIncomeData(this.DateWeek[1], true)
-                    //                     this.turnoverDateWeek = this.DateWeek.concat()
-                    //                 }
-                    //             }
-                    //         }
-                    //     } else {
-                    //         // this.messageFun('warning','请勾选对比')
-                    //     }
-                    // }
+                    let tempPeriodType = this.amountForm.periodType,
+                        tempCompareSourceDate = this.amountForm[tempPeriodType].compareSourceDate,
+                        tempCompareTargetDate = this.amountForm[tempPeriodType].compareTargetDate;
+                    // 周对比时，返回的时间戳不一定是用户所点击的那天
+                    if (tempCompareSourceDate == tempCompareTargetDate || (this.amountForm.periodType == 'compareWeek' && this.$refs.weekSource.displayValue == this.$refs.weekTarget.displayValue)) {
+                        this.messageFun('warning', '请选择不一样的时间进行对比')
+                    } else if(this.turnoverCompare && tempCompareSourceDate && tempCompareTargetDate) {
+                        this.setOrderIncomeData(tempCompareSourceDate, true)
+                    } else if(comefrom == 'start') {
+                        this.setOrderIncomeData(tempCompareSourceDate, false)
+                    }
                 } else if (this.activeTabsName === 'order'){
                     if (comefrom === 'start'){
                         if (this.DateMonth[0] == this.DateMonth[1]) {
@@ -955,7 +903,6 @@
             },
             // 成交金额接口 GetOrderIncomeByMonth
             setOrderIncomeData(endTime,isCompare){
-                console.log('成交金额endTime',endTime,isCompare)
                 let portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo')) || [],
                     startDate = this.amountForm.compareMonth.compareSourceDate,
                     endDate = this.amountForm.compareMonth.compareTargetDate,
@@ -981,7 +928,7 @@
                         // 将数据转成柱形图所需数组格式
                         let cityName = [],
                             sourceData = {
-                                dateMonth: startDate || '',
+                                dateMonth: params.startDate || '',
                                 nativeContractPrice: [],
                                 nativeExecutePrice: [],
                                 nativeNationwideExecutePrice: [],
@@ -990,7 +937,7 @@
                                 nationwideBillExecutePrice: []
                             },
                             compareData = {
-                                dateMonth: endDate || '',
+                                dateMonth: params.endDate || '',
                                 nativeContractPrice: [],
                                 nativeExecutePrice: [],
                                 nativeNationwideExecutePrice: [],
@@ -999,7 +946,7 @@
                                 nationwideBillExecutePrice: []
                             },
                             beginDateIndex = this.amountForm.periodType == 'compareWeek' ? params.startDate : params.startDate.slice(0,7),
-                            endDateIndex = this.amountForm.periodType == 'compareWeek' ? params.startDate : params.startDate.slice(0,7);
+                            endDateIndex = this.amountForm.periodType == 'compareWeek' ? params.endDate : params.endDate.slice(0,7);
                         (resData[beginDateIndex] || []).forEach(item=>{
                             cityName.push(item.name.replace(/(?<=邻).+/, ''));
                             sourceData.nativeContractPrice.push(item.nativeContractPrice);
@@ -1018,16 +965,8 @@
                             compareData.nationwideExecutePrice.push(item.nationwideExecutePrice);
                             compareData.nationwideBillExecutePrice.push(item.nationwideBillExecutePrice || 0);
                         })
-                        if (isCompare){
-                            // this.turnoverDataShow.compareDataByDate = compareDataByDate
-                        } else {
-                            // this.turnoverDataShow.cityName = cityName
-                            // this.turnoverDataShow.priceData = priceData
-
-                            // this.setOrderCountData(endTime, false)
-                        }
                         this.turnoverDataShow = {
-                            cityName: cityName.length > 0 ? cityName : portraitInfo.map(item=>item.asrName),
+                            cityName: cityName.length > 0 ? cityName : portraitInfo.map(item=>item.asrName.replace(/(?<=邻).+/, '')),
                             sourceData: sourceData,
                             compareData: compareData,
                         };
@@ -1040,42 +979,8 @@
                     }
                 })
             },
-            setOrderIncomeDataBak(endTime,isCompare){
-                let starTimeSub = endTime.substring(0,7) + '-01'
-                let params = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token,
-                    asrIDs: this.returnAsrID(this.sessionData.asrID),
-                    onStart: starTimeSub,
-                    onEnd: this.returnDate(endTime),
-                }
-                api.getApi(this.apiVar.Count + '/GetOrderIncomeByMonth',params).then(res=>{
-                    // console.log('成交金额接口',res)
-                    if(res.data !== '' && res.data !== null && res.data !== undefined){
-                        let dataArr = res.data
-                        let priceData = []
-                        let cityName = []
-                        let compareDataByDate = []
-                        for(let key of dataArr){
-                            // 是否来自对比
-                            if (isCompare) {
-                                compareDataByDate.push(Math.floor(key.orderIncomeInfo[0].increment / 10000) * 100)
-                            } else {
-                                cityName.push(key.asName.substring(0,key.asName.length-6))
-                                priceData.push(Math.floor(key.orderIncomeInfo[0].increment / 10000) * 100)
-                            }
-                        }
-                        // 销售金额柱状图
-                        this.setTurnoverBar()
-                        this.priceBoxLoading = false
-                    } else {
-                        this.messageFun('warning','暂无数据')
-                    }
-                })
-            },
             // 按周或者按月
             switchpPeriodType(val) {
-                console.log('zhouhuozheyue', val)
                 this.changeMonthToCompare('start')
             },
             // 切换签约额和执行额（单选）
@@ -1124,7 +1029,6 @@
             },
             // 金额图表
             setTurnoverBar() {
-                // console.log('this.turnoverDataShow', this.turnoverDataShow)
                 this.turnoverEcharts = this.$echarts.init(this.$refs.turnoverDataBar);
                 let that = this
                 // 第二个参数为true,不会和之前的option合并
@@ -1143,19 +1047,27 @@
                         borderWidth: 1,
                         formatter: function (params) {
                             // console.log(params)
-                            let eleStr = ''
-                            if(params.length == 4 || params.length == 8) {
+                            let eleStr = '',
+                                tempDateLabel = '<span>' + '时间' + '</span>';
+                            if((that.radioAmount === '执行额' && params.length == 8) || (that.radioAmount === '签约额' && params.length == 4)) {
                                 let paramsHalfLen = params.length / 2;
                                 eleStr = '<p style="background-color:#F4F6F6;font-size: 12px; color: #808080; width: 320px;height: 36px; display: flex; justify-content: space-between;padding: 0px 10px; align-items: center;box-sizing: border-box;margin-bottom: -20px;">' +
                                     '<span>' + '类目' + '</span>' + 
-                                    '<span>' + '时间' + '</span>' + 
+                                    tempDateLabel + 
                                     '<span>' + (that.radioAmount || '') +'</span>' + 
                                     '</p>' + '<br/>';
                                 params.forEach((item, index)=>{
-                                    let dateMonthStr = paramsHalfLen < index+1 ? that.turnoverDataShow.compareData.dateMonth : that.turnoverDataShow.sourceData.dateMonth;
+                                    let dateMonthStr = ''
+                                    if(that.amountForm.periodType == 'compareWeek') {
+                                        dateMonthStr = paramsHalfLen < index+1 ? that.$refs.weekSource.displayValue : that.$refs.weekTarget.displayValue;
+                                    } else {
+                                        // dateMonthStr = paramsHalfLen < index+1 ? that.turnoverDataShow.compareData.dateMonth : that.turnoverDataShow.sourceData.dateMonth;
+                                        dateMonthStr = paramsHalfLen < index+1 ? that.amountForm.compareMonth.compareTargetDate : that.amountForm.compareMonth.compareSourceDate;
+                                    }
+                                    dateMonthStr = '<span style="flex-grow: 1;">' + dateMonthStr + '</span>';
                                     eleStr += '<p style="display: flex; justify-content: space-between; padding: 0px 10px; box-sizing: border-box; align-items: center; font-size: 12px;color: #2C313C;height: 32px; ">' +
                                               '<span style="width: 130px; white-space: nowrap;"><i style="display: inline-block; width: 6px; height: 6px; border-radius: 50%;background-color: ' + item.color + ';margin-right: 5px"></i>' + item.seriesName + '</span>' + 
-                                              '<span style="flex-grow: 1;">' + dateMonthStr + '</span>' + 
+                                              dateMonthStr + 
                                               that.priceFormat(item.data) + '</p>';
                                 })
                             } else {

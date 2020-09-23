@@ -41,7 +41,7 @@
         <div class="SM_order_price" v-if="isRetailCompany">
             <div class="order_price_date">
                 <template v-if="activeTabsName == 'price'">
-                    <el-radio-group v-model="amountForm.periodType" size="mini" @change="switchpPeriodType">
+                    <el-radio-group v-model="amountForm.periodType" size="mini" @change="switchpPeriodType" class="radio-period-type">
                         <el-radio-button label="compareWeek">按周</el-radio-button>
                         <el-radio-button label="compareMonth">按月</el-radio-button>
                     </el-radio-group>
@@ -1059,7 +1059,7 @@
                                 params.forEach((item, index)=>{
                                     let dateMonthStr = ''
                                     if(that.amountForm.periodType == 'compareWeek') {
-                                        dateMonthStr = paramsHalfLen < index+1 ? that.$refs.weekSource.displayValue : that.$refs.weekTarget.displayValue;
+                                        dateMonthStr = paramsHalfLen < index+1 ? that.$refs.weekTarget.displayValue : that.$refs.weekSource.displayValue;
                                     } else {
                                         // dateMonthStr = paramsHalfLen < index+1 ? that.turnoverDataShow.compareData.dateMonth : that.turnoverDataShow.sourceData.dateMonth;
                                         dateMonthStr = paramsHalfLen < index+1 ? that.amountForm.compareMonth.compareTargetDate : that.amountForm.compareMonth.compareSourceDate;
@@ -1154,28 +1154,28 @@
                             color: 'rgba(24, 144, 255, 1)',
                             name: '本地单签约额',
                             type: 'bar',
-                            barWidth: '10%',
+                            barWidth: '5%',
                             data: this.turnoverDataShow.sourceData.nativeContractPrice,
                         },
                         {
                             color: 'rgba(255, 145, 24, 1)',
                             name: '全国单签约额',
                             type: 'bar',
-                            barWidth: '10%',
+                            barWidth: '5%',
                             data: this.turnoverDataShow.sourceData.nationwideContractPrice,
                         },
                         {
                             color: 'rgba(24, 144, 255, 0.35)',
                             name: '本地单签约额',
                             type: 'bar',
-                            barWidth: '10%',
+                            barWidth: '5%',
                             data: this.turnoverDataShow.compareData.nativeContractPrice,
                         },
                         {
                             color: 'rgba(255, 145, 24, 0.35)',
                             name: '全国单签约额',
                             type: 'bar',
-                            barWidth: '10%',
+                            barWidth: '5%',
                             data: this.turnoverDataShow.compareData.nationwideContractPrice,
                         }
                     ]
@@ -1185,56 +1185,56 @@
                             color: 'rgba(24, 144, 255, 1)',
                             name: '本地单执行额',
                             type: 'bar',
-                            barWidth: '10%',
+                            barWidth: '5%',
                             data: this.turnoverDataShow.sourceData.nativeExecutePrice,
                         },
                         {
                             color: 'rgba(19, 194, 194, 1)',
                             name: '本地全国单执行额',
                             type: 'bar',
-                            barWidth: '10%',
+                            barWidth: '5%',
                             data: this.turnoverDataShow.sourceData.nativeNationwideExecutePrice,
                         },
                         {
                             color: 'rgba(250, 140, 22, 1)',
                             name: '全国单接单执行额',
                             type: 'bar',
-                            barWidth: '10%',
+                            barWidth: '5%',
                             data: this.turnoverDataShow.sourceData.nationwideExecutePrice,
                         },
                         {
                             color: 'rgba(82, 196, 26, 1)',
                             name: '全国单发单执行额',
                             type: 'bar',
-                            barWidth: '10%',
+                            barWidth: '5%',
                             data: this.turnoverDataShow.sourceData.nationwideBillExecutePrice,
                         },
                         {
                             color: 'rgba(24, 144, 255, 0.35)',
                             name: '本地单执行额',
                             type: 'bar',
-                            barWidth: '10%',
+                            barWidth: '5%',
                             data: this.turnoverDataShow.compareData.nativeExecutePrice,
                         },
                         {
                             color: 'rgba(19, 194, 194, 0.35)',
                             name: '本地全国单执行额',
                             type: 'bar',
-                            barWidth: '10%',
+                            barWidth: '5%',
                             data: this.turnoverDataShow.compareData.nativeNationwideExecutePrice,
                         },
                         {
                             color: 'rgba(250, 140, 22, 0.35)',
                             name: '全国单接单执行额',
                             type: 'bar',
-                            barWidth: '10%',
+                            barWidth: '5%',
                             data: this.turnoverDataShow.compareData.nationwideExecutePrice,
                         },
                         {
                             color: 'rgba(82, 196, 26, 0.35)',
                             name: '全国单发单执行额',
                             type: 'bar',
-                            barWidth: '10%',
+                            barWidth: '5%',
                             data: this.turnoverDataShow.compareData.nationwideBillExecutePrice,
                         }
                     ]
@@ -1815,6 +1815,7 @@
         width: 14px;
         height: 14px;
         border-radius: 50%;
+        vertical-align: middle;
         filter: brightness(0.75);
     }
 
@@ -1834,6 +1835,10 @@
     }
     /deep/ .order_price_date .el-date-editor.el-input, .el-date-editor.el-input__inner{
         width: 140px;
+    }
+    /* 按周或按月单选 */
+    .radio-period-type {
+        margin-right: 20px;
     }
     /*业绩跑道*/
     .SM_results_runway{

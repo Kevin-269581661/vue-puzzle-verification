@@ -716,7 +716,10 @@
                     //　订单金额初始化日期
                     this.turnoverDateMonth = [this.nowMonth]
                     this.amountForm.compareMonth.compareSourceDate = this.nowMonth
-                    this.amountForm.compareWeek.compareSourceDate = new Date()
+                    // 获取上周六为默认周选时间,周六到周五为一周
+                    let tempWeekSort = [0, 1, 2, 3, 4, 5, 6],
+                        rangeWithSaturday = tempWeekSort[(new Date().getDay() + 1)%7] ;
+                    this.amountForm.compareWeek.compareSourceDate = new Date(new Date(new Date().getTime() - 3600*24*(7+rangeWithSaturday)*1000))
                     //　订单数量初始化日期
                     this.orderDateMonth = [this.nowMonth]
                     // 表头日期
@@ -879,7 +882,7 @@
                         tempCompareTargetDate = this.amountForm[tempPeriodType].compareTargetDate;
                     // 周对比时，返回的时间戳不一定是用户所点击的那天
                     if (tempCompareSourceDate == tempCompareTargetDate || (this.amountForm.periodType == 'compareWeek' && this.$refs.weekSource.displayValue == this.$refs.weekTarget.displayValue)) {
-                        this.messageFun('warning', '请选择不一样的时间进行对比')
+                        tempCompareSourceDate && tempCompareTargetDate && this.messageFun('warning', '请选择不一样的时间进行对比')
                     } else if(this.turnoverCompare && tempCompareSourceDate && tempCompareTargetDate || comefrom == 'start') {
                         this.setOrderIncomeData()
                     }

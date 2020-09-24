@@ -51,6 +51,7 @@
                             v-model="amountForm.compareWeek.compareSourceDate"
                             type="week"
                             size="mini"
+                            :clearable="false"
                             format="yyyy 第 WW 周"
                             placeholder="选择周"
                             :picker-options="priceDate"
@@ -62,6 +63,7 @@
                             v-model="amountForm.compareWeek.compareTargetDate"
                             type="week"
                             size="mini"
+                            :clearable="false"
                             format="yyyy 第 WW 周"
                             placeholder="选择周"
                             :picker-options="priceDate"
@@ -131,7 +133,13 @@
                                     签约额：均为合同金额，未扣除总部收益部分
                                 </li>
                                 <li style="line-height: 20px;">
-                                    执行额：该外地执行额仅统计投放在直营城市中的点位
+                                    全国单发单执行额：该执行额不以实际订单金额统计，而以拆单时的方案金额以公式计算获得
+                                </li>
+                                <li style="line-height: 20px;">
+                                    按周统计：指每周六至下周五为一个周
+                                </li>
+                                <li style="line-height: 20px;">
+                                    按月统计：指从1号至自然月底
                                 </li>
                             </ul>
                             <img class="quesition-icon" src="../../assets/images/question_icon.png" />
@@ -923,7 +931,7 @@
                     apiUrl = '/report/api/v1/getWeekAscrPrice'
                 }
                 api.getApi(apiUrl, params).then(res=>{
-                    if(res.data !== '' && res.data !== null && res.data !== undefined){
+                    if(res.data !== '' && res.data !== null && res.data !== undefined && res.data.SysCode == 200200){
                         let resData = res.data.data
                         // 将数据转成柱形图所需数组格式
                         let cityName = [],
@@ -1831,6 +1839,9 @@
         right: 32px;
         top:12px;
         z-index: 99;
+    }
+    .order_price_date /deep/ .el-picker-panel.el-date-picker.el-popper {
+        position: absolute;
     }
     /deep/ .order_price_date .el-date-editor.el-input, .el-date-editor.el-input__inner{
         width: 140px;

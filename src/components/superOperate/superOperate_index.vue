@@ -1755,7 +1755,7 @@
 
 <style>
 .amount-tooltip {
-    max-width: unset;
+    max-width: unset !important;
 }
 </style>
 <style scoped>

@@ -939,7 +939,7 @@
                     };
                 if(this.amountForm.periodType == 'compareWeek') {
                     params.startDate = timeFormat.toDate(new Date(Date.parse(this.amountForm.compareWeek.compareSourceDate) + 3600*24*7*1000)),
-                    params.endDate = this.amountForm.compareWeek.compareTargetDate ? timeFormat.toDate(new Date(Date.parse(this.amountForm.compareWeek.compareTargetDate) + 3600*24*7*1000)) : '',
+                    params.endDate = this.amountForm.compareWeek.compareTargetDate && this.turnoverCompare ? timeFormat.toDate(new Date(Date.parse(this.amountForm.compareWeek.compareTargetDate) + 3600*24*7*1000)) : '',
                     apiUrl = '/report/api/v1/getWeekAscrPrice'
                 }
                 api.getApi(apiUrl, params).then(res=>{

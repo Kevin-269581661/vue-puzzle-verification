@@ -127,7 +127,7 @@
                             <el-radio-button label="签约额"></el-radio-button>
                             <el-radio-button label="执行额"></el-radio-button>
                         </el-radio-group>
-                        <el-tooltip content="Top center" placement="top">
+                        <el-tooltip popper-class="amount-tooltip" effect="dark" content="Top center" placement="top">
                             <ul slot="content">
                                 <li style="line-height: 20px;">
                                     签约额：均为合同金额，未扣除总部收益部分
@@ -938,7 +938,6 @@
                         asrIds: portraitInfo.map(item=>item.asrId).join(',') || '1,2,3,4,5,6,7'
                     };
                 if(this.amountForm.periodType == 'compareWeek') {
-                    console.log('this.amountForm.compareWeek.compareSourceDate', this.amountForm.compareWeek, )
                     params.startDate = timeFormat.toDate(new Date(Date.parse(this.amountForm.compareWeek.compareSourceDate) + 3600*24*7*1000)),
                     params.endDate = this.amountForm.compareWeek.compareTargetDate ? timeFormat.toDate(new Date(Date.parse(this.amountForm.compareWeek.compareTargetDate) + 3600*24*7*1000)) : '',
                     apiUrl = '/report/api/v1/getWeekAscrPrice'
@@ -1754,6 +1753,11 @@
 
 </script>
 
+<style>
+.amount-tooltip {
+    max-width: unset;
+}
+</style>
 <style scoped>
     .ad_index_container{
         margin: 24px 64px;

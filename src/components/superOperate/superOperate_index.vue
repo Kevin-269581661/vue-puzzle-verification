@@ -54,7 +54,7 @@
                             :clearable="false"
                             format="yyyy 第 WW 周"
                             placeholder="选择周"
-                            :picker-options="priceDate"
+                            :picker-options="priceDateWeek"
                             @change="changeMonthToCompare('start')">
                         </el-date-picker>
                         <el-checkbox v-model="turnoverCompare" @change="compareRadio">对比</el-checkbox>
@@ -66,7 +66,7 @@
                             :clearable="false"
                             format="yyyy 第 WW 周"
                             placeholder="选择周"
-                            :picker-options="priceDate"
+                            :picker-options="priceDateWeek"
                             @change="changeMonthToCompare('end')">
                         </el-date-picker>
                     </template>
@@ -556,6 +556,15 @@
                 priceDate:{
                     disabledDate:(time) =>{
                         return time.getTime() > Date.now()
+                    }
+                },
+                priceDateWeek: {
+                    disabledDate:(time) =>{
+                        let tempWeekSort = [0, 1, 2, 3, 4, 5, 6],
+                        // 以周六为一周的开始，求当天与本周六的相隔天数
+                        rangeWithSaturday = tempWeekSort[(new Date().getDay() + 1)%7] ;
+                        // 超过上周五置灰
+                        return time.getTime() > (new Date().getTime() - 3600*24*(rangeWithSaturday+1)*1000)
                     },
                     firstDayOfWeek: 6
                 },
@@ -929,8 +938,9 @@
                         asrIds: portraitInfo.map(item=>item.asrId).join(',') || '1,2,3,4,5,6,7'
                     };
                 if(this.amountForm.periodType == 'compareWeek') {
-                    params.startDate = timeFormat.toDate(this.amountForm.compareWeek.compareSourceDate),
-                    params.endDate = timeFormat.toDate(this.amountForm.compareWeek.compareTargetDate),
+                    console.log('this.amountForm.compareWeek.compareSourceDate', this.amountForm.compareWeek, )
+                    params.startDate = timeFormat.toDate(new Date(Date.parse(this.amountForm.compareWeek.compareSourceDate) + 3600*24*7*1000)),
+                    params.endDate = this.amountForm.compareWeek.compareTargetDate ? timeFormat.toDate(new Date(Date.parse(this.amountForm.compareWeek.compareTargetDate) + 3600*24*7*1000)) : '',
                     apiUrl = '/report/api/v1/getWeekAscrPrice'
                 }
                 api.getApi(apiUrl, params).then(res=>{

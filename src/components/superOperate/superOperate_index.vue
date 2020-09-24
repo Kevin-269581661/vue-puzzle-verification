@@ -548,7 +548,8 @@
                 priceDate:{
                     disabledDate:(time) =>{
                         return time.getTime() > Date.now()
-                    }
+                    },
+                    firstDayOfWeek: 6
                 },
                 // 各城市对应荣誉图片地址
                 honorImg:[

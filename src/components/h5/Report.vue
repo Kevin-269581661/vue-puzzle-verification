@@ -589,7 +589,7 @@
                         info.periods = this.checkPeriodArr.join(',')
                     }
                     info.customizeCode = this.templateType == 1 ? this.customizeCode : 0
-                    info.exportAllPoint = (this.pptxFilter.indexOf('0') != -1)?0:1
+                    info.exportAllPoint = (this.pptxFilter.indexOf(0) != -1)?0:1
                     // customizeCode: 2 亲粤邻定制模板
                     this.customizeCode == '2' && (info.customCondition = this.pptxFilter.reduce((accumulator, currentValue) => {
                         if(currentValue > 0) {
@@ -637,7 +637,7 @@
                             } else {
                                 fileInfo.photoCountPerPage = this.pptxType*1
                             }
-                            fileInfo.exportAllPoint = (this.pptxFilter.indexOf('0') != -1)?0:1
+                            fileInfo.exportAllPoint = (this.pptxFilter.indexOf(0) != -1)?0:1
                             this.customizeCode == '2' && (fileInfo.customCondition = this.pptxFilter.reduce((accumulator, currentValue) => {
                                 if(currentValue > 0) {
                                     return accumulator!==''?(accumulator + ',' + currentValue):currentValue

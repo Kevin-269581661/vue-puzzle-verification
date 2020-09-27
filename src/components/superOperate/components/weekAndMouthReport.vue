@@ -244,7 +244,7 @@
             echartsListener(){
                 window.addEventListener("resize", ()=> {
                     // 数据总览
-                    this.issueReportPieEcharts.resize();
+                    this.issueReportPieEcharts && this.issueReportPieEcharts.resize();
                 });
             },
             // 设置初始时间

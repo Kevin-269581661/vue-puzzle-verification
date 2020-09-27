@@ -469,10 +469,10 @@
             // 统一监听
             echartsListener(){
                 window.addEventListener("resize", ()=> {
-                    this.chinaMapEcharts.resize();
-                    this.cityBattleLineEcharts.resize();
-                    this.cityPercentBattleEchart.resize();
-                    this.keyDataPieEcharts.resize();
+                    this.chinaMapEcharts && this.chinaMapEcharts.resize();
+                    this.cityBattleLineEcharts && this.cityBattleLineEcharts.resize();
+                    this.cityPercentBattleEchart && this.cityPercentBattleEchart.resize();
+                    this.keyDataPieEcharts && this.keyDataPieEcharts.resize();
                 });
             },
             // 统一调用接口

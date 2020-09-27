@@ -849,19 +849,19 @@
             echartsListener(){
                 window.addEventListener("resize", ()=> {
                     // 关键数据总量
-                    this.keyDataLineEchart.resize();
+                    this.keyDataLineEchart && this.keyDataLineEchart.resize();
                     // 关键数据增量
-                    this.KeyDataBarEchart.resize();
+                    this.KeyDataBarEchart && this.KeyDataBarEchart.resize();
                     // 行业订单总量
-                    this.busOrderLineEchart.resize();
+                    this.busOrderLineEchart && this.busOrderLineEchart.resize();
                     // 行业订单占比
-                    this.allOrderPieEcharts.resize();
+                    this.allOrderPieEcharts && this.allOrderPieEcharts.resize();
                     // 入驻物业
-                    this.PropertyRankEchart.resize();
+                    this.PropertyRankEchart && this.PropertyRankEchart.resize();
                     // 广告主
-                    this.adOwnerRankEcharts.resize();
+                    this.adOwnerRankEcharts && this.adOwnerRankEcharts.resize();
                     // 销售业绩
-                    this.salesRankEcharts.resize();
+                    this.salesRankEcharts && this.salesRankEcharts.resize();
                 });
             },
             // 统一调用接口

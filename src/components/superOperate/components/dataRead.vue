@@ -698,17 +698,17 @@
             echartsListener(){
                 window.addEventListener("resize", ()=> {
                     // 数据总览
-                    this.totalDataBarEcharts.resize();
+                    this.totalDataBarEcharts && this.totalDataBarEcharts.resize();
                     // 当天概况
-                    this.toDayPreceptBarEcharts.resize();
+                    this.toDayPreceptBarEcharts && this.toDayPreceptBarEcharts.resize();
                     // 广告销售
-                    this.adSaleBarEcharts.resize();
-                    this.adSalePieEcharts.resize();
+                    this.adSaleBarEcharts && this.adSaleBarEcharts.resize();
+                    this.adSalePieEcharts && this.adSalePieEcharts.resize();
                     // 广告库存
-                    this.adInventoriedPieEcharts.resize();
-                    this.adInventoryPieEcharts.resize();
+                    this.adInventoriedPieEcharts && this.adInventoriedPieEcharts.resize();
+                    this.adInventoryPieEcharts && this.adInventoryPieEcharts.resize();
                     // 机会挖掘
-                    this.chanceFindPieEcharts.resize();
+                    this.chanceFindPieEcharts && this.chanceFindPieEcharts.resize();
                 });
             },
             // 设置初始时间

@@ -968,7 +968,8 @@
                             beginDateIndex = this.amountForm.periodType == 'compareWeek' ? params.startDate : params.startDate.slice(0,7),
                             endDateIndex = this.amountForm.periodType == 'compareWeek' ? params.endDate : params.endDate.slice(0,7);
                         (resData[beginDateIndex] || []).forEach(item=>{
-                            cityName.push(item.name.replace(/(?<=邻).+/, ''));
+                            cityName.push(item.name.substring(0, item.name.length-6))
+                            // cityName.push(item.name.replace(/(?<=邻).+/, ''));
                             sourceData.nativeContractPrice.push(item.nativeContractPrice);
                             sourceData.nativeExecutePrice.push(item.nativeExecutePrice);
                             sourceData.nativeNationwideExecutePrice.push(item.nativeNationwideExecutePrice);
@@ -977,7 +978,6 @@
                             sourceData.nationwideBillExecutePrice.push(item.nationwideBillExecutePrice || 0);
                         });
                         (resData[endDateIndex] || []).forEach(item=>{
-                            // cityName.push(item.name);
                             compareData.nativeContractPrice.push(item.nativeContractPrice);
                             compareData.nativeExecutePrice.push(item.nativeExecutePrice);
                             compareData.nativeNationwideExecutePrice.push(item.nativeNationwideExecutePrice);
@@ -986,7 +986,8 @@
                             compareData.nationwideBillExecutePrice.push(item.nationwideBillExecutePrice || 0);
                         })
                         this.turnoverDataShow = {
-                            cityName: cityName.length > 0 ? cityName : portraitInfo.map(item=>item.asrName.replace(/(?<=邻).+/, '')),
+                            // cityName: cityName.length > 0 ? cityName : portraitInfo.map(item=>item.asrName.replace(/(?<=邻).+/, '')),
+                            cityName: cityName.length > 0 ? cityName : portraitInfo.map(item=>item.asrName.substring(0, item.asrName.length-6)),
                             sourceData: sourceData,
                             compareData: compareData,
                         };

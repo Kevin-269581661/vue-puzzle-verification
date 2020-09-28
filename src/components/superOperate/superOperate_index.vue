@@ -476,6 +476,7 @@
                 ],
                 linkArr: [],
                 isRetailCompany: false,     // 判断是否为7大直营公司或平台商
+                listDirectList: [],         // 直营城市公司列表
                 activeTabsName: 'price',
                 // 金额图表的echarts
                 DateMonth: ['2019-03',''],
@@ -502,12 +503,6 @@
                     },
                     turnoverTitle: ['订单金额']
                 },
-                // turnoverDataShow: {
-                //     priceData: [],
-                //     cityName: [],
-                //     compareDataByDate: [],
-                //     turnoverTitle: ['订单金额']
-                // },
                 turnoverDateMonth: ['2019-03', ''],
                 // 订单数柱状图echarts
                 orderEcharts: '',
@@ -734,7 +729,7 @@
                     // 表头日期
                     this.DateMonth = [this.nowMonth]
                     // 成交金额接口
-                    this.setOrderIncomeData()
+                    this.getDirectSales()
                     this.setOrderCountData(this.nowMonth, false)
                 }
                 // 是否平台商
@@ -742,6 +737,23 @@
                     // 业绩排行
                     this.setBDonRunway()
                 }
+            },
+            // 获取直营公司列表
+            getDirectSales(){
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token
+                }
+                api.getApi(this.apiVar.report + '/api/v2/listDirectList',params).then(res=>{
+                    if (res.data.SysCode === 200200) {
+                        this.listDirectList = res.data.data;
+                        this.setOrderIncomeData()
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                }).catch(err=>{
+                    console.log('err', err)
+                })
             },
             // 动态修改图表的宽度
             realTimeChangeEcharteWidth(){
@@ -926,7 +938,7 @@
             },
             // 成交金额接口 GetOrderIncomeByMonth
             setOrderIncomeData(){
-                let portraitInfo = JSON.parse(sessionStorage.getItem('portraitInfo')) || [],
+                let portraitInfo = this.listDirectList || [],
                     startDate = this.amountForm.compareMonth.compareSourceDate,
                     endDate = this.amountForm.compareMonth.compareTargetDate,
                     apiUrl = '/report/api/v1/getMonthAscrPrice',
@@ -986,8 +998,7 @@
                             compareData.nationwideBillExecutePrice.push(item.nationwideBillExecutePrice || 0);
                         })
                         this.turnoverDataShow = {
-                            // cityName: cityName.length > 0 ? cityName : portraitInfo.map(item=>item.asrName.replace(/(?<=邻).+/, '')),
-                            cityName: cityName.length > 0 ? cityName : portraitInfo.map(item=>item.asrName.substring(0, item.asrName.length-6)),
+                            cityName: cityName.length > 0 ? cityName : portraitInfo.map(item=>item.name.substring(0, item.name.length-6)),
                             sourceData: sourceData,
                             compareData: compareData,
                         };

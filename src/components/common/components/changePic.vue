@@ -2208,7 +2208,8 @@
                 }
                 this.downLoading = true;
                 const tempPage = window.open('', '_blank');
-                api.getApi(this.apiVar.Advertisement + '/DownloadImgPackage', info).then(res => {
+                // api.getApi(this.apiVar.Advertisement + '/DownloadImgPackage', info).then(res => {
+                api.getApi(this.apiVar.image + '/downloadImgPackage', info).then(res => {
                     if (res.data.SysCode == 200200) {
                         let routeUrl = this.$router.resolve({
                             path: "/progressDown",

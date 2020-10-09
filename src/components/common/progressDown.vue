@@ -24,7 +24,8 @@ export default {
         // 导出订单图片包
         getProcess(){
             let tempwindow = '';
-            api.getApi(this.apiVar.Advertisement+'/DownloadImgPackage', this.$route.query).then(res =>{
+            // api.getApi(this.apiVar.Advertisement+'/DownloadImgPackage', this.$route.query).then(res =>{
+            api.getApi(this.apiVar.image+'/downloadImgPackage', this.$route.query).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 200200){
                     let resinfo = res.data.data;

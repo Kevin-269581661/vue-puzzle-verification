@@ -798,7 +798,8 @@
                     onStart: onStart,
                     onEnd: onEnd
                 }
-                api.getApi(this.apiVar.Count + url, params).then(res => {
+                // api.getApi(this.apiVar.Count + url, params).then(res => {
+                api.getApi(this.apiVar.report + url, params).then(res => {
                     console.log('asrID', asrID, '城市数据对比社区接口 - 接口', res)
                     let ResCount = res.data
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
@@ -1177,7 +1178,8 @@
                     istart: tStart,
                     iend: tEnd
                 }
-                api.getApi(this.apiVar.Count + '/GetRM', params).then(res => {
+                // api.getApi(this.apiVar.Count + '/GetRM', params).then(res => {
+                api.getApi(this.apiVar.report + '/GetRM', params).then(res => {
                     console.log('城市关键数据对比 - 接口 （社区、广告门、点位）', res)
                     let dataArr = res.data
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
@@ -1227,7 +1229,8 @@
                     istart: this.cityKeyDataDate[0],
                     iend: this.cityKeyDataDate[1]
                 }
-                api.getApi(this.apiVar.Count + '/GetCOrder', params).then(res => {
+                // api.getApi(this.apiVar.Count + '/GetCOrder', params).then(res => {
+                api.getApi(this.apiVar.report + '/GetCOrder', params).then(res => {
                     console.log(asrID,'城市数据展示res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         sessFun.loginTimeout()       // 登录超时

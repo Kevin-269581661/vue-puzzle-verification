@@ -778,7 +778,8 @@
                     uid: this.sessionData.uID,
                     token: this.sessionData.token
                 }
-                api.getApi(this.apiVar.Count + '/GetPdIncomeCount',params).then(res=>{
+                // api.getApi(this.apiVar.Count + '/GetPdIncomeCount',params).then(res=>{
+                api.getApi(this.apiVar.report + '/GetPdIncomeCount',params).then(res=>{
                     // console.log('直营公司收入排名',res)
                     if(res.data !== '' && res.data !== null && res.data !== undefined && res.data.length > 0){
                         let dataArr = res.data
@@ -846,7 +847,8 @@
                     uid: this.sessionData.uID,
                     token: this.sessionData.token
                 }
-                api.getApi(this.apiVar.Count + '/GetSMOverview',params).then(res=>{
+                // api.getApi(this.apiVar.Count + '/GetSMOverview',params).then(res=>{
+                api.getApi(this.apiVar.report + '/GetSMOverview',params).then(res=>{
                     console.log('超级运营顶部内容详情',res)
                     if(res.data !== '' && res.data !== null && res.data !== undefined){
                         this.dataArr[0].data = res.data.companyCount
@@ -1031,7 +1033,8 @@
                     onEnd: this.returnDate(endTime),
                 }
                 // console.log('获取订单数量总量接口参数',params)
-                api.getApi(this.apiVar.Count + '/GetOrderCountByMonth',params).then(res=>{
+                // api.getApi(this.apiVar.Count + '/GetOrderCountByMonth',params).then(res=>{
+                api.getApi(this.apiVar.report + '/GetOrderCountByMonth',params).then(res=>{
                     console.log('订单总数接口',res)
                     if(res.data !== '' && res.data !== null && res.data !== undefined){
                         let dataArr = res.data
@@ -1405,7 +1408,8 @@
                     asrIDs: this.returnAsrID(this.sessionData.asrID),
                 }
                 // console.log('获取业绩排行参数',params)
-                api.getApi(this.apiVar.Count + '/GetAchievementRankList', params).then(res => {
+                // api.getApi(this.apiVar.Count + '/GetAchievementRankList', params).then(res => {
+                api.getApi(this.apiVar.report + '/GetAchievementRankList', params).then(res => {
                     console.log('业绩排行接口', res)
                     if(res.data !== '' && res.data !== null && res.data !== undefined){
                         let dataArr = res.data
@@ -1513,7 +1517,8 @@
                     suID: row.uID,
                 }
                 // console.log('设置销售目标参数',params)
-                api.postApi(this.apiVar.Count + '/SaveOrUpdateUserTarget', params).then(res=>{
+                // api.postApi(this.apiVar.Count + '/SaveOrUpdateUserTarget', params).then(res=>{
+                api.postApi(this.apiVar.report + '/SaveOrUpdateUserTarget', params).then(res=>{
                     console.log('设置销售目标',res)
                     if(res.data.SysCode === 200200 || res.data.MSG === "操作成功"){
                         this.messageFun('success',res.data.MSG)

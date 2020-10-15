@@ -778,11 +778,10 @@
                     uid: this.sessionData.uID,
                     token: this.sessionData.token
                 }
-                // api.getApi(this.apiVar.Count + '/GetPdIncomeCount',params).then(res=>{
                 api.getApi(this.apiVar.report + '/GetPdIncomeCount',params).then(res=>{
                     // console.log('直营公司收入排名',res)
-                    if(res.data !== '' && res.data !== null && res.data !== undefined && res.data.length > 0){
-                        let dataArr = res.data
+                    let dataArr = res.data.data
+                    if(res.data.SysCode == 200200 && Array.isArray(dataArr) && dataArr.length > 0){
                         dataArr.sort(this.compareSort('total'))
                         let first = ''
                         let second = ''
@@ -847,13 +846,13 @@
                     uid: this.sessionData.uID,
                     token: this.sessionData.token
                 }
-                // api.getApi(this.apiVar.Count + '/GetSMOverview',params).then(res=>{
                 api.getApi(this.apiVar.report + '/GetSMOverview',params).then(res=>{
                     console.log('超级运营顶部内容详情',res)
-                    if(res.data !== '' && res.data !== null && res.data !== undefined){
-                        this.dataArr[0].data = res.data.companyCount
-                        this.dataArr[1].data = res.data.apCount
-                        this.dataArr[2].data = Math.floor(res.data.pdTotal / 100)
+                    let resData = res.data.data;
+                    if(res.data.SysCode == 200200 && resData ){
+                        this.dataArr[0].data = resData.companyCount
+                        this.dataArr[1].data = resData.apCount
+                        this.dataArr[2].data = Math.floor(resData.pdTotal / 100)
                     } else {
                         this.messageFun('warning','暂无数据')
                     }
@@ -957,7 +956,7 @@
                     apiUrl = '/report/api/v1/getWeekAscrPrice'
                 }
                 api.getApi(apiUrl, params).then(res=>{
-                    if(res.data !== '' && res.data !== null && res.data !== undefined && res.data.SysCode == 200200){
+                    if(res.data.SysCode == 200200){
                         let resData = res.data.data
                         // 将数据转成柱形图所需数组格式
                         let cityName = [],
@@ -1033,11 +1032,10 @@
                     onEnd: this.returnDate(endTime),
                 }
                 // console.log('获取订单数量总量接口参数',params)
-                // api.getApi(this.apiVar.Count + '/GetOrderCountByMonth',params).then(res=>{
                 api.getApi(this.apiVar.report + '/GetOrderCountByMonth',params).then(res=>{
                     console.log('订单总数接口',res)
-                    if(res.data !== '' && res.data !== null && res.data !== undefined){
-                        let dataArr = res.data
+                    if(res.data.SysCode == 200200 && res.data.data){
+                        let dataArr = res.data.data
                         let priceData = []
                         let cityName = []
                         let compareDataByDate = []
@@ -1408,11 +1406,10 @@
                     asrIDs: this.returnAsrID(this.sessionData.asrID),
                 }
                 // console.log('获取业绩排行参数',params)
-                // api.getApi(this.apiVar.Count + '/GetAchievementRankList', params).then(res => {
                 api.getApi(this.apiVar.report + '/GetAchievementRankList', params).then(res => {
                     console.log('业绩排行接口', res)
-                    if(res.data !== '' && res.data !== null && res.data !== undefined){
-                        let dataArr = res.data
+                    let dataArr = res.data.data;
+                    if(res.data.SysCode == 200200 && res.data.data){
                         let tempArr = []
                         let tableList = []
                         let i = 0
@@ -1517,7 +1514,6 @@
                     suID: row.uID,
                 }
                 // console.log('设置销售目标参数',params)
-                // api.postApi(this.apiVar.Count + '/SaveOrUpdateUserTarget', params).then(res=>{
                 api.postApi(this.apiVar.report + '/SaveOrUpdateUserTarget', params).then(res=>{
                     console.log('设置销售目标',res)
                     if(res.data.SysCode === 200200 || res.data.MSG === "操作成功"){

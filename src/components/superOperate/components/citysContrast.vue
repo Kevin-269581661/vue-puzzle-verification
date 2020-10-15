@@ -798,10 +798,9 @@
                     onStart: onStart,
                     onEnd: onEnd
                 }
-                // api.getApi(this.apiVar.Count + url, params).then(res => {
                 api.getApi(this.apiVar.report + url, params).then(res => {
                     console.log('asrID', asrID, '城市数据对比社区接口 - 接口', res)
-                    let ResCount = res.data
+                    let ResCount = res.data.data
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         sessFun.loginTimeout()       // 登录超时
                     } else {
@@ -1178,17 +1177,16 @@
                     istart: tStart,
                     iend: tEnd
                 }
-                // api.getApi(this.apiVar.Count + '/GetRM', params).then(res => {
                 api.getApi(this.apiVar.report + '/GetRM', params).then(res => {
                     console.log('城市关键数据对比 - 接口 （社区、广告门、点位）', res)
-                    let dataArr = res.data
+                    let dataArr = res.data.data
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         sessFun.loginTimeout()       // 登录超时
                     } else {
                         this.cityResKeyData = []
                         this.cityAdsKeyData = []
                         this.cityMediaKeyData = []
-                        if (res.data.length > 0) {
+                        if (dataArr.length > 0) {
                             for (let key of dataArr) {
                                 let cityName = this.returnAsName(key.asrID)
                                 let RESData = {name: cityName, value: key.countRES}
@@ -1229,13 +1227,12 @@
                     istart: this.cityKeyDataDate[0],
                     iend: this.cityKeyDataDate[1]
                 }
-                // api.getApi(this.apiVar.Count + '/GetCOrder', params).then(res => {
                 api.getApi(this.apiVar.report + '/GetCOrder', params).then(res => {
                     console.log(asrID,'城市数据展示res', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         sessFun.loginTimeout()       // 登录超时
                     }else{
-                        let COrderData = res.data
+                        let COrderData = res.data.data
                         let tempObj = {asrID: params.asrIDs, totalSum: 0, apCount: 0, adOwners: COrderData.length,}
                         for (let key of COrderData) {
                             tempObj.totalSum += Number((key.totalSum / 100).toFixed(0))

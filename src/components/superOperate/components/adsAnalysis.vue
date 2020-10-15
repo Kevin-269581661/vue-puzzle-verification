@@ -588,13 +588,12 @@
                 }else if(val === 'month'){
                     params.dateType = 'month'
                 }
-                // api.getApi(this.apiVar.Count + '/GetSpotUsedInfo', params).then(res => {
                 api.getApi(this.apiVar.report + '/GetSpotUsedInfo', params).then(res => {
                     console.log('参数', params, '点位使用概况', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         sessFun.loginTimeout()
                     } else {
-                        let adsData = res.data
+                        let adsData = res.data.data
                         this.adsUserData = {
                             totalAdSpaceInfoCount: adsData.totalAdSpaceInfoCount || 0,
                             planToOrderConversionRate: adsData.planToOrderConversionRate !== undefined ? (adsData.planToOrderConversionRate * 100).toFixed(2) : 0,
@@ -637,17 +636,17 @@
                         delete params[i]
                     }
                 }
-                // api.postApi(this.apiVar.Count + '/GetResPublicationRateV2',params).then(res=> {
-                api.postApi(this.apiVar.report + '/GetResPublicationRateV2',params).then(res=> {
+                api.getApi(this.apiVar.report + '/GetResPublicationRateV2',params).then(res=> {
                     console.log('社区社区列表-接口', res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         sessFun.loginTimeout()
                     } else {
-                        if (res.data.list.length > 0) {
-                            console.log('res.data.list', res.data.list)
-                            this.resTotalPage = res.data.totalPage
+                        let resData = res.data.data;
+                        if (resData.list.length > 0) {
+                            console.log('res.data.list', resData.list)
+                            this.resTotalPage = resData.totalPage
                             this.resPageNum++
-                            this.setResTableData(res.data.list)
+                            this.setResTableData(resData.list)
                             this.loadingRes = true
                         } else {
                             sessFun.messageFun('warning', '社区社区列表,在该时段暂无数据!')
@@ -690,16 +689,16 @@
                         delete params[i]
                     }
                 }
-                // api.postApi(this.apiVar.Count + '/GetSpotPublicationRateV2',params).then(res=>{
-                api.postApi(this.apiVar.report + '/GetSpotPublicationRateV2',params).then(res=>{
+                api.getApi(this.apiVar.report + '/GetSpotPublicationRateV2',params).then(res=>{
                     console.log('点位社区列表 - 接口',res)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
                         sessFun.loginTimeout()
                     }else {
-                        if(res.data.list.length > 0){
-                            this.adsTotalPage = res.data.totalPage
+                        let resData = res.data.data;
+                        if(resData.list.length > 0){
+                            this.adsTotalPage = resData.totalPage
                             this.adsPageNum++
-                            this.setAdsTableData(res.data.list)
+                            this.setAdsTableData(resData.list)
                             this.loadingMoreAds = true
                         }else{
                             // this.$message.warning('点位社区列表,在该时段暂无数据！');
@@ -973,7 +972,6 @@
                         delete params[i]
                     }
                 }
-                // api.getApi_file(this.apiVar.Count + '/ExportResPublicationRate'
                 api.getApi_file(this.apiVar.report + '/ExportResPublicationRate'
                     , params).then(res=>{
                     console.log('社区上刊率导出',res)
@@ -1012,7 +1010,6 @@
                         delete params[i]
                     }
                 }
-                // api.getApi_file(this.apiVar.Count + '/ExportSpotPublicationRate',params).then(res=>{
                 api.getApi_file(this.apiVar.report + '/ExportSpotPublicationRate',params).then(res=>{
                     console.log('点位上刊率导出',res.headers)
                     if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {

@@ -413,8 +413,7 @@ export default {
 				uid: this.sessionData.uID,
 				token: this.sessionData.token,
 			};
-			// api.postApi(this.apiVar.Count + '/GetHomePageInfoOfMD', info).then(res =>{
-			api.postApi(this.apiVar.report + '/GetHomePageInfoOfMD', info).then(res =>{
+			api.getApi(this.apiVar.report + '/GetHomePageInfoOfMD', info).then(res =>{
 				console.log(res.data);
 				if(res.data.SysCode == 200200){
 					let resInfo = res.data.data;
@@ -438,8 +437,7 @@ export default {
 				uid: this.sessionData.uID,
 				token: this.sessionData.token,
 			};
-			// api.postApi(this.apiVar.Count + '/GetSummaryOfLastMonthOfMD', info).then(res =>{
-			api.postApi(this.apiVar.report + '/GetSummaryOfLastMonthOfMD', info).then(res =>{
+			api.getApi(this.apiVar.report + '/GetSummaryOfLastMonthOfMD', info).then(res =>{
 				console.log(res);
 				if(res.data.SysCode == 200200){
 					let resinfo = res.data.data;
@@ -461,8 +459,7 @@ export default {
 				uid: this.sessionData.uID,
 				token: this.sessionData.token,
 			};
-			// api.postApi(this.apiVar.Count + '/GetTotalPerformanceOfMD', info).then(res =>{
-			api.postApi(this.apiVar.report + '/GetTotalPerformanceOfMD', info).then(res =>{
+			api.getApi(this.apiVar.report + '/GetTotalPerformanceOfMD', info).then(res =>{
 				console.log(res);
 				if(res.data.SysCode == 200200){
 					let resinfo = res.data.data;
@@ -596,8 +593,7 @@ export default {
 				startTime: this.monthRange[0],
 				endTime: this.monthRange[1]
 			};
-			// api.postApi(this.apiVar.Count + '/GetAdPlanCountAndAsCountByPeriodOfMD', info).then(res =>{
-			api.postApi(this.apiVar.report + '/GetAdPlanCountAndAsCountByPeriodOfMD', info).then(res =>{
+			api.getApi(this.apiVar.report + '/GetAdPlanCountAndAsCountByPeriodOfMD', info).then(res =>{
 				console.log(res.data);
 				if(res.data.SysCode == 200200){
 					let title = [];

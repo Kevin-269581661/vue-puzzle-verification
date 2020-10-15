@@ -353,8 +353,7 @@
                     uid: this.sessionData.uID,
                     token: this.sessionData.token
                 };
-                // api.postApi(this.apiVar.Count + '/GetMonthRankOfBD', info).then(res => {
-                api.postApi(this.apiVar.report + '/GetMonthRankOfBD', info).then(res => {
+                api.getApi(this.apiVar.report + '/GetMonthRankOfBD', info).then(res => {
                     console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         let resinfo = res.data.data;
@@ -417,8 +416,7 @@
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                 };
-                // api.postApi(this.apiVar.Count + '/GetCountMessage', info).then(res => {
-                api.postApi(this.apiVar.report + '/GetCountMessage', info).then(res => {
+                api.getApi(this.apiVar.report + '/GetCountMessage', info).then(res => {
                     console.log(res);
                     if (res.data.SysCode == 200200) {
                         let resinfo = res.data.data;
@@ -437,8 +435,7 @@
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                 };
-                // api.postApi(this.apiVar.Count + '/GetHomePageInfoOfBD', info).then(res => {
-                api.postApi(this.apiVar.report + '/GetHomePageInfoOfBD', info).then(res => {
+                api.getApi(this.apiVar.report + '/GetHomePageInfoOfBD', info).then(res => {
                     console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         let resInfo = res.data.data;
@@ -460,8 +457,7 @@
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                 };
-                // api.postApi(this.apiVar.Count + '/GetTargetOfYear', info).then(res => {
-                api.postApi(this.apiVar.report + '/GetTargetOfYear', info).then(res => {
+                api.getApi(this.apiVar.report + '/GetTargetOfYear', info).then(res => {
                     console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         let target = res.data.data.targetOfYear / 1000000;
@@ -487,8 +483,7 @@
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                 };
-                // api.postApi(this.apiVar.Count + '/GetApTotalSoFarOfBD', info).then(res => {
-                api.postApi(this.apiVar.report + '/GetApTotalSoFarOfBD', info).then(res => {
+                api.getApi(this.apiVar.report + '/GetApTotalSoFarOfBD', info).then(res => {
                     console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         let resinfo = res.data.data;

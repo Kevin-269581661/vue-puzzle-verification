@@ -224,7 +224,7 @@
                                         min-width="18%"
                                         align="right">
                                         <template slot-scope="scope">
-                                            <span>&yen;{{scope.row.price || '--'}}</span>
+                                            <span>&yen;{{scope.row.price || '0'}}</span>
                                         </template>
                                     </el-table-column>
                                     <div slot="empty">

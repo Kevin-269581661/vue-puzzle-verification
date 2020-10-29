@@ -5438,7 +5438,8 @@
                     rn: this.searchInput,
                     ls: starTime.split(".").join(""),
                     le: endTime.split(".").join(""),
-                    cityIds: this.city.map(_=>_.rid)
+                    cityIds: this.city.map(_=>_.rid),
+                    saleId: this.BDData.uid
                 }
                 console.log('参数', params) //planList
                 api.postApi(this.apiVar.Advertisement + '/GetResAdplanInfo', params).then(res => {

@@ -1,7 +1,8 @@
 <template>
   <div>
     <div class="ad_index_container">
-        <home-top :user-info="userInfo" :data-arr="dataArr" :honor-img="companyHonor"></home-top>
+        <!-- <home-top :user-info="userInfo" :data-arr="dataArr" :honor-img="companyHonor"></home-top> -->
+        <personal-info :user-info="userInfo" :honor-img="companyHonor"></personal-info>
         <div style="margin:24px 0;display:flex">
             <!--isPlatform-->
             <div :class="isPlatform ? 'use_module' : 'platFrom_use_module'" style="border: 1px solid #e5e6e9;">
@@ -336,6 +337,9 @@
 
 <script>
     import homeTop from '../common/components/homeTop.vue';
+
+    import personalInfo from '../common/components/personalInfo.vue';
+    
     import homeLink from '../common/components/homeLink.vue';
     import timeFormat from '../../commonFun/timeFormat'
     import commaFormat from '../../commonFun/commaFormat'
@@ -625,6 +629,8 @@
         components: {
             homeTop,
             homeLink,
+
+            personalInfo
         },
         mounted() {
             // 获取session中的数据,并进行权限判断

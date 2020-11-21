@@ -2,22 +2,33 @@
   <div>
     <div class="ad_index_container">
         <!-- <home-top :user-info="userInfo" :data-arr="dataArr" :honor-img="companyHonor"></home-top> -->
-        <personal-info :user-info="userInfo" :honor-img="companyHonor"></personal-info>
-        <div style="margin:24px 0;display:flex">
+        <div class="index-row">
+            <div class="left-layout">
+                <personal-info :user-info="userInfo" :honor-img="companyHonor" :linkArr="linkArrNew"></personal-info>
+                <div class="card-group">
+                    
+                </div>
+            </div>
+            <!-- 消息推送和应用市场 -->
+            <div class="right-board">
+                <message-and-app :appCenter="appCenter" @goToPage="goToPage"></message-and-app>
+            </div>
+        </div>
+        <!-- <div style="margin:24px 0;display:flex"> -->
             <!--isPlatform-->
-            <div :class="isPlatform ? 'use_module' : 'platFrom_use_module'" style="border: 1px solid #e5e6e9;">
+            <!-- <div :class="isPlatform ? 'use_module' : 'platFrom_use_module'" style="border: 1px solid #e5e6e9;">
                 <h2 class="h2_style">常用模块</h2>
                 <home-link :link="linkArr"></home-link>
-            </div>
-            <div v-if="isPlatform" style="width:33%; margin-left:24px;background:#fff;border: 1px solid #e5e6e9;">
+            </div> -->
+            <!-- <div v-if="isPlatform" style="width:33%; margin-left:24px;background:#fff;border: 1px solid #e5e6e9;">
                 <h2 class="h2_style">勋章墙</h2>
                 <div class="loglist_box">
                     <div class="info_box">
                         <img v-for="(key,index) of companyHonor" :src="key.url" alt="">
                     </div>
                 </div>
-            </div>
-        </div>
+            </div> -->
+        <!-- </div> -->
         <div class="app-center-item" id="appCenter">
             <!--isPlatform-->
             <h2 class="h2_style"><span @click="goToPage()">应用中心 <i class="el-icon-arrow-right"></i></span></h2>
@@ -339,6 +350,7 @@
     import homeTop from '../common/components/homeTop.vue';
 
     import personalInfo from '../common/components/personalInfo.vue';
+    import messageAndApp from '../common/components/messageAndApp.vue';
     
     import homeLink from '../common/components/homeLink.vue';
     import timeFormat from '../../commonFun/timeFormat'
@@ -364,6 +376,7 @@
                     phone: '13570491551',
                     avator: require('../../assets/images/index/headimg.png'),
                     endTime: '',
+                    role: '超级管理员'
                 },
                 dataArr: [
                     {
@@ -377,6 +390,39 @@
                     {
                         name: '当月成交金额',
                         data: '0'
+                    },
+                ],
+                // 常用功能，按超管、媒介、销售分组
+                linkArrNew: [
+                    {
+                        imgurl: require('../../assets/images/group.png'),
+                        title: '媒体列表',
+                        link: './superOperate/mediaList',
+                    },
+                    {
+                        imgurl: require('../../assets/images/group.png'),
+                        title: '客户列表',
+                        link: './superOperate/clientList',
+                    },
+                    {
+                        imgurl: require('../../assets/images/group.png'),
+                        title: '方案列表',
+                        link: './superOperate/planList',
+                    },
+                    {
+                        imgurl: require('../../assets/images/group.png'),
+                        title: '地图选点',
+                        link: '',
+                    },
+                    {
+                        imgurl: require('../../assets/images/group.png'),
+                        title: '订单列表',
+                        link: './superOperate/orderList'
+                    },
+                    {
+                        imgurl: require('../../assets/images/group.png'),
+                        title: '经营分析',
+                        link: './superOperate/orderList1'
                     },
                 ],
                 // 常用模块数据
@@ -630,7 +676,8 @@
             homeTop,
             homeLink,
 
-            personalInfo
+            personalInfo,
+            messageAndApp
         },
         mounted() {
             // 获取session中的数据,并进行权限判断
@@ -660,7 +707,7 @@
                 // 根据不同的登录用户构建不同的常用模块
                 for (let key of this.linkTemp) {
                     if (this.sessionData.asrID === '999') {
-                        delete key.children
+                        // delete key.children
                         this.linkArr.push(key)
                     } else {
                         if (key.title === '方案管理' || key.title === '订单管理' || key.title === '经营分析') {
@@ -1777,9 +1824,36 @@
     max-width: unset !important;
 }
 </style>
-<style scoped>
+<style scoped lang="scss">
+/** 新增*/
+    .index-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        .left-layout {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            margin-right: 24px;
+            .card-group {
+                height: 428px;
+                width: 100%;
+                margin-top: 24px;
+                background: #fff;
+            }
+        }
+        .right-board {
+            width: 312px;
+            height: 582px;
+            background: rgba(255, 255, 255, 1);
+            border: 1px solid #E6E7E9;
+        }
+    }
+ /**新增 */
     .ad_index_container{
-        margin: 24px 64px;
+        margin: 24px 60px;
         height: auto;
     }
     /*常用模块*/

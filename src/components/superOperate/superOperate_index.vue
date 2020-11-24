@@ -2,11 +2,20 @@
   <div>
     <div class="ad_index_container">
         <!-- <home-top :user-info="userInfo" :data-arr="dataArr" :honor-img="companyHonor"></home-top> -->
-        <div class="index-row">
+        <div class="index-top-row">
             <div class="left-layout">
                 <personal-info :user-info="userInfo" :honor-img="companyHonor" :linkArr="linkArrNew"></personal-info>
                 <div class="card-group">
-                    
+                    <el-row :gutter="24" style="margin-bottom: 24px;">
+                        <el-col :span="8"><chart-card :cardData="cardData"></chart-card></el-col>
+                        <el-col :span="8"><chart-card :cardData="cardData"></chart-card></el-col>
+                        <el-col :span="8"><chart-card :cardData="cardData"></chart-card></el-col>
+                    </el-row>
+                    <el-row :gutter="24">
+                        <el-col :span="8"><chart-card :cardData="cardDataOther"></chart-card></el-col>
+                        <el-col :span="8"><chart-card :cardData="cardDataOther"></chart-card></el-col>
+                        <el-col :span="8"><chart-card :cardData="cardDataOther"></chart-card></el-col>
+                    </el-row>
                 </div>
             </div>
             <!-- 消息推送和应用市场 -->
@@ -14,6 +23,112 @@
                 <message-and-app :appCenter="appCenter" @goToPage="goToPage"></message-and-app>
             </div>
         </div>
+        <el-row :gutter="24" class="index-row">
+            <!-- 资源库存 -->
+            <el-col :span="12">
+                <index-custom-card>
+                    <template slot="head">
+                        资源库存&nbsp
+                        <el-tooltip popper-class="amount-tooltip" effect="dark" content="Top center" placement="top">
+                            <ul slot="content">
+                                <li style="line-height: 20px;">
+                                    签约额：均为合同金额，未扣除总部收益部分
+                                </li>
+                                <li style="line-height: 20px;">
+                                    全国单发单执行额：该执行额不以实际订单金额统计，而以拆单时的方案金额以公式计算获得
+                                </li>
+                                <li style="line-height: 20px;">
+                                    按周统计：指每周六至下周五为一个周
+                                </li>
+                                <li style="line-height: 20px;">
+                                    按月统计：指从1号至自然月底
+                                </li>
+                            </ul>
+                            <img class="quesition-icon" src="../../assets/images/question_icon.png" />
+                        </el-tooltip>
+                    </template>
+                </index-custom-card>
+            </el-col>
+            <el-col :span="12">
+                <index-custom-card>
+                    <template slot="head">
+                        业绩排行
+                        <div class="date-interval">
+                            <span :class="{'active': dateInterval === 1}" @click="dateInterval = 1">全年</span>
+                            <span :class="{'active': dateInterval === 2}" @click="dateInterval = 2">本季</span>
+                            <span :class="{'active': dateInterval === 3}" @click="dateInterval = 3">本月</span>
+                        </div>
+                        <el-radio-group v-model="isBehind" size="small" class="achievement-radio-group">
+                            <el-radio-button :label="false">领先</el-radio-button>
+                            <el-radio-button :label="true">落后</el-radio-button>
+                        </el-radio-group>
+                    </template>
+                    <template slot="content">
+                        <ul class="item-list">
+                            <li class="item">
+                                <span class="label">吴永忠</span>
+                                <el-popover
+                                    popper-class="custom-popper"
+                                    class="progress"
+                                    placement="top"
+                                    :visible-arrow="false"
+                                    width="200"
+                                    trigger="click"
+                                >
+                                    <div class="pop-box">
+                                        <div class="pop-title">
+                                            <em>殷基层</em>
+                                            <span class="target-btn">设置目标</span>
+                                        </div>
+                                        <ul>
+                                            <li class="pop-item">
+                                                <em>业绩目标：</em>
+                                                <span>¥8,000,000</span>
+                                            </li>
+                                            <li class="pop-item">
+                                                <em>销售金额：</em>
+                                                <span>¥4,253,502</span>
+                                            </li>
+                                            <li class="pop-item">
+                                                <em>完成进度：</em>
+                                                <span>¥67.89</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <mini-progress slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                </el-popover>
+                            </li>
+                            <li class="item">
+                                <span class="label">吴永忠</span>
+                                <el-popover
+                                    class="progress"
+                                    placement="top-start"
+                                    title="标题"
+                                    width="200"
+                                    trigger="hover"
+                                    content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。"
+                                >
+                                    <mini-progress slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                </el-popover>
+                            </li>
+                            <li class="item">
+                                <span class="label">吴永忠</span>
+                                <el-popover
+                                    class="progress"
+                                    placement="top-start"
+                                    title="标题"
+                                    width="200"
+                                    trigger="hover"
+                                    content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。"
+                                >
+                                    <mini-progress slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                </el-popover>
+                            </li>
+                        </ul>
+                    </template>
+                </index-custom-card>
+            </el-col>
+        </el-row>
         <!-- <div style="margin:24px 0;display:flex"> -->
             <!--isPlatform-->
             <!-- <div :class="isPlatform ? 'use_module' : 'platFrom_use_module'" style="border: 1px solid #e5e6e9;">
@@ -29,8 +144,8 @@
                 </div>
             </div> -->
         <!-- </div> -->
-        <div class="app-center-item" id="appCenter">
             <!--isPlatform-->
+        <!-- <div class="app-center-item" id="appCenter">
             <h2 class="h2_style"><span @click="goToPage()">应用中心 <i class="el-icon-arrow-right"></i></span></h2>
             <ul :style="{height:isSlideDown?'254px':'510px'}">
                 <li v-for="item in appCenter" @click="goToPage(item)">
@@ -49,7 +164,7 @@
                 <span class="down" v-if="isSlideDown">展开 <i class="el-icon-d-arrow-left"></i> </span>
                 <span class="up" v-else>收起 <i class="el-icon-d-arrow-left"></i> </span>
             </div>
-        </div>
+        </div> -->
         <div class="SM_order_price" v-if="isRetailCompany">
             <div class="order_price_date">
                 <template v-if="activeTabsName == 'price'">
@@ -351,6 +466,9 @@
 
     import personalInfo from '../common/components/personalInfo.vue';
     import messageAndApp from '../common/components/messageAndApp.vue';
+    import chartCard from '../common/components/chartCard.vue';
+    import IndexCustomCard from '../common/components/indexCustomCard.vue';
+    import miniProgress from '../common/components/miniProgress.vue';
     
     import homeLink from '../common/components/homeLink.vue';
     import timeFormat from '../../commonFun/timeFormat'
@@ -669,7 +787,27 @@
                         compareTargetDate: ''
 
                     }
-                }
+                },
+                
+                cardData: {
+                    title: '本年销售额',
+                    value: 22572256,
+                    prefix: '￥',
+                    comment: '数据统计截止至昨天',
+                    compare: -25,
+                    trendLabel: '周环比'
+                },
+                cardDataOther: {
+                    stack: true,
+                    title: '媒体总数',
+                    value: 22572256,
+                    prefix: '￥',
+                    comment: '数据统计截止至昨天',
+                    compare: -25,
+                    trendLabel: '周环比'
+                },
+                dateInterval: 1,
+                isBehind: false
             }
         },
         components: {
@@ -677,7 +815,10 @@
             homeLink,
 
             personalInfo,
-            messageAndApp
+            messageAndApp,
+            chartCard,
+            miniProgress,
+                IndexCustomCard
         },
         mounted() {
             // 获取session中的数据,并进行权限判断
@@ -699,7 +840,8 @@
             getsessionData() {
                 this.sessionData = sessFun.getSess();
                 if (this.sessionData.asrID === '999') {
-                    this.isPlatform = false
+                    // this.isPlatform = false
+                    this.isPlatform = true
                     // this.linkArr = JSON.parse(JSON.stringify(this.linkTemp))
                 } else {
                     this.isPlatform = true
@@ -1826,10 +1968,11 @@
 </style>
 <style scoped lang="scss">
 /** 新增*/
-    .index-row {
+    .index-top-row {
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
+        margin-bottom: 24px;
         .left-layout {
             display: flex;
             flex: 1;
@@ -1838,10 +1981,10 @@
             justify-content: space-between;
             margin-right: 24px;
             .card-group {
+                position: relative;
                 height: 428px;
                 width: 100%;
                 margin-top: 24px;
-                background: #fff;
             }
         }
         .right-board {
@@ -1849,6 +1992,85 @@
             height: 582px;
             background: rgba(255, 255, 255, 1);
             border: 1px solid #E6E7E9;
+        }
+    }
+    .index-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        & > div {
+            flex: 1;
+        }
+        .date-interval {
+            margin: 0 24px 0 auto;
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.45);
+            line-height: 20px;
+            cursor: pointer;
+            span {
+                margin: 0 8px;
+            }
+            .active {
+                font-weight: 600;
+                color: rgba(24, 144, 255, 1);
+            }
+        }
+        .achievement-radio-group {
+            /deep/ .el-radio-button__inner {
+                width: 88px;
+            }
+        }
+        .item-list {
+            height: 100%;
+            padding: 16px 24px;
+            box-sizing: border-box;
+            .item {
+                display: flex;
+                align-items: center;
+                margin: 9px;
+                .progress {
+                    flex: 1;
+                    cursor: pointer;
+                }
+                .label {
+                    width: 56px;
+                    height: 20px;
+                    margin-right: 8px;
+                    line-height: 20px;
+                    font-size: 14px;
+                    font-family: PingFangSC-Regular, PingFang SC;
+                    font-weight: 400;
+                    color: rgba(0, 0, 0, 0.65);
+                }
+            }
+        }
+    }
+    .custom-popper {
+        min-height: 92px;
+        box-sizing: border-box;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0px 0px 10px 0px rgba(174, 174, 174, 0.65);
+        border-radius: 2px;
+    }
+    .pop-box {
+        border-radius: 2px;
+        line-height: 16px;
+        font-size: 12px;
+        font-weight: 400;
+        font-family: PingFangSC-Regular, PingFang SC;
+        .pop-title {
+            display: flex;
+            color: rgba(0, 0, 0, 0.85);
+            .target-btn {
+                margin: 0 0 2px auto;
+                color: rgba(24, 144, 255, 1);
+                cursor: pointer;
+            }
+        }
+        .pop-item {
+            margin: 2px 0;
+            color: rgba(0, 0, 0, 0.65);
         }
     }
  /**新增 */

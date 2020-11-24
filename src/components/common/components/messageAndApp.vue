@@ -14,7 +14,7 @@
                         <div class="item-right">
                             <span class="app-name">{{item.title}}</span>
                             <!-- <el-tooltip popper-class="desc-tooltip" effect="dark" :content="item.desc" v-model="item.descTooltip"> -->
-                                <p class="app-desc">{{item.desc}}</p>
+                                <p class="app-desc" :title="item.desc">{{item.desc}}</p>
                             <!-- </el-tooltip> -->
                         </div>
                     </li>
@@ -94,12 +94,12 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 16px 24px 0;
+    padding: 16px 0;
     .carousel-box {
         width: 100%;
         padding-top: 16px;
         .app-list {
-            height: 100%;
+            height: calc(100% - 18px);
             overflow-y: auto;
             overflow-x: hidden;
             .app-item {
@@ -107,6 +107,7 @@
                 display: flex;
                 flex-direction: row;
                 align-items: center;
+                padding: 0 24px;
                 margin: 16px 0;
                 cursor: pointer;
                 .item-left {

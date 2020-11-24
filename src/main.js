@@ -23,6 +23,9 @@ Vue.use(MintUI);
 import echarts from 'echarts';
 Vue.prototype.$echarts = echarts;
 
+import Viser from 'viser-vue'
+Vue.use(Viser)
+
 // axios
 import axios from 'axios'
 axios.defaults.baseURL = process.env.API_ROOT;

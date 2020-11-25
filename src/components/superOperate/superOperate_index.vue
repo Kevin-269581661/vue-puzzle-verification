@@ -78,7 +78,7 @@
                                     <div class="pop-box">
                                         <div class="pop-title">
                                             <em>殷基层</em>
-                                            <span class="target-btn">设置目标</span>
+                                            <span class="target-btn" @click="showSetTarget = true">设置目标</span>
                                         </div>
                                         <ul>
                                             <li class="pop-item">
@@ -452,12 +452,27 @@
                                   <el-button type="primary" size="mini" @click="setSalerTarget(scope.row)">确定</el-button>
                               </div>
                               <span slot="reference" class="performance_table_btn" @click="scope.row.setBtn = !scope.row.setBtn">设置目标</span>
-                          </el-popover>
-                      </template>
-                  </el-table-column>
-              </el-table>
-          </div>
-      </el-dialog>
+                            </el-popover>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+        </el-dialog>
+        <!-- 设置业绩目标 -->
+        <el-dialog :width="'288px'" :show-close="false" :visible.sync="showSetTarget" custom-class="target-dialog">
+            <span slot="title">设置殷基层业绩目标</span>
+            <el-form>
+                <el-form-item>
+                    <el-input-number size="small" :precision="2" :controls="false" :min="0" v-model="targetVaule">
+                        <template slot="prepend">¥</template>
+                    </el-input-number >
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="showSetTarget = false">取 消</el-button>
+                <el-button type="primary" @click="showSetTarget = false">保 存</el-button>
+            </div>
+        </el-dialog>
   </div>
 </template>
 
@@ -807,7 +822,9 @@
                     trendLabel: '周环比'
                 },
                 dateInterval: 1,
-                isBehind: false
+                isBehind: false,
+                showSetTarget: false,
+                targetVaule: 0
             }
         },
         components: {
@@ -1274,7 +1291,6 @@
                         borderColor: '#dddddd',
                         borderWidth: 1,
                         formatter: function (params) {
-                            // console.log(params)
                             let eleStr = '',
                                 tempDateLabel = '<span>' + '时间' + '</span>';
                             if((that.radioAmount === '执行额' && params.length == 8) || (that.radioAmount === '签约额' && params.length == 4)) {
@@ -1950,7 +1966,6 @@
                         }
                         params.push(obj)
                     }
-                    console.log(params)
                     api.postApi(this.apiVar.UCAPI+'/UserStaticReport',{userStatics:JSON.stringify(params)}).then(res=>{
                         // console.log('UserStaticReport---',res.data);
                     })
@@ -2071,6 +2086,42 @@
         .pop-item {
             margin: 2px 0;
             color: rgba(0, 0, 0, 0.65);
+        }
+    }
+
+    /deep/ .target-dialog {
+        .el-dialog__header {
+            height: 24px;
+            padding: 16px 24px;
+            font-size: 16px;
+            font-family: PingFangSC-Medium, PingFang SC;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.85);
+            line-height: 24px;
+        }
+        .el-dialog__body {
+            padding: 0 24px 24px;
+            .el-form-item {
+                margin: 0;
+                .el-form-item__content {
+                    line-height: unset;
+                    .el-input-number--small {
+                        width: 100%;
+                        .el-input-group__prepend {
+                            padding: 0 12px;
+                        }
+                        .el-input__inner {
+                            text-align: left;
+                        }
+                    }
+                }
+            }
+        }
+        .el-dialog__footer {
+            padding: 0 24px 24px;
+        }
+        .el-input-number .el-input {
+            display: inline-table;
         }
     }
  /**新增 */

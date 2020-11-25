@@ -106,7 +106,6 @@
                                     title="标题"
                                     width="200"
                                     trigger="hover"
-                                    content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。"
                                 >
                                     <mini-progress slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
                                 </el-popover>
@@ -128,6 +127,28 @@
                     </template>
                 </index-custom-card>
             </el-col>
+        </el-row>
+        <el-row class="index-row">
+            <!-- 机会挖掘 -->
+            <index-custom-card>
+                <template slot="head">
+                    机会挖掘&nbsp
+                    <el-tooltip popper-class="amount-tooltip" effect="dark" content="Top center" placement="top">
+                        <ul slot="content">
+                            <li style="line-height: 20px;">
+                                签约额：均为合同金额，未扣除总部收益部分
+                            </li>
+                            <li style="line-height: 20px;">
+                                全国单发单执行额：该执行额不以实际订单金额统计，而以拆单时的方案金额以公式计算获得
+                            </li>
+                        </ul>
+                        <img class="quesition-icon" src="../../assets/images/question_icon.png" />
+                    </el-tooltip>
+                </template>
+                <template slot="content">
+                    <nest-pie-chart></nest-pie-chart>
+                </template>
+            </index-custom-card>
         </el-row>
         <!-- <div style="margin:24px 0;display:flex"> -->
             <!--isPlatform-->
@@ -482,8 +503,9 @@
     import personalInfo from '../common/components/personalInfo.vue';
     import messageAndApp from '../common/components/messageAndApp.vue';
     import chartCard from '../common/components/chartCard.vue';
-    import IndexCustomCard from '../common/components/indexCustomCard.vue';
+    import indexCustomCard from '../common/components/indexCustomCard.vue';
     import miniProgress from '../common/components/miniProgress.vue';
+    import nestPieChart from '../common/components/nestPieChart.vue';
     
     import homeLink from '../common/components/homeLink.vue';
     import timeFormat from '../../commonFun/timeFormat'
@@ -495,6 +517,17 @@
 
     export default {
         name: "admin_index",
+        components: {
+            homeTop,
+            homeLink,
+
+            personalInfo,
+            messageAndApp,
+            chartCard,
+            miniProgress,
+            indexCustomCard,
+            nestPieChart
+        },
         data() {
             return {
                 nowMonth: '',
@@ -826,16 +859,6 @@
                 showSetTarget: false,
                 targetVaule: 0
             }
-        },
-        components: {
-            homeTop,
-            homeLink,
-
-            personalInfo,
-            messageAndApp,
-            chartCard,
-            miniProgress,
-                IndexCustomCard
         },
         mounted() {
             // 获取session中的数据,并进行权限判断

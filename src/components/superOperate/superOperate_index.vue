@@ -150,6 +150,190 @@
                 </template>
             </index-custom-card>
         </el-row>
+        <el-row :gutter="24" class="index-row">
+            <!-- 媒体概况 -->
+            <el-col :span="12">
+                <index-custom-card>
+                    <template slot="head">
+                        媒体概况&nbsp
+                        <el-tooltip popper-class="amount-tooltip" effect="dark" content="Top center" placement="top">
+                            <ul slot="content">
+                                <li style="line-height: 20px;">
+                                    签约额：均为合同金额，未扣除总部收益部分
+                                </li>
+                                <li style="line-height: 20px;">
+                                    全国单发单执行额：该执行额不以实际订单金额统计，而以拆单时的方案金额以公式计算获得
+                                </li>
+                                <li style="line-height: 20px;">
+                                    按周统计：指每周六至下周五为一个周
+                                </li>
+                                <li style="line-height: 20px;">
+                                    按月统计：指从1号至自然月底
+                                </li>
+                            </ul>
+                            <img class="quesition-icon" src="../../assets/images/question_icon.png" />
+                        </el-tooltip>
+                        <el-radio-group v-model="isBehind" size="small" class="achievement-radio-group">
+                            <el-radio-button :label="false">媒体</el-radio-button>
+                            <el-radio-button :label="true">点位（面）</el-radio-button>
+                        </el-radio-group>
+                    </template>
+                    <template slot="content">
+                        <ring-chart container="ringChart"></ring-chart>
+                    </template>
+                </index-custom-card>
+            </el-col>
+            <el-col :span="12">
+                <index-custom-card>
+                    <template slot="head">
+                        预锁概况
+                    </template>
+                    <template slot="content">
+                        <ul class="item-list">
+                            <li class="item">
+                                <span class="label">吴永忠</span>
+                                <el-popover
+                                    popper-class="custom-popper"
+                                    class="progress"
+                                    placement="top"
+                                    :visible-arrow="false"
+                                    width="200"
+                                    trigger="click"
+                                >
+                                    <div class="pop-box">
+                                        <div class="pop-title">
+                                            <em>殷基层</em>
+                                            <span class="target-btn" @click="showSetTarget = true">设置目标</span>
+                                        </div>
+                                        <ul>
+                                            <li class="pop-item">
+                                                <em>业绩目标：</em>
+                                                <span>¥8,000,000</span>
+                                            </li>
+                                            <li class="pop-item">
+                                                <em>销售金额：</em>
+                                                <span>¥4,253,502</span>
+                                            </li>
+                                            <li class="pop-item">
+                                                <em>完成进度：</em>
+                                                <span>¥67.89</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <mini-progress slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                </el-popover>
+                            </li>
+                            <li class="item">
+                                <span class="label">吴永忠</span>
+                                <el-popover
+                                    class="progress"
+                                    placement="top-start"
+                                    title="标题"
+                                    width="200"
+                                    trigger="hover"
+                                >
+                                    <mini-progress slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                </el-popover>
+                            </li>
+                            <li class="item">
+                                <span class="label">吴永忠</span>
+                                <el-popover
+                                    class="progress"
+                                    placement="top-start"
+                                    title="标题"
+                                    width="200"
+                                    trigger="hover"
+                                    content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。"
+                                >
+                                    <mini-progress slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                </el-popover>
+                            </li>
+                        </ul>
+                    </template>
+                </index-custom-card>
+            </el-col>
+        </el-row>
+        <el-row :gutter="24" class="index-row">
+            <el-col :span="12">
+                <index-custom-card>
+                    <template slot="head">
+                        业绩目标
+                    </template>
+                    <template slot="content">
+                        <gauge-chart container="gaugeChart"></gauge-chart>
+                    </template>
+                </index-custom-card>
+            </el-col>
+            <el-col :span="12">
+                <index-custom-card>
+                    <template slot="head">
+                        合作客户
+                    </template>
+                    <template slot="content">
+                        <ul class="item-list">
+                            <li class="item">
+                                <span class="label">吴永忠</span>
+                                <el-popover
+                                    popper-class="custom-popper"
+                                    class="progress"
+                                    placement="top"
+                                    :visible-arrow="false"
+                                    width="200"
+                                    trigger="click"
+                                >
+                                    <div class="pop-box">
+                                        <div class="pop-title">
+                                            <em>殷基层</em>
+                                            <span class="target-btn" @click="showSetTarget = true">设置目标</span>
+                                        </div>
+                                        <ul>
+                                            <li class="pop-item">
+                                                <em>业绩目标：</em>
+                                                <span>¥8,000,000</span>
+                                            </li>
+                                            <li class="pop-item">
+                                                <em>销售金额：</em>
+                                                <span>¥4,253,502</span>
+                                            </li>
+                                            <li class="pop-item">
+                                                <em>完成进度：</em>
+                                                <span>¥67.89</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <mini-progress slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                </el-popover>
+                            </li>
+                            <li class="item">
+                                <span class="label">吴永忠</span>
+                                <el-popover
+                                    class="progress"
+                                    placement="top-start"
+                                    title="标题"
+                                    width="200"
+                                    trigger="hover"
+                                >
+                                    <mini-progress slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                </el-popover>
+                            </li>
+                            <li class="item">
+                                <span class="label">吴永忠</span>
+                                <el-popover
+                                    class="progress"
+                                    placement="top-start"
+                                    title="标题"
+                                    width="200"
+                                    trigger="hover"
+                                    content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。"
+                                >
+                                    <mini-progress slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                </el-popover>
+                            </li>
+                        </ul>
+                    </template>
+                </index-custom-card>
+            </el-col>
+        </el-row>
         <!-- <div style="margin:24px 0;display:flex"> -->
             <!--isPlatform-->
             <!-- <div :class="isPlatform ? 'use_module' : 'platFrom_use_module'" style="border: 1px solid #e5e6e9;">
@@ -506,7 +690,9 @@
     import indexCustomCard from '../common/components/indexCustomCard.vue';
     import miniProgress from '../common/components/miniProgress.vue';
     import nestPieChart from '../common/components/nestPieChart.vue';
-    
+    import ringChart from '../common/components/ringChart.vue';
+    import gaugeChart from '../common/components/gaugeChart.vue';
+
     import homeLink from '../common/components/homeLink.vue';
     import timeFormat from '../../commonFun/timeFormat'
     import commaFormat from '../../commonFun/commaFormat'
@@ -526,7 +712,9 @@
             chartCard,
             miniProgress,
             indexCustomCard,
-            nestPieChart
+            nestPieChart,
+            ringChart,
+            gaugeChart
         },
         data() {
             return {
@@ -2055,6 +2243,7 @@
             }
         }
         .achievement-radio-group {
+            margin-left: auto;
             /deep/ .el-radio-button__inner {
                 width: 88px;
             }
@@ -2066,7 +2255,7 @@
             .item {
                 display: flex;
                 align-items: center;
-                margin: 9px;
+                margin: 9px 0;
                 .progress {
                     flex: 1;
                     cursor: pointer;

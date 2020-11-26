@@ -1,16 +1,16 @@
 <template>
   <div>
-    <v-chart renderer='canvas' padding="auto" :forceFit="true" :height="height" :data="data" :scale="scale">
+    <v-chart renderer='svg' padding="auto" :forceFit="true" :height="height" :data="data" :scale="scale">
       <v-tooltip :showTitle="false" :itemTpl="itemTpl" />
       <v-coord type="theta" :radius="0.62" />
       <v-pie
         position="percent"
         :color="colorInner"
         :label="labelInner"
-        :vStyle="style"
+        :vStyle="styleInner"
         :tooltip="tooltip"
         :onMouseMove="clickSeries"
-        :onMouseLeave="mouseLeaveSeries"
+        :onMouseLeave="mouseLeaveSeriesInner"
       />
       <v-view :data="viewData" :scale="scale">
         <v-coord type="theta" :radius="1" :innerRadius="0.66 / 1" />
@@ -20,6 +20,7 @@
           :label="label"
           :vStyle="style"
           :tooltip="tooltip"
+          :active="true"
           :onMouseMove="clickSeries"
           :onMouseLeave="mouseLeaveSeries"
         />
@@ -69,6 +70,13 @@ const itemTpl =
 const style = {
   lineWidth: 1,
   stroke: "#fff",
+  fillOpacity: .75
+};
+
+const styleInner = {
+  lineWidth: 1,
+  stroke: "#fff",
+  fillOpacity: 1
 };
 
 const label = ["name", { offset: -35, autoRotate: false, textStyle: { textAlign: 'center', fontSize: '12px', fill: '#FFFFFF', lineHeight: '17px', fontFamily: 'PingFangSC-Regular, PingFang SC' } }];
@@ -87,7 +95,7 @@ const tooltip = [
 
 const color = [
   "name",
-  ["rgba(24, 144, 255, 0.75)", "rgba(24, 144, 255, 0.75)", "rgba(93, 112, 146, 0.4)", "rgba(250, 173, 20, 0.75)", "rgba(250, 173, 20, 0.75)"],
+  ["rgba(24, 144, 255)", "rgba(24, 144, 255)", "rgba(93, 112, 146)", "rgba(250, 173, 20)", "rgba(250, 173, 20)"],
 ];
 const colorInner = [
     "type",
@@ -110,20 +118,19 @@ export default {
       colorInner,
       label,
       labelInner,
-      style
+      style,
+      styleInner
     };
   },
   methods: {
       clickSeries(ev, chart) {
-          console.log(ev)
-        ev.shape._attrs.lineWidth = 10
-        ev.shape._attrs.stroke = ev.shape._attrs.fill
-        // ev.shape._attrs.strokeOpacity = ev.shape._attrs.fillOpacity
+        Object.assign(ev.shape._attrs, {lineWidth: 10, stroke: ev.shape._attrs.fill, strokeStyle: ev.shape._attrs.fill, fillOpacity: 1})
       },
       mouseLeaveSeries(ev, chart) {
-        ev.shape._attrs.lineWidth = 1
-        ev.shape._attrs.stroke = '#fff'
-        ev.shape._attrs.strokeOpacity = 1
+        Object.assign(ev.shape._attrs, {lineWidth: 1, stroke: '#fff',  strokeStyle: '#fff'})
+      },
+      mouseLeaveSeriesInner(ev, chart) {
+        Object.assign(ev.shape._attrs, {lineWidth: 1, stroke: '#fff',  strokeStyle: '#fff', fillOpacity: .75})
       }
   },
   mounted() {},

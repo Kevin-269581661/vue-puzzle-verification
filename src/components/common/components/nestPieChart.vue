@@ -58,7 +58,7 @@ viewDv.transform({
   as: "percent",
 });
 const viewData = viewDv.rows;
-console.log(viewData);
+// console.log(viewData);
 const scale = {
   dataType: "percent",
   formatter: ".2%",

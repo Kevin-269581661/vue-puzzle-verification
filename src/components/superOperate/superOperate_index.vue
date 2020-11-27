@@ -452,7 +452,13 @@
                         </el-date-picker>
                 </template>
             </div>
-            <el-tabs style="height: 480px;border: 1px solid #e5e6e9;" v-model="activeTabsName" @tab-click="tabHandleClick">
+            <el-tabs style="height: 643px;border: 1px solid #e5e6e9;" v-model="activeTabsName" @tab-click="tabHandleClick">
+                <el-tab-pane label="点位分布" name="pointDistribution">
+                    <point-distribution mapContainer="mapContainer1" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointDistribution'"></point-distribution>
+                </el-tab-pane>
+                <el-tab-pane label="点位上刊率" name="pointPublication">
+                    <point-distribution mapContainer="mapContainer2" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointPublication'"></point-distribution>
+                </el-tab-pane>
                 <el-tab-pane label="成交金额" name="price">
                     <div style="margin-top: 8px">
                         <el-radio-group v-model="radioAmount" size="mini" @change="switchRadioAmount">
@@ -481,7 +487,7 @@
                         v-loading="priceBoxLoading"
                         element-loading-text="玩命加载中.."
                         element-loading-spinner="el-icon-loading">
-                       <div class="turnover_charts" id="turnoverBar" ref="turnoverDataBar" style="width:100%;height:360px;"> </div>
+                       <div class="turnover_charts" id="turnoverBar" ref="turnoverDataBar" style="width:100%;"> </div>
                    </div>
                 </el-tab-pane>
                 <el-tab-pane label="订单数" name="order">
@@ -692,6 +698,7 @@
     import nestPieChart from '../common/components/nestPieChart.vue';
     import ringChart from '../common/components/ringChart.vue';
     import gaugeChart from '../common/components/gaugeChart.vue';
+    import pointDistribution from '../common/components/pointDistribution.vue';
 
     import homeLink from '../common/components/homeLink.vue';
     import timeFormat from '../../commonFun/timeFormat'
@@ -714,10 +721,12 @@
             indexCustomCard,
             nestPieChart,
             ringChart,
-            gaugeChart
+            gaugeChart,
+            pointDistribution
         },
         data() {
             return {
+                hasMpvgl: false,
                 nowMonth: '',
                 sessionData: '',
                 isPlatform: false,      // 根据帐号所属公司id判断是否是否为平台商
@@ -881,7 +890,7 @@
                 linkArr: [],
                 isRetailCompany: false,     // 判断是否为7大直营公司或平台商
                 listDirectList: [],         // 直营城市公司列表
-                activeTabsName: 'price',
+                activeTabsName: 'pointDistribution',
                 // 金额图表的echarts
                 DateMonth: ['2019-03',''],
                 turnoverEcharts: '',
@@ -1048,6 +1057,15 @@
                 targetVaule: 0
             }
         },
+        beforeCreate() {
+            var script = document.createElement("script");
+            script.type = "text/javascript";
+            script.src = "/static/mapvgl.min.js";
+            document.body.appendChild(script);
+            script.onload = ()=>{
+                this.hasMpvgl = true
+            }
+        },
         mounted() {
             // 获取session中的数据,并进行权限判断
             this.getsessionData()
@@ -1182,13 +1200,17 @@
             realTimeChangeEcharteWidth(){
                 let width = 0
                 let bar_box = ''
-                if (this.activeTabsName === 'order') {
+                if (this.activeTabsName === 'order' || this.activeTabsName === 'price') {
+                    console.log('this.activeTabsName', this.activeTabsName)
                     // bar_box = document.getElementById('order_bar_box') SM_order_price
                     bar_box = document.getElementsByClassName('SM_order_price')[0]
+                    let turnoverBar = document.getElementById('turnoverBar')
                     let order = document.getElementById('orderBar')
                     width = bar_box.offsetWidth
                     order.style.width = width + 'px'
+                    turnoverBar.style.width = width + 'px'
                     this.orderEcharts.resize()
+                    this.turnoverEcharts.resize()
                 }
                 if (this.isPlatform){
                     // 销售头像在跑道前进的位置
@@ -2402,7 +2424,12 @@
         font-size:16px;
     }
     /deep/ .SM_order_price .el-tabs__content{
-        padding: 0 40px 20px 40px;
+        padding: 9px 24px 24px 24px;
+        height: calc(100% - 67px);
+        box-sizing: border-box;
+        .el-tab-pane {
+            height: 100%;
+        }
     }
 
     /deep/ .question-popover2 {
@@ -2421,9 +2448,11 @@
         filter: brightness(0.75);
     }
 
-    .turnover_charts,.order_charts{
-        /*width: 1200px;*/
-        height: 360px;
+    .turnover_charts {
+        height: 507px;
+    }
+    .order_charts{
+        height: 543px;
     }
     /deep/ .el-tabs__nav-wrap::after{
         height: 1px;

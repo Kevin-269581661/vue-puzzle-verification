@@ -1,14 +1,14 @@
 <template>
   <div class="chart-mini-progress">
-    <div class="target" :style="{ left: 'calc(' + target + '% + 3px'}">
-      <span :style="{ backgroundColor: color }" />
-      <span :style="{ backgroundColor: color }" />
+    <div class="target" :style="{ left: 'calc(' + target + '% + 3px', backgroundColor: color}">
+      <!-- <span :style="{ backgroundColor: color }" />
+      <span :style="{ backgroundColor: color }" /> -->
     </div>
     <div class="progress-wrapper" :style="{ height: height }">
       <div
         class="progress"
         :style="{ backgroundColor: color, width: percentage + '%', height: height }"
-      ><div class="value" :style="{ 'line-height': height }">￥2,356</div></div>
+      ><div class="value" :style="{ 'line-height': height }">￥{{value}}</div></div>
     </div>
   </div>
 </template>
@@ -18,8 +18,8 @@ export default {
   name: "miniProgress",
   props: {
     target: {
-      type: Number,
-      default: 30,
+      type: [Number, String],
+      default: 0,
     },
     height: {
       type: String,
@@ -30,9 +30,13 @@ export default {
       default: "#13C2C2",
     },
     percentage: {
-      type: Number,
-      default: 10,
+      type: [Number, String],
+      default: 0,
     },
+    value: {
+      type: [Number, String],
+      default: 0,
+    }
   },
   data() {
     return {};
@@ -50,9 +54,9 @@ export default {
   background: rgba(0, 0, 0, 0.06);
   .target {
     position: absolute;
-    top: 0;
-    bottom: 0;
-
+    top: 2px;
+    bottom: 2px;
+    width: 1px;
     span {
       border-radius: 100px;
       position: absolute;

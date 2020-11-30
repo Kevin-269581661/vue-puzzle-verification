@@ -57,19 +57,19 @@
                     <template slot="head">
                         业绩排行
                         <div class="date-interval">
-                            <span :class="{'active': dateInterval === 1}" @click="dateInterval = 1">全年</span>
-                            <span :class="{'active': dateInterval === 2}" @click="dateInterval = 2">本季</span>
-                            <span :class="{'active': dateInterval === 3}" @click="dateInterval = 3">本月</span>
+                            <span :class="{'active': dateInterval === 1}" @click="getRankList(dateInterval, 1)">全年</span>
+                            <span :class="{'active': dateInterval === 2}" @click="getRankList(dateInterval, 2)">本季</span>
+                            <span :class="{'active': dateInterval === 3}" @click="getRankList(dateInterval, 3)">本月</span>
                         </div>
-                        <el-radio-group v-model="isBehind" size="small" class="achievement-radio-group">
+                        <el-radio-group v-model="isBehind" size="small" class="achievement-radio-group" @change="getRankList">
                             <el-radio-button :label="false">领先</el-radio-button>
                             <el-radio-button :label="true">落后</el-radio-button>
                         </el-radio-group>
                     </template>
                     <template slot="content">
                         <ul class="item-list">
-                            <li class="item">
-                                <span class="label">吴永忠</span>
+                            <li class="item" v-for="(rankItem, index) in rankListArr" :key="index">
+                                <span class="label">{{rankItem.name}}</span>
                                 <el-popover
                                     popper-class="custom-popper"
                                     class="progress"
@@ -80,50 +80,25 @@
                                 >
                                     <div class="pop-box">
                                         <div class="pop-title">
-                                            <em>殷基层</em>
-                                            <span class="target-btn" @click="showSetTarget = true">设置目标</span>
+                                            <em>{{rankItem.name}}</em>
+                                            <span class="target-btn" @click="setTarget(rankItem)">设置目标</span>
                                         </div>
                                         <ul>
                                             <li class="pop-item">
                                                 <em>业绩目标：</em>
-                                                <span>¥8,000,000</span>
+                                                <span>¥{{rankItem.targetPrice || 0}}</span>
                                             </li>
                                             <li class="pop-item">
                                                 <em>销售金额：</em>
-                                                <span>¥4,253,502</span>
+                                                <span>¥{{rankItem.totalPrice || 0}}</span>
                                             </li>
                                             <li class="pop-item">
                                                 <em>完成进度：</em>
-                                                <span>¥67.89</span>
+                                                <span>{{rankItem.finshProcess || 0}}%</span>
                                             </li>
                                         </ul>
                                     </div>
-                                    <mini-progress slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
-                                </el-popover>
-                            </li>
-                            <li class="item">
-                                <span class="label">吴永忠</span>
-                                <el-popover
-                                    class="progress"
-                                    placement="top-start"
-                                    title="标题"
-                                    width="200"
-                                    trigger="hover"
-                                >
-                                    <mini-progress slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
-                                </el-popover>
-                            </li>
-                            <li class="item">
-                                <span class="label">吴永忠</span>
-                                <el-popover
-                                    class="progress"
-                                    placement="top-start"
-                                    title="标题"
-                                    width="200"
-                                    trigger="hover"
-                                    content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。"
-                                >
-                                    <mini-progress slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                    <mini-progress :target="rankItem.targetProcess" :percentage="rankItem.finshProcess" :value="rankItem.totalPrice" slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
                                 </el-popover>
                             </li>
                         </ul>
@@ -674,7 +649,7 @@
         </el-dialog>
         <!-- 设置业绩目标 -->
         <el-dialog :width="'288px'" :show-close="false" :visible.sync="showSetTarget" custom-class="target-dialog">
-            <span slot="title">设置殷基层业绩目标</span>
+            <span slot="title">设置{{currentEditSale.name || ''}}业绩目标</span>
             <el-form>
                 <el-form-item>
                     <el-input-number size="small" :precision="2" :controls="false" :min="0" v-model="targetVaule">
@@ -684,7 +659,7 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="showSetTarget = false">取 消</el-button>
-                <el-button type="primary" @click="showSetTarget = false">保 存</el-button>
+                <el-button type="primary" @click="setTarget">保 存</el-button>
             </div>
         </el-dialog>
   </div>
@@ -703,6 +678,7 @@
     import ringChart from '../common/components/ringChart.vue';
     import gaugeChart from '../common/components/gaugeChart.vue';
     import pointDistribution from '../common/components/pointDistribution.vue';
+    import moment from "moment";
 
     import homeLink from '../common/components/homeLink.vue';
     import timeFormat from '../../commonFun/timeFormat'
@@ -711,7 +687,6 @@
     import api from "../../api/api";
     import indexIsDateFirst from '../../commonFun/indexIsDateFirst.js';
     import appCenter from '../../commonFun/json/appCenter.json';
-
     export default {
         name: "admin_index",
         components: {
@@ -1108,7 +1083,10 @@
                 dateInterval: 1,
                 isBehind: false,
                 showSetTarget: false,
-                targetVaule: 0
+                targetVaule: 0,
+                currentEditSale: {},
+                // 业绩排行列表
+                rankListArr: []
             }
         },
         beforeCreate() {
@@ -1135,6 +1113,7 @@
             this.appCenter = appCenter
             this.uploadEvent(1)
             this.allReportApi()
+            this.getRankList()
         },
         methods: {
             // 首页报表接口
@@ -1412,17 +1391,20 @@
                     })
                 })
             },
-            // 管理员的业绩排行 /report /homepage/getSMResStockReport
-            getRankList() {
+            // 管理员的业绩排行 /report /homepage/getSMAchievementReport
+            getRankList(field, val) {
+                // 日期区间切换等
+                if(field) {field = val}
                 let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
                     limit: 10,
-                    startDate: '',
-                    endDate: '',
+                    dateType: this.dateInterval
                 }
                 if (this.isBehind == false) {
                     params.orderType = 1    // 倒序传1
                 }
-                api.getApi(this.apiVar.report + '/homepage/getSMResStockReport', params).then(res=>{
+                api.getApi(this.apiVar.report + '/homepage/getSMAchievementReport', params).then(res=>{
                     if (res.data.SysCode === 200200) {
                     } else {
                         this.messageFun('warning', res.data.MSG)
@@ -1435,14 +1417,62 @@
                         "userList": [
                             {
                                 "uID": 807,
+                                "name": 'ceshi1',
                                 "totalPrice": 0.0,
                                 "targetPrice": 1000000.0,
                                 "finshProcess": "0.00",
                                 "targetProcess": "83.00"
+                            },
+                            {
+                                "uID": 807,
+                                "name": '测试2',
+                                "totalPrice": 0.0,
+                                "targetPrice": 1000000.0,
+                                "finshProcess": "0.00",
+                                "targetProcess": "83.00"
+                            },
+                            {
+                                "uID": 807,
+                                "name": '测试3',
+                                "totalPrice": 0.0,
+                                "targetPrice": 1000000.0,
+                                "finshProcess": "90.00",
+                                "targetProcess": "83.00"
                             }
                         ]
                     }
-                    console.log('0-0', this.dateInterval, this.isBehind)
+                    this.rankListArr = temp.userList
+                    console.log('0-0', this.dateInterval, this.isBehind, this.rankListArr)
+                })
+            },
+            // 设置业绩目标
+            setTarget(row) {
+                if(row) {
+                    this.showSetTarget = true;
+                    this.currentEditSale = row;
+                    return
+                }
+                this.showSetTarget = false;
+                if(this.targetVaule === ''){
+                    this.messageFun('warning','目标金额不能为空！')
+                    return
+                }
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    target: Number(this.targetVaule) * 100,
+                    // target: Number(this.targetVaule) * 10000 * 100,
+                    suID: this.currentEditSale.uID,
+                }
+                // console.log('设置销售目标参数',params)
+                api.postApi(this.apiVar.report + '/SaveOrUpdateUserTarget', params).then(res=>{
+                    console.log('设置销售目标',res)
+                    if(res.data.SysCode === 200200 || res.data.MSG === "操作成功"){
+                        this.messageFun('success',res.data.MSG)
+                        this.getRankList()
+                    }else{
+                        this.messageFun('warning',res.data.MSG)
+                    }
                 })
             },
             // 获取浏览器session数据及权限设置

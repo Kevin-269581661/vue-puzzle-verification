@@ -7,14 +7,14 @@
                 <personal-info :user-info="userInfo" :honor-img="companyHonor" :linkArr="linkArrNew"></personal-info>
                 <div class="card-group">
                     <el-row :gutter="24" style="margin-bottom: 24px;">
-                        <el-col :span="8"><chart-card :cardData="cardData"></chart-card></el-col>
-                        <el-col :span="8"><chart-card :cardData="cardData"></chart-card></el-col>
-                        <el-col :span="8"><chart-card :cardData="cardData"></chart-card></el-col>
+                        <el-col :span="8"><chart-card :cardData="cardData1"></chart-card></el-col>
+                        <el-col :span="8"><chart-card :cardData="cardData2"></chart-card></el-col>
+                        <el-col :span="8"><chart-card :cardData="cardData3"></chart-card></el-col>
                     </el-row>
                     <el-row :gutter="24">
-                        <el-col :span="8"><chart-card :cardData="cardDataOther"></chart-card></el-col>
-                        <el-col :span="8"><chart-card :cardData="cardDataOther"></chart-card></el-col>
-                        <el-col :span="8"><chart-card :cardData="cardDataOther"></chart-card></el-col>
+                        <el-col :span="8"><chart-card :cardData="cardDataOther1"></chart-card></el-col>
+                        <el-col :span="8"><chart-card :cardData="cardDataOther2"></chart-card></el-col>
+                        <el-col :span="8"><chart-card :cardData="cardDataOther3"></chart-card></el-col>
                     </el-row>
                 </div>
             </div>
@@ -46,6 +46,9 @@
                             </ul>
                             <img class="quesition-icon" src="../../assets/images/question_icon.png" />
                         </el-tooltip>
+                    </template>
+                    <template slot="content">
+                        <liquid-chart></liquid-chart>
                     </template>
                 </index-custom-card>
             </el-col>
@@ -695,6 +698,7 @@
     import chartCard from '../common/components/chartCard.vue';
     import indexCustomCard from '../common/components/indexCustomCard.vue';
     import miniProgress from '../common/components/miniProgress.vue';
+    import liquidChart from '../common/components/liquidChart.vue';
     import nestPieChart from '../common/components/nestPieChart.vue';
     import ringChart from '../common/components/ringChart.vue';
     import gaugeChart from '../common/components/gaugeChart.vue';
@@ -719,6 +723,7 @@
             chartCard,
             miniProgress,
             indexCustomCard,
+            liquidChart,
             nestPieChart,
             ringChart,
             gaugeChart,
@@ -1030,26 +1035,75 @@
                     compareWeek: {
                         compareSourceDate: '',
                         compareTargetDate: ''
-
                     }
                 },
                 
-                cardData: {
+                cardData1: {
                     title: '本年销售额',
-                    value: 22572256,
+                    tip: '数据截止至昨日，销售额数据来源为统计周期内发布的订单金额总和',
+                    value: 0,
+                    valueAlias: '销售额',
                     prefix: '￥',
                     comment: '数据统计截止至昨天',
-                    compare: -25,
-                    trendLabel: '周环比'
+                    compare: 0,
+                    trendLabel: '同比去年',
+                    data: []
                 },
-                cardDataOther: {
-                    stack: true,
-                    title: '媒体总数',
-                    value: 22572256,
+                cardData2: {
+                    title: '本年订单数',
+                    tip: '数据截止至昨日，订单总数数数据来源为统计周期内发布的订单数量总和',
+                    value: 0,
+                    valueAlias: '订单数',
                     prefix: '￥',
                     comment: '数据统计截止至昨天',
-                    compare: -25,
-                    trendLabel: '周环比'
+                    compare: 0,
+                    trendLabel: '同比去年',
+                    data: []
+                },
+                cardData3: {
+                    title: '总客户数',
+                    tip: '数据截止至昨日，客户数数据来源为统计周期内新建的客户数总和',
+                    value: 0,
+                    valueAlias: '客户数',
+                    prefix: '￥',
+                    comment: '数据统计截止至昨天',
+                    compare: 0,
+                    trendLabel: '同比去年',
+                    data: []
+                },
+                cardDataOther1: {
+                    type: 'stackBar',
+                    title: '媒体总数',
+                    tip: '数据截止至昨日，媒体总数数据来源为统计周期内新增的各类型媒体数量总和',
+                    value: 0,
+                    prefix: '￥',
+                    comment: '数据统计截止至昨天',
+                    compare: 0,
+                    trendLabel: '同比去年',
+                    data: []
+                },
+                cardDataOther2: {
+                    type: 'bar',
+                    title: '社区总数',
+                    tip: '数据截止至昨日，社区总数数据来源为统计周期内新增的社区数量总和',
+                    value: 0,
+                    prefix: '￥',
+                    comment: '数据统计截止至昨天',
+                    compare: 0,
+                    trendLabel: '同比去年',
+                    data: []
+                },
+                cardDataOther3: {
+                    type: 'bar',
+                    title: '昨日上刊率',
+                    tip: '数据截止至昨日，上刊率计算公式为统计周期内上周六至这周五点位投放总面*天与该时间内可投放总面*天的百分比',
+                    value: 0,
+                    suffix: '%',
+                    comment: '数据统计截止至昨天',
+                    compare: 0,
+                    trendLabel: '周环比',
+                    decimals: 2,
+                    data: []
                 },
                 dateInterval: 1,
                 isBehind: false,
@@ -1080,8 +1134,317 @@
             //用户中心
             this.appCenter = appCenter
             this.uploadEvent(1)
+            this.allReportApi()
         },
         methods: {
+            // 首页报表接口
+            allReportApi() {
+                // 管理员的本年销售额和本年订单数卡片 /report /homepage/getSMAdPlanCardReport
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token
+                }
+                api.getApi(this.apiVar.report + '/homepage/getSMAdPlanCardReport',params).then(res=>{
+                    if (res.data.SysCode === 200200) {
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                }).catch(err=>{
+                    console.log('err', err)
+                }).finally(_=>{
+                    let temp = {
+                        "totalAdPlanPrice": 2.0,  //本年销售额
+                        "totalAdPlanCnt": 2098977,	//本年订单数
+                        "planPriceIncrRate": "10.5", //销售额的同比率
+                        "planCntIncrRate": "-6.32" //订单数的同比率
+                    }
+                    Object.assign(this.cardData1, {
+                        value: temp.totalAdPlanPrice,
+                        compare: temp.planPriceIncrRate
+                    })
+                    Object.assign(this.cardData2, {
+                        value: temp.totalAdPlanCnt,
+                        compare: temp.planCntIncrRate
+                    })
+                })
+                // 管理员的客户数，媒体数和社区数卡片 /report /homepage/getSMResAndCustomCardReport
+                api.getApi(this.apiVar.report + '/homepage/getSMResAndCustomCardReport',params).then(res=>{
+                    if (res.data.SysCode === 200200) {
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                }).catch(err=>{
+                    console.log('err', err)
+                }).finally(_=>{
+                    let temp = {
+                        "totalResCnt": 3,  //总小区数
+                        "totalMediaCnt": 6, //总媒体数
+                        "totalCustomerCnt": 3, //总客户数
+                        "resIncrRate": "200.00", //小区数量同比
+                        "mediaIncrRate": "200.00", //媒体数同比
+                        "customerIncrRate": "200.00" //客户数同比
+                    }
+                    Object.assign(this.cardData3, {
+                        value: temp.totalCustomerCnt,
+                        compare: temp.customerIncrRate
+                    })
+                    Object.assign(this.cardDataOther1, {
+                        value: temp.totalMediaCnt,
+                        compare: temp.mediaIncrRate
+                    })
+                    Object.assign(this.cardDataOther2, {
+                        value: temp.totalResCnt,
+                        compare: temp.resIncrRate
+                    })
+                })
+                // 管理员的上刊率卡片 /report /homepage/getSMOnPubRateReport
+                api.getApi(this.apiVar.report + '/homepage/getSMOnPubRateReport',params).then(res=>{
+                    if (res.data.SysCode === 200200) {
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                }).catch(err=>{
+                    console.log('err', err)
+                }).finally(_=>{
+                    let temp = {
+                        "onPubRate": "0.10",   //昨日上刊率
+                        "incrOnPubRate": "10" //同比上刊率
+                    }
+                    Object.assign(this.cardDataOther3, {
+                        value: temp.onPubRate*1,
+                        compare: temp.incrOnPubRate
+                    })
+                })
+                // 管理员的所有卡片过去十三周的数据 /report /homepage/getSMOnPubRateReport
+                api.getApi(this.apiVar.report + '/homepage/getSMOnPubRateReport',params).then(res=>{
+                    if (res.data.SysCode === 200200) {
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                }).catch(err=>{
+                    console.log('err', err)
+                }).finally(_=>{
+                    let temp = [{
+                        "weekStarDate": "2020-08-31",  //周开始时间
+                        "weekEndDate": "2020-09-06",  //周结束时间
+                        "weekPlanPrice": 0.0,   //周销售额
+                        "weekPlanCnt": 3,       //周订单数
+                        "weekBarrierCnt": 6,   //周道闸数 
+                        "weekDoorCnt": 60,     //周广告门数
+                        "weekResCnt": 50,       //周社区增量
+                        "weekCustomerCnt": 10,  //周客户数
+                        "weekOnPubRate": "1.20" //周上刊率
+                    },
+                    {
+                        "weekStarDate": "2020-08-31",  //周开始时间
+                        "weekEndDate": "2020-09-06",  //周结束时间
+                        "weekPlanPrice": 33.0,   //周销售额
+                        "weekPlanCnt": 7,       //周订单数
+                        "weekBarrierCnt": 8,   //周道闸数 
+                        "weekDoorCnt": 30,     //周广告门数
+                        "weekResCnt": 20,       //周社区增量
+                        "weekCustomerCnt": 6,  //周客户数
+                        "weekOnPubRate": "9.05" //周上刊率
+                    },
+                    {
+                        "weekStarDate": "2020-08-31",  //周开始时间
+                        "weekEndDate": "2020-09-06",  //周结束时间
+                        "weekPlanPrice": 7.0,   //周销售额
+                        "weekPlanCnt": 88,       //周订单数
+                        "weekBarrierCnt": 125,   //周道闸数 
+                        "weekDoorCnt": 99,     //周广告门数
+                        "weekResCnt": 898,       //周社区增量
+                        "weekCustomerCnt": 65,  //周客户数
+                        "weekOnPubRate": "0.90" //周上刊率
+                    },
+                    {
+                        "weekStarDate": "2020-08-31",  //周开始时间
+                        "weekEndDate": "2020-09-06",  //周结束时间
+                        "weekPlanPrice": 0.0,   //周销售额
+                        "weekPlanCnt": 0,       //周订单数
+                        "weekBarrierCnt": 0,   //周道闸数 
+                        "weekDoorCnt": 0,     //周广告门数
+                        "weekResCnt": 0,       //周社区增量
+                        "weekCustomerCnt": 0,  //周客户数
+                        "weekOnPubRate": "0.00" //周上刊率
+                    },
+                    {
+                        "weekStarDate": "2020-08-31",  //周开始时间
+                        "weekEndDate": "2020-09-06",  //周结束时间
+                        "weekPlanPrice": 0.0,   //周销售额
+                        "weekPlanCnt": 0,       //周订单数
+                        "weekBarrierCnt": 0,   //周道闸数 
+                        "weekDoorCnt": 0,     //周广告门数
+                        "weekResCnt": 0,       //周社区增量
+                        "weekCustomerCnt": 0,  //周客户数
+                        "weekOnPubRate": "0.00" //周上刊率
+                    },
+                    {
+                        "weekStarDate": "2020-08-31",  //周开始时间
+                        "weekEndDate": "2020-09-06",  //周结束时间
+                        "weekPlanPrice": 0.0,   //周销售额
+                        "weekPlanCnt": 0,       //周订单数
+                        "weekBarrierCnt": 0,   //周道闸数 
+                        "weekDoorCnt": 0,     //周广告门数
+                        "weekResCnt": 0,       //周社区增量
+                        "weekCustomerCnt": 0,  //周客户数
+                        "weekOnPubRate": "0.00" //周上刊率
+                    },
+                    {
+                        "weekStarDate": "2020-08-31",  //周开始时间
+                        "weekEndDate": "2020-09-06",  //周结束时间
+                        "weekPlanPrice": 0.0,   //周销售额
+                        "weekPlanCnt": 0,       //周订单数
+                        "weekBarrierCnt": 0,   //周道闸数 
+                        "weekDoorCnt": 0,     //周广告门数
+                        "weekResCnt": 0,       //周社区增量
+                        "weekCustomerCnt": 0,  //周客户数
+                        "weekOnPubRate": "0.00" //周上刊率
+                    },
+                    {
+                        "weekStarDate": "2020-08-31",  //周开始时间
+                        "weekEndDate": "2020-09-06",  //周结束时间
+                        "weekPlanPrice": 0.0,   //周销售额
+                        "weekPlanCnt": 0,       //周订单数
+                        "weekBarrierCnt": 0,   //周道闸数 
+                        "weekDoorCnt": 0,     //周广告门数
+                        "weekResCnt": 0,       //周社区增量
+                        "weekCustomerCnt": 0,  //周客户数
+                        "weekOnPubRate": "0.00" //周上刊率
+                    },
+                    {
+                        "weekStarDate": "2020-08-31",  //周开始时间
+                        "weekEndDate": "2020-09-06",  //周结束时间
+                        "weekPlanPrice": 0.0,   //周销售额
+                        "weekPlanCnt": 0,       //周订单数
+                        "weekBarrierCnt": 0,   //周道闸数 
+                        "weekDoorCnt": 0,     //周广告门数
+                        "weekResCnt": 0,       //周社区增量
+                        "weekCustomerCnt": 100,  //周客户数
+                        "weekOnPubRate": "0.00" //周上刊率
+                    },
+                    {
+                        "weekStarDate": "2020-08-31",  //周开始时间
+                        "weekEndDate": "2020-09-06",  //周结束时间
+                        "weekPlanPrice": 0.0,   //周销售额
+                        "weekPlanCnt": 0,       //周订单数
+                        "weekBarrierCnt": 0,   //周道闸数 
+                        "weekDoorCnt": 0,     //周广告门数
+                        "weekResCnt": 0,       //周社区增量
+                        "weekCustomerCnt": 1000,  //周客户数
+                        "weekOnPubRate": "0.00" //周上刊率
+                    },
+                    {
+                        "weekStarDate": "2020-08-31",  //周开始时间
+                        "weekEndDate": "2020-09-06",  //周结束时间
+                        "weekPlanPrice": 0.0,   //周销售额
+                        "weekPlanCnt": 0,       //周订单数
+                        "weekBarrierCnt": 100,   //周道闸数 
+                        "weekDoorCnt": 200,     //周广告门数
+                        "weekResCnt": 0,       //周社区增量
+                        "weekCustomerCnt": 0,  //周客户数
+                        "weekOnPubRate": "0.00" //周上刊率
+                    }]
+                    let tempcCardData1 = [],
+                        tempcCardData2 = [],
+                        tempcCardData3 = [],
+                        tempcCardDataOther1 = [],
+                        tempcCardDataOther2 = [],
+                        tempcCardDataOther3 = [];
+                    temp.forEach((item, index)=>{
+                        tempcCardData1.push({
+                            week: `第${index+1}周`,
+                            dateStr: item.weekStarDate + item.weekEndDate,
+                            value: item.weekPlanPrice || 0
+                        })
+                        tempcCardData2.push({
+                            week: `第${index+1}周`,
+                            dateStr: item.weekStarDate + item.weekEndDate,
+                            value: item.weekPlanCnt || 0
+                        })
+                        tempcCardData3.push({
+                            week: `第${index+1}周`,
+                            dateStr: item.weekStarDate + item.weekEndDate,
+                            value: item.weekCustomerCnt || 0
+                        })
+                        tempcCardDataOther1.push({
+                            week: `第${index+1}周`,
+                            name: '新增道闸',
+                            dateStr: item.weekStarDate + item.weekEndDate,
+                            value: item.weekBarrierCnt || 0
+                        })
+                        tempcCardDataOther1.push({
+                            week: `第${index+1}周`,
+                            name: '新增广告门',
+                            dateStr: item.weekStarDate + item.weekEndDate,
+                            value: item.weekDoorCnt || 0
+                        })
+                        tempcCardDataOther2.push({
+                            week: `第${index+1}周`,
+                            name: '新增小区数',
+                            dateStr: item.weekStarDate + item.weekEndDate,
+                            value: item.weekResCnt || 0
+                        })
+                        tempcCardDataOther3.push({
+                            week: `第${index+1}周`,
+                            name: '上刊率',
+                            dateStr: item.weekStarDate + '~' + item.weekEndDate,
+                            value: (item.weekOnPubRate || 0)*1
+                        })
+                    })
+                    Object.assign(this.cardData1, {
+                        data: tempcCardData1,
+                    })
+                    Object.assign(this.cardData2, {
+                        data: tempcCardData2,
+                    })
+                    Object.assign(this.cardData3, {
+                        data: tempcCardData3,
+                    })
+                    Object.assign(this.cardDataOther1, {
+                        data: tempcCardDataOther1,
+                    })
+                    Object.assign(this.cardDataOther2, {
+                        data: tempcCardDataOther2,
+                    })
+                    Object.assign(this.cardDataOther3, {
+                        data: tempcCardDataOther3,
+                    })
+                })
+            },
+            // 管理员的业绩排行 /report /homepage/getSMResStockReport
+            getRankList() {
+                let params = {
+                    limit: 10,
+                    startDate: '',
+                    endDate: '',
+                }
+                if (this.isBehind == false) {
+                    params.orderType = 1    // 倒序传1
+                }
+                api.getApi(this.apiVar.report + '/homepage/getSMResStockReport', params).then(res=>{
+                    if (res.data.SysCode === 200200) {
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                }).catch(err=>{
+                    console.log('err', err)
+                }).finally(_=>{
+                    let temp = {
+                        "maxTargetPrice": 1000000.0,
+                        "userList": [
+                            {
+                                "uID": 807,
+                                "totalPrice": 0.0,
+                                "targetPrice": 1000000.0,
+                                "finshProcess": "0.00",
+                                "targetProcess": "83.00"
+                            }
+                        ]
+                    }
+                    console.log('0-0', this.dateInterval, this.isBehind)
+                })
+            },
             // 获取浏览器session数据及权限设置
             getsessionData() {
                 this.sessionData = sessFun.getSess();

@@ -19,7 +19,7 @@ export default {
       required: true,
     },
     percentage: {
-      type: Number,
+      type: [Number, String],
       default: null,
     },
     type: {
@@ -46,7 +46,7 @@ export default {
   },
   filters: {
     formatPercentage(percentage) {
-      return percentage !== null ? (Math.abs(percentage) + '%') : "--";
+      return (percentage === null || percentage === '--') ? "--" : (Math.abs(percentage) + '%');
     },
   },
   created() {

@@ -4,7 +4,7 @@
       <div class="meta">
         <span class="chart-card-title">{{ cardData.title }}</span>
         <span class="chart-card-action">
-          <el-tooltip content="Top center" placement="top">
+          <el-tooltip :content="cardData.tip || ''" placement="top">
             <i class="el-icon-info"></i>
           </el-tooltip>
         </span>
@@ -18,6 +18,7 @@
             :duration="500"
             :prefix="cardData.prefix"
             :suffix="cardData.suffix"
+            :decimals='cardData.decimals || 0'
             @callback="mountedCallback"
           ></countTo>
         </div>
@@ -32,39 +33,39 @@
     </div>
     <div class="chart-card-content">
       <v-chart
-        v-if="cardData.stack"
+        v-if="cardData.type"
         :forceFit="true"
         :height="height"
-        :data="stackData"
+        :data="cardData.data"
         :scale="scale"
         :padding="[0, 'auto', 'auto', 'auto']"
       >
         <v-axis dataKey="value" :show="false"></v-axis>
-        <v-axis dataKey="year" :tickLine="{length: -5}" :label="{textStyle: {fill: 'rgba(0, 0, 0, 0.45)'}}"></v-axis>
-        <v-tooltip :hideMarkers="false" />
-        <v-stack-bar position="year*value" :color="stackColor" />
+        <v-axis dataKey="week" :tickLine="{length: -3}" :label="{textStyle: {fill: 'rgb(0, 0, 0)', opacity: 0.45}}"></v-axis>
+        <v-tooltip :hideMarkers="false"/>
+        <v-bar v-if="cardData.type == 'bar'" position="week*value" :color="stackColor[0]" />
+        <v-stack-bar v-if="cardData.type == 'stackBar'" position="week*value" :color="stackColor" />
       </v-chart>
 
       <v-chart
         v-else
         :forceFit="true"
         :height="height"
-        :data="data"
+        :data="cardData.data"
         :scale="scale"
         :padding="[0, 'auto', 'auto', 'auto']"
       >
-        <!-- <v-axis position="bottom" /> -->
         <v-axis dataKey="value" :show="false"></v-axis>
-        <v-axis dataKey="year" :tickLine="{length: -5}" :label="{textStyle: {fill: 'rgba(0, 0, 0, 0.45)'}}"></v-axis>
+        <v-axis dataKey="week" :tickLine="{length: -5}" :label="{textStyle: {fill: 'rgb(0, 0, 0)', opacity: 0.45}}"></v-axis>
         <v-tooltip :shared="false" :hideMarkers="false" />
         <v-smooth-line
-          position="year*value"
+          position="week*value"
           :size="2"
-          color="rgba(24,144,255,1)"
+          color="#1890ff"
         />
         <v-smooth-area
-          position="year*value"
-          :color="['l(90) 0:rgba(24, 144, 255, .2) 1:rgba(24, 144, 255, 0)']"
+          position="week*value"
+          :color="['l(90) 0:#1890ff 1:#fff']"
         />
       </v-chart>
     </div>
@@ -79,61 +80,6 @@
 <script>
 import countTo from "vue-count-to";
 import Trend from "./Trend.vue";
-// import moment from "moment";
-const tooltip = [
-  "x*y",
-  (x, y) => ({
-    name: x,
-    value: y,
-  }),
-];
-const data = [
-  { year: "第1周", value: 15468 },
-  { year: "第2周", value: 16100 },
-  { year: "第3周", value: 15900 },
-  { year: "第4周", value: 17409 },
-  { year: "第5周", value: 17000 },
-  { year: "第6周", value: 31056 },
-  { year: "第7周", value: 31982 },
-  { year: "第8周", value: 32040 },
-  { year: "第9周", value: 33233 },
-];
-const stackData = [
-  {name: '新增道闸', year: "第1周", value: 15490 },
-  {name: '新增道闸', year: "第2周", value: 16500 },
-  {name: '新增道闸', year: "第3周", value: 13900 },
-  {name: '新增道闸', year: "第4周", value: 17609 },
-  {name: '新增道闸', year: "第5周", value: 17300 },
-  {name: '新增道闸', year: "第6周", value: 30056 },
-  {name: '新增道闸', year: "第7周", value: 31582 },
-  {name: '新增道闸', year: "第8周", value: 33040 },
-  {name: '新增道闸', year: "第9周", value: 33633 },
-  {name: '新增广告门', year: "第1周", value: 15468 },
-  {name: '新增广告门', year: "第2周", value: 16100 },
-  {name: '新增广告门', year: "第3周", value: 15900 },
-  {name: '新增广告门', year: "第4周", value: 17409 },
-  {name: '新增广告门', year: "第5周", value: 17000 },
-  {name: '新增广告门', year: "第6周", value: 31056 },
-  {name: '新增广告门', year: "第7周", value: 31982 },
-  {name: '新增广告门', year: "第8周", value: 32040 },
-  {name: '新增广告门', year: "第9周", value: 33233 },
-];
-const scale = [
-  {
-    dataKey: "value",
-    alias: '别名',
-    min: 10000,
-  },
-  {
-    dataKey: "year",
-    type: 'cat',
-    min: 0,
-    max: 1,
-    tickCount: 6,
-    range: [ 0, 1 ]
-  },
-];
-
 export default {
   name: "chartCard",
   components: { countTo, Trend },
@@ -162,44 +108,31 @@ export default {
       type: Boolean,
       default: true,
     },
-    chartData: {
-      type: Array,
-      default: () => [
-        {
-          x: 1,
-          y: 2,
-        },
-        {
-          x: 1,
-          y: 2,
-        },
-        {
-          x: 1,
-          y: 2,
-        },
-        {
-          x: 1,
-          y: 2,
-        },
-        {
-          x: 1,
-          y: 2,
-        },
-      ],
-    },
   },
   data() {
     return {
-      data,
-      stackData,
-      scale,
+      scale: [
+        {
+          dataKey: "value",
+          min: 0,
+          alias: this.cardData.valueAlias || '',
+        },
+        {
+          dataKey: "week",
+          type: 'cat',
+          min: 0,
+          max: 1,
+          tickCount: 7,
+          range: [ 0, 1 ]
+        }
+      ],
       stackColor: ['name', ['rgba(24, 144, 255, 0.65)', 'rgba(24, 144, 255, 1)']],
-      tooltip,
       height: 100,
       oldTotal: 0,
     };
   },
   mounted(){
+    console.log('-----', this.cardData)
   },
   methods: {
     mountedCallback() {

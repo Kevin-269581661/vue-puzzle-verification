@@ -1,7 +1,68 @@
 <template>
     <div>
         <div class="ad_index_container">
-            <home-top :user-info="userInfo" :data-arr="dataArr" :honor-img="companyHonor"></home-top>
+            <div class="index-top-row">
+                <div class="left-layout">
+                    <personal-info :user-info="userInfo" :honor-img="companyHonor" :linkArr="linkArrNew"></personal-info>
+                    <div class="card-group">
+                        <el-row :gutter="24" style="margin-bottom: 24px;">
+                            <el-col :span="8"><chart-card :cardData="cardData1"></chart-card></el-col>
+                            <el-col :span="8"><chart-card :cardData="cardData2"></chart-card></el-col>
+                            <el-col :span="8"><chart-card :cardData="cardData3"></chart-card></el-col>
+                        </el-row>
+                    </div>
+                </div>
+                <!-- 消息推送和应用市场 -->
+                <div class="right-board">
+                    <message-and-app :appCenter="appCenter" @goToPage="goToPage"></message-and-app>
+                </div>
+            </div>
+            <el-row :gutter="24" class="index-row">
+                <el-col :span="12">
+                    <index-custom-card>
+                        <template slot="head">
+                            业绩目标
+                        </template>
+                        <template slot="content">
+                            <gauge-chart container="gaugeChart" :gaugeData="gaugeData"></gauge-chart>
+                        </template>
+                    </index-custom-card>
+                </el-col>
+                <el-col :span="12">
+                    <index-custom-card>
+                        <template slot="head">
+                            合作客户
+                        </template>
+                        <template slot="content">
+                            <el-table
+                                :data="clientArr"
+                                max-height="460"
+								style="padding: 25px 25px 0;"
+                            >
+                                <el-table-column
+									prop="cname"
+                                    label="客户"
+                                    width="230">
+                                </el-table-column>
+                                <el-table-column
+                                    prop="dayDiff"
+                                    label="沉默天数"
+                                    width="100">
+                                </el-table-column>
+                                <el-table-column
+                                    prop="totalAdPrice"
+                                    label="合作金额"
+                                >
+                                    <template slot-scope="scope">
+                                        <mini-progress slot="reference" :target="0" :percentage="scope.row.priceRate" :value="scope.row.totalAdPrice" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </template>
+                    </index-custom-card>
+                </el-col>
+            </el-row>
+            <!-- <home-top :user-info="userInfo" :data-arr="dataArr" :honor-img="companyHonor"></home-top>
             <div style="margin:24px 0;display:flex;">
                 <div style="width:66%;border: 1px solid #e5e6e9;">
                     <h2 class="h2_style">常用模块</h2>
@@ -22,10 +83,10 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="app-center-item" id="appCenter">
+            </div> -->
+            <!-- <div class="app-center-item" id="appCenter"> -->
                 <!--isPlatform-->
-                <h2 class="h2_style"><span @click="goToPage()">应用中心 <i class="el-icon-arrow-right"></i></span></h2>
+                <!-- <h2 class="h2_style"><span @click="goToPage()">应用中心 <i class="el-icon-arrow-right"></i></span></h2>
                 <ul :style="{height:isSlideDown?'254px':'510px'}">
                     <li v-for="item in appCenter" @click="goToPage(item)">
                         <div class="item-left">
@@ -43,7 +104,7 @@
                     <span class="down" v-if="isSlideDown">展开 <i class="el-icon-d-arrow-left"></i> </span>
                     <span class="up" v-else>收起 <i class="el-icon-d-arrow-left"></i> </span>
                 </div>
-            </div>
+            </div> -->
             <div style="margin:24px 0; background:#fff;border: 1px solid #e5e6e9;">
                 <h2 class="h2_style">业绩进度 <span class="span_rank">单位为：万</span></h2>
                 <div style=" width:96%; margin:24px auto;position:relative;" v-if="isShowLine">
@@ -170,6 +231,12 @@
     import indexIsDateFirst from '../../commonFun/indexIsDateFirst.js';
     import noSearchResult from "../../components/common/components/noSearchResult.vue";
 
+    import personalInfo from '../common/components/personalInfo.vue';
+    import messageAndApp from '../common/components/messageAndApp.vue';
+    import chartCard from '../common/components/chartCard.vue';
+    import indexCustomCard from '../common/components/indexCustomCard.vue';
+    import gaugeChart from '../common/components/gaugeChart.vue';
+    import miniProgress from '../common/components/miniProgress.vue';
 
     export default {
         name: "sale_index",
@@ -178,11 +245,51 @@
             homeLink,
             noSearchResult,
             elButton: Button,
+
+            personalInfo,
+            messageAndApp,
+            chartCard,
+            miniProgress,
+            indexCustomCard,
+            gaugeChart,
         },
         data() {
             return {
+                hasMpvgl: false,
                 // 动效
                 isMonthlyRanking: false,
+                linkArrNew: [
+                    {
+                        imgurl: require('../../assets/images/group.png'),
+                        title: '地图选点',
+                        link: '',
+                    },
+                    {
+                        imgurl: require('../../assets/images/group.png'),
+                        title: '导空位',
+                        link: '',
+                    },
+                    {
+                        imgurl: require('../../assets/images/group.png'),
+                        title: '新建方案',
+                        link: '',
+                    },
+                    {
+                        imgurl: require('../../assets/images/group.png'),
+                        title: '行业图片',
+                        link: '',
+                    },
+                    {
+                        imgurl: require('../../assets/images/group.png'),
+                        title: '新建客户',
+                        link: './sale/createClient'
+                    },
+                    {
+                        imgurl: require('../../assets/images/group.png'),
+                        title: '点位表盘',
+                        link: ''
+                    },
+                ],
                 linkArr: [
                     {
                         imgurl: require('../../assets/images/group.png'),
@@ -294,8 +401,38 @@
                 // 应用中心
                 appCenter: '',
                 isSlideDown: true,
-
-
+                cardData1: {
+                    title: '本月成交金额',
+                    tip: '数据截止至昨日，销售额数据来源为统计周期内发布的订单金额总和',
+                    value: 0,
+                    valueAlias: '成交额',
+                    prefix: '￥',
+                    compare: 0,
+                    trendLabel: '月环比',
+                    data: []
+                },
+                cardData2: {
+                    title: '本月订单',
+                    tip: '数据实时更新，统计当月发布的订单数量',
+                    value: 0,
+                    valueAlias: '订单数',
+                    compare: 0,
+                    trendLabel: '月环比',
+                    data: []
+                },
+                cardData3: {
+                    title: '本月激活客户',
+                    tip: '数据实时更新，统计该销售当月发布过订单的客户数量',
+                    value: 0,
+                    valueAlias: '客户数',
+                    compare: 0,
+                    trendLabel: '月环比',
+                    data: []
+                },
+                // 客户列表
+                clientArr: [],
+                // 业绩目标仪表盘数据
+                gaugeData: null
             }
         },
         methods: {
@@ -693,6 +830,120 @@
                         // console.log('UserStaticReport---',res.data);
                     })
                 });
+            },
+            // 首页报表接口
+            allReportApi() {
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token
+                }
+                // 销售的成交金额 /report /homepage/getBDCardReport
+                api.getApi(this.apiVar.report + '/homepage/getBDCardReport',params).then(res=>{
+                    if (res.data.SysCode === 200200) {
+                        let temp = res.data.data;
+                        Object.assign(this.cardData1, {
+                            value: temp.orderPrice,
+                            compare: temp.orderPriceIncrRate
+                        })
+                        Object.assign(this.cardData2, {
+                            value: temp.orderCnt,
+                            compare: temp.orderCntIncrRate
+                        })
+                        Object.assign(this.cardData3, {
+                            value: temp.customCnt,
+                            compare: temp.customCntIncrRate
+                        })
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                }).catch(err=>{
+                    console.log('err', err)
+                }).finally(_=>{
+                })
+                
+                // 销售的周报数据 /report /homepage/getBDWeekReport
+                api.getApi(this.apiVar.report + '/homepage/getBDWeekReport',params).then(res=>{
+                    if (res.data.SysCode === 200200 && Array.isArray(res.data.data)) {
+                        let temp = res.data.data,
+                            tempcCardData1 = [],
+                            tempcCardData2 = [],
+                            tempcCardData3 = [];
+                        temp.forEach((item, index)=>{
+                            tempcCardData1.push({
+                                week: `第${index+1}周`,
+                                dateStr: item.weekStart + item.weekEnd,
+                                value: item.orderPrice || 0
+                            })
+                            tempcCardData2.push({
+                                week: `第${index+1}周`,
+                                dateStr: item.weekStart + item.weekEnd,
+                                value: item.orderCnt || 0
+                            })
+                            tempcCardData3.push({
+                                week: `第${index+1}周`,
+                                dateStr: item.weekStart + item.weekEnd,
+                                value: item.customCnt || 0
+                            })
+                        })
+                        Object.assign(this.cardData1, {
+                            data: tempcCardData1,
+                        })
+                        Object.assign(this.cardData2, {
+                            data: tempcCardData2,
+                        })
+                        Object.assign(this.cardData3, {
+                            data: tempcCardData3,
+                        })
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                }).catch(err=>{
+                    console.log('err', err)
+                }).finally(_=>{
+                    
+                })
+                // 销售业绩目标 /report /homepage/getBDActiveCustomerReport
+                api.getApi(this.apiVar.report + '/homepage/getBDActiveCustomerReport', params).then(res=>{
+                    if (res.data.SysCode === 200200) {
+                        /* "uID" 销售id
+                        "totalPrice" 销售本业完成的金额
+                        "targetPrice" 销售本年的业绩
+                        "rank" 公司排名
+                        "finshProcess" 完成进度*/
+                        let temp = res.data.data;
+                        this.gaugeData = {
+                            "uID": 8910,		//销售id
+                            "totalPrice": 10828,	//销售本业完成的金额
+                            "targetPrice": 1000000.0,	//销售本年的业绩
+                            "rank": 0,		//公司排名
+                            "finshProcess": 80	//完成进度,要是number
+                        };
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                }).catch(err=>{
+                    console.log('媒体概况', err)
+                }).finally(_=>{
+                })
+                // 合作客户 /report /homepage/getBDActiveCustomerReport
+                api.getApi(this.apiVar.report + '/homepage/getBDActiveCustomerReport',params).then(res=>{
+                    if (res.data.SysCode === 200200) {
+                        this.clientArr = res.data.data || []
+                        // this.clientArr = [{
+                        //     "cID": 32,	//客户id
+                        //     "totalAdPrice": 1111.0,	//合作过的金额
+                        //     "dayDiff": 13,	//沉默天数 
+                        //     "priceRate": 50,
+                        //     "cname": "壹媒介（上海）广告有限公司北京分公司" //客户名字
+                        // }];
+                        
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                }).catch(err=>{
+                    console.log('err', err)
+                }).finally(_=>{
+                })
             }
         },
         mounted() {
@@ -712,13 +963,53 @@
             //用户中心
             this.appCenter = appCenter
             this.uploadEvent(1)
+            this.allReportApi()
         }
         ,
     }
     ;
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+/** 新增*/
+    .index-top-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        .left-layout {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            margin-right: 24px;
+            .card-group {
+                position: relative;
+                height: 428px;
+                width: 100%;
+                margin-top: 24px;
+            }
+        }
+        .right-board {
+            width: 312px;
+            height: 582px;
+            background: rgba(255, 255, 255, 1);
+            border: 1px solid #E6E7E9;
+        }
+    }
+    .index-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        & > div {
+            flex: 1;
+        }
+    }
+    
+    
+ /**新增 */
     .ad_index_container {
         margin: 24px 64px;
         height: auto;

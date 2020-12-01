@@ -1,6 +1,6 @@
 <template>
   <div class="chart-mini-progress">
-    <div class="target" :style="{ left: 'calc(' + target + '% + 3px', backgroundColor: color}">
+    <div v-if="target > 0" class="target" :style="{ left: 'calc(' + target + '% + 3px', backgroundColor: color}">
       <!-- <span :style="{ backgroundColor: color }" />
       <span :style="{ backgroundColor: color }" /> -->
     </div>
@@ -52,6 +52,7 @@ export default {
   box-sizing: border-box;
   padding: 5px;
   background: rgba(0, 0, 0, 0.06);
+  cursor: pointer;
   .target {
     position: absolute;
     top: 2px;

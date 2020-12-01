@@ -57,9 +57,9 @@
                     <template slot="head">
                         业绩排行
                         <div class="date-interval">
-                            <span :class="{'active': dateInterval === 1}" @click="getRankList(dateInterval, 1)">全年</span>
-                            <span :class="{'active': dateInterval === 2}" @click="getRankList(dateInterval, 2)">本季</span>
-                            <span :class="{'active': dateInterval === 3}" @click="getRankList(dateInterval, 3)">本月</span>
+                            <span :class="{'active': dateInterval === 1}" @click="getRankList('dateInterval', 1)">全年</span>
+                            <span :class="{'active': dateInterval === 2}" @click="getRankList('dateInterval', 2)">本季</span>
+                            <span :class="{'active': dateInterval === 3}" @click="getRankList('dateInterval', 3)">本月</span>
                         </div>
                         <el-radio-group v-model="isBehind" size="small" class="achievement-radio-group" @change="getRankList">
                             <el-radio-button :label="false">领先</el-radio-button>
@@ -71,7 +71,7 @@
                             <li class="item" v-for="(rankItem, index) in rankListArr" :key="index">
                                 <span class="label">{{rankItem.name}}</span>
                                 <el-popover
-                                    popper-class="custom-popper"
+                                    popper-class="index-custom-popper"
                                     class="progress"
                                     placement="top"
                                     :visible-arrow="false"
@@ -108,209 +108,98 @@
         </el-row>
         <el-row class="index-row">
             <!-- 机会挖掘 -->
-            <index-custom-card>
+            <index-custom-card :height="'auto'">
                 <template slot="head">
                     机会挖掘&nbsp
                     <el-tooltip popper-class="amount-tooltip" effect="dark" content="Top center" placement="top">
                         <ul slot="content">
                             <li style="line-height: 20px;">
-                                签约额：均为合同金额，未扣除总部收益部分
+                                数据统计至昨日
                             </li>
                             <li style="line-height: 20px;">
-                                全国单发单执行额：该执行额不以实际订单金额统计，而以拆单时的方案金额以公式计算获得
+                                沉默：指没有订单投放且最后一次方案创建时间≥30天的客户数
+                            </li>
+                            <li style="line-height: 20px;">
+                                活跃：指统计当前有订单正在投放或投放订单完成后的30天内的客户数
+                            </li>
+                            <li style="line-height: 20px;">
+                                初购：指该客户录入进系统后，有且仅合作过一个订单
+                            </li>
+                            <li style="line-height: 20px;">
+                                复购：指该客户录入进系统后，至少合作过2个及以上的订单
+                            </li>
+                            <li style="line-height: 20px;">
+                                未合作：指该客户录入进系统后，从未合作发布过订单
                             </li>
                         </ul>
                         <img class="quesition-icon" src="../../assets/images/question_icon.png" />
                     </el-tooltip>
                 </template>
                 <template slot="content">
-                    <nest-pie-chart></nest-pie-chart>
+                    <el-row :gutter="24" class="index-row" style="padding: 33px 24px; margin: 0;">
+                        <el-col :span="12">
+                            <nest-pie-chart :sourceData="nestPieData"></nest-pie-chart>
+                            <div class="bottom-box">
+                                贵公司<span class="avtive">{{extendData[0]}}</span>位沉默客户待挖掘，多于全国<span class="avtive">{{extendData[1]+'%'}}</span>的公司，请加把劲！
+                            </div>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-table
+                                :data="clientArr"
+                                max-height="460"
+                            >
+                                <el-table-column
+                                    label="客户"
+                                    width="230">
+                                    <template slot-scope="scope">
+                                        <span @click="routePage(scope.row)" style="color: #1890FF; cursor: pointer;">{{scope.row.saleNames}}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                    prop="daydiffer"
+                                    label="沉默天数"
+                                    sortable
+                                    width="100">
+                                </el-table-column>
+                                <el-table-column
+                                    prop="price"
+                                    label="合作金额"
+                                    sortable
+                                >
+                                    <template slot-scope="scope">
+                                        <el-popover
+                                            popper-class="index-custom-popper"
+                                            class="progress"
+                                            placement="top"
+                                            :visible-arrow="false"
+                                            :border="true"
+                                            width="200"
+                                            trigger="hover"
+                                        >
+                                            <div class="pop-box">
+                                                <ul>
+                                                    <li class="pop-item">
+                                                        <em>所属销售：</em>
+                                                        <span>{{scope.row.saleNames || ''}}</span>
+                                                    </li>
+                                                    <li class="pop-item">
+                                                        <em>合作金额：</em>
+                                                        <span>￥{{scope.row.price || 0}}</span>
+                                                    </li>
+                                                </ul>
+                                                <div class="pop-title">
+                                                    <span class="bottom-btn" @click="unfollow(scope.row)">不再关注</span>
+                                                </div>
+                                            </div>
+                                            <mini-progress slot="reference" :target="0" :percentage="scope.row.priceRate" :value="scope.row.price" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                        </el-popover>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </el-col>
+                    </el-row>
                 </template>
             </index-custom-card>
-        </el-row>
-        <el-row :gutter="24" class="index-row">
-            <!-- 媒体概况 -->
-            <el-col :span="12">
-                <index-custom-card>
-                    <template slot="head">
-                        媒体概况&nbsp
-                        <el-tooltip popper-class="amount-tooltip" effect="dark" content="Top center" placement="top">
-                            <ul slot="content">
-                                <li style="line-height: 20px;">
-                                    签约额：均为合同金额，未扣除总部收益部分
-                                </li>
-                                <li style="line-height: 20px;">
-                                    全国单发单执行额：该执行额不以实际订单金额统计，而以拆单时的方案金额以公式计算获得
-                                </li>
-                                <li style="line-height: 20px;">
-                                    按周统计：指每周六至下周五为一个周
-                                </li>
-                                <li style="line-height: 20px;">
-                                    按月统计：指从1号至自然月底
-                                </li>
-                            </ul>
-                            <img class="quesition-icon" src="../../assets/images/question_icon.png" />
-                        </el-tooltip>
-                        <el-radio-group v-model="isBehind" size="small" class="achievement-radio-group">
-                            <el-radio-button :label="false">媒体</el-radio-button>
-                            <el-radio-button :label="true">点位（面）</el-radio-button>
-                        </el-radio-group>
-                    </template>
-                    <template slot="content">
-                        <ring-chart container="ringChart"></ring-chart>
-                    </template>
-                </index-custom-card>
-            </el-col>
-            <el-col :span="12">
-                <index-custom-card>
-                    <template slot="head">
-                        预锁概况
-                    </template>
-                    <template slot="content">
-                        <ul class="item-list">
-                            <li class="item">
-                                <span class="label">吴永忠</span>
-                                <el-popover
-                                    popper-class="custom-popper"
-                                    class="progress"
-                                    placement="top"
-                                    :visible-arrow="false"
-                                    width="200"
-                                    trigger="click"
-                                >
-                                    <div class="pop-box">
-                                        <div class="pop-title">
-                                            <em>殷基层</em>
-                                            <span class="target-btn" @click="showSetTarget = true">设置目标</span>
-                                        </div>
-                                        <ul>
-                                            <li class="pop-item">
-                                                <em>业绩目标：</em>
-                                                <span>¥8,000,000</span>
-                                            </li>
-                                            <li class="pop-item">
-                                                <em>销售金额：</em>
-                                                <span>¥4,253,502</span>
-                                            </li>
-                                            <li class="pop-item">
-                                                <em>完成进度：</em>
-                                                <span>¥67.89</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <mini-progress slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
-                                </el-popover>
-                            </li>
-                            <li class="item">
-                                <span class="label">吴永忠</span>
-                                <el-popover
-                                    class="progress"
-                                    placement="top-start"
-                                    title="标题"
-                                    width="200"
-                                    trigger="hover"
-                                >
-                                    <mini-progress slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
-                                </el-popover>
-                            </li>
-                            <li class="item">
-                                <span class="label">吴永忠</span>
-                                <el-popover
-                                    class="progress"
-                                    placement="top-start"
-                                    title="标题"
-                                    width="200"
-                                    trigger="hover"
-                                    content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。"
-                                >
-                                    <mini-progress slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
-                                </el-popover>
-                            </li>
-                        </ul>
-                    </template>
-                </index-custom-card>
-            </el-col>
-        </el-row>
-        <el-row :gutter="24" class="index-row">
-            <el-col :span="12">
-                <index-custom-card>
-                    <template slot="head">
-                        业绩目标
-                    </template>
-                    <template slot="content">
-                        <gauge-chart container="gaugeChart"></gauge-chart>
-                    </template>
-                </index-custom-card>
-            </el-col>
-            <el-col :span="12">
-                <index-custom-card>
-                    <template slot="head">
-                        合作客户
-                    </template>
-                    <template slot="content">
-                        <ul class="item-list">
-                            <li class="item">
-                                <span class="label">吴永忠</span>
-                                <el-popover
-                                    popper-class="custom-popper"
-                                    class="progress"
-                                    placement="top"
-                                    :visible-arrow="false"
-                                    width="200"
-                                    trigger="click"
-                                >
-                                    <div class="pop-box">
-                                        <div class="pop-title">
-                                            <em>殷基层</em>
-                                            <span class="target-btn" @click="showSetTarget = true">设置目标</span>
-                                        </div>
-                                        <ul>
-                                            <li class="pop-item">
-                                                <em>业绩目标：</em>
-                                                <span>¥8,000,000</span>
-                                            </li>
-                                            <li class="pop-item">
-                                                <em>销售金额：</em>
-                                                <span>¥4,253,502</span>
-                                            </li>
-                                            <li class="pop-item">
-                                                <em>完成进度：</em>
-                                                <span>¥67.89</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <mini-progress slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
-                                </el-popover>
-                            </li>
-                            <li class="item">
-                                <span class="label">吴永忠</span>
-                                <el-popover
-                                    class="progress"
-                                    placement="top-start"
-                                    title="标题"
-                                    width="200"
-                                    trigger="hover"
-                                >
-                                    <mini-progress slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
-                                </el-popover>
-                            </li>
-                            <li class="item">
-                                <span class="label">吴永忠</span>
-                                <el-popover
-                                    class="progress"
-                                    placement="top-start"
-                                    title="标题"
-                                    width="200"
-                                    trigger="hover"
-                                    content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。"
-                                >
-                                    <mini-progress slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
-                                </el-popover>
-                            </li>
-                        </ul>
-                    </template>
-                </index-custom-card>
-            </el-col>
         </el-row>
         <!-- <div style="margin:24px 0;display:flex"> -->
             <!--isPlatform-->
@@ -435,7 +324,7 @@
                     <point-distribution mapContainer="mapContainer1" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointDistribution'"></point-distribution>
                 </el-tab-pane>
                 <el-tab-pane label="点位上刊率" name="pointPublication">
-                    <point-distribution mapContainer="mapContainer2" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointPublication'"></point-distribution>
+                    <!-- <point-distribution mapContainer="mapContainer2" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointPublication'"></point-distribution> -->
                 </el-tab-pane>
                 <el-tab-pane label="成交金额" name="price">
                     <div style="margin-top: 8px">
@@ -675,8 +564,6 @@
     import miniProgress from '../common/components/miniProgress.vue';
     import liquidChart from '../common/components/liquidChart.vue';
     import nestPieChart from '../common/components/nestPieChart.vue';
-    import ringChart from '../common/components/ringChart.vue';
-    import gaugeChart from '../common/components/gaugeChart.vue';
     import pointDistribution from '../common/components/pointDistribution.vue';
     import moment from "moment";
 
@@ -700,8 +587,6 @@
             indexCustomCard,
             liquidChart,
             nestPieChart,
-            ringChart,
-            gaugeChart,
             pointDistribution
         },
         data() {
@@ -1084,9 +969,17 @@
                 isBehind: false,
                 showSetTarget: false,
                 targetVaule: 0,
+                // 当前被设置目标的销售
                 currentEditSale: {},
                 // 业绩排行列表
-                rankListArr: []
+                rankListArr: [],
+                // 机会挖掘表格
+                clientArr: [],
+                extendData: ['0', '0'],
+                // 机会挖掘嵌套饼图数据
+                nestPieData: [],
+                // 媒体概况饼图数据
+                ringData: []
             }
         },
         beforeCreate() {
@@ -1125,276 +1018,212 @@
                 }
                 api.getApi(this.apiVar.report + '/homepage/getSMAdPlanCardReport',params).then(res=>{
                     if (res.data.SysCode === 200200) {
+                        let temp = res.data.data;
+                        Object.assign(this.cardData1, {
+                            value: temp.totalAdPlanPrice,
+                            compare: temp.planPriceIncrRate
+                        })
+                        Object.assign(this.cardData2, {
+                            value: temp.totalAdPlanCnt,
+                            compare: temp.planCntIncrRate
+                        })
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }
                 }).catch(err=>{
                     console.log('err', err)
                 }).finally(_=>{
-                    let temp = {
-                        "totalAdPlanPrice": 2.0,  //本年销售额
-                        "totalAdPlanCnt": 2098977,	//本年订单数
-                        "planPriceIncrRate": "10.5", //销售额的同比率
-                        "planCntIncrRate": "-6.32" //订单数的同比率
-                    }
-                    Object.assign(this.cardData1, {
-                        value: temp.totalAdPlanPrice,
-                        compare: temp.planPriceIncrRate
-                    })
-                    Object.assign(this.cardData2, {
-                        value: temp.totalAdPlanCnt,
-                        compare: temp.planCntIncrRate
-                    })
                 })
                 // 管理员的客户数，媒体数和社区数卡片 /report /homepage/getSMResAndCustomCardReport
                 api.getApi(this.apiVar.report + '/homepage/getSMResAndCustomCardReport',params).then(res=>{
                     if (res.data.SysCode === 200200) {
+                        let temp = res.data.data;
+                        Object.assign(this.cardData3, {
+                            value: temp.totalCustomerCnt,
+                            compare: temp.customerIncrRate
+                        })
+                        Object.assign(this.cardDataOther1, {
+                            value: temp.totalMediaCnt,
+                            compare: temp.mediaIncrRate
+                        })
+                        Object.assign(this.cardDataOther2, {
+                            value: temp.totalResCnt,
+                            compare: temp.resIncrRate
+                        })
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }
                 }).catch(err=>{
                     console.log('err', err)
                 }).finally(_=>{
-                    let temp = {
-                        "totalResCnt": 3,  //总小区数
-                        "totalMediaCnt": 6, //总媒体数
-                        "totalCustomerCnt": 3, //总客户数
-                        "resIncrRate": "200.00", //小区数量同比
-                        "mediaIncrRate": "200.00", //媒体数同比
-                        "customerIncrRate": "200.00" //客户数同比
-                    }
-                    Object.assign(this.cardData3, {
-                        value: temp.totalCustomerCnt,
-                        compare: temp.customerIncrRate
-                    })
-                    Object.assign(this.cardDataOther1, {
-                        value: temp.totalMediaCnt,
-                        compare: temp.mediaIncrRate
-                    })
-                    Object.assign(this.cardDataOther2, {
-                        value: temp.totalResCnt,
-                        compare: temp.resIncrRate
-                    })
                 })
                 // 管理员的上刊率卡片 /report /homepage/getSMOnPubRateReport
                 api.getApi(this.apiVar.report + '/homepage/getSMOnPubRateReport',params).then(res=>{
                     if (res.data.SysCode === 200200) {
+                        let temp = res.data.data;
+                        Object.assign(this.cardDataOther3, {
+                            value: temp.onPubRate*1,
+                            compare: temp.incrOnPubRate
+                        })
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }
                 }).catch(err=>{
                     console.log('err', err)
                 }).finally(_=>{
-                    let temp = {
-                        "onPubRate": "0.10",   //昨日上刊率
-                        "incrOnPubRate": "10" //同比上刊率
-                    }
-                    Object.assign(this.cardDataOther3, {
-                        value: temp.onPubRate*1,
-                        compare: temp.incrOnPubRate
-                    })
                 })
                 // 管理员的所有卡片过去十三周的数据 /report /homepage/getSMOnPubRateReport
                 api.getApi(this.apiVar.report + '/homepage/getSMOnPubRateReport',params).then(res=>{
-                    if (res.data.SysCode === 200200) {
+                    if (res.data.SysCode === 200200 && Array.isArray(res.data.data)) {
+                        let temp = res.data.data;
+                        let tempcCardData1 = [],
+                            tempcCardData2 = [],
+                            tempcCardData3 = [],
+                            tempcCardDataOther1 = [],
+                            tempcCardDataOther2 = [],
+                            tempcCardDataOther3 = [];
+                        temp.forEach((item, index)=>{
+                            tempcCardData1.push({
+                                week: `第${index+1}周`,
+                                dateStr: item.weekStarDate + item.weekEndDate,
+                                value: item.weekPlanPrice || 0
+                            })
+                            tempcCardData2.push({
+                                week: `第${index+1}周`,
+                                dateStr: item.weekStarDate + item.weekEndDate,
+                                value: item.weekPlanCnt || 0
+                            })
+                            tempcCardData3.push({
+                                week: `第${index+1}周`,
+                                dateStr: item.weekStarDate + item.weekEndDate,
+                                value: item.weekCustomerCnt || 0
+                            })
+                            tempcCardDataOther1.push({
+                                week: `第${index+1}周`,
+                                name: '新增道闸',
+                                dateStr: item.weekStarDate + item.weekEndDate,
+                                value: item.weekBarrierCnt || 0
+                            })
+                            tempcCardDataOther1.push({
+                                week: `第${index+1}周`,
+                                name: '新增广告门',
+                                dateStr: item.weekStarDate + item.weekEndDate,
+                                value: item.weekDoorCnt || 0
+                            })
+                            tempcCardDataOther2.push({
+                                week: `第${index+1}周`,
+                                name: '新增小区数',
+                                dateStr: item.weekStarDate + item.weekEndDate,
+                                value: item.weekResCnt || 0
+                            })
+                            tempcCardDataOther3.push({
+                                week: `第${index+1}周`,
+                                name: '上刊率',
+                                dateStr: item.weekStarDate + '~' + item.weekEndDate,
+                                value: (item.weekOnPubRate || 0)*1
+                            })
+                        })
+                        Object.assign(this.cardData1, {
+                            data: tempcCardData1,
+                        })
+                        Object.assign(this.cardData2, {
+                            data: tempcCardData2,
+                        })
+                        Object.assign(this.cardData3, {
+                            data: tempcCardData3,
+                        })
+                        Object.assign(this.cardDataOther1, {
+                            data: tempcCardDataOther1,
+                        })
+                        Object.assign(this.cardDataOther2, {
+                            data: tempcCardDataOther2,
+                        })
+                        Object.assign(this.cardDataOther3, {
+                            data: tempcCardDataOther3,
+                        })
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }
                 }).catch(err=>{
                     console.log('err', err)
                 }).finally(_=>{
-                    let temp = [{
-                        "weekStarDate": "2020-08-31",  //周开始时间
-                        "weekEndDate": "2020-09-06",  //周结束时间
-                        "weekPlanPrice": 0.0,   //周销售额
-                        "weekPlanCnt": 3,       //周订单数
-                        "weekBarrierCnt": 6,   //周道闸数 
-                        "weekDoorCnt": 60,     //周广告门数
-                        "weekResCnt": 50,       //周社区增量
-                        "weekCustomerCnt": 10,  //周客户数
-                        "weekOnPubRate": "1.20" //周上刊率
-                    },
-                    {
-                        "weekStarDate": "2020-08-31",  //周开始时间
-                        "weekEndDate": "2020-09-06",  //周结束时间
-                        "weekPlanPrice": 33.0,   //周销售额
-                        "weekPlanCnt": 7,       //周订单数
-                        "weekBarrierCnt": 8,   //周道闸数 
-                        "weekDoorCnt": 30,     //周广告门数
-                        "weekResCnt": 20,       //周社区增量
-                        "weekCustomerCnt": 6,  //周客户数
-                        "weekOnPubRate": "9.05" //周上刊率
-                    },
-                    {
-                        "weekStarDate": "2020-08-31",  //周开始时间
-                        "weekEndDate": "2020-09-06",  //周结束时间
-                        "weekPlanPrice": 7.0,   //周销售额
-                        "weekPlanCnt": 88,       //周订单数
-                        "weekBarrierCnt": 125,   //周道闸数 
-                        "weekDoorCnt": 99,     //周广告门数
-                        "weekResCnt": 898,       //周社区增量
-                        "weekCustomerCnt": 65,  //周客户数
-                        "weekOnPubRate": "0.90" //周上刊率
-                    },
-                    {
-                        "weekStarDate": "2020-08-31",  //周开始时间
-                        "weekEndDate": "2020-09-06",  //周结束时间
-                        "weekPlanPrice": 0.0,   //周销售额
-                        "weekPlanCnt": 0,       //周订单数
-                        "weekBarrierCnt": 0,   //周道闸数 
-                        "weekDoorCnt": 0,     //周广告门数
-                        "weekResCnt": 0,       //周社区增量
-                        "weekCustomerCnt": 0,  //周客户数
-                        "weekOnPubRate": "0.00" //周上刊率
-                    },
-                    {
-                        "weekStarDate": "2020-08-31",  //周开始时间
-                        "weekEndDate": "2020-09-06",  //周结束时间
-                        "weekPlanPrice": 0.0,   //周销售额
-                        "weekPlanCnt": 0,       //周订单数
-                        "weekBarrierCnt": 0,   //周道闸数 
-                        "weekDoorCnt": 0,     //周广告门数
-                        "weekResCnt": 0,       //周社区增量
-                        "weekCustomerCnt": 0,  //周客户数
-                        "weekOnPubRate": "0.00" //周上刊率
-                    },
-                    {
-                        "weekStarDate": "2020-08-31",  //周开始时间
-                        "weekEndDate": "2020-09-06",  //周结束时间
-                        "weekPlanPrice": 0.0,   //周销售额
-                        "weekPlanCnt": 0,       //周订单数
-                        "weekBarrierCnt": 0,   //周道闸数 
-                        "weekDoorCnt": 0,     //周广告门数
-                        "weekResCnt": 0,       //周社区增量
-                        "weekCustomerCnt": 0,  //周客户数
-                        "weekOnPubRate": "0.00" //周上刊率
-                    },
-                    {
-                        "weekStarDate": "2020-08-31",  //周开始时间
-                        "weekEndDate": "2020-09-06",  //周结束时间
-                        "weekPlanPrice": 0.0,   //周销售额
-                        "weekPlanCnt": 0,       //周订单数
-                        "weekBarrierCnt": 0,   //周道闸数 
-                        "weekDoorCnt": 0,     //周广告门数
-                        "weekResCnt": 0,       //周社区增量
-                        "weekCustomerCnt": 0,  //周客户数
-                        "weekOnPubRate": "0.00" //周上刊率
-                    },
-                    {
-                        "weekStarDate": "2020-08-31",  //周开始时间
-                        "weekEndDate": "2020-09-06",  //周结束时间
-                        "weekPlanPrice": 0.0,   //周销售额
-                        "weekPlanCnt": 0,       //周订单数
-                        "weekBarrierCnt": 0,   //周道闸数 
-                        "weekDoorCnt": 0,     //周广告门数
-                        "weekResCnt": 0,       //周社区增量
-                        "weekCustomerCnt": 0,  //周客户数
-                        "weekOnPubRate": "0.00" //周上刊率
-                    },
-                    {
-                        "weekStarDate": "2020-08-31",  //周开始时间
-                        "weekEndDate": "2020-09-06",  //周结束时间
-                        "weekPlanPrice": 0.0,   //周销售额
-                        "weekPlanCnt": 0,       //周订单数
-                        "weekBarrierCnt": 0,   //周道闸数 
-                        "weekDoorCnt": 0,     //周广告门数
-                        "weekResCnt": 0,       //周社区增量
-                        "weekCustomerCnt": 100,  //周客户数
-                        "weekOnPubRate": "0.00" //周上刊率
-                    },
-                    {
-                        "weekStarDate": "2020-08-31",  //周开始时间
-                        "weekEndDate": "2020-09-06",  //周结束时间
-                        "weekPlanPrice": 0.0,   //周销售额
-                        "weekPlanCnt": 0,       //周订单数
-                        "weekBarrierCnt": 0,   //周道闸数 
-                        "weekDoorCnt": 0,     //周广告门数
-                        "weekResCnt": 0,       //周社区增量
-                        "weekCustomerCnt": 1000,  //周客户数
-                        "weekOnPubRate": "0.00" //周上刊率
-                    },
-                    {
-                        "weekStarDate": "2020-08-31",  //周开始时间
-                        "weekEndDate": "2020-09-06",  //周结束时间
-                        "weekPlanPrice": 0.0,   //周销售额
-                        "weekPlanCnt": 0,       //周订单数
-                        "weekBarrierCnt": 100,   //周道闸数 
-                        "weekDoorCnt": 200,     //周广告门数
-                        "weekResCnt": 0,       //周社区增量
-                        "weekCustomerCnt": 0,  //周客户数
-                        "weekOnPubRate": "0.00" //周上刊率
-                    }]
-                    let tempcCardData1 = [],
-                        tempcCardData2 = [],
-                        tempcCardData3 = [],
-                        tempcCardDataOther1 = [],
-                        tempcCardDataOther2 = [],
-                        tempcCardDataOther3 = [];
-                    temp.forEach((item, index)=>{
-                        tempcCardData1.push({
-                            week: `第${index+1}周`,
-                            dateStr: item.weekStarDate + item.weekEndDate,
-                            value: item.weekPlanPrice || 0
-                        })
-                        tempcCardData2.push({
-                            week: `第${index+1}周`,
-                            dateStr: item.weekStarDate + item.weekEndDate,
-                            value: item.weekPlanCnt || 0
-                        })
-                        tempcCardData3.push({
-                            week: `第${index+1}周`,
-                            dateStr: item.weekStarDate + item.weekEndDate,
-                            value: item.weekCustomerCnt || 0
-                        })
-                        tempcCardDataOther1.push({
-                            week: `第${index+1}周`,
-                            name: '新增道闸',
-                            dateStr: item.weekStarDate + item.weekEndDate,
-                            value: item.weekBarrierCnt || 0
-                        })
-                        tempcCardDataOther1.push({
-                            week: `第${index+1}周`,
-                            name: '新增广告门',
-                            dateStr: item.weekStarDate + item.weekEndDate,
-                            value: item.weekDoorCnt || 0
-                        })
-                        tempcCardDataOther2.push({
-                            week: `第${index+1}周`,
-                            name: '新增小区数',
-                            dateStr: item.weekStarDate + item.weekEndDate,
-                            value: item.weekResCnt || 0
-                        })
-                        tempcCardDataOther3.push({
-                            week: `第${index+1}周`,
-                            name: '上刊率',
-                            dateStr: item.weekStarDate + '~' + item.weekEndDate,
-                            value: (item.weekOnPubRate || 0)*1
-                        })
-                    })
-                    Object.assign(this.cardData1, {
-                        data: tempcCardData1,
-                    })
-                    Object.assign(this.cardData2, {
-                        data: tempcCardData2,
-                    })
-                    Object.assign(this.cardData3, {
-                        data: tempcCardData3,
-                    })
-                    Object.assign(this.cardDataOther1, {
-                        data: tempcCardDataOther1,
-                    })
-                    Object.assign(this.cardDataOther2, {
-                        data: tempcCardDataOther2,
-                    })
-                    Object.assign(this.cardDataOther3, {
-                        data: tempcCardDataOther3,
-                    })
+                    
+                })
+
+                // 管理员的活跃客户报表 /report /homepage/getSMCustomerActiveReport
+                api.getApi(this.apiVar.report + '/homepage/getSMCustomerActiveReport', params).then(res=>{
+                    if (res.data.SysCode === 200200) {
+                        /* "noCooperation" 沉默未合作的客户数
+                        "silentFirstCnt" 沉默初购的客户数
+                        "silentSecondCnt" 沉默复购的客户数
+                        "silentCnt" 沉默的客户数
+                        "activeFirstCnt" 活跃的初购客户数
+                        "activeSecondCnt" 活跃的复购的客户数
+                        "activeCnt" 活跃的客户数
+                        "silenetCustomerRank" 沉默的排行百分比 */
+                        let temp = res.data.data;
+                        this.nestPieData = [
+                            { value: temp.activeFirstCnt, type: "活跃", name: "初购" },
+                            { value: temp.activeSecondCnt, type: "活跃", name: "复购" },
+                            { value: temp.silentSecondCnt, type: "沉默", name: "复购" },
+                            { value: temp.silentFirstCnt, type: "沉默", name: "初购" },
+                            { value: temp.noCooperation, type: "沉默", name: "未合作" }
+                        ];
+                        this.clientArr = temp.customerPriceList;
+                        this.extendData = [temp.silentCnt||0, temp.silenetCustomerRank||0]
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                }).catch(err=>{
+                    console.log('err', err)
+                }).finally(_=>{
+                    
+                })
+
+                // 媒介的媒体概况 /report /homepage/getMDMediaReport
+                api.getApi(this.apiVar.report + '/homepage/getMDMediaReport', params).then(res=>{
+                    if (res.data.SysCode === 200200) {
+                        /* "banLabCnt" 禁止的点位数
+                        "banMediaCnt" 禁止的媒体数
+                        "normalLabCnt" 正常的点位数
+                        "normalMediaCnt" 正常的媒体数
+                        "installLabCnt" 待安装的点位数
+                        "installMediaCnt" 待安装的媒体数
+                        "repairLabCnt" 待修理的点位数
+                        "repairMediaCnt" 待修理的媒体数
+                        "demolishLabCnt" 拆除的点位数
+                        "demolishMediaCnt" 拆除的媒体数
+                        "offPubMediaCnt" 不可投的媒体数
+                        "offPubLabCnt" 不可投的点位数
+                        "offPubRank" 排名百分比 */
+                        let temp = res.data.data;
+                        this.ringData = [
+                            { item: "正常", count: temp.normalLabCnt, percent: 0.4 },
+                            { item: "待安装", count: temp.normalLabCnt, percent: 0.21 },
+                            { item: "待维修", count: temp.normalLabCnt, percent: 0.17 },
+                            { item: "禁用", count: temp.normalLabCnt, percent: 0.21 },
+                        ];
+                        // this.clientArr = temp.customerPriceList;
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                }).catch(err=>{
+                    console.log('媒体概况', err)
+                }).finally(_=>{
+                    this.ringData = [
+                        { item: "事例一", count: 40, percent: 0.4 },
+                        { item: "事例二", count: 21, percent: 0.21 },
+                        { item: "事例三", count: 17, percent: 0.17 },
+                        { item: "事例四", count: 13, percent: 0.13 },
+                        { item: "事例五", count: 9, percent: 0.09 },
+                    ]
                 })
             },
+            
             // 管理员的业绩排行 /report /homepage/getSMAchievementReport
             getRankList(field, val) {
                 // 日期区间切换等
-                if(field) {field = val}
+                if(field) {this[field] = val}
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
@@ -1406,44 +1235,25 @@
                 }
                 api.getApi(this.apiVar.report + '/homepage/getSMAchievementReport', params).then(res=>{
                     if (res.data.SysCode === 200200) {
+                        let temp = res.data.data;
+                        this.rankListArr = temp.userList
+                        // console.log('rankListArr', this.rankListArr)
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }
                 }).catch(err=>{
                     console.log('err', err)
                 }).finally(_=>{
-                    let temp = {
-                        "maxTargetPrice": 1000000.0,
-                        "userList": [
-                            {
-                                "uID": 807,
-                                "name": 'ceshi1',
-                                "totalPrice": 0.0,
-                                "targetPrice": 1000000.0,
-                                "finshProcess": "0.00",
-                                "targetProcess": "83.00"
-                            },
-                            {
-                                "uID": 807,
-                                "name": '测试2',
-                                "totalPrice": 0.0,
-                                "targetPrice": 1000000.0,
-                                "finshProcess": "0.00",
-                                "targetProcess": "83.00"
-                            },
-                            {
-                                "uID": 807,
-                                "name": '测试3',
-                                "totalPrice": 0.0,
-                                "targetPrice": 1000000.0,
-                                "finshProcess": "90.00",
-                                "targetProcess": "83.00"
-                            }
-                        ]
-                    }
-                    this.rankListArr = temp.userList
-                    console.log('0-0', this.dateInterval, this.isBehind, this.rankListArr)
                 })
+            },
+            // 跳转到客户列表页面
+            routePage(row) {
+                sessionStorage.setItem("customerId", row.cID);
+                this.$router.push("./superOperate/clientDetail");
+            },
+            // 取消关注客户所在公司
+            unfollow(row) {
+
             },
             // 设置业绩目标
             setTarget(row) {
@@ -1685,7 +1495,7 @@
                     token: this.sessionData.token
                 }
                 api.getApi(this.apiVar.report + '/GetSMOverview',params).then(res=>{
-                    console.log('超级运营顶部内容详情',res)
+                    // console.log('超级运营顶部内容详情',res)
                     let resData = res.data.data;
                     if(res.data.SysCode == 200200 && resData ){
                         this.dataArr[0].data = resData.companyCount
@@ -1841,7 +1651,7 @@
                             sourceData: sourceData,
                             compareData: compareData,
                         };
-                        console.log('this.turnoverDataShow',this.turnoverDataShow)
+                        // console.log('this.turnoverDataShow',this.turnoverDataShow)
                         // 销售金额柱状图
                         this.setTurnoverBar()
                         this.priceBoxLoading = false
@@ -1871,7 +1681,7 @@
                 }
                 // console.log('获取订单数量总量接口参数',params)
                 api.getApi(this.apiVar.report + '/GetOrderCountByMonth',params).then(res=>{
-                    console.log('订单总数接口',res)
+                    // console.log('订单总数接口',res)
                     if(res.data.SysCode == 200200 && res.data.data){
                         let dataArr = res.data.data
                         let priceData = []
@@ -2244,7 +2054,7 @@
                 }
                 // console.log('获取业绩排行参数',params)
                 api.getApi(this.apiVar.report + '/GetAchievementRankList', params).then(res => {
-                    console.log('业绩排行接口', res)
+                    // console.log('业绩排行接口', res)
                     let dataArr = res.data.data;
                     if(res.data.SysCode == 200200 && res.data.data){
                         let tempArr = []
@@ -2311,7 +2121,7 @@
                 }
                 priceList.push(parseInt(maxPrice / 100 / 10000))
                 this.runwayPrice = priceList
-                console.log('根据设置的最大目标销售额动态改变跑道的价格间隔',priceList)
+                // console.log('根据设置的最大目标销售额动态改变跑道的价格间隔',priceList)
             },
             // 根据销售金额占比总金额计算偏移位置 runway_td_2 runwayPrice salePrice
             locationOnRunway() {
@@ -2606,6 +2416,14 @@
 .amount-tooltip {
     max-width: unset !important;
 }
+.index-custom-popper {
+    min-height: 92px;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0px 0px 10px 0px rgba(174, 174, 174, 0.65);
+    border-radius: 2px;
+    padding: 8px;
+}
 </style>
 <style scoped lang="scss">
 /** 新增*/
@@ -2688,12 +2506,19 @@
             }
         }
     }
-    .custom-popper {
-        min-height: 92px;
-        box-sizing: border-box;
-        background: rgba(255, 255, 255, 0.9);
-        box-shadow: 0px 0px 10px 0px rgba(174, 174, 174, 0.65);
+    .bottom-box {
+        height: 48px;
+        line-height: 48px;
+        text-align: center;
+        background: #F8F8F8;
         border-radius: 2px;
+        font-size: 16px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.85);
+        .avtive {
+            color: #1890FF;
+        }
     }
     .pop-box {
         border-radius: 2px;
@@ -2706,6 +2531,18 @@
             color: rgba(0, 0, 0, 0.85);
             .target-btn {
                 margin: 0 0 2px auto;
+                color: rgba(24, 144, 255, 1);
+                cursor: pointer;
+            }
+            .bottom-btn {
+                width: 64px;
+                height: 24px;
+                line-height: 24px;
+                margin: 8px auto 2px auto;
+                border: 1px solid #1890FF;
+                border-radius: 2px;
+                text-align: center;
+                font-size: 12px;
                 color: rgba(24, 144, 255, 1);
                 cursor: pointer;
             }

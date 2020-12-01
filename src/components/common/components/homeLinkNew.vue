@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="nav-cell" v-for="item of link" :key="item.link" >
+        <div class="nav-cell" v-for="(item, index) of link" :key="index" >
             <img class="cell-img" :src="item.imgurl" alt="" >
             <span class="cell-text" v-if="item.title === '地图选点'" @click="showMapModel">{{item.title}}</span>
             <span class="cell-text" v-else-if="item.title === '导出空位'" @click="isOpenDownload=true">{{item.title}}</span>

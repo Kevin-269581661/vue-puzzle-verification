@@ -3,15 +3,8 @@
 </template>
 
 <script>
+import { DataView } from "@antv/data-set";
 import { Chart } from "@antv/g2";
-
-const data = [
-  { item: "事例一", count: 40, percent: 0.4 },
-  { item: "事例二", count: 21, percent: 0.21 },
-  { item: "事例三", count: 17, percent: 0.17 },
-  { item: "事例四", count: 13, percent: 0.13 },
-  { item: "事例五", count: 9, percent: 0.09 },
-];
 
 export default {
   name: "ringChart",
@@ -21,59 +14,77 @@ export default {
       type: String,
       required: true,
     },
+    sourceData: {
+      type: Array,
+      required: true,
+    },
   },
   data() {
     return {
-      data,
+      chartInstance: null
     };
   },
-  methods: {},
-  mounted() {
-    const chart = new Chart({
-      container: this.container,
-      autoFit: true,
-      height: 500,
-    });
-
-    chart.coordinate("theta", {
-      radius: 0.75,
-      innerRadius: 0.5,
-    });
-
-    chart.data(data);
-
-    chart.scale("percent", {
-      formatter: (val) => {
-        val = val * 100 + "%";
-        return val;
-      },
-    });
-
-    // chart.tooltip(false);
-    chart.legend(false);
-    chart
-      .interval()
-      .adjust("stack")
-      .position("percent")
-      .color("item")
-      .style({
-        fillOpacity: 1,
-      })
-      .state({
-        active: {
-          style: (element) => {
-            const shape = element.shape;
-            return {
-              lineWidth: 10,
-              stroke: shape.attr("fill"),
-              strokeOpacity: shape.attr("fillOpacity"),
-            };
-          },
+  watch: {
+    sourceData(newVal, oldVal) {
+      if (newVal.length > 0) {
+        this.render(newVal);
+      }
+    },
+  },
+  mounted() {},
+  methods: {
+    render(data) {
+      if(this.chartInstance == null) {
+        this.chartInstance = new Chart({
+          container: this.container,
+          autoFit: true,
+          height: 500,
+        });
+      }
+      const dv = new DataView();
+      dv.source(data).transform({
+        type: "percent",
+        field: "count",
+        dimension: "item",
+        as: "percent",
+      });
+      this.chartInstance.coordinate("theta", {
+        radius: 0.75,
+        innerRadius: 0.5,
+      });
+      this.chartInstance.data(dv.rows);
+      this.chartInstance.scale("percent", {
+        formatter: (val) => {
+          val = val * 100 + "%";
+          return val;
         },
       });
-    chart.interaction("element-active");
-    chart.annotation().text({
-      content: ()=> `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+
+      // chart.tooltip(false);
+      this.chartInstance.legend(false);
+      this.chartInstance
+        .interval()
+        .adjust("stack")
+        .position("percent")
+        .color("item")
+        .style({
+          fillOpacity: 1,
+        })
+        .state({
+          active: {
+            style: (element) => {
+              const shape = element.shape;
+              return {
+                lineWidth: 10,
+                stroke: shape.attr("fill"),
+                strokeOpacity: shape.attr("fillOpacity"),
+              };
+            },
+          },
+        });
+      this.chartInstance.interaction("element-active");
+      this.chartInstance.annotation().text({
+        content: () => `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
                 <span>媒体总数</span>
                 <span style="font-family: DINEngschrift;">2052</span>
                 <div style="font-size: 14px;">
@@ -95,16 +106,17 @@ export default {
                     </span>
                 </div>
       </div>`,
-      offsetY: 15,
-    });
-    chart.render('svg');
+        offsetY: 15,
+      });
+      this.chartInstance.render();
+    },
   },
 };
 </script>
 
 <style scoped lang="scss">
 .idsuaus {
-    border-radius: unset;
+  border-radius: unset;
   flex-direction: column;
   align-items: center;
   justify-content: center;

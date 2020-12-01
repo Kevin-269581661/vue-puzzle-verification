@@ -204,7 +204,7 @@ export default {
         textAlign: "center",
       },
     });
-    chart.render("svg");
+    chart.render();
   },
 };
 </script>

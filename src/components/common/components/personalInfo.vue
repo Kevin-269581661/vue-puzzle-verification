@@ -18,7 +18,6 @@
         </div>
         <div class="line-vertical"></div>
         <div class="item-three">
-            
                 <home-link class="cell-group" :link="linkArr"></home-link>
         </div>
     </div>

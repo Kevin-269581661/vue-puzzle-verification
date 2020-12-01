@@ -1,8 +1,94 @@
 <template>
 	<div class="media_index">
 		<div class="ad_index_container">
-			<home-top :user-info="userInfo" :data-arr="dataArr" :honor-img="companyHonor"></home-top>
-			<div style="margin:24px 0;display:flex;">
+			<div class="index-top-row">
+				<div class="left-layout">
+					<personal-info :user-info="userInfo" :honor-img="companyHonor" :linkArr="linkArrNew"></personal-info>
+					<div class="card-group">
+						<el-row :gutter="24" style="margin-bottom: 24px;">
+							<el-col :span="8"><chart-card :cardData="cardData1"></chart-card></el-col>
+							<el-col :span="8"><chart-card :cardData="cardData2"></chart-card></el-col>
+							<el-col :span="8"><chart-card :cardData="cardData3"></chart-card></el-col>
+						</el-row>
+						<el-row :gutter="24">
+							<el-col :span="8"><chart-card :cardData="cardDataOther1"></chart-card></el-col>
+							<el-col :span="8"><chart-card :cardData="cardDataOther2"></chart-card></el-col>
+							<el-col :span="8"><chart-card :cardData="cardDataOther3"></chart-card></el-col>
+						</el-row>
+					</div>
+				</div>
+				<!-- 消息推送和应用市场 -->
+				<div class="right-board">
+					<message-and-app :appCenter="appCenter" @goToPage="goToPage"></message-and-app>
+				</div>
+			</div>
+			<el-row :gutter="24" class="index-row">
+				<!-- 媒体概况 -->
+				<el-col :span="12">
+					<index-custom-card>
+						<template slot="head">
+							媒体概况&nbsp
+							<el-tooltip popper-class="amount-tooltip" effect="dark" content="Top center" placement="top">
+								<ul slot="content">
+									<li style="line-height: 20px;">
+										签约额：均为合同金额，未扣除总部收益部分
+									</li>
+									<li style="line-height: 20px;">
+										全国单发单执行额：该执行额不以实际订单金额统计，而以拆单时的方案金额以公式计算获得
+									</li>
+									<li style="line-height: 20px;">
+										按周统计：指每周六至下周五为一个周
+									</li>
+									<li style="line-height: 20px;">
+										按月统计：指从1号至自然月底
+									</li>
+								</ul>
+								<img class="quesition-icon" src="../../assets/images/question_icon.png" />
+							</el-tooltip>
+							<el-radio-group v-model="isPoint" size="small" class="achievement-radio-group">
+								<el-radio-button :label="false">媒体</el-radio-button>
+								<el-radio-button :label="true">点位（面）</el-radio-button>
+							</el-radio-group>
+						</template>
+						<template slot="content">
+							<ring-chart container="ringChart" :sourceData="ringData[isPoint*1]"></ring-chart>
+							<div class="bottom-box">
+                                贵公司<span class="avtive">{{ringData[2][isPoint*1][0]}}</span>个媒体处于不可投状态，多于全国<span class="avtive">{{ringData[2][isPoint*1][1]}}</span>的公司，请尽快处理下吧！
+                            </div>
+						</template>
+					</index-custom-card>
+				</el-col>
+				<el-col :span="12">
+					<index-custom-card>
+						<template slot="head">
+							预锁概况
+						</template>
+						<template slot="content">
+							<el-table
+                                :data="preLockArr"
+                                max-height="460"
+								style="padding: 25px 25px 0;"
+                            >
+                                <el-table-column
+									prop="apName"
+                                    label="方案"
+                                    width="230">
+                                </el-table-column>
+                                <el-table-column
+                                    prop="dayDiffer"
+                                    label="预锁剩余天数"
+                                >
+                                    <template slot-scope="scope">
+										<mini-progress slot="reference" :target="0" :percentage="scope.row.dayDiffer/7*100" :value="scope.row.dayDiffer + '天'" :height="'20px'" :color="scope.row.dayDiffer>4?'#1890FF':(scope.row.dayDiffer>1?'#FAAD14':'#FF7875')"></mini-progress>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+						</template>
+					</index-custom-card>
+				</el-col>
+			</el-row>
+			<!-- <home-top :user-info="userInfo" :data-arr="dataArr" :honor-img="companyHonor"></home-top> -->
+			<!-- <div style="margin:24px 0;display:flex;">
 				<div style="width:66%;border: 1px solid #e5e6e9;">
 					<h2 class="h2_style">常用模块</h2>
 					<home-link :link="linkArr"></home-link>
@@ -27,10 +113,10 @@
 						</div>
 					</template>
 				</div>
-			</div>
-            <div class="app-center-item" id="appCenter">
+			</div> -->
+            <!-- <div class="app-center-item" id="appCenter"> -->
                 <!--isPlatform-->
-                <h2 class="h2_style"><span @click="goToPage()">应用中心 <i class="el-icon-arrow-right"></i></span></h2>
+                <!-- <h2 class="h2_style"><span @click="goToPage()">应用中心 <i class="el-icon-arrow-right"></i></span></h2>
                 <ul :style="{height:isSlideDown?'254px':'510px'}">
                     <li v-for="item in appCenter" @click="goToPage(item)">
                         <div class="item-left">
@@ -48,7 +134,7 @@
                     <span class="down" v-if="isSlideDown">展开 <i class="el-icon-d-arrow-left"></i> </span>
                     <span class="up" v-else>收起 <i class="el-icon-d-arrow-left"></i> </span>
                 </div>
-            </div>
+            </div> -->
 			<div style="margin:24px 0; background:#fff;padding-bottom: 24px;border: 1px solid #e5e6e9;">
 				<h2 class="h2_style flex_box">
 					<b>业绩指标</b>
@@ -183,7 +269,7 @@
 <script>
 import { Button, Message } from 'element-ui';
 import timeFormat from '../../commonFun/timeFormat.js';
-import homeTop from '../common/components/homeTop.vue';
+// import homeTop from '../common/components/homeTop.vue';
 import homeLink from '../common/components/homeLink.vue';
 import { api } from '../../api/api';
 import comcards from '../../commonFun/json/comcard.json';
@@ -192,20 +278,57 @@ import indexIsDateFirst from '../../commonFun/indexIsDateFirst.js';
 import noSearchResult from "../../components/common/components/noSearchResult.vue";
 import appCenter from '../../commonFun/json/appCenter.json';
 
+import personalInfo from '../common/components/personalInfo.vue';
+import messageAndApp from '../common/components/messageAndApp.vue';
+import chartCard from '../common/components/chartCard.vue';
+import indexCustomCard from '../common/components/indexCustomCard.vue';
+import ringChart from '../common/components/ringChart.vue';
+import miniProgress from '../common/components/miniProgress.vue';
 
 export default {
 	name: "media_index",
 	components:{
-		homeTop,
+		// homeTop,
 		homeLink,
 		noSearchResult,
+
+		personalInfo,
+		messageAndApp,
+		chartCard,
+		indexCustomCard,
+		ringChart,
+		miniProgress
 	},
 	data(){
 		return{
+			hasMpvgl: false,
+
 			isAllMedia: false,
 			isShowNum: false,
 			// 勋章弹出框
 			isShowMedal: false,
+			linkArrNew: [
+				{
+					imgurl: require('../../assets/images/editor.png'),
+					title: '导空位',
+					link: '',
+				},
+				{
+					imgurl: require('../../assets/images/media.png'),
+					title: '新建方案',
+					link: './media/createPlan',
+				},
+				{
+					imgurl: require('../../assets/images/media.png'),
+					title: '新建媒体',
+					link: './media/mediaInput',
+				},
+				{
+					imgurl: require('../../assets/images/media.png'),
+					title: '维护管理',
+					link: '',
+				},
+			],
 			linkArr:[
                 {
                     imgurl: require('../../assets/images/media.png'),
@@ -265,28 +388,28 @@ export default {
                 avator: require('../../assets/images/tvQNA_img3.jpg'),
 				endTime: '2018-06-09',
 			},
-			dataArr:[
-                {
-                    name: '资源总数',
-                    data: '3,042'
-                },
-                {
-                    name: '本月创建方案数',
-                    data: 22
-                },
-                {
-                    name: '本月发布订单数',
-                    data: 17
-                },
-                {
-                    name: '本月录单点位数',
-                    data: 437
-                },
-                {
-                    name:'禁用点位总数(面)',
-                    data:1
-                }
-			],
+			// dataArr:[
+            //     {
+            //         name: '资源总数',
+            //         data: '3,042'
+            //     },
+            //     {
+            //         name: '本月创建方案数',
+            //         data: 22
+            //     },
+            //     {
+            //         name: '本月发布订单数',
+            //         data: 17
+            //     },
+            //     {
+            //         name: '本月录单点位数',
+            //         data: 437
+            //     },
+            //     {
+            //         name:'禁用点位总数(面)',
+            //         data:1
+            //     }
+			// ],
 			// 勋章排名
 			medalInfo: {
 				point: 1,
@@ -360,7 +483,80 @@ export default {
 			companyHonor: [],
             // 应用中心
             appCenter: '',
-            isSlideDown: true,
+			isSlideDown: true,
+			
+			cardData1: {
+				type: 'bar',
+				title: '明日预锁到期方案',
+				tip: '数据实时更新，指明日将到期自动解锁的方案数量',
+				value: 0,
+				valueAlias: '方案个数',
+				compare: 0,
+				trendLabel: '同比上周',
+				data: []
+			},
+			cardData2: {
+				type: 'bar',
+				title: '本月发布订单',
+				tip: '数据实时更新，本月该媒介发布的订单数量',
+				value: 0,
+				valueAlias: '订单数',
+				compare: 0,
+				trendLabel: '月环比',
+				data: []
+			},
+			cardData3: {
+				type: 'bar',
+				title: '本月创建方案',
+				tip: '数据实时更新，本月该媒介协助创建的方案数量',
+				value: 0,
+				valueAlias: '方案数',
+				compare: 0,
+				trendLabel: '月环比',
+				data: []
+			},
+			cardDataOther1: {
+				title: '社区总数',
+				tip: '数据截止至昨日，社区总数数据来源为统计周期内新增的社区数量总和',
+				value: 0,
+				valueAlias: '新增小区数量',
+				compare: 0,
+				trendLabel: '同比去年',
+				data: []
+			},
+			cardDataOther2: {
+				title: '在刊点位',
+				tip: '数据实时更新，当前正在被投放的点位数量',
+				value: 0,
+				valueAlias: '在刊点位数量',
+				compare: 0,
+				trendLabel: '同比上周',
+				data: [],
+				formatter: (val)=>{return val.substr(5)}
+			},
+			cardDataOther3: {
+				title: '禁用点位',
+				tip: '数据实时更新，公司禁用的总点位数',
+				value: 0,
+				valueAlias: '禁用点位数量',
+				compare: 0,
+				trendLabel: '同比上周',
+				data: [],
+				formatter: (val)=>{return val.substr(5)}
+			},
+			// 媒体概况 媒体和点位切换
+			isPoint: false,
+			// 媒体概况饼图数据
+			ringData: [
+				[], 
+				[], 
+				[
+					['0', '0%'],
+					['0', '0%']
+				]
+			],
+			// 媒介预锁概况表格
+			preLockArr: []
 		}
 	},
 	methods:{
@@ -516,7 +712,7 @@ export default {
 			return arr[value];
 		},
 		getRank(type, value){
-			console.log('type---', type, value);
+			// console.log('type---', type, value);
 			let rank = 0;
 			let oldArr = [];
 			if(type == 1){
@@ -849,7 +1045,217 @@ export default {
                     // console.log('UserStaticReport---',res.data);
                 })
             });
-        }
+		},
+		// 首页报表接口
+		allReportApi() {
+			let params = {
+				uid: this.sessionData.uID,
+				token: this.sessionData.token
+			}
+			// 媒介的明日预锁到期卡片 /report /homepage/getMDUnlockPlanCardReport
+			api.getApi(this.apiVar.report + '/homepage/getMDUnlockPlanCardReport',params).then(res=>{
+				if (res.data.SysCode === 200200) {
+					let temp = res.data.data;
+					Object.assign(this.cardData1, {
+						value: temp.unlockPlanCnt,
+						compare: temp.unlockPlanIncrRate
+					})
+				} else {
+					this.messageFun('warning', res.data.MSG)
+				}
+			}).catch(err=>{
+				console.log('err', err)
+			}).finally(_=>{
+			})
+			// 媒介的发布订单和创建方案卡片 /report /homepage/getMDAdPlanReport
+			api.getApi(this.apiVar.report + '/homepage/getMDAdPlanReport',params).then(res=>{
+				if (res.data.SysCode === 200200) {
+					let temp = res.data.data;
+					Object.assign(this.cardData2, {
+						value: temp.totalOrderCnt,
+						compare: temp.orderIncrRate
+					})
+					Object.assign(this.cardData3, {
+						value: temp.totalFanganCnt,
+						compare: temp.fanganIncrRate
+					})
+				} else {
+					this.messageFun('warning', res.data.MSG)
+				}
+			}).catch(err=>{
+				console.log('err', err)
+			}).finally(_=>{
+			})
+			// 媒介的社区总数卡片 /report /homepage/getMDResCntReport
+			api.getApi(this.apiVar.report + '/homepage/getMDResCntReport',params).then(res=>{
+				if (res.data.SysCode === 200200) {
+					let temp = res.data.data;
+					Object.assign(this.cardDataOther1, {
+						value: temp.totalResCnt,
+						compare: temp.resIncrRate
+					})
+				} else {
+					this.messageFun('warning', res.data.MSG)
+				}
+			}).catch(err=>{
+				console.log('err', err)
+			}).finally(_=>{
+			})
+			// 媒介的在刊点位和禁止点位卡片 /report /homepage/getMDPointReport
+			api.getApi(this.apiVar.report + '/homepage/getMDPointReport',params).then(res=>{
+				if (res.data.SysCode === 200200) {
+					let temp = res.data.data;
+					Object.assign(this.cardDataOther2, {
+						value: temp.onPubLabCnt,
+						compare: temp.onPubIncrRate
+					})
+					Object.assign(this.cardDataOther3, {
+						value: temp.banLabCnt,
+						compare: temp.banIncrRate
+					})
+				} else {
+					this.messageFun('warning', res.data.MSG)
+				}
+			}).catch(err=>{
+				console.log('err', err)
+			}).finally(_=>{
+			})
+			// 媒介的卡片的周报和日报数据 /report /homepage/getMDWeekReport
+			api.getApi(this.apiVar.report + '/homepage/getMDWeekReport',params).then(res=>{
+				if (res.data.SysCode === 200200) {
+					if(Array.isArray(res.data.data.weekDataList)) {
+						let weekDataList = res.data.data.weekDataList,
+							tempcCardData1 = [],
+							tempcCardData2 = [],
+							tempcCardData3 = [],
+							tempcCardDataOther1 = [];
+						weekDataList.forEach((item, index)=>{
+							tempcCardData1.push({
+								week: `第${index+1}周`,
+								dateStr: item.weekStart + item.weekEnd,
+								value: item.unlockCnt || 0
+							})
+							tempcCardData2.push({
+								week: `第${index+1}周`,
+								dateStr: item.weekStart + item.weekEnd,
+								value: item.orderCnt || 0
+							})
+							tempcCardData3.push({
+								week: `第${index+1}周`,
+								dateStr: item.weekStart + item.weekEnd,
+								value: item.fanganCnt || 0
+							})
+							tempcCardDataOther1.push({
+								week: `第${index+1}周`,
+								name: '新增社区',
+								dateStr: item.weekStart + item.weekEnd,
+								value: item.weekBarrierCnt || 0
+							})
+						})
+						Object.assign(this.cardData1, {
+							data: tempcCardData1,
+						})
+						Object.assign(this.cardData2, {
+							data: tempcCardData2,
+						})
+						Object.assign(this.cardData3, {
+							data: tempcCardData3,
+						})
+						Object.assign(this.cardDataOther1, {
+							data: tempcCardDataOther1,
+						})
+					}
+					if(Array.isArray(res.data.data.dayDataList)) {
+						let dayDataList = res.data.data.dayDataList,
+							tempcCardDataOther2 = [],
+							tempcCardDataOther3 = [];
+						dayDataList.forEach((item, index)=>{
+							tempcCardDataOther2.push({
+								week: item.dateId,
+								dateStr: item.dateId,
+								value: item.onPubLabCnt || 0
+							})
+							tempcCardDataOther3.push({
+								week: item.dateId,
+								dateStr: item.dateId,
+								value: item.banLabCnt || 0
+							})
+						})
+						Object.assign(this.cardDataOther2, {
+							data: tempcCardDataOther2,
+						})
+						Object.assign(this.cardDataOther3, {
+							data: tempcCardDataOther3,
+						})
+					}
+				} else {
+					this.messageFun('warning', res.data.MSG)
+				}
+			}).catch(err=>{
+				console.log('err', err)
+			}).finally(_=>{
+				
+			})
+			// 媒介的媒体概况 /report /homepage/getMDMediaReport
+			api.getApi(this.apiVar.report + '/homepage/getMDMediaReport', params).then(res=>{
+				if (res.data.SysCode === 200200) {
+					/* "banLabCnt" 禁止的点位数
+					"banMediaCnt" 禁止的媒体数
+					"normalLabCnt" 正常的点位数
+					"normalMediaCnt" 正常的媒体数
+					"installLabCnt" 待安装的点位数
+					"installMediaCnt" 待安装的媒体数
+					"repairLabCnt" 待修理的点位数
+					"repairMediaCnt" 待修理的媒体数
+					"demolishLabCnt" 拆除的点位数
+					"demolishMediaCnt" 拆除的媒体数
+					"offPubMediaCnt" 不可投的媒体数
+					"offPubLabCnt" 不可投的点位数
+					"offPubRank" 排名百分比 */
+					let temp = res.data.data;
+					this.ringData = [
+						[
+							{ item: "正常", count: temp.normalMediaCnt+1 },
+							{ item: "待安装", count: temp.installMediaCnt+1 },
+							{ item: "待维修", count: temp.repairMediaCnt+1 },
+							{ item: "禁用", count: temp.banMediaCnt+1 }
+						],
+						[
+							{ item: "正常", count: temp.normalLabCnt+10 },
+							{ item: "待安装", count: temp.installLabCnt+1 },
+							{ item: "待维修", count: temp.repairLabCnt+1 },
+							{ item: "禁用", count: temp.banLabCnt+1 }
+						],
+						[
+							[temp.offPubMediaCnt, temp.offPubRank+'%'],
+							[temp.offPubLabCnt, temp.offPubRank+'%']
+						]
+					];
+				} else {
+					this.messageFun('warning', res.data.MSG)
+				}
+			}).catch(err=>{
+				console.log('媒体概况', err)
+			}).finally(_=>{
+			})
+			// 媒介的预锁概况 /report /homepage/getMDUnlockPlanReport
+			api.getApi(this.apiVar.report + '/homepage/getMDUnlockPlanReport',params).then(res=>{
+				if (res.data.SysCode === 200200) {
+					// this.preLockArr = res.data.data || [{
+					this.preLockArr = [{
+						"apID": 1111,  //方案id
+						"apName": "1111", //方案名称
+						"dayDiffer": 1 //预锁到期天数
+					}];
+					
+				} else {
+					this.messageFun('warning', res.data.MSG)
+				}
+			}).catch(err=>{
+				console.log('err', err)
+			}).finally(_=>{
+			})
+		}
 	},
 	mounted(){
 		this.getSession();
@@ -866,11 +1272,126 @@ export default {
         this.appCenter = appCenter
         this.uploadEvent(1)
 		// this.getLinePer();
+		this.allReportApi()
 	},
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+/** 新增*/
+    .index-top-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        .left-layout {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            margin-right: 24px;
+            .card-group {
+                position: relative;
+                height: 428px;
+                width: 100%;
+                margin-top: 24px;
+            }
+        }
+        .right-board {
+            width: 312px;
+            height: 582px;
+            background: rgba(255, 255, 255, 1);
+            border: 1px solid #E6E7E9;
+        }
+    }
+    .index-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        & > div {
+            flex: 1;
+        }
+        
+        .achievement-radio-group {
+            margin-left: auto;
+            /deep/ .el-radio-button__inner {
+                width: 88px;
+            }
+        }
+        .item-list {
+            height: 100%;
+            padding: 16px 24px;
+            box-sizing: border-box;
+            .item {
+                display: flex;
+                align-items: center;
+                margin: 9px 0;
+                .progress {
+                    flex: 1;
+                    cursor: pointer;
+                }
+                .label {
+                    width: 56px;
+                    height: 20px;
+                    margin-right: 8px;
+                    line-height: 20px;
+                    font-size: 14px;
+                    font-family: PingFangSC-Regular, PingFang SC;
+                    font-weight: 400;
+                    color: rgba(0, 0, 0, 0.65);
+                }
+            }
+        }
+    }
+	.bottom-box {
+        height: 48px;
+        line-height: 48px;
+        text-align: center;
+        background: #F8F8F8;
+        border-radius: 2px;
+        font-size: 16px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.85);
+        .avtive {
+            color: #1890FF;
+        }
+    }
+    .pop-box {
+        border-radius: 2px;
+        line-height: 16px;
+        font-size: 12px;
+        font-weight: 400;
+        font-family: PingFangSC-Regular, PingFang SC;
+        .pop-title {
+            display: flex;
+            color: rgba(0, 0, 0, 0.85);
+            .target-btn {
+                margin: 0 0 2px auto;
+                color: rgba(24, 144, 255, 1);
+                cursor: pointer;
+            }
+            .bottom-btn {
+                width: 64px;
+                height: 24px;
+                line-height: 24px;
+                margin: 8px auto 2px auto;
+                border: 1px solid #1890FF;
+                border-radius: 2px;
+                text-align: center;
+                font-size: 12px;
+                color: rgba(24, 144, 255, 1);
+                cursor: pointer;
+            }
+        }
+        .pop-item {
+            margin: 2px 0;
+            color: rgba(0, 0, 0, 0.65);
+        }
+    }
+ /**新增 */
 .ad_index_container{
 	margin: 24px 64px;
 	height: auto;

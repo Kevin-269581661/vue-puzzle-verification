@@ -56,7 +56,7 @@
         :padding="[0, 'auto', 'auto', 'auto']"
       >
         <v-axis dataKey="value" :show="false"></v-axis>
-        <v-axis dataKey="week" :tickLine="{length: -5}" :label="{textStyle: {fill: 'rgb(0, 0, 0)', opacity: 0.45}}"></v-axis>
+        <v-axis dataKey="week" :tickLine="{length: -5}" :label="{formatter: cardData.formatter, textStyle: {fill: 'rgb(0, 0, 0)', opacity: 0.45}}"></v-axis>
         <v-tooltip :shared="false" :hideMarkers="false" />
         <v-smooth-line
           position="week*value"
@@ -132,7 +132,6 @@ export default {
     };
   },
   mounted(){
-    console.log('-----', this.cardData)
   },
   methods: {
     mountedCallback() {

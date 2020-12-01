@@ -1,137 +1,174 @@
 <template>
-  <div>
-    <v-chart renderer='svg' padding="auto" :forceFit="true" :height="height" :data="data" :scale="scale">
-      <v-tooltip :showTitle="false" :itemTpl="itemTpl" />
-      <v-coord type="theta" :radius="0.62" />
-      <v-pie
-        position="percent"
-        :color="colorInner"
-        :label="labelInner"
-        :vStyle="styleInner"
-        :tooltip="tooltip"
-        :onMouseMove="clickSeries"
-        :onMouseLeave="mouseLeaveSeriesInner"
-      />
-      <v-view :data="viewData" :scale="scale">
-        <v-coord type="theta" :radius="1" :innerRadius="0.66 / 1" />
-        <v-pie
-          position="percent"
-          :color="color"
-          :label="label"
-          :vStyle="style"
-          :tooltip="tooltip"
-          :active="true"
-          :onMouseMove="clickSeries"
-          :onMouseLeave="mouseLeaveSeries"
-        />
-      </v-view>
-    </v-chart>
-  </div>
+  <div id="nestPie"></div>
 </template>
 
 <script>
-const DataSet = require("@antv/data-set");
-
-const sourceData = [
-  { value: 251, type: "大事例一", name: "子事例一" },
-  { value: 1048, type: "大事例一", name: "子事例二" },
-  { value: 610, type: "大事例二", name: "子事例三" },
-  { value: 335, type: "大事例二", name: "子事例四" },
-  { value: 250, type: "大事例二", name: "子事例五" },
-];
-
-const dv = new DataSet.View().source(sourceData);
-dv.transform({
-  type: "percent",
-  field: "value",
-  dimension: "type",
-  as: "percent",
-});
-const data = dv.rows;
-// console.log(data);
-
-const viewDv = new DataSet.View().source(sourceData);
-viewDv.transform({
-  type: "percent",
-  field: "value",
-  dimension: "name",
-  as: "percent",
-});
-const viewData = viewDv.rows;
-// console.log(viewData);
-const scale = {
-  dataType: "percent",
-  formatter: ".2%",
-};
-
-const itemTpl =
-  '<li><span style="background-color:{color};" class="g2-tooltip-marker"></span>{name}: {value}</li>';
-
-const style = {
-  lineWidth: 1,
-  stroke: "#fff",
-  fillOpacity: .75
-};
-
-const styleInner = {
-  lineWidth: 1,
-  stroke: "#fff",
-  fillOpacity: 1
-};
-
-const label = ["name", { offset: -35, autoRotate: false, textStyle: { textAlign: 'center', fontSize: '12px', fill: '#FFFFFF', lineHeight: '17px', fontFamily: 'PingFangSC-Regular, PingFang SC' } }];
-const labelInner = ["type", { offset: -65, autoRotate: false, textStyle: { textAlign: 'center', fontSize: '12px', fill: '#FFFFFF', lineHeight: '17px', fontFamily: 'PingFangSC-Regular, PingFang SC' } }];
-
-const tooltip = [
-  "name*percent",
-  (item, percent) => {
-    percent = (percent * 100).toFixed(2) + "%";
-    return {
-      name: item,
-      value: percent,
-    };
-  },
-];
-
-const color = [
-  "name",
-  ["rgba(24, 144, 255)", "rgba(24, 144, 255)", "rgba(93, 112, 146)", "rgba(250, 173, 20)", "rgba(250, 173, 20)"],
-];
-const colorInner = [
-    "type",
-    ["rgba(24, 144, 255, 1)", "rgba(250, 173, 20, 1)"],
-]
+import { DataView } from "@antv/data-set";
+import { Chart } from "@antv/g2";
 
 export default {
   name: "nestPieChart",
   components: {},
-  props: {},
-  data() {
-    return {
-      data,
-      scale,
-      viewData,
-      height: 406,
-      itemTpl,
-      tooltip,
-      color,
-      colorInner,
-      label,
-      labelInner,
-      style,
-      styleInner
-    };
+  props: {
+    sourceData: {
+      type: Array,
+      required: true,
+    },
   },
-  methods: {
-      clickSeries(ev, chart) {
-        Object.assign(ev.shape._attrs, {lineWidth: 10, stroke: ev.shape._attrs.fill, strokeStyle: ev.shape._attrs.fill, fillOpacity: 1})
-      },
-      mouseLeaveSeries(ev, chart) {
-        Object.assign(ev.shape._attrs, {lineWidth: 1, stroke: '#fff',  strokeStyle: '#fff'})
-      },
-      mouseLeaveSeriesInner(ev, chart) {
-        Object.assign(ev.shape._attrs, {lineWidth: 1, stroke: '#fff',  strokeStyle: '#fff', fillOpacity: .75})
+  data() {
+    return {};
+  },
+  watch: {
+    sourceData(newVal, oldVal) {
+      if (newVal.length > 0) {
+        this.render(newVal);
       }
+    },
+  },
+  mounted() {},
+  methods: {
+    render(data) {
+      // 通过 DataSet 计算百分比
+      const dv = new DataView();
+      dv.source(data).transform({
+        type: "percent",
+        field: "value",
+        dimension: "type",
+        as: "percent",
+      });
+      const chart = new Chart({
+        container: "nestPie",
+        autoFit: true,
+        height: 500,
+        padding: [15, 0],
+      });
+      chart.data(dv.rows);
+      chart.scale({
+        percent: {
+          formatter: (val) => {
+            val = (val * 100).toFixed(2) + "%";
+            return val;
+          },
+        },
+      });
+      chart.coordinate("theta", {
+        radius: 0.59,
+      });
+      chart.tooltip({
+        showTitle: false,
+        showMarkers: false,
+      });
+      chart.legend(false);
+      chart
+        .interval()
+        .adjust("stack")
+        .position("percent")
+        .color("type", ["rgb(24, 144, 255)", "rgb(250, 173, 20)"])
+        .label("type", {
+          offset: -65,
+          autoRotate: false,
+          textStyle: {
+            textAlign: "center",
+            fontSize: "12px",
+            fill: "#FFFFFF",
+            lineHeight: "17px",
+            fontFamily: "PingFangSC-Regular, PingFang SC",
+          },
+        })
+        .tooltip("type*percent", (item, percent) => {
+          percent = (percent * 100).toFixed(2) + "%";
+          return {
+            name: item,
+            value: percent,
+          };
+        })
+        .style({
+          fillOpacity: 1,
+        })
+        .state({
+          active: {
+            style: (element) => {
+              const shape = element.shape;
+              return {
+                lineWidth: 10,
+                stroke: shape.attr("fill"),
+                strokeOpacity: shape.attr("fillOpacity"),
+              };
+            },
+          },
+        });
+
+      const outterView = chart.createView();
+      const dv1 = new DataView();
+      dv1.source(data).transform({
+        type: "percent",
+        field: "value",
+        dimension: "name",
+        as: "percent",
+      });
+
+      outterView.data(dv1.rows);
+      outterView.scale({
+        percent: {
+          formatter: (val) => {
+            val = (val * 100).toFixed(2) + "%";
+            return val;
+          },
+        },
+      });
+      outterView.coordinate("theta", {
+        innerRadius: 0.66 / 1,
+        radius: 1,
+      });
+      outterView
+        .interval()
+        .adjust("stack")
+        .position("percent")
+        .color("name", [
+          "rgb(24, 144, 255)",
+          "rgb(24, 144, 255)",
+          "rgb(93, 112, 146)",
+          "rgb(250, 173, 20)",
+          "rgb(250, 173, 20)",
+        ])
+        .label("name", {
+          offset: -35,
+          autoRotate: false,
+          textStyle: {
+            textAlign: "center",
+            fontSize: "12px",
+            fill: "#FFFFFF",
+            lineHeight: "17px",
+            fontFamily: "PingFangSC-Regular, PingFang SC",
+          },
+        })
+        .tooltip("name*percent", (item, percent) => {
+          percent = (percent * 100).toFixed(2) + "%";
+          return {
+            name: item,
+            value: percent,
+          };
+        })
+        .style({
+          fillOpacity: 1,
+        })
+        .state({
+          active: {
+            style: (element) => {
+              const shape = element.shape;
+              return {
+                lineWidth: 10,
+                stroke: shape.attr("fill"),
+                strokeOpacity: shape.attr("fillOpacity"),
+              };
+            },
+          },
+        });
+
+      chart.interaction("element-active");
+
+      chart.render();
+    },
   },
   mounted() {},
 };
@@ -142,18 +179,5 @@ export default {
   font-family: "Helvetica Neue", Helvetica, Arial, "PingFang ",
     "Hiragino Sans GB" "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei",
     sans-serif;
-}
-li {
-}
-%flex-row-center {
-  display: flex;
-  align-items: center;
-  flex-flow: row nowrap;
-}
-%flex-column-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-flow: column nowrap;
 }
 </style>

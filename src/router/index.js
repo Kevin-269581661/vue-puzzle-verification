@@ -16,6 +16,7 @@ const NotFountPage = () => import('../components/common/NotFoundPage.vue')
 const admin = () => import('../components/admin/adminCommon.vue')
 const SMqinlinzk = () => import('../components/admin/SMqinlinzk.vue')
 const ADlimitList = () => import('../components/admin/ADlimitList.vue')
+const notice = () => import('../components/admin/notice.vue')
 
 // 空点导出
 const emptyPoint = () => import('../components/common/downEmptyPoint.vue')
@@ -139,6 +140,7 @@ export default new Router({
                 {path: '/admin/companyList', component: companyList},
                 {path: '/admin/myInfo', component: myInfo},
                 {path: '/admin/ADlimitList', component: ADlimitList},
+                {path: '/admin/notice', component: notice},
             ]
         },
         //超级运营

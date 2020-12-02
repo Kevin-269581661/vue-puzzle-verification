@@ -69,7 +69,7 @@
                     <template slot="content">
                         <ul class="item-list">
                             <li class="item" v-for="(rankItem, index) in rankListArr" :key="index">
-                                <span class="label">{{rankItem.name}}</span>
+                                <span :title="rankItem.realName" class="label">{{rankItem.realName}}</span>
                                 <el-popover
                                     popper-class="index-custom-popper"
                                     class="progress"
@@ -80,7 +80,7 @@
                                 >
                                     <div class="pop-box">
                                         <div class="pop-title">
-                                            <em>{{rankItem.name}}</em>
+                                            <em>{{rankItem.realName}}</em>
                                             <span class="target-btn" @click="setTarget(rankItem)">设置目标</span>
                                         </div>
                                         <ul>
@@ -143,7 +143,7 @@
                                 贵公司<span class="avtive">{{extendData[0]}}</span>位沉默客户待挖掘，多于全国<span class="avtive">{{extendData[1]+'%'}}</span>的公司，请加把劲！
                             </div>
                         </el-col>
-                        <el-col :span="12">
+                        <el-col :span="12" style="align-self: flex-start;">
                             <el-table
                                 :data="clientArr"
                                 max-height="460"
@@ -538,7 +538,7 @@
         </el-dialog>
         <!-- 设置业绩目标 -->
         <el-dialog :width="'288px'" :show-close="false" :visible.sync="showSetTarget" custom-class="target-dialog">
-            <span slot="title">设置{{currentEditSale.name || ''}}业绩目标</span>
+            <span slot="title">设置{{currentEditSale.realName || ''}}业绩目标</span>
             <el-form>
                 <el-form-item>
                     <el-input-number size="small" :precision="2" :controls="false" :min="0" v-model="targetVaule">
@@ -1179,45 +1179,6 @@
                 }).finally(_=>{
                     
                 })
-
-                // 媒介的媒体概况 /report /homepage/getMDMediaReport
-                api.getApi(this.apiVar.report + '/homepage/getMDMediaReport', params).then(res=>{
-                    if (res.data.SysCode === 200200) {
-                        /* "banLabCnt" 禁止的点位数
-                        "banMediaCnt" 禁止的媒体数
-                        "normalLabCnt" 正常的点位数
-                        "normalMediaCnt" 正常的媒体数
-                        "installLabCnt" 待安装的点位数
-                        "installMediaCnt" 待安装的媒体数
-                        "repairLabCnt" 待修理的点位数
-                        "repairMediaCnt" 待修理的媒体数
-                        "demolishLabCnt" 拆除的点位数
-                        "demolishMediaCnt" 拆除的媒体数
-                        "offPubMediaCnt" 不可投的媒体数
-                        "offPubLabCnt" 不可投的点位数
-                        "offPubRank" 排名百分比 */
-                        let temp = res.data.data;
-                        this.ringData = [
-                            { item: "正常", count: temp.normalLabCnt, percent: 0.4 },
-                            { item: "待安装", count: temp.normalLabCnt, percent: 0.21 },
-                            { item: "待维修", count: temp.normalLabCnt, percent: 0.17 },
-                            { item: "禁用", count: temp.normalLabCnt, percent: 0.21 },
-                        ];
-                        // this.clientArr = temp.customerPriceList;
-                    } else {
-                        this.messageFun('warning', res.data.MSG)
-                    }
-                }).catch(err=>{
-                    console.log('媒体概况', err)
-                }).finally(_=>{
-                    this.ringData = [
-                        { item: "事例一", count: 40, percent: 0.4 },
-                        { item: "事例二", count: 21, percent: 0.21 },
-                        { item: "事例三", count: 17, percent: 0.17 },
-                        { item: "事例四", count: 13, percent: 0.13 },
-                        { item: "事例五", count: 9, percent: 0.09 },
-                    ]
-                })
             },
             
             // 管理员的业绩排行 /report /homepage/getSMAchievementReport
@@ -1237,7 +1198,6 @@
                     if (res.data.SysCode === 200200) {
                         let temp = res.data.data;
                         this.rankListArr = temp.userList
-                        // console.log('rankListArr', this.rankListArr)
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }
@@ -2496,6 +2456,9 @@
                 .label {
                     width: 56px;
                     height: 20px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                     margin-right: 8px;
                     line-height: 20px;
                     font-size: 14px;

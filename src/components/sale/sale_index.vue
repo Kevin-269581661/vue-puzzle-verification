@@ -54,7 +54,7 @@
                                     label="合作金额"
                                 >
                                     <template slot-scope="scope">
-                                        <mini-progress slot="reference" :target="0" :percentage="scope.row.priceRate" :value="scope.row.totalAdPrice" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                        <mini-progress slot="reference" :target="0" :percentage="scope.row.rate*1" :value="scope.row.totalAdPrice" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
                                     </template>
                                 </el-table-column>
                             </el-table>
@@ -472,7 +472,7 @@
                         obj.url = obj.value;
                         result.push(obj);
                     }
-                    console.log('result----cards', result);
+                    // console.log('result----cards', result);
                     this.companyHonor = result;
                 }
             },
@@ -491,7 +491,7 @@
                     token: this.sessionData.token
                 };
                 api.getApi(this.apiVar.report + '/GetMonthRankOfBD', info).then(res => {
-                    console.log(res.data);
+                    // console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         let resinfo = res.data.data;
                         let result = [];
@@ -503,7 +503,7 @@
                             };
                             result.push(obj);
                         }
-                        console.log('result----', result);
+                        // console.log('result----', result);
                         if (result.length == 3) {
                             this.rankInfo = result;
                         } else if (result.length == 1) {
@@ -554,7 +554,7 @@
                     token: this.sessionData.token,
                 };
                 api.getApi(this.apiVar.report + '/GetCountMessage', info).then(res => {
-                    console.log(res);
+                    // console.log(res);
                     if (res.data.SysCode == 200200) {
                         let resinfo = res.data.data;
                         this.saleTalk.content = resinfo.countMessage;
@@ -573,7 +573,7 @@
                     token: this.sessionData.token,
                 };
                 api.getApi(this.apiVar.report + '/GetHomePageInfoOfBD', info).then(res => {
-                    console.log(res.data);
+                    // console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         let resInfo = res.data.data;
                         this.dataArr[0].data = resInfo.customerCount;
@@ -595,7 +595,7 @@
                     token: this.sessionData.token,
                 };
                 api.getApi(this.apiVar.report + '/GetTargetOfYear', info).then(res => {
-                    console.log(res.data);
+                    // console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         let target = res.data.data.targetOfYear / 1000000;
                         let oneTarget = target / 4;
@@ -621,7 +621,7 @@
                     token: this.sessionData.token,
                 };
                 api.getApi(this.apiVar.report + '/GetApTotalSoFarOfBD', info).then(res => {
-                    console.log(res.data);
+                    // console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         let resinfo = res.data.data;
                         this.saleInfo = {
@@ -634,11 +634,10 @@
                         } else {
                             price = this.saleInfo.price;
                         }
-                        console.log(this.saleInfo, 'fdalfda----');
+                        // console.log(this.saleInfo, 'fdalfda----');
                         this.resizeRank(price);
                         // 实时监听body宽度变化
                         window.addEventListener("resize", () => {
-                            console.log(1111);
                             this.resizeRank(price);
                         });
                     } else {
@@ -825,7 +824,7 @@
                         }
                         params.push(obj)
                     }
-                    console.log(params)
+                    // console.log(params)
                     api.postApi(this.apiVar.UCAPI+'/UserStaticReport',{userStatics:JSON.stringify(params)}).then(res=>{
                         // console.log('UserStaticReport---',res.data);
                     })
@@ -902,8 +901,8 @@
                 }).finally(_=>{
                     
                 })
-                // 销售业绩目标 /report /homepage/getBDActiveCustomerReport
-                api.getApi(this.apiVar.report + '/homepage/getBDActiveCustomerReport', params).then(res=>{
+                // 销售业绩目标 /report /homepage/getBDAchievementReport
+                api.getApi(this.apiVar.report + '/homepage/getBDAchievementReport', params).then(res=>{
                     if (res.data.SysCode === 200200) {
                         /* "uID" 销售id
                         "totalPrice" 销售本业完成的金额
@@ -929,14 +928,6 @@
                 api.getApi(this.apiVar.report + '/homepage/getBDActiveCustomerReport',params).then(res=>{
                     if (res.data.SysCode === 200200) {
                         this.clientArr = res.data.data || []
-                        // this.clientArr = [{
-                        //     "cID": 32,	//客户id
-                        //     "totalAdPrice": 1111.0,	//合作过的金额
-                        //     "dayDiff": 13,	//沉默天数 
-                        //     "priceRate": 50,
-                        //     "cname": "壹媒介（上海）广告有限公司北京分公司" //客户名字
-                        // }];
-                        
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }

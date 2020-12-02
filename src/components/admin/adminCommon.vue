@@ -28,8 +28,9 @@
             <el-submenu index="7" :show-timeout="80" popper-class="submenu">
                 <template slot="title">系统管理</template>
                 <el-menu-item index="/admin/ADlimitList">广告限制</el-menu-item>
+                <el-menu-item index="/admin/notice">公告通知</el-menu-item>
             </el-submenu>
-            <el-submenu index="6" class="user_center" popper-class="user_center_item" show-timeout="80">
+            <el-submenu index="6" class="user_center" popper-class="user_center_item" :show-timeout="80">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">
                     {{userName}}
@@ -120,7 +121,6 @@
             // 获取用户名称和角色
             getUserName() {
                 this.sessionData = sessFun.getSess();
-                console.log('this.sessionData', this.sessionData)
                 if (this.sessionData !== null && this.sessionData !== undefined) {
                     if (this.sessionData.uType !== 'SA') {
                         this.$message({
@@ -147,7 +147,7 @@
         },
         computed:{
             isActive(val) {
-                console.log(val, 'isActive', this.$route.path)
+                // console.log(val, 'isActive', this.$route.path)
                 let path = this.$route.path
                 let routePath = ''
                 if (path.includes('/createAccount')) {

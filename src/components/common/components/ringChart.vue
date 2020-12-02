@@ -84,6 +84,104 @@ export default {
         });
       this.chartInstance.interaction("element-active");
       this.chartInstance.annotation().text({
+        position: ['50%', '50%'],
+        content: '媒体总数',
+        style: {
+          fontSize: 16,
+          fill: 'rgba(0, 0, 0, 0.85)',
+          textAlign: 'center'
+        },
+        offsetY: -50,
+      });
+      let temp = (this.sourceData || []).reduce((total, num)=>{
+        return total + num.count*1
+      }, 0);
+      this.chartInstance.annotation().text({
+        position: ['50%', '50%'],
+        content: temp,
+        style: {
+          fontSize: 48,
+          fill: "rgba(0, 0, 0, 0.85)",
+          fontWeight: 500,
+          textAlign: "center",
+          fontFamily: "DINEngschrift",
+        },
+        offsetY: -10,
+      });
+      this.chartInstance.annotation().text({
+        position: ['50%', '55%'],
+        content: '・',
+        style: {
+          fontSize: 40,
+          fill: "#1890FF",
+          textAlign: "center",
+        },
+        offsetX: -65
+      });
+      this.chartInstance.annotation().text({
+        position: ['50%', '55%'],
+        content: '正常',
+        style: {
+          fontSize: 10,
+          fill: "rgba(0, 0, 0, 0.65)"
+        },
+        offsetX: -45
+      });
+      this.chartInstance.annotation().text({
+        position: ['50%', '55%'],
+        content: '・',
+        style: {
+          fontSize: 40,
+          fill: "#1890FF",
+        },
+        offsetX: -25
+      });
+      this.chartInstance.annotation().text({
+        position: ['50%', '55%'],
+        content: '待安装',
+        style: {
+          fontSize: 12,
+          fill: "rgba(0, 0, 0, 0.65)",
+        },
+        offsetX: -5
+      });
+      this.chartInstance.annotation().text({
+        position: ['50%', '55%'],
+        content: '・',
+        style: {
+          fontSize: 40,
+          fill: "#FAAD14",
+        },
+        offsetX: 15
+      });
+      this.chartInstance.annotation().text({
+        position: ['50%', '55%'],
+        content: '待维修',
+        style: {
+          fontSize: 12,
+          fill: "rgba(0, 0, 0, 0.65)"
+        },
+        offsetX: 35
+      });
+      this.chartInstance.annotation().text({
+        position: ['50%', '55%'],
+        content: '・',
+        style: {
+          fontSize: 40,
+          fill: "#FF7875",
+        },
+        offsetX: 50
+      });
+      this.chartInstance.annotation().text({
+        position: ['50%', '55%'],
+        content: '禁用',
+        style: {
+          fontSize: 12,
+          fill: "rgba(0, 0, 0, 0.65)",
+        },
+        offsetX: 65
+      });
+      // this.chartInstance.annotation().text({
       //   content: () => `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
       //           <span>媒体总数</span>
       //           <span style="font-family: DINEngschrift;">2052</span>
@@ -106,8 +204,8 @@ export default {
       //               </span>
       //           </div>
       // </div>`,
-        offsetY: 15,
-      });
+        // offsetY: 15,
+      // });
       this.chartInstance.render();
     },
   },

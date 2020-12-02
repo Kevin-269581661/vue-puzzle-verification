@@ -1069,7 +1069,7 @@
                 }).finally(_=>{
                 })
                 // 管理员的所有卡片过去十三周的数据 /report /homepage/getSMOnPubRateReport
-                api.getApi(this.apiVar.report + '/homepage/getSMOnPubRateReport',params).then(res=>{
+                api.getApi(this.apiVar.report + '/homepage/getSMWeekCardReport',params).then(res=>{
                     if (res.data.SysCode === 200200 && Array.isArray(res.data.data)) {
                         let temp = res.data.data;
                         let tempcCardData1 = [],

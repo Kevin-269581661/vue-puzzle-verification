@@ -131,6 +131,8 @@ li {
         margin-right: 27px;
         img {
             margin: 0 5px;
+            width: 51px;
+            height: 59px;
         }
     }
     .item-three {

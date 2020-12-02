@@ -135,6 +135,14 @@
                     <span class="up" v-else>收起 <i class="el-icon-d-arrow-left"></i> </span>
                 </div>
             </div> -->
+			<el-tabs class="index-tab-group" style="height: 643px;border: 1px solid #e5e6e9;" v-model="activeTabsName">
+                <el-tab-pane label="点位分布" name="pointDistribution">
+                    <point-distribution mapContainer="mapContainer1" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointDistribution'"></point-distribution>
+                </el-tab-pane>
+                <el-tab-pane label="点位上刊率" name="pointPublication">
+                    <publish-rate mapContainer="mapContainer2" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointPublication'"></publish-rate>
+                </el-tab-pane>
+            </el-tabs>
 			<div style="margin:24px 0; background:#fff;padding-bottom: 24px;border: 1px solid #e5e6e9;">
 				<h2 class="h2_style flex_box">
 					<b>业绩指标</b>
@@ -284,6 +292,8 @@ import chartCard from '../common/components/chartCard.vue';
 import indexCustomCard from '../common/components/indexCustomCard.vue';
 import ringChart from '../common/components/ringChart.vue';
 import miniProgress from '../common/components/miniProgress.vue';
+import pointDistribution from '../common/components/pointDistribution.vue';
+import publishRate from '../common/components/publishRate.vue';
 
 export default {
 	name: "media_index",
@@ -297,11 +307,14 @@ export default {
 		chartCard,
 		indexCustomCard,
 		ringChart,
-		miniProgress
+		miniProgress,
+		pointDistribution,
+        publishRate
 	},
 	data(){
 		return{
 			hasMpvgl: false,
+			activeTabsName: 'pointDistribution',
 
 			isAllMedia: false,
 			isShowNum: false,
@@ -309,24 +322,24 @@ export default {
 			isShowMedal: false,
 			linkArrNew: [
 				{
-					imgurl: require('../../assets/images/editor.png'),
-					title: '导空位',
+					imgurl: require('../../assets/images/importPoint.png'),
+					title: '导出空位',
 					link: '',
 				},
 				{
-					imgurl: require('../../assets/images/media.png'),
+					imgurl: require('../../assets/images/fangan.png'),
 					title: '新建方案',
 					link: './media/createPlan',
 				},
 				{
-					imgurl: require('../../assets/images/media.png'),
+					imgurl: require('../../assets/images/addMedia.png'),
 					title: '新建媒体',
 					link: './media/mediaInput',
 				},
 				{
-					imgurl: require('../../assets/images/media.png'),
-					title: '维护管理',
-					link: '',
+					imgurl: require('../../assets/images/gua.png'),
+					title: '点位表盘',
+					link: './media/adsDialPlate',
 				},
 			],
 			linkArr:[
@@ -557,6 +570,15 @@ export default {
 			],
 			// 媒介预锁概况表格
 			preLockArr: []
+		}
+	},
+	beforeCreate() {
+		var script = document.createElement("script");
+		script.type = "text/javascript";
+		script.src = "/static/mapvgl.min.js";
+		document.body.appendChild(script);
+		script.onload = ()=>{
+			this.hasMpvgl = true
 		}
 	},
 	methods:{
@@ -1241,13 +1263,7 @@ export default {
 			// 媒介的预锁概况 /report /homepage/getMDUnlockPlanReport
 			api.getApi(this.apiVar.report + '/homepage/getMDUnlockPlanReport',params).then(res=>{
 				if (res.data.SysCode === 200200) {
-					// this.preLockArr = res.data.data || [{
-					this.preLockArr = [{
-						"apID": 1111,  //方案id
-						"apName": "1111", //方案名称
-						"dayDiffer": 1 //预锁到期天数
-					}];
-					
+					this.preLockArr = res.data.data || []
 				} else {
 					this.messageFun('warning', res.data.MSG)
 				}
@@ -1279,6 +1295,29 @@ export default {
 
 <style scoped lang="scss">
 /** 新增*/
+	.index-tab-group {
+		background: #fff;
+        position: relative;
+		/deep/ .el-tabs__nav-scroll{
+			padding-left: 40px;
+			line-height: 52px;
+			font-size:16px;
+			font-family:PingFangSC-Medium;
+			font-weight:500;
+			color:rgba(24,144,255,1);
+		}
+		/deep/ .el-tabs__item{
+			font-size:16px;
+		}
+		/deep/ .el-tabs__content{
+			padding: 9px 24px 24px 24px;
+			height: calc(100% - 67px);
+			box-sizing: border-box;
+			.el-tab-pane {
+				height: 100%;
+			}
+		}
+	}
     .index-top-row {
         display: flex;
         align-items: flex-start;

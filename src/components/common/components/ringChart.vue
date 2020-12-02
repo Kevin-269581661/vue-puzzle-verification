@@ -38,7 +38,7 @@ export default {
         this.chartInstance = new Chart({
           container: this.container,
           autoFit: true,
-          height: 500,
+          height: 450,
         });
       }
       const dv = new DataView();
@@ -84,28 +84,28 @@ export default {
         });
       this.chartInstance.interaction("element-active");
       this.chartInstance.annotation().text({
-        content: () => `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                <span>媒体总数</span>
-                <span style="font-family: DINEngschrift;">2052</span>
-                <div style="font-size: 14px;">
-                    <span>
-                        <span style="width: 8px; height: 8px; border-radius: 4px; background: rgba(24, 144, 255, 1);"></span>
-                        正常
-                    </span>
-                    <span>
-                        <span style="width: 8px; height: 8px; border-radius: 4px; background: rgba(110, 203, 83, 1);"></span>
-                        待安装
-                    </span>
-                    <span>
-                        <span style="width: 8px; height: 8px; border-radius: 4px; background: rgba(250, 173, 20, 1);"></span>
-                        待维修
-                    </span>
-                    <span>
-                        <span style="width: 8px; height: 8px; border-radius: 4px; background: rgba(255, 120, 117, 1);"></span>
-                        禁用
-                    </span>
-                </div>
-      </div>`,
+      //   content: () => `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+      //           <span>媒体总数</span>
+      //           <span style="font-family: DINEngschrift;">2052</span>
+      //           <div style="font-size: 14px;">
+      //               <span>
+      //                   <span style="width: 8px; height: 8px; border-radius: 4px; background: rgba(24, 144, 255, 1);"></span>
+      //                   正常
+      //               </span>
+      //               <span>
+      //                   <span style="width: 8px; height: 8px; border-radius: 4px; background: rgba(110, 203, 83, 1);"></span>
+      //                   待安装
+      //               </span>
+      //               <span>
+      //                   <span style="width: 8px; height: 8px; border-radius: 4px; background: rgba(250, 173, 20, 1);"></span>
+      //                   待维修
+      //               </span>
+      //               <span>
+      //                   <span style="width: 8px; height: 8px; border-radius: 4px; background: rgba(255, 120, 117, 1);"></span>
+      //                   禁用
+      //               </span>
+      //           </div>
+      // </div>`,
         offsetY: 15,
       });
       this.chartInstance.render();

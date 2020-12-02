@@ -103,7 +103,7 @@ export default {
       }
     },
     actived(val) {
-      if (this.mapFinish == false && this.hasMpvgl && val === true) {
+      if (this.hasMpvgl && val === true) {
         setTimeout(() => {
           this.setMap();
         }, 1000);
@@ -113,7 +113,6 @@ export default {
   data() {
     return {
       instanceMap: null,
-      mapFinish: false,
       fullFlag: null,
       sessionData: null,
       infoBoxShow: true,
@@ -139,7 +138,7 @@ export default {
         .then((res) => {
           if (res.data.SysCode === 200200) {
             this.tableData = res.data.data || [];
-            this.setMap(this.tableData);
+            this.setMap();
           } else {
             this.messageFun("warning", res.data.MSG);
           }
@@ -149,7 +148,7 @@ export default {
         })
         .finally((_) => {});
     },
-    setMap(tableData = []) {
+    setMap() {
       if (this.instanceMap == null) {
         this.instanceMap = new BMap.Map(this.mapContainer, {
           enableMapClick: false,
@@ -165,9 +164,10 @@ export default {
           new BMap.ScaleControl({ offset: new BMap.Size(20, 5) })
         );
       }
+      if(!this.tableData) return;
       this.instanceMap.clearOverlays();
-      tableData.forEach((item) => {
-        if (item.latlng && item.rID) {
+      this.tableData.forEach((item) => {
+        if (item.latlng) {
           let label = new BMap.Label(item.onPubRate + "%", {
             offset: new BMap.Size(22, 2),
             position: new BMap.Point(
@@ -204,7 +204,6 @@ export default {
           this.instanceMap.addOverlay(label);
         }
       });
-      // this.mapFinish = true;
     },
     // 放大或缩小地图
     setMapZoom(key, type) {

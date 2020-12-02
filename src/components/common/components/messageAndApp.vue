@@ -4,7 +4,7 @@
             <el-radio-button label="应用市场"></el-radio-button>
             <el-radio-button label="公告通知"></el-radio-button>
         </el-radio-group>
-        <el-carousel ref="carousel" :autoplay="false" arrow="never" indicator-position="none" class="carousel-box"  height="528px" @change='carouselChange'>
+        <el-carousel ref="carousel" :autoplay="false" arrow="never" indicator-position="none" class="carousel-box"  :height="height" @change='carouselChange'>
             <el-carousel-item>
                 <ul class="app-list">
                     <li class="app-item" v-for="item in appCenter" @click="goToPage(item)">
@@ -22,38 +22,65 @@
             </el-carousel-item>
             <el-carousel-item>
                 <ul class="app-list">
-                    <li class="app-item" v-for="item in appCenter" @click="goToPage(item)">
-                        <div class="item-left">
-                            <img :src="item.imgUrl" alt="">
-                        </div>
-                        <div class="item-right">
-                            <span class="app-name">{{item.title}}</span>
-                            <!-- <el-tooltip popper-class="desc-tooltip" effect="dark" :content="item.desc" v-model="item.descTooltip"> -->
-                                <p class="app-desc">{{item.desc}}</p>
-                            <!-- </el-tooltip> -->
+                    <li class="app-item" v-for="item in tableSource">
+                        <div style="position: relative; margin-bottom: 12px;">
+                            <div class="notice-head">
+                                <span class="notice-title">{{item.title || ''}}</span>
+                                <span class="notice-date">{{item.createTime || ''}}</span>
+                            </div>
+                            <div class="notice-content">{{item.content || ''}}</div>
+                            <span class="notice-cat" @click="catDetail(item)">查看</span>
                         </div>
                     </li>
                 </ul>
             </el-carousel-item>
         </el-carousel>
+        <!-- 查看公告 -->
+        <el-dialog
+            :visible.sync="dialogVisible"
+            :show-close="false"
+            width="30%"
+            custom-class="notice-dialog">
+            <span class="content">{{currentRow.content || ''}}</span>
+            <div slot="title">
+                <span class="title">{{currentRow.title || ''}}</span>
+                <div class="date">{{currentRow.createTime || ''}}</div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary"  @click="dialogVisible = false">知道了</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
 <script>
+    import sessFun from '../../../commonFun/sessFun.js';
+    import {api} from '../../../api/api';
     export default {
         name: "messageAndApp",
         props: {
             appCenter:{
                 type: [Object, String, Array],
                 default: ()=>{}
+            },
+            height: {
+                type: String,
+                default: '528px'
             }
         },
         data() {
             return {
-                checked: '应用市场'
+                checked: '应用市场',
+                tableSource: [],
+                dialogVisible: false,
+                currentRow: {}
             }
         },
         methods: {
+            catDetail(item) {
+                this.currentRow = item;
+                this.dialogVisible = true
+            },
             goToPage(item) {
                 this.$emit('goToPage', item)
             },
@@ -70,9 +97,32 @@
                 } else if(val == 0 && this.checked == '公告通知') {
                     this.checked = '应用市场'
                 }
+            },
+            getNoticeList() {
+                let sessionData = sessFun.getSess();
+                api.getApi(this.apiVar.Advertisement+'/GetSystemNotice', {
+                    uid: sessionData.uID,
+                    token: sessionData.token,
+                    pageNum: 1,
+                    pagesize: 100
+                }).then(res =>{
+                    if(!res.data.SysCode){
+                        let dataInfo = res.data;
+                        // this.totalNum = dataInfo.count;
+                        this.tableSource = dataInfo || [];
+                        // this.loading = false;
+                        // this.isSearch = false;
+                        // if(dataInfo.totalpage == 0){
+                        //     this.$message.warning('暂无数据');
+                        // }
+                    }else{
+                        this.$message.warning(res.data.MSG);
+                    }
+                });
             }
         },
         mounted() {
+            this.getNoticeList()
         }
     }
 </script>
@@ -88,6 +138,39 @@
     background: #fafafa;
     border-radius: 4px;
 }
+/deep/ .notice-dialog {
+    .el-dialog__header {
+        padding: 16px 24px 6px;
+        .title {
+            height: 24px;
+            font-size: 16px;
+            font-family: PingFangSC-Medium, PingFang SC;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.85);
+            line-height: 24px;
+        }
+        .date {
+            float: right;
+            height: 24px;
+            font-size: 14px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: rgba(0, 0, 0, 0.45);
+            line-height: 24px;
+        }
+    }
+    .el-dialog__body {
+        padding: 6px 24px 14px;
+    }
+    .content {
+        height: 200px;
+        font-size: 12px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.65);
+        line-height: 20px;
+    }
+}
 .list-wrap {
     position: relative;
     display: flex;
@@ -95,6 +178,9 @@
     align-items: center;
     justify-content: center;
     padding: 16px 0;
+    /deep/ .el-radio-button__inner {
+        padding: 8px 16px
+    }
     .carousel-box {
         width: 100%;
         padding-top: 16px;
@@ -121,6 +207,7 @@
                 .item-right {
                     display: flex;
                     flex-direction: column;
+                    width: calc(100% - 60px);
                     .app-name {
                         font-size: 16px;
                         font-family: PingFangSC-Semibold, PingFang SC;
@@ -129,7 +216,6 @@
                         line-height: 24px;
                     }
                     .app-desc {
-                        width: 204px;
                         overflow: hidden;
                         white-space: nowrap;
                         font-size: 12px;
@@ -139,6 +225,43 @@
                         line-height: 18px;
                         text-overflow: ellipsis;
                     }
+                }
+                .notice-head {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+                .notice-title {
+                    font-size: 16px;
+                    font-family: PingFangSC-Semibold, PingFang SC;
+                    font-weight: 600;
+                    color: rgba(0, 0, 0, 0.85);
+                    line-height: 24px;
+                }
+                .notice-date {
+                    font-size: 12px;
+                    font-family: PingFangSC-Regular, PingFang SC;
+                    font-weight: 400;
+                    color: rgba(0, 0, 0, 0.45);
+                    line-height: 24px;
+                }
+                .notice-content {
+                    margin-top: 6px;
+                    font-size: 12px;
+                    font-family: PingFangSC-Regular, PingFang SC;
+                    font-weight: 400;
+                    color: rgba(0, 0, 0, 0.65);
+                    line-height: 18px;
+                }
+                .notice-cat {
+                    position: absolute;
+                    right: 0;
+                    bottom: 0;
+                    font-size: 12px;
+                    font-family: PingFangSC-Regular, PingFang SC;
+                    font-weight: 400;
+                    color: #1890FF;
+                    line-height: 18px;
                 }
             }
         }

@@ -6,17 +6,17 @@
                 <li class="bold-text">{{userInfo.username || ''}}</li>
                 <li class="normal-text">{{userInfo.role || ''}}</li>
             </ul>
-            <div class="item-one-column item-one-board">
-                <span class="bold-text">第三名</span>
+            <div v-if="rank" class="item-one-column item-one-board">
+                <span class="bold-text">第{{rank}}名</span>
                 <span class="normal-text">城市排名</span>
             </div>
         </div>
-        <div class="line-vertical"></div>
+        <div v-if="rank" class="line-vertical"></div>
         <div class="item-two">
             <img v-for="(item,index) of honorImg" :key="index" :src="item.url" :alt="item.title" :title="item.title">
             <!-- <i>{{key.title}}</i> -->
         </div>
-        <div class="line-vertical"></div>
+        <div v-if="rank || honorImg.length>0" class="line-vertical"></div>
         <div class="item-three">
                 <home-link class="cell-group" :link="linkArr"></home-link>
         </div>
@@ -42,6 +42,10 @@
             linkArr:{
                 type: Array,
                 default: []
+            },
+            rank: {
+                type: String,
+                default: ''
             }
         },
         data() {

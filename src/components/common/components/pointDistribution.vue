@@ -1,101 +1,169 @@
 <template>
-  <div class="map-wrap map-wrap-index1">
-    <div :id="mapContainer" class="map-container"></div>
-    <div class="fad-map-info">
-      <!-- <a-icon type="info-circle" /> -->
-      <span class="info-text">点位分布: 这段时间内可投点位的位置分布</span>
-      <!-- <a-icon @click="closeInfoBox(7)" class="info-close" type="close" /> -->
-    </div>
-    <!-- <div class="fad-map-control">
-      <a-icon
-        @click="fullMap(1)"
-        class="map-full-screen"
-        :type="fullFlag == 1 ? 'fullscreen-exit' : 'fullscreen'"
-      />
-      <a-slider
-        vertical
-        :marks="distanceMarks"
-        :step="25"
-        v-model="sliderValue1"
-        @change="sliderChange"
-      />
-      <div>
-        <div class="zoom-btn">
-          <a-icon type="plus" @click="setMapZoom(1, 'plus')" />
-        </div>
-        <div class="zoom-btn">
-          <a-icon type="minus" @click="setMapZoom(1, 'minus')" />
+  <div class="index-map-row">
+    <div :class="['map-wrap', mapContainer]">
+      <div :id="mapContainer" class="map-container"></div>
+      <div class="fad-map-info" v-if="infoBoxShow">
+        <i class="el-icon-info" />
+        <span class="info-text">点位分布: 这段时间内可投点位的位置分布</span>
+        <i v-if="instanceMap" @click="closeInfoBox" class="el-icon-close info-close" />
+      </div>
+      <div class="fad-map-control">
+        <i class="el-icon-rank map-full-screen" @click="fullMap(1)" />
+        <!-- <a-slider
+          vertical
+          :marks="distanceMarks"
+          :step="25"
+          v-model="sliderValue1"
+          @change="sliderChange"
+        /> -->
+        <div>
+          <div class="zoom-btn">
+            <i class="el-icon-zoom-in" @click="setMapZoom('plus')" />
+          </div>
+          <div class="zoom-btn">
+            <i class="el-icon-zoom-out" @click="setMapZoom('minus')" />
+          </div>
         </div>
       </div>
-    </div> -->
+    </div>
+    <el-table :data="tableData" max-height="540" style="flex: unset; width: auto;">
+      <el-table-column label="排名" type=index width="60">
+      </el-table-column>
+      <el-table-column prop="rName" label="城市" width="120" show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column prop="totalResCnt" label="社区" width="120" show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column prop="totalMediaCnt" label="媒体" width="120" show-overflow-tooltip>
+      </el-table-column>
+    </el-table>
   </div>
 </template>
 <script>
 import $ from "jquery";
 import { initMap, snowStyle, whiteStyle } from "@/commonFun/mapCommon.js";
-// var instanceMap1 = null;
+import api from "../../../api/api";
+import sessFun from "../../../commonFun/sessFun.js";
 export default {
   name: "pointDistribution",
   components: {},
   props: {
     mapContainer: {
       type: String,
-      required: true
+      required: true,
     },
     hasMpvgl: {
       type: Boolean,
-      default: false
+      default: false,
     },
     actived: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   watch: {
     hasMpvgl(val) {
       if (val === true) {
         setTimeout(() => {
-          this.pointsDistribution();
+          this.setMap();
         }, 1000);
       }
     },
     actived(val) {
       if (this.mapFinish == false && this.hasMpvgl && val === true) {
         setTimeout(() => {
-          this.pointsDistribution();
+          this.setMap();
         }, 1000);
       }
-    }
+    },
   },
   data() {
     return {
-      instanceMap1: null,
-      mapFinish: false
+      instanceMap: null,
+      mapFinish: false,
+      fullFlag: null,
+      sessionData: null,
+      infoBoxShow: true,
+      tableData: []
     };
   },
+  mounted() {
+    this.sessionData = sessFun.getSess();
+    this.getPointDistributionReport();
+  },
   methods: {
-    pointsDistribution() {
-      this.instanceMap1 = initMap({
-        id: this.mapContainer,
-        tilt: 48.8,
-        heading: 0,
-        center: [105.348145, 28.165926],
-        zoom: 11,
-        style: whiteStyle,
-      });
-      this.instanceMap1.addEventListener("zoomend", (e) => {
-        let level = e.target.getZoom();
-        // this.sliderValue1 = this.getSliderValue(level);
-      });
+    // 首页的地图点位投放 /report /homepage/getPointDistributionReport
+    getPointDistributionReport() {
+      let params = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+      };
+      api
+        .getApi(
+          this.apiVar.report + "/homepage/getPointDistributionReport",
+          params
+        )
+        .then((res) => {
+          if (res.data.SysCode === 200200) {
+            this.tableData = res.data.data;
+            this.setMap(this.tableData);
+          } else {
+            this.messageFun("warning", res.data.MSG);
+          }
+        })
+        .catch((err) => {
+          console.log("err", err);
+        })
+        .finally((_) => {});
+    },
+    setMap(tableData=[]) {
+      let mapData = []
+      if(tableData.length>0) {
+        tableData.forEach(item=>{
+          if(Array.isArray(item.latLngList)) {
+            item.latLngList.forEach(point=>{
+              mapData.push({
+                geometry: {
+                  type: "Point",
+                  coordinates: [
+                    parseFloat(point.split(';')[0]),
+                    parseFloat(point.split(';')[1]),
+                  ],
+                },
+                properties: {
+                  time: Math.random() * 100,
+                  // count: Math.random() * 100,
+                  count: item.totalMediaCnt || 0,
+                },
+              });
+            })
+          }
+        })
+      }
+      if (this.instanceMap == null) {
+        this.instanceMap = initMap({
+          id: this.mapContainer,
+          tilt: 48.8,
+          heading: 0,
+          center: [105.348145, 28.165926],
+          zoom: 6,
+          style: whiteStyle,
+        });
+        this.instanceMap.addEventListener("zoomend", (e) => {
+          let level = e.target.getZoom();
+          // this.sliderValue1 = this.getSliderValue(level);
+        });
+      }
+      console.log('mapData', mapData)
+      if(mapData.length == 0) return
       var view = new mapvgl.View({
-        map: this.instanceMap1,
+        map: this.instanceMap,
       });
 
       let layer1 = new mapvgl.PointLayer({
         blend: "lighter",
         shape: "circle",
         color: "rgba(17, 95, 255, 0.8)", // 点图层1颜色
-        // data: data1,
+        // data: mapData,
         size: 3,
       });
       view.addLayer(layer1);
@@ -104,7 +172,7 @@ export default {
         blend: "lighter",
         shape: "circle",
         color: "rgba(24, 144, 255, 0.6)", // 点图层2颜色
-        // data: data2,
+        // data: mapData,
         size: 5,
       });
       view.addLayer(layer2);
@@ -113,7 +181,7 @@ export default {
         blend: "lighter",
         shape: "circle",
         color: "rgba(24, 144, 255, 0.4)", // 点图层3颜色
-        // data: data3,
+        // data: mapData,
         size: 8,
       });
       view.addLayer(layer3);
@@ -126,14 +194,38 @@ export default {
         step: 0.1,
         trailLength: 10,
         color: "rgba(24, 144, 255, 0.5)", // 点动画图层颜色
-        // data: data1,
+        // data: mapData,
         size: 10,
       });
       view.addLayer(layer4);
+      layer1.setData(mapData)
+      // layer2.setData(mapData)
+      layer3.setData(mapData)
+      layer4.setData(mapData)
       this.mapFinish = true;
-    }
+    },
+    // 放大或缩小地图
+    setMapZoom(key, type) {
+      if (type === "plus") {
+        instanceMap.zoomIn();
+      } else if (type === "minus") {
+        instanceMap.zoomOut();
+      }
+    },
+    closeInfoBox() {
+      this.infoBoxShow = false;
+    },
+    fullMap(key) {
+      let obj = $("." + this.mapContainer);
+      if (obj.hasClass("map-wrap-full")) {
+        obj.removeClass("map-wrap-full");
+        $("body").css({ overflow: "auto" });
+      } else {
+        $("." + this.mapContainer).addClass("map-wrap-full");
+        $("body").css({ overflow: "hidden" });
+      }
+    },
   },
-  mounted() {},
 };
 </script>
 
@@ -147,7 +239,6 @@ li {
 }
 %flex-row-center {
   display: flex;
-  align-items: center;
   flex-flow: row nowrap;
 }
 %flex-column-center {
@@ -156,8 +247,29 @@ li {
   justify-content: center;
   flex-flow: column nowrap;
 }
+.index-map-row {
+  @extend %flex-row-center;
+  align-items: flex-start;
+}
 .map-container {
+  height: 100%;
+}
+.map-wrap {
+  position: relative;
+  flex-grow: 1;
+  /* min-height: 551px; */
   height: 540px;
+  margin-right: 24px;
+}
+.map-wrap-full {
+  position: fixed !important;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100% !important;
+  z-index: 10000;
 }
 .fad-map-info {
   position: absolute;

@@ -3,7 +3,7 @@
         <div class="ad_index_container">
             <div class="index-top-row">
                 <div class="left-layout">
-                    <personal-info :user-info="userInfo" :honor-img="companyHonor" :linkArr="linkArrNew"></personal-info>
+                    <personal-info :rank="rankInfo[0].rank||''" :user-info="userInfo" :honor-img="companyHonor" :linkArr="linkArrNew"></personal-info>
                     <div class="card-group">
                         <el-row :gutter="24" style="margin-bottom: 24px;">
                             <el-col :span="8"><chart-card :cardData="cardData1"></chart-card></el-col>
@@ -14,7 +14,7 @@
                 </div>
                 <!-- 消息推送和应用市场 -->
                 <div class="right-board">
-                    <message-and-app :appCenter="appCenter" @goToPage="goToPage"></message-and-app>
+                    <message-and-app height="284px" :appCenter="appCenter" @goToPage="goToPage"></message-and-app>
                 </div>
             </div>
             <el-row :gutter="24" class="index-row">
@@ -58,6 +58,18 @@
                                     </template>
                                 </el-table-column>
                             </el-table>
+                        </template>
+                    </index-custom-card>
+                </el-col>
+            </el-row>
+            <el-row class="index-row">
+                <el-col :span="24">
+                    <index-custom-card height="540px">
+                        <template slot="head">
+                            点位分布
+                        </template>
+                        <template slot="content">
+                            <point-distribution style="padding: 24px;" mapContainer="mapContainer1" :hasMpvgl="hasMpvgl" :actived="true"></point-distribution>
                         </template>
                     </index-custom-card>
                 </el-col>
@@ -237,6 +249,7 @@
     import indexCustomCard from '../common/components/indexCustomCard.vue';
     import gaugeChart from '../common/components/gaugeChart.vue';
     import miniProgress from '../common/components/miniProgress.vue';
+    import pointDistribution from '../common/components/pointDistribution.vue';
 
     export default {
         name: "sale_index",
@@ -252,6 +265,7 @@
             miniProgress,
             indexCustomCard,
             gaugeChart,
+            pointDistribution
         },
         data() {
             return {
@@ -260,32 +274,32 @@
                 isMonthlyRanking: false,
                 linkArrNew: [
                     {
-                        imgurl: require('../../assets/images/group.png'),
+                        imgurl: require('../../assets/images/map.png'),
                         title: '地图选点',
                         link: '',
                     },
                     {
-                        imgurl: require('../../assets/images/group.png'),
+                        imgurl: require('../../assets/images/importPoint.png'),
                         title: '导空位',
                         link: '',
                     },
                     {
-                        imgurl: require('../../assets/images/group.png'),
+                        imgurl: require('../../assets/images/fangan.png'),
                         title: '新建方案',
                         link: '',
                     },
                     {
-                        imgurl: require('../../assets/images/group.png'),
+                        imgurl: require('../../assets/images/img.png'),
                         title: '行业图片',
                         link: '',
                     },
                     {
-                        imgurl: require('../../assets/images/group.png'),
+                        imgurl: require('../../assets/images/client.png'),
                         title: '新建客户',
                         link: './sale/createClient'
                     },
                     {
-                        imgurl: require('../../assets/images/group.png'),
+                        imgurl: require('../../assets/images/gua.png'),
                         title: '点位表盘',
                         link: ''
                     },
@@ -432,7 +446,7 @@
                 // 客户列表
                 clientArr: [],
                 // 业绩目标仪表盘数据
-                gaugeData: null
+                gaugeData: null,
             }
         },
         methods: {
@@ -937,6 +951,15 @@
                 })
             }
         },
+        beforeCreate() {
+            var script = document.createElement("script");
+            script.type = "text/javascript";
+            script.src = "/static/mapvgl.min.js";
+            document.body.appendChild(script);
+            script.onload = ()=>{
+                this.hasMpvgl = true
+            }
+        },
         mounted() {
 
             this.getSession();
@@ -971,20 +994,21 @@
         .left-layout {
             display: flex;
             flex: 1;
+            width: 75%;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
             margin-right: 24px;
             .card-group {
                 position: relative;
-                height: 428px;
+                // height: 428px;
                 width: 100%;
                 margin-top: 24px;
             }
         }
         .right-board {
-            width: 312px;
-            height: 582px;
+            width: 25%;
+            height: 356px;
             background: rgba(255, 255, 255, 1);
             border: 1px solid #E6E7E9;
         }

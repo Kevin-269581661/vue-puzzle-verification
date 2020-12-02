@@ -1287,6 +1287,7 @@ export default {
         .left-layout {
             display: flex;
             flex: 1;
+			width: 75%;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
@@ -1299,7 +1300,7 @@ export default {
             }
         }
         .right-board {
-            width: 312px;
+            width: 25%;
             height: 582px;
             background: rgba(255, 255, 255, 1);
             border: 1px solid #E6E7E9;

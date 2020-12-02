@@ -335,7 +335,7 @@
             width: 18px;
             height: 18px;
             margin-top: 16px;
-            background:rgba(24, 144, 255, 1);
+            // background:rgba(24, 144, 255, 1);
 
         }
         .cell-text {

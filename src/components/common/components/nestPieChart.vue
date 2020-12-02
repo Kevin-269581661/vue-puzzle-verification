@@ -1,5 +1,5 @@
 <template>
-  <div id="nestPie"></div>
+  <div :id="container"></div>
 </template>
 
 <script>
@@ -14,9 +14,15 @@ export default {
       type: Array,
       required: true,
     },
+    container: {
+      type: String,
+      required: true,
+    },
   },
   data() {
-    return {};
+    return {
+      chartInstance: null
+    };
   },
   watch: {
     sourceData(newVal, oldVal) {
@@ -28,6 +34,14 @@ export default {
   mounted() {},
   methods: {
     render(data) {
+      if(this.chartInstance == null) {
+        this.chartInstance = new Chart({
+          container: this.container,
+          autoFit: true,
+          height: 450,
+          padding: [15, 0],
+        });
+      }
       // 通过 DataSet 计算百分比
       const dv = new DataView();
       dv.source(data).transform({
@@ -36,14 +50,8 @@ export default {
         dimension: "type",
         as: "percent",
       });
-      const chart = new Chart({
-        container: "nestPie",
-        autoFit: true,
-        height: 500,
-        padding: [15, 0],
-      });
-      chart.data(dv.rows);
-      chart.scale({
+      this.chartInstance.data(dv.rows);
+      this.chartInstance.scale({
         percent: {
           formatter: (val) => {
             val = (val * 100).toFixed(2) + "%";
@@ -51,15 +59,15 @@ export default {
           },
         },
       });
-      chart.coordinate("theta", {
+      this.chartInstance.coordinate("theta", {
         radius: 0.59,
       });
-      chart.tooltip({
+      this.chartInstance.tooltip({
         showTitle: false,
         showMarkers: false,
       });
-      chart.legend(false);
-      chart
+      this.chartInstance.legend(false);
+      this.chartInstance
         .interval()
         .adjust("stack")
         .position("percent")
@@ -98,7 +106,7 @@ export default {
           },
         });
 
-      const outterView = chart.createView();
+      const outterView = this.chartInstance.createView();
       const dv1 = new DataView();
       dv1.source(data).transform({
         type: "percent",
@@ -165,9 +173,9 @@ export default {
           },
         });
 
-      chart.interaction("element-active");
+      this.chartInstance.interaction("element-active");
 
-      chart.render();
+      this.chartInstance.render();
     },
   },
   mounted() {},

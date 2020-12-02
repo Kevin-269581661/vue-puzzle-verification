@@ -32,16 +32,19 @@
                         <el-tooltip popper-class="amount-tooltip" effect="dark" content="Top center" placement="top">
                             <ul slot="content">
                                 <li style="line-height: 20px;">
-                                    签约额：均为合同金额，未扣除总部收益部分
+                                    数据更新至昨日
                                 </li>
                                 <li style="line-height: 20px;">
-                                    全国单发单执行额：该执行额不以实际订单金额统计，而以拆单时的方案金额以公式计算获得
+                                    已售资源：指统计周期内售卖出去的面*周数
                                 </li>
                                 <li style="line-height: 20px;">
-                                    按周统计：指每周六至下周五为一个周
+                                    过期资源：指统计周期内可投放却未售卖出去的面*周数
                                 </li>
                                 <li style="line-height: 20px;">
-                                    按月统计：指从1号至自然月底
+                                    维修资源：指统计周期内处于维修状态而未售卖的面*周数
+                                </li>
+                                <li style="line-height: 20px;">
+                                    禁用资源：指统计周期内处于禁用状态而未售卖的面*周数
                                 </li>
                             </ul>
                             <img class="quesition-icon" src="../../assets/images/question_icon.png" />
@@ -136,9 +139,9 @@
                     </el-tooltip>
                 </template>
                 <template slot="content">
-                    <el-row :gutter="24" class="index-row" style="padding: 33px 24px; margin: 0;">
+                    <el-row :gutter="24" class="index-row" style="align-items: flex-start; padding: 33px 24px; margin: 0; ">
                         <el-col :span="12">
-                            <nest-pie-chart :sourceData="nestPieData"></nest-pie-chart>
+                            <nest-pie-chart container="nestPie" :sourceData="nestPieData"></nest-pie-chart>
                             <div class="bottom-box">
                                 贵公司<span class="avtive">{{extendData[0]}}</span>位沉默客户待挖掘，多于全国<span class="avtive">{{extendData[1]+'%'}}</span>的公司，请加把劲！
                             </div>
@@ -146,13 +149,13 @@
                         <el-col :span="12" style="align-self: flex-start;">
                             <el-table
                                 :data="clientArr"
-                                max-height="460"
+                                max-height="500"
                             >
                                 <el-table-column
                                     label="客户"
                                     width="230">
                                     <template slot-scope="scope">
-                                        <span @click="routePage(scope.row)" style="color: #1890FF; cursor: pointer;">{{scope.row.saleNames}}</span>
+                                        <span @click="routePage(scope.row)" style="color: #1890FF; cursor: pointer;">{{scope.row.cName}}</span>
                                     </template>
                                 </el-table-column>
                                 <el-table-column
@@ -324,7 +327,7 @@
                     <point-distribution mapContainer="mapContainer1" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointDistribution'"></point-distribution>
                 </el-tab-pane>
                 <el-tab-pane label="点位上刊率" name="pointPublication">
-                    <!-- <point-distribution mapContainer="mapContainer2" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointPublication'"></point-distribution> -->
+                    <publish-rate mapContainer="mapContainer2" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointPublication'"></publish-rate>
                 </el-tab-pane>
                 <el-tab-pane label="成交金额" name="price">
                     <div style="margin-top: 8px">
@@ -364,7 +367,7 @@
                 </el-tab-pane>
             </el-tabs>
         </div>
-        <div class="SM_results_runway" v-if="isPlatform">
+        <!-- <div class="SM_results_runway" v-if="isPlatform">
             <div class="results_runway_title">
                 <h2 class="results_runway_title_h2">业务员业绩跑道</h2>
                 <div class="results_runway_title_box">
@@ -409,7 +412,7 @@
                       </el-row>
                   </div>
             </div>
-        </div>
+        </div> -->
     </div>
         <div class="monthly_ranking" v-show="isMonthlyRanking">
             <div class="monthly_ranking_box">
@@ -565,6 +568,7 @@
     import liquidChart from '../common/components/liquidChart.vue';
     import nestPieChart from '../common/components/nestPieChart.vue';
     import pointDistribution from '../common/components/pointDistribution.vue';
+    import publishRate from '../common/components/publishRate.vue';
     import moment from "moment";
 
     import homeLink from '../common/components/homeLink.vue';
@@ -587,7 +591,8 @@
             indexCustomCard,
             liquidChart,
             nestPieChart,
-            pointDistribution
+            pointDistribution,
+            publishRate
         },
         data() {
             return {
@@ -623,35 +628,25 @@
                 // 常用功能，按超管、媒介、销售分组
                 linkArrNew: [
                     {
-                        imgurl: require('../../assets/images/group.png'),
-                        title: '媒体列表',
-                        link: './superOperate/mediaList',
-                    },
-                    {
-                        imgurl: require('../../assets/images/group.png'),
-                        title: '客户列表',
-                        link: './superOperate/clientList',
-                    },
-                    {
-                        imgurl: require('../../assets/images/group.png'),
-                        title: '方案列表',
-                        link: './superOperate/planList',
-                    },
-                    {
-                        imgurl: require('../../assets/images/group.png'),
+                        imgurl: require('../../assets/images/map.png'),
                         title: '地图选点',
                         link: '',
                     },
                     {
-                        imgurl: require('../../assets/images/group.png'),
-                        title: '订单列表',
-                        link: './superOperate/orderList'
+                        imgurl: require('../../assets/images/acount.png'),
+                        title: '账号管理',
+                        link: './superOperate/accountList',
                     },
                     {
-                        imgurl: require('../../assets/images/group.png'),
-                        title: '经营分析',
-                        link: './superOperate/orderList1'
+                        imgurl: require('../../assets/images/img.png'),
+                        title: '图片库',
+                        link: './superOperate/photoGallery',
                     },
+                    {
+                        imgurl: require('../../assets/images/adPrice.png'),
+                        title: '刊例价',
+                        link: './superOperate/publishPriceList'
+                    }
                 ],
                 // 常用模块数据
                 linkTemp: [
@@ -1007,6 +1002,7 @@
             this.uploadEvent(1)
             this.allReportApi()
             this.getRankList()
+            this.getSMCustomerActiveReport()
         },
         methods: {
             // 首页报表接口
@@ -1149,18 +1145,14 @@
                 }).finally(_=>{
                     
                 })
-
+            },
+            getSMCustomerActiveReport() {
                 // 管理员的活跃客户报表 /report /homepage/getSMCustomerActiveReport
-                api.getApi(this.apiVar.report + '/homepage/getSMCustomerActiveReport', params).then(res=>{
+                api.getApi(this.apiVar.report + '/homepage/getSMCustomerActiveReport', {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                }).then(res=>{
                     if (res.data.SysCode === 200200) {
-                        /* "noCooperation" 沉默未合作的客户数
-                        "silentFirstCnt" 沉默初购的客户数
-                        "silentSecondCnt" 沉默复购的客户数
-                        "silentCnt" 沉默的客户数
-                        "activeFirstCnt" 活跃的初购客户数
-                        "activeSecondCnt" 活跃的复购的客户数
-                        "activeCnt" 活跃的客户数
-                        "silenetCustomerRank" 沉默的排行百分比 */
                         let temp = res.data.data;
                         this.nestPieData = [
                             { value: temp.activeFirstCnt, type: "活跃", name: "初购" },
@@ -1180,7 +1172,6 @@
                     
                 })
             },
-            
             // 管理员的业绩排行 /report /homepage/getSMAchievementReport
             getRankList(field, val) {
                 // 日期区间切换等
@@ -1213,7 +1204,33 @@
             },
             // 取消关注客户所在公司
             unfollow(row) {
-
+                this.$confirm('确定不再关注该客户了吗?', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                    }).then(() => {
+                        if(row.cID !=='' || row.cID !== undefined || row.cID !== null) {
+                            let params = {
+                                uid: this.sessionData.uID,
+                                token: this.sessionData.token,
+                                cID: row.cID
+                            }
+                            // console.log('设置销售目标参数',params)
+                            api.postApi(this.apiVar.report + '/homepage/addIgnoreCustomer', params).then(res=>{
+                                if(res.data.SysCode === 200200 || res.data.MSG === "操作成功"){
+                                    this.messageFun('success',res.data.MSG)
+                                    this.getSMCustomerActiveReport()
+                                }else{
+                                    this.messageFun('warning',res.data.MSG)
+                                }
+                            })
+                        }
+                    }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消'
+                    });          
+                });
             },
             // 设置业绩目标
             setTarget(row) {
@@ -1249,8 +1266,8 @@
             getsessionData() {
                 this.sessionData = sessFun.getSess();
                 if (this.sessionData.asrID === '999') {
-                    // this.isPlatform = false
-                    this.isPlatform = true
+                    this.isPlatform = false
+                    // this.isPlatform = true
                     // this.linkArr = JSON.parse(JSON.stringify(this.linkTemp))
                 } else {
                     this.isPlatform = true
@@ -2395,6 +2412,7 @@
         .left-layout {
             display: flex;
             flex: 1;
+            width: 75%;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
@@ -2407,7 +2425,7 @@
             }
         }
         .right-board {
-            width: 312px;
+            width: 25%;
             height: 582px;
             background: rgba(255, 255, 255, 1);
             border: 1px solid #E6E7E9;

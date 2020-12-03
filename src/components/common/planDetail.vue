@@ -18,6 +18,9 @@
                         </h4>
                         <div class="handleBtn">
                             <!--<el-button plain>导出</el-button>-->
+                            <el-tooltip v-if="role=='MD'" effect="dark" content="从今天起重新预锁七天" placement="top">
+                                <el-button @click="reLock">预 锁</el-button>
+                            </el-tooltip>
                             <template v-if="planDetail.apState==1">
                                 <el-button type="primary" @click="edit()" v-if="(role=='BD')|| (role=='MD')"
                                            v-qadn-mta-h5="{id: 'a004_b010_c000_d000_bt097_ck03'}">编辑</el-button>
@@ -490,6 +493,19 @@ export default {
                 .catch(() => {
                     Message.info("已取消操作");
                 });
+        },
+        // 重新预锁
+        reLock() {
+            this.$confirm('是否确定对该方案重新进行预锁？', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                // this.$message({
+                //     type: 'success',
+                //     message: '删除成功!'
+                // });
+            }).catch(() => {})
         },
         // 编辑
         edit() {

@@ -96,18 +96,14 @@ export default {
   },
   watch: {
     hasMpvgl(val) {
-      if (val === true) {
-        setTimeout(() => {
-          this.setMap();
-        }, 1000);
-      }
+      setTimeout(() => {
+        this.setMap();
+      }, 1000);
     },
     actived(val) {
-      if (this.hasMpvgl && val === true) {
-        setTimeout(() => {
-          this.setMap();
-        }, 1000);
-      }
+      setTimeout(() => {
+        this.setMap();
+      }, 1000);
     },
   },
   data() {
@@ -149,6 +145,7 @@ export default {
         .finally((_) => {});
     },
     setMap() {
+      if(!this.hasMpvgl) return
       if (this.instanceMap == null) {
         this.instanceMap = new BMap.Map(this.mapContainer, {
           enableMapClick: false,
@@ -163,8 +160,17 @@ export default {
         this.instanceMap.addControl(
           new BMap.ScaleControl({ offset: new BMap.Size(20, 5) })
         );
+        // this.instanceMap.addEventListener("zoomend", (e) => {
+        //   let level = e.target.getZoom()
+        //   currentScaleLevel = this.instanceMap.currentScaleLevel;
+        //   this.sliderValue2 = this.getSliderValue(level);
+        //   this.instanceMap.currentScaleLevel = level;
+        // });
       }
       if(!this.tableData) return;
+      this.instanceMap.setCenter(
+        new BMap.Point(105.348145, 28.165926)
+      );
       this.instanceMap.clearOverlays();
       this.tableData.forEach((item) => {
         if (item.latlng) {
@@ -206,11 +212,11 @@ export default {
       });
     },
     // 放大或缩小地图
-    setMapZoom(key, type) {
+    setMapZoom(type) {
       if (type === "plus") {
-        instanceMap.zoomIn();
+        this.instanceMap.zoomIn();
       } else if (type === "minus") {
-        instanceMap.zoomOut();
+        this.instanceMap.zoomOut();
       }
     },
     closeInfoBox() {

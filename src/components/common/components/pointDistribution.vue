@@ -153,7 +153,6 @@ export default {
           // this.sliderValue1 = this.getSliderValue(level);
         });
       }
-      console.log('mapData', mapData)
       if(mapData.length == 0) return
       var view = new mapvgl.View({
         map: this.instanceMap,
@@ -205,11 +204,11 @@ export default {
       this.mapFinish = true;
     },
     // 放大或缩小地图
-    setMapZoom(key, type) {
+    setMapZoom(type) {
       if (type === "plus") {
-        instanceMap.zoomIn();
+        this.instanceMap.zoomIn();
       } else if (type === "minus") {
-        instanceMap.zoomOut();
+        this.instanceMap.zoomOut();
       }
     },
     closeInfoBox() {

@@ -52,6 +52,7 @@
                     {{userName}}
                 </template>
                 <el-menu-item index="/superOperate/myInfo">个人中心</el-menu-item>
+                <el-menu-item>余额：￥0.00</el-menu-item>
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
                 <el-menu-item index="/login">退出登陆</el-menu-item>
             </el-submenu>

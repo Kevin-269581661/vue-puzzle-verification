@@ -14,7 +14,7 @@
           class="el-icon-close info-close"
         />
       </div>
-      <div class="fad-map-control">
+      <div v-if="instanceMap" class="fad-map-control">
         <i class="el-icon-rank map-full-screen" @click="fullMap(1)" />
         <!-- <a-slider
           vertical
@@ -96,14 +96,18 @@ export default {
   },
   watch: {
     hasMpvgl(val) {
-      setTimeout(() => {
-        this.setMap();
-      }, 1000);
+      if (val === true) {
+        setTimeout(() => {
+          this.setMap();
+        }, 1000);
+      }
     },
     actived(val) {
-      setTimeout(() => {
-        this.setMap();
-      }, 1000);
+      if (this.hasMpvgl && val === true) {
+        setTimeout(() => {
+          this.setMap();
+        }, 1000);
+      }
     },
   },
   data() {
@@ -134,7 +138,7 @@ export default {
         .then((res) => {
           if (res.data.SysCode === 200200) {
             this.tableData = res.data.data || [];
-            this.setMap();
+            // this.setMap();
           } else {
             this.messageFun("warning", res.data.MSG);
           }
@@ -145,7 +149,6 @@ export default {
         .finally((_) => {});
     },
     setMap() {
-      if(!this.hasMpvgl) return
       if (this.instanceMap == null) {
         this.instanceMap = initMap({
           id: this.mapContainer,

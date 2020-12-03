@@ -39,6 +39,7 @@ export default {
           container: this.container,
           autoFit: true,
           height: 450,
+          padding: [-30, 0, 0 , 0],
         });
       }
       const dv = new DataView();
@@ -55,7 +56,7 @@ export default {
       this.chartInstance.data(dv.rows);
       this.chartInstance.scale("percent", {
         formatter: (val) => {
-          val = val * 100 + "%";
+          val = (val * 100).toFixed(2) + "%";
           return val;
         },
       });
@@ -83,6 +84,11 @@ export default {
           },
         });
       this.chartInstance.interaction("element-active");
+      let temp = (this.sourceData || []).reduce((total, num)=>{
+        return total + num.count*1
+      }, 0);
+      // if(temp == 0) return;
+      this.chartInstance.annotation().clear(true);
       this.chartInstance.annotation().text({
         position: ['50%', '50%'],
         content: '媒体总数',
@@ -93,9 +99,6 @@ export default {
         },
         offsetY: -50,
       });
-      let temp = (this.sourceData || []).reduce((total, num)=>{
-        return total + num.count*1
-      }, 0);
       this.chartInstance.annotation().text({
         position: ['50%', '50%'],
         content: temp,
@@ -116,7 +119,8 @@ export default {
           fill: "#1890FF",
           textAlign: "center",
         },
-        offsetX: -65
+        offsetX: -72,
+        offsetY: 2
       });
       this.chartInstance.annotation().text({
         position: ['50%', '55%'],
@@ -125,43 +129,45 @@ export default {
           fontSize: 10,
           fill: "rgba(0, 0, 0, 0.65)"
         },
-        offsetX: -45
+        offsetX: -67
       });
       this.chartInstance.annotation().text({
         position: ['50%', '55%'],
         content: '・',
         style: {
           fontSize: 40,
-          fill: "#1890FF",
+          fill: "#6ECB53",
         },
-        offsetX: -25
+        offsetX: -57,
+        offsetY: 2
       });
       this.chartInstance.annotation().text({
         position: ['50%', '55%'],
         content: '待安装',
         style: {
-          fontSize: 12,
+          fontSize: 10,
           fill: "rgba(0, 0, 0, 0.65)",
         },
-        offsetX: -5
+        offsetX: -32
       });
       this.chartInstance.annotation().text({
         position: ['50%', '55%'],
         content: '・',
         style: {
           fontSize: 40,
-          fill: "#FAAD14",
+          fill: "#FAAD14"
         },
-        offsetX: 15
+        offsetX: -12,
+        offsetY: 2
       });
       this.chartInstance.annotation().text({
         position: ['50%', '55%'],
         content: '待维修',
         style: {
-          fontSize: 12,
+          fontSize: 10,
           fill: "rgba(0, 0, 0, 0.65)"
         },
-        offsetX: 35
+        offsetX: 14
       });
       this.chartInstance.annotation().text({
         position: ['50%', '55%'],
@@ -169,43 +175,23 @@ export default {
         style: {
           fontSize: 40,
           fill: "#FF7875",
+          textBaseline: 'middle',
+          lineHeight: 40
         },
-        offsetX: 50
+        offsetX: 34,
+        offsetY: 2
       });
       this.chartInstance.annotation().text({
         position: ['50%', '55%'],
         content: '禁用',
         style: {
-          fontSize: 12,
+          fontSize: 10,
           fill: "rgba(0, 0, 0, 0.65)",
+          textBaseline: 'middle',
+          lineHeight: 40
         },
-        offsetX: 65
+        offsetX: 60
       });
-      // this.chartInstance.annotation().text({
-      //   content: () => `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-      //           <span>媒体总数</span>
-      //           <span style="font-family: DINEngschrift;">2052</span>
-      //           <div style="font-size: 14px;">
-      //               <span>
-      //                   <span style="width: 8px; height: 8px; border-radius: 4px; background: rgba(24, 144, 255, 1);"></span>
-      //                   正常
-      //               </span>
-      //               <span>
-      //                   <span style="width: 8px; height: 8px; border-radius: 4px; background: rgba(110, 203, 83, 1);"></span>
-      //                   待安装
-      //               </span>
-      //               <span>
-      //                   <span style="width: 8px; height: 8px; border-radius: 4px; background: rgba(250, 173, 20, 1);"></span>
-      //                   待维修
-      //               </span>
-      //               <span>
-      //                   <span style="width: 8px; height: 8px; border-radius: 4px; background: rgba(255, 120, 117, 1);"></span>
-      //                   禁用
-      //               </span>
-      //           </div>
-      // </div>`,
-        // offsetY: 15,
-      // });
       this.chartInstance.render();
     },
   },
@@ -219,12 +205,14 @@ export default {
   align-items: center;
   justify-content: center;
 }
+@font-face {
+    font-family: 'DINEngschrift';
+    src: url('../../../assets/font/DINEngschrift-Alternate.otf');
+}
 * {
   font-family: "Helvetica Neue", Helvetica, Arial, "PingFang ",
     "Hiragino Sans GB" "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei",
     sans-serif;
-}
-li {
 }
 %flex-row-center {
   display: flex;

@@ -18,7 +18,7 @@
                         </h4>
                         <div class="handleBtn">
                             <!--<el-button plain>导出</el-button>-->
-                            <el-tooltip v-if="role=='MD'" effect="dark" content="从今天起重新预锁七天" placement="top">
+                            <el-tooltip v-if="role=='MD' && planDetail.apState===0" effect="dark" content="从今天起重新预锁七天" placement="top">
                                 <el-button @click="reLock">预 锁</el-button>
                             </el-tooltip>
                             <template v-if="planDetail.apState==1">
@@ -501,6 +501,16 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
+                // 方案详情的预锁重置
+                api.postApi(this.apiVar.Advertisement+"/ResetFangLock", {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    apid: sessionStorage.getItem("plan_apid")
+                }).then(res =>{
+                    if(!res.data.SysCode){
+                        console.log('res.data', res.data)
+                    }
+                });
                 // this.$message({
                 //     type: 'success',
                 //     message: '删除成功!'

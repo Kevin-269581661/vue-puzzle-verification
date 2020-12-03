@@ -105,6 +105,7 @@ li {
                 font-weight: 500;
                 color: rgba(51, 51, 51, 1);
                 line-height: 24px;
+                white-space: nowrap;
             }
             .normal-text {
                 font-size: 14px;
@@ -129,6 +130,7 @@ li {
         justify-content: space-between;
         margin-left: 27px;
         margin-right: 27px;
+        overflow: hidden;
         img {
             margin: 0 5px;
             width: 51px;

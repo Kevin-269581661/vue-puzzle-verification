@@ -25,7 +25,7 @@
 			<el-row :gutter="24" class="index-row">
 				<!-- 媒体概况 -->
 				<el-col :span="12">
-					<index-custom-card>
+					<index-custom-card height="520px">
 						<template slot="head">
 							媒体概况&nbsp
 							<el-tooltip popper-class="amount-tooltip" effect="dark" content="Top center" placement="top">
@@ -59,20 +59,23 @@
 					</index-custom-card>
 				</el-col>
 				<el-col :span="12">
-					<index-custom-card>
+					<index-custom-card height="520px">
 						<template slot="head">
 							预锁概况
 						</template>
 						<template slot="content">
 							<el-table
                                 :data="preLockArr"
-                                max-height="460"
+                                max-height="484"
 								style="padding: 25px 25px 0;"
                             >
                                 <el-table-column
 									prop="apName"
                                     label="方案"
                                     width="230">
+									<template slot-scope="scope">
+										<span @click="routePage(scope.row)" style="color: #1890FF; cursor: pointer;">{{scope.row.apName || ''}}</span>
+									</template>
                                 </el-table-column>
                                 <el-table-column
                                     prop="dayDiffer"
@@ -575,7 +578,7 @@ export default {
 	beforeCreate() {
 		var glSript = document.createElement('script');
 		glSript.type = 'text/javascript';
-		glSript.src = '//api.map.baidu.com/api?type=webgl&v=1.0&ak=OuaBKFQpjyuK6a2BvVW7qbNagMkSAKqI&callback=init';
+		glSript.src = 'https://api.map.baidu.com/api?type=webgl&v=1.0&ak=OuaBKFQpjyuK6a2BvVW7qbNagMkSAKqI&callback=init';
 		document.body.appendChild(glSript);
 		glSript.onload = ()=>{
 			var script = document.createElement("script");
@@ -1068,11 +1071,17 @@ export default {
                     }
                     params.push(obj)
                 }
-                console.log(params)
+                // console.log(params)
                 api.postApi(this.apiVar.UCAPI+'/UserStaticReport',{userStatics:JSON.stringify(params)}).then(res=>{
                     // console.log('UserStaticReport---',res.data);
                 })
             });
+		},
+		// 跳转到客户列表页面
+		routePage(row) {
+			sessionStorage.setItem("plan_apid", row.apID);
+			// sessionStorage.setItem('cityArea', JSON.stringify(row.cityArea));
+			this.$router.push("./media/planDetail");
 		},
 		// 首页报表接口
 		allReportApi() {
@@ -1245,16 +1254,16 @@ export default {
 					let temp = res.data.data;
 					this.ringData = [
 						[
-							{ item: "正常", count: temp.normalMediaCnt+1 },
-							{ item: "待安装", count: temp.installMediaCnt+1 },
-							{ item: "待维修", count: temp.repairMediaCnt+1 },
-							{ item: "禁用", count: temp.banMediaCnt+1 }
+							{ item: "正常", count: temp.normalMediaCn||0 },
+							{ item: "待安装", count: temp.installMediaCnt||0 },
+							{ item: "待维修", count: temp.repairMediaCnt||0 },
+							{ item: "禁用", count: temp.banMediaCnt||0 }
 						],
 						[
-							{ item: "正常", count: temp.normalLabCnt+10 },
-							{ item: "待安装", count: temp.installLabCnt+1 },
-							{ item: "待维修", count: temp.repairLabCnt+1 },
-							{ item: "禁用", count: temp.banLabCnt+1 }
+							{ item: "正常", count: temp.normalLabCnt||0 },
+							{ item: "待安装", count: temp.installLabCnt||0 },
+							{ item: "待维修", count: temp.repairLabCnt||0 },
+							{ item: "禁用", count: temp.banLabCnt||0 }
 						],
 						[
 							[temp.offPubMediaCnt, temp.offPubRank+'%'],
@@ -1355,7 +1364,7 @@ export default {
     }
     .index-row {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
         margin-bottom: 24px;
         & > div {
@@ -1394,9 +1403,17 @@ export default {
         }
     }
 	.bottom-box {
+		position: absolute;
         height: 48px;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		margin: 0 24px 32px;
         line-height: 48px;
         text-align: center;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
         background: #F8F8F8;
         border-radius: 2px;
         font-size: 16px;

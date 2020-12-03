@@ -7,7 +7,7 @@
         <span class="info-text">点位分布: 这段时间内可投点位的位置分布</span>
         <i v-if="instanceMap" @click="closeInfoBox" class="el-icon-close info-close" />
       </div>
-      <div class="fad-map-control">
+      <div v-if="instanceMap" class="fad-map-control">
         <i class="el-icon-rank map-full-screen" @click="fullMap(1)" />
         <!-- <a-slider
           vertical
@@ -69,7 +69,7 @@ export default {
       }
     },
     actived(val) {
-      if (this.mapFinish == false && this.hasMpvgl && val === true) {
+      if (this.hasMpvgl && val === true) {
         setTimeout(() => {
           this.setMap();
         }, 1000);
@@ -79,7 +79,6 @@ export default {
   data() {
     return {
       instanceMap: null,
-      mapFinish: false,
       fullFlag: null,
       sessionData: null,
       infoBoxShow: true,
@@ -105,7 +104,7 @@ export default {
         .then((res) => {
           if (res.data.SysCode === 200200) {
             this.tableData = res.data.data;
-            this.setMap(this.tableData);
+            // this.setMap();
           } else {
             this.messageFun("warning", res.data.MSG);
           }
@@ -115,10 +114,10 @@ export default {
         })
         .finally((_) => {});
     },
-    setMap(tableData=[]) {
+    setMap() {
       let mapData = []
-      if(tableData.length>0) {
-        tableData.forEach(item=>{
+      if(this.tableData.length>0) {
+        this.tableData.forEach(item=>{
           if(Array.isArray(item.latLngList)) {
             item.latLngList.forEach(point=>{
               mapData.push({
@@ -201,7 +200,6 @@ export default {
       // layer2.setData(mapData)
       layer3.setData(mapData)
       layer4.setData(mapData)
-      this.mapFinish = true;
     },
     // 放大或缩小地图
     setMapZoom(type) {

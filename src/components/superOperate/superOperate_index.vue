@@ -980,7 +980,7 @@
         beforeCreate() {
             var glSript = document.createElement('script');
             glSript.type = 'text/javascript';
-            glSript.src = '//api.map.baidu.com/api?type=webgl&v=1.0&ak=OuaBKFQpjyuK6a2BvVW7qbNagMkSAKqI&callback=init';
+            glSript.src = 'https://api.map.baidu.com/api?type=webgl&v=1.0&ak=OuaBKFQpjyuK6a2BvVW7qbNagMkSAKqI&callback=init';
             document.body.appendChild(glSript);
             glSript.onload = ()=>{
                 var script = document.createElement("script");

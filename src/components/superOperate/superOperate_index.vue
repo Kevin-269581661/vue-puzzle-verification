@@ -978,12 +978,18 @@
             }
         },
         beforeCreate() {
-            var script = document.createElement("script");
-            script.type = "text/javascript";
-            script.src = "/static/mapvgl.min.js";
-            document.body.appendChild(script);
-            script.onload = ()=>{
-                this.hasMpvgl = true
+            var glSript = document.createElement('script');
+            glSript.type = 'text/javascript';
+            glSript.src = '//api.map.baidu.com/api?type=webgl&v=1.0&ak=OuaBKFQpjyuK6a2BvVW7qbNagMkSAKqI&callback=init';
+            document.body.appendChild(glSript);
+            glSript.onload = ()=>{
+                var script = document.createElement("script");
+                script.type = "text/javascript";
+                script.src = "/static/mapvgl.min.js";
+                document.body.appendChild(script);
+                script.onload = ()=>{
+                    this.hasMpvgl = true
+                }
             }
         },
         mounted() {

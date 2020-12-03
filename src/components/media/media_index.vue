@@ -573,12 +573,18 @@ export default {
 		}
 	},
 	beforeCreate() {
-		var script = document.createElement("script");
-		script.type = "text/javascript";
-		script.src = "/static/mapvgl.min.js";
-		document.body.appendChild(script);
-		script.onload = ()=>{
-			this.hasMpvgl = true
+		var glSript = document.createElement('script');
+		glSript.type = 'text/javascript';
+		glSript.src = '//api.map.baidu.com/api?type=webgl&v=1.0&ak=OuaBKFQpjyuK6a2BvVW7qbNagMkSAKqI&callback=init';
+		document.body.appendChild(glSript);
+		glSript.onload = ()=>{
+			var script = document.createElement("script");
+			script.type = "text/javascript";
+			script.src = "/static/mapvgl.min.js";
+			document.body.appendChild(script);
+			script.onload = ()=>{
+				this.hasMpvgl = true
+			}
 		}
 	},
 	methods:{
@@ -621,7 +627,7 @@ export default {
 					obj.url = obj.value;
 					result.push(obj);
 				}
-				console.log('result----cards', result);
+				// console.log('result----cards', result);
 				this.comimgInfo = result;
 			}
 		},
@@ -632,7 +638,7 @@ export default {
 				token: this.sessionData.token,
 			};
 			api.getApi(this.apiVar.report + '/GetHomePageInfoOfMD', info).then(res =>{
-				console.log(res.data);
+				// console.log(res.data);
 				if(res.data.SysCode == 200200){
 					let resInfo = res.data.data;
 					this.dataArr[0].data = resInfo.resCount;
@@ -656,7 +662,7 @@ export default {
 				token: this.sessionData.token,
 			};
 			api.getApi(this.apiVar.report + '/GetSummaryOfLastMonthOfMD', info).then(res =>{
-				console.log(res);
+				// console.log(res);
 				if(res.data.SysCode == 200200){
 					let resinfo = res.data.data;
 					this.contribute = {
@@ -678,7 +684,7 @@ export default {
 				token: this.sessionData.token,
 			};
 			api.getApi(this.apiVar.report + '/GetTotalPerformanceOfMD', info).then(res =>{
-				console.log(res);
+				// console.log(res);
 				if(res.data.SysCode == 200200){
 					let resinfo = res.data.data;
 					this.medalInfo = {
@@ -705,7 +711,7 @@ export default {
 					this.imginfo[2].name = this.getName(3, this.medalInfo.release-2);
 					this.imginfo[2].title = this.imginfo[2].name?this.imginfo[2].name:'';
 
-					console.log('this.imginfo', this.imginfo);
+					// console.log('this.imginfo', this.imginfo);
 					for(let data of this.imginfo){
 						if(data.title){
 							data.flag = true;
@@ -714,7 +720,7 @@ export default {
 						}
 					}
 					this.companyHonor = this.comimgInfo.concat(this.imginfo);
-					console.log(this.companyHonor, 'companyHonor');
+					// console.log(this.companyHonor, 'companyHonor');
 				}else{
 					Message.warning(res.data.MSG);
 				}
@@ -812,7 +818,7 @@ export default {
 				endTime: this.monthRange[1]
 			};
 			api.getApi(this.apiVar.report + '/GetAdPlanCountAndAsCountByPeriodOfMD', info).then(res =>{
-				console.log(res.data);
+				// console.log(res.data);
 				if(res.data.SysCode == 200200){
 					let title = [];
 					let orderData = [];
@@ -1218,22 +1224,24 @@ export default {
 			}).finally(_=>{
 				
 			})
-			// 媒介的媒体概况 /report /homepage/getMDMediaReport
+			/* 
+				媒介的媒体概况
+				"banLabCnt" 禁止的点位数
+				"banMediaCnt" 禁止的媒体数
+				"normalLabCnt" 正常的点位数
+				"normalMediaCnt" 正常的媒体数
+				"installLabCnt" 待安装的点位数
+				"installMediaCnt" 待安装的媒体数
+				"repairLabCnt" 待修理的点位数
+				"repairMediaCnt" 待修理的媒体数
+				"demolishLabCnt" 拆除的点位数
+				"demolishMediaCnt" 拆除的媒体数
+				"offPubMediaCnt" 不可投的媒体数
+				"offPubLabCnt" 不可投的点位数
+				"offPubRank" 排名百分比 
+			*/
 			api.getApi(this.apiVar.report + '/homepage/getMDMediaReport', params).then(res=>{
 				if (res.data.SysCode === 200200) {
-					/* "banLabCnt" 禁止的点位数
-					"banMediaCnt" 禁止的媒体数
-					"normalLabCnt" 正常的点位数
-					"normalMediaCnt" 正常的媒体数
-					"installLabCnt" 待安装的点位数
-					"installMediaCnt" 待安装的媒体数
-					"repairLabCnt" 待修理的点位数
-					"repairMediaCnt" 待修理的媒体数
-					"demolishLabCnt" 拆除的点位数
-					"demolishMediaCnt" 拆除的媒体数
-					"offPubMediaCnt" 不可投的媒体数
-					"offPubLabCnt" 不可投的点位数
-					"offPubRank" 排名百分比 */
 					let temp = res.data.data;
 					this.ringData = [
 						[

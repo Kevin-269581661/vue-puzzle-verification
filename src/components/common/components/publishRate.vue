@@ -147,36 +147,29 @@ export default {
     setMap() {
       if(!this.hasMpvgl) return
       if (this.instanceMap == null) {
-        this.instanceMap = new BMap.Map(this.mapContainer, {
-          enableMapClick: false,
-        }); // 创建Map实例
-        this.instanceMap.centerAndZoom(
-          new BMap.Point(105.348145, 28.165926),
-          5
-        ); // 初始化地图,设置中心点坐标和地图级别
-        this.instanceMap.currentScaleLevel = 5;
-        this.instanceMap.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
-        this.instanceMap.setMapStyleV2({ styleJson: whiteStyle });
-        this.instanceMap.addControl(
-          new BMap.ScaleControl({ offset: new BMap.Size(20, 5) })
-        );
-        // this.instanceMap.addEventListener("zoomend", (e) => {
-        //   let level = e.target.getZoom()
-        //   currentScaleLevel = this.instanceMap.currentScaleLevel;
-        //   this.sliderValue2 = this.getSliderValue(level);
-        //   this.instanceMap.currentScaleLevel = level;
-        // });
+        this.instanceMap = initMap({
+          id: this.mapContainer,
+          tilt: 48.8,
+          heading: 0,
+          center: [105.348145, 28.165926],
+          zoom: 6,
+          style: whiteStyle,
+        });
+        this.instanceMap.addEventListener("zoomend", (e) => {
+          let level = e.target.getZoom();
+          // this.sliderValue1 = this.getSliderValue(level);
+        });
       }
       if(!this.tableData) return;
-      this.instanceMap.setCenter(
-        new BMap.Point(105.348145, 28.165926)
-      );
+      // this.instanceMap.setCenter(
+      //   new BMapGL.Point(105.348145, 28.165926)
+      // );
       this.instanceMap.clearOverlays();
       this.tableData.forEach((item) => {
         if (item.latlng) {
-          let label = new BMap.Label(item.onPubRate + "%", {
-            offset: new BMap.Size(22, 2),
-            position: new BMap.Point(
+          let label = new BMapGL.Label(item.onPubRate + "%", {
+            offset: new BMapGL.Size(22, 2),
+            position: new BMapGL.Point(
               item.latlng.split(";")[0],
               item.latlng.split(";")[1]
             ),

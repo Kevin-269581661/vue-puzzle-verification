@@ -1,10 +1,8 @@
 <template>
     <div>
-        <div class="nav-cell" v-for="(item, index) of link" :key="index" >
+        <div class="nav-cell" v-for="(item, index) of link" :key="index" @click="navFun(item)">
             <img class="cell-img" :src="item.imgurl" alt="" >
-            <span class="cell-text" v-if="item.title === '地图选点'" @click="showMapModel">{{item.title}}</span>
-            <span class="cell-text" v-else-if="item.title === '导出空位'" @click="isOpenDownload=true">{{item.title}}</span>
-            <a class="cell-text" v-else :href="item.link">{{item.title}}</a>
+            <a class="cell-text">{{item.title}}</a>
         </div>
         <!-- 地图选点选择条件弹出框 -->
         <el-dialog
@@ -111,8 +109,14 @@
             this.getsessionData()
         },
         methods:{
-            toLink(link){
-                this.$router.push(link);
+            navFun(item) {
+                if(item.title === '地图选点') {
+                    this.showMapModel()
+                } else if(item.title === '导出空位') {
+                    this.isOpenDownload=true
+                } else {
+                    windows.location.href=item.link
+                }
             },
             // 获取登录用户信息
             getsessionData() {

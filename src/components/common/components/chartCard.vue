@@ -24,7 +24,6 @@
         </div>
         <div class="row-right">
             <trend
-                style="margin-right: 16px;"
                 :term="cardData.trendLabel"
                 :percentage="cardData.compare"
               ></trend>
@@ -208,7 +207,7 @@ export default {
     }
     .row-right {
       height: 26px;
-      padding: 2px 8px;
+      padding: 2px 10px;
       margin-left: auto;
       text-align: center;
       font-size: 12px;

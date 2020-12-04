@@ -73,6 +73,7 @@ export default {
   }
   .progress-wrapper {
     position: relative;
+    overflow: hidden;
     .progress {
       height: 20px;
       width: 0;
@@ -82,7 +83,7 @@ export default {
       .value {
         margin-left: 8px;
         font-size: 12px;
-        color: #FFFFFF;
+        color: #c0c4cc;
         font-family: HelveticaNeue;
       }
     }

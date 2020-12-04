@@ -341,8 +341,8 @@ export default {
 				},
 				{
 					imgurl: require('../../assets/images/gua.png'),
-					title: '点位表盘',
-					link: './media/adsDialPlate',
+					title: '维护管理',
+					link: './media/maintainList',
 				},
 			],
 			linkArr:[

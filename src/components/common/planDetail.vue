@@ -18,7 +18,7 @@
                         </h4>
                         <div class="handleBtn">
                             <!--<el-button plain>导出</el-button>-->
-                            <el-tooltip v-if="role=='MD' && planDetail.apState===0" effect="dark" content="从今天起重新预锁七天" placement="top">
+                            <el-tooltip v-if="role=='MD' && planDetail.lockStatus==1" effect="dark" content="从今天起重新预锁七天" placement="top">
                                 <el-button @click="reLock">预 锁</el-button>
                             </el-tooltip>
                             <template v-if="planDetail.apState==1">
@@ -324,6 +324,7 @@ export default {
                             apID: info.apID,
                             apName: info.apName,
                             apState: info.apState,
+                            lockStatus: info.lockStatus,
                             apTotal: info.apTotal,
                             apcTime: dateFormat.toDateTime(info.apcTime, '/'),
                             bTitle: info.bTitle,

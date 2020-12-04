@@ -6,8 +6,9 @@
         </el-radio-group>
         <el-carousel ref="carousel" :autoplay="false" arrow="never" indicator-position="none" class="carousel-box"  :height="height" @change='carouselChange'>
             <el-carousel-item>
+                <img class="index-banner" alt="" src="/static/images/appBanner.png" @click="goToPage({link: 'https://apps.qinlinad.com/OKR.html', name: 'OKR'})" />
                 <ul class="app-list">
-                    <li class="app-item" v-for="item in appCenter" @click="goToPage(item)">
+                    <li class="app-item" v-for="(item, index) in appCenter" @click="goToPage(item)" :key="index">
                         <div class="item-left">
                             <img :src="item.imgUrl" alt="">
                         </div>
@@ -21,9 +22,10 @@
                 </ul>
             </el-carousel-item>
             <el-carousel-item>
+                <img class="index-banner" alt="" src="/static/images/noticeBanner.png" />
                 <ul class="app-list">
-                    <li class="app-item" v-for="item in tableSource">
-                        <div style="position: relative; margin-bottom: 12px;">
+                    <li class="app-item" v-for="(item, index) in tableSource" :key="index">
+                        <div style="position: relative; margin-bottom: 12px; width: 100%;">
                             <div class="notice-head">
                                 <span class="notice-title">{{item.title || ''}}</span>
                                 <span class="notice-date">{{item.createTime || ''}}</span>
@@ -65,7 +67,7 @@
             },
             height: {
                 type: String,
-                default: '528px'
+                default: 'inherit'
             }
         },
         data() {
@@ -110,11 +112,7 @@
                         let dataInfo = res.data;
                         // this.totalNum = dataInfo.count;
                         this.tableSource = dataInfo || [];
-                        // this.loading = false;
-                        // this.isSearch = false;
-                        // if(dataInfo.totalpage == 0){
-                        //     this.$message.warning('暂无数据');
-                        // }
+                        // this.tableSource = this.tableSource.concat(dataInfo || []);
                     }else{
                         this.$message.warning(res.data.MSG);
                     }
@@ -176,25 +174,37 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 16px 0;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 16px 0 0;
     /deep/ .el-radio-button__inner {
         padding: 8px 16px
     }
     .carousel-box {
         width: 100%;
+        height: inherit;
         padding-top: 16px;
+        .index-banner {
+            width: 100%;
+            padding: 0 24px 8px;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
         .app-list {
-            height: calc(100% - 18px);
+            height: calc(100% - 90px);
             overflow-y: auto;
             overflow-x: hidden;
+            .app-item:last-child {
+                border-bottom: none;
+            }
             .app-item {
                 position: relative;
                 display: flex;
                 flex-direction: row;
                 align-items: center;
-                padding: 0 24px;
-                margin: 16px 0;
+                padding: 8px 0;
+                margin: 0 24px;
+                border-bottom: 1px solid #E9E9E9;
                 cursor: pointer;
                 .item-left {
                     img {
@@ -237,6 +247,9 @@
                     font-weight: 600;
                     color: rgba(0, 0, 0, 0.85);
                     line-height: 24px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
                 .notice-date {
                     font-size: 12px;
@@ -244,6 +257,9 @@
                     font-weight: 400;
                     color: rgba(0, 0, 0, 0.45);
                     line-height: 24px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
                 .notice-content {
                     margin-top: 6px;

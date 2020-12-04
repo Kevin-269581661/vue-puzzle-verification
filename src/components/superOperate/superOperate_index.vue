@@ -79,7 +79,7 @@
                                     placement="top"
                                     :visible-arrow="false"
                                     width="200"
-                                    trigger="click"
+                                    trigger="hover"
                                 >
                                     <div class="pop-box">
                                         <div class="pop-title">
@@ -470,7 +470,7 @@
                 </div>
             </div>
         </div>
-        <el-dialog
+        <!-- <el-dialog
           title="业绩排名"
           :visible.sync="performanceVisible"
           width="820px">
@@ -538,7 +538,7 @@
                     </el-table-column>
                 </el-table>
             </div>
-        </el-dialog>
+        </el-dialog> -->
         <!-- 设置业绩目标 -->
         <el-dialog :width="'288px'" :show-close="false" :visible.sync="showSetTarget" custom-class="target-dialog">
             <span slot="title">设置{{currentEditSale.realName || ''}}业绩目标</span>
@@ -551,7 +551,7 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="showSetTarget = false">取 消</el-button>
-                <el-button type="primary" @click="setTarget">保 存</el-button>
+                <el-button type="primary" @click="setTarget(null)">保 存</el-button>
             </div>
         </el-dialog>
   </div>
@@ -791,27 +791,27 @@
                 // 是否对比
                 turnoverCompare: false,
                 // 跑道价格
-                runwayLoading: true,    // 业绩跑到loading
-                maxPrice: 550000000,     // 跑道价格最大值，单位分
+                // runwayLoading: true,    // 业绩跑到loading
+                // maxPrice: 550000000,     // 跑道价格最大值，单位分
                 runwayPrice: [0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550],
                 // 跑道图片
-                runwayImg: [],
+                // runwayImg: [],
                 // 销售当月销售金额
                 salePrice: [430, 290, 220, 195, 160, 110, 45, 20],
                 // 销售排行
-                performanceVisible: false,
+                // performanceVisible: false,
                 // 排行表格
-                tableData: [],
+                // tableData: [],
                 isMonthlyRanking: false,
-                rankingImg:[
-                    {city:'北京',asrID: '1',url: require('../../assets/images/index/beijing.png')},
-                    {city:'上海',asrID: '2',url: require('../../assets/images/index/shanghai.png')},
-                    {city:'广州',asrID: '3',url: require('../../assets/images/index/guangzhou.png')},
-                    {city:'深圳',asrID: '4',url: require('../../assets/images/index/shenzhen.png')},
-                    {city:'成都',asrID: '5',url: require('../../assets/images/index/chengdu.png')},
-                    {city:'重庆',asrID: '6',url: require('../../assets/images/index/chongqing.png')},
-                    {city:'天津',asrID: '7',url: require('../../assets/images/index/tianjing.png')}
-                ],
+                // rankingImg:[
+                //     {city:'北京',asrID: '1',url: require('../../assets/images/index/beijing.png')},
+                //     {city:'上海',asrID: '2',url: require('../../assets/images/index/shanghai.png')},
+                //     {city:'广州',asrID: '3',url: require('../../assets/images/index/guangzhou.png')},
+                //     {city:'深圳',asrID: '4',url: require('../../assets/images/index/shenzhen.png')},
+                //     {city:'成都',asrID: '5',url: require('../../assets/images/index/chengdu.png')},
+                //     {city:'重庆',asrID: '6',url: require('../../assets/images/index/chongqing.png')},
+                //     {city:'天津',asrID: '7',url: require('../../assets/images/index/tianjing.png')}
+                // ],
                 // 弹窗显示的城市排名
                 showCityRankingImg:[
                     {city:'',ranking: 0,url: ''},
@@ -1240,6 +1240,7 @@
             },
             // 设置业绩目标
             setTarget(row) {
+                console.log('row', row)
                 if(row) {
                     this.showSetTarget = true;
                     this.currentEditSale = row;
@@ -1253,8 +1254,7 @@
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    target: Number(this.targetVaule) * 100,
-                    // target: Number(this.targetVaule) * 10000 * 100,
+                    target: Number(this.targetVaule),
                     suID: this.currentEditSale.uID,
                 }
                 // console.log('设置销售目标参数',params)
@@ -1272,11 +1272,11 @@
             getsessionData() {
                 this.sessionData = sessFun.getSess();
                 if (this.sessionData.asrID === '999') {
-                    this.isPlatform = false
-                    // this.isPlatform = true
+                    // this.isPlatform = false
+                    this.isPlatform = true
                     // this.linkArr = JSON.parse(JSON.stringify(this.linkTemp))
                 } else {
-                    this.isPlatform = true
+                    this.isPlatform = false
                 }
                 // 根据不同的登录用户构建不同的常用模块
                 for (let key of this.linkTemp) {
@@ -1326,9 +1326,9 @@
                 if (this.isRetailCompany) {
                     // 直营公司收入排名(超级运营排行弹窗) GetPdIncomeCount
                     let nowDate = timeFormat.toDate(new Date(), '/');
-                    if(indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)){
+                    // if(indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)){
                         this.getPdIncomeCountByID()
-                    }
+                    // }
                     // 获取月订单数及订单金额总数
                     let endTime = timeFormat.returnMonthCount(0, '-')
                     // 判断当前日期是否为每月的1号
@@ -1360,10 +1360,10 @@
                     this.setOrderCountData(this.nowMonth, false)
                 }
                 // 是否平台商
-                if (this.isPlatform) {
+                // if (this.isPlatform) {
                     // 业绩排行
-                    this.setBDonRunway()
-                }
+                    // this.setBDonRunway()
+                // }
             },
             // 获取直营公司列表
             getDirectSales(){
@@ -1384,24 +1384,23 @@
             },
             // 动态修改图表的宽度
             realTimeChangeEcharteWidth(){
-                let width = 0
-                let bar_box = ''
                 if (this.activeTabsName === 'order' || this.activeTabsName === 'price') {
                     console.log('this.activeTabsName', this.activeTabsName)
                     // bar_box = document.getElementById('order_bar_box') SM_order_price
-                    bar_box = document.getElementsByClassName('SM_order_price')[0]
-                    let turnoverBar = document.getElementById('turnoverBar')
-                    let order = document.getElementById('orderBar')
-                    width = bar_box.offsetWidth
-                    order.style.width = width + 'px'
-                    turnoverBar.style.width = width + 'px'
+                    // let bar_box = document.getElementsByClassName('SM_order_price')[0]
+                    // let order = document.getElementById('orderBar')
+                    // let turnoverBar = document.getElementById('turnoverBar')
+                    let width = document.getElementsByClassName('SM_order_price')[0].offsetWidth
+                    console.log('width', width)
+                    document.getElementById('orderBar').style.width = width + 'px'
+                    document.getElementById('turnoverBar').style.width = width + 'px'
                     this.orderEcharts.resize()
                     this.turnoverEcharts.resize()
                 }
-                if (this.isPlatform){
+                // if (this.isPlatform){
                     // 销售头像在跑道前进的位置
-                    this.locationOnRunway()
-                }
+                    // this.locationOnRunway()
+                // }
             },
             // 直营公司收入排名(超级运营排行弹窗)
             getPdIncomeCountByID(){
@@ -1413,13 +1412,28 @@
                     // console.log('直营公司收入排名',res)
                     let dataArr = res.data.data
                     if(res.data.SysCode == 200200 && Array.isArray(dataArr) && dataArr.length > 0){
-                        dataArr.sort(this.compareSort('total'))
-                        let first = ''
-                        let second = ''
-                        let three = ''
-                        if (this.isPlatform) {
+                        // dataArr.sort((a, b)=>{
+                        //     return b.total - a.total;
+                        // })
+                        let first = 1,
+                            second = 0,
+                            three = 2;
+                        let tempArr = [
+                            {city:'北京',asrID: '1',url: require('../../assets/images/index/beijing.png')},
+                            {city:'上海',asrID: '2',url: require('../../assets/images/index/shanghai.png')},
+                            {city:'广州',asrID: '3',url: require('../../assets/images/index/guangzhou.png')},
+                            {city:'深圳',asrID: '4',url: require('../../assets/images/index/shenzhen.png')},
+                            {city:'成都',asrID: '5',url: require('../../assets/images/index/chengdu.png')},
+                            {city:'重庆',asrID: '6',url: require('../../assets/images/index/chongqing.png')},
+                            {city:'天津',asrID: '7',url: require('../../assets/images/index/tianjing.png')}
+                        ]
+                        if (!this.isPlatform) {
+                            dataArr.forEach((item, index)=>{
+                                if (this.sessionData.asrID == dataArr[i].asrId) {}
+                            })
                             for (let i = 0; i < dataArr.length; i++) {
-                                if (this.sessionData.asrID == dataArr[i].asrID) { // this.sessionData.asrID
+
+                                if (this.sessionData.asrID == dataArr[i].asrId) {
                                     if (i === 0) {
                                         first = 1
                                         second = 0
@@ -1437,26 +1451,12 @@
                                 }
                             }
                         } else {
-                            first = 1
-                            second = 0
-                            three = 2
+                            this.showCityRankingImg.forEach((item, index)=>{
+                                item.city = dataArr[index].city
+                                item.ranking = index + 1
+                                item.url = tempArr[item.asrId-1].url
+                            })
                         }
-                        // console.log('first',first,'second',second,'three',three)
-                        // 第一个
-                        let cityFirst = this.returnCityData(dataArr[first].asrID)
-                        this.showCityRankingImg[0].city = cityFirst.city
-                        this.showCityRankingImg[0].ranking = first + 1
-                        this.showCityRankingImg[0].url = cityFirst.url
-                        // 第二个
-                        let citySecond = this.returnCityData(dataArr[second].asrID)
-                        this.showCityRankingImg[1].city = citySecond.city
-                        this.showCityRankingImg[1].ranking = second + 1
-                        this.showCityRankingImg[1].url = citySecond.url
-                        // 第三个
-                        let cityThree = this.returnCityData(dataArr[three].asrID)
-                        this.showCityRankingImg[2].city = cityThree.city
-                        this.showCityRankingImg[2].ranking = three + 1
-                        this.showCityRankingImg[2].url = cityThree.url
                         this.animateFun()
                     } else {
                         this.messageFun('warning','城市月季排行暂无数据')
@@ -1464,13 +1464,13 @@
                 })
             },
             // 根据公司id返回城市名称及图片地址 rankingImg
-            returnCityData(asrID) {
-                for(let key of this.rankingImg){
-                    if(asrID == key.asrID){
-                        return {city: key.city, url: key.url}
-                    }
-                }
-            },
+            // returnCityData(asrID) {
+            //     for(let key of this.rankingImg){
+            //         if(asrID == key.asrID){
+            //             return {city: key.city, url: key.url}
+            //         }
+            //     }
+            // },
             //超级运营顶部内容详情
             getHeaderData(){
                 let params = {
@@ -1494,10 +1494,11 @@
                 this.activeTabsName = tab.name
                 if (this.activeTabsName === 'price'){
                     this.DateMonth = this.turnoverDateMonth.concat()
-                }else{
+                    this.realTimeChangeEcharteWidth()
+                }else if (this.activeTabsName === 'order'){
                     this.DateMonth = this.orderDateMonth.concat()
+                    this.realTimeChangeEcharteWidth()
                 }
-                this.realTimeChangeEcharteWidth()
             },
             // 对比checkbox
             compareRadio() {
@@ -2029,104 +2030,103 @@
                 }, true);
             },
             // 获取业绩排行 GetAchievementRankList
-            setBDonRunway(){
-                let params = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token,
-                    asrIDs: this.returnAsrID(this.sessionData.asrID),
-                }
-                // console.log('获取业绩排行参数',params)
-                api.getApi(this.apiVar.report + '/GetAchievementRankList', params).then(res => {
-                    // console.log('业绩排行接口', res)
-                    let dataArr = res.data.data;
-                    if(res.data.SysCode == 200200 && res.data.data){
-                        let tempArr = []
-                        let tableList = []
-                        let i = 0
-                        let maxPrice = 0
-                        for(let key of dataArr){
-                            if(key.target > maxPrice){
-                                maxPrice = key.target
-                            }
-                            tableList.push({
-                                ranking: i+1,
-                                name: key.realName,
-                                salesAmount: Math.floor(key.pdTotal / 100),
-                                targetAmount: Math.floor(key.target / 100) || 0,
-                                progressBar: key.target ? Number(((key.pdTotal / key.target) * 100).toFixed(2)) : 0,
-                                inputValue: '',
-                                setBtn: false,
-                                uID: key.uID,
-                            })
-                            if(i < 8){
-                                tempArr.push({
-                                    headPic: key.headPic || require('../../assets/images/index/headimg.png'),
-                                    pdTotal: Math.floor(key.pdTotal / 100),
-                                    realName: key.realName,
-                                    target: Math.floor(key.target / 100),
-                                    uID: key.uID,
-                                })
-                            }
-                            i++
-                        }
-                        if(maxPrice > 0){
-                            this.maxPrice = maxPrice
-                        }
-                        this.setRunwayPrice(this.maxPrice)
-                        for(let i = tempArr.length; i < 8;i++){
-                            tempArr.push({
-                                headPic:'',
-                                pdTotal:'',
-                                realName: '',
-                                target: 0,
-                                uID: '',
-                            })
-                        }
-                        this.runwayImg = tempArr
-                        // console.log('业绩排行接口tempArr',tempArr)
-                        let timer = setTimeout(()=>{
-                            this.locationOnRunway()
-                            clearTimeout(timer)
-                        },100)
-                        this.tableData = tableList
-                        this.runwayLoading = false
-                    } else {
-                        this.messageFun('warning','暂无数据')
-                    }
-                })
-            },
+            // setBDonRunway(){
+            //     let params = {
+            //         uid: this.sessionData.uID,
+            //         token: this.sessionData.token,
+            //         asrIDs: this.returnAsrID(this.sessionData.asrID),
+            //     }
+            //     console.log('获取业绩排行参数',params)
+            //     api.getApi(this.apiVar.report + '/GetAchievementRankList', params).then(res => {
+            //         console.log('业绩排行接口', res)
+            //         let dataArr = res.data.data;
+            //         if(res.data.SysCode == 200200 && res.data.data){
+            //             let tempArr = []
+            //             let tableList = []
+            //             let i = 0
+            //             let maxPrice = 0
+            //             for(let key of dataArr){
+            //                 if(key.target > maxPrice){
+            //                     maxPrice = key.target
+            //                 }
+            //                 tableList.push({
+            //                     ranking: i+1,
+            //                     name: key.realName,
+            //                     salesAmount: Math.floor(key.pdTotal / 100),
+            //                     targetAmount: Math.floor(key.target / 100) || 0,
+            //                     progressBar: key.target ? Number(((key.pdTotal / key.target) * 100).toFixed(2)) : 0,
+            //                     inputValue: '',
+            //                     setBtn: false,
+            //                     uID: key.uID,
+            //                 })
+            //                 if(i < 8){
+            //                     tempArr.push({
+            //                         headPic: key.headPic || require('../../assets/images/index/headimg.png'),
+            //                         pdTotal: Math.floor(key.pdTotal / 100),
+            //                         realName: key.realName,
+            //                         target: Math.floor(key.target / 100),
+            //                         uID: key.uID,
+            //                     })
+            //                 }
+            //                 i++
+            //             }
+            //             if(maxPrice > 0){
+            //                 this.maxPrice = maxPrice
+            //             }
+            //             this.setRunwayPrice(this.maxPrice)
+            //             for(let i = tempArr.length; i < 8;i++){
+            //                 tempArr.push({
+            //                     headPic:'',
+            //                     pdTotal:'',
+            //                     realName: '',
+            //                     target: 0,
+            //                     uID: '',
+            //                 })
+            //             }
+            //             this.runwayImg = tempArr
+            //             console.log('业绩排行接口tempArr',tempArr)
+            //             let timer = setTimeout(()=>{
+            //                 this.locationOnRunway()
+            //                 clearTimeout(timer)
+            //             },100)
+            //             this.tableData = tableList
+            //             this.runwayLoading = false
+            //         } else {
+            //             this.messageFun('warning','暂无数据')
+            //         }
+            //     })
+            // },
             // 根据设置的最大目标销售额动态改变跑道的价格间隔 runwayPrice
-            setRunwayPrice(maxPrice){
-                let colPrice = parseInt(maxPrice / 11/ 100 / 10000)    // 分层十一格，分单位再除以100、10000转换成单位万元
-                let priceList = [0]
-                for(let i=1; i < 11; i++){
-                    priceList.push(colPrice * i)
-                }
-                priceList.push(parseInt(maxPrice / 100 / 10000))
-                this.runwayPrice = priceList
-                // console.log('根据设置的最大目标销售额动态改变跑道的价格间隔',priceList)
-            },
+            // setRunwayPrice(maxPrice){
+            //     let colPrice = parseInt(maxPrice / 11/ 100 / 10000)    // 分层十一格，分单位再除以100、10000转换成单位万元
+            //     let priceList = [0]
+            //     for(let i=1; i < 11; i++){
+            //         priceList.push(colPrice * i)
+            //     }
+            //     priceList.push(parseInt(maxPrice / 100 / 10000))
+            //     this.runwayPrice = priceList
+            //     console.log('根据设置的最大目标销售额动态改变跑道的价格间隔',priceList)
+            // },
             // 根据销售金额占比总金额计算偏移位置 runway_td_2 runwayPrice salePrice
-            locationOnRunway() {
+            // locationOnRunway() {
                 // 获取跑道长度
-                let runwayLength = document.getElementsByClassName('runway_conten')[0].offsetWidth
+                // let runwayLength = document.getElementsByClassName('runway_conten')[0].offsetWidth
                 // 跑道的最大金额
-                let maxPrice = this.runwayPrice[this.runwayPrice.length - 1]
+                // let maxPrice = this.runwayPrice[this.runwayPrice.length - 1]
                 // 偏移位置
-                let locationArr = []
+                // let locationArr = []
                 // 跑道图片元素
-                for (let i in this.runwayImg) {
-                    let salerImg = document.getElementById('saler_img' + i)
-                    locationArr.push(this.runwayImg[i].pdTotal / maxPrice / 10000)
-                    let percent = this.runwayImg[i].pdTotal / maxPrice / 10000
-                    if(percent >= 1){
-                        salerImg.style.left =  0.88 * runwayLength + 'px'
-                    }else{
-                        salerImg.style.left = 0.88 * percent  * runwayLength + 'px'
-                    }
-                }
-                // console.log('locationArr',locationArr)
-            },
+                // for (let i in this.runwayImg) {
+                //     let salerImg = document.getElementById('saler_img' + i)
+                //     locationArr.push(this.runwayImg[i].pdTotal / maxPrice / 10000)
+                //     let percent = this.runwayImg[i].pdTotal / maxPrice / 10000
+                //     if(percent >= 1){
+                //         salerImg.style.left =  0.88 * runwayLength + 'px'
+                //     }else{
+                //         salerImg.style.left = 0.88 * percent  * runwayLength + 'px'
+                //     }
+                // }
+            // },
             // 设置销售目标 SaveOrUpdateUserTarget
             setSalerTarget(row){
                 console.log('行数据',row)
@@ -2151,10 +2151,6 @@
                         row.setBtn = false
                         row.targetAmount = params.target / 100
                         row.progressBar = row.targetAmount ? Number(((row.salesAmount / row.targetAmount ) * 100).toFixed(0)) : 0
-                        if(params.target > this.maxPrice){
-                            this.maxPrice = params.target
-                            this.setRunwayPrice(this.maxPrice)
-                        }
                     }else{
                         this.messageFun('warning',res.data.MSG)
                     }
@@ -2295,13 +2291,13 @@
                 return commaFormat.init(price);
             },
             // 数据大到小排序
-            compareSort(property) {
-                return function (a, b) {
-                    let value1 = a[property];
-                    let value2 = b[property];
-                    return value2 - value1;
-                }
-            },
+            // compareSort(property) {
+            //     return function (a, b) {
+            //         let value1 = a[property];
+            //         let value2 = b[property];
+            //         return value2 - value1;
+            //     }
+            // },
             // 操作提示统一方法
             messageFun(mesType,mes){
                 this.$message({

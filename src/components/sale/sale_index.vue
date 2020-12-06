@@ -25,6 +25,9 @@
                         </template>
                         <template slot="content">
                             <gauge-chart container="gaugeChart" :gaugeData="gaugeData"></gauge-chart>
+                            <div class="bottom-box">
+                                您本年业绩目标为 <span class="avtive"> ￥{{gaugeData.targetPrice || 0}} </span> 完成了<span class="avtive"> {{gaugeData.finshProcess}}% </span>业绩排名第<span class="avtive"> {{gaugeData.rank}} </span>，请继续努力
+                            </div>
                         </template>
                     </index-custom-card>
                 </el-col>
@@ -36,25 +39,29 @@
                         <template slot="content">
                             <el-table
                                 :data="clientArr"
-                                max-height="460"
-								style="padding: 25px 25px 0;"
+                                max-height="483"
                             >
                                 <el-table-column
+                                    show-overflow-tooltip
 									prop="cname"
                                     label="客户"
-                                    width="230">
+                                    width="150">
                                 </el-table-column>
                                 <el-table-column
+                                    sortable
                                     prop="dayDiff"
                                     label="沉默天数"
-                                    width="100">
+                                    width="120"
+                                    align="center">
                                 </el-table-column>
                                 <el-table-column
+                                    sortable
                                     prop="totalAdPrice"
                                     label="合作金额"
+                                    width="auto"
                                 >
                                     <template slot-scope="scope">
-                                        <mini-progress slot="reference" :target="0" :percentage="scope.row.rate*1" :value="scope.row.totalAdPrice" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                        <mini-progress style="cursor: unset;" slot="reference" :target="0" :percentage="scope.row.rate*1" :value="scope.row.totalAdPrice" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
                                     </template>
                                 </el-table-column>
                             </el-table>
@@ -64,7 +71,7 @@
             </el-row>
             <el-row class="index-row">
                 <el-col :span="24">
-                    <index-custom-card height="540px">
+                    <index-custom-card height="auto">
                         <template slot="head">
                             点位分布
                         </template>
@@ -117,7 +124,7 @@
                     <span class="up" v-else>收起 <i class="el-icon-d-arrow-left"></i> </span>
                 </div>
             </div> -->
-            <div style="margin:24px 0; background:#fff;border: 1px solid #e5e6e9;">
+            <!-- <div style="margin:24px 0; background:#fff;border: 1px solid #e5e6e9;">
                 <h2 class="h2_style">业绩进度 <span class="span_rank">单位为：万</span></h2>
                 <div style=" width:96%; margin:24px auto;position:relative;" v-if="isShowLine">
 
@@ -144,7 +151,7 @@
                         <no-search-result></no-search-result>
                     </div>
                 </template>
-            </div>
+            </div> -->
         </div>
         <!-- 动效 -->
         <div class="monthly_ranking" v-show="isMonthlyRanking">
@@ -355,13 +362,8 @@
                     },
                 ],
                 userInfo: {
-                    username: '曾俊超',
-                    greetings: '祝您开心每一天!',
-                    duty: '销售经理',
-                    dep: '销售部门',
-                    phone: '13631275100',
-                    avator: require('../../assets/images/index/niu.png'),
-                    endTime: '2018-06-06'
+                    userName: '',
+                    greetings: '祝您开心每一天!'
                 },
                 dataArr: [
                     {
@@ -381,11 +383,11 @@
                 // 是否显示进度条
                 isShowLine: true,
                 // 你的助手
-                saleTalk: {
-                    dateTime: '2018.08.08 15:06:06',
-                    imgurl: require('../../assets/images/index/niu.png'),
-                    content: '宇杰，您上月业绩200万，本月截止9月16号业绩150万，继续努力哦！'
-                },
+                // saleTalk: {
+                //     dateTime: '2018.08.08 15:06:06',
+                //     imgurl: require('../../assets/images/index/niu.png'),
+                //     content: '宇杰，您上月业绩200万，本月截止9月16号业绩150万，继续努力哦！'
+                // },
                 // 进度排名
                 saleInfo: {
                     price: 30,
@@ -446,19 +448,18 @@
                 // 客户列表
                 clientArr: [],
                 // 业绩目标仪表盘数据
-                gaugeData: null,
+                gaugeData: {},
             }
         },
         methods: {
             getSession() {
                 this.sessionData = sessFun.getSess();
-                this.userInfo.username = this.sessionData.realName;
-                this.userInfo.dep = this.sessionData.division;
-                this.userInfo.duty = this.sessionData.asName;
-                this.userInfo.phone = this.sessionData.phone;
+                this.userInfo.userName = this.sessionData.realName;
+                this.userInfo.role = this.sessionData.uType;
                 this.userInfo.avator = this.sessionData.headPic ? this.sessionData.headPic : require('../../assets/images/index/niu.png')
+            console.log('this.userInfo', this.userInfo)
             },
-            getIsCom() {
+            /* getIsCom() {
                 let sessrid = this.sessionData.asrID;
                 let comarr = ['1', '2', '3', '4', '5', '6', '7'];
                 for (let data of comarr) {
@@ -486,10 +487,9 @@
                         obj.url = obj.value;
                         result.push(obj);
                     }
-                    // console.log('result----cards', result);
                     this.companyHonor = result;
                 }
-            },
+            }, */
             resizeRank(price) {
                 let rankLength = document.getElementsByClassName('timeline')[0].offsetWidth;
                 let maxPrice = this.priceList[this.priceList.length - 1];
@@ -550,7 +550,6 @@
                         }, 200);
 
                     } else {
-                        // Message.warning(res.data.MSG);
                         this.$message({
                             type: 'warning',
                             message: res.data.MSG,
@@ -562,24 +561,23 @@
                 });
             },
             // 那句话
-            getOneTalk() {
-                let info = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token,
-                };
-                api.getApi(this.apiVar.report + '/GetCountMessage', info).then(res => {
-                    // console.log(res);
-                    if (res.data.SysCode == 200200) {
-                        let resinfo = res.data.data;
-                        this.saleTalk.content = resinfo.countMessage;
-                        this.saleTalk.dateTime = resinfo.time;
-                    } else {
-                        Message.warning(res.data.MSG);
-                    }
-                }).catch(err => {
-                    console.log(err);
-                });
-            },
+            // getOneTalk() {
+            //     let info = {
+            //         uid: this.sessionData.uID,
+            //         token: this.sessionData.token,
+            //     };
+            //     api.getApi(this.apiVar.report + '/GetCountMessage', info).then(res => {
+            //         if (res.data.SysCode == 200200) {
+            //             let resinfo = res.data.data;
+            //             this.saleTalk.content = resinfo.countMessage;
+            //             this.saleTalk.dateTime = resinfo.time;
+            //         } else {
+            //             Message.warning(res.data.MSG);
+            //         }
+            //     }).catch(err => {
+            //         console.log(err);
+            //     });
+            // },
             // 获取数据
             getData() {
                 let info = {
@@ -867,7 +865,7 @@
                             compare: temp.customCntIncrRate
                         })
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        Message.warning(res.data.MSG);
                     }
                 }).catch(err=>{
                     console.log('err', err)
@@ -908,7 +906,7 @@
                             data: tempcCardData3,
                         })
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        Message.warning(res.data.MSG);
                     }
                 }).catch(err=>{
                     console.log('err', err)
@@ -918,21 +916,16 @@
                 // 销售业绩目标 /report /homepage/getBDAchievementReport
                 api.getApi(this.apiVar.report + '/homepage/getBDAchievementReport', params).then(res=>{
                     if (res.data.SysCode === 200200) {
-                        /* "uID" 销售id
-                        "totalPrice" 销售本业完成的金额
-                        "targetPrice" 销售本年的业绩
-                        "rank" 公司排名
-                        "finshProcess" 完成进度*/
                         let temp = res.data.data;
                         this.gaugeData = {
-                            "uID": 8910,		//销售id
-                            "totalPrice": 10828,	//销售本业完成的金额
-                            "targetPrice": 1000000.0,	//销售本年的业绩
-                            "rank": 0,		//公司排名
-                            "finshProcess": 80	//完成进度,要是number
+                            uID: temp.uID || null,		//销售id
+                            totalPrice: temp.totalPrice || 0,	//销售本年完成的金额
+                            targetPrice: temp.targetPrice || 0,	//销售本年的业绩
+                            rank: temp.rank || 0,		//公司排名
+                            finshProcess: temp.finshProcess*1 || 0	//完成进度,要是number
                         };
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        Message.warning(res.data.MSG);
                     }
                 }).catch(err=>{
                     console.log('媒体概况', err)
@@ -943,7 +936,7 @@
                     if (res.data.SysCode === 200200) {
                         this.clientArr = res.data.data || []
                     } else {
-                        this.messageFun('warning', res.data.MSG)
+                        Message.warning(res.data.MSG);
                     }
                 }).catch(err=>{
                     console.log('err', err)
@@ -967,9 +960,8 @@
             }
         },
         mounted() {
-
             this.getSession();
-            this.getIsCom();
+            // this.getIsCom();
             let nowDate = timeFormat.toDate(new Date(), '/');
             if (indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)) {
                 this.getRank();
@@ -977,9 +969,9 @@
             // 获取数据
             this.getData();
             // 获取目标
-            this.getTarget();
+            // this.getTarget();
             // 那句话
-            this.getOneTalk();
+            // this.getOneTalk();
             //用户中心
             this.appCenter = appCenter
             this.uploadEvent(1)
@@ -992,6 +984,9 @@
 
 <style scoped lang="scss">
 /** 新增*/
+    /deep/ .custom-card-content {
+        padding: 25px 25px 0;
+    }
     .index-top-row {
         display: flex;
         align-items: flex-start;
@@ -1026,6 +1021,29 @@
         margin-bottom: 24px;
         & > div {
             flex: 1;
+        }
+    }
+
+    .bottom-box {
+        position: absolute;
+        height: 48px;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		margin: 0 24px 32px;
+        line-height: 48px;
+        text-align: center;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+        background: #F8F8F8;
+        border-radius: 2px;
+        font-size: 16px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.85);
+        .avtive {
+            color: #1890FF;
         }
     }
     
@@ -1132,15 +1150,15 @@
         vertical-align: middle;
     }
 
-    .rank_line {
-        border-radius: 50%;
-        border: 1px solid #2d8cf0;
-        position: absolute;
-        top: 4px;
-        background-color: rgba(191, 191, 191, 1);
-        color: #2d8cf0;
-        z-index: 20;
-    }
+    // .rank_line {
+    //     border-radius: 50%;
+    //     border: 1px solid #2d8cf0;
+    //     position: absolute;
+    //     top: 4px;
+    //     background-color: rgba(191, 191, 191, 1);
+    //     color: #2d8cf0;
+    //     z-index: 20;
+    // }
 
     .span_rank {
         float: right;

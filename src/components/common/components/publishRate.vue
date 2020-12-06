@@ -5,8 +5,7 @@
       <div class="fad-map-info" v-if="infoBoxShow">
         <i class="el-icon-info" />
         <span class="info-text"
-          >点位利用率:
-          这段时间内可投点位每天的上刊率与点位填充率的综合平均</span
+          >点位利用率：展示昨日各地区的点位上刊率情况</span
         >
         <i
           v-if="instanceMap"
@@ -63,6 +62,7 @@
         prop="onPubRate"
         label="上刊率"
         width="100"
+        align="right"
         show-overflow-tooltip
       >
         <template slot-scope="scope">
@@ -273,7 +273,7 @@ li {
   bottom: 0;
   width: 100%;
   height: 100% !important;
-  z-index: 10000;
+  z-index: 999;
 }
 .fad-map-info {
   position: absolute;

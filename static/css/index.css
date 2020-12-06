@@ -192,7 +192,8 @@ body .el-table colgroup.gutter {
 
 .el-menu--horizontal .el-menu-item:not(:first-child):hover,
 .el-menu--horizontal>.el-submenu .el-submenu__title:hover{
-    color: rgb(255, 255, 255) !important;
+    color: #1890FF !important;
+    background-color: rgba(24,144,255,0.06) !important;
     border-bottom-color: rgba(255, 255, 255,0) !important;
 }
 
@@ -206,9 +207,11 @@ body .el-table colgroup.gutter {
 }
 .el-menu--popup .el-menu-item{
     font-size: 14px;
+    color: rgba(0, 0, 0, 0.65)
 }
 .el-menu--horizontal .el-menu--popup .el-menu-item:hover{
-    color: rgb(255, 255, 255) !important;
+    background-color: rgba(24,144,255,0.06) !important;
+    color: rgba(24,144,255,0.8) !important;
 }
 .user_center_item .el-menu--popup{
     min-width: 160px;

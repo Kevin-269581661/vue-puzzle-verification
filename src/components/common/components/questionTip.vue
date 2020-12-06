@@ -242,7 +242,7 @@
     .tip-ul {
         text-align: center;
         padding: 4px 0;
-        background: rgba(68, 68, 68, 1);
+        background: #fff;
         border-radius: 2px;
         display: flex;
         flex-direction: column;
@@ -261,8 +261,7 @@
     }
 
     .tip-list:hover {
-        color: #fff;
-        background: rgba(54, 54, 54, 1);
+        background: rgba(24,144,255,0.06);
     }
 
     .tip-wrap {
@@ -309,7 +308,7 @@
     .modal-list {
         height: 40px;
         line-height: 40px;
-        background: rgba(247, 247, 246, 1);
+        background: #fff;
         border-radius: 3px;
         margin-bottom: 12px;
         padding-left: 12px;
@@ -328,6 +327,7 @@
     .quesition-icon{
         width: 20px;
         height: 20px;
+        filter: brightness(0.75);
         cursor: pointer;
     }
 

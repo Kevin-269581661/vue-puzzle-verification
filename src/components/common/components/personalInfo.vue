@@ -3,20 +3,20 @@
         <div class="item-one">
             <img :src="userInfo.avator" alt="" class="avator-round">
             <ul class="item-one-column">
-                <li class="bold-text">{{userInfo.username || ''}}</li>
-                <li class="normal-text">{{userInfo.role || ''}}</li>
+                <li class="bold-text">{{userInfo.userName || ''}}</li>
+                <li class="normal-text">{{userInfo.role | uTypeToText}}</li>
             </ul>
-            <div v-if="rank" class="item-one-column item-one-board">
-                <span class="bold-text">第{{rank}}名</span>
+            <div v-if="cityRank" class="item-one-column item-one-board">
+                <span class="bold-text">第{{cityRank}}名</span>
                 <span class="normal-text">城市排名</span>
             </div>
         </div>
-        <div v-if="rank" class="line-vertical"></div>
-        <div class="item-two">
+        <div v-if="honorImg.length>0" class="line-vertical"></div>
+        <div class="item-two" v-if="honorImg.length>0">
             <img v-for="(item,index) of honorImg" :key="index" :src="item.url" :alt="item.title" :title="item.title">
             <!-- <i>{{key.title}}</i> -->
         </div>
-        <div v-if="rank || honorImg.length>0" class="line-vertical"></div>
+        <div v-if="linkArr.length>0" class="line-vertical"></div>
         <div class="item-three">
                 <home-link class="cell-group" :link="linkArr"></home-link>
         </div>
@@ -25,6 +25,7 @@
 
 <script>
     import homeLink from './homeLinkNew.vue';
+    import uTypeToText from "../../../commonFun/uTypeToText.js";
     export default {
         name: "personalInfo",
         components: {
@@ -43,8 +44,8 @@
                 type: Array,
                 default: []
             },
-            rank: {
-                type: String,
+            cityRank: {
+                type: [String, Number],
                 default: ''
             }
         },
@@ -113,6 +114,7 @@ li {
                 font-family: PingFangSC-Regular, PingFang SC;
                 color: rgba(0, 0, 0, 0.45);
                 line-height: 22px;
+                white-space: nowrap;
             }
         }
         .item-one-board {
@@ -125,7 +127,6 @@ li {
         }
     }
     .item-two {
-        flex: 1;
         display: flex;
         justify-content: space-between;
         margin-left: 27px;
@@ -138,7 +139,6 @@ li {
         }
     }
     .item-three {
-        flex: 1;
         margin-left: 32px;
         .cell-group {
             @extend %flex-row-center;

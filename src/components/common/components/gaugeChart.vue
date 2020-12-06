@@ -25,7 +25,7 @@ export default {
   },
   watch: {
     gaugeData(newVal, oldVal) {
-      console.log('000', newVal)
+      // console.log('000', newVal)
       this.render()
     }
   },
@@ -66,11 +66,11 @@ export default {
         this.chartInstance = new Chart({
           container: this.container,
           autoFit: true,
-          height: 500,
+          height: 450,
           padding: [0, 0, 30, 0],
         });
       }
-      const data = [{ value: this.gaugeData.finshProcess || 0 }];
+      const data = [{ value: this.gaugeData.finshProcess%100 > 0 ? 100 : this.gaugeData.finshProcess}];
       this.chartInstance.data(data);
       this.chartInstance.scale("value", {
         min: 0,

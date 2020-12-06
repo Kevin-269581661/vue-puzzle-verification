@@ -4,7 +4,7 @@
       <div :id="mapContainer" class="map-container"></div>
       <div class="fad-map-info" v-if="infoBoxShow">
         <i class="el-icon-info" />
-        <span class="info-text">点位分布: 这段时间内可投点位的位置分布</span>
+        <span class="info-text">点位分布: 展示公司覆盖的所有小区资源，数据截止至昨日</span>
         <i v-if="instanceMap" @click="closeInfoBox" class="el-icon-close info-close" />
       </div>
       <div v-if="instanceMap" class="fad-map-control">
@@ -31,9 +31,9 @@
       </el-table-column>
       <el-table-column prop="rName" label="城市" width="120" show-overflow-tooltip>
       </el-table-column>
-      <el-table-column prop="totalResCnt" label="社区" width="120" show-overflow-tooltip>
+      <el-table-column prop="totalResCnt" label="社区" width="120" align="right" show-overflow-tooltip>
       </el-table-column>
-      <el-table-column prop="totalMediaCnt" label="媒体" width="120" show-overflow-tooltip>
+      <el-table-column prop="totalMediaCnt" label="媒体" width="120" align="right" show-overflow-tooltip>
       </el-table-column>
     </el-table>
   </div>
@@ -266,7 +266,7 @@ li {
   bottom: 0;
   width: 100%;
   height: 100% !important;
-  z-index: 10000;
+  z-index: 999;
 }
 .fad-map-info {
   position: absolute;

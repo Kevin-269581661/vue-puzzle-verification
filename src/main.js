@@ -33,7 +33,9 @@ axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 // 全局变量
 import { apiVar } from './utils/config.js'
 Vue.prototype.apiVar = apiVar;
-
+Vue.filter('uTypeToText', function (uType) {
+	return { 'SA': '系统管理员','SM': '超级管理员', 'OP': '运营', 'MD': '媒介','BD': '销售','AD': '广告主', 'EP': '工程人员'}[uType]
+})
 
 //引入全局css
 import '../static/css/reset.css'

@@ -27,6 +27,7 @@ export default {
   watch: {
     sourceData(newVal, oldVal) {
       if (newVal.length > 0) {
+        console.log('renData', newVal)
         this.render(newVal);
       }
     },
@@ -50,6 +51,7 @@ export default {
         dimension: "type",
         as: "percent",
       });
+      console.log('dvR', dv.rows)
       this.chartInstance.data(dv.rows);
       this.chartInstance.scale({
         percent: {
@@ -82,6 +84,9 @@ export default {
             lineHeight: "17px",
             fontFamily: "PingFangSC-Regular, PingFang SC",
           },
+          layout: {
+            type: 'fixed-overlap'
+          }
         })
         .tooltip("type*percent", (item, percent) => {
           percent = (percent * 100).toFixed(2) + "%";
@@ -114,7 +119,7 @@ export default {
         dimension: "name",
         as: "percent",
       });
-
+      console.log('dv1.rows', dv1.rows)
       outterView.data(dv1.rows);
       outterView.scale({
         percent: {
@@ -133,11 +138,11 @@ export default {
         .adjust("stack")
         .position("percent")
         .color("name", [
-          "rgb(24, 144, 255)",
-          "rgb(24, 144, 255)",
-          "rgb(93, 112, 146)",
-          "rgb(250, 173, 20)",
-          "rgb(250, 173, 20)",
+          "#52acff",
+          "#52acff",
+          "#bec6d3",
+          "#fbc24f",
+          "#fbc24f",
         ])
         .label("name", {
           offset: -35,
@@ -149,6 +154,9 @@ export default {
             lineHeight: "17px",
             fontFamily: "PingFangSC-Regular, PingFang SC",
           },
+          layout: {
+            type: 'fixed-overlap'
+          }
         })
         .tooltip("name*percent", (item, percent) => {
           percent = (percent * 100).toFixed(2) + "%";

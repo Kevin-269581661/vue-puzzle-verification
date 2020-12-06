@@ -7,9 +7,8 @@
             class="el-menu-nav"
             mode="horizontal"
             @select="handleSelect"
-            background-color="#444"
-            text-color="#999999"
-            active-text-color="#fff">
+            background-color="#fff"
+            active-text-color="#1890FF">
             <el-menu-item index="" class="no-hover">
                 <div class="logo_box">
                     <img src="../../assets/images/logo.png" alt="">

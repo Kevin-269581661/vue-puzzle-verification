@@ -250,7 +250,7 @@
 }
 /*某些菜单样式*/
 .no-hover{
-    background-color: rgb(68, 68, 68) !important;
+    background-color: #fff !important;
 }
 /*导航*/
 .el-menu-nav /deep/ .el-menu-item, .el-menu-nav /deep/ .el-submenu__title{

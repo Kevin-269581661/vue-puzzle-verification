@@ -146,7 +146,7 @@
                     <publish-rate mapContainer="mapContainer2" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointPublication'"></publish-rate>
                 </el-tab-pane>
             </el-tabs>
-			<div style="margin:24px 0; background:#fff;padding-bottom: 24px;border: 1px solid #e5e6e9;">
+			<!-- <div style="margin:24px 0; background:#fff;padding-bottom: 24px;border: 1px solid #e5e6e9;">
 				<h2 class="h2_style flex_box">
 					<b>业绩指标</b>
 					<span style="margin-right:24px;">
@@ -179,7 +179,7 @@
 						<no-search-result></no-search-result>
 					</div>
 				</template>
-			</div>
+			</div> -->
 		</div>
 
 		<div class="dialog_box">
@@ -396,13 +396,9 @@ export default {
                 },
 			],
 			userInfo: {
-                username: '熊善琪',
+				userName: '',
                 greetings: '祝您开心每一天!',
-                duty: '媒介',
-                dep: '市场销售部',
-                phone: '13570491551',
                 avator: require('../../assets/images/tvQNA_img3.jpg'),
-				endTime: '2018-06-09',
 			},
 			// dataArr:[
             //     {
@@ -475,25 +471,25 @@ export default {
 				mediaCount: 0,
 				asCount: 0,
 			},
-			monthRange: [],
-			disableDate1:{
-				disabledDate: (time)=> {
-					return time.getTime() > Date.parse(this.monthRange[1])
-				},
-			},
-			disableDate2:{
-				disabledDate: (time)=> {
-					return time.getTime() < Date.parse(this.monthRange[0])
-				},
-			},
+			// monthRange: [],
+			// disableDate1:{
+			// 	disabledDate: (time)=> {
+			// 		return time.getTime() > Date.parse(this.monthRange[1])
+			// 	},
+			// },
+			// disableDate2:{
+			// 	disabledDate: (time)=> {
+			// 		return time.getTime() < Date.parse(this.monthRange[0])
+			// 	},
+			// },
 			// 图表数据
-			orderPointData:{
-				legendTitle: ['发布订单数','录单点位数'],
-				title: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
-				orderData: [2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3],
-				pointData: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3],
-			},
-			isCom: false,
+			// orderPointData:{
+			// 	legendTitle: ['发布订单数','录单点位数'],
+			// 	title: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+			// 	orderData: [2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3],
+			// 	pointData: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3],
+			// },
+			// isCom: false,
 			// 公司勋章
 			comimgInfo: [],
 			companyHonor: [],
@@ -595,14 +591,12 @@ export default {
 			this.sessionData = sessFun.getSess();
 			let sess = this.sessionData;
 			this.isAllMedia = (sess.uType=='MD' && sess.mediaManageLevel==1) ? true: false;
-			this.userInfo.username = sess.realName;
-			this.userInfo.dep = sess.division;
-			this.userInfo.duty = sess.asName;
-			this.userInfo.phone = sess.phone;
+			this.userInfo.userName = sess.realName;
+			this.userInfo.role = this.sessionData.uType;
 			this.userInfo.avator = sess.headPic ? sess.headPic : require('../../assets/images/index/niu.png')
 
 		},
-		getIsCom(){
+		/* getIsCom(){
 			let sessrid = this.sessionData.asrID;
 			let comarr = ['1','2','3','4','5','6','7'];
 			for(let data of comarr){
@@ -611,6 +605,7 @@ export default {
 					break;
 				}
 			}
+			// 只有直营超管才可见公司荣誉
 			if(this.isCom){
 				let cards = [];
 				let result = [];
@@ -630,34 +625,34 @@ export default {
 					obj.url = obj.value;
 					result.push(obj);
 				}
-				// console.log('result----cards', result);
 				this.comimgInfo = result;
 			}
-		},
+		}, */
 		// 获取数据
-		getData(){
-			let info = {
-				uid: this.sessionData.uID,
-				token: this.sessionData.token,
-			};
-			api.getApi(this.apiVar.report + '/GetHomePageInfoOfMD', info).then(res =>{
-				// console.log(res.data);
-				if(res.data.SysCode == 200200){
-					let resInfo = res.data.data;
-					this.dataArr[0].data = resInfo.resCount;
-					this.dataArr[1].data = resInfo.createdAdPlanCount;
-					this.dataArr[2].data = resInfo.publishedAdPlanCount;
-                    this.dataArr[3].data = resInfo.asCount;
-                    this.dataArr[4].data = resInfo.bannedAdsCount;
+		// getData(){
+		// 	let info = {
+		// 		uid: this.sessionData.uID,
+		// 		token: this.sessionData.token,
+		// 	};
+		// 	api.getApi(this.apiVar.report + '/GetHomePageInfoOfMD', info).then(res =>{
+		// 		// console.log(res.data);
+		// 		if(res.data.SysCode == 200200){
+		// 			let resInfo = res.data.data;
+		// 			console.log('resInfo', resInfo);
+		// 			this.dataArr[0].data = resInfo.resCount;
+		// 			this.dataArr[1].data = resInfo.createdAdPlanCount;
+		// 			this.dataArr[2].data = resInfo.publishedAdPlanCount;
+        //             this.dataArr[3].data = resInfo.asCount;
+        //             this.dataArr[4].data = resInfo.bannedAdsCount;
 
-					this.userInfo.endTime = timeFormat.toDate(resInfo.time, '/');
-				}else{
-					Message.warning(res.data.MSG);
-				}
-			}).catch(err =>{
-				console.log(err);
-			});
-		},
+		// 			this.userInfo.endTime = timeFormat.toDate(resInfo.time, '/');
+		// 		}else{
+		// 			Message.warning(res.data.MSG);
+		// 		}
+		// 	}).catch(err =>{
+		// 		console.error(err);
+		// 	});
+		// },
 		// 媒介贡献弹窗
 		getContributeBox(){
 			let info = {
@@ -792,218 +787,218 @@ export default {
 				img5: require('../../assets/images/index/'+str+'-5.png'),
 			};
 		},
-		setTime(){
-			let starTime = timeFormat.returnMonthCount(5,'-') //this.GetDateStr(5)
-			let endTime = timeFormat.returnMonthCount(0,'-')  //this.GetDateStr(0)
-			let starTimeSub = starTime.substring(0,7)
-			let endTimeSub = endTime.substring(0,7)
-			console.log(starTime, endTime);
-			this.monthRange = [starTimeSub, endTimeSub]     // 关键数据增量趋势
-			this.selectMonth();
-		},
-		selectMonth(){
-			if(this.monthRange[0] && this.monthRange[1]){
-				if(this.monthRange[0]>this.monthRange[1]){
-					Message.warning('结束时间小于开始时间');
-				}else{
-					this.getchartData();
-				}
-			}else {
-				Message.warning('请先选择一段时间');
-			}
-		},
+		// setTime(){
+		// 	let starTime = timeFormat.returnMonthCount(5,'-') //this.GetDateStr(5)
+		// 	let endTime = timeFormat.returnMonthCount(0,'-')  //this.GetDateStr(0)
+		// 	let starTimeSub = starTime.substring(0,7)
+		// 	let endTimeSub = endTime.substring(0,7)
+		// 	console.log(starTime, endTime);
+		// 	this.monthRange = [starTimeSub, endTimeSub]     // 关键数据增量趋势
+		// 	this.selectMonth();
+		// },
+		// selectMonth(){
+		// 	if(this.monthRange[0] && this.monthRange[1]){
+		// 		if(this.monthRange[0]>this.monthRange[1]){
+		// 			Message.warning('结束时间小于开始时间');
+		// 		}else{
+		// 			this.getchartData();
+		// 		}
+		// 	}else {
+		// 		Message.warning('请先选择一段时间');
+		// 	}
+		// },
 		// 获取图表数据
-		getchartData(){
-			let info = {
-				uid: this.sessionData.uID,
-				token: this.sessionData.token,
-				startTime: this.monthRange[0],
-				endTime: this.monthRange[1]
-			};
-			api.getApi(this.apiVar.report + '/GetAdPlanCountAndAsCountByPeriodOfMD', info).then(res =>{
-				// console.log(res.data);
-				if(res.data.SysCode == 200200){
-					let title = [];
-					let orderData = [];
-					let pointData = [];
-					for(let data of res.data.data){
-						title.push(data.month);
-						orderData.push(data.apCount);
-						pointData.push(data.asCount);
-					}
-					this.orderPointData.title = title;
-					this.orderPointData.orderData = orderData;
-					this.orderPointData.pointData = pointData;
-					if(this.getNumIsNull(orderData) || this.getNumIsNull(pointData)){
-						this.getLinePer();
-					}
-				}else{
-					Message.warning(res.data.MSG);
-				}
-			}).catch(err =>{
-				console.log(err);
-			});
-		},
-		getNumIsNull(arr){
-			let isHad = arr.filter(item =>{
-				return item>0;
-			});
-			return isHad.length==0?false:true;
-		},
-		getLinePer(){
-			let perLine = this.$echarts.init(this.$refs.perform)
-			perLine.setOption({
-				tooltip: {
-					trigger: 'axis',
-					axisPointer: {            // 坐标轴指示器，坐标轴触发有效
-						type: 'shadow',        // 默认为直线，可选为：'line' | 'shadow'
-						shadowStyle: {
-							shadowColor: '#999'
-						}
-					},
-					backgroundColor: '#FFFFFF',
-					padding: 0,
-					borderColor: '#dddddd',
-					borderWidth: 1,
-					formatter: function(params){
-                        let title = '';
-                        let arr = [];
-                        for (let i = 0; i < params.length; i++) {
-                            title = `<p class="echarts_tooltip_title"><span>${params[i].name}</span><span>数值</span></p> <br/>`
-                            let data = `<p class="echarts_tooltip_content"><span><i class="echarts_tooltip_i" style="background:${params[i].color}"></i>
-                                ${params[i].seriesName}</span> ${params[i].value}</p>`
-                            arr.push(data)
-                        }
-                        let tooltip = arr.join('')
-                        return title + tooltip
-					},
-				},
-				legend: {
-					top: 'bottom',
-					left: 'center',
-					data: this.orderPointData.legendTitle
-				},
-				grid: {
-					left: '3%',
-					right: '4%',
-					bottom: '8%',
-					containLabel: true
-				},
-				xAxis: [
-					{
-						type: 'category',
-						data: this.orderPointData.title,
-						axisPointer: {
-							type: 'shadow'
-						},
-						axisLabel: {
-							//坐标轴刻度标签
-							margin: 7, //刻度标签与轴线之间的距离
-							interval: 0,    //强制文字产生间隔
-							// rotate: 25,     //文字逆时针旋转25°
-							textStyle: {
-								fontFamily: "DINPro-Regular",
-								color: "#2C313C" //坐标轴刻度文字的颜色
-							}
-						},
-						axisLine: {
-							//坐标轴线条相关设置(颜色等)
-							lineStyle: {
-								color: "#E8E8E8"
-							}
-						},
-					}
-				],
-				yAxis: [
-					{
-						type: 'value',
-						name: '发布订单数',
-						nameTextStyle:{
-							fontWeight: 'bold',
-							fontSize: 14,
-							color: '#000'
-						},
-						axisLine: {
-							//坐标轴线条相关设置(颜色等)
-							lineStyle: {
-								color: "#E8E8E8"
-							}
-						},
-						axisLabel: {
-							//坐标轴刻度标签
-							margin: 7, //刻度标签与轴线之间的距离
-							textStyle: {
-								fontFamily: "DINPro-Regular",
-								color: "#2C313C" //坐标轴刻度文字的颜色
-							}
-						},
-						splitLine: {
-                            lineStyle: {
-                                color: "#E8E8E8",
-                                type: "dashed"
-                            }
-                        }
-					},
-					{
-						type: 'value',
-						name: '录单点位数',
-						nameTextStyle:{
-							fontWeight: 'bold',
-							fontSize: 14,
-							color: '#000'
-						},
-						axisLine: {
-							//坐标轴线条相关设置(颜色等)
-							lineStyle: {
-								color: "#E8E8E8"
-							}
-						},
-						axisLabel: {
-							//坐标轴刻度标签
-							margin: 7, //刻度标签与轴线之间的距离
-							textStyle: {
-								fontFamily: "DINPro-Regular",
-								color: "#2C313C", //坐标轴刻度文字的颜色，
-							}
-						},
-						splitLine: {
-                            lineStyle: {
-                                color: "#E8E8E8",
-                                type: "dashed"
-                            }
-                        }
-					}
-				],
-				series: [
-					{
-						color: '#1890FF',
-						name:'发布订单数',
-						barWidth: "10%",
-						type:'bar',
-						data:this.orderPointData.orderData
-					},
-					{
-						color: '#FF9118',
-						name:'录单点位数',
-						barWidth: "10%",
-						type:'bar',
-						yAxisIndex: 1,
-						data:this.orderPointData.pointData
-					}
-				]
-			});
-			window.addEventListener("resize", function (e) {
-				perLine.resize();
-			});
-		},
+		// getchartData(){
+		// 	let info = {
+		// 		uid: this.sessionData.uID,
+		// 		token: this.sessionData.token,
+		// 		startTime: this.monthRange[0],
+		// 		endTime: this.monthRange[1]
+		// 	};
+		// 	api.getApi(this.apiVar.report + '/GetAdPlanCountAndAsCountByPeriodOfMD', info).then(res =>{
+		// 		// console.log(res.data);
+		// 		if(res.data.SysCode == 200200){
+		// 			let title = [];
+		// 			let orderData = [];
+		// 			let pointData = [];
+		// 			for(let data of res.data.data){
+		// 				title.push(data.month);
+		// 				orderData.push(data.apCount);
+		// 				pointData.push(data.asCount);
+		// 			}
+		// 			this.orderPointData.title = title;
+		// 			this.orderPointData.orderData = orderData;
+		// 			this.orderPointData.pointData = pointData;
+		// 			if(this.getNumIsNull(orderData) || this.getNumIsNull(pointData)){
+		// 				this.getLinePer();
+		// 			}
+		// 		}else{
+		// 			Message.warning(res.data.MSG);
+		// 		}
+		// 	}).catch(err =>{
+		// 		console.log(err);
+		// 	});
+		// },
+		// getNumIsNull(arr){
+		// 	let isHad = arr.filter(item =>{
+		// 		return item>0;
+		// 	});
+		// 	return isHad.length==0?false:true;
+		// },
+		// getLinePer(){
+		// 	let perLine = this.$echarts.init(this.$refs.perform)
+		// 	perLine.setOption({
+		// 		tooltip: {
+		// 			trigger: 'axis',
+		// 			axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+		// 				type: 'shadow',        // 默认为直线，可选为：'line' | 'shadow'
+		// 				shadowStyle: {
+		// 					shadowColor: '#999'
+		// 				}
+		// 			},
+		// 			backgroundColor: '#FFFFFF',
+		// 			padding: 0,
+		// 			borderColor: '#dddddd',
+		// 			borderWidth: 1,
+		// 			formatter: function(params){
+        //                 let title = '';
+        //                 let arr = [];
+        //                 for (let i = 0; i < params.length; i++) {
+        //                     title = `<p class="echarts_tooltip_title"><span>${params[i].name}</span><span>数值</span></p> <br/>`
+        //                     let data = `<p class="echarts_tooltip_content"><span><i class="echarts_tooltip_i" style="background:${params[i].color}"></i>
+        //                         ${params[i].seriesName}</span> ${params[i].value}</p>`
+        //                     arr.push(data)
+        //                 }
+        //                 let tooltip = arr.join('')
+        //                 return title + tooltip
+		// 			},
+		// 		},
+		// 		legend: {
+		// 			top: 'bottom',
+		// 			left: 'center',
+		// 			data: this.orderPointData.legendTitle
+		// 		},
+		// 		grid: {
+		// 			left: '3%',
+		// 			right: '4%',
+		// 			bottom: '8%',
+		// 			containLabel: true
+		// 		},
+		// 		xAxis: [
+		// 			{
+		// 				type: 'category',
+		// 				data: this.orderPointData.title,
+		// 				axisPointer: {
+		// 					type: 'shadow'
+		// 				},
+		// 				axisLabel: {
+		// 					//坐标轴刻度标签
+		// 					margin: 7, //刻度标签与轴线之间的距离
+		// 					interval: 0,    //强制文字产生间隔
+		// 					// rotate: 25,     //文字逆时针旋转25°
+		// 					textStyle: {
+		// 						fontFamily: "DINPro-Regular",
+		// 						color: "#2C313C" //坐标轴刻度文字的颜色
+		// 					}
+		// 				},
+		// 				axisLine: {
+		// 					//坐标轴线条相关设置(颜色等)
+		// 					lineStyle: {
+		// 						color: "#E8E8E8"
+		// 					}
+		// 				},
+		// 			}
+		// 		],
+		// 		yAxis: [
+		// 			{
+		// 				type: 'value',
+		// 				name: '发布订单数',
+		// 				nameTextStyle:{
+		// 					fontWeight: 'bold',
+		// 					fontSize: 14,
+		// 					color: '#000'
+		// 				},
+		// 				axisLine: {
+		// 					//坐标轴线条相关设置(颜色等)
+		// 					lineStyle: {
+		// 						color: "#E8E8E8"
+		// 					}
+		// 				},
+		// 				axisLabel: {
+		// 					//坐标轴刻度标签
+		// 					margin: 7, //刻度标签与轴线之间的距离
+		// 					textStyle: {
+		// 						fontFamily: "DINPro-Regular",
+		// 						color: "#2C313C" //坐标轴刻度文字的颜色
+		// 					}
+		// 				},
+		// 				splitLine: {
+        //                     lineStyle: {
+        //                         color: "#E8E8E8",
+        //                         type: "dashed"
+        //                     }
+        //                 }
+		// 			},
+		// 			{
+		// 				type: 'value',
+		// 				name: '录单点位数',
+		// 				nameTextStyle:{
+		// 					fontWeight: 'bold',
+		// 					fontSize: 14,
+		// 					color: '#000'
+		// 				},
+		// 				axisLine: {
+		// 					//坐标轴线条相关设置(颜色等)
+		// 					lineStyle: {
+		// 						color: "#E8E8E8"
+		// 					}
+		// 				},
+		// 				axisLabel: {
+		// 					//坐标轴刻度标签
+		// 					margin: 7, //刻度标签与轴线之间的距离
+		// 					textStyle: {
+		// 						fontFamily: "DINPro-Regular",
+		// 						color: "#2C313C", //坐标轴刻度文字的颜色，
+		// 					}
+		// 				},
+		// 				splitLine: {
+        //                     lineStyle: {
+        //                         color: "#E8E8E8",
+        //                         type: "dashed"
+        //                     }
+        //                 }
+		// 			}
+		// 		],
+		// 		series: [
+		// 			{
+		// 				color: '#1890FF',
+		// 				name:'发布订单数',
+		// 				barWidth: "10%",
+		// 				type:'bar',
+		// 				data:this.orderPointData.orderData
+		// 			},
+		// 			{
+		// 				color: '#FF9118',
+		// 				name:'录单点位数',
+		// 				barWidth: "10%",
+		// 				type:'bar',
+		// 				yAxisIndex: 1,
+		// 				data:this.orderPointData.pointData
+		// 			}
+		// 		]
+		// 	});
+		// 	window.addEventListener("resize", function (e) {
+		// 		perLine.resize();
+		// 	});
+		// },
         // 应用中心的展开和收起
-        slideAppCenterItem() {
-            this.isSlideDown = !this.isSlideDown
-            if(!this.isSlideDown){
-                this.uploadEvent(1)
-            }
+        // slideAppCenterItem() {
+        //     this.isSlideDown = !this.isSlideDown
+        //     if(!this.isSlideDown){
+        //         this.uploadEvent(1)
+        //     }
 
-        },
+        // },
         // 应用中心跳转
         goToPage(item) {
             if (item) {
@@ -1292,15 +1287,15 @@ export default {
 	},
 	mounted(){
 		this.getSession();
-		this.getIsCom();
-		this.getData();
+		// this.getIsCom();
+		// this.getData();
 		this.getContributeBox();
 		this.getContribute();
 		let nowDate = timeFormat.toDate(new Date(), '/');
 		if(indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)){
 			this.isShowNum = true;
 		}
-		this.setTime();
+		// this.setTime();
         //用户中心
         this.appCenter = appCenter
         this.uploadEvent(1)
@@ -1522,8 +1517,8 @@ export default {
 }
 
 .rank_box{
-	z-index: 100;
-    position: absolute;
+	z-index: 1000;
+    position: fixed;
 	left: 50%;
     top: 35%;
     transform: translate(-50%, -35%);

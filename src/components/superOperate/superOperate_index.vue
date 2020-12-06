@@ -4,7 +4,7 @@
         <!-- <home-top :user-info="userInfo" :data-arr="dataArr" :honor-img="companyHonor"></home-top> -->
         <div class="index-top-row">
             <div class="left-layout">
-                <personal-info :user-info="userInfo" :honor-img="companyHonor" :linkArr="linkArrNew"></personal-info>
+                <personal-info :cityRank='cityRank' :user-info="userInfo" :honor-img="companyHonor" :linkArr="linkArrNew"></personal-info>
                 <div class="card-group">
                     <el-row :gutter="24" style="margin-bottom: 24px;">
                         <el-col :span="8"><chart-card :cardData="cardData1"></chart-card></el-col>
@@ -51,7 +51,24 @@
                         </el-tooltip>
                     </template>
                     <template slot="content">
-                        <liquid-chart></liquid-chart>
+                        <div class="capsule">
+                            <!-- <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="600" height="320"> -->
+                            <!-- <rect x="0" y="0" rx="160" width="600" height="320"/> -->
+                            <!-- <g fill="rgba(106,127,239,0.1)"> -->
+                                <!-- <path d="M 0 70 Q 30 52, 60 70 T 120 70 T 180 70 T 240 70 T 300 70 T 360 70 T 420 70 T 480 70 T 540 70 T 600 70 V 320 H 0 V 0"></path> -->
+                                <!-- <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-300" dur="1.5s" repeatCount="indefinite"></animateTransform> -->
+                            <!-- </g> -->
+                            <!-- <g fill="rgba(106,127,239,0.15)">
+                                <path d="M 0 70 Q 87.5 47, 175 70 T 350 70 T 525 70 T 700 70 T 875 70 T 1050 70 V 320 H 0 V 0"></path>
+                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-350" dur="3s" repeatCount="indefinite"></animateTransform>
+                            </g>
+                            <g fill="rgba(106,127,239,0.18)" transform="translate(-903.868 0)">
+                                <path d="M 0 70 Q 135 36, 270 70 T 540 70 T 810 70 T 1080 70 V 320 H 0 V 0" transform="translate(-38.232284367796474, 0)"></path>
+                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-540" dur="2s" repeatCount="indefinite"></animateTransform>
+                            </g> -->
+                        <!-- </svg> -->
+                        </div>
+                        <!-- <liquid-chart></liquid-chart> -->
                     </template>
                 </index-custom-card>
             </el-col>
@@ -142,7 +159,7 @@
                     <el-row :gutter="24" class="index-row" style="align-items: flex-start; padding: 33px 24px; margin: 0; ">
                         <el-col :span="12">
                             <nest-pie-chart container="nestPie" :sourceData="nestPieData"></nest-pie-chart>
-                            <div class="bottom-box">
+                            <div v-if="sessionData.asrID != '999'" class="bottom-box">
                                 贵公司<span class="avtive">{{extendData[0]}}</span>位沉默客户待挖掘，多于全国<span class="avtive">{{extendData[1]+'%'}}</span>的公司，请加把劲！
                             </div>
                         </el-col>
@@ -159,9 +176,9 @@
                                     </template>
                                 </el-table-column>
                                 <el-table-column
+                                    sortable
                                     prop="daydiffer"
                                     label="沉默天数"
-                                    sortable
                                     width="100">
                                 </el-table-column>
                                 <el-table-column
@@ -240,8 +257,8 @@
                 <span class="up" v-else>收起 <i class="el-icon-d-arrow-left"></i> </span>
             </div>
         </div> -->
-        <div class="SM_order_price" v-if="isRetailCompany">
-            <div class="order_price_date">
+        <div class="SM_order_price">
+            <div class="order_price_date" v-if="isRetailCompany">
                 <template v-if="activeTabsName == 'price'">
                     <el-radio-group v-model="amountForm.periodType" size="mini" @change="switchpPeriodType" class="radio-period-type">
                         <el-radio-button label="compareWeek">按周</el-radio-button>
@@ -329,7 +346,7 @@
                 <el-tab-pane label="点位上刊率" name="pointPublication">
                     <publish-rate mapContainer="mapContainer2" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointPublication'"></publish-rate>
                 </el-tab-pane>
-                <el-tab-pane label="成交金额" name="price">
+                <el-tab-pane v-if="isRetailCompany" label="成交金额" name="price">
                     <div style="margin-top: 8px">
                         <el-radio-group v-model="radioAmount" size="mini" @change="switchRadioAmount">
                             <el-radio-button label="签约额"></el-radio-button>
@@ -360,7 +377,7 @@
                        <div class="turnover_charts" id="turnoverBar" ref="turnoverDataBar" style="width:100%;"> </div>
                    </div>
                 </el-tab-pane>
-                <el-tab-pane label="订单数" name="order">
+                <el-tab-pane v-if="isRetailCompany" label="订单数" name="order">
                     <div id="order_bar_box">
                         <div class="order_charts" id="orderBar" ref="orderDataBar"> </div>
                     </div>
@@ -602,14 +619,9 @@
                 isPlatform: false,      // 根据帐号所属公司id判断是否是否为平台商
                 // 表头登录账户信息
                 userInfo: {
-                    username: '',
+                    userName: '',
                     greetings: '祝您开心每一天!',
-                    duty: '',
-                    dep: '',
-                    phone: '13570491551',
                     avator: require('../../assets/images/index/headimg.png'),
-                    endTime: '',
-                    role: '超级管理员'
                 },
                 dataArr: [
                     {
@@ -803,15 +815,8 @@
                 // 排行表格
                 // tableData: [],
                 isMonthlyRanking: false,
-                // rankingImg:[
-                //     {city:'北京',asrID: '1',url: require('../../assets/images/index/beijing.png')},
-                //     {city:'上海',asrID: '2',url: require('../../assets/images/index/shanghai.png')},
-                //     {city:'广州',asrID: '3',url: require('../../assets/images/index/guangzhou.png')},
-                //     {city:'深圳',asrID: '4',url: require('../../assets/images/index/shenzhen.png')},
-                //     {city:'成都',asrID: '5',url: require('../../assets/images/index/chengdu.png')},
-                //     {city:'重庆',asrID: '6',url: require('../../assets/images/index/chongqing.png')},
-                //     {city:'天津',asrID: '7',url: require('../../assets/images/index/tianjing.png')}
-                // ],
+                // 当前城市排名
+                cityRank: '',
                 // 弹窗显示的城市排名
                 showCityRankingImg:[
                     {city:'',ranking: 0,url: ''},
@@ -1160,6 +1165,13 @@
                 }).then(res=>{
                     if (res.data.SysCode === 200200) {
                         let temp = res.data.data;
+                        // this.nestPieData = [
+                        //     { value: 1, type: "活跃", name: "初购" },
+                        //     { value: 2, type: "活跃", name: "复购" },
+                        //     { value: 98989, type: "沉默", name: "复购" },
+                        //     { value: 888, type: "沉默", name: "初购" },
+                        //     { value: 1, type: "沉默", name: "未合作" }
+                        // ];
                         this.nestPieData = [
                             { value: temp.activeFirstCnt, type: "活跃", name: "初购" },
                             { value: temp.activeSecondCnt, type: "活跃", name: "复购" },
@@ -1167,6 +1179,7 @@
                             { value: temp.silentFirstCnt, type: "沉默", name: "初购" },
                             { value: temp.noCooperation, type: "沉默", name: "未合作" }
                         ];
+                        //0-沉默  1-活跃
                         this.clientArr = temp.customerPriceList;
                         this.extendData = [temp.silentCnt||0, temp.silenetCustomerRank||0]
                     } else {
@@ -1272,7 +1285,6 @@
             getsessionData() {
                 this.sessionData = sessFun.getSess();
                 if (this.sessionData.asrID === '999') {
-                    // this.isPlatform = false
                     this.isPlatform = true
                     // this.linkArr = JSON.parse(JSON.stringify(this.linkTemp))
                 } else {
@@ -1297,10 +1309,8 @@
                     }
                 }
                 this.userInfo.avator = this.sessionData.headPic || require('../../assets/images/index/headimg.png')
-                this.userInfo.username = this.sessionData.realName
-                this.userInfo.dep = this.sessionData.division
-                this.userInfo.duty = this.sessionData.asName
-                this.userInfo.phone = this.sessionData.phone
+                this.userInfo.role = this.sessionData.uType;
+                this.userInfo.userName = this.sessionData.realName
                 this.userInfo.endTime = timeFormat.returnDayCount(-1,'-')
                 // 本季度荣誉
                 for(let key of this.honorImg){
@@ -1326,9 +1336,9 @@
                 if (this.isRetailCompany) {
                     // 直营公司收入排名(超级运营排行弹窗) GetPdIncomeCount
                     let nowDate = timeFormat.toDate(new Date(), '/');
-                    // if(indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)){
+                    if(indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)){
                         this.getPdIncomeCountByID()
-                    // }
+                    }
                     // 获取月订单数及订单金额总数
                     let endTime = timeFormat.returnMonthCount(0, '-')
                     // 判断当前日期是否为每月的1号
@@ -1385,13 +1395,7 @@
             // 动态修改图表的宽度
             realTimeChangeEcharteWidth(){
                 if (this.activeTabsName === 'order' || this.activeTabsName === 'price') {
-                    console.log('this.activeTabsName', this.activeTabsName)
-                    // bar_box = document.getElementById('order_bar_box') SM_order_price
-                    // let bar_box = document.getElementsByClassName('SM_order_price')[0]
-                    // let order = document.getElementById('orderBar')
-                    // let turnoverBar = document.getElementById('turnoverBar')
                     let width = document.getElementsByClassName('SM_order_price')[0].offsetWidth
-                    console.log('width', width)
                     document.getElementById('orderBar').style.width = width + 'px'
                     document.getElementById('turnoverBar').style.width = width + 'px'
                     this.orderEcharts.resize()
@@ -1411,13 +1415,10 @@
                 api.getApi(this.apiVar.report + '/GetPdIncomeCount',params).then(res=>{
                     // console.log('直营公司收入排名',res)
                     let dataArr = res.data.data
-                    if(res.data.SysCode == 200200 && Array.isArray(dataArr) && dataArr.length > 0){
-                        // dataArr.sort((a, b)=>{
-                        //     return b.total - a.total;
-                        // })
-                        let first = 1,
-                            second = 0,
-                            three = 2;
+                    if(res.data.SysCode == 200200 && Array.isArray(dataArr) && dataArr.length > 2){
+                        dataArr.sort((a, b)=>{
+                            return b.total - a.total;
+                        })
                         let tempArr = [
                             {city:'北京',asrID: '1',url: require('../../assets/images/index/beijing.png')},
                             {city:'上海',asrID: '2',url: require('../../assets/images/index/shanghai.png')},
@@ -1427,36 +1428,24 @@
                             {city:'重庆',asrID: '6',url: require('../../assets/images/index/chongqing.png')},
                             {city:'天津',asrID: '7',url: require('../../assets/images/index/tianjing.png')}
                         ]
-                        if (!this.isPlatform) {
-                            dataArr.forEach((item, index)=>{
-                                if (this.sessionData.asrID == dataArr[i].asrId) {}
-                            })
-                            for (let i = 0; i < dataArr.length; i++) {
-
-                                if (this.sessionData.asrID == dataArr[i].asrId) {
-                                    if (i === 0) {
-                                        first = 1
-                                        second = 0
-                                        three = 2
-                                    } else if (i === dataArr.length - 1) {
-                                        first = dataArr.length - 3
-                                        second = dataArr.length - 1
-                                        three = dataArr.length - 2
-                                    } else {
-                                        first = i - 1
-                                        second = i
-                                        three = i + 1
-                                    }
-                                    break
+                        let indexArr = [1, 0, 2];
+                        for (let i = 0; i < dataArr.length; i++) {
+                            if (this.sessionData.asrID == dataArr[i].asrId) {
+                                this.cityRank = i*1 + 1
+                                if(i === dataArr.length - 1) {
+                                    indexArr = [dataArr.length - 3, dataArr.length - 1, dataArr.length - 2]
+                                } else if(i > 0){
+                                    indexArr = [i - 1, i, i + 1]
                                 }
+                                break
                             }
-                        } else {
-                            this.showCityRankingImg.forEach((item, index)=>{
-                                item.city = dataArr[index].city
-                                item.ranking = index + 1
-                                item.url = tempArr[item.asrId-1].url
-                            })
                         }
+                        indexArr.forEach((item, index)=>{
+                            let temp = this.showCityRankingImg[index]
+                            temp.city = tempArr[item].city
+                            temp.ranking = item*1+1
+                            temp.url = tempArr[item].url
+                        })
                         this.animateFun()
                     } else {
                         this.messageFun('warning','城市月季排行暂无数据')
@@ -2406,6 +2395,7 @@
 </style>
 <style scoped lang="scss">
 /** 新增*/
+    .capsule{border: 1px solid #E9E9E9; -moz-border-radius:160px;-webkit-border-radius:160px;border-radius:160px;width:600px;height:320px;}
     .index-top-row {
         display: flex;
         align-items: flex-start;
@@ -2490,9 +2480,17 @@
         }
     }
     .bottom-box {
-        height: 48px;
+        // position: absolute;
+        // height: 48px;
+		// bottom: 0;
+		// left: 0;
+		// right: 0;
+		margin: 0 24px 32px;
         line-height: 48px;
         text-align: center;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
         background: #F8F8F8;
         border-radius: 2px;
         font-size: 16px;

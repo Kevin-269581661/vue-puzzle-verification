@@ -7,9 +7,8 @@
             class="el-menu-nav"
             mode="horizontal"
             @select="handleSelect"
-            background-color="#444"
-            text-color="#999999"
-            active-text-color="#fff">
+            background-color="#fff"
+            active-text-color="#1890FF">
             <el-menu-item index="" class="no-hover" style="cursor: default">
                 <div class="logo_box">
                     <img src="../../assets/images/logo.png" alt="">
@@ -59,6 +58,7 @@
                     {{userName}}
                 </template>
                 <el-menu-item index="/media/myInfo">个人中心</el-menu-item>
+                <span style="color: rgb(153, 153, 153); font-size: 14px;">余额：￥0.00</span>
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
                 <el-menu-item index="/login">退出登陆</el-menu-item>
             </el-submenu>

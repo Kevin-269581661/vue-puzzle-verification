@@ -51,23 +51,29 @@
                         </el-tooltip>
                     </template>
                     <template slot="content">
-                        <div class="capsule">
-                            <!-- <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="600" height="320"> -->
-                            <!-- <rect x="0" y="0" rx="160" width="600" height="320"/> -->
-                            <!-- <g fill="rgba(106,127,239,0.1)"> -->
-                                <!-- <path d="M 0 70 Q 30 52, 60 70 T 120 70 T 180 70 T 240 70 T 300 70 T 360 70 T 420 70 T 480 70 T 540 70 T 600 70 V 320 H 0 V 0"></path> -->
-                                <!-- <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-300" dur="1.5s" repeatCount="indefinite"></animateTransform> -->
-                            <!-- </g> -->
-                            <!-- <g fill="rgba(106,127,239,0.15)">
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="320" class="capsule-left">
+                                
+                                
+                            <g fill="rgba(106,127,239,0.15)">
                                 <path d="M 0 70 Q 87.5 47, 175 70 T 350 70 T 525 70 T 700 70 T 875 70 T 1050 70 V 320 H 0 V 0"></path>
                                 <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-350" dur="3s" repeatCount="indefinite"></animateTransform>
                             </g>
-                            <g fill="rgba(106,127,239,0.18)" transform="translate(-903.868 0)">
-                                <path d="M 0 70 Q 135 36, 270 70 T 540 70 T 810 70 T 1080 70 V 320 H 0 V 0" transform="translate(-38.232284367796474, 0)"></path>
-                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-540" dur="2s" repeatCount="indefinite"></animateTransform>
-                            </g> -->
-                        <!-- </svg> -->
-                        </div>
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="320" class="capsule-right">
+                            <g fill="rgba(106,127,239,0.1)">
+                                <path d="M 0 70 Q 30 52, 60 70 T 120 70 T 180 70 T 240 70 T 300 70 T 360 70 T 420 70 T 480 70 T 540 70 T 600 70 V 320 H 0 V 0"></path>
+                                <!-- <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-300" dur="1.5s" repeatCount="indefinite"></animateTransform> -->
+                            </g>
+                            
+                        <!-- <g fill="rgba(106,127,239,0.15)">
+                            <path d="M 0 70 Q 87.5 47, 175 70 T 350 70 T 525 70 T 700 70 T 875 70 T 1050 70 V 320 H 0 V 0"></path>
+                            <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-350" dur="3s" repeatCount="indefinite"></animateTransform>
+                        </g>
+                        <g fill="rgba(106,127,239,0.18)" transform="translate(-903.868 0)">
+                            <path d="M 0 70 Q 135 36, 270 70 T 540 70 T 810 70 T 1080 70 V 320 H 0 V 0" transform="translate(-38.232284367796474, 0)"></path>
+                            <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-540" dur="2s" repeatCount="indefinite"></animateTransform>
+                        </g> -->
+                    </svg>
                         <!-- <liquid-chart></liquid-chart> -->
                     </template>
                 </index-custom-card>
@@ -1313,21 +1319,23 @@
                 this.userInfo.userName = this.sessionData.realName
                 this.userInfo.endTime = timeFormat.returnDayCount(-1,'-')
                 // 本季度荣誉
-                for(let key of this.honorImg){
-                    if (key.asrID == this.sessionData.asrID) {
-                        this.companyHonor.push({
-                            asrID: key.asrID,
-                            url: key.url,
-                            title: key.title,
-                            flag: true
-                        })
-                    } else {
-                        this.companyHonor.push({
-                            asrID: key.asrID,
-                            url: key.urlFalse,
-                            title: key.title,
-                            flag: false
-                        })
+                if(this.isRetailCompany) {
+                    for(let key of this.honorImg){
+                        if (key.asrID == this.sessionData.asrID) {
+                            this.companyHonor.push({
+                                asrID: key.asrID,
+                                url: key.url,
+                                title: key.title,
+                                flag: true
+                            })
+                        } else {
+                            this.companyHonor.push({
+                                asrID: key.asrID,
+                                url: key.urlFalse,
+                                title: key.title,
+                                flag: false
+                            })
+                        }
                     }
                 }
             },
@@ -2395,7 +2403,11 @@
 </style>
 <style scoped lang="scss">
 /** 新增*/
-    .capsule{border: 1px solid #E9E9E9; -moz-border-radius:160px;-webkit-border-radius:160px;border-radius:160px;width:600px;height:320px;}
+    .capsule-right{box-sizing: border-box; border: 1px solid #E9E9E9; -moz-border-radius:0 160px 160px 0;-webkit-border-radius:0 160px 160px 0;border-radius:0 160px 160px 0;width:300px;height:320px;}
+    
+    .capsule-left {
+        box-sizing: border-box; border: 1px solid #E9E9E9; -moz-border-radius:160px 0 0 160px;-webkit-border-radius:160px 0 0 160px;border-radius:160px 0 0 160px;width:300px;height:320px;
+    }
     .index-top-row {
         display: flex;
         align-items: flex-start;

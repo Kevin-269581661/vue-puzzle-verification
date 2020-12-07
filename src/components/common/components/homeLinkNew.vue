@@ -115,7 +115,7 @@
                 } else if(item.title === '导出空位') {
                     this.isOpenDownload=true
                 } else {
-                    windows.location.href=item.link
+                    document.location.href=item.link
                 }
             },
             // 获取登录用户信息

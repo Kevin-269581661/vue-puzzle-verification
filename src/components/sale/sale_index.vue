@@ -308,7 +308,7 @@
                     {
                         imgurl: require('../../assets/images/gua.png'),
                         title: '点位表盘',
-                        link: ''
+                        link: './sale/adsDialPlate'
                     },
                 ],
                 linkArr: [

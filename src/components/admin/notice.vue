@@ -12,7 +12,7 @@
             <div class="mediaList_container">
                 <el-form :inline="true">
                     <el-form-item label="标题：">
-                        <el-input placeholder="请输入标题" v-model="searchInfo.keyword" size="small" class="marginR"></el-input>
+                        <el-input placeholder="请输入标题" v-model="searchInfo.title" size="small" class="marginR"></el-input>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" icon="el-icon-search" @click="search()" :loading="isSearch" class="marginR">搜索</el-button>
@@ -143,7 +143,7 @@
                 //加载中
                 loading: true,
                 searchInfo:{
-                    keyword: ""
+                    title: ""
                 },
                 // 表格数据
                 tableSource: [],
@@ -232,10 +232,10 @@
                     pageNum: this.currPage,
                     pagesize: this.pageSize
                 };
-                let { keyword } = this.searchInfo;
+                let { title } = this.searchInfo;
                 info = {
                     ...info,
-                    ...(keyword && {keyword})
+                    ...(title && {title})
                 };
                 return info;
             },
@@ -255,13 +255,13 @@
             },
             // 搜索优化
             search(){
-                let { keyword } = this.searchInfo;
+                let { title } = this.searchInfo;
                 // this.isSearch = false;
                 // let timer = setTimeout(()=>{
                 //     this.isSearch = true;
                 //     clearTimeout(timer);
                 // }, 1000);
-                if(keyword){
+                if(title){
                     this.tableSource = [];
                     this.loading = true;
                     this.currPage = 1;
@@ -274,7 +274,7 @@
             // 重置
             reset(){
                 this.searchInfo = {
-                    keyword: '',
+                    title: '',
                 };
                 this.currPage = 1;
                 this.tableSource = [];

@@ -35,6 +35,12 @@
                                     数据更新至昨日
                                 </li>
                                 <li style="line-height: 20px;">
+                                    历史库存：统计今年1月1日起至昨日的总点位面周数
+                                </li>
+                                <li style="line-height: 20px;">
+                                    未来库存：统计今日起至年底12月31日的总点位面周数
+                                </li>
+                                <li style="line-height: 20px;">
                                     已售资源：指统计周期内售卖出去的面*周数
                                 </li>
                                 <li style="line-height: 20px;">
@@ -51,30 +57,111 @@
                         </el-tooltip>
                     </template>
                     <template slot="content">
-                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="320" class="capsule-left">
-                                
-                                
-                            <g fill="rgba(106,127,239,0.15)">
-                                <path d="M 0 70 Q 87.5 47, 175 70 T 350 70 T 525 70 T 700 70 T 875 70 T 1050 70 V 320 H 0 V 0"></path>
-                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-350" dur="3s" repeatCount="indefinite"></animateTransform>
-                            </g>
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="320" class="capsule-right">
-                            <g fill="rgba(106,127,239,0.1)">
-                                <path d="M 0 70 Q 30 52, 60 70 T 120 70 T 180 70 T 240 70 T 300 70 T 360 70 T 420 70 T 480 70 T 540 70 T 600 70 V 320 H 0 V 0"></path>
-                                <!-- <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-300" dur="1.5s" repeatCount="indefinite"></animateTransform> -->
-                            </g>
+                        <div style="display: flex">
+                            <el-popover
+                                popper-class="index-custom-popper"
+                                class="progress"
+                                placement="top"
+                                :visible-arrow="false"
+                                width="200"
+                                trigger="hover">
+                                <div class="pop-box">
+                                    <div class="pop-title">
+                                        <em>rankItem.realName</em>
+                                    </div>
+                                    <ul>
+                                        <li class="pop-item">
+                                            <em>业绩目标：</em>
+                                            <span>rankItem.targetPrice</span>
+                                        </li>
+                                        <li class="pop-item">
+                                            <em>销售金额：</em>
+                                            <span>rankItem.totalPrice</span>
+                                        </li>
+                                        <li class="pop-item">
+                                            <em>完成进度：</em>
+                                            <span>rankItem.finshProcess</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div slot="reference">
+                                    <svg @click="showTip('past')" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="320" class="capsule-left">
+                                        <defs>
+                                            <linearGradient id="blue1" x1="0%" y1="0%" x2="0%" y2="100%">
+                                                <stop offset="0%" style="stop-color:#6DB9FF;stop-opacity:1" />
+                                                <stop offset="100%" style="stop-color:#1890FF;stop-opacity:1" />
+                                            </linearGradient>
+                                        </defs>
+                                        <g>
+                                            <g fill="#FABF14" transform="translate(-903.868 0)">
+                                                <path d="M 0 70 Q 135 36, 270 70 T 540 70 T 810 70 T 1080 70 V 90 H 0 V 0" transform="translate(-38.232284367796474, 0)"></path>
+                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-540" dur="2s" repeatCount="indefinite"></animateTransform>
+                                            </g>
+                                            <g fill="#FAAD14">
+                                                <path d="M 0 70 Q 135 36, 270 70 T 540 70 T 810 70 T 1080 70 V 90 H 0 V 0" transform="translate(-38.232284367796474, 0)"></path>
+                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-350" dur="3s" repeatCount="indefinite"></animateTransform>
+                                            </g>
+                                        </g>
+                                        
+                                        <g transform="translate(0, 90)" fill="url(#blue1)">
+                                            <path d="M 0 0 H 300 V 230 H 0 V 0"></path>
+                                        </g>
+                                    </svg>
+                                </div>
+                            </el-popover>
                             
-                        <!-- <g fill="rgba(106,127,239,0.15)">
-                            <path d="M 0 70 Q 87.5 47, 175 70 T 350 70 T 525 70 T 700 70 T 875 70 T 1050 70 V 320 H 0 V 0"></path>
-                            <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-350" dur="3s" repeatCount="indefinite"></animateTransform>
-                        </g>
-                        <g fill="rgba(106,127,239,0.18)" transform="translate(-903.868 0)">
-                            <path d="M 0 70 Q 135 36, 270 70 T 540 70 T 810 70 T 1080 70 V 320 H 0 V 0" transform="translate(-38.232284367796474, 0)"></path>
-                            <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-540" dur="2s" repeatCount="indefinite"></animateTransform>
-                        </g> -->
-                    </svg>
-                        <!-- <liquid-chart></liquid-chart> -->
+                            <el-popover
+                                popper-class="index-custom-popper"
+                                class="progress"
+                                placement="top"
+                                :visible-arrow="false"
+                                width="200"
+                                trigger="hover">
+                                <div class="pop-box">
+                                    <div class="pop-title">
+                                        <em>rankItem.realName</em>
+                                    </div>
+                                    <ul>
+                                        <li class="pop-item">
+                                            <em>业绩目标：</em>
+                                            <span>rankItem.targetPrice</span>
+                                        </li>
+                                        <li class="pop-item">
+                                            <em>销售金额：</em>
+                                            <span>rankItem.totalPrice</span>
+                                        </li>
+                                        <li class="pop-item">
+                                            <em>完成进度：</em>
+                                            <span>rankItem.finshProcess</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div slot="reference">
+                                    <svg @click="showTip('next')" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="320" class="capsule-right">
+                                        <defs>
+                                            <linearGradient id="blue2" x1="0%" y1="0%" x2="0%" y2="100%">
+                                                <stop offset="0%" style="stop-color:#6DB9FF;stop-opacity:1" />
+                                                <stop offset="100%" style="stop-color:#1890FF;stop-opacity:1" />
+                                            </linearGradient>
+                                        </defs>
+                                        <g>
+                                            <g fill="url(#blue2)">
+                                                <path d="M 0 70 Q 87.5 47, 175 70 T 350 70 T 525 70 T 700 70 T 875 70 T 1050 70 V 320 H 0 V 0"></path>
+                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-700" dur="1.5s" repeatCount="indefinite"></animateTransform>
+                                            </g>
+                                            <g fill="#6DB9FF">
+                                                <path d="M 0 70 Q 87.5 47, 175 70 T 350 70 T 525 70 T 700 70 T 875 70 T 1050 70 V 320 H 0 V 0" transform="translate(-38.232284367796474, 0)"></path>
+                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-540" dur="2s" repeatCount="indefinite"></animateTransform>
+                                            </g>
+                                            <g fill="url(#blue2)">
+                                                <path d="M 0 70 Q 87.5 47, 175 70 T 350 70 T 525 70 T 700 70 T 875 70 T 1050 70 V 320 H 0 V 0"></path>
+                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-350" dur="3s" repeatCount="indefinite"></animateTransform>
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </div>
+                        </el-popover>
+                        </div>
                     </template>
                 </index-custom-card>
             </el-col>
@@ -985,7 +1072,9 @@
                 // 机会挖掘嵌套饼图数据
                 nestPieData: [],
                 // 媒体概况饼图数据
-                ringData: []
+                ringData: [],
+                // 资源库存数据
+                resStock: {}
             }
         },
         beforeCreate() {
@@ -1022,6 +1111,14 @@
             this.getSMCustomerActiveReport()
         },
         methods: {
+            // 资源库存事件
+            showTip(flag) {
+                if(flag == 'next') {
+                    console.log(this.resStock.next)
+                } else if(flag == 'past') {
+                    console.log(this.resStock.past)
+                }
+            },
             // 首页报表接口
             allReportApi() {
                 // 管理员的本年销售额和本年订单数卡片 /report /homepage/getSMAdPlanCardReport
@@ -1161,6 +1258,66 @@
                     console.log('err', err)
                 }).finally(_=>{
                     
+                })
+                // 资源库存数据
+                api.getApi(this.apiVar.report + '/homepage/getSMResStockReport',params).then(res=>{
+                    if (res.data.SysCode === 200200) {
+                        let temp = res.data.data;
+                        /* "historyStock": 0,     //历史库存
+                        "futureStock": 36,    //未来库存
+
+                        "preStartDate": "2020/01/01",  //历史开始时间
+                        "preEndDate": "2020/01/01",	 //历史结束时间
+                        "onPubStock": 0,     //历史已售库存面周数
+                        "overdueStock": 0,		//过期资源面周数
+                        "repairStock": 0,		//历史维修的库存
+                        "banStock": 0,			//历史禁止的库存
+                        "onPubStockRate": "0.00",	//历史已售库存的百分比
+                        "overdueStockRate": "0.00", //历史过期库存的百分比
+                        "repairStockRate": "0.00",   //历史维修库存的百分比
+                        "banStockRate": "0.00", 	//历史禁止库存的百分比
+
+                        "futureStartDate": "2020/11/26",	//未来开始时间
+                        "futureEndDate": "2020/12/31"		//未来结束时间
+                        "futureOnPubStock": 1,  //未来已售库存面周数
+                        "futureUnsoldStock": 35, //未来未售库存面周数
+                        "futureOnPubStockRate": "2.00",  //未来已售库存百分比
+                        "futureUnsoldStockRate": "97.00", //未来未售库存百分比
+                        
+
+                        "overduePrice": 1.0,     //浪费的资源价值
+                        "unsoldRank": 0,		//浪费的资源价值百分比*/
+
+                        let past = {
+                            preStartDate: temp.preStartDate,  //历史开始时间
+                            preEndDate: temp.preEndDate,	 //历史结束时间
+                            onPubStock: temp.onPubStock,     //历史已售库存面周数
+                            overdueStock: temp.overdueStock,		//过期资源面周数
+                            repairStock: temp.repairStock,		//历史维修的库存
+                            banStock: temp.banStock,			//历史禁止的库存
+                            onPubStockRate: temp.onPubStockRate,	//历史已售库存的百分比
+                            overdueStockRate: temp.overdueStockRate, //历史过期库存的百分比
+                            repairStockRate: temp.repairStockRate,   //历史维修库存的百分比
+                            banStockRate: temp.banStockRate, 	//历史禁止库存的百分比
+                        }
+                        let next = {
+                            futureStartDate: temp.futureStartDate,	//未来开始时间
+                            futureEndDate: temp.futureEndDate,		//未来结束时间
+                            futureOnPubStock: temp.futureOnPubStock,  //未来已售库存面周数
+                            futureUnsoldStock: temp.futureUnsoldStock, //未来未售库存面周数
+                            futureOnPubStockRate: temp.futureOnPubStockRate,  //未来已售库存百分比
+                            futureUnsoldStockRate: temp.futureUnsoldStockRate, //未来未售库存百分比
+                        }
+                        this.resStock = {
+                            past,
+                            next
+                        }
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                }).catch(err=>{
+                    console.log('err', err)
+                }).finally(_=>{
                 })
             },
             getSMCustomerActiveReport() {

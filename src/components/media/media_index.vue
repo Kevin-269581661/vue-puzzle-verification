@@ -1278,7 +1278,7 @@ export default {
 					let temp = res.data.data;
 					this.ringData = [
 						[
-							{ item: "正常", count: temp.normalMediaCn||0 },
+							{ item: "正常", count: temp.normalMediaCnt||0 },
 							{ item: "待安装", count: temp.installMediaCnt||0 },
 							{ item: "待维修", count: temp.repairMediaCnt||0 },
 							{ item: "禁用", count: temp.banMediaCnt||0 }

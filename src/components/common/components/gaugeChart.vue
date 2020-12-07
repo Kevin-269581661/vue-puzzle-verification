@@ -70,7 +70,7 @@ export default {
           padding: [0, 0, 30, 0],
         });
       }
-      const data = [{ value: this.gaugeData.finshProcess%100 > 0 ? 100 : this.gaugeData.finshProcess}];
+      const data = [{ value: this.gaugeData.finshProcess/100 > 1 ? 100 : this.gaugeData.finshProcess}];
       this.chartInstance.data(data);
       this.chartInstance.scale("value", {
         min: 0,

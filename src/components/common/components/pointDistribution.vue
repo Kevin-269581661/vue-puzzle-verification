@@ -110,7 +110,7 @@ export default {
             this.tableData = res.data.data;
             // this.setMap();
           } else {
-            this.messageFun("warning", res.data.MSG);
+            sessFun.messageFun("warning", res.data.MSG);
           }
         })
         .catch((err) => {

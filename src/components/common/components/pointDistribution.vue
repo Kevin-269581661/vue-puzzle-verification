@@ -29,8 +29,8 @@
     <el-table :data="tableData" max-height="540" style="flex: unset; width: auto;">
       <el-table-column label="排名" type=index width="60">
       </el-table-column>
-      <el-table-column prop="rName" label="城市" width="120" show-overflow-tooltip>
-      </el-table-column>
+      <el-table-column v-if="isPlatformSM" prop="rName" label="城市" width="120" show-overflow-tooltip></el-table-column>
+      <el-table-column v-else prop="rName" label="地区" width="120" show-overflow-tooltip></el-table-column>
       <el-table-column prop="totalResCnt" label="社区" width="120" align="right" show-overflow-tooltip>
       </el-table-column>
       <el-table-column prop="totalMediaCnt" label="媒体" width="120" align="right" show-overflow-tooltip>
@@ -59,6 +59,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    isPlatformSM: {
+      type: Boolean,
+      default: false,
+    }
   },
   watch: {
     hasMpvgl(val) {

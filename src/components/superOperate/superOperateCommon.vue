@@ -220,6 +220,9 @@
     .logo_box{
         margin: 0 16px 0 42px;
     }
+    .logo_box img {
+        width: 103px;
+    }
     /*用户中心*/
     /deep/.el-menu--horizontal>.el-submenu.user_center{
         float: right;

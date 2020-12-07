@@ -860,6 +860,9 @@ export default {
 .logo_img {
     padding: 14px 0 0 38px;
 }
+.logo_img img {
+    width: 103px;
+}
 
 .content{
     width: 90%;

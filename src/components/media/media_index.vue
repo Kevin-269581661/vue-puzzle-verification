@@ -28,19 +28,48 @@
 					<index-custom-card height="520px">
 						<template slot="head">
 							媒体概况&nbsp
-							<el-tooltip popper-class="amount-tooltip" effect="dark" content="Top center" placement="top">
+							<el-tooltip v-if="isPoint" effect="dark" content="Top center" placement="top">
 								<ul slot="content">
 									<li style="line-height: 20px;">
-										签约额：均为合同金额，未扣除总部收益部分
+										数据更新至昨日
 									</li>
 									<li style="line-height: 20px;">
-										全国单发单执行额：该执行额不以实际订单金额统计，而以拆单时的方案金额以公式计算获得
+										总点位数：统计所属公司累计所有录入的媒体点位数
 									</li>
 									<li style="line-height: 20px;">
-										按周统计：指每周六至下周五为一个周
+										正常：指状态为“正常”的媒体点位数量
 									</li>
 									<li style="line-height: 20px;">
-										按月统计：指从1号至自然月底
+										待维修：指状态为“待维修”的媒体点位数量
+									</li>
+									<li style="line-height: 20px;">
+										待安装：指状态为“待安装”的媒体点位数量
+									</li>
+									<li style="line-height: 20px;">
+										禁用：指状态为“禁用”的媒体点位数量
+									</li>
+								</ul>
+								<img class="quesition-icon" src="../../assets/images/question_icon.png" />
+							</el-tooltip>
+							<el-tooltip v-else effect="dark" content="Top center" placement="top">
+								<ul slot="content">
+									<li style="line-height: 20px;">
+										数据更新至昨日
+									</li>
+									<li style="line-height: 20px;">
+										总媒体数：统计所属公司累计所有录入的媒体数
+									</li>
+									<li style="line-height: 20px;">
+										正常：指状态为“正常”的媒体数量
+									</li>
+									<li style="line-height: 20px;">
+										待维修：指状态为“待维修”的媒体数量
+									</li>
+									<li style="line-height: 20px;">
+										待安装：指状态为“待安装”的媒体数量
+									</li>
+									<li style="line-height: 20px;">
+										禁用：指状态为“禁用”的媒体数量
 									</li>
 								</ul>
 								<img class="quesition-icon" src="../../assets/images/question_icon.png" />
@@ -1307,6 +1336,13 @@ export default {
 
 <style scoped lang="scss">
 /** 新增*/
+	.quesition-icon {
+		width: 14px;
+		height: 14px;
+		border-radius: 50%;
+		vertical-align: middle;
+		filter: brightness(0.75);
+	}
 	.index-tab-group {
 		background: #fff;
         position: relative;

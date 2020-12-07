@@ -347,7 +347,7 @@
             </div>
             <el-tabs style="height: 643px;border: 1px solid #e5e6e9;" v-model="activeTabsName" @tab-click="tabHandleClick">
                 <el-tab-pane label="点位分布" name="pointDistribution">
-                    <point-distribution mapContainer="mapContainer1" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointDistribution'"></point-distribution>
+                    <point-distribution :isPlatformSM="isPlatform"  mapContainer="mapContainer1" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointDistribution'"></point-distribution>
                 </el-tab-pane>
                 <el-tab-pane label="点位上刊率" name="pointPublication">
                     <publish-rate mapContainer="mapContainer2" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointPublication'"></publish-rate>
@@ -1224,6 +1224,8 @@
             },
             // 跳转到客户列表页面
             routePage(row) {
+                console.log('row', row)
+                return
                 sessionStorage.setItem("customerId", row.cID);
                 this.$router.push("./superOperate/clientDetail");
             },

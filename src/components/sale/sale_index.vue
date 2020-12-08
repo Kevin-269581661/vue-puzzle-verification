@@ -429,7 +429,7 @@
                 },
                 cardData2: {
                     title: '本月订单',
-                    tip: '数据实时更新，统计当月发布的订单数量',
+                    tip: '数据每5分钟更新一次，统计当月发布的订单数量',
                     value: 0,
                     valueAlias: '订单数',
                     compare: 0,
@@ -438,7 +438,7 @@
                 },
                 cardData3: {
                     title: '本月激活客户',
-                    tip: '数据实时更新，统计该销售当月发布过订单的客户数量',
+                    tip: '数据每5分钟更新一次，统计该销售当月发布过订单的客户数量',
                     value: 0,
                     valueAlias: '客户数',
                     compare: 0,
@@ -880,19 +880,20 @@
                             tempcCardData2 = [],
                             tempcCardData3 = [];
                         temp.forEach((item, index)=>{
+                            let commonObj = {
+                                dateStr: `第${index+1}周`,
+                                week: item.weekStart + '~' + item.weekEnd,
+                            }
                             tempcCardData1.push({
-                                week: `第${index+1}周`,
-                                dateStr: item.weekStart + item.weekEnd,
+                                ...commonObj,
                                 value: item.orderPrice || 0
                             })
                             tempcCardData2.push({
-                                week: `第${index+1}周`,
-                                dateStr: item.weekStart + item.weekEnd,
+                                ...commonObj,
                                 value: item.orderCnt || 0
                             })
                             tempcCardData3.push({
-                                week: `第${index+1}周`,
-                                dateStr: item.weekStart + item.weekEnd,
+                                ...commonObj,
                                 value: item.customCnt || 0
                             })
                         })

@@ -495,7 +495,7 @@ export default {
 			cardData1: {
 				type: 'bar',
 				title: '明日预锁到期方案',
-				tip: '数据实时更新，指明日将到期自动解锁的方案数量',
+				tip: '数据每5分钟更新一次，指明日将到期自动解锁的方案数量',
 				value: 0,
 				valueAlias: '方案个数',
 				compare: 0,
@@ -505,7 +505,7 @@ export default {
 			cardData2: {
 				type: 'bar',
 				title: '本月发布订单',
-				tip: '数据实时更新，本月该媒介发布的订单数量',
+				tip: '数据每5分钟更新一次，本月该媒介发布的订单数量',
 				value: 0,
 				valueAlias: '订单数',
 				compare: 0,
@@ -515,7 +515,7 @@ export default {
 			cardData3: {
 				type: 'bar',
 				title: '本月创建方案',
-				tip: '数据实时更新，本月该媒介协助创建的方案数量',
+				tip: '数据每5分钟更新一次，本月该媒介协助创建的方案数量',
 				value: 0,
 				valueAlias: '方案数',
 				compare: 0,
@@ -533,7 +533,7 @@ export default {
 			},
 			cardDataOther2: {
 				title: '在刊点位',
-				tip: '数据实时更新，当前正在被投放的点位数量',
+				tip: '数据每5分钟更新一次，当前正在被投放的点位数量',
 				value: 0,
 				valueAlias: '在刊点位数量',
 				compare: 0,
@@ -543,7 +543,7 @@ export default {
 			},
 			cardDataOther3: {
 				title: '禁用点位',
-				tip: '数据实时更新，公司禁用的总点位数',
+				tip: '数据每5分钟更新一次，公司禁用的总点位数',
 				value: 0,
 				valueAlias: '禁用点位数量',
 				compare: 0,
@@ -782,218 +782,6 @@ export default {
 				img5: require('../../assets/images/index/'+str+'-5.png'),
 			};
 		},
-		// setTime(){
-		// 	let starTime = timeFormat.returnMonthCount(5,'-') //this.GetDateStr(5)
-		// 	let endTime = timeFormat.returnMonthCount(0,'-')  //this.GetDateStr(0)
-		// 	let starTimeSub = starTime.substring(0,7)
-		// 	let endTimeSub = endTime.substring(0,7)
-		// 	console.log(starTime, endTime);
-		// 	this.monthRange = [starTimeSub, endTimeSub]     // 关键数据增量趋势
-		// 	this.selectMonth();
-		// },
-		// selectMonth(){
-		// 	if(this.monthRange[0] && this.monthRange[1]){
-		// 		if(this.monthRange[0]>this.monthRange[1]){
-		// 			Message.warning('结束时间小于开始时间');
-		// 		}else{
-		// 			this.getchartData();
-		// 		}
-		// 	}else {
-		// 		Message.warning('请先选择一段时间');
-		// 	}
-		// },
-		// 获取图表数据
-		// getchartData(){
-		// 	let info = {
-		// 		uid: this.sessionData.uID,
-		// 		token: this.sessionData.token,
-		// 		startTime: this.monthRange[0],
-		// 		endTime: this.monthRange[1]
-		// 	};
-		// 	api.getApi(this.apiVar.report + '/GetAdPlanCountAndAsCountByPeriodOfMD', info).then(res =>{
-		// 		// console.log(res.data);
-		// 		if(res.data.SysCode == 200200){
-		// 			let title = [];
-		// 			let orderData = [];
-		// 			let pointData = [];
-		// 			for(let data of res.data.data){
-		// 				title.push(data.month);
-		// 				orderData.push(data.apCount);
-		// 				pointData.push(data.asCount);
-		// 			}
-		// 			this.orderPointData.title = title;
-		// 			this.orderPointData.orderData = orderData;
-		// 			this.orderPointData.pointData = pointData;
-		// 			if(this.getNumIsNull(orderData) || this.getNumIsNull(pointData)){
-		// 				this.getLinePer();
-		// 			}
-		// 		}else{
-		// 			Message.warning(res.data.MSG);
-		// 		}
-		// 	}).catch(err =>{
-		// 		console.log(err);
-		// 	});
-		// },
-		// getNumIsNull(arr){
-		// 	let isHad = arr.filter(item =>{
-		// 		return item>0;
-		// 	});
-		// 	return isHad.length==0?false:true;
-		// },
-		// getLinePer(){
-		// 	let perLine = this.$echarts.init(this.$refs.perform)
-		// 	perLine.setOption({
-		// 		tooltip: {
-		// 			trigger: 'axis',
-		// 			axisPointer: {            // 坐标轴指示器，坐标轴触发有效
-		// 				type: 'shadow',        // 默认为直线，可选为：'line' | 'shadow'
-		// 				shadowStyle: {
-		// 					shadowColor: '#999'
-		// 				}
-		// 			},
-		// 			backgroundColor: '#FFFFFF',
-		// 			padding: 0,
-		// 			borderColor: '#dddddd',
-		// 			borderWidth: 1,
-		// 			formatter: function(params){
-        //                 let title = '';
-        //                 let arr = [];
-        //                 for (let i = 0; i < params.length; i++) {
-        //                     title = `<p class="echarts_tooltip_title"><span>${params[i].name}</span><span>数值</span></p> <br/>`
-        //                     let data = `<p class="echarts_tooltip_content"><span><i class="echarts_tooltip_i" style="background:${params[i].color}"></i>
-        //                         ${params[i].seriesName}</span> ${params[i].value}</p>`
-        //                     arr.push(data)
-        //                 }
-        //                 let tooltip = arr.join('')
-        //                 return title + tooltip
-		// 			},
-		// 		},
-		// 		legend: {
-		// 			top: 'bottom',
-		// 			left: 'center',
-		// 			data: this.orderPointData.legendTitle
-		// 		},
-		// 		grid: {
-		// 			left: '3%',
-		// 			right: '4%',
-		// 			bottom: '8%',
-		// 			containLabel: true
-		// 		},
-		// 		xAxis: [
-		// 			{
-		// 				type: 'category',
-		// 				data: this.orderPointData.title,
-		// 				axisPointer: {
-		// 					type: 'shadow'
-		// 				},
-		// 				axisLabel: {
-		// 					//坐标轴刻度标签
-		// 					margin: 7, //刻度标签与轴线之间的距离
-		// 					interval: 0,    //强制文字产生间隔
-		// 					// rotate: 25,     //文字逆时针旋转25°
-		// 					textStyle: {
-		// 						fontFamily: "DINPro-Regular",
-		// 						color: "#2C313C" //坐标轴刻度文字的颜色
-		// 					}
-		// 				},
-		// 				axisLine: {
-		// 					//坐标轴线条相关设置(颜色等)
-		// 					lineStyle: {
-		// 						color: "#E8E8E8"
-		// 					}
-		// 				},
-		// 			}
-		// 		],
-		// 		yAxis: [
-		// 			{
-		// 				type: 'value',
-		// 				name: '发布订单数',
-		// 				nameTextStyle:{
-		// 					fontWeight: 'bold',
-		// 					fontSize: 14,
-		// 					color: '#000'
-		// 				},
-		// 				axisLine: {
-		// 					//坐标轴线条相关设置(颜色等)
-		// 					lineStyle: {
-		// 						color: "#E8E8E8"
-		// 					}
-		// 				},
-		// 				axisLabel: {
-		// 					//坐标轴刻度标签
-		// 					margin: 7, //刻度标签与轴线之间的距离
-		// 					textStyle: {
-		// 						fontFamily: "DINPro-Regular",
-		// 						color: "#2C313C" //坐标轴刻度文字的颜色
-		// 					}
-		// 				},
-		// 				splitLine: {
-        //                     lineStyle: {
-        //                         color: "#E8E8E8",
-        //                         type: "dashed"
-        //                     }
-        //                 }
-		// 			},
-		// 			{
-		// 				type: 'value',
-		// 				name: '录单点位数',
-		// 				nameTextStyle:{
-		// 					fontWeight: 'bold',
-		// 					fontSize: 14,
-		// 					color: '#000'
-		// 				},
-		// 				axisLine: {
-		// 					//坐标轴线条相关设置(颜色等)
-		// 					lineStyle: {
-		// 						color: "#E8E8E8"
-		// 					}
-		// 				},
-		// 				axisLabel: {
-		// 					//坐标轴刻度标签
-		// 					margin: 7, //刻度标签与轴线之间的距离
-		// 					textStyle: {
-		// 						fontFamily: "DINPro-Regular",
-		// 						color: "#2C313C", //坐标轴刻度文字的颜色，
-		// 					}
-		// 				},
-		// 				splitLine: {
-        //                     lineStyle: {
-        //                         color: "#E8E8E8",
-        //                         type: "dashed"
-        //                     }
-        //                 }
-		// 			}
-		// 		],
-		// 		series: [
-		// 			{
-		// 				color: '#1890FF',
-		// 				name:'发布订单数',
-		// 				barWidth: "10%",
-		// 				type:'bar',
-		// 				data:this.orderPointData.orderData
-		// 			},
-		// 			{
-		// 				color: '#FF9118',
-		// 				name:'录单点位数',
-		// 				barWidth: "10%",
-		// 				type:'bar',
-		// 				yAxisIndex: 1,
-		// 				data:this.orderPointData.pointData
-		// 			}
-		// 		]
-		// 	});
-		// 	window.addEventListener("resize", function (e) {
-		// 		perLine.resize();
-		// 	});
-		// },
-        // 应用中心的展开和收起
-        // slideAppCenterItem() {
-        //     this.isSlideDown = !this.isSlideDown
-        //     if(!this.isSlideDown){
-        //         this.uploadEvent(1)
-        //     }
-
-        // },
         // 应用中心跳转
         goToPage(item) {
             if (item) {
@@ -1157,25 +945,25 @@ export default {
 							tempcCardData3 = [],
 							tempcCardDataOther1 = [];
 						weekDataList.forEach((item, index)=>{
+							let commonObj = {
+                                dateStr: `第${index+1}周`,
+                                week: item.weekStart + '~' + item.weekEnd
+                            }
 							tempcCardData1.push({
-								week: `第${index+1}周`,
-								dateStr: item.weekStart + item.weekEnd,
+								...commonObj,
 								value: item.unlockCnt || 0
 							})
 							tempcCardData2.push({
-								week: `第${index+1}周`,
-								dateStr: item.weekStart + item.weekEnd,
+								...commonObj,
 								value: item.orderCnt || 0
 							})
 							tempcCardData3.push({
-								week: `第${index+1}周`,
-								dateStr: item.weekStart + item.weekEnd,
+								...commonObj,
 								value: item.fanganCnt || 0
 							})
 							tempcCardDataOther1.push({
-								week: `第${index+1}周`,
+								...commonObj,
 								name: '新增社区',
-								dateStr: item.weekStart + item.weekEnd,
 								value: item.weekBarrierCnt || 0
 							})
 						})

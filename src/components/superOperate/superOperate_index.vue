@@ -1050,6 +1050,7 @@
                     title: '社区总数',
                     tip: '数据截止至昨日，社区总数数据来源为统计周期内新增的社区数量总和',
                     value: 0,
+                    valueAlias: '新增小区数',
                     prefix: '￥',
                     comment: '数据统计截止至昨天',
                     compare: 0,
@@ -1059,8 +1060,9 @@
                 cardDataOther3: {
                     type: 'bar',
                     title: '昨日上刊率',
-                    tip: '数据截止至昨日，上刊率计算公式为统计周期内上周六至这周五点位投放总面*天与该时间内可投放总面*天的百分比',
+                    tip: '数据截止至昨日，上刊率计算公式为统计周期内周一至周日点位投放总面*天与该时间内可投放总面*天的百分比',
                     value: 0,
+                    valueAlias: '上刊率',
                     suffix: '%',
                     comment: '数据统计截止至昨天',
                     compare: 0,
@@ -1203,43 +1205,40 @@
                             tempcCardDataOther2 = [],
                             tempcCardDataOther3 = [];
                         temp.forEach((item, index)=>{
+                            let commonObj = {
+                                dateStr: `第${index+1}周`,
+                                week: item.weekStarDate + '~' + item.weekEndDate
+                            }
                             tempcCardData1.push({
-                                week: `第${index+1}周`,
-                                dateStr: item.weekStarDate + item.weekEndDate,
+                                ...commonObj,
                                 value: item.weekPlanPrice || 0
                             })
                             tempcCardData2.push({
-                                week: `第${index+1}周`,
-                                dateStr: item.weekStarDate + item.weekEndDate,
+                                ...commonObj,
                                 value: item.weekPlanCnt || 0
                             })
                             tempcCardData3.push({
-                                week: `第${index+1}周`,
-                                dateStr: item.weekStarDate + item.weekEndDate,
+                                ...commonObj,
                                 value: item.weekCustomerCnt || 0
                             })
                             tempcCardDataOther1.push({
-                                week: `第${index+1}周`,
-                                name: '新增道闸',
-                                dateStr: item.weekStarDate + item.weekEndDate,
+                                ...commonObj,
+                                name: '道闸',
                                 value: item.weekBarrierCnt || 0
                             })
                             tempcCardDataOther1.push({
-                                week: `第${index+1}周`,
+                                ...commonObj,
                                 name: '新增广告门',
-                                dateStr: item.weekStarDate + item.weekEndDate,
                                 value: item.weekDoorCnt || 0
                             })
                             tempcCardDataOther2.push({
-                                week: `第${index+1}周`,
+                                ...commonObj,
                                 name: '新增小区数',
-                                dateStr: item.weekStarDate + item.weekEndDate,
                                 value: item.weekResCnt || 0
                             })
                             tempcCardDataOther3.push({
-                                week: `第${index+1}周`,
+                                ...commonObj,
                                 name: '上刊率',
-                                dateStr: item.weekStarDate + '~' + item.weekEndDate,
                                 value: (item.weekOnPubRate || 0)*1
                             })
                         })

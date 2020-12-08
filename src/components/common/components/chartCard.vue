@@ -40,7 +40,8 @@
         :padding="[0, 'auto', 'auto', 'auto']"
       >
         <v-axis dataKey="value" :show="false"></v-axis>
-        <v-axis dataKey="week" :tickLine="{length: -3}" :label="{formatter: formatter, textStyle: {fill: 'rgb(0, 0, 0)', opacity: 0.45}}"></v-axis>
+        <v-axis v-if="cardData.type == 'bar'" dataKey="week" :tickLine="{length: -3}" :label="{formatter: formatter1, textStyle: {fill: 'rgb(0, 0, 0)', opacity: 0.45}}"></v-axis>
+        <v-axis v-if="cardData.type == 'stackBar'" dataKey="week" :tickLine="{length: -3}" :label="{formatter: formatter2, textStyle: {fill: 'rgb(0, 0, 0)', opacity: 0.45}}"></v-axis>
         <v-tooltip :hideMarkers="false"/>
         
         <v-bar v-if="cardData.type == 'bar'" position="week*value" :color="stackColor[1][0]" />
@@ -56,7 +57,7 @@
         :padding="[0, 'auto', 'auto', 'auto']"
       >
         <v-axis dataKey="value" :show="false"></v-axis>
-        <v-axis dataKey="week" :tickLine="{length: -5}" :label="{formatter: cardData.formatter || formatter, textStyle: {fill: 'rgb(0, 0, 0)', opacity: 0.45}}"></v-axis>
+        <v-axis dataKey="week" :tickLine="{length: -5}" :label="{formatter: cardData.formatter || formatter1, textStyle: {fill: 'rgb(0, 0, 0)', opacity: 0.45}}"></v-axis>
         <v-tooltip :shared="false" :hideMarkers="false" />
         <v-smooth-line
           position="week*value"
@@ -122,7 +123,7 @@ export default {
           type: 'cat',
           min: 0,
           max: 1,
-          tickCount: 7,
+          // tickCount: 7,
           range: [ 0, 1 ]
         }
       ],
@@ -137,8 +138,11 @@ export default {
     mountedCallback() {
       this.oldTotal = this.cardData.value;
     },
-    formatter(text, item, index) {
+    formatter1(text, item, index) {
         return this.cardData.data[index].dateStr
+    },
+    formatter2(text, item, index) {
+        return `第${index+1}周`
     }
   },
   mounted() {},

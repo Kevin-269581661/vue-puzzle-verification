@@ -61,7 +61,7 @@
                             <el-popover
                                 popper-class="index-custom-popper"
                                 class="progress"
-                                placement="left-start"
+                                placement="top-start"
                                 :visible-arrow="false"
                                 width="200"
                                 trigger="hover">
@@ -93,7 +93,7 @@
                                     </ul>
                                 </div>
                                 <div slot="reference">
-                                    <svg @click="showTip('past')" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="320" class="capsule-left">
+                                    <svg @click="showTip('past')" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" :width="600*resStock.currentMonthPercent" height="320" class="capsule-left">
                                         <defs>
                                             <linearGradient id="blue1" x1="0%" y1="0%" x2="0%" y2="100%">
                                                 <stop offset="0%" style="stop-color:#6DB9FF;stop-opacity:1" />
@@ -102,17 +102,36 @@
                                         </defs>
                                         <g>
                                             <g fill="#FABF14" transform="translate(-903.868 0)">
-                                                <path d="M 0 70 Q 135 36, 270 70 T 540 70 T 810 70 T 1080 70 V 90 H 0 V 0" transform="translate(-38.232284367796474, 0)"></path>
-                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-540" dur="2s" repeatCount="indefinite"></animateTransform>
+                                                <path :d="'M 0 23 Q 87.5 0, 175 23 T 350 23 T 525 23 T 700 23 T 875 23 T 1050 23 V ' + (resStock.past.overdueStockRate||100)*3.2 + ' H 0 V 0'" transform="translate(-38.232284367796474, 0)"></path>
+                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-600" dur="2s" repeatCount="indefinite"></animateTransform>
                                             </g>
                                             <g fill="#FAAD14">
-                                                <path d="M 0 70 Q 135 36, 270 70 T 540 70 T 810 70 T 1080 70 V 90 H 0 V 0" transform="translate(-38.232284367796474, 0)"></path>
+                                                <path :d="'M 0 23 Q 87.5 0, 175 23 T 350 23 T 525 23 T 700 23 T 875 23 T 1050 23 V ' + (resStock.past.overdueStockRate||100)*3.2 + ' H 0 V 0'" transform="translate(-38.232284367796474, 0)"></path>
                                                 <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-350" dur="3s" repeatCount="indefinite"></animateTransform>
                                             </g>
+                                            <text x="150" y="155" fill="#fff" >{{resStock.past.overdueStockRate||'0.00'}}%</text>
+                                            <text x="150" y="175" fill="#fff" >过期</text>
                                         </g>
-                                        
-                                        <g transform="translate(0, 90)" fill="url(#blue1)">
-                                            <path d="M 0 0 H 300 V 230 H 0 V 0"></path>
+                                        <g v-if="resStock.past.overdueStockRate*1 > 0" :transform="'translate(0, '+ (resStock.past.overdueStockRate || 0)*3.2 +')'" fill="url(#blue1)">
+                                            <path d="M 0 0 H 600 V 320 H 0 V 0"></path>
+                                            <text x="150" y="155" fill="#fff" >{{resStock.past.onPubStockRate||'0.00'}}%</text>
+                                            <text x="150" y="175" fill="#fff" >已售</text>  
+                                        </g>
+                                        <g v-else>
+                                            <g fill="#6DB9FF">
+                                                <path d="M 0 23 Q 87.5 0, 175 23 T 350 23 T 525 23 T 700 23 T 875 23 T 1050 23 V 320 H 0 V 0"></path>
+                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-700" dur="1.5s" repeatCount="indefinite"></animateTransform>
+                                            </g>
+                                            <g fill="#6DB9FF">
+                                                <path d="M 0 23 Q 87.5 0, 175 23 T 350 23 T 525 23 T 700 23 T 875 23 T 1050 23 V 320 H 0 V 0" transform="translate(-38.232284367796474, 0)"></path>
+                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-540" dur="2s" repeatCount="indefinite"></animateTransform>
+                                            </g>
+                                            <g fill="url(#blue2)">
+                                                <path d="M 0 23 Q 87.5 0, 175 23 T 350 23 T 525 23 T 700 23 T 875 23 T 1050 23 V 320 H 0 V 0"></path>
+                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-350" dur="3s" repeatCount="indefinite"></animateTransform>
+                                            </g>
+                                            <text x="150" y="155" fill="#fff" >{{resStock.past.onPubStockRate||'0.00'}}%</text>
+                                            <text x="150" y="175" fill="#fff" >已售</text>  
                                         </g>
                                     </svg>
                                 </div>
@@ -142,31 +161,41 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <div slot="reference">
-                                    <svg @click="showTip('next')" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="320" class="capsule-right">
+                                <div slot="reference" style="position: relative;">
+                                    <svg @click="showTip('next')" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" :width="600*(1-resStock.currentMonthPercent)" height="320" class="capsule-right">
                                         <defs>
                                             <linearGradient id="blue2" x1="0%" y1="0%" x2="0%" y2="100%">
                                                 <stop offset="0%" style="stop-color:#6DB9FF;stop-opacity:1" />
                                                 <stop offset="100%" style="stop-color:#1890FF;stop-opacity:1" />
                                             </linearGradient>
                                         </defs>
-                                        <g>
-                                            <g fill="url(#blue2)">
-                                                <path d="M 0 70 Q 87.5 47, 175 70 T 350 70 T 525 70 T 700 70 T 875 70 T 1050 70 V 320 H 0 V 0"></path>
+                                        <g :transform="'translate(0, '+ (resStock.next.futureUnsoldStockRate||100)*3.2 +')'">
+                                            <g fill="#6DB9FF">
+                                                <path d="M 0 23 Q 87.5 0, 175 23 T 350 23 T 525 23 T 700 23 T 875 23 T 1050 23 V 320 H 0 V 0"></path>
                                                 <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-700" dur="1.5s" repeatCount="indefinite"></animateTransform>
                                             </g>
                                             <g fill="#6DB9FF">
-                                                <path d="M 0 70 Q 87.5 47, 175 70 T 350 70 T 525 70 T 700 70 T 875 70 T 1050 70 V 320 H 0 V 0" transform="translate(-38.232284367796474, 0)"></path>
+                                                <path d="M 0 23 Q 87.5 0, 175 23 T 350 23 T 525 23 T 700 23 T 875 23 T 1050 23 V 320 H 0 V 0" transform="translate(-38.232284367796474, 0)"></path>
                                                 <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-540" dur="2s" repeatCount="indefinite"></animateTransform>
                                             </g>
                                             <g fill="url(#blue2)">
-                                                <path d="M 0 70 Q 87.5 47, 175 70 T 350 70 T 525 70 T 700 70 T 875 70 T 1050 70 V 320 H 0 V 0"></path>
+                                                <path d="M 0 23 Q 87.5 0, 175 23 T 350 23 T 525 23 T 700 23 T 875 23 T 1050 23 V 320 H 0 V 0"></path>
                                                 <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-350" dur="3s" repeatCount="indefinite"></animateTransform>
                                             </g>
                                         </g>
                                     </svg>
+                                    <div v-if="resStock.next.futureUnsoldStockRate*1<100" class="next-text">
+                                        <span>已售</span>
+                                        <span>{{resStock.next.futureOnPubStockRate||'0.00'}}%</span>
+                                    </div>
                                 </div>
                             </el-popover>
+                                <!-- <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="600" height="320" class="capsule"></svg> -->
+                        </div>
+                        <div class="coordinate-line">
+                            <div v-for="item in 12" class="sub-line">
+                                <span class="sub-text">{{item + '月'}}</span>
+                            </div>
                         </div>
                         <div v-if="sessionData.asrID != '999'" class="bottom-box">
                             贵司共浪费了价值  <span class="avtive"> ￥{{resStock.overduePrice || 0}} </span>  的资源，多于全国 <span class="avtive"> {{resStock.unsoldRank}}% </span> 的公司，太可惜了
@@ -931,7 +960,7 @@
                 // 媒体概况饼图数据
                 ringData: [],
                 // 资源库存数据
-                resStock: {past: {}, next: {}}
+                resStock: {past: {}, next: {}, currentMonthPercent: 0.5}
             }
         },
         beforeCreate() {
@@ -1134,14 +1163,15 @@
                                 futureEndDate: temp.futureEndDate,		//未来结束时间
                                 futureOnPubStock: temp.futureOnPubStock,  //未来已售库存面周数
                                 futureUnsoldStock: temp.futureUnsoldStock, //未来未售库存面周数
-                                futureOnPubStockRate: temp.futureOnPubStockRate,  //未来已售库存百分比
+                                futureOnPubStockRate: temp.futureOnPubStockRate, //未来已售库存百分比
                                 futureUnsoldStockRate: temp.futureUnsoldStockRate, //未来未售库存百分比
                             };
                         this.resStock = {
                             past,
                             next,
                             overduePrice: temp.overduePrice,
-                            unsoldRank: temp.unsoldRank
+                            unsoldRank: temp.unsoldRank,
+                            currentMonthPercent: (new Date().getMonth()+1)/13
                         }
                     } else {
                         this.messageFun('warning', res.data.MSG)
@@ -2018,104 +2048,6 @@
                     ]
                 }, true);
             },
-            // 获取业绩排行 GetAchievementRankList
-            // setBDonRunway(){
-            //     let params = {
-            //         uid: this.sessionData.uID,
-            //         token: this.sessionData.token,
-            //         asrIDs: this.returnAsrID(this.sessionData.asrID),
-            //     }
-            //     console.log('获取业绩排行参数',params)
-            //     api.getApi(this.apiVar.report + '/GetAchievementRankList', params).then(res => {
-            //         console.log('业绩排行接口', res)
-            //         let dataArr = res.data.data;
-            //         if(res.data.SysCode == 200200 && res.data.data){
-            //             let tempArr = []
-            //             let tableList = []
-            //             let i = 0
-            //             let maxPrice = 0
-            //             for(let key of dataArr){
-            //                 if(key.target > maxPrice){
-            //                     maxPrice = key.target
-            //                 }
-            //                 tableList.push({
-            //                     ranking: i+1,
-            //                     name: key.realName,
-            //                     salesAmount: Math.floor(key.pdTotal / 100),
-            //                     targetAmount: Math.floor(key.target / 100) || 0,
-            //                     progressBar: key.target ? Number(((key.pdTotal / key.target) * 100).toFixed(2)) : 0,
-            //                     inputValue: '',
-            //                     setBtn: false,
-            //                     uID: key.uID,
-            //                 })
-            //                 if(i < 8){
-            //                     tempArr.push({
-            //                         headPic: key.headPic || require('../../assets/images/index/headimg.png'),
-            //                         pdTotal: Math.floor(key.pdTotal / 100),
-            //                         realName: key.realName,
-            //                         target: Math.floor(key.target / 100),
-            //                         uID: key.uID,
-            //                     })
-            //                 }
-            //                 i++
-            //             }
-            //             if(maxPrice > 0){
-            //                 this.maxPrice = maxPrice
-            //             }
-            //             this.setRunwayPrice(this.maxPrice)
-            //             for(let i = tempArr.length; i < 8;i++){
-            //                 tempArr.push({
-            //                     headPic:'',
-            //                     pdTotal:'',
-            //                     realName: '',
-            //                     target: 0,
-            //                     uID: '',
-            //                 })
-            //             }
-            //             this.runwayImg = tempArr
-            //             console.log('业绩排行接口tempArr',tempArr)
-            //             let timer = setTimeout(()=>{
-            //                 this.locationOnRunway()
-            //                 clearTimeout(timer)
-            //             },100)
-            //             this.tableData = tableList
-            //             this.runwayLoading = false
-            //         } else {
-            //             this.messageFun('warning','暂无数据')
-            //         }
-            //     })
-            // },
-            // 根据设置的最大目标销售额动态改变跑道的价格间隔 runwayPrice
-            // setRunwayPrice(maxPrice){
-            //     let colPrice = parseInt(maxPrice / 11/ 100 / 10000)    // 分层十一格，分单位再除以100、10000转换成单位万元
-            //     let priceList = [0]
-            //     for(let i=1; i < 11; i++){
-            //         priceList.push(colPrice * i)
-            //     }
-            //     priceList.push(parseInt(maxPrice / 100 / 10000))
-            //     this.runwayPrice = priceList
-            //     console.log('根据设置的最大目标销售额动态改变跑道的价格间隔',priceList)
-            // },
-            // 根据销售金额占比总金额计算偏移位置 runway_td_2 runwayPrice salePrice
-            // locationOnRunway() {
-                // 获取跑道长度
-                // let runwayLength = document.getElementsByClassName('runway_conten')[0].offsetWidth
-                // 跑道的最大金额
-                // let maxPrice = this.runwayPrice[this.runwayPrice.length - 1]
-                // 偏移位置
-                // let locationArr = []
-                // 跑道图片元素
-                // for (let i in this.runwayImg) {
-                //     let salerImg = document.getElementById('saler_img' + i)
-                //     locationArr.push(this.runwayImg[i].pdTotal / maxPrice / 10000)
-                //     let percent = this.runwayImg[i].pdTotal / maxPrice / 10000
-                //     if(percent >= 1){
-                //         salerImg.style.left =  0.88 * runwayLength + 'px'
-                //     }else{
-                //         salerImg.style.left = 0.88 * percent  * runwayLength + 'px'
-                //     }
-                // }
-            // },
             // 设置销售目标 SaveOrUpdateUserTarget
             setSalerTarget(row){
                 console.log('行数据',row)
@@ -2395,10 +2327,30 @@
 </style>
 <style scoped lang="scss">
 /** 新增*/
-    .capsule-right{box-sizing: border-box; border: 1px solid #E9E9E9; -moz-border-radius:0 160px 160px 0;-webkit-border-radius:0 160px 160px 0;border-radius:0 160px 160px 0;width:300px;height:320px;}
+    .next-text {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: 500;
+        color: #FFFFFF;
+        line-height: 38px;
+    }
+    .capsule {
+        position: absolute;
+        left: 0;
+        box-sizing: border-box; border: 1px solid #E9E9E9; -moz-border-radius:160px 0 0 160px;-webkit-border-radius:160px 0 0 160px;border-radius:160px;width:auto;height:320px;
+    }
+    .capsule-right{box-sizing: border-box; border: 1px solid #E9E9E9; -moz-border-radius:0 160px 160px 0;-webkit-border-radius:0 160px 160px 0;border-radius:0 160px 160px 0;width:auto;height:320px;}
     
     .capsule-left {
-        box-sizing: border-box; border: 1px solid #E9E9E9; -moz-border-radius:160px 0 0 160px;-webkit-border-radius:160px 0 0 160px;border-radius:160px 0 0 160px;width:300px;height:320px;
+        box-sizing: border-box; border: 1px solid #E9E9E9; -moz-border-radius:160px 0 0 160px;-webkit-border-radius:160px 0 0 160px;border-radius:160px 0 0 160px;width:auto;height:320px;
     }
     .index-top-row {
         display: flex;
@@ -2506,8 +2458,43 @@
     }
     .stock-chart {
         display: flex; 
-        justify-content: center; 
-        padding: 40px 24px 16px;
+        justify-content: center;
+        width: 600px;
+        height: 320px;
+        margin: 36px auto;
+        box-sizing: border-box;
+        border: 1px solid #E9E9E9; 
+        -moz-border-radius:160px;
+        -webkit-border-radius:160px;
+        border-radius:160px;
+        overflow: hidden;
+    }
+    .coordinate-line {
+        width: 550px;
+        height: 1px;
+        position: relative;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+        margin: 17px auto;
+        padding: 0 25px;
+        background: #E8E8E8;
+        .sub-line {
+            position: relative;
+            width: 1px;
+            height: 6px;
+            background: #E8E8E8;
+            .sub-text {
+                position: absolute;
+                display: block;
+                transform: translateX(-50%);
+                margin-top: 4px;
+                line-height: 22px;
+                font-size: 12px;
+                color: rgba(0, 0, 0, 0.45);
+                white-space: nowrap;
+            }
+        }
     }
     .tip-box {
         border-radius: 2px;

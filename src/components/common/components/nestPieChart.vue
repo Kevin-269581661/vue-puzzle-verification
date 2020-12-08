@@ -51,7 +51,6 @@ export default {
         dimension: "type",
         as: "percent",
       });
-      console.log('dvR', dv.rows)
       this.chartInstance.data(dv.rows);
       this.chartInstance.scale({
         percent: {
@@ -110,6 +109,11 @@ export default {
             },
           },
         });
+      this.chartInstance.on('interval:click', (ev) => {
+        const lineElement = ev.target.get('element');
+        const data = lineElement.getModel().data; // 单条数据
+        console.log('---', data)
+      });
 
       const outterView = this.chartInstance.createView();
       const dv1 = new DataView();
@@ -119,7 +123,6 @@ export default {
         dimension: "name",
         as: "percent",
       });
-      console.log('dv1.rows', dv1.rows)
       outterView.data(dv1.rows);
       outterView.scale({
         percent: {

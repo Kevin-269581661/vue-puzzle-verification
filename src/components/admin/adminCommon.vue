@@ -164,6 +164,10 @@
 
 <style scoped>
     .logo_box{
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         margin: 0 16px 0 42px;
     }
     .logo_box img {

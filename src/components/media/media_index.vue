@@ -539,7 +539,11 @@ export default {
 				compare: 0,
 				trendLabel: '同比上周',
 				data: [],
-				formatter: (val)=>{return val.substr(5)}
+				formatter: (text, item, index)=>{
+					if(index%2 === 1 && index > 0 && index < 12) {
+						return text.substr(5)
+					}
+				}
 			},
 			cardDataOther3: {
 				title: '禁用点位',
@@ -549,7 +553,11 @@ export default {
 				compare: 0,
 				trendLabel: '同比上周',
 				data: [],
-				formatter: (val)=>{return val.substr(5)}
+				formatter: (text, item, index)=>{
+					if(index%2 === 1 && index > 0 && index < 12) {
+						return text.substr(5)
+					}
+				}
 			},
 			// 媒体概况 媒体和点位切换
 			isPoint: false,
@@ -1091,8 +1099,8 @@ export default {
 <style scoped lang="scss">
 /** 新增*/
 	.quesition-icon {
-		width: 14px;
-		height: 14px;
+		width: 16px;
+		height: 16px;
 		border-radius: 50%;
 		vertical-align: middle;
 		filter: brightness(0.75);

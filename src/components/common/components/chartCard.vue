@@ -5,7 +5,7 @@
         <span class="chart-card-title">{{ cardData.title }}</span>
         <span class="chart-card-action">
           <el-tooltip :content="cardData.tip || ''" placement="top">
-            <i class="el-icon-info"></i>
+            <img class="quesition-icon" src="../../../assets/images/question_icon.png" />
           </el-tooltip>
         </span>
       </div>
@@ -37,11 +37,11 @@
         :height="height"
         :data="cardData.data"
         :scale="scale"
-        :padding="[0, 'auto', 'auto', 'auto']"
+        :padding="[16, 'auto', 'auto', 'auto']"
       >
         <v-axis dataKey="value" :show="false"></v-axis>
-        <v-axis v-if="cardData.type == 'bar'" dataKey="week" :tickLine="{length: -3}" :label="{autoRotate: false, formatter: formatter1, textStyle: {fill: 'rgb(0, 0, 0)', opacity: 0.45}}"></v-axis>
-        <v-axis v-if="cardData.type == 'stackBar'" dataKey="week" :tickLine="{length: -3}" :label="{autoRotate: false, formatter: formatter2, textStyle: {fill: 'rgb(0, 0, 0)', opacity: 0.45}}"></v-axis>
+        <v-axis v-if="cardData.type == 'bar'" dataKey="week" :tickLine="{length: 0}" :line="{stroke: '#E8E8E8'}" :label="{autoRotate: false, formatter: formatter1, textStyle: {fill: 'rgb(0, 0, 0)', opacity: 0.45}}"></v-axis>
+        <v-axis v-if="cardData.type == 'stackBar'" dataKey="week" :tickLine="{length: 0}" :line="{stroke: '#E8E8E8'}" :label="{autoRotate: false, formatter: formatter2, textStyle: {fill: 'rgb(0, 0, 0)', opacity: 0.45}}"></v-axis>
         <v-tooltip :hideMarkers="false"/>
         
         <v-bar v-if="cardData.type == 'bar'" position="week*value" :color="stackColor[1][0]" />
@@ -54,10 +54,10 @@
         :height="height"
         :data="cardData.data"
         :scale="scale"
-        :padding="[0, 'auto', 'auto', 'auto']"
+        :padding="[16, 'auto', 'auto', 'auto']"
       >
         <v-axis dataKey="value" :show="false"></v-axis>
-        <v-axis dataKey="week" :tickLine="{length: -5}" :label="{autoRotate: false, formatter: cardData.formatter || formatter1, textStyle: {fill: 'rgb(0, 0, 0)', opacity: 0.45}}"></v-axis>
+        <v-axis dataKey="week" :line="{stroke: '#E8E8E8'}" :tickLine="{length: -5}" :label="{autoRotate: false, formatter: cardData.formatter || formatter1, textStyle: {fill: 'rgb(0, 0, 0)', opacity: 0.45}}"></v-axis>
         <v-tooltip :shared="false" :hideMarkers="false" />
         <v-smooth-line
           position="week*value"
@@ -128,7 +128,7 @@ export default {
         }
       ],
       stackColor: ['name', ['rgba(24, 144, 255, 0.65)', 'rgba(24, 144, 255, 1)']],
-      height: 100,
+      height: 107,
       oldTotal: 0,
     };
   },
@@ -179,6 +179,7 @@ export default {
   position: relative;
   height: 202px;
   padding: 20px 24px 15px;
+  border: 1px solid #E6E7E9;
   box-sizing: border-box;
   background: #fff;
 }
@@ -243,5 +244,12 @@ export default {
   position: relative;
   margin-bottom: 12px;
   // width: 100%;
+}
+.quesition-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  vertical-align: middle;
+  filter: brightness(0.75);
 }
 </style>

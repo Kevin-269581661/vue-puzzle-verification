@@ -198,7 +198,7 @@ body .el-table colgroup.gutter {
 }
 
 .el-submenu.is-active .el-submenu__title i{
-    color: #fff;
+    color: rgba(0, 0, 0, 0.5);
     font-size: 14px;
 }
 

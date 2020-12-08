@@ -20,7 +20,7 @@
                 </li>
             </ul>
             <!--<i slot="reference" class="el-icon-question" @click="showActions"></i>-->
-            <img slot="reference" class="quesition-icon" src="../../../assets/images/question_icon.png"></img>
+            <img slot="reference" class="quesition-icon" src="../../../assets/images/question.png" />
         </el-popover>
         <!--问题列表对话框-->
         <el-dialog class="question-dialog" :title="modalInfo.title" :visible.sync="dialogTableVisible" width="36%">

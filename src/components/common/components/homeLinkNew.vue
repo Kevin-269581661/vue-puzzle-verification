@@ -336,14 +336,14 @@
             background: rgba(24, 144, 255, 0.06);
         }
         .cell-img {
-            width: 18px;
-            height: 18px;
-            margin-top: 16px;
+            width: 24px;
+            height: 24px;
+            margin-top: 13px;
             // background:rgba(24, 144, 255, 1);
 
         }
         .cell-text {
-            margin-bottom: 12px;
+            margin: 6px 0 12px;
             font-size: 12px;
             font-family: PingFangSC-Regular, PingFang SC;
             font-weight: 400;

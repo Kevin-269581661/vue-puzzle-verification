@@ -61,7 +61,7 @@
                             <el-popover
                                 popper-class="index-custom-popper"
                                 class="progress"
-                                placement="top-start"
+                                placement="left-start"
                                 :visible-arrow="false"
                                 width="200"
                                 trigger="hover">
@@ -121,7 +121,7 @@
                             <el-popover
                                 popper-class="index-custom-popper"
                                 class="progress"
-                                placement="top"
+                                placement="right-start"
                                 :visible-arrow="false"
                                 width="200"
                                 trigger="hover">
@@ -324,42 +324,6 @@
                 </template>
             </index-custom-card>
         </el-row>
-        <!-- <div style="margin:24px 0;display:flex"> -->
-            <!--isPlatform-->
-            <!-- <div :class="isPlatform ? 'use_module' : 'platFrom_use_module'" style="border: 1px solid #e5e6e9;">
-                <h2 class="h2_style">常用模块</h2>
-                <home-link :link="linkArr"></home-link>
-            </div> -->
-            <!-- <div v-if="isPlatform" style="width:33%; margin-left:24px;background:#fff;border: 1px solid #e5e6e9;">
-                <h2 class="h2_style">勋章墙</h2>
-                <div class="loglist_box">
-                    <div class="info_box">
-                        <img v-for="(key,index) of companyHonor" :src="key.url" alt="">
-                    </div>
-                </div>
-            </div> -->
-        <!-- </div> -->
-            <!--isPlatform-->
-        <!-- <div class="app-center-item" id="appCenter">
-            <h2 class="h2_style"><span @click="goToPage()">应用中心 <i class="el-icon-arrow-right"></i></span></h2>
-            <ul :style="{height:isSlideDown?'254px':'510px'}">
-                <li v-for="item in appCenter" @click="goToPage(item)">
-                    <div class="item-left">
-                        <img :src="item.imgUrl" alt="">
-                    </div>
-                    <div class="item-right">
-                        <h5>{{item.title}}</h5>
-                        <el-tooltip popper-class="desc-tooltip" effect="dark" :content="item.desc" placement="top" v-model="item.descTooltip">
-                            <p>{{item.desc}}</p>
-                        </el-tooltip>
-                    </div>
-                </li>
-            </ul>
-            <div class="slide" @click="slideAppCenterItem">
-                <span class="down" v-if="isSlideDown">展开 <i class="el-icon-d-arrow-left"></i> </span>
-                <span class="up" v-else>收起 <i class="el-icon-d-arrow-left"></i> </span>
-            </div>
-        </div> -->
         <div class="SM_order_price">
             <div class="order_price_date" v-if="isRetailCompany">
                 <template v-if="activeTabsName == 'price'">
@@ -487,52 +451,6 @@
                 </el-tab-pane>
             </el-tabs>
         </div>
-        <!-- <div class="SM_results_runway" v-if="isPlatform">
-            <div class="results_runway_title">
-                <h2 class="results_runway_title_h2">业务员业绩跑道</h2>
-                <div class="results_runway_title_box">
-                    <el-button size="small" @click="performanceVisible = !performanceVisible">设置目标</el-button>
-                    <img class="results_runway_title_trophy" src="../../assets/images/trophy.png" alt="">
-                </div>
-            </div>
-            <div class="results_runway_main"
-                 v-loading="runwayLoading"
-                 element-loading-text="玩命加载中.."
-                 element-loading-spinner="el-icon-loading">
-                <div class="results_runway_destination">
-                    <img src="../../assets/images/groupEnd.png" alt="">
-                </div>
-                  <div class="runway_head">
-                      <el-row>
-                          <el-col :span="2" v-for="(item,index) of runwayPrice" :key="index">
-                              <div class="runway_price">{{item}}<span v-if="index !== 0">万</span></div>
-                          </el-col>
-                      </el-row>
-                  </div>
-                  <div class="runway_conten">
-                      <el-row class="runway_conten_tr" v-for="(key,index) of runwayImg" :key="index">
-                          <el-col :span="1">
-                              <div class="runway_conten_td runway_td_1">{{index+1}}</div>
-                          </el-col>
-                          <el-col :span="21">
-                              <div class="runway_conten_td runway_td_2">
-                                  <el-tooltip class="item" effect="dark" :content="key.realName" placement="bottom-start">
-                                      <img :src="key.headPic" alt="" class="saler_img" :id="'saler_img'+index">
-                                  </el-tooltip>
-                              </div>
-                          </el-col>
-                          <el-col :span="1">
-                              <div class="runway_conten_td runway_td_21">{{index+1}}</div>
-                          </el-col>
-                          <el-col :span="1">
-                              <div class="runway_conten_td">
-
-                              </div>
-                          </el-col>
-                      </el-row>
-                  </div>
-            </div>
-        </div> -->
     </div>
         <div class="monthly_ranking" v-show="isMonthlyRanking">
             <div class="monthly_ranking_box">
@@ -590,75 +508,6 @@
                 </div>
             </div>
         </div>
-        <!-- <el-dialog
-          title="业绩排名"
-          :visible.sync="performanceVisible"
-          width="820px">
-          <div class="performance_table">
-              <el-table
-                  :data="tableData"
-                  style="width: 100%"
-                  height="480">
-                  <el-table-column
-                      prop="ranking"
-                      label="排名"
-                      width="50">
-                  </el-table-column>
-                  <el-table-column
-                      prop="name"
-                      label="姓名"
-                      width="105">
-                  </el-table-column>
-                  <el-table-column
-                      prop="salesAmount"
-                      label="销售金额"
-                      width="115">
-                      <template slot-scope="scope">
-                          ¥{{priceFormat(scope.row.salesAmount)}}
-                      </template>
-                  </el-table-column>
-                  <el-table-column
-                      prop="targetAmount"
-                      label="目标销售金额"
-                      width="120">
-                      <template slot-scope="scope">
-                          ¥{{priceFormat(scope.row.targetAmount)}}
-                      </template>
-                  </el-table-column>
-                  <el-table-column
-                      prop="progressBar"
-                      label="进度">
-                      <template slot-scope="scope">
-                          <el-progress :percentage="scope.row.progressBar" color="#1890FF"></el-progress>
-                      </template>
-                  </el-table-column>
-                  <el-table-column
-                      prop="setBtn"
-                      label="操作"
-                      width="90">
-                      <template slot-scope="scope">
-                          <el-popover
-                              placement="top"
-                              width="290"
-                              trigger="click"
-                              v-model="scope.row.setBtn">
-                              <div class="performance_table_set_box">
-                                  <h3>请输入该销售目标销售金额</h3>
-                                  <el-input size="small" v-model="scope.row.inputValue"></el-input>
-                                  <span class="performance_table_set_box_rmb">￥</span>
-                                  <span class="performance_table_set_box_unit">万</span>
-                              </div>
-                              <div style="text-align: right; margin: 0">
-                                  <el-button size="mini" @click="scope.row.setBtn = false">取消</el-button>
-                                  <el-button type="primary" size="mini" @click="setSalerTarget(scope.row)">确定</el-button>
-                              </div>
-                              <span slot="reference" class="performance_table_btn" @click="scope.row.setBtn = !scope.row.setBtn">设置目标</span>
-                            </el-popover>
-                        </template>
-                    </el-table-column>
-                </el-table>
-            </div>
-        </el-dialog> -->
         <!-- 设置业绩目标 -->
         <el-dialog :width="'288px'" :show-close="false" :visible.sync="showSetTarget" custom-class="target-dialog">
             <span slot="title">设置{{currentEditSale.realName || ''}}业绩目标</span>
@@ -1017,7 +866,6 @@
                     tip: '数据截止至昨日，订单总数数数据来源为统计周期内发布的订单数量总和',
                     value: 0,
                     valueAlias: '订单数',
-                    prefix: '￥',
                     comment: '数据统计截止至昨天',
                     compare: 0,
                     trendLabel: '同比去年',
@@ -1028,7 +876,6 @@
                     tip: '数据截止至昨日，客户数数据来源为统计周期内新建的客户数总和',
                     value: 0,
                     valueAlias: '客户数',
-                    prefix: '￥',
                     comment: '数据统计截止至昨天',
                     compare: 0,
                     trendLabel: '同比去年',
@@ -1039,7 +886,6 @@
                     title: '媒体总数',
                     tip: '数据截止至昨日，媒体总数数据来源为统计周期内新增的各类型媒体数量总和',
                     value: 0,
-                    prefix: '￥',
                     comment: '数据统计截止至昨天',
                     compare: 0,
                     trendLabel: '同比去年',
@@ -1051,7 +897,6 @@
                     tip: '数据截止至昨日，社区总数数据来源为统计周期内新增的社区数量总和',
                     value: 0,
                     valueAlias: '新增小区数',
-                    prefix: '￥',
                     comment: '数据统计截止至昨天',
                     compare: 0,
                     trendLabel: '同比去年',
@@ -1239,7 +1084,7 @@
                             tempcCardDataOther3.push({
                                 ...commonObj,
                                 name: '上刊率',
-                                value: (item.weekOnPubRate || 0)*1
+                                value: (item.weekOnPubRate || 0)*1+'%'
                             })
                         })
                         Object.assign(this.cardData1, {
@@ -1271,52 +1116,27 @@
                 // 资源库存数据
                 api.getApi(this.apiVar.report + '/homepage/getSMResStockReport',params).then(res=>{
                     if (res.data.SysCode === 200200) {
-                        let temp = res.data.data;
-                        /* "historyStock": 0,     //历史库存
-                        "futureStock": 36,    //未来库存
-
-                        "preStartDate": "2020/01/01",  //历史开始时间
-                        "preEndDate": "2020/01/01",	 //历史结束时间
-                        "onPubStock": 0,     //历史已售库存面周数
-                        "overdueStock": 0,		//过期资源面周数
-                        "repairStock": 0,		//历史维修的库存
-                        "banStock": 0,			//历史禁止的库存
-                        "onPubStockRate": "0.00",	//历史已售库存的百分比
-                        "overdueStockRate": "0.00", //历史过期库存的百分比
-                        "repairStockRate": "0.00",   //历史维修库存的百分比
-                        "banStockRate": "0.00", 	//历史禁止库存的百分比
-
-                        "futureStartDate": "2020/11/26",	//未来开始时间
-                        "futureEndDate": "2020/12/31"		//未来结束时间
-                        "futureOnPubStock": 1,  //未来已售库存面周数
-                        "futureUnsoldStock": 35, //未来未售库存面周数
-                        "futureOnPubStockRate": "2.00",  //未来已售库存百分比
-                        "futureUnsoldStockRate": "97.00", //未来未售库存百分比
-                        
-
-                        "overduePrice": 1.0,     //浪费的资源价值
-                        "unsoldRank": 0,		//浪费的资源价值百分比*/
-
-                        let past = {
-                            preStartDate: temp.preStartDate,  //历史开始时间
-                            preEndDate: temp.preEndDate,	 //历史结束时间
-                            onPubStock: temp.onPubStock,     //历史已售库存面周数
-                            overdueStock: temp.overdueStock,		//过期资源面周数
-                            repairStock: temp.repairStock,		//历史维修的库存
-                            banStock: temp.banStock,			//历史禁止的库存
-                            onPubStockRate: temp.onPubStockRate,	//历史已售库存的百分比
-                            overdueStockRate: temp.overdueStockRate, //历史过期库存的百分比
-                            repairStockRate: temp.repairStockRate,   //历史维修库存的百分比
-                            banStockRate: temp.banStockRate, 	//历史禁止库存的百分比
-                        }
-                        let next = {
-                            futureStartDate: temp.futureStartDate,	//未来开始时间
-                            futureEndDate: temp.futureEndDate,		//未来结束时间
-                            futureOnPubStock: temp.futureOnPubStock,  //未来已售库存面周数
-                            futureUnsoldStock: temp.futureUnsoldStock, //未来未售库存面周数
-                            futureOnPubStockRate: temp.futureOnPubStockRate,  //未来已售库存百分比
-                            futureUnsoldStockRate: temp.futureUnsoldStockRate, //未来未售库存百分比
-                        }
+                        let temp = res.data.data,
+                            past = {
+                                preStartDate: temp.preStartDate,  //历史开始时间
+                                preEndDate: temp.preEndDate,	 //历史结束时间
+                                onPubStock: temp.onPubStock,     //历史已售库存面周数
+                                overdueStock: temp.overdueStock,		//过期资源面周数
+                                repairStock: temp.repairStock,		//历史维修的库存
+                                banStock: temp.banStock,			//历史禁止的库存
+                                onPubStockRate: temp.onPubStockRate,	//历史已售库存的百分比
+                                overdueStockRate: temp.overdueStockRate, //历史过期库存的百分比
+                                repairStockRate: temp.repairStockRate,   //历史维修库存的百分比
+                                banStockRate: temp.banStockRate, 	//历史禁止库存的百分比
+                            },
+                            next = {
+                                futureStartDate: temp.futureStartDate,	//未来开始时间
+                                futureEndDate: temp.futureEndDate,		//未来结束时间
+                                futureOnPubStock: temp.futureOnPubStock,  //未来已售库存面周数
+                                futureUnsoldStock: temp.futureUnsoldStock, //未来未售库存面周数
+                                futureOnPubStockRate: temp.futureOnPubStockRate,  //未来已售库存百分比
+                                futureUnsoldStockRate: temp.futureUnsoldStockRate, //未来未售库存百分比
+                            };
                         this.resStock = {
                             past,
                             next,
@@ -1513,10 +1333,10 @@
             getDataByAsrID(){
                 if (this.isRetailCompany) {
                     // 直营公司收入排名(超级运营排行弹窗) GetPdIncomeCount
-                    let nowDate = timeFormat.toDate(new Date(), '/');
-                    if(indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)){
+                    // let nowDate = timeFormat.toDate(new Date(), '/');
+                    // if(indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)){
                         this.getPdIncomeCountByID()
-                    }
+                    // }
                     // 获取月订单数及订单金额总数
                     let endTime = timeFormat.returnMonthCount(0, '-')
                     // 判断当前日期是否为每月的1号
@@ -1579,10 +1399,10 @@
                     this.orderEcharts.resize()
                     this.turnoverEcharts.resize()
                 }
-                // if (this.isPlatform){
-                    // 销售头像在跑道前进的位置
-                    // this.locationOnRunway()
-                // }
+                /* if (this.isPlatform){
+                    销售头像在跑道前进的位置
+                    this.locationOnRunway()
+                } */
             },
             // 直营公司收入排名(超级运营排行弹窗)
             getPdIncomeCountByID(){
@@ -1624,7 +1444,9 @@
                             temp.ranking = item*1+1
                             temp.url = tempArr[item].url
                         })
-                        this.animateFun()
+                        if(indexIsDateFirst.getIsFirst(this.sessionData.uID, timeFormat.toDate(new Date(), '/'))){
+                            this.animateFun()
+                        }
                     } else {
                         this.messageFun('warning','城市月季排行暂无数据')
                     }
@@ -2616,6 +2438,7 @@
         .date-interval {
             margin: 0 24px 0 auto;
             font-size: 14px;
+            font-weight: 400;
             color: rgba(0, 0, 0, 0.45);
             line-height: 20px;
             cursor: pointer;
@@ -2623,12 +2446,10 @@
                 margin: 0 8px;
             }
             .active {
-                font-weight: 600;
                 color: rgba(24, 144, 255, 1);
             }
         }
         .achievement-radio-group {
-            margin-left: auto;
             /deep/ .el-radio-button__inner {
                 width: 88px;
             }
@@ -2886,8 +2707,8 @@
     }
 
     .quesition-icon {
-        width: 14px;
-        height: 14px;
+        width: 16px;
+        height: 16px;
         border-radius: 50%;
         vertical-align: middle;
         filter: brightness(0.75);

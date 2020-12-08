@@ -83,7 +83,7 @@ export default {
       .value {
         margin-left: 8px;
         font-size: 12px;
-        color: #c0c4cc;
+        color: #fff;
         font-family: HelveticaNeue;
       }
     }

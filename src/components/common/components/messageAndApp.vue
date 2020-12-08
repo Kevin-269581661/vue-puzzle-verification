@@ -5,7 +5,7 @@
             <el-radio-button label="公告通知"></el-radio-button>
         </el-radio-group>
         <el-carousel ref="carousel" :autoplay="false" :loop="true" arrow="never" indicator-position="none" class="carousel-box"  :height="height" @change='carouselChange'>
-            <el-carousel-item>
+            <el-carousel-item class="flex-v">
                 <img class="index-banner" alt="" src="/static/images/appBanner.png" @click="goToPage({link: 'https://apps.qinlinad.com/OKR.html', name: 'OKR'})" />
                 <ul class="app-list">
                     <li class="app-item" v-for="(item, index) in appCenter" @click="goToPage(item)" :key="index">
@@ -21,7 +21,7 @@
                     </li>
                 </ul>
             </el-carousel-item>
-            <el-carousel-item>
+            <el-carousel-item class="flex-v">
                 <img class="index-banner" alt="" src="/static/images/noticeBanner.png" />
                 <ul class="app-list">
                     <li class="app-item" v-for="(item, index) in tableSource" :key="index">
@@ -136,6 +136,10 @@
     background: #fafafa;
     border-radius: 4px;
 }
+.flex-v {
+    display: flex; 
+    flex-direction: column;
+}
 /deep/ .notice-dialog {
     .el-dialog__header {
         padding: 16px 24px 6px;
@@ -162,7 +166,7 @@
     }
     .content {
         height: 200px;
-        font-size: 12px;
+        font-size: 14px;
         font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
         color: rgba(0, 0, 0, 0.65);
@@ -175,24 +179,27 @@
     flex-direction: column;
     align-items: center;
     height: 100%;
+    padding: 16px 24px 0;
     box-sizing: border-box;
-    padding: 16px 0 0;
     /deep/ .el-radio-button__inner {
         padding: 8px 16px
     }
     .carousel-box {
         width: 100%;
         height: inherit;
-        padding-top: 16px;
+        padding: 16px 0 0;
+        overflow: hidden;
         .index-banner {
             width: 100%;
-            padding: 0 24px 8px;
+            padding: 0 0 8px;
             box-sizing: border-box;
             cursor: pointer;
         }
-        .app-list {
-            height: calc(100% - 90px);
+        .app-list:hover {
             overflow-y: auto;
+        }
+        .app-list {
+            overflow-y: hidden;
             overflow-x: hidden;
             .app-item:last-child {
                 border-bottom: none;
@@ -201,7 +208,7 @@
                 position: relative;
                 display: flex;
                 flex-direction: row;
-                align-items: center;
+                align-items: flex-start;
                 padding: 8px 0;
                 margin: 0 24px;
                 border-bottom: 1px solid #E9E9E9;
@@ -226,6 +233,7 @@
                         line-height: 24px;
                     }
                     .app-desc {
+                        margin-top: 2px;
                         overflow: hidden;
                         white-space: nowrap;
                         font-size: 12px;

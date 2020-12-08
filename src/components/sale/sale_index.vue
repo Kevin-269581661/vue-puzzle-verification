@@ -5,7 +5,7 @@
                 <div class="left-layout">
                     <personal-info :rank="rankInfo[0].rank||''" :user-info="userInfo" :honor-img="companyHonor" :linkArr="linkArrNew"></personal-info>
                     <div class="card-group">
-                        <el-row :gutter="24" style="margin-bottom: 24px;">
+                        <el-row :gutter="24">
                             <el-col :span="8"><chart-card :cardData="cardData1"></chart-card></el-col>
                             <el-col :span="8"><chart-card :cardData="cardData2"></chart-card></el-col>
                             <el-col :span="8"><chart-card :cardData="cardData3"></chart-card></el-col>
@@ -14,7 +14,7 @@
                 </div>
                 <!-- 消息推送和应用市场 -->
                 <div class="right-board">
-                    <message-and-app height="284px" :appCenter="appCenter" @goToPage="goToPage"></message-and-app>
+                    <message-and-app :appCenter="appCenter" @goToPage="goToPage"></message-and-app>
                 </div>
             </div>
             <el-row :gutter="24" class="index-row">

@@ -82,6 +82,7 @@ li {
     height: 130px;
     width: 100%;
     padding: 0 24px;
+    border: 1px solid #E6E7E9;
     box-sizing: border-box;
     background: #fff;
     font-family: PingFangSC-Regular, PingFang SC;
@@ -129,17 +130,17 @@ li {
     .item-two {
         display: flex;
         justify-content: space-between;
-        margin-left: 27px;
-        margin-right: 27px;
+        margin: 0 27px 0 -5px;
         overflow: hidden;
         img {
             margin: 0 5px;
             width: 51px;
-            height: 59px;
         }
     }
     .item-three {
-        margin-left: 32px;
+        // width: 50%;
+        flex: 1;
+        margin-left: auto;
         .cell-group {
             @extend %flex-row-center;
             justify-content: space-between;
@@ -150,6 +151,7 @@ li {
     .line-vertical {
         width: 1px;
         height: 64px;
+        margin-right: 32px;
         flex-grow: unset;
         background: rgba(241, 241, 241, 1);
     }

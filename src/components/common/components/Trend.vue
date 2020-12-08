@@ -65,7 +65,7 @@ export default {
   line-height: 22px;
   color: rgba($color: #000000, $alpha: .65);
   .trend-value {
-    margin-left: 8px;
+    margin-left: 4px;
     font-family: “Helvetica Neue”, Helvetica, Arial, “PingFang SC”, “Hiragino Sans GB” “Heiti SC”, “Microsoft YaHei”, “WenQuanYi Micro Hei”, sans-serif;
   }
   .trend-icon {
@@ -73,7 +73,7 @@ export default {
 
     &.up,
     &.down {
-      margin-left: 4px;
+      margin-left: 0px;
       position: relative;
       /* top: 1px; */
 

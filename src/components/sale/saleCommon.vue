@@ -47,15 +47,15 @@
                     <img class="user_avator" :src="avator" alt="">
                     {{userName}}
                 </template>
-                <el-menu-item index="/sale/myInfo">个人中心</el-menu-item>
-                <span style="color: rgb(153, 153, 153); font-size: 14px;">余额：￥0.00</span>
+                <span class="my-balance">余额：￥0.00</span>
+                <el-menu-item index="/sale/myInfo" class="index-menu-item">个人中心</el-menu-item>
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
-                <el-menu-item index="/login">退出登陆</el-menu-item>
+                <el-menu-item index="/login" class="index-menu-item">退出登陆</el-menu-item>
             </el-submenu>
             <el-menu-item class="no-hover" index="" style="cursor: default;float: right;padding: 0 0 0 4px">
                 <messageNotice></messageNotice>
             </el-menu-item>
-            <el-menu-item class="no-hover" index="" style="cursor: default;float: right;padding: 0 10px 0 0">
+            <el-menu-item class="no-hover" index="" style="cursor: default;float: right;padding: 0 10px 0 10px;">
                 <questionTip></questionTip>
             </el-menu-item>
         </el-menu>
@@ -201,7 +201,30 @@
 </script>
 
 <style scoped>
+    .my-balance {
+        display: block;
+        width: calc(100% - 24px);
+        padding: 5px 12px 0;
+        text-align: left;
+        color: rgba(0, 0, 0, 0.85); 
+        font-size: 14px; 
+        line-height: 18px;
+    }
+    .my-balance::after {
+        display: block;
+        content: '';
+        height: 1px;
+        margin: 10px 0 2px;
+        background: #F1F1F1;
+    }
+    .index-menu-item {
+        text-align: left;
+    }
     .logo_box{
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         margin: 0 16px 0 42px;
     }
     .logo_box img {

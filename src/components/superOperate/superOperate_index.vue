@@ -57,30 +57,38 @@
                         </el-tooltip>
                     </template>
                     <template slot="content">
-                        <div style="display: flex">
+                        <div class="stock-chart">
                             <el-popover
                                 popper-class="index-custom-popper"
                                 class="progress"
-                                placement="top"
+                                placement="top-start"
                                 :visible-arrow="false"
                                 width="200"
                                 trigger="hover">
-                                <div class="pop-box">
+                                <div class="tip-box">
                                     <div class="pop-title">
-                                        <em>rankItem.realName</em>
+                                        <em>{{resStock.past.preStartDate+'~'+resStock.past.preEndDate}}</em>
                                     </div>
                                     <ul>
                                         <li class="pop-item">
-                                            <em>业绩目标：</em>
-                                            <span>rankItem.targetPrice</span>
+                                            <em>已售</em>
+                                            <span class="align-right">{{resStock.past.onPubStock}}面周</span>
+                                            <span class="tip-rate">{{resStock.past.onPubStockRate}}%</span>
                                         </li>
                                         <li class="pop-item">
-                                            <em>销售金额：</em>
-                                            <span>rankItem.totalPrice</span>
+                                            <em>过期</em>
+                                            <span class="align-right">{{resStock.past.overdueStock}}面周</span>
+                                            <span class="tip-rate">{{resStock.past.overdueStockRate}}%</span>
                                         </li>
                                         <li class="pop-item">
-                                            <em>完成进度：</em>
-                                            <span>rankItem.finshProcess</span>
+                                            <em>维修</em>
+                                            <span class="align-right">{{resStock.past.repairStock}}面周</span>
+                                            <span class="tip-rate">{{resStock.past.repairStockRate}}%</span>
+                                        </li>
+                                        <li class="pop-item">
+                                            <em>禁用</em>
+                                            <span class="align-right">{{resStock.past.banStock}}面周</span>
+                                            <span class="tip-rate">{{resStock.past.banStockRate}}%</span>
                                         </li>
                                     </ul>
                                 </div>
@@ -117,22 +125,20 @@
                                 :visible-arrow="false"
                                 width="200"
                                 trigger="hover">
-                                <div class="pop-box">
+                                <div class="tip-box">
                                     <div class="pop-title">
-                                        <em>rankItem.realName</em>
+                                        <em>{{resStock.next.futureStartDate+'-'+resStock.next.futureEndDate}}</em>
                                     </div>
                                     <ul>
                                         <li class="pop-item">
-                                            <em>业绩目标：</em>
-                                            <span>rankItem.targetPrice</span>
+                                            <em>已售</em>
+                                            <span class="align-right">{{resStock.next.futureOnPubStock}}面周</span>
+                                            <span class="tip-rate">{{resStock.next.futureOnPubStockRate}}%</span>
                                         </li>
                                         <li class="pop-item">
-                                            <em>销售金额：</em>
-                                            <span>rankItem.totalPrice</span>
-                                        </li>
-                                        <li class="pop-item">
-                                            <em>完成进度：</em>
-                                            <span>rankItem.finshProcess</span>
+                                            <em>未售</em>
+                                            <span class="align-right">{{resStock.next.futureUnsoldStock}}面周</span>
+                                            <span class="tip-rate">{{resStock.next.futureUnsoldStockRate}}%</span>
                                         </li>
                                     </ul>
                                 </div>
@@ -160,7 +166,10 @@
                                         </g>
                                     </svg>
                                 </div>
-                        </el-popover>
+                            </el-popover>
+                        </div>
+                        <div v-if="sessionData.asrID != '999'" class="bottom-box">
+                            贵司共浪费了价值  <span class="avtive"> ￥{{resStock.overduePrice || 0}} </span>  的资源，多于全国 <span class="avtive"> {{resStock.unsoldRank}}% </span> 的公司，太可惜了
                         </div>
                     </template>
                 </index-custom-card>
@@ -252,7 +261,7 @@
                     <el-row :gutter="24" class="index-row" style="align-items: flex-start; padding: 33px 24px; margin: 0; ">
                         <el-col :span="12">
                             <nest-pie-chart container="nestPie" :sourceData="nestPieData"></nest-pie-chart>
-                            <div v-if="sessionData.asrID != '999'" class="bottom-box">
+                            <div v-if="sessionData.asrID != '999'" class="bottom-box" style="width: calc(50% - 48px);">
                                 贵公司<span class="avtive">{{extendData[0]}}</span>位沉默客户待挖掘，多于全国<span class="avtive">{{extendData[1]+'%'}}</span>的公司，请加把劲！
                             </div>
                         </el-col>
@@ -265,7 +274,8 @@
                                     label="客户"
                                     width="230">
                                     <template slot-scope="scope">
-                                        <span @click="routePage(scope.row)" style="color: #1890FF; cursor: pointer;">{{scope.row.cName}}</span>
+                                        <!-- <span @click="routePage(scope.row)" style="color: #1890FF; cursor: pointer;">{{scope.row.cName}}</span> -->
+                                        <span>{{scope.row.cName}}</span>
                                     </template>
                                 </el-table-column>
                                 <el-table-column
@@ -1074,7 +1084,7 @@
                 // 媒体概况饼图数据
                 ringData: [],
                 // 资源库存数据
-                resStock: {}
+                resStock: {past: {}, next: {}}
             }
         },
         beforeCreate() {
@@ -1310,7 +1320,9 @@
                         }
                         this.resStock = {
                             past,
-                            next
+                            next,
+                            overduePrice: temp.overduePrice,
+                            unsoldRank: temp.unsoldRank
                         }
                     } else {
                         this.messageFun('warning', res.data.MSG)
@@ -1380,12 +1392,12 @@
                 })
             },
             // 跳转到客户列表页面
-            routePage(row) {
+            /* routePage(row) {
                 console.log('row', row)
                 return
                 sessionStorage.setItem("customerId", row.cID);
                 this.$router.push("./superOperate/clientDetail");
-            },
+            }, */
             // 取消关注客户所在公司
             unfollow(row) {
                 this.$confirm('确定不再关注该客户了吗?', {
@@ -2651,11 +2663,11 @@
         }
     }
     .bottom-box {
-        // position: absolute;
-        // height: 48px;
-		// bottom: 0;
-		// left: 0;
-		// right: 0;
+        position: absolute;
+        height: 48px;
+		bottom: 0;
+		left: 0;
+		right: 0;
 		margin: 0 24px 32px;
         line-height: 48px;
         text-align: center;
@@ -2670,6 +2682,56 @@
         color: rgba(0, 0, 0, 0.85);
         .avtive {
             color: #1890FF;
+        }
+    }
+    .stock-chart {
+        display: flex; 
+        justify-content: center; 
+        padding: 40px 24px 16px;
+    }
+    .tip-box {
+        border-radius: 2px;
+        line-height: 16px;
+        font-size: 12px;
+        font-weight: 400;
+        font-family: PingFangSC-Regular, PingFang SC;
+        .pop-title {
+            display: flex;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(216, 216, 216, .65);
+            color: rgba(0, 0, 0, 0.85);
+            .target-btn {
+                margin: 0 0 2px auto;
+                color: rgba(24, 144, 255, 1);
+                cursor: pointer;
+            }
+            .bottom-btn {
+                width: 64px;
+                height: 24px;
+                line-height: 24px;
+                margin: 8px auto 2px auto;
+                border: 1px solid #1890FF;
+                border-radius: 2px;
+                text-align: center;
+                font-size: 12px;
+                color: rgba(24, 144, 255, 1);
+                cursor: pointer;
+            }
+        }
+        ul {
+            padding-top: 3px;
+        }
+        .pop-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            color: rgba(0, 0, 0, 0.65);
+            .align-right {
+                margin: 0 16px 0 auto;
+            }
+            .tip-rate {
+                width: 45px;
+            }
         }
     }
     .pop-box {
@@ -2700,6 +2762,8 @@
             }
         }
         .pop-item {
+            display: flex;
+            justify-content: space-between;
             margin: 2px 0;
             color: rgba(0, 0, 0, 0.65);
         }

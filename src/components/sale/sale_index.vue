@@ -287,18 +287,18 @@
                     },
                     {
                         imgurl: require('../../assets/images/importPoint.png'),
-                        title: '导空位',
+                        title: '导出空位',
                         link: '',
                     },
                     {
                         imgurl: require('../../assets/images/fangan.png'),
                         title: '新建方案',
-                        link: '',
+                        link: './sale/createPlan',
                     },
                     {
                         imgurl: require('../../assets/images/img.png'),
                         title: '行业图片',
-                        link: '',
+                        link: './sale/photoGallery',
                     },
                     {
                         imgurl: require('../../assets/images/client.png'),
@@ -937,9 +937,10 @@
                         this.clientArr = res.data.data || []
                     } else {
                         Message.warning(res.data.MSG);
+                        console.error('getBDActiveCustomerReport', res.data.MSG)
                     }
                 }).catch(err=>{
-                    console.log('err', err)
+                    console.error('err', err)
                 }).finally(_=>{
                 })
             }

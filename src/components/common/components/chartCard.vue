@@ -42,7 +42,7 @@
         <v-axis dataKey="value" :show="false"></v-axis>
         <v-axis dataKey="week" :tickLine="{length: -3}" :label="{textStyle: {fill: 'rgb(0, 0, 0)', opacity: 0.45}}"></v-axis>
         <v-tooltip :hideMarkers="false"/>
-        <v-bar v-if="cardData.type == 'bar'" position="week*value" :color="stackColor[0]" />
+        <v-bar v-if="cardData.type == 'bar'" position="week*value" :color="stackColor[1][0]" />
         <v-stack-bar v-if="cardData.type == 'stackBar'" position="week*value" :color="stackColor" />
       </v-chart>
 

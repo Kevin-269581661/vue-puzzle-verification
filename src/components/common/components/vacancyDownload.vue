@@ -317,16 +317,20 @@ export default {
                 // console.log(resultValus);
                 if(resultValus.length){
                     let returnobj = this.hasPointData(resultValus);
-                    console.log('returnobj----', returnobj);
-                    let date = returnobj.date;
-                    let head = [ '省份', '城市', '区域', '资源名称','商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '广告限制', '点位备注', '媒体数量(面)'];
-                    let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
-                    if(customPermission && customPermission.patrolPermission) {
-                        head.push('巡点问题', '通行情况');
+                    if(returnobj.arr.length>0) {
+                        console.log('returnobj----', returnobj);
+                        let date = returnobj.date,
+                            head = [ '省份', '城市', '区域', '资源名称','商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '广告限制', '点位备注', '媒体数量(面)'],
+                            customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
+                        if(customPermission && customPermission.patrolPermission) {
+                            head.push('巡点问题', '通行情况');
+                        }
+                        let allHead = head.concat(date);
+                        let filename = returnobj.filename+'-'+ date[0].substring(0, 10)+'~'+date[date.length-1].substring(11)+'空位表';
+                        sheetExcel.toDownload(allHead, returnobj.arr, filename);
+                    } else {
+                        this.messageFun('warning', '点位为空');
                     }
-                    let allHead = head.concat(date);
-                    let filename = returnobj.filename+'-'+ date[0].substring(0, 10)+'~'+date[date.length-1].substring(11)+'空位表';
-                    sheetExcel.toDownload(allHead, returnobj.arr, filename);
                 }else{
                     this.messageFun('warning', '此城市没有点位');
                 }
@@ -344,12 +348,13 @@ export default {
             let allDateArr = [];
             let filenameArr = [];
             for(let data of arr){
+                if(data.length === 0 || data[0].length === 0) {continue;}
                 let resObj = {
                     sheetName: data[0][0].crName,
                     showList: [],
                 };
                 filenameArr.push(resObj.sheetName);
-                console.log(data)
+                // console.log(data)
                 for(let k = 0, kLen = data.length; k < kLen; k++){
                     for(let item of data[k]){
                         let dateArr = [];
@@ -377,7 +382,7 @@ export default {
                             obj.allTrafficState = item.allTrafficState;
                         }
                         let showData = item.DateInfo.sort(this.sortDate);
-                        console.log('showData',showData)
+                        // console.log('showData',showData)
                         for(let date of showData){
                             dateArr.push(timeFormat.toDate(date.starDate, '/')+'-'+timeFormat.toDate(date.endDate, '/'));
                             dataStr.push(date.adsNum);

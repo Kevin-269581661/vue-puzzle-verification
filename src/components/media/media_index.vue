@@ -90,7 +90,15 @@
 				<el-col :span="12">
 					<index-custom-card height="520px">
 						<template slot="head">
-							预锁概况
+							预锁概况&nbsp
+							<el-tooltip effect="dark" content="Top center" placement="top">
+								<ul slot="content">
+									<li style="line-height: 20px;">
+										数据每5分钟更新一次
+									</li>
+								</ul>
+								<img class="quesition-icon" src="../../assets/images/question_icon.png" />
+							</el-tooltip>
 						</template>
 						<template slot="content">
 							<el-table
@@ -119,54 +127,7 @@
 					</index-custom-card>
 				</el-col>
 			</el-row>
-			<!-- <home-top :user-info="userInfo" :data-arr="dataArr" :honor-img="companyHonor"></home-top> -->
-			<!-- <div style="margin:24px 0;display:flex;">
-				<div style="width:66%;border: 1px solid #e5e6e9;">
-					<h2 class="h2_style">常用模块</h2>
-					<home-link :link="linkArr"></home-link>
-				</div>
-				<div style="width:33%; margin-left:24px;background:#fff;border: 1px solid #e5e6e9;">
-					<h2 :class="isCom?'com_style':'h2_style'">个人荣誉</h2>
-					<div :class="isCom?'com_loglistBox':'loglist_box'">
-						<el-row style="text-align:center;">
-							<el-col :span="isCom?4:8" v-for="(item, index) of imginfo" :key="item.name">
-								<img :src="item.url" :alt="item.name" @click="showImg(index, item.url)">
-							</el-col>
-						</el-row>
-					</div>
-					<template v-if="isCom">
-						<h2 class="com_style">公司荣誉</h2>
-						<div class="com_loglistBox">
-							<el-row style="text-align:center;">
-								<el-col :span="4" v-for="item of comimgInfo" :key="item.label">
-									<img :src="item.value" :alt="item.label">
-								</el-col>
-							</el-row>
-						</div>
-					</template>
-				</div>
-			</div> -->
-            <!-- <div class="app-center-item" id="appCenter"> -->
-                <!--isPlatform-->
-                <!-- <h2 class="h2_style"><span @click="goToPage()">应用中心 <i class="el-icon-arrow-right"></i></span></h2>
-                <ul :style="{height:isSlideDown?'254px':'510px'}">
-                    <li v-for="item in appCenter" @click="goToPage(item)">
-                        <div class="item-left">
-                            <img :src="item.imgUrl" alt="">
-                        </div>
-                        <div class="item-right">
-                            <h5>{{item.title}}</h5>
-                            <el-tooltip popper-class="desc-tooltip" effect="dark" :content="item.desc" placement="top" v-model="item.descTooltip">
-                                <p>{{item.desc}}</p>
-                            </el-tooltip>
-                        </div>
-                    </li>
-                </ul>
-                <div class="slide" @click="slideAppCenterItem">
-                    <span class="down" v-if="isSlideDown">展开 <i class="el-icon-d-arrow-left"></i> </span>
-                    <span class="up" v-else>收起 <i class="el-icon-d-arrow-left"></i> </span>
-                </div>
-            </div> -->
+			
 			<el-tabs class="index-tab-group" style="height: 643px;border: 1px solid #e5e6e9;" v-model="activeTabsName">
                 <el-tab-pane label="点位分布" name="pointDistribution">
                     <point-distribution mapContainer="mapContainer1" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointDistribution'"></point-distribution>
@@ -373,6 +334,11 @@ export default {
 					title: '维护管理',
 					link: './media/maintainList',
 				},
+				{
+					imgurl: require('../../assets/images/gua.png'),
+					title: '点位表盘',
+					link: './media/adsDialPlate'
+				}
 			],
 			linkArr:[
                 {

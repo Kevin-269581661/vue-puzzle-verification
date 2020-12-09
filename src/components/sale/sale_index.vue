@@ -489,24 +489,6 @@
                     console.log(err);
                 });
             },
-            // 那句话
-            // getOneTalk() {
-            //     let info = {
-            //         uid: this.sessionData.uID,
-            //         token: this.sessionData.token,
-            //     };
-            //     api.getApi(this.apiVar.report + '/GetCountMessage', info).then(res => {
-            //         if (res.data.SysCode == 200200) {
-            //             let resinfo = res.data.data;
-            //             this.saleTalk.content = resinfo.countMessage;
-            //             this.saleTalk.dateTime = resinfo.time;
-            //         } else {
-            //             Message.warning(res.data.MSG);
-            //         }
-            //     }).catch(err => {
-            //         console.log(err);
-            //     });
-            // },
             // 获取数据
             getData() {
                 let info = {

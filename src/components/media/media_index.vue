@@ -136,40 +136,6 @@
                     <publish-rate mapContainer="mapContainer2" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointPublication'"></publish-rate>
                 </el-tab-pane>
             </el-tabs>
-			<!-- <div style="margin:24px 0; background:#fff;padding-bottom: 24px;border: 1px solid #e5e6e9;">
-				<h2 class="h2_style flex_box">
-					<b>业绩指标</b>
-					<span style="margin-right:24px;">
-						<el-date-picker
-							v-model="monthRange[0]"
-							type="month"
-							size="mini"
-							value-format="yyyy-MM"
-							format="yyyy-MM"
-							placeholder="选择月"
-							:picker-options="disableDate1"
-							@change="selectMonth()">
-						</el-date-picker>
-						<span>~</span>
-						<el-date-picker
-							v-model="monthRange[1]"
-							type="month"
-							size="mini"
-							value-format="yyyy-MM"
-							format="yyyy-MM"
-							placeholder="选择月"
-							:picker-options="disableDate2"
-							@change="selectMonth()">
-						</el-date-picker>
-					</span>
-				</h2>
-				<div v-if="getNumIsNull(orderPointData.pointData)|| getNumIsNull(orderPointData.orderData)" id="perform" ref="perform" class="charts2" style="width:100%;height:400px;"></div>
-				<template v-else>
-					<div class="img_point">
-						<no-search-result></no-search-result>
-					</div>
-				</template>
-			</div> -->
 		</div>
 
 		<div class="dialog_box">
@@ -395,28 +361,6 @@ export default {
                 greetings: '祝您开心每一天!',
                 avator: require('../../assets/images/tvQNA_img3.jpg'),
 			},
-			// dataArr:[
-            //     {
-            //         name: '资源总数',
-            //         data: '3,042'
-            //     },
-            //     {
-            //         name: '本月创建方案数',
-            //         data: 22
-            //     },
-            //     {
-            //         name: '本月发布订单数',
-            //         data: 17
-            //     },
-            //     {
-            //         name: '本月录单点位数',
-            //         data: 437
-            //     },
-            //     {
-            //         name:'禁用点位总数(面)',
-            //         data:1
-            //     }
-			// ],
 			// 勋章排名
 			medalInfo: {
 				point: 1,
@@ -466,25 +410,6 @@ export default {
 				mediaCount: 0,
 				asCount: 0,
 			},
-			// monthRange: [],
-			// disableDate1:{
-			// 	disabledDate: (time)=> {
-			// 		return time.getTime() > Date.parse(this.monthRange[1])
-			// 	},
-			// },
-			// disableDate2:{
-			// 	disabledDate: (time)=> {
-			// 		return time.getTime() < Date.parse(this.monthRange[0])
-			// 	},
-			// },
-			// 图表数据
-			// orderPointData:{
-			// 	legendTitle: ['发布订单数','录单点位数'],
-			// 	title: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
-			// 	orderData: [2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3],
-			// 	pointData: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3],
-			// },
-			// isCom: false,
 			// 公司勋章
 			comimgInfo: [],
 			companyHonor: [],
@@ -631,31 +556,6 @@ export default {
 				this.comimgInfo = result;
 			}
 		}, */
-		// 获取数据
-		// getData(){
-		// 	let info = {
-		// 		uid: this.sessionData.uID,
-		// 		token: this.sessionData.token,
-		// 	};
-		// 	api.getApi(this.apiVar.report + '/GetHomePageInfoOfMD', info).then(res =>{
-		// 		// console.log(res.data);
-		// 		if(res.data.SysCode == 200200){
-		// 			let resInfo = res.data.data;
-		// 			console.log('resInfo', resInfo);
-		// 			this.dataArr[0].data = resInfo.resCount;
-		// 			this.dataArr[1].data = resInfo.createdAdPlanCount;
-		// 			this.dataArr[2].data = resInfo.publishedAdPlanCount;
-        //             this.dataArr[3].data = resInfo.asCount;
-        //             this.dataArr[4].data = resInfo.bannedAdsCount;
-
-		// 			this.userInfo.endTime = timeFormat.toDate(resInfo.time, '/');
-		// 		}else{
-		// 			Message.warning(res.data.MSG);
-		// 		}
-		// 	}).catch(err =>{
-		// 		console.error(err);
-		// 	});
-		// },
 		// 媒介贡献弹窗
 		getContributeBox(){
 			let info = {

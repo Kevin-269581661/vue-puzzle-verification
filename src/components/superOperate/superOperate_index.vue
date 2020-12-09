@@ -67,7 +67,7 @@
                                 trigger="hover">
                                 <div class="tip-box">
                                     <div class="pop-title">
-                                        <em>{{resStock.past.preStartDate||''+'~'+resStock.past.preEndDate||''}}</em>
+                                        <em>{{(resStock.past.preStartDate||'')+'~'+(resStock.past.preEndDate||'')}}</em>
                                     </div>
                                     <ul>
                                         <li class="pop-item">
@@ -93,7 +93,7 @@
                                     </ul>
                                 </div>
                                 <div slot="reference">
-                                    <svg @click="showTip('past')" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" :width="600*resStock.currentMonthPercent" height="320" class="capsule-left">
+                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" :width="600*resStock.currentMonthPercent" height="320" class="capsule-left">
                                         <defs>
                                             <linearGradient id="blue1" x1="0%" y1="0%" x2="0%" y2="100%">
                                                 <stop offset="0%" style="stop-color:#6DB9FF;stop-opacity:1" />
@@ -162,7 +162,7 @@
                                     </ul>
                                 </div>
                                 <div slot="reference" style="position: relative;">
-                                    <svg @click="showTip('next')" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" :width="600*(1-resStock.currentMonthPercent)" height="320" class="capsule-right">
+                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" :width="600*(1-resStock.currentMonthPercent)" height="320" class="capsule-right">
                                         <defs>
                                             <linearGradient id="blue2" x1="0%" y1="0%" x2="0%" y2="100%">
                                                 <stop offset="0%" style="stop-color:#6DB9FF;stop-opacity:1" />
@@ -190,7 +190,6 @@
                                     </div>
                                 </div>
                             </el-popover>
-                                <!-- <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="600" height="320" class="capsule"></svg> -->
                         </div>
                         <div class="coordinate-line">
                             <div v-for="item in 12" class="sub-line">
@@ -559,7 +558,7 @@
 </template>
 
 <script>
-    import homeTop from '../common/components/homeTop.vue';
+    // import homeTop from '../common/components/homeTop.vue';
 
     import personalInfo from '../common/components/personalInfo.vue';
     import messageAndApp from '../common/components/messageAndApp.vue';
@@ -582,7 +581,7 @@
     export default {
         name: "admin_index",
         components: {
-            homeTop,
+            // homeTop,
             homeLink,
 
             personalInfo,
@@ -1063,14 +1062,6 @@
                     }
                 }
                 // console.log('viewData', viewData, this.filterClientObj)
-            },
-            // 资源库存事件
-            showTip(flag) {
-                if(flag == 'next') {
-                    console.log(this.resStock.next)
-                } else if(flag == 'past') {
-                    console.log(this.resStock.past)
-                }
             },
             // 首页报表接口
             allReportApi() {

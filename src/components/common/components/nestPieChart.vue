@@ -21,13 +21,13 @@ export default {
   },
   data() {
     return {
-      chartInstance: null
+      chartInstance: null,
     };
   },
   watch: {
     sourceData(newVal, oldVal) {
       if (newVal.length > 0) {
-        console.log('renData', newVal)
+        // console.log("renData", newVal);
         this.render(newVal);
       }
     },
@@ -35,7 +35,7 @@ export default {
   mounted() {},
   methods: {
     render(data) {
-      if(this.chartInstance == null) {
+      if (this.chartInstance == null) {
         this.chartInstance = new Chart({
           container: this.container,
           autoFit: true,
@@ -51,6 +51,7 @@ export default {
         dimension: "type",
         as: "percent",
       });
+      // console.log("dv.rows", dv.rows);
       this.chartInstance.data(dv.rows);
       this.chartInstance.scale({
         percent: {
@@ -84,8 +85,8 @@ export default {
             fontFamily: "PingFangSC-Regular, PingFang SC",
           },
           layout: {
-            type: 'fixed-overlap'
-          }
+            type: "fixed-overlap",
+          },
         })
         .tooltip("type*percent", (item, percent) => {
           percent = (percent * 100).toFixed(2) + "%";
@@ -96,9 +97,11 @@ export default {
         })
         .style({
           fillOpacity: 1,
+          lineWidth: 2,
+          stroke: '#fff',
         })
         .state({
-          active: {
+          selected: {
             style: (element) => {
               const shape = element.shape;
               return {
@@ -109,20 +112,26 @@ export default {
             },
           },
         });
-      this.chartInstance.on('interval:click', (ev) => {
-        const lineElement = ev.target.get('element');
-        const data = lineElement.getModel().data; // 单条数据
-        console.log('---', data)
+      this.chartInstance.on("interval:click", (ev) => {
+        const tempElement = ev.target.get("element");
+        const data = tempElement.getModel().data; // 单条数据
+        this.$emit('activeData', data, ev)
+        // console.log("elementData", ev, data);
       });
 
       const outterView = this.chartInstance.createView();
       const dv1 = new DataView();
+      // console.log("dv1data", data);
       dv1.source(data).transform({
         type: "percent",
         field: "value",
         dimension: "name",
         as: "percent",
       });
+      dv1.rows.forEach(item => {
+        item.view = 'out'
+      });
+      // console.log("dv1.rows", dv1.rows);
       outterView.data(dv1.rows);
       outterView.scale({
         percent: {
@@ -140,14 +149,10 @@ export default {
         .interval()
         .adjust("stack")
         .position("percent")
-        .color("name", [
-          "#52acff",
-          "#52acff",
-          "#bec6d3",
-          "#fbc24f",
-          "#fbc24f",
-        ])
-        .label("name", {
+        .color("name", ["#52acff", "#52acff", "#bec6d3", "#fbc24f", "#fbc24f"])
+        .label("name", (name) => {
+          return {content: name.split('-')[0]}
+        }, {
           offset: -35,
           autoRotate: false,
           textStyle: {
@@ -158,8 +163,8 @@ export default {
             fontFamily: "PingFangSC-Regular, PingFang SC",
           },
           layout: {
-            type: 'fixed-overlap'
-          }
+            type: "fixed-overlap",
+          },
         })
         .tooltip("name*percent", (item, percent) => {
           percent = (percent * 100).toFixed(2) + "%";
@@ -170,9 +175,11 @@ export default {
         })
         .style({
           fillOpacity: 1,
+          lineWidth: 2,
+          stroke: '#fff',
         })
         .state({
-          active: {
+          selected: {
             style: (element) => {
               const shape = element.shape;
               return {
@@ -183,8 +190,11 @@ export default {
             },
           },
         });
-
-      this.chartInstance.interaction("element-active");
+      this.chartInstance.interaction('element-single-selected', {
+        start: [{ trigger: 'element:click', action: 'element-single-selected:toggle' }],
+        end: [{ trigger: 'element:mouseleave', action: 'element-single-selected:reset' }],
+      });
+      // this.chartInstance.interaction("element-selected");
 
       this.chartInstance.render();
     },

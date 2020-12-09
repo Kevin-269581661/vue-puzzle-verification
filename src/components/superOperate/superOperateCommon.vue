@@ -50,7 +50,7 @@
                     <img class="user_avator" :src="avator" alt="">
                     {{userName}}
                 </template>
-                <span class="my-balance">余额：￥0.00</span>
+                <span class="my-balance">余额：¥0.00</span>
                 <el-menu-item index="/superOperate/myInfo" class="index-menu-item">个人中心</el-menu-item>
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
                 <el-menu-item index="/login" class="index-menu-item">退出登陆</el-menu-item>

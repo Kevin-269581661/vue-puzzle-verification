@@ -8,7 +8,7 @@
       <div
         class="progress"
         :style="{ backgroundColor: color, width: percentage + '%', height: height }"
-      ><div class="value" :style="{ 'line-height': height }">￥{{value}}</div></div>
+      ><div class="value" :style="{ 'line-height': height }">¥{{value}}</div></div>
     </div>
   </div>
 </template>
@@ -52,7 +52,7 @@ export default {
   box-sizing: border-box;
   padding: 5px;
   background: rgba(0, 0, 0, 0.06);
-  cursor: pointer;
+  // cursor: pointer;
   .target {
     position: absolute;
     top: 2px;

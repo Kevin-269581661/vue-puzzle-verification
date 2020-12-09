@@ -198,7 +198,7 @@
                             </div>
                         </div>
                         <div v-if="sessionData.asrID != '999'" class="bottom-box">
-                            贵司共浪费了价值  <span class="avtive"> ￥{{resStock.overduePrice || 0}} </span>  的资源，多于全国 <span class="avtive"> {{resStock.unsoldRank}}% </span> 的公司，太可惜了
+                            贵司共浪费了价值  <span class="avtive"> ¥{{resStock.overduePrice || 0}} </span>  的资源，多于全国 <span class="avtive"> {{resStock.unsoldRank}}% </span> 的公司，太可惜了
                         </div>
                     </template>
                 </index-custom-card>
@@ -227,7 +227,7 @@
                                     placement="top"
                                     :visible-arrow="false"
                                     width="200"
-                                    trigger="hover"
+                                    trigger="click"
                                 >
                                     <div class="pop-box">
                                         <div class="pop-title">
@@ -288,16 +288,19 @@
                 </template>
                 <template slot="content">
                     <el-row :gutter="24" class="index-row" style="align-items: flex-start; padding: 33px 24px; margin: 0; ">
-                        <el-col :span="12">
-                            <nest-pie-chart container="nestPie" :sourceData="nestPieData"></nest-pie-chart>
-                            <div v-if="sessionData.asrID != '999'" class="bottom-box" style="width: calc(50% - 48px);">
-                                贵公司<span class="avtive">{{extendData[0]}}</span>位沉默客户待挖掘，多于全国<span class="avtive">{{extendData[1]+'%'}}</span>的公司，请加把劲！
+                        <el-col :span="10">
+                            <nest-pie-chart container="nestPie" :sourceData="nestPieData" @activeData="activeData"></nest-pie-chart>
+                            <div v-if="sessionData.asrID != '999'" class="bottom-box" style="width: calc(41.66% - 48px);">
+                                贵公司<span class="avtive"> {{extendData[0]}} </span>位沉默客户待挖掘，多于全国<span class="avtive"> {{extendData[1]+'%'}} </span>的公司，请加把劲！
                             </div>
                         </el-col>
-                        <el-col :span="12" style="align-self: flex-start;">
+                        <el-col :span="14" style="align-self: flex-start;">
                             <el-table
-                                :data="clientArr"
+                                v-loading="clientLoading"
+                                :data="showClientArr"
                                 max-height="500"
+                                class="client-table"
+                                style="border: 1px solid #e8e8e8;"
                             >
                                 <el-table-column
                                     label="客户"
@@ -336,14 +339,14 @@
                                                     </li>
                                                     <li class="pop-item">
                                                         <em>合作金额：</em>
-                                                        <span>￥{{scope.row.price || 0}}</span>
+                                                        <span>¥{{scope.row.price || 0}}</span>
                                                     </li>
                                                 </ul>
                                                 <div class="pop-title">
                                                     <span class="bottom-btn" @click="unfollow(scope.row)">不再关注</span>
                                                 </div>
                                             </div>
-                                            <mini-progress slot="reference" :target="0" :percentage="scope.row.priceRate" :value="scope.row.price" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                            <mini-progress slot="reference" :target="0" :percentage="scope.row.priceRate" :value="scope.row.price" :height="'20px'" :color="clientColor"></mini-progress>
                                         </el-popover>
                                     </template>
                                 </el-table-column>
@@ -884,7 +887,7 @@
                     tip: '数据截止至昨日，销售额数据来源为统计周期内发布的订单金额总和',
                     value: 0,
                     valueAlias: '销售额',
-                    prefix: '￥',
+                    prefix: '¥',
                     comment: '数据统计截止至昨天',
                     compare: 0,
                     trendLabel: '同比去年',
@@ -954,13 +957,16 @@
                 rankListArr: [],
                 // 机会挖掘表格
                 clientArr: [],
+                clientLoading: false,
+                clientColor: 'rgba(24, 144, 255, 1)',
+                filterClientObj: {apCnt: 1, activeStatus: 1},
                 extendData: ['0', '0'],
                 // 机会挖掘嵌套饼图数据
                 nestPieData: [],
                 // 媒体概况饼图数据
                 ringData: [],
                 // 资源库存数据
-                resStock: {past: {}, next: {}, currentMonthPercent: 0.5}
+                resStock: {past: {}, next: {}, currentMonthPercent: 0.5},
             }
         },
         beforeCreate() {
@@ -996,7 +1002,68 @@
             this.getRankList()
             this.getSMCustomerActiveReport()
         },
+        computed: {
+            showClientArr() {
+                this.clientLoading = true;
+                let tempArr = this.clientArr.filter(item=>{
+                    // console.log('this.filterClientObj.apCnt', this.filterClientObj.apCnt)
+                    if(this.filterClientObj.apCnt >= 0) {
+                        if(this.filterClientObj.apCnt == 2) {
+                            return (item.apCnt >= this.filterClientObj.apCnt) && (item.activeStatus === this.filterClientObj.activeStatus)
+                        } else {
+                            return (item.apCnt === this.filterClientObj.apCnt) && (item.activeStatus === this.filterClientObj.activeStatus)
+                        }
+                    } else {
+                        return item.activeStatus === this.filterClientObj.activeStatus
+                    }
+                })
+                this.clientLoading = false;
+                return tempArr;
+            }
+        },
         methods: {
+            // 环图点击事件更改客户表格数据
+            activeData(viewData, ev) {
+                // console.log('tempElement', ev.data.color)
+                this.clientColor = ev.data.color;
+                if(viewData.view == 'out') {
+                    // 展示饼图外层子集数据
+                    const tempArr = viewData.name.split('-');
+                    switch(tempArr[0]) {
+                        case '初购':
+                            this.filterClientObj = {
+                                apCnt: 1,
+                                activeStatus: tempArr[1] == '活跃' ? 1 : 0
+                            }
+                            break;
+                        case '复购':
+                            this.filterClientObj = {
+                                apCnt: 2,
+                                activeStatus: tempArr[1] == '活跃' ? 1 : 0
+                            }
+                            break;
+                        case '未合作':
+                            this.filterClientObj = {
+                                apCnt: 0,
+                                activeStatus: tempArr[1] == '活跃' ? 1 : 0
+                            }
+                            break;
+                            
+                    }
+                } else {
+                    // 展示饼图内层数据，即默认或活跃的客户
+                    if(viewData.type == '活跃') {
+                        this.filterClientObj = {
+                            activeStatus: 1
+                        }
+                    } else {
+                        this.filterClientObj = {
+                            activeStatus: 0
+                        }
+                    }
+                }
+                // console.log('viewData', viewData, this.filterClientObj)
+            },
             // 资源库存事件
             showTip(flag) {
                 if(flag == 'next') {
@@ -1189,19 +1256,13 @@
                 }).then(res=>{
                     if (res.data.SysCode === 200200) {
                         let temp = res.data.data;
-                        // this.nestPieData = [
-                        //     { value: 1, type: "活跃", name: "初购" },
-                        //     { value: 2, type: "活跃", name: "复购" },
-                        //     { value: 98989, type: "沉默", name: "复购" },
-                        //     { value: 888, type: "沉默", name: "初购" },
-                        //     { value: 1, type: "沉默", name: "未合作" }
-                        // ];
+                        // 图标源数据name值要唯一
                         this.nestPieData = [
-                            { value: temp.activeFirstCnt, type: "活跃", name: "初购" },
-                            { value: temp.activeSecondCnt, type: "活跃", name: "复购" },
-                            { value: temp.silentSecondCnt, type: "沉默", name: "复购" },
-                            { value: temp.silentFirstCnt, type: "沉默", name: "初购" },
-                            { value: temp.noCooperation, type: "沉默", name: "未合作" }
+                            { value: temp.activeFirstCnt, type: "活跃", name: "初购-活跃" },
+                            { value: temp.activeSecondCnt, type: "活跃", name: "复购-活跃" },
+                            { value: temp.silentFirstCnt, type: "沉默", name: "初购-沉默" },
+                            { value: temp.silentSecondCnt, type: "沉默", name: "复购-沉默" },
+                            { value: temp.noCooperation, type: "沉默", name: "未合作-沉默" }
                         ];
                         //0-沉默  1-活跃
                         this.clientArr = temp.customerPriceList;
@@ -2373,11 +2434,22 @@
             }
         }
         .right-board {
-            width: 25%;
+            width: calc(25% - 24px);
             height: 582px;
             background: rgba(255, 255, 255, 1);
             border: 1px solid #E6E7E9;
         }
+    }
+    /deep/ .client-table .el-table__body {
+        width: inherit !important;
+    }
+    /deep/ .el-table__body-wrapper {
+        overflow-y: hidden;
+        overflow-x: hidden;
+    }
+    /deep/ .el-table__body-wrapper:hover {
+        overflow-y: auto;
+        overflow-x: hidden;
     }
     .index-row {
         display: flex;
@@ -2385,7 +2457,7 @@
         justify-content: space-between;
         margin-bottom: 24px;
         & > div {
-            flex: 1;
+            // flex: 1;
         }
         .date-interval {
             margin: 0 24px 0 auto;
@@ -2398,12 +2470,14 @@
                 margin: 0 8px;
             }
             .active {
+                font-weight: 600;
                 color: rgba(24, 144, 255, 1);
             }
         }
         .achievement-radio-group {
             /deep/ .el-radio-button__inner {
                 width: 88px;
+                font-size: 14px;
             }
         }
         .item-list {
@@ -2453,6 +2527,7 @@
         font-weight: 400;
         color: rgba(0, 0, 0, 0.85);
         .avtive {
+            font-weight: 600;
             color: #1890FF;
         }
     }

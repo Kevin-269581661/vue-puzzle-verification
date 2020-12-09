@@ -38,7 +38,7 @@
                             <span style="margin-left: 16px">
                 <div class="item-content">
                 <p>{{item.realName}} 对 <span>{{item.apName}}</span>申请 {{item.resName}} 等<i
-                    @click="getHouseList(item.apid,item.aiTime)">{{item.count}}</i>个 社区画像，费用为 ￥{{priceFormat(item.price)}}</p>
+                    @click="getHouseList(item.apid,item.aiTime)">{{item.count}}</i>个 社区画像，费用为 ¥{{priceFormat(item.price)}}</p>
                 <em class="times">{{item.timeDiff}}</em>
               </div>
               </span>
@@ -88,7 +88,7 @@
               </ul>
               <p class="total-count">
                   <i class="el-icon-info"
-                     style="margin-right: 2px;color: #999"></i>总计：<span>￥{{priceFormat(currPrice)}}</span></p>
+                     style="margin-right: 2px;color: #999"></i>总计：<span>¥{{priceFormat(currPrice)}}</span></p>
             </span>
                         </div>
                         <span slot="footer" class="dialog-footer">

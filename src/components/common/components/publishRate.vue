@@ -29,7 +29,7 @@
     <el-table
       :data="tableData"
       max-height="540"
-      style="flex: unset; width: auto"
+      style="flex: unset; width: auto; border: 1px solid #e8e8e8;"
     >
       <el-table-column
         prop="index"
@@ -274,9 +274,8 @@ li {
 .fad-map-info {
   position: absolute;
   top: 12px;
-  right: 0;
+  right: 45px;
   left: 0;
-  width: 92%;
   height: 32px;
   padding: 0 17px;
   background: rgba(0, 0, 0, 0.5);

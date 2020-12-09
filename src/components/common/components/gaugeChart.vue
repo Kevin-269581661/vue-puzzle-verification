@@ -67,7 +67,7 @@ export default {
           container: this.container,
           autoFit: true,
           height: 450,
-          padding: [0, 0, 30, 0],
+          padding: [-60, 0, 60, 0],
         });
       }
       const data = [{ value: this.gaugeData.finshProcess/100 > 1 ? 100 : this.gaugeData.finshProcess}];

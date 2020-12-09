@@ -49,9 +49,11 @@
                 </div>
             </div>
             <el-badge v-if="messageList.unread>0"  slot="reference" :value="messageList.unread" :max="99" >
-                <i class="el-icon-bell" style="font-size: 20px;" @click="showPop"></i>
+                <!-- <i class="el-icon-bell" style="font-size: 20px;" @click="showPop"></i> -->
+                <img src="../../../assets/images/bell.png" style="width: 24px; height: 24px;" @click="showPop" />
             </el-badge>
-            <i v-else slot="reference" class="el-icon-bell" style="font-size: 20px;" @click="showPop"></i>
+            <!-- <i v-else slot="reference" class="el-icon-bell" style="font-size: 20px;" @click="showPop"></i> -->
+            <img v-else slot="reference" src="../../../assets/images/bell.png" style="width: 24px; height: 24px;" @click="showPop" />
         </el-popover>
     </div>
 </template>

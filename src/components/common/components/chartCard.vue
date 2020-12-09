@@ -12,7 +12,7 @@
       <div class="row">
         <div class="row-left">
           <countTo
-            style="font-size: 30px; color: rgba(0, 0, 0, 0.85)"
+            style="font-size: 28px; color: rgba(0, 0, 0, 0.85); fontFamily: DIN-Medium;"
             :startVal="oldTotal || 0"
             :endVal="cardData.value || 0"
             :duration="500"
@@ -57,16 +57,16 @@
         :padding="[16, 'auto', 'auto', 'auto']"
       >
         <v-axis dataKey="value" :show="false"></v-axis>
-        <v-axis dataKey="week" :line="{stroke: '#E8E8E8'}" :tickLine="{length: -5}" :label="{autoRotate: false, formatter: cardData.formatter || formatter1, textStyle: {fill: 'rgb(0, 0, 0)', opacity: 0.45}}"></v-axis>
+        <v-axis dataKey="week" :line="{stroke: '#E8E8E8'}" :tickLine="{length: 0}" :label="{autoRotate: false, formatter: cardData.formatter || formatter1, textStyle: {fill: 'rgb(0, 0, 0)', opacity: 0.45}}"></v-axis>
         <v-tooltip :shared="false" :hideMarkers="false" />
         <v-smooth-line
           position="week*value"
-          :size="2"
+          :size="3"
           color="#1890ff"
         />
         <v-smooth-area
           position="week*value"
-          :color="['l(90) 0:#1890ff 1:#fff']"
+          :color="['l(90) 0:#d2eaff 1:#fff']"
         />
       </v-chart>
     </div>
@@ -154,6 +154,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@font-face {
+  font-family: DIN-Medium;
+  src: url("../../../assets/font/DIN-Medium.otf");
+}
 * {
   font-family: "Helvetica Neue", Helvetica, Arial, "PingFang ",
     "Hiragino Sans GB" "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei",
@@ -215,7 +219,7 @@ export default {
       margin-top: 4px;
       margin-bottom: 0;
       font-size: 30px !important;
-      line-height: 38px;
+      line-height: 32px;
       height: 38px;
     }
     .row-right {
@@ -234,7 +238,6 @@ export default {
 }
 
 .chart-card-action {
-  cursor: pointer;
   position: absolute;
   top: 0;
   right: 0;

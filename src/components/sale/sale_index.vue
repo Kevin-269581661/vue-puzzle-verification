@@ -26,7 +26,7 @@
                         <template slot="content">
                             <gauge-chart container="gaugeChart" :gaugeData="gaugeData"></gauge-chart>
                             <div class="bottom-box">
-                                您本年业绩目标为 <span class="avtive"> ￥{{gaugeData.targetPrice || 0}} </span> 完成了<span class="avtive"> {{gaugeData.finshProcess}}% </span>业绩排名第<span class="avtive"> {{gaugeData.rank}} </span>，请继续努力
+                                您本年业绩目标为 <span class="avtive"> ¥{{gaugeData.targetPrice || 0}} </span> 完成了<span class="avtive"> {{gaugeData.finshProcess}}% </span>业绩排名第<span class="avtive"> {{gaugeData.rank}} </span>，请继续努力
                             </div>
                         </template>
                     </index-custom-card>
@@ -422,7 +422,7 @@
                     tip: '数据截止至昨日，销售额数据来源为统计周期内发布的订单金额总和',
                     value: 0,
                     valueAlias: '成交额',
-                    prefix: '￥',
+                    prefix: '¥',
                     compare: 0,
                     trendLabel: '月环比',
                     data: []
@@ -1010,7 +1010,7 @@
             }
         }
         .right-board {
-            width: 25%;
+            width: calc(25% - 24px);
             height: 356px;
             background: rgba(255, 255, 255, 1);
             border: 1px solid #E6E7E9;
@@ -1045,6 +1045,7 @@
         font-weight: 400;
         color: rgba(0, 0, 0, 0.85);
         .avtive {
+            font-weight: 600;
             color: #1890FF;
         }
     }

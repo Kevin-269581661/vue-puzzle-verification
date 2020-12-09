@@ -76,13 +76,13 @@
 							</el-tooltip>
 							<el-radio-group v-model="isPoint" size="small" class="achievement-radio-group">
 								<el-radio-button :label="false">媒体</el-radio-button>
-								<el-radio-button :label="true">点位（面）</el-radio-button>
+								<el-radio-button :label="true">点位(面)</el-radio-button>
 							</el-radio-group>
 						</template>
 						<template slot="content">
 							<ring-chart container="ringChart" :sourceData="ringData[isPoint*1]"></ring-chart>
 							<div class="bottom-box">
-                                贵公司<span class="avtive">{{ringData[2][isPoint*1][0]}}</span>个媒体处于不可投状态，多于全国<span class="avtive">{{ringData[2][isPoint*1][1]}}</span>的公司，请尽快处理下吧！
+                                贵公司<span class="avtive"> {{ringData[2][isPoint*1][0]}} </span>个媒体处于不可投状态，多于全国<span class="avtive"> {{ringData[2][isPoint*1][1]}} </span>的公司，请尽快处理下吧！
                             </div>
 						</template>
 					</index-custom-card>
@@ -1149,7 +1149,7 @@ export default {
             }
         }
         .right-board {
-            width: 25%;
+            width: calc(25% - 24px);
             height: 582px;
             background: rgba(255, 255, 255, 1);
             border: 1px solid #E6E7E9;
@@ -1168,6 +1168,7 @@ export default {
             margin-left: auto;
             /deep/ .el-radio-button__inner {
                 width: 88px;
+				font-size: 14px;
             }
         }
         .item-list {
@@ -1214,6 +1215,7 @@ export default {
         font-weight: 400;
         color: rgba(0, 0, 0, 0.85);
         .avtive {
+			font-weight: 600;
             color: #1890FF;
         }
     }

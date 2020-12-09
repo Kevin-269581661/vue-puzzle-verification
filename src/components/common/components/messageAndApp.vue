@@ -25,13 +25,16 @@
                 <img class="index-banner" alt="" src="/static/images/noticeBanner.png" />
                 <ul class="app-list">
                     <li class="app-item" v-for="(item, index) in tableSource" :key="index">
-                        <div style="position: relative; margin-bottom: 12px; width: 100%;">
+                        <div style="position: relative; width: 100%;" @click="catDetail(item)">
                             <div class="notice-head">
                                 <span class="notice-title">{{item.title || ''}}</span>
-                                <span class="notice-date">{{item.createTime || ''}}</span>
+                                <span class="notice-date">{{item.createTime.split(' ')[0] || ''}}</span>
                             </div>
-                            <div class="notice-content">{{item.content || ''}}</div>
-                            <span class="notice-cat" @click="catDetail(item)">查看</span>
+                            <div class="notice-content">
+                                {{item.content || ''}}
+                                <!-- <span class="notice-cat" @click="catDetail(item)">查看</span> -->
+                            </div>
+                            
                         </div>
                     </li>
                 </ul>
@@ -209,8 +212,8 @@
                 display: flex;
                 flex-direction: row;
                 align-items: flex-start;
-                padding: 8px 0;
-                margin: 0 24px;
+                padding: 12px 0;
+                margin: 0;
                 border-bottom: 1px solid #E9E9E9;
                 cursor: pointer;
                 .item-left {
@@ -226,11 +229,12 @@
                     flex-direction: column;
                     width: calc(100% - 60px);
                     .app-name {
+                        margin-top: 2px;
+                        line-height: 24px;
                         font-size: 16px;
                         font-family: PingFangSC-Semibold, PingFang SC;
                         font-weight: 600;
                         color: rgba(0, 0, 0, 0.85);
-                        line-height: 24px;
                     }
                     .app-desc {
                         margin-top: 2px;
@@ -270,6 +274,11 @@
                     text-overflow: ellipsis;
                 }
                 .notice-content {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    -webkit-line-clamp: 3;
+                    -webkit-box-orient: vertical;
+                    display: -webkit-box;
                     margin-top: 6px;
                     font-size: 12px;
                     font-family: PingFangSC-Regular, PingFang SC;

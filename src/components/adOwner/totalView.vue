@@ -235,7 +235,7 @@
                 ],
                 houseTotalArr: [
                     {val: '人流量', Count: 14572},
-                    {val: '楼盘价格(￥)', Count: 8434},
+                    {val: '楼盘价格(¥)', Count: 8434},
                     {val: '户数', Count: 1124},
                     {val: '出入口数', Count: 20},
                     {val: '入住年份', Count: 2008},
@@ -598,7 +598,7 @@
                 // ];
                 this.houseTotalArr = [
                     {val: '人流量', Count: 0},
-                    {val: '楼盘价格(￥)', Count: 0},
+                    {val: '楼盘价格(¥)', Count: 0},
                     {val: '户数', Count: 0},
                     {val: '出入口数', Count: 0},
                     {val: '入住年份', Count: '--'},

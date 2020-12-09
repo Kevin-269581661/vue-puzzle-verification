@@ -1,6 +1,6 @@
 <template>
   <div class="chart-trend">
-    {{ term }}
+    <span class="">{{ term }}</span>
     <span class="trend-value">{{percentage | formatPercentage}}</span>
     <span :class="['trend-icon', (percentage >= 0 ? 'up' : 'down')]">
       <i :class="[percentage >= 0 ? 'el-icon-caret-top' : 'el-icon-caret-bottom']"></i>
@@ -63,6 +63,7 @@ export default {
   display: inline-block;
   font-size: 12px;
   line-height: 22px;
+  white-space: nowrap;
   color: rgba($color: #000000, $alpha: .65);
   .trend-value {
     margin-left: 4px;

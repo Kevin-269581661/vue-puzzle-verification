@@ -139,7 +139,7 @@ li {
     }
     .item-three {
         // width: 50%;
-        flex: 1;
+        // flex: 1;
         margin-left: auto;
         .cell-group {
             @extend %flex-row-center;

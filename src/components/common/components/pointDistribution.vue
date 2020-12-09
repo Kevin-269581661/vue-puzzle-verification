@@ -20,7 +20,7 @@
         </div>
       </div>
     </div>
-    <el-table :data="tableData" max-height="540" style="flex: unset; width: auto;">
+    <el-table :data="tableData" max-height="540" style="flex: unset; width: auto; border: 1px solid #e8e8e8;">
       <el-table-column label="排名" type=index width="60">
       </el-table-column>
       <el-table-column v-if="isPlatformSM" prop="rName" label="城市" width="120" show-overflow-tooltip></el-table-column>
@@ -271,9 +271,8 @@ li {
 .fad-map-info {
   position: absolute;
   top: 12px;
-  right: 0;
+  right: 45px;
   left: 0;
-  width: 92%;
   height: 32px;
   padding: 0 17px;
   background: rgba(0, 0, 0, 0.5);

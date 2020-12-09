@@ -50,8 +50,8 @@ export default {
         as: "percent",
       });
       this.chartInstance.coordinate("theta", {
-        radius: 0.75,
-        innerRadius: 0.5,
+        radius: 0.8,
+        innerRadius: 0.7,
       });
       this.chartInstance.data(dv.rows);
       this.chartInstance.scale("percent", {
@@ -111,86 +111,95 @@ export default {
         },
         offsetY: -10,
       });
+      // this.chartInstance.annotation().image({
+      //   src: '../../../../static/images/status.png',
+      //   top: true,
+      //   width: '40px',
+      //   height: '50px',
+      //   start: 50,
+      //   end: 60,
+      //   offsetY: 100,
+      // });
       this.chartInstance.annotation().text({
         position: ['50%', '55%'],
-        content: '・',
+        content: '●',
         style: {
-          fontSize: 40,
+          fontSize: 16,
           fill: "#1890FF",
           textAlign: "center",
         },
-        offsetX: -72,
-        offsetY: 2
+        offsetX: -115,
+        offsetY: 0
       });
       this.chartInstance.annotation().text({
         position: ['50%', '55%'],
         content: '正常',
         style: {
-          fontSize: 10,
+          fontSize: 14,
           fill: "rgba(0, 0, 0, 0.65)"
         },
-        offsetX: -67
+        offsetX: -105
       });
       this.chartInstance.annotation().text({
         position: ['50%', '55%'],
-        content: '・',
+        content: '●',
         style: {
-          fontSize: 40,
+          fontSize: 16,
           fill: "#6ECB53",
         },
-        offsetX: -57,
-        offsetY: 2
+        offsetX: -65,
+        offsetY: 0
       });
       this.chartInstance.annotation().text({
         position: ['50%', '55%'],
         content: '待安装',
         style: {
-          fontSize: 10,
+          fontSize: 14,
           fill: "rgba(0, 0, 0, 0.65)",
         },
-        offsetX: -32
+        offsetX: -50
       });
       this.chartInstance.annotation().text({
         position: ['50%', '55%'],
-        content: '・',
+        content: '●',
         style: {
-          fontSize: 40,
+          fontSize: 16,
           fill: "#FAAD14"
         },
-        offsetX: -12,
-        offsetY: 2
+        offsetX: 5,
+        offsetY: 0
       });
       this.chartInstance.annotation().text({
         position: ['50%', '55%'],
         content: '待维修',
         style: {
-          fontSize: 10,
+          fontSize: 14,
           fill: "rgba(0, 0, 0, 0.65)"
         },
-        offsetX: 14
+        offsetX: 20
       });
       this.chartInstance.annotation().text({
         position: ['50%', '55%'],
-        content: '・',
+        content: '●',
         style: {
-          fontSize: 40,
+          fontSize: 16,
           fill: "#FF7875",
           textBaseline: 'middle',
           lineHeight: 40
         },
-        offsetX: 34,
-        offsetY: 2
+        offsetX: 75,
+        offsetY: 0
       });
       this.chartInstance.annotation().text({
         position: ['50%', '55%'],
         content: '禁用',
         style: {
-          fontSize: 10,
+          fontSize: 14,
           fill: "rgba(0, 0, 0, 0.65)",
           textBaseline: 'middle',
           lineHeight: 40
         },
-        offsetX: 60
+        offsetX: 90
       });
       this.chartInstance.render();
     },

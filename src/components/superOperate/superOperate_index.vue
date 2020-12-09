@@ -956,8 +956,8 @@
                 rankListArr: [],
                 // 机会挖掘表格
                 clientArr: [],
-                clientLoading: false,
-                clientColor: 'rgba(24, 144, 255, 1)',
+                clientLoading: true,
+                clientColor: 'rgb(250, 173, 20)',
                 filterClientObj: {activeStatus: 0},
                 extendData: ['0', '0'],
                 // 机会挖掘嵌套饼图数据
@@ -999,11 +999,13 @@
             this.uploadEvent(1)
             this.allReportApi()
             this.getRankList()
-            this.getSMCustomerActiveReport()
+            let timer = setTimeout(()=>{
+                this.getSMCustomerActiveReport()
+                clearTimeout(timer)
+            }, 1500)
         },
         computed: {
             showClientArr() {
-                this.clientLoading = true;
                 let tempArr = this.clientArr.filter(item=>{
                     // console.log('this.filterClientObj.apCnt', this.filterClientObj.apCnt)
                     if(this.filterClientObj.apCnt >= 0) {
@@ -1025,6 +1027,7 @@
             activeData(viewData, ev) {
                 // console.log('tempElement', ev.data.color)
                 this.clientColor = ev.data.color;
+                this.clientLoading = true;
                 if(viewData.view == 'out') {
                     // 展示饼图外层子集数据
                     const tempArr = viewData.name.split('-');

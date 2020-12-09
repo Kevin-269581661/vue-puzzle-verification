@@ -91,15 +91,17 @@ export default {
   watch: {
     hasMpvgl(val) {
       if (val === true) {
-        setTimeout(() => {
+        let time1 = setTimeout(() => {
           this.setMap();
+          clearTimeout(time1)
         }, 1000);
       }
     },
     actived(val) {
       if (this.hasMpvgl && val === true) {
-        setTimeout(() => {
+        let time2 = setTimeout(() => {
           this.setMap();
+          clearTimeout(time2)
         }, 1000);
       }
     },
@@ -116,6 +118,10 @@ export default {
   mounted() {
     this.sessionData = sessFun.getSess();
     this.getDistrictOnPubRateReport();
+  },
+  beforeDestroy() {
+    console.log('destroy-publishRate');
+    this.instanceMap = null;
   },
   methods: {
     // 首页的地图上刊率 /report /homepage/getDistrictOnPubRateReport

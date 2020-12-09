@@ -61,15 +61,17 @@ export default {
   watch: {
     hasMpvgl(val) {
       if (val === true) {
-        setTimeout(() => {
+        let time1 = setTimeout(() => {
           this.setMap();
+          clearTimeout(time1)
         }, 1000);
       }
     },
     actived(val) {
       if (this.hasMpvgl && val === true) {
-        setTimeout(() => {
+        let time2 = setTimeout(() => {
           this.setMap();
+          clearTimeout(time2)
         }, 1000);
       }
     },
@@ -86,6 +88,10 @@ export default {
   mounted() {
     this.sessionData = sessFun.getSess();
     this.getPointDistributionReport();
+  },
+  beforeDestroy() {
+    console.log('destroy-pointDistribution');
+    this.instanceMap = null;
   },
   methods: {
     // 首页的地图点位投放 /report /homepage/getPointDistributionReport
@@ -118,17 +124,17 @@ export default {
         this.tableData.forEach(item=>{
           if(Array.isArray(item.latLngList)) {
             item.latLngList.forEach(point=>{
+              let tempCoordinate = point.split(';')
               mapData.push({
                 geometry: {
                   type: "Point",
                   coordinates: [
-                    parseFloat(point.split(';')[0]),
-                    parseFloat(point.split(';')[1]),
+                    parseFloat(tempCoordinate[0]),
+                    parseFloat(tempCoordinate[1])
                   ],
                 },
                 properties: {
                   time: Math.random() * 100,
-                  // count: Math.random() * 100,
                   count: item.totalMediaCnt || 0,
                 },
               });

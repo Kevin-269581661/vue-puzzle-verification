@@ -3311,6 +3311,7 @@
                 let params = {
                     startTime: this.adListParams.ls,
                     endTime: this.adListParams.le,
+                    suID: this.adListParams.suID,
                     resIDList: arr,
                 }
                 if(this.selectExcludeType) {

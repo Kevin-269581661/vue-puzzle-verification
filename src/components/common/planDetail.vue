@@ -510,12 +510,10 @@ export default {
                 }).then(res =>{
                     if(!res.data.SysCode){
                         console.log('res.data', res.data)
+                    } else {
+                        Message.success('重新预锁成功！');
                     }
                 });
-                // this.$message({
-                //     type: 'success',
-                //     message: '删除成功!'
-                // });
             }).catch(() => {})
         },
         // 编辑

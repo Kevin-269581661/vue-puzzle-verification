@@ -89,14 +89,14 @@ export default {
     },
   },
   watch: {
-    hasMpvgl(val) {
-      if (val === true) {
-        let time1 = setTimeout(() => {
-          this.setMap();
-          clearTimeout(time1)
-        }, 1000);
-      }
-    },
+    // hasMpvgl(val) {
+    //   if (val === true) {
+    //     let time1 = setTimeout(() => {
+    //       this.setMap();
+    //       clearTimeout(time1)
+    //     }, 1000);
+    //   }
+    // },
     actived(val) {
       if (this.hasMpvgl && val === true) {
         let time2 = setTimeout(() => {

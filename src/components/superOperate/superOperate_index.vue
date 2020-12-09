@@ -109,13 +109,13 @@
                                                 <path :d="'M 0 23 Q 87.5 0, 175 23 T 350 23 T 525 23 T 700 23 T 875 23 T 1050 23 V ' + (resStock.past.overdueStockRate||100)*3.2 + ' H 0 V 0'" transform="translate(-38.232284367796474, 0)"></path>
                                                 <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-350" dur="3s" repeatCount="indefinite"></animateTransform>
                                             </g>
-                                            <text x="150" y="155" fill="#fff" >{{resStock.past.overdueStockRate||'0.00'}}%</text>
-                                            <text x="150" y="175" fill="#fff" >过期</text>
+                                            <text x="150" y="80" fill="#fff" >{{resStock.past.overdueStockRate||'0.00'}}%</text>
+                                            <text x="150" y="105" fill="#fff" >过期</text>
                                         </g>
                                         <g v-if="resStock.past.overdueStockRate*1 > 0" :transform="'translate(0, '+ (resStock.past.overdueStockRate || 0)*3.2 +')'" fill="url(#blue1)">
                                             <path d="M 0 0 H 600 V 320 H 0 V 0"></path>
-                                            <text x="150" y="155" fill="#fff" >{{resStock.past.onPubStockRate||'0.00'}}%</text>
-                                            <text x="150" y="175" fill="#fff" >已售</text>  
+                                            <text x="150" y="80" fill="#fff" >{{resStock.past.onPubStockRate||'0.00'}}%</text>
+                                            <text x="150" y="105" fill="#fff" >已售</text>
                                         </g>
                                         <g v-else>
                                             <g fill="#6DB9FF">
@@ -1019,7 +1019,7 @@
                     }
                 })
                 this.clientLoading = false;
-                return tempArr;
+                return tempArr.slice(0, 10);
             }
         },
         methods: {

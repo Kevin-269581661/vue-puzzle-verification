@@ -43,7 +43,7 @@
                     </div>
                     <div class="data_box" :class="basicTotalType === '广告门' ? 'box_active' : ''"
                          @click="totalActiveFun('广告门')">
-                        <h4>广告门</h4>
+                        <h4>媒体</h4>
                         <p>{{basicTotalData.advertDoorCount}}</p>
                     </div>
                     <div class="data_box" :class="basicTotalType === '年上刊率' ? 'box_active' : ''"

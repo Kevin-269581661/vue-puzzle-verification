@@ -67,7 +67,7 @@
                                 trigger="hover">
                                 <div class="tip-box">
                                     <div class="pop-title">
-                                        <em>{{resStock.past.preStartDate+'~'+resStock.past.preEndDate}}</em>
+                                        <em>{{resStock.past.preStartDate||''+'~'+resStock.past.preEndDate||''}}</em>
                                     </div>
                                     <ul>
                                         <li class="pop-item">
@@ -227,7 +227,7 @@
                                     placement="top"
                                     :visible-arrow="false"
                                     width="200"
-                                    trigger="click"
+                                    trigger="hover"
                                 >
                                     <div class="pop-box">
                                         <div class="pop-title">
@@ -237,15 +237,15 @@
                                         <ul>
                                             <li class="pop-item">
                                                 <em>业绩目标：</em>
-                                                <span>¥{{rankItem.targetPrice || 0}}</span>
+                                                <span class="item-right">¥{{rankItem.targetPrice || 0}}</span>
                                             </li>
                                             <li class="pop-item">
                                                 <em>销售金额：</em>
-                                                <span>¥{{rankItem.totalPrice || 0}}</span>
+                                                <span class="item-right">¥{{rankItem.totalPrice || 0}}</span>
                                             </li>
                                             <li class="pop-item">
                                                 <em>完成进度：</em>
-                                                <span>{{rankItem.finshProcess || 0}}%</span>
+                                                <span class="item-right">{{rankItem.finshProcess || 0}}%</span>
                                             </li>
                                         </ul>
                                     </div>
@@ -886,7 +886,7 @@
                     title: '本年销售额',
                     tip: '数据截止至昨日，销售额数据来源为统计周期内发布的订单金额总和',
                     value: 0,
-                    valueAlias: '销售额',
+                    valueAlias: '新增销售额',
                     prefix: '¥',
                     comment: '数据统计截止至昨天',
                     compare: 0,
@@ -897,7 +897,7 @@
                     title: '本年订单数',
                     tip: '数据截止至昨日，订单总数数数据来源为统计周期内发布的订单数量总和',
                     value: 0,
-                    valueAlias: '订单数',
+                    valueAlias: '新增订单数',
                     comment: '数据统计截止至昨天',
                     compare: 0,
                     trendLabel: '同比去年',
@@ -907,7 +907,7 @@
                     title: '总客户数',
                     tip: '数据截止至昨日，客户数数据来源为统计周期内新建的客户数总和',
                     value: 0,
-                    valueAlias: '客户数',
+                    valueAlias: '新增客户数',
                     comment: '数据统计截止至昨天',
                     compare: 0,
                     trendLabel: '同比去年',
@@ -959,7 +959,7 @@
                 clientArr: [],
                 clientLoading: false,
                 clientColor: 'rgba(24, 144, 255, 1)',
-                filterClientObj: {apCnt: 1, activeStatus: 1},
+                filterClientObj: {activeStatus: 0},
                 extendData: ['0', '0'],
                 // 机会挖掘嵌套饼图数据
                 nestPieData: [],
@@ -1164,7 +1164,7 @@
                             })
                             tempcCardDataOther1.push({
                                 ...commonObj,
-                                name: '道闸',
+                                name: '新增道闸',
                                 value: item.weekBarrierCnt || 0
                             })
                             tempcCardDataOther1.push({
@@ -1531,13 +1531,13 @@
                         }
                         indexArr.forEach((item, index)=>{
                             let temp = this.showCityRankingImg[index]
-                            temp.city = tempArr[item].city
+                            temp.city = tempArr[dataArr[item].asrId-1].city
                             temp.ranking = item*1+1
                             temp.url = tempArr[item].url
                         })
-                        if(indexIsDateFirst.getIsFirst(this.sessionData.uID, timeFormat.toDate(new Date(), '/'))){
+                        // if(indexIsDateFirst.getIsFirst(this.sessionData.uID, timeFormat.toDate(new Date(), '/'))){
                             this.animateFun()
-                        }
+                        // }
                     } else {
                         this.messageFun('warning','城市月季排行暂无数据')
                     }
@@ -2645,9 +2645,12 @@
         }
         .pop-item {
             display: flex;
-            justify-content: space-between;
+            // justify-content: space-between;
             margin: 2px 0;
             color: rgba(0, 0, 0, 0.65);
+            .item-right {
+                margin-left: 4px;
+            }
         }
     }
 

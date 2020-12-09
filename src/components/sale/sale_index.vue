@@ -76,82 +76,11 @@
                             点位分布
                         </template>
                         <template slot="content">
-                            <point-distribution style="padding: 24px;" mapContainer="mapContainer1" :hasMpvgl="hasMpvgl" :actived="true"></point-distribution>
+                            <point-distribution style="padding-bottom: 24px;" mapContainer="mapContainer1" :hasMpvgl="hasMpvgl" :actived="true"></point-distribution>
                         </template>
                     </index-custom-card>
                 </el-col>
             </el-row>
-            <!-- <home-top :user-info="userInfo" :data-arr="dataArr" :honor-img="companyHonor"></home-top>
-            <div style="margin:24px 0;display:flex;">
-                <div style="width:66%;border: 1px solid #e5e6e9;">
-                    <h2 class="h2_style">常用模块</h2>
-                    <home-link :link="linkArr"></home-link>
-                </div>
-                <div style="width:33%; margin-left:24px;background:#fff;border: 1px solid #e5e6e9;">
-                    <h2 class="h2_style">您的助手</h2>
-                    <div class="loglist_box">
-                        <p class="time_box">
-                            <span class="time">{{saleTalk.dateTime}}</span>
-                        </p>
-                        <div class="info_box">
-                            <img :src="saleTalk.imgurl" alt="">
-                            <div class="info_content">
-                                <span>{{userInfo.username}}, 您{{saleTalk.content}}</span>
-                                <div class="info_arrow"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
-            <!-- <div class="app-center-item" id="appCenter"> -->
-                <!--isPlatform-->
-                <!-- <h2 class="h2_style"><span @click="goToPage()">应用中心 <i class="el-icon-arrow-right"></i></span></h2>
-                <ul :style="{height:isSlideDown?'254px':'510px'}">
-                    <li v-for="item in appCenter" @click="goToPage(item)">
-                        <div class="item-left">
-                            <img :src="item.imgUrl" alt="">
-                        </div>
-                        <div class="item-right">
-                            <h5>{{item.title}}</h5>
-                            <el-tooltip popper-class="desc-tooltip" effect="dark" :content="item.desc" placement="top" v-model="item.descTooltip">
-                                <p>{{item.desc}}</p>
-                            </el-tooltip>
-                        </div>
-                    </li>
-                </ul>
-                <div class="slide" @click="slideAppCenterItem">
-                    <span class="down" v-if="isSlideDown">展开 <i class="el-icon-d-arrow-left"></i> </span>
-                    <span class="up" v-else>收起 <i class="el-icon-d-arrow-left"></i> </span>
-                </div>
-            </div> -->
-            <!-- <div style="margin:24px 0; background:#fff;border: 1px solid #e5e6e9;">
-                <h2 class="h2_style">业绩进度 <span class="span_rank">单位为：万</span></h2>
-                <div style=" width:96%; margin:24px auto;position:relative;" v-if="isShowLine">
-
-                    <ul class="timeline">
-                        <li v-for="(item, index) of priceList" :key="index" class="timeline_item"
-                            :style="'width:'+100/(priceList.length-1)+'%'">
-                            <div class="line_tail"></div>
-                            <div class="line_head"></div>
-                            <div class="line_content"> {{item}}</div>
-                        </li>
-                    </ul>
-                    <div id="rank_info">
-                        <el-popover class="item" effect="dark" placement="right-start" width="180" trigger="hover">
-							<span class="popover_span rank_img">
-								<img :src="userInfo.avator" alt="">
-								<span>￥{{saleInfo.price}}(第{{saleInfo.rank}}名)</span>
-							</span>
-                            <span slot="reference" class="rank_line"></span>
-                        </el-popover>
-                    </div>
-                </div>
-                <template v-else>
-                    <div class="img_point">
-                        <no-search-result></no-search-result>
-                    </div>
-                </template>
-            </div> -->
         </div>
         <!-- 动效 -->
         <div class="monthly_ranking" v-show="isMonthlyRanking">

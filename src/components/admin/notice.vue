@@ -35,12 +35,12 @@
                                     <span style="color: #108EE9;cursor: pointer;" @click="catDetail(scope.row)">查看</span>
                                     <el-popover
                                         placement="top-end"
-                                        v-model="popShow2"
+                                        trigger="hover"
                                         >
                                         <div class="publish-pop">
                                             <div class="content"><i class="el-icon-warning"></i>你确定要删除吗？</div>
-                                            <el-button size="mini" type="text" @click="popShow2 = false">取消</el-button>
-                                            <el-button type="primary" size="mini" @click="deleteNotice(scope.row.id)">确定</el-button>
+                                            <!-- <el-button size="mini" type="text" @click="popShow2 = false">取消</el-button> -->
+                                            <el-button class="btn-right" type="primary" size="mini" @click="deleteNotice(scope.row.id)">确定</el-button>
                                         </div>
                                         <span slot="reference" style="color: #108EE9;cursor: pointer;margin-left: 8px">删除</span>
                                     </el-popover>
@@ -154,7 +154,6 @@
                 // 新建公告
                 dialogFormVisible: false,
                 popShow1: false,
-                popShow2: false,
                 noticeForm: {
                     title: '',
                     content: ''
@@ -312,7 +311,6 @@
             },
             deleteNotice(id) {
                 if(!id) return;
-                this.popShow2 = false
                 api.postApi(this.apiVar.Advertisement+'/DelSystemNotice', {id}).then(res =>{
                     if(res.data.SysCode == '200200'){
                         this.searchFun();
@@ -375,6 +373,10 @@
         i {
             color: #E6A23C;
             margin-right: 4px;
+        }
+        .btn-right {
+            display: block;
+            margin-left: auto;
         }
     }
 </style>

@@ -1535,9 +1535,9 @@
                             temp.ranking = item*1+1
                             temp.url = tempArr[item].url
                         })
-                        // if(indexIsDateFirst.getIsFirst(this.sessionData.uID, timeFormat.toDate(new Date(), '/'))){
+                        if(indexIsDateFirst.getIsFirst(this.sessionData.uID, timeFormat.toDate(new Date(), '/'))){
                             this.animateFun()
-                        // }
+                        }
                     } else {
                         this.messageFun('warning','城市月季排行暂无数据')
                     }

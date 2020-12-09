@@ -938,7 +938,7 @@
                     title: '昨日上刊率',
                     tip: '数据截止至昨日，上刊率计算公式为统计周期内周一至周日点位投放总面*天与该时间内可投放总面*天的百分比',
                     value: 0,
-                    valueAlias: '上刊率',
+                    valueAlias: '上刊率(%)',
                     suffix: '%',
                     comment: '数据统计截止至昨天',
                     compare: 0,
@@ -1174,7 +1174,7 @@
                             tempcCardDataOther3.push({
                                 ...commonObj,
                                 name: '上刊率',
-                                value: (item.weekOnPubRate || 0)*1+'%'
+                                value: (item.weekOnPubRate || 0)*1
                             })
                         })
                         Object.assign(this.cardData1, {

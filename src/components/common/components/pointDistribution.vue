@@ -319,13 +319,13 @@ li {
   .zoom-btn {
     width: 25px;
     height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin-top: 2px;
     border-radius: 2px;
     background: #fff;
     text-align: center;
-    i {
-      vertical-align: middle;
-    }
   }
 }
 /deep/ .anchorBL {

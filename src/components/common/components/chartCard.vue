@@ -116,7 +116,7 @@ export default {
         {
           dataKey: "value",
           min: 0,
-          alias: this.cardData.valueAlias || '',
+          alias: this.cardData.valueAlias || ''
         },
         {
           dataKey: "week",

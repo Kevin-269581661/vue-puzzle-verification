@@ -101,28 +101,30 @@
 							</el-tooltip>
 						</template>
 						<template slot="content">
-							<el-table
+							<div style="padding: 20px 25px 10px;">
+								<el-table
                                 :data="preLockArr"
-                                max-height="484"
-								style="padding: 25px 25px 0;"
-                            >
-                                <el-table-column
-									prop="apName"
-                                    label="方案"
-                                    width="230">
-									<template slot-scope="scope">
-										<span @click="routePage(scope.row)" style="color: #1890FF; cursor: pointer;">{{scope.row.apName || ''}}</span>
-									</template>
-                                </el-table-column>
-                                <el-table-column
-                                    prop="dayDiffer"
-                                    label="预锁剩余天数"
-                                >
-                                    <template slot-scope="scope">
-										<mini-progress slot="reference" :target="0" :percentage="scope.row.dayDiffer/7*100" :value="scope.row.dayDiffer + '天'" :height="'20px'" :color="scope.row.dayDiffer>4?'#1890FF':(scope.row.dayDiffer>1?'#FAAD14':'#FF7875')"></mini-progress>
-                                    </template>
-                                </el-table-column>
-                            </el-table>
+								class="lock-table"
+                                max-height="486"
+								>
+									<el-table-column
+										prop="apName"
+										label="方案"
+										width="230">
+										<template slot-scope="scope">
+											<span @click="routePage(scope.row)" style="color: #1890FF; cursor: pointer;">{{scope.row.apName || ''}}</span>
+										</template>
+									</el-table-column>
+									<el-table-column
+										prop="dayDiffer"
+										label="预锁剩余天数"
+									>
+										<template slot-scope="scope">
+											<mini-progress slot="reference" :target="0" :percentage="scope.row.dayDiffer/7*100" :value="scope.row.dayDiffer + '天'" :height="'20px'" :color="scope.row.dayDiffer>4?'#1890FF':(scope.row.dayDiffer>1?'#FAAD14':'#FF7875')"></mini-progress>
+										</template>
+									</el-table-column>
+								</el-table>
+							</div>
 						</template>
 					</index-custom-card>
 				</el-col>
@@ -1028,6 +1030,9 @@ export default {
 			}
 		}
 	}
+	/deep/ .lock-table .el-table__body {
+        width: inherit !important;
+    }
     .index-top-row {
         display: flex;
         align-items: flex-start;

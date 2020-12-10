@@ -61,7 +61,7 @@
                                     width="auto"
                                 >
                                     <template slot-scope="scope">
-                                        <mini-progress style="cursor: unset;" slot="reference" :target="0" :percentage="scope.row.rate*1" :value="scope.row.totalAdPrice" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                        <mini-progress style="cursor: unset;" slot="reference" :target="0" :percentage="scope.row.rate*1" :value="'¥'+scope.row.totalAdPrice" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
                                     </template>
                                 </el-table-column>
                             </el-table>

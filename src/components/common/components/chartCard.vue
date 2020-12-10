@@ -44,7 +44,7 @@
         <v-axis v-if="cardData.type == 'stackBar'" dataKey="week" :tickLine="{length: 0}" :line="{stroke: '#E8E8E8'}" :label="{autoRotate: false, formatter: formatter2, textStyle: {fill: 'rgb(0, 0, 0)', opacity: 0.45}}"></v-axis>
         <v-tooltip :hideMarkers="false"/>
         
-        <v-bar v-if="cardData.type == 'bar'" position="week*value" :color="stackColor[1][0]" />
+        <v-bar v-if="cardData.type == 'bar'" position="week*value" :color="stackColor[1][1]" />
         <v-stack-bar v-if="cardData.type == 'stackBar'" position="week*value" :color="stackColor" />
       </v-chart>
 

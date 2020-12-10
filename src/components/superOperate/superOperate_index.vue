@@ -213,7 +213,7 @@
                         </div>
                         <el-radio-group v-model="isBehind" size="small" class="achievement-radio-group" @change="getRankList">
                             <el-radio-button :label="false">领先</el-radio-button>
-                            <el-radio-button :label="true">落后</el-radio-button>
+                            <el-radio-button :label="true" :disabled="sessionData.asrID == '999'">落后</el-radio-button>
                         </el-radio-group>
                     </template>
                     <template slot="content">
@@ -221,6 +221,7 @@
                             <li class="item" v-for="(rankItem, index) in rankListArr" :key="index">
                                 <span :title="rankItem.realName" class="label">{{rankItem.realName}}</span>
                                 <el-popover
+                                    v-if="sessionData.asrID != '999'"
                                     popper-class="index-custom-popper"
                                     class="progress"
                                     placement="top"
@@ -247,9 +248,9 @@
                                                 <span class="item-right">{{rankItem.finshProcess || 0}}%</span>
                                             </li>
                                         </ul>
-                                    </div>
-                                    <mini-progress :target="rankItem.targetProcess" :percentage="rankItem.finshProcess" :value="rankItem.totalPrice" slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                    </div><mini-progress :target="rankItem.targetProcess" :percentage="rankItem.finshProcess" :value="'¥'+rankItem.totalPrice" slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
                                 </el-popover>
+                                <mini-progress v-else :target="rankItem.targetProcess" :percentage="rankItem.finshProcess" :value="'¥'+rankItem.totalPrice" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
                             </li>
                         </ul>
                     </template>
@@ -345,7 +346,7 @@
                                                     <span class="bottom-btn" @click="unfollow(scope.row)">不再关注</span>
                                                 </div>
                                             </div>
-                                            <mini-progress slot="reference" :target="0" :percentage="scope.row.priceRate" :value="scope.row.price" :height="'20px'" :color="clientColor"></mini-progress>
+                                            <mini-progress slot="reference" :target="0" :percentage="scope.row.priceRate" :value="'¥'+scope.row.price" :height="'20px'" :color="clientColor"></mini-progress>
                                         </el-popover>
                                     </template>
                                 </el-table-column>
@@ -2481,7 +2482,7 @@
             .item {
                 display: flex;
                 align-items: center;
-                margin: 9px 0;
+                padding: 9px 0;
                 .progress {
                     flex: 1;
                     cursor: pointer;

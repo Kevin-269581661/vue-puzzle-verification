@@ -327,7 +327,6 @@
     .quesition-icon{
         width: 20px;
         height: 20px;
-        filter: brightness(0.75);
         cursor: pointer;
     }
 

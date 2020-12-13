@@ -180,7 +180,7 @@ export default {
                 if(!res.data.SysCode){
                     if(res.data.length){
                         let returnobj = this.formatData(res.data);
-                        let head = [ '省份', '城市', '区域', '资源名称','商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '车位数', '车流量', '人流量', '广告限制', '点位备注', '媒体数量(面)'];
+                        let head = [ '省份', '城市', '区域', '资源名称', '所属公司', '商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '车位数', '车流量', '人流量', '广告限制', '点位备注', '媒体数量(面)'];
                         let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
                         if(customPermission && customPermission.patrolPermission) {
                             head.push('巡点问题', '通行情况');
@@ -220,6 +220,7 @@ export default {
                         city: item.crName || '--',
                         rName: item.rName || '--',
                         resName: item.resName || '--',
+                        asNames: item.asNames,
                         tradingArea: item.tradingArea || '--',
                         resAddress: item.resAddress || '--',
                         mVehicle: item.mVehicle,
@@ -320,7 +321,7 @@ export default {
                     if(returnobj.arr.length>0) {
                         console.log('returnobj----', returnobj);
                         let date = returnobj.date,
-                            head = [ '省份', '城市', '区域', '资源名称','商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '广告限制', '点位备注', '媒体数量(面)'],
+                            head = [ '省份', '城市', '区域', '资源名称', '所属公司', '商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '广告限制', '点位备注', '媒体数量(面)'],
                             customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
                         if(customPermission && customPermission.patrolPermission) {
                             head.push('巡点问题', '通行情况');
@@ -364,6 +365,7 @@ export default {
                             city: item.crName,
                             rName: item.rName,
                             resName: item.resName,
+                            asNames: item.asNames,
                             tradingArea: item.tradingArea,
                             resAddress: item.resAddress,
                             mVehicle: item.mVehicle,
@@ -430,7 +432,7 @@ export default {
                         if(returnData.length){
                             let returnobj = this.formatDataAds(resinfo.data, date);
                             console.log('returnobj-----', returnobj);
-                            let head = ['资源名称', '省份', '城市', '区域', '商圈', '媒体名称', '媒介载体', '资产编号', '门体类型', '投放面', '媒体等级', '广告限制', '点位备注', '广告尺寸/图片尺寸', '画面尺寸/灯箱尺寸', '详细地址', '楼盘类型', '楼盘价格', '楼栋数量', '入住时间', '小区户数', '人流量', '车位数', '车流量', '空闲日期'];
+                            let head = ['资源名称', '所属公司', '省份', '城市', '区域', '商圈', '媒体名称', '媒介载体', '资产编号', '门体类型', '投放面', '媒体等级', '广告限制', '点位备注', '广告尺寸/图片尺寸', '画面尺寸/灯箱尺寸', '详细地址', '楼盘类型', '楼盘价格', '楼栋数量', '入住时间', '小区户数', '人流量', '车位数', '车流量', '空闲日期'];
                             let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
                             if(customPermission && customPermission.patrolPermission) {
                                 head.push('巡点问题', '通行情况');
@@ -468,6 +470,7 @@ export default {
                     for(let item of data.spareAds){
                         let obj = {
                             resName: item.resName || '--',
+                            asName: item.asName,
                             province: item.prName|| '--',
                             city: item.crName || '--',
                             rName: item.rName || '--',

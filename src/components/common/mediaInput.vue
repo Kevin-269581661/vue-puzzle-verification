@@ -88,14 +88,13 @@
                             <el-row :gutter="76" class="from_row">
                                 <el-col :span="6">
                                     <el-form-item label="资源地址" prop="resaddr">
-                                        <el-autocomplete
+                                        <el-input
                                             v-model="recForm.resaddr"
-                                            :fetch-suggestions="querySearchAsync"
                                             placeholder=""
                                             @blur="blurFun('resaddr')"
                                             style="width: 100%"
                                             class="el-from-item-address">
-                                        </el-autocomplete>
+                                        </el-input>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="6">
@@ -1331,6 +1330,20 @@
                 customPermission: {},  //巡点权限
             };
         },
+        computed: {
+            changeLatLng() {
+                if(this.resAddres.city && this.resAddres.area && this.recForm.resname && this.recForm.resaddr) {
+                    return this.resAddres.city + this.resAddres.area + this.recForm.resname + this.recForm.resaddr
+                } else {
+                    return false
+                }
+            }
+        },
+        watch: {
+            changeLatLng(val) {
+                val && this.querySearchAsync()
+            }
+        },
         mounted: function () {
             this.customPermission = this.sessionData.customPermission;
             this.resUpdata = []
@@ -1507,21 +1520,19 @@
                 });
             },
             // 根据填写的具体地址去获取经纬度
-            querySearchAsync(queryString, callback) {
-                callback([])
-                let uid = this.sessionData.uID
-                if (queryString) {
+            querySearchAsync() {
+                if(this.resAddres.city && this.resAddres.area && this.recForm.resname && this.recForm.resaddr) {
                     let params = {
-                        uid: uid,
+                        uid: this.sessionData.uID,
                         token: this.sessionData.token,
-                        address:   this.resAddres.city  +  this.resAddres.area + this.recForm.resaddr
+                        address:   this.resAddres.city  +  this.resAddres.area + this.recForm.resname + this.recForm.resaddr
                     }
                     console.log('根据填写的具体地址去获取经纬度',params)
-                    api.postApi(this.apiVar.Map + '/Geocoder', params).then(res => {
+                    api.postApi(this.apiVar.Advertisement + '/Geocoder', params).then(res => {
                         console.log('Geocoder', res)
                         if (res.data.status == 0) {
-                            this.recForm.lat = res.data.result.location.lng.toFixed(6)     // 经度
-                            this.recForm.lng = res.data.result.location.lat.toFixed(6)     // 纬度
+                            this.recForm.lat = res.data.result.location.lng     // 经度
+                            this.recForm.lng = res.data.result.location.lat    // 纬度
                         }
                     });
                 }

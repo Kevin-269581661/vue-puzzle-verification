@@ -308,56 +308,6 @@ export default {
 					link: './media/adsDialPlate'
 				}
 			],
-			linkArr:[
-                {
-                    imgurl: require('../../assets/images/media.png'),
-                    title: '媒体管理',
-                    desc: '媒体管理模块，您可在此模块中查看、添加、编辑媒体',
-                    link: './media/mediaList',
-                    children: [
-                        {
-                            title: '媒体列表',
-                            link: './media/mediaList',
-                        },
-                        {
-                            title: '新建媒体',
-                            link: './media/mediaInput',
-                        }
-                    ],
-                },
-                {
-                    imgurl: require('../../assets/images/editor.png'),
-                    title: '方案管理',
-                    desc: '方案管理模块，您可在此模块中查看、新建、发布方案',
-                    link: './media/planList',
-                    children: [
-                        {
-                            title: '导出空位',
-                            link: '',
-						},
-						// {
-                        //     title: '方案列表',
-                        //     link: './media/planList',
-                        // },
-                        {
-                            title: '新建方案',
-                            link: './media/createPlan',
-                        }
-                    ],
-                },
-                {
-                    imgurl: require('../../assets/images/order.png'),
-                    title: '订单管理',
-                    desc: '订单管理模块，您可在此模块查看订单，中止订单',
-                    link: './media/orderList',
-                    children: [
-                        {
-                            title: '订单列表',
-                            link: './media/orderList'
-                        }
-                    ],
-                },
-			],
 			userInfo: {
 				userName: '',
                 greetings: '祝您开心每一天!',

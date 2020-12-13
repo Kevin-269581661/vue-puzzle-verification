@@ -113,13 +113,18 @@
                                                     <span>{{ props.row.notPush || '--'}}</span>
                                                 </el-form-item>
                                             </el-form>
-                                            <el-form v-if="customPermission.patrolPermission" label-position="left" inline class="demo-table-expand">
-                                                <el-form-item label="巡点问题：">
-                                                    <span class="ellipsis-td">{{ props.row.remark || '--' }}</span>
+                                            <el-form label-position="left" inline class="demo-table-expand">
+                                                <el-form-item label="归属公司：">
+                                                    <span class="ellipsis-td">{{ props.row.asName||'' }}</span>
                                                 </el-form-item>
-                                                <el-form-item label="通行情况：">
-                                                    <span class="ellipsis-td">{{ props.row.trafficState || '--' }}</span>
-                                                </el-form-item>
+                                                <template v-if="customPermission.patrolPermission">
+                                                    <el-form-item label="巡点问题：">
+                                                        <span class="ellipsis-td">{{ props.row.remark || '--' }}</span>
+                                                    </el-form-item>
+                                                    <el-form-item label="通行情况：">
+                                                        <span class="ellipsis-td">{{ props.row.trafficState || '--' }}</span>
+                                                    </el-form-item>
+                                                </template>
                                             </el-form>
                                         </template>
                                     </el-table-column>
@@ -364,13 +369,18 @@
                                                 <span>{{ props.row.notPush || '--'}}</span>
                                             </el-form-item>
                                         </el-form>
-                                        <el-form v-if="customPermission.patrolPermission" label-position="left" inline class="demo-table-expand">
-                                            <el-form-item label="巡点问题：">
-                                                <span class="ellipsis-td">{{ props.row.remark || '--' }}</span>
+                                        <el-form label-position="left" inline class="demo-table-expand">
+                                            <el-form-item label="归属公司：">
+                                                <span class="ellipsis-td">{{ props.row.asName||'' }}</span>
                                             </el-form-item>
-                                            <el-form-item label="通行情况：">
-                                                <span class="ellipsis-td">{{ props.row.trafficState || '--' }}</span>
-                                            </el-form-item>
+                                            <template v-if="customPermission.patrolPermission">
+                                                <el-form-item label="巡点问题：">
+                                                    <span class="ellipsis-td">{{ props.row.remark || '--' }}</span>
+                                                </el-form-item>
+                                                <el-form-item label="通行情况：">
+                                                    <span class="ellipsis-td">{{ props.row.trafficState || '--' }}</span>
+                                                </el-form-item>
+                                            </template>
                                         </el-form>
                                     </template>
                                 </el-table-column>
@@ -1330,8 +1340,8 @@
                             for (let data of InfoTest) {
                                 let str = data.roadGateMaterialSize.split('-');
                                 let obj = {
-                                    adSize: str[0],
-                                    adViewSize: str[1],
+                                    adSize: str[1],
+                                    adViewSize: str[0],
                                     pointNum: data.roadGateMaterialCount,
                                     resolution: "150dpi",
                                     colorMode: "CMYK",

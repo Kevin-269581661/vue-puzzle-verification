@@ -58,13 +58,18 @@
                                                     <span>{{ props.row.notPush }}</span>
                                                 </el-form-item>
                                             </el-form>
-                                            <el-form v-if="customPermission.patrolPermission" label-position="left" inline class="demo-table-expand">
-                                                <el-form-item label="巡点问题：">
-                                                    <span class="ellipsis-td">{{ props.row.remark }}</span>
+                                            <el-form label-position="left" inline class="demo-table-expand">
+                                                <el-form-item label="归属公司：">
+                                                    <span class="ellipsis-td">{{ props.row.asName||'' }}</span>
                                                 </el-form-item>
-                                                <el-form-item label="通行情况：">
-                                                    <span class="ellipsis-td">{{ props.row.trafficState }}</span>
-                                                </el-form-item>
+                                                <template v-if="customPermission.patrolPermission">
+                                                    <el-form-item label="巡点问题：">
+                                                        <span class="ellipsis-td">{{ props.row.remark }}</span>
+                                                    </el-form-item>
+                                                    <el-form-item label="通行情况：">
+                                                        <span class="ellipsis-td">{{ props.row.trafficState }}</span>
+                                                    </el-form-item>
+                                                </template>
                                             </el-form>
                                         </template>
                                     </el-table-column>
@@ -271,13 +276,14 @@ export default {
                     resAddress: data.resAddress,
                     remark: data.remark,
                     trafficState: data.trafficState,
+                    asName: data.asName
                 };
                 resultArr.push(obj);
             }
             require.ensure([], () => {
                 const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
-                const tHeader = ['资源名称', '市', '区域', '媒介载体', '媒体名称', '资产编号', '投放面', '投放日期', '终止日期', '商圈', '楼盘类型/写字楼类型', '楼盘价格', '住户数量/办公室数量', '楼栋数量', '入住年份/建成年份', '广告尺寸/画面尺寸', '可视画面/灯箱尺寸', '广告限制', '媒体备注', '详细地址'];
-                const filterVal = ['resName', 'city', 'rName', 'mVehicle', 'mTitle', 'assetTag', 'asLab', 'timeRange', 'finishTimeRange', 'tradingArea', 'cType', 'hPrice', 'hNum', 'fNum', 'chDay', 'adSize', 'adViewSize', 'notPush', 'mRemark', 'resAddress'];
+                const tHeader = ['资源名称', '市', '区域', '媒介载体', '媒体名称', '资产编号', '投放面', '投放日期', '终止日期', '商圈', '楼盘类型/写字楼类型', '楼盘价格', '住户数量/办公室数量', '楼栋数量', '入住年份/建成年份', '广告尺寸/画面尺寸', '可视画面/灯箱尺寸', '广告限制', '媒体备注', '详细地址', '归属公司'];
+                const filterVal = ['resName', 'city', 'rName', 'mVehicle', 'mTitle', 'assetTag', 'asLab', 'timeRange', 'finishTimeRange', 'tradingArea', 'cType', 'hPrice', 'hNum', 'fNum', 'chDay', 'adSize', 'adViewSize', 'notPush', 'mRemark', 'resAddress', 'asName'];
                 if(this.customPermission.patrolPermission) {
                     tHeader.push('巡点问题', '通行情况');
                     filterVal.push('remark', 'trafficState');
@@ -373,6 +379,7 @@ export default {
                 apid: apid
             };
             if (this.planDetail.apState == 1) {
+                // apState: 1 方案并未转成订单
                 this.funcToInit(this.apiVar.Advertisement+'/GetADB', info, this.planDetail.apState);
             } else {
                 this.funcToInit(this.apiVar.Advertisement+'/GetAdLaunch', info, this.planDetail.apState);

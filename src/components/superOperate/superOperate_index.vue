@@ -644,106 +644,6 @@
                         link: './superOperate/publishPriceList'
                     }
                 ],
-                // 常用模块数据
-                linkTemp: [
-                    {
-                        imgurl: require('../../assets/images/media.png'),
-                        title: '媒体管理',
-                        desc: '媒体管理模块，您可在此模块中查添加、编辑媒体',
-                        link: './superOperate/mediaList',
-                        children: [
-                            {
-                                title: '媒体列表',
-                                link: './superOperate/mediaList',
-                            },
-                            {
-                                title: '--',
-                                link: '',
-                            }
-                        ],
-                    },
-                    {
-                        imgurl: require('../../assets/images/group.png'),
-                        title: '客户管理',
-                        desc: '客户管理模块，您可在此模块中查看、新建客户',
-                        link: './superOperate/clientList',
-                        children: [
-                            {
-                                title: '客户列表',
-                                link: './superOperate/clientList',
-                            },
-                            {
-                                title: '--',
-                                link: '',
-                            }
-                        ],
-                    },
-                    {
-                        imgurl: require('../../assets/images/editor.png'),
-                        title: '方案管理',
-                        desc: '方案管理模块，您可在此模块中查看、新建方案',
-                        link: './superOperate/planList',
-                        children: [
-                            {
-                                title: '方案列表',
-                                link: './superOperate/planList',
-                            },
-                            {
-                                title: '地图选点',
-                                link: '',
-                            }
-                        ],
-                    },
-                    {
-                        imgurl: require('../../assets/images/order.png'),
-                        title: '订单管理',
-                        desc: '订单管理模块，您可在此模块查看订单，中止订单',
-                        link: './superOperate/orderList',
-                        children: [
-                            {
-                                title: '订单列表',
-                                link: './superOperate/orderList'
-                            },
-                            {
-                                title: '--',
-                                link: '',
-                            }
-                        ]
-                    },
-                    {
-                        imgurl: require('../../assets/images/manage.png'),
-                        title: '经营分析',
-                        desc: '经营报表模块，您可在此模块查阅各类经营数据',
-                        link: './superOperate/dataAnalysis',
-                        children: [
-                            {
-                                title: '--',
-                                link: ''
-                            },
-                            {
-                                title: '--',
-                                link: '',
-                            }
-                        ]
-                    },
-                    {
-                        imgurl: require('../../assets/images/price.png'),
-                        title: '刊例价',
-                        desc: '刊例价模块，您可在此模块查看、修改城市刊例价',
-                        link: './superOperate/publishPriceList',
-                        children: [
-                            {
-                                title: '刊例价列表',
-                                link: './superOperate/publishPriceList'
-                            },
-                            {
-                                title: '--',
-                                link: '',
-                            }
-                        ]
-                    },
-                ],
-                linkArr: [],
                 isRetailCompany: false,     // 判断是否为7大直营公司或平台商
                 listDirectList: [],         // 直营城市公司列表
                 activeTabsName: 'pointDistribution',
@@ -1368,20 +1268,8 @@
                 this.sessionData = sessFun.getSess();
                 if (this.sessionData.asrID === '999') {
                     this.isPlatform = true
-                    // this.linkArr = JSON.parse(JSON.stringify(this.linkTemp))
                 } else {
                     this.isPlatform = false
-                }
-                // 根据不同的登录用户构建不同的常用模块
-                for (let key of this.linkTemp) {
-                    if (this.sessionData.asrID === '999') {
-                        // delete key.children
-                        this.linkArr.push(key)
-                    } else {
-                        if (key.title === '方案管理' || key.title === '订单管理' || key.title === '经营分析') {
-                            this.linkArr.push(key)
-                        }
-                    }
                 }
                 let companyList = ['999','1','2','3','4','5','6','7']
                 for (let key of companyList) {

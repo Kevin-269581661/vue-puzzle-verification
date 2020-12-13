@@ -100,6 +100,18 @@
                                     </el-option>
                                 </el-select>
                             </el-form-item>
+                            <!-- saleManageLevel 1全国 2KA -->
+                            <el-form-item v-if="BDData.saleManageLevel > 0" label="归属公司：" prop="pointOfAsrIDs" ref="planPointOfAsrIDs">
+                                <el-select v-model="planForm.pointOfAsrIDs" size="small" filterable multiple
+                                    placeholder="请选择">
+                                    <el-option
+                                        v-for="item in pointOfAsrIDs"
+                                        :key="item.asrID*1"
+                                        :label="item.asName"
+                                        :value="item.asrID*1">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
                         </el-form>
                     </div>
                 </div>
@@ -1167,7 +1179,7 @@
             top="20vh"
             width="80%">
             <template v-if="importType =='1'">
-                <import-result :importData="importInfoData" :name="planForm.planName" @cancel="cancelImport"
+                <import-result :importData="importInfoData" :name="planForm.planName" :customPermission="customPermission" @cancel="cancelImport"
                                @confirmImport="confirmImport"></import-result>
             </template>
             <template v-if="importType == '2'">
@@ -1203,6 +1215,8 @@
                                 <span>{{scope.row.schedules}}</span>
                             </el-tooltip>
                         </template>
+                    </el-table-column>
+                    <el-table-column prop="failReason" label="失败原因" min-width="130">
                     </el-table-column>
                 </el-table>
             </template>
@@ -1455,7 +1469,9 @@
                     throwCity: [],
                     ownerBU: '',    // 所属联系人
                     planRemark: '',
+                    pointOfAsrIDs: []      // 点位所属公司id组合，根据城市联动
                 },
+                pointOfAsrIDs: [],
                 // 媒介选择所属销售列表
                 salerList: [],
                 // 获取销售选项loading
@@ -1484,6 +1500,9 @@
                     throwCity: [
                         {required: true, message: '请选择投放城市(可多选)', trigger: 'change'},
                     ],
+                    pointOfAsrIDs: [
+                        {required: true, message: '请选择归属公司(可多选)', trigger: 'blur'}
+                    ]
                 },
                 shopingList: [],            // step2购物车列表
                 // 购物车展示的数据
@@ -1618,7 +1637,7 @@
                 // 地图类型
                 isMapKind: false,
                 selectMapKind: 2,
-                ActiveMapType: 1,
+                ActiveMapType: 2,
                 // 亲邻地图
                 mapAdsList: [],
                 currPageAsLength: 0,//当前页面可选的点位总数
@@ -1660,6 +1679,16 @@
         //         }
         //     }
         // },
+        watch: {
+            'planForm.throwCity': {
+                handler: function() {
+                    this.planForm.pointOfAsrIDs = []
+                    this.pointOfAsrIDs = []
+                    if(this.planForm.throwCity.length == 0) return
+                    this.getPointOfAsr()
+                }
+            }
+        },
         computed: {
             nowPointNum() {
                 if (this.dialogTableVisible) {
@@ -1795,7 +1824,6 @@
                     params.suID = this.BDData.uid
                 }
                 api.getApi(this.apiVar.Advertisement + '/GetFanganCity', params).then(res => {
-                    console.log('获取权限下的城市列表', res.data)
                     if (res.data.SysCode === 100200 || res.data.MSG === '该用户暂未分配公司！') {
                         sessFun.messageFun('warning', res.data.MSG)
                     } else {
@@ -1815,6 +1843,23 @@
                         } else {
                             sessFun.messageFun('warning', '城市数据获取异常')
                         }
+                    }
+                })
+            },
+            // 获取所选权限城市下的点位所属公司
+            getPointOfAsr() {
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    suID: this.BDData.uid,
+                    cityIds: this.planForm.throwCity.join(',')
+                }
+                api.getApi(this.apiVar.Advertisement + '/GetCityAscrList', params)
+                .then(res => {
+                    if (res.data.SysCode === 200200) {
+                        this.pointOfAsrIDs = res.data.data;
+                    } else {
+                        sessFun.messageFun('warning', res.data.MSG)
                     }
                 })
             },
@@ -2199,7 +2244,7 @@
                     let rids = this.planForm.throwCity.join(',');
                     let sess = this.sessionData;
                     let info = `?uid=${sess.uID}&token=${
-                        sess.token}&suId=${this.BDData.uid}&rids=${rids}&excludedApId=${this.activeAdPlan ? this.activeAdPlan : ''}`;
+                        sess.token}&suId=${this.BDData.uid}&rids=${rids}&excludedApId=${this.activeAdPlan ? this.activeAdPlan : ''}&asrIDs=${this.planForm.pointOfAsrIDs.join(',')}`;
                     let formData = new FormData();
                     formData.append('file', this.fileData[0]);
                     if (this.importType == '2') {
@@ -2426,6 +2471,7 @@
                         assetTag: data.assetTag,
                         schedules: data.date,
                         pointId: data.pointId,
+                        failReason: data.failReason
                     };
                     resultarr.push(item);
                 }
@@ -2434,7 +2480,7 @@
             // 导出有问题的点
             downLoadExcel() {
                 let arr = this.questionPoint(this.excelDataUpload, this.importInfoData.successList);
-                let allHead = ['资源名称', '市', '区', '媒介载体', '媒体名称', '投放面', '资产编号', '投放排期', '钼媒点位ID'];
+                let allHead = ['资源名称', '市', '区', '媒介载体', '媒体名称', '投放面', '资产编号', '投放排期', '钼媒点位ID', '失败原因'];
                 sheetExcel.toDownload(allHead, arr, this.planForm.planName + '问题点位表');
             },
             // 导入excel后台返回的问题点位
@@ -2460,6 +2506,7 @@
                         assetTag: data.assetTag,
                         schedules: data.schedules,
                         pointId: data.pointId,
+                        failReason: data.failReason
                     };
                     resultarr[0].showList.push(obj);
                 }
@@ -2607,7 +2654,7 @@
             // 第四步的导出方案
             downLoadFanan() {
                 let arr = this.excelData(this.shopingList)
-                let allHead = ['资源名称', '市', '区', '商圈', '资源地址', '楼盘价格', '入住年份', '住户数量', '出入口', '楼栋数量', '楼盘（写字楼）类型', '地图中心点', '可选面数', '投放排期'];
+                let allHead = ['资源名称', '所属公司', '市', '区', '商圈', '资源地址', '楼盘价格', '入住年份', '住户数量', '出入口', '楼栋数量', '楼盘（写字楼）类型', '地图中心点', '可选面数', '投放排期'];
                 let head = ['在线协同选点链接(可地图查看社区)  ' + this.shareADUrl, '', '', '', '', '', '', '', '', '', '', '', ''];
                 if(this.customPermission.patrolPermission) {
                     allHead.push('巡点问题', '通行情况');
@@ -2632,6 +2679,7 @@
                     let obj = {
                         resID: data.resID,
                         resName: data.resName,
+                        asName: data.asName,
                         city: data.city,
                         rName: data.origin,
                         tradingArea: data.tradingArea,
@@ -2672,7 +2720,7 @@
                     }
                     data.sheetName = data.sheetName.replace(/[/]/g, '.');
                 }
-                console.log('datearrr-----', dateArr);
+                // console.log('datearrr-----', dateArr);
                 return dateArr;
             },
             // 导出空位
@@ -3117,6 +3165,7 @@
                 this.getAdsParamsData.dateTimeEnd = this.dateInput[1]
                 this.getAdsParamsData.pageNo = this.pageNo
                 this.getAdsParamsData.uid = this.BDData.uid
+                this.getAdsParamsData.asrIDs = this.planForm.pointOfAsrIDs.join(',')
                 for (let i in this.getAdsParamsData) {
                     if (this.getAdsParamsData[i] === '') {
                         delete this.getAdsParamsData[i]
@@ -3336,7 +3385,8 @@
                     ls: starTime.split(".").join(""),
                     le: endTime.split(".").join(""),
                     cityIds: this.city.map(_=>_.rid),
-                    saleId: this.BDData.uid
+                    saleId: this.BDData.uid,
+                    asrIDs: this.planForm.pointOfAsrIDs.join(',')
                 }
                 console.log('参数', params)
                 api.postApi(this.apiVar.Advertisement + '/GetResAdplanInfo', params).then(res => {
@@ -3461,6 +3511,7 @@
                     le: this.dateInput[1],
                     adSystemId: [this.industryID],
                     suID: this.BDData.uid,
+                    asrIDs: this.planForm.pointOfAsrIDs
                 }));
                 let url = '';
                 if(window.location.hostname == 'localhost') {
@@ -3521,6 +3572,7 @@
                     shp: this.buildPrice[0] * 100,
                     bhp: this.buildPrice[1] * 100,
                     suid: this.BDData.uid,
+                    asrIDs: this.planForm.pointOfAsrIDs.join(','),
                     apId: this.activeAdPlan
                 }
                 if (this.selectValue === '商圈') {

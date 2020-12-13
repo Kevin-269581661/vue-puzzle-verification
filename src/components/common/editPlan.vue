@@ -978,7 +978,7 @@
             top="20vh"
             width="80%">
             <template v-if="importType =='1'">
-                <import-result :importData="importInfoData" :name="planForm.planName" @cancel="cancelImport" @confirmImport="confirmImport"></import-result>
+                <import-result :importData="importInfoData" :name="planForm.planName" :customPermission="customPermission" @cancel="cancelImport" @confirmImport="confirmImport"></import-result>
             </template>
             <template v-if="importType == '2'">
                 <div class="car-title">
@@ -1013,6 +1013,8 @@
                                 <span>{{scope.row.schedules}}</span>
                             </el-tooltip>
                         </template>
+                    </el-table-column>
+                    <el-table-column prop="failReason" label="失败原因" min-width="130" >
                     </el-table-column>
                 </el-table>
             </template>
@@ -1460,7 +1462,7 @@
                 isMapKind: false,
                 selectMapKind: 2,
                 // 当前选择的地图类型
-                ActiveMapType: 1,
+                ActiveMapType: 2,
                 // 亲邻地图
                 mapAdsList:[],
                 currPageSelect:0,
@@ -1585,7 +1587,7 @@
                     }
                     let rids = ridsArr.join(',');
                     let sess = this.sessionData;
-                    let info = `?uid=${sess.uID}&token=${sess.token}&suId=${this.BDData.uid}&rids=${rids}&excludedApId=${this.activeAdPlan ? this.activeAdPlan : ''}`;
+                    let info = `?uid=${sess.uID}&token=${sess.token}&suId=${this.BDData.uid}&rids=${rids}&excludedApId=${this.activeAdPlan ? this.activeAdPlan : ''}&asrIDs=${this.BDData.asrIDs}`;
                     let formData = new FormData();
                     formData.append('file', this.fileData[0]);
                     if (this.importType == '2') {
@@ -1808,6 +1810,7 @@
                         assetTag: data.assetTag,
                         schedules: data.date,
                         pointId: data.pointId,
+                        failReason: data.failReason
                     };
                     resultarr.push(item);
                 }
@@ -1816,7 +1819,7 @@
             // 导出有问题的点
             downLoadExcel(){
                 let arr = this.questionPoint(this.excelDataUpload, this.importInfoData.successList);
-                let allHead = ['资源名称',	'市', '区', '媒介载体',	'媒体名称', '投放面', '资产编号', '投放排期', '钼媒点位ID'];
+                let allHead = ['资源名称',	'市', '区', '媒介载体',	'媒体名称', '投放面', '资产编号', '投放排期', '钼媒点位ID', '失败原因'];
                 sheetExcel.toDownload(allHead, arr, this.planForm.planName+'问题点位表');
             },
             // 导入excel后台返回的问题点位
@@ -1843,6 +1846,7 @@
                         assetTag: data.assetTag,
                         schedules: data.schedules,
                         pointId: data.pointId,
+                        failReason: data.failReason
                     };
                     resultarr[0].showList.push(obj);
                 }
@@ -2001,7 +2005,7 @@
             downLoadFanan(){
                 console.log('this.shopingList---', this.shopingList);
                 let arr = this.excelData(this.shopingList)
-                let allHead = ['资源名称',	'市', '区',	'商圈', '资源地址',	'楼盘价格',	'入住年份',	'住户数量',	'出入口', '楼栋数量', '楼盘（写字楼）类型',	'地图中心点', '可选面数' ,'投放排期'];
+                let allHead = ['资源名称', '所属公司', '市', '区',	'商圈', '资源地址',	'楼盘价格',	'入住年份',	'住户数量',	'出入口', '楼栋数量', '楼盘（写字楼）类型',	'地图中心点', '可选面数' ,'投放排期'];
                 if(this.customPermission.patrolPermission) {
                     allHead.push('巡点问题', '通行情况');
                 }
@@ -2030,6 +2034,7 @@
                     let obj = {
                         resID: data.resID,
                         resName: data.resName,
+                        asName: data.asName,
                         city: data.city,
                         rName: data.origin,
                         tradingArea: data.tradingArea,
@@ -2181,6 +2186,7 @@
                 this.getAdsParamsData.dateTimeEnd = this.dateInput[1]
                 this.getAdsParamsData.pageNo = this.pageNo
                 this.getAdsParamsData.uid = this.BDData.uid
+                this.getAdsParamsData.asrIDs = this.BDData.asrIDs || ''
                 for(let i in this.getAdsParamsData){
                     if(this.getAdsParamsData[i] === ''){
                         delete this.getAdsParamsData[i]
@@ -2530,7 +2536,8 @@
                     shp: this.buildPrice[0] * 100,
                     bhp: this.buildPrice[1] * 100,
                     suid: this.BDData.uid,
-                    apId: this.activeAdPlan
+                    apId: this.activeAdPlan,
+                    asrIDs: this.BDData.asrIDs || ''
                 }
                 if(this.selectValue === '商圈'){
                     params.ta = this.searchInput
@@ -5268,6 +5275,7 @@
                         this.cBand = this.FAInfo.bTitle
                         this.industryID = this.FAInfo.piID
                         this.BDData.uid = this.FAInfo.suID || ''
+                        this.BDData.asrIDs = this.FAInfo.asrIDs || ''
                         this.FAInfo.cityList = this.delCommentCity(this.FAInfo.rIDs.split(','))
                         if ((this.sessionData.uType === 'BD' && (this.sessionData.saleManageLevel == '1' || this.sessionData.saleManageLevel == '2'))
                             ||(this.sessionData.uType === 'MD' && this.sessionData.mediaManageLevel == '1')) {
@@ -5439,7 +5447,8 @@
                     ls: starTime.split(".").join(""),
                     le: endTime.split(".").join(""),
                     cityIds: this.city.map(_=>_.rid),
-                    saleId: this.BDData.uid
+                    saleId: this.BDData.uid,
+                    asrIDs: this.BDData.asrIDs
                 }
                 console.log('参数', params) //planList
                 api.postApi(this.apiVar.Advertisement + '/GetResAdplanInfo', params).then(res => {

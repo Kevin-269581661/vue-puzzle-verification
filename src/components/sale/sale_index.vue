@@ -240,56 +240,6 @@
                         link: './sale/adsDialPlate'
                     },
                 ],
-                linkArr: [
-                    {
-                        imgurl: require('../../assets/images/group.png'),
-                        title: '客户管理',
-                        desc: '客户管理模块，您可在此模块中查看、新建、编辑客户',
-                        link: './sale/clientList',
-                        children: [
-                            {
-                                title: '客户列表',
-                                link: './sale/clientList',
-                            },
-                            {
-                                title: '新建客户',
-                                link: './sale/createClient',
-                            }
-                        ],
-                    },
-                    {
-                        imgurl: require('../../assets/images/editor.png'),
-                        title: '方案管理',
-                        desc: '方案管理模块，您可在此模块中查看、新建、发布方案',
-                        link: './sale/planList',
-                        children: [
-                            {
-                                title: '导出空位',
-                                link: '',
-                            },
-                            // {
-                            //     title: '方案列表',
-                            //     link: './sale/planList',
-                            // },
-                            {
-                                title: '地图选点',
-                                link: '',
-                            }
-                        ],
-                    },
-                    {
-                        imgurl: require('../../assets/images/order.png'),
-                        title: '订单管理',
-                        desc: '订单管理模块，您可在此模块查看订单，中止订单',
-                        link: './sale/orderList',
-                        children: [
-                            {
-                                title: '订单列表',
-                                link: './sale/orderList'
-                            }
-                        ],
-                    },
-                ],
                 userInfo: {
                     userName: '',
                     greetings: '祝您开心每一天!'

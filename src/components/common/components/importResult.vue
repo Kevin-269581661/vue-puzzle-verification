@@ -116,6 +116,14 @@
                             </el-tooltip>
                         </template>
                     </el-table-column>
+                    <template v-if="customPermission.patrolPermission">
+                    <el-table-column prop="feedback" label="巡点问题" min-width="130">
+                    </el-table-column>
+                    <el-table-column prop="trafficState" label="通行情况" min-width="130">
+                    </el-table-column>
+                </template>
+                <el-table-column prop="failReason" label="失败原因" show-overflow-tooltip>
+                </el-table-column>
                 </el-table>
             </div>
         </template>
@@ -133,12 +141,14 @@
                 </el-table-column>
                 <el-table-column prop="resAddress" label="详细地址" min-width="85" >
                 </el-table-column>
-                <el-table-column prop="schedules" label="排期" min-width="190">
+                <el-table-column prop="schedules" label="排期" min-width="160">
                     <template slot-scope="scope">
                         <el-tooltip class="item" effect="dark" :content="scope.row.schedules" placement="bottom">
                             <span>{{scope.row.schedules}}</span>
                         </el-tooltip>
                     </template>
+                </el-table-column>
+                <el-table-column prop="failReason" label="失败原因" show-overflow-tooltip>
                 </el-table-column>
             </el-table>
         </template>
@@ -165,6 +175,10 @@ export default {
             type: String,
             default: '方案名称'
         },
+        customPermission: {
+            type: Object,
+            default: ()=>{}
+        }
     },
     data(){
         return{
@@ -244,6 +258,7 @@ export default {
         setTableData(arr){
             console.log('arr---', arr);
             let result = [];
+            let pointSet = new Set();
             for(let key of arr) {
                 let adObj = {
                     mID: key.mID,
@@ -283,9 +298,12 @@ export default {
                     mediaLevel: key.grade || '',        // 媒体等级
                     asName: key.asName,                 // 点位所属公司名称
                     asrID: key.asrID,                   // 所属公司id
-                    checkBox: {A: false, B: false, ABC:false},
+                    checkBox: {A: !pointSet.has(key.resID), B: false, ABC:false},
                     box: {A: false, B: false},
+                    trafficState: key.trafficState || '',
+                    feedback: key.feedback || ''
                 }
+                pointSet.add(key.resID)
                 // 点位价格
                 if (key.mVehicle === '道闸') {
                     adObj.adPrice = key.asPrice / 100;
@@ -543,6 +561,7 @@ export default {
                     origin: data.district,
                     resAddress: data.resAddress,
                     schedules: data.date,
+                    failReason: data.failReason,
                 };
                 resultarr.push(item);
             }
@@ -551,7 +570,10 @@ export default {
         // 导出有问题的点
         downLoadExcel(){
             let arr = this.questionPoint(this.errorList);
-            let allHead = ['资源名称',	'市', '区',	'详细地址', '投放排期'];
+            let allHead = ['资源名称',	'市', '区',	'详细地址', '投放排期', '失败原因'];
+            // if(this.customPermission && this.customPermission.patrolPermission) {
+            //     allHead.push('巡点问题', '通行情况');
+            // }
             sheetExcel.toDownload(allHead, arr, '导入失败小区表'+timeFormat.toDate(new Date(), '-'));
         },
         // 导入excel后台返回的问题点位
@@ -569,7 +591,12 @@ export default {
                     origin: data.origin,
                     resAddress: data.resAddress,
                     schedules: data.schedules,
+                    failReason: data.failReason ||'',
                 };
+                // if(this.customPermission && this.customPermission.patrolPermission) {
+                //     obj.feedback = data.feedback || ''
+                //     obj.trafficState = data.trafficState || ''
+                // }
                 resultarr[0].showList.push(obj);
             }
             return resultarr;

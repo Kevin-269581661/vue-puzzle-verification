@@ -243,6 +243,7 @@
                         ls: this.dateInput[0],
                         le: this.dateInput[1],
                         suID: this.sessionData.uID,
+                        asrIDs: this.sessionData.saleManageLevel > 0 ? [] : [this.sessionData.asrID]
                     }));
                 } else if (this.sessionData.uType === 'SM') {
                     url = url + '&flag=' + false
@@ -252,6 +253,7 @@
                         ls: this.dateInput[0],
                         le: this.dateInput[1],
                         suID: this.sessionData.uID,
+                        asrIDs: this.sessionData.ascType==0?[]:[this.sessionData.asrID]
                     }));
                 }
                 this.mapDialogVisible = false;

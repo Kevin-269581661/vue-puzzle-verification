@@ -1773,6 +1773,7 @@
             // uWho为全国时，根据市级城市rid，获取它的下属区、县
             handleChange(value) {
                 this.recForm.region = ''
+                this.resAddres.area = ''
                 console.log('handleChange', value)
                 let cityRID = value[1]
                 let cityName = areaToTextNew.toTextCity(cityRID)

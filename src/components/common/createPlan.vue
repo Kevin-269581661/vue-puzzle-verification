@@ -1209,14 +1209,14 @@
                     </el-table-column>
                     <el-table-column prop="assetTag" label="资产编号" min-width="130">
                     </el-table-column>
-                    <el-table-column prop="schedules" label="排期" min-width="190">
+                    <el-table-column prop="schedules" label="排期" min-width="160">
                         <template slot-scope="scope">
                             <el-tooltip class="item" effect="dark" :content="scope.row.schedules" placement="bottom">
                                 <span>{{scope.row.schedules}}</span>
                             </el-tooltip>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="failReason" label="失败原因" min-width="130">
+                    <el-table-column prop="failReason" label="失败原因" min-width="130" show-overflow-tooltip>
                     </el-table-column>
                 </el-table>
             </template>
@@ -1951,7 +1951,7 @@
                     if (!res.data.SysCode) {
                         if (res.data.length) {
                             let returnobj = this.formatData(res.data);
-                            let head = ['省份', '城市', '区域', '资源名称', '商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '车位数', '车流量', '人流量', '广告限制', '点位备注', '媒体数量(面)'];
+                            let head = ['省份', '城市', '区域', '资源名称', '所属公司', '商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '车位数', '车流量', '人流量', '广告限制', '点位备注', '媒体数量(面)'];
                             let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
                             if(customPermission && customPermission.patrolPermission) {
                                 head.push('巡点问题', '通行情况');
@@ -1991,6 +1991,7 @@
                             city: item.crName || '--',
                             rName: item.rName || '--',
                             resName: item.resName || '--',
+                            asNames: item.asNames,
                             tradingArea: item.tradingArea || '--',
                             resAddress: item.resAddress || '--',
                             mVehicle: item.mVehicle,

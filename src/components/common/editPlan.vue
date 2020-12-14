@@ -1007,14 +1007,14 @@
                     </el-table-column>
                     <el-table-column prop="assetTag" label="资产编号" min-width="130" >
                     </el-table-column>
-                    <el-table-column prop="schedules" label="排期" min-width="190">
+                    <el-table-column prop="schedules" label="排期" min-width="160">
                         <template slot-scope="scope">
                             <el-tooltip class="item" effect="dark" :content="scope.row.schedules" placement="bottom">
                                 <span>{{scope.row.schedules}}</span>
                             </el-tooltip>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="failReason" label="失败原因" min-width="130" >
+                    <el-table-column prop="failReason" label="失败原因" min-width="130" show-overflow-tooltip>
                     </el-table-column>
                 </el-table>
             </template>

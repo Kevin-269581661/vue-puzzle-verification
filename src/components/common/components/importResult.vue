@@ -109,7 +109,7 @@
                     </el-table-column>
                     <el-table-column prop="assetTag" label="资产编号" min-width="130" >
                     </el-table-column>
-                    <el-table-column prop="schedules" label="排期" min-width="190">
+                    <el-table-column prop="schedules" label="排期" min-width="160">
                         <template slot-scope="scope">
                             <el-tooltip class="item" effect="dark" :content="scope.row.schedules" placement="bottom">
                                 <span>{{scope.row.schedules}}</span>
@@ -256,10 +256,9 @@ export default {
         },
         // 勾选表格数据格式
         setTableData(arr){
-            console.log('arr---', arr);
             let result = [];
             let pointSet = new Set();
-            for(let key of arr) {
+            for(let [index,key] of arr.entries()) {
                 let adObj = {
                     mID: key.mID,
                     resType: key.resType,
@@ -298,22 +297,26 @@ export default {
                     mediaLevel: key.grade || '',        // 媒体等级
                     asName: key.asName,                 // 点位所属公司名称
                     asrID: key.asrID,                   // 所属公司id
-                    checkBox: {A: !pointSet.has(key.resID), B: false, ABC:false},
-                    box: {A: false, B: false},
+                    checkBox: {A: false, B: false, ABC:false},
+                    box: {A: false, B: false},          // 被占用，置灰 mVehicle
                     trafficState: key.trafficState || '',
                     feedback: key.feedback || ''
                 }
-                pointSet.add(key.resID)
                 // 点位价格
                 if (key.mVehicle === '道闸') {
                     adObj.adPrice = key.asPrice / 100;
                 } else {
+                    // 每个小区默认勾选一个点位
+                    if(!pointSet.has(key.resID)) {
+                        index%2 === 0 ? adObj.checkBox.A = true : adObj.checkBox.B = true;
+                    }
                     if (key.asPrice) {
                         adObj.adPrice = key.asPrice / 700;
                     } else {
                         adObj.adPrice = 0;
                     }
                 }
+                pointSet.add(key.resID)
                 // A/B面
                 if (key.asLabs.indexOf('A') === -1) {
                     adObj.box.A = true;

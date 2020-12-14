@@ -100,34 +100,30 @@
                                                 <stop offset="100%" style="stop-color:#1890FF;stop-opacity:1" />
                                             </linearGradient>
                                         </defs>
-                                        <g>
-                                            <g fill="#FABF14" transform="translate(-903.868 0)">
-                                                <path :d="'M 0 23 Q 87.5 0, 175 23 T 350 23 T 525 23 T 700 23 T 875 23 T 1050 23 V ' + (resStock.past.overdueStockRate||100)*3.2 + ' H 0 V 0'" transform="translate(-38.232284367796474, 0)"></path>
-                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-600" dur="2s" repeatCount="indefinite"></animateTransform>
+                                        <g :transform="'translate(0, ' + (100-(resStock.past.onPubStockRate||0)*1-(resStock.past.overdueStockRate||0)*1)*3.2 +')'">
+                                            <g fill="#FABF14" transform="translate(-175 0)">
+                                                <path :d="'M 0 0 Q 87.5 23, 175 0 T 350 0 T 525 0 T 700 0 T 875 0 T 1050 0 T 1225 0 T 1400 0 V ' + (resStock.past.overdueStockRate||100)*3.2 + ' H 0 V 0'" transform="translate(-38.232284367796474, 0)"></path>
+                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-700" dur="1.5s" repeatCount="indefinite"></animateTransform>
                                             </g>
                                             <g fill="#FAAD14">
-                                                <path :d="'M 0 23 Q 87.5 0, 175 23 T 350 23 T 525 23 T 700 23 T 875 23 T 1050 23 V ' + (resStock.past.overdueStockRate||100)*3.2 + ' H 0 V 0'" transform="translate(-38.232284367796474, 0)"></path>
+                                                <path :d="'M 0 0 Q 87.5 23, 175 0 T 350 0 T 525 0 T 700 0 T 875 0 T 1050 0 T 1225 0 T 1400 0 V ' + (resStock.past.overdueStockRate||100)*3.2 + ' H 0 V 0'" transform="translate(-38.232284367796474, 0)"></path>
                                                 <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-350" dur="3s" repeatCount="indefinite"></animateTransform>
                                             </g>
                                             <text :x="300*resStock.currentMonthPercent+10" :y="(resStock.past.overdueStockRate||100)*1.6+10" fill="#fff" >{{resStock.past.overdueStockRate||'0.00'}}%</text>
                                             <text :x="300*resStock.currentMonthPercent+10" :y="(resStock.past.overdueStockRate||100)*1.6+30" fill="#fff" >过期</text>
                                         </g>
-                                        <g v-if="resStock.past.overdueStockRate*1 > 0" :transform="'translate(0, '+ (resStock.past.overdueStockRate || 0)*3.2 +')'" fill="url(#blue1)">
+                                        <g v-if="resStock.past.overdueStockRate*1 > 0" :transform="'translate(0, ' + (100-(resStock.past.onPubStockRate||0)*1)*3.2 +')'" fill="url(#blue1)">
                                             <path d="M 0 0 H 600 V 320 H 0 V 0"></path>
-                                            <text :x="300*resStock.currentMonthPercent+10" :y="(resStock.past.overdueStockRate||100)*1.6+10" fill="#fff" >{{resStock.past.onPubStockRate||'0.00'}}%</text>
-                                            <text :x="300*resStock.currentMonthPercent+10" :y="(resStock.past.overdueStockRate||100)*1.6+30" fill="#fff" >已售</text>
+                                            <text :x="300*resStock.currentMonthPercent+10" :y="((100-resStock.past.onPubStockRate)||100)*1.6+10" fill="#fff" >{{resStock.past.onPubStockRate||'0.00'}}%</text>
+                                            <text :x="300*resStock.currentMonthPercent+10" :y="((100-resStock.past.onPubStockRate)||100)*1.6+30" fill="#fff" >已售</text>
                                         </g>
                                         <g v-else>
-                                            <g fill="#6DB9FF">
-                                                <path d="M 0 23 Q 87.5 0, 175 23 T 350 23 T 525 23 T 700 23 T 875 23 T 1050 23 V 320 H 0 V 0"></path>
+                                            <g fill="#B2DAFF" transform="translate(-175 0)">
+                                                <path d="M 0 0 Q 87.5 23, 175 0 T 350 0 T 525 0 T 700 0 T 875 0 T 1050 0 T 1225 0 T 1400 0 V 320 H 0 V 0"></path>
                                                 <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-700" dur="1.5s" repeatCount="indefinite"></animateTransform>
                                             </g>
-                                            <g fill="#6DB9FF">
-                                                <path d="M 0 23 Q 87.5 0, 175 23 T 350 23 T 525 23 T 700 23 T 875 23 T 1050 23 V 320 H 0 V 0" transform="translate(-38.232284367796474, 0)"></path>
-                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-540" dur="2s" repeatCount="indefinite"></animateTransform>
-                                            </g>
                                             <g fill="url(#blue2)">
-                                                <path d="M 0 23 Q 87.5 0, 175 23 T 350 23 T 525 23 T 700 23 T 875 23 T 1050 23 V 320 H 0 V 0"></path>
+                                                <path d="M 0 0 Q 87.5 23, 175 0 T 350 0 T 525 0 T 700 0 T 875 0 T 1050 0 T 1225 0 T 1400 0 V 320 H 0 V 0"></path>
                                                 <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-350" dur="3s" repeatCount="indefinite"></animateTransform>
                                             </g>
                                             <text x="150" y="155" fill="#fff" >{{resStock.past.onPubStockRate||'0.00'}}%</text>
@@ -162,24 +158,24 @@
                                     </ul>
                                 </div>
                                 <div slot="reference" style="position: relative;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" :width="600*(1-resStock.currentMonthPercent)" height="320" class="capsule-right">
+                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" :width="600*(1-resStock.currentMonthPercent*1)" height="320" class="capsule-right">
                                         <defs>
                                             <linearGradient id="blue2" x1="0%" y1="0%" x2="0%" y2="100%">
                                                 <stop offset="0%" style="stop-color:#6DB9FF;stop-opacity:1" />
                                                 <stop offset="100%" style="stop-color:#1890FF;stop-opacity:1" />
                                             </linearGradient>
                                         </defs>
-                                        <g :transform="'translate(0, '+ (resStock.next.futureUnsoldStockRate||100)*3.2 +')'">
-                                            <g fill="#6DB9FF">
-                                                <path d="M 0 23 Q 87.5 0, 175 23 T 350 23 T 525 23 T 700 23 T 875 23 T 1050 23 V 320 H 0 V 0"></path>
+                                        <g :transform="'translate(0, ' + ((resStock.next.futureUnsoldStockRate||0)*1||100)*3.2 +')'">
+                                            <g fill="#B2DAFF" transform="translate(-175 0)">
+                                                <path d="M 0 0 Q 87.5 23, 175 0 T 350 0 T 525 0 T 700 0 T 875 0 T 1050 0 T 1225 0 T 1400 0 V 320 H 0 V 0"></path>
                                                 <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-700" dur="1.5s" repeatCount="indefinite"></animateTransform>
                                             </g>
-                                            <g fill="#6DB9FF">
-                                                <path d="M 0 23 Q 87.5 0, 175 23 T 350 23 T 525 23 T 700 23 T 875 23 T 1050 23 V 320 H 0 V 0" transform="translate(-38.232284367796474, 0)"></path>
-                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-540" dur="2s" repeatCount="indefinite"></animateTransform>
-                                            </g>
+                                            <!-- <g fill="#6DB9FF">
+                                                <path d="M 0 0 Q 87.5 23, 175 0 T 350 0 T 525 0 T 700 0 T 875 0 T 1050 0 T 1225 0 V 320 H 0 V 0" transform="translate(-38.232284367796474, 0)"></path>
+                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-340" dur="2s" repeatCount="indefinite"></animateTransform>
+                                            </g> -->
                                             <g fill="url(#blue2)">
-                                                <path d="M 0 23 Q 87.5 0, 175 23 T 350 23 T 525 23 T 700 23 T 875 23 T 1050 23 V 320 H 0 V 0"></path>
+                                                <path d="M 0 0 Q 87.5 23, 175 0 T 350 0 T 525 0 T 700 0 T 875 0 T 1050 0 T 1225 0 T 1400 0 V 320 H 0 V 0"></path>
                                                 <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-350" dur="3s" repeatCount="indefinite"></animateTransform>
                                             </g>
                                         </g>
@@ -1115,18 +1111,18 @@
                                 overdueStock: temp.overdueStock,		//过期资源面周数
                                 repairStock: temp.repairStock,		//历史维修的库存
                                 banStock: temp.banStock,			//历史禁止的库存
-                                onPubStockRate: temp.onPubStockRate,	//历史已售库存的百分比
-                                overdueStockRate: temp.overdueStockRate, //历史过期库存的百分比
-                                repairStockRate: temp.repairStockRate,   //历史维修库存的百分比
-                                banStockRate: temp.banStockRate, 	//历史禁止库存的百分比
+                                onPubStockRate: temp.onPubStockRate || 0,	//历史已售库存的百分比
+                                overdueStockRate: temp.overdueStockRate || 0, //历史过期库存的百分比
+                                repairStockRate: temp.repairStockRate || 0,   //历史维修库存的百分比
+                                banStockRate: temp.banStockRate || 0, 	//历史禁止库存的百分比
                             },
                             next = {
                                 futureStartDate: temp.futureStartDate,	//未来开始时间
                                 futureEndDate: temp.futureEndDate,		//未来结束时间
                                 futureOnPubStock: temp.futureOnPubStock,  //未来已售库存面周数
                                 futureUnsoldStock: temp.futureUnsoldStock, //未来未售库存面周数
-                                futureOnPubStockRate: temp.futureOnPubStockRate, //未来已售库存百分比
-                                futureUnsoldStockRate: temp.futureUnsoldStockRate, //未来未售库存百分比
+                                futureOnPubStockRate: temp.futureOnPubStockRate||0, //未来已售库存百分比
+                                futureUnsoldStockRate: temp.futureUnsoldStockRate||0, //未来未售库存百分比
                             };
                         this.resStock = {
                             past,

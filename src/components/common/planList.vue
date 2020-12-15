@@ -121,7 +121,7 @@
                                              </span>
                                     </el-tooltip>
                                 </div>
-                                <div v-if="!isAll" v-for="item of scope.row.cityArea" :key="item.rid+'-'+item.asrID"
+                                <div v-else v-for="item of scope.row.cityArea" :key="item.rid+'-'+item.asrID"
                                      class="city_p">
                                     <el-tooltip class="item" effect="dark"
                                                 :content="item.asName+' '+item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'"
@@ -555,6 +555,8 @@
                                 result.push(obj);
                             }
                             this.companyData = result;
+                        } else if(res.data.SysCode == 100403) {
+                            console.error('获取投放城市', res.data.MSG)
                         } else {
                             this.messageFun('warning', res.data.MSG);
                         }

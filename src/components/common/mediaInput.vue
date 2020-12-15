@@ -1341,7 +1341,7 @@
         },
         watch: {
             changeLatLng(val) {
-                val && this.querySearchAsync()
+                this.querySearchAsync(val)
             }
         },
         mounted: function () {
@@ -1520,8 +1520,8 @@
                 });
             },
             // 根据填写的具体地址去获取经纬度
-            querySearchAsync() {
-                if(this.resAddres.city && this.resAddres.area && this.recForm.resname && this.recForm.resaddr) {
+            querySearchAsync(flag) {
+                if(flag && this.resAddres.city && this.resAddres.area && this.recForm.resname && this.recForm.resaddr) {
                     let params = {
                         uid: this.sessionData.uID,
                         token: this.sessionData.token,
@@ -1535,6 +1535,9 @@
                             this.recForm.lng = res.data.result.location.lat    // 纬度
                         }
                     });
+                } else {
+                    this.recForm.lat = ''    // 经度
+                    this.recForm.lng = ''    // 纬度
                 }
             },
             openBmap(){

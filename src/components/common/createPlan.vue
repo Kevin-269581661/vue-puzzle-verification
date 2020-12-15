@@ -1953,7 +1953,7 @@
                             let returnobj = this.formatData(res.data);
                             let head = ['省份', '城市', '区域', '资源名称', '商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '车流量', '车位数', '人流量', '广告限制', '点位备注', '媒体数量(面)'];
                             let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
-                            if(this.sessionData.mediaManageLevel == 1 || this.sessionData.saleManageLevel == 2) {
+                            if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
                                 head.push('归属公司')
                             }
                             if(customPermission && customPermission.patrolPermission) {
@@ -2010,7 +2010,7 @@
                             adsNum: item.adsNum || 0
                         };
                         let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
-                        if(this.sessionData.mediaManageLevel == 1 || this.sessionData.saleManageLevel == 2) {
+                        if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
                             obj.asNames = item.asNames
                         }
                         // 巡点定制
@@ -2111,6 +2111,9 @@
                             let date = returnobj.date;
                             let head = ['省份', '城市', '区域', '资源名称', '商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '广告限制', '点位备注', '媒体数量(面)'];
                             let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
+                            if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
+                                head.push('归属公司')
+                            }
                             if(customPermission && customPermission.patrolPermission) {
                                 head.push('巡点问题', '通行情况');
                             }
@@ -2163,6 +2166,9 @@
                                 remark: item.allremark || '',
                                 adsNum: item.adsNum,
                             };
+                            if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
+                                obj.asNames = item.asNames
+                            }
                             let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
                             if(customPermission && customPermission.patrolPermission) {
                                 obj.allRemark = item.allRemark;

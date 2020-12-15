@@ -2006,7 +2006,7 @@
                 console.log('this.shopingList---', this.shopingList);
                 let arr = this.excelData(this.shopingList)
                 let allHead = ['资源名称', '市', '区',	'商圈', '资源地址',	'楼盘价格',	'入住年份',	'住户数量',	'出入口', '楼栋数量', '楼盘（写字楼）类型',	'地图中心点', '可选面数' ,'投放排期'];
-                if(this.sessionData.mediaManageLevel == 1 || this.sessionData.saleManageLevel == 2) {
+                if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
                     allHead.push('归属公司')
                 }
                 if(this.customPermission.patrolPermission) {
@@ -2054,7 +2054,7 @@
                         remark: data.remark,
                         trafficState: data.trafficState,
                     };
-                    if(this.sessionData.mediaManageLevel == 1 || this.sessionData.saleManageLevel == 2) {
+                    if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
                             obj.asName = data.asName
                     }
                     // 无巡点权限(亲粤邻之外的公司)

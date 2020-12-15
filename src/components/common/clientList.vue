@@ -209,7 +209,9 @@ export default {
                         result.push(obj);
                     }
                     this.companyArr = result;
-                }else{
+                } else if(res.data.SysCode == 100403) {
+                    console.error('获取公司', res.data.MSG)
+                } else{
                     Message.warning(res.data.MSG);
                 }
             }).catch(err =>{

@@ -302,13 +302,26 @@ export default {
                     trafficState: key.trafficState || '',
                     feedback: key.feedback || ''
                 }
+                // A/B面
+                if (key.asLabs.indexOf('A') === -1) {
+                    adObj.box.A = true;
+                }
+                if (key.asLabs.indexOf('B') === -1) {
+                    adObj.box.B = true;
+                }
                 // 点位价格
                 if (key.mVehicle === '道闸') {
                     adObj.adPrice = key.asPrice / 100;
                 } else {
                     // 每个小区默认勾选一个点位
                     if(!pointSet.has(key.resID)) {
-                        index%2 === 0 ? adObj.checkBox.A = true : adObj.checkBox.B = true;
+                        if(index%2 === 0 && !adObj.box.A) {
+                            adObj.checkBox.A = true
+                            this.AddShopingInfo(adObj, 'A')
+                        } else if(index%2 === 1 && !adObj.box.B) {
+                            adObj.checkBox.B = true
+                            this.AddShopingInfo(adObj, 'B')
+                        }
                     }
                     if (key.asPrice) {
                         adObj.adPrice = key.asPrice / 700;
@@ -317,13 +330,6 @@ export default {
                     }
                 }
                 pointSet.add(key.resID)
-                // A/B面
-                if (key.asLabs.indexOf('A') === -1) {
-                    adObj.box.A = true;
-                }
-                if (key.asLabs.indexOf('B') === -1) {
-                    adObj.box.B = true;
-                }
                 if (!!key.adlInfo && key.adlInfo.length > 0) {
                     let arr = [];
                     for (let akey of key.adlInfo) {

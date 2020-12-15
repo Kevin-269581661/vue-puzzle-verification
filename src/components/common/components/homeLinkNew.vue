@@ -253,6 +253,7 @@
                         ls: this.dateInput[0],
                         le: this.dateInput[1],
                         suID: this.sessionData.uID,
+                        // ascType: 是否平台商
                         asrIDs: this.sessionData.ascType==0?[]:[this.sessionData.asrID]
                     }));
                 }

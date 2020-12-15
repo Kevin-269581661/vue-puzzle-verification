@@ -180,7 +180,10 @@ export default {
                 if(!res.data.SysCode){
                     if(res.data.length){
                         let returnobj = this.formatData(res.data);
-                        let head = [ '省份', '城市', '区域', '资源名称', '所属公司', '商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '车位数', '车流量', '人流量', '广告限制', '点位备注', '媒体数量(面)'];
+                        let head = [ '省份', '城市', '区域', '资源名称', '商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '车位数', '车流量', '人流量', '广告限制', '点位备注', '媒体数量(面)'];
+                        if(this.sessionData.mediaManageLevel == 1 || this.sessionData.saleManageLevel == 2) {
+                            head.push('归属公司')
+                        }
                         let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
                         if(customPermission && customPermission.patrolPermission) {
                             head.push('巡点问题', '通行情况');
@@ -220,7 +223,6 @@ export default {
                         city: item.crName || '--',
                         rName: item.rName || '--',
                         resName: item.resName || '--',
-                        asNames: item.asNames,
                         tradingArea: item.tradingArea || '--',
                         resAddress: item.resAddress || '--',
                         mVehicle: item.mVehicle,
@@ -235,16 +237,17 @@ export default {
                         notPush: item.allNotPush || '--',
                         remark: item.allremark || '--',
                         adsNum: item.adsNum || 0,
-                        allRemark: item.allRemark,
-                        allTrafficState: item.allTrafficState,
-                        [this.downLoadInfo.daterange[0]+'-'+this.downLoadInfo.daterange[1]]: item.DateInfo.adsNum || 0,
                     };
-                    let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
-                    // 无巡点权限(亲粤邻之外的公司)
-                    if(!(customPermission && customPermission.patrolPermission)) {
-                        delete obj.allRemark
-                        delete obj.allTrafficState
+                    if(this.sessionData.mediaManageLevel == 1 || this.sessionData.saleManageLevel == 2) {
+                        obj.asNames = item.asNames
                     }
+                    let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
+                    // (定制巡点)
+                    if(customPermission && customPermission.patrolPermission) {
+                        obj.allRemark = item.allRemark
+                        obj.allTrafficState = item.allTrafficState
+                    }
+                    obj[this.downLoadInfo.daterange[0]+'-'+this.downLoadInfo.daterange[1]] = item.DateInfo.adsNum || 0
                     resObj.showList.push(obj);
                 }
                 result.push(resObj);
@@ -321,8 +324,11 @@ export default {
                     if(returnobj.arr.length>0) {
                         console.log('returnobj----', returnobj);
                         let date = returnobj.date,
-                            head = [ '省份', '城市', '区域', '资源名称', '所属公司', '商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '广告限制', '点位备注', '媒体数量(面)'],
+                            head = [ '省份', '城市', '区域', '资源名称', '商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '广告限制', '点位备注', '媒体数量(面)'],
                             customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
+                        if(this.sessionData.mediaManageLevel == 1 || this.sessionData.saleManageLevel == 2) {
+                            head.push('归属公司')
+                        }
                         if(customPermission && customPermission.patrolPermission) {
                             head.push('巡点问题', '通行情况');
                         }
@@ -365,7 +371,6 @@ export default {
                             city: item.crName,
                             rName: item.rName,
                             resName: item.resName,
-                            asNames: item.asNames,
                             tradingArea: item.tradingArea,
                             resAddress: item.resAddress,
                             mVehicle: item.mVehicle,
@@ -378,6 +383,9 @@ export default {
                             remark: item.allremark || '',
                             adsNum: item.adsNum
                         };
+                        if(this.sessionData.mediaManageLevel == 1 || this.sessionData.saleManageLevel == 2) {
+                            obj.asNames = item.asNames
+                        }
                         let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
                         if(customPermission && customPermission.patrolPermission) {
                             obj.allRemark = item.allRemark;
@@ -432,7 +440,10 @@ export default {
                         if(returnData.length){
                             let returnobj = this.formatDataAds(resinfo.data, date);
                             console.log('returnobj-----', returnobj);
-                            let head = ['资源名称', '所属公司', '省份', '城市', '区域', '商圈', '媒体名称', '媒介载体', '资产编号', '门体类型', '投放面', '媒体等级', '广告限制', '点位备注', '广告尺寸/图片尺寸', '画面尺寸/灯箱尺寸', '详细地址', '楼盘类型', '楼盘价格', '楼栋数量', '入住时间', '小区户数', '人流量', '车位数', '车流量', '空闲日期'];
+                            let head = ['资源名称', '省份', '城市', '区域', '商圈', '媒体名称', '媒介载体', '资产编号', '门体类型', '投放面', '媒体等级', '广告限制', '点位备注', '广告尺寸/图片尺寸', '画面尺寸/灯箱尺寸', '详细地址', '楼盘类型', '楼盘价格', '楼栋数量', '入住时间', '小区户数', '人流量', '车位数', '车流量', '空闲日期'];
+                            if(this.sessionData.mediaManageLevel == 1 || this.sessionData.saleManageLevel == 2) {
+                                head.push('归属公司')
+                            }
                             let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
                             if(customPermission && customPermission.patrolPermission) {
                                 head.push('巡点问题', '通行情况');
@@ -470,7 +481,6 @@ export default {
                     for(let item of data.spareAds){
                         let obj = {
                             resName: item.resName || '--',
-                            asName: item.asName,
                             province: item.prName|| '--',
                             city: item.crName || '--',
                             rName: item.rName || '--',
@@ -496,6 +506,9 @@ export default {
                             carFlow: item.carFlow || '--',
                             date: date,
                         };
+                        if(this.sessionData.mediaManageLevel == 1 || this.sessionData.saleManageLevel == 2) {
+                            obj.asName = item.asName
+                        }
                         let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
                         if(customPermission && customPermission.patrolPermission) {
                             obj.remark = item.remark || ''

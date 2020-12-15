@@ -112,19 +112,17 @@
                                                 <el-form-item label="广告限制：">
                                                     <span>{{ props.row.notPush || '--'}}</span>
                                                 </el-form-item>
-                                            </el-form>
-                                            <el-form label-position="left" inline class="demo-table-expand">
-                                                <el-form-item label="归属公司：">
+                                                <el-form-item v-if="sessionData.mediaManageLevel == 1 || sessionData.saleManageLevel == 2" label="归属公司：">
                                                     <span class="ellipsis-td">{{ props.row.asName||'' }}</span>
                                                 </el-form-item>
-                                                <template v-if="customPermission.patrolPermission">
-                                                    <el-form-item label="巡点问题：">
-                                                        <span class="ellipsis-td">{{ props.row.remark || '--' }}</span>
-                                                    </el-form-item>
-                                                    <el-form-item label="通行情况：">
-                                                        <span class="ellipsis-td">{{ props.row.trafficState || '--' }}</span>
-                                                    </el-form-item>
-                                                </template>
+                                            </el-form>
+                                            <el-form v-if="customPermission.patrolPermission" label-position="left" inline class="demo-table-expand">
+                                                <el-form-item label="巡点问题：">
+                                                    <span class="ellipsis-td">{{ props.row.remark || '--' }}</span>
+                                                </el-form-item>
+                                                <el-form-item label="通行情况：">
+                                                    <span class="ellipsis-td">{{ props.row.trafficState || '--' }}</span>
+                                                </el-form-item>
                                             </el-form>
                                         </template>
                                     </el-table-column>
@@ -370,7 +368,7 @@
                                             </el-form-item>
                                         </el-form>
                                         <el-form label-position="left" inline class="demo-table-expand">
-                                            <el-form-item label="归属公司：">
+                                            <el-form-item v-if="sessionData.mediaManageLevel == 1 || sessionData.saleManageLevel == 2" label="归属公司：">
                                                 <span class="ellipsis-td">{{ props.row.asName||'' }}</span>
                                             </el-form-item>
                                             <template v-if="customPermission.patrolPermission">
@@ -1153,8 +1151,12 @@
 
                 require.ensure([], () => {
                     const {export_json_to_excel} = require('../../vendorExcel/Export2Excel');
-                    const tHeader = ['资源名称', '归属公司', '市', '区域', '媒介载体', '媒体名称', '资产编号', '投放面', '投放日期', '终止日期', '商圈', '楼盘类型/写字楼类型', '楼盘价格', '住户数量/办公室数量', '楼栋数量', '入住年份/建成年份', '广告尺寸/画面尺寸', '可视画面/灯箱尺寸', '广告限制', '媒体备注', '详细地址'];
-                    const filterVal = ['resName', 'asName', 'city', 'rName', 'mVehicle', 'mTitle', 'assetTag', 'asLab', 'timeRange', 'finishTimeRange', 'tradingArea', 'cType', 'hPrice', 'hNum', 'fNum', 'chDay', 'adSize', 'adViewSize', 'notPush', 'mRemark', 'resAddress'];
+                    const tHeader = ['资源名称', '市', '区域', '媒介载体', '媒体名称', '资产编号', '投放面', '投放日期', '终止日期', '商圈', '楼盘类型/写字楼类型', '楼盘价格', '住户数量/办公室数量', '楼栋数量', '入住年份/建成年份', '广告尺寸/画面尺寸', '可视画面/灯箱尺寸', '广告限制', '媒体备注', '详细地址'];
+                    const filterVal = ['resName', 'city', 'rName', 'mVehicle', 'mTitle', 'assetTag', 'asLab', 'timeRange', 'finishTimeRange', 'tradingArea', 'cType', 'hPrice', 'hNum', 'fNum', 'chDay', 'adSize', 'adViewSize', 'notPush', 'mRemark', 'resAddress'];
+                    if(this.sessionData.mediaManageLevel == 1 || this.sessionData.saleManageLevel == 2) {
+                        tHeader.push('归属公司');
+                        filterVal.push('asName')
+                    }
                     if(this.customPermission.patrolPermission) {
                         tHeader.push('巡点问题', '通行情况');
                         filterVal.push('remark', 'trafficState')

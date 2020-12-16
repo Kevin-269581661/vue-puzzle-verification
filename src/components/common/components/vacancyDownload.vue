@@ -297,7 +297,6 @@ export default {
                         // this.apiVar.jsonLink+this.downLoadInfo.city[i]+'.json'
                         this.apiVar.Advertisement+'/ExportHalfYearSpaceRes',{cityIds:this.downLoadInfo.city[i]}
                     ).then((response)=>{
-                        console.log('response----', response.data);
                         if(response.data.SysCode==200200){
                             let dataArr = response.data.data[0];
                             data.push(dataArr);

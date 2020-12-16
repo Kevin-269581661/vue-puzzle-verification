@@ -2050,9 +2050,6 @@
                         map: data.mapCenter,
                         adsNum: 1,
                         timeRange: '',
-                        asName: data.asName,
-                        remark: data.remark,
-                        trafficState: data.trafficState,
                     };
                     if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
                             obj.asName = data.asName
@@ -4332,7 +4329,7 @@
                         spinner: 'el-icon-loading',
                         background: 'rgba(0, 0, 0, 0.7)'
                     });
-                    api.getApi(this.apiVar.mapApi + '/adsListByUid',{}).then(res=>{
+                    api.getApi(this.apiVar.mapApi + '/adsListByUid', {asrIDs: this.planForm.pointOfAsrIDs.join(',')}).then(res=>{
                         console.log('res-----',res);
                         if(res.data.SysCode === 200200) {
                             this.mapAdsList = res.data.data;

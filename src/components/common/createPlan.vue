@@ -1945,6 +1945,7 @@
                     rIDs: rid,
                     startTime: this.emptyRange[0],
                     endTime: this.emptyRange[1],
+                    asrIDs: this.planForm.pointOfAsrIDs.join(',')
                 };
                 api.postApi(this.apiVar.Advertisement + '/ExportSpareRes', info).then(res => {
                     // console.log(res.data);
@@ -2077,17 +2078,13 @@
                         let func = new Promise((resolve, reject) => { //定义Promise并处理请求逻辑
                             let data = [];
                             api.getApi(
-                                this.apiVar.jsonLink + self.planForm.throwCity[i] + '.json'
+                                // this.apiVar.jsonLink + self.planForm.throwCity[i] + '.json'
+                                this.apiVar.Advertisement+'/ExportHalfYearSpaceRes',{cityIds: self.planForm.throwCity[i], asrIDs: this.planForm.pointOfAsrIDs.join(',')}
                             ).then(function (response) {
-                                console.log('response----', response.data);
-                                if (!response.data.SysCode) {
-                                    if (response.data.length) {
-                                        let dataArr = response.data;
-                                        data.push(dataArr);
-                                        resolve(data);
-                                    } else {
-                                        resolve('');
-                                    }
+                                if(response.data.SysCode==200200){
+                                    let dataArr = response.data.data[0];
+                                    data.push(dataArr);
+                                    resolve(data);
                                 } else {
                                     resolve('');
                                 }
@@ -2140,6 +2137,7 @@
                 let allDateArr = [];
                 let filenameArr = [];
                 for (let data of arr) {
+                    if(data.length === 0 || data[0].length === 0) {continue;}
                     let resObj = {
                         sheetName: data[0][0].crName,
                         showList: [],
@@ -2164,7 +2162,7 @@
                                 chDay: item.chDay,
                                 notPush: item.allNotPush || '',
                                 remark: item.allremark || '',
-                                adsNum: item.adsNum,
+                                adsNum: item.adsNum
                             };
                             if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
                                 obj.asNames = item.asNames
@@ -2664,8 +2662,11 @@
             // 第四步的导出方案
             downLoadFanan() {
                 let arr = this.excelData(this.shopingList)
-                let allHead = ['资源名称', '所属公司', '市', '区', '商圈', '资源地址', '楼盘价格', '入住年份', '住户数量', '出入口', '楼栋数量', '楼盘（写字楼）类型', '地图中心点', '可选面数', '投放排期'];
+                let allHead = ['资源名称', '市', '区', '商圈', '资源地址', '楼盘价格', '入住年份', '住户数量', '出入口', '楼栋数量', '楼盘（写字楼）类型', '地图中心点', '可选面数', '投放排期'];
                 let head = ['在线协同选点链接(可地图查看社区)  ' + this.shareADUrl, '', '', '', '', '', '', '', '', '', '', '', ''];
+                if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
+                    allHead.push('归属公司')
+                }
                 if(this.customPermission.patrolPermission) {
                     allHead.push('巡点问题', '通行情况');
                 }
@@ -2689,7 +2690,6 @@
                     let obj = {
                         resID: data.resID,
                         resName: data.resName,
-                        asName: data.asName,
                         city: data.city,
                         rName: data.origin,
                         tradingArea: data.tradingArea,
@@ -2703,9 +2703,15 @@
                         map: data.mapCenter,
                         adsNum: 1,
                         timeRange: '',
-                        remark: data.remark,
-                        trafficState: data.trafficState,
                     };
+                    if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
+                        obj.asName = data.asName
+                    }
+                    // 巡点权限(亲粤邻)
+                    if(this.customPermission && this.customPermission.patrolPermission) {
+                        obj.remark = data.remark
+                        obj.trafficState = data.trafficState
+                    }
                     for (let date of dateArr) {
                         if (data.schedules == date.sheetName) {
                             if (date.resIDArr.includes(data.resID)) {
@@ -4272,8 +4278,7 @@
                     // };
                     // if(params.code) {adsListByUid
                     //     api.getApi(this.apiVar.mapApi + '/adsListByCode',params).then(res=>{
-                        api.getApi(this.apiVar.mapApi + '/adsListByUid',{}).then(res=>{
-                            console.log('res-----',res);
+                        api.getApi(this.apiVar.mapApi + '/adsListByUid', {asrIDs: this.planForm.pointOfAsrIDs.join(',')}).then(res=>{
                             if(res.data.SysCode === 200200) {
                                 this.mapAdsList = res.data.data;
                                 this.setMapAdsListInShopCar();

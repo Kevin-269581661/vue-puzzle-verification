@@ -580,9 +580,6 @@ export default {
         downLoadExcel(){
             let arr = this.questionPoint(this.errorList);
             let allHead = ['资源名称',	'市', '区',	'详细地址', '投放排期', '失败原因'];
-            // if(this.customPermission && this.customPermission.patrolPermission) {
-            //     allHead.push('巡点问题', '通行情况');
-            // }
             sheetExcel.toDownload(allHead, arr, '导入失败小区表'+timeFormat.toDate(new Date(), '-'));
         },
         // 导入excel后台返回的问题点位
@@ -602,10 +599,6 @@ export default {
                     schedules: data.schedules,
                     failReason: data.failReason ||'',
                 };
-                // if(this.customPermission && this.customPermission.patrolPermission) {
-                //     obj.feedback = data.feedback || ''
-                //     obj.trafficState = data.trafficState || ''
-                // }
                 resultarr[0].showList.push(obj);
             }
             return resultarr;

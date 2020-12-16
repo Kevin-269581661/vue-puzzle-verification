@@ -1328,6 +1328,7 @@
                 rowData: {},
                 changeBeforMediaState: '',
                 customPermission: {},  //巡点权限
+                queryTimeout: null
             };
         },
         computed: {
@@ -1341,7 +1342,10 @@
         },
         watch: {
             changeLatLng(val) {
-                this.querySearchAsync(val)
+                clearTimeout(this.queryTimeout);
+                this.queryTimeout = setTimeout(() => {
+                    this.querySearchAsync(val)
+                }, 500);
             }
         },
         mounted: function () {
@@ -1527,9 +1531,8 @@
                         token: this.sessionData.token,
                         address:   this.resAddres.city  +  this.resAddres.area + this.recForm.resname + this.recForm.resaddr
                     }
-                    console.log('根据填写的具体地址去获取经纬度',params)
+                    // console.log('根据填写的具体地址去获取经纬度',params)
                     api.postApi(this.apiVar.Advertisement + '/Geocoder', params).then(res => {
-                        console.log('Geocoder', res)
                         if (res.data.status == 0) {
                             this.recForm.lat = res.data.result.location.lng     // 经度
                             this.recForm.lng = res.data.result.location.lat    // 纬度

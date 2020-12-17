@@ -4329,7 +4329,7 @@
                         spinner: 'el-icon-loading',
                         background: 'rgba(0, 0, 0, 0.7)'
                     });
-                    api.getApi(this.apiVar.mapApi + '/adsListByUid', {asrIDs: this.planForm.pointOfAsrIDs.join(',')}).then(res=>{
+                    api.getApi(this.apiVar.mapApi + '/adsListByUid', {asrIDs: this.BDData.asrIDs}).then(res=>{
                         console.log('res-----',res);
                         if(res.data.SysCode === 200200) {
                             this.mapAdsList = res.data.data;

@@ -4278,7 +4278,7 @@
                     // };
                     // if(params.code) {adsListByUid
                     //     api.getApi(this.apiVar.mapApi + '/adsListByCode',params).then(res=>{
-                        api.getApi(this.apiVar.mapApi + '/adsListByUid', {asrIDs: this.planForm.pointOfAsrIDs.join(',')}).then(res=>{
+                        api.getApi(this.apiVar.mapApi + '/adsListByUid', {asrIDs: this.planForm.pointOfAsrIDs.join(','), suID: this.BDData.uid}).then(res=>{
                             if(res.data.SysCode === 200200) {
                                 this.mapAdsList = res.data.data;
                                 this.setMapAdsListInShopCar();

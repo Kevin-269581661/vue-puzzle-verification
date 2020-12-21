@@ -122,8 +122,8 @@
                     <el-table-column prop="trafficState" label="通行情况" min-width="130">
                     </el-table-column>
                 </template>
-                <el-table-column prop="failReason" label="失败原因" show-overflow-tooltip>
-                </el-table-column>
+                <!-- <el-table-column prop="failReason" label="失败原因" show-overflow-tooltip>
+                </el-table-column> -->
                 </el-table>
             </div>
         </template>
@@ -241,9 +241,6 @@ export default {
             this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
         },
         initData(){
-            console.log(this.importData, 'this.importData----da-');
-            // this.successList = [];
-            // this.errorList = [];
             this.shopList = [];
             // let copyData = JSON.parse(JSON.stringify(this.importData));
             let copyData = Object.assign({}, this.importData);
@@ -252,13 +249,13 @@ export default {
             this.successRes = copyData.successSize;
             this.errorRes = copyData.errorSize;
             this.isAll = false;
-            console.log(this.importData, 'this.importData-----');
+            // console.log(this.importData, 'this.importData-----');
         },
         // 勾选表格数据格式
         setTableData(arr){
             let result = [];
             let pointSet = new Set();
-            for(let [index,key] of arr.entries()) {
+            for(let key of arr) {
                 let adObj = {
                     mID: key.mID,
                     resType: key.resType,
@@ -313,15 +310,16 @@ export default {
                 if (key.mVehicle === '道闸') {
                     adObj.adPrice = key.asPrice / 100;
                 } else {
-                    // 每个小区默认勾选一个点位
+                    // 每个小区默认勾选一个点位，A、B面五五分
                     if(!pointSet.has(key.resID)) {
-                        if(index%2 === 0 && !adObj.box.A) {
+                        if(pointSet.size%2 === 0 && !adObj.box.A) {
                             adObj.checkBox.A = true
                             this.AddShopingInfo(adObj, 'A')
-                        } else if(index%2 === 1 && !adObj.box.B) {
+                        } else if(pointSet.size%2 === 1 && !adObj.box.B) {
                             adObj.checkBox.B = true
                             this.AddShopingInfo(adObj, 'B')
                         }
+                        pointSet.add(key.resID)
                     }
                     if (key.asPrice) {
                         adObj.adPrice = key.asPrice / 700;
@@ -329,7 +327,6 @@ export default {
                         adObj.adPrice = 0;
                     }
                 }
-                pointSet.add(key.resID)
                 if (!!key.adlInfo && key.adlInfo.length > 0) {
                     let arr = [];
                     for (let akey of key.adlInfo) {

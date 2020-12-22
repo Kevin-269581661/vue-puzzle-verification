@@ -19,17 +19,12 @@
                     <el-col :span="12" class="text_right">
                         <el-button plain size="small" @click="toSetLine()" v-if="!projectInfo.line">设置线路</el-button>
                         <el-button plain size="small" @click="download()" :loading="downLoading">导出清单</el-button>
-                        <el-button type="primary" size="small" @click="toDistribute()">分配人员</el-button>
                     </el-col>
                 </el-row>
                 <el-row class="same_padding">
                     <el-col :span="5">
                         <b>所属线路：</b>
                         <span>{{projectInfo.lineName||'未设置'}}</span>
-                    </el-col>
-                    <el-col :span="5">
-                        <b>工程人员：</b>
-                        <span>{{projectInfo.engineer||'--'}}</span>
                     </el-col>
                     <el-col :span="5">
                         <b>小区数量：</b>
@@ -39,7 +34,7 @@
                         <b>点位数量：</b>
                         <span>{{projectInfo.adsNum}}</span>
                     </el-col>
-                    <el-col :span="4" class="text_right">
+                    <el-col :span="9" class="text_right">
                         <span>上画进度</span>
                     </el-col>
                 </el-row>
@@ -73,13 +68,12 @@
             </div>
             <div class="pro_detail_container">
                 <el-tabs @tab-click="handleClick" v-model="currentOrder">
-                    <el-tab-pane v-for="(item, index) in tabOrderList" :name="item.orderId?item.orderId.toString():''" :key="item.orderId" :label="'订单'+toChinesNum(index+1)">
-                        <el-row class="order_row">
-                            <h4>{{item.orderName}}</h4>
-                        </el-row>
-                    </el-tab-pane>
+                    <el-tab-pane v-for="(item, index) in tabOrderList" :name="item.orderId?item.orderId.toString():''" :key="item.orderId" :label="'订单'+toChinesNum(index+1)"></el-tab-pane>
                 </el-tabs>
                 <div class="table_wrap">
+                    <el-row class="order_row" v-if="tableNumInfo.orderName">
+                        <h4>{{tableNumInfo.orderName}}</h4>
+                    </el-row>
                     <el-row class="car-title">
                         <i class="el-icon-info" style="color: #1890FF;"></i>
                         小区:<span>{{tableNumInfo.resNum}}</span>
@@ -158,20 +152,6 @@
             </span>
         </el-dialog>
 
-        <!-- 分配人员弹出框 -->
-        <el-dialog title="分配上画人员"
-            :visible.sync="isShowDistri"
-            custom-class="size_detail_dialog"
-            width="400px">
-            <el-select v-model="currEngineer" placeholder="请选择" size="small" multiple>
-                <el-option v-for="item of engineerArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
-            </el-select>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="isShowDistri = false" size="small">取 消</el-button>
-                <el-button type="primary" @click="confirmDistribute" size="small" :loading="disTriLoading">确 定</el-button>
-            </span>
-        </el-dialog>
-
         <!-- 查看素材 -->
         <el-dialog :visible.sync="isShowImg" class="imgPreview">
             <img  :src="dialogImageUrl" alt="素材" />
@@ -216,27 +196,9 @@
                 lineArr: [],
                 isShowLine: false,
                 // 小区列表
-                // resList: [],
-                resList: [
-                    {
-                        resID: 1,
-                        resName: '小区一',
-                        area: '天河区',
-                        lineId: 25,
-                        lineName: '',
-                    },
-                    {
-                        resID: 2,
-                        resName: '小区二',
-                        area: '天河区',
-                        lineId: '',
-                        lineName: '',
-                    },
-                ],
+                resList: [],
                 // 工程人员
                 engineerArr: [],
-                isShowDistri: false,
-                currEngineer: [],
                 // 展示图片
                 isShowImg: false,
                 // 图片url
@@ -249,11 +211,12 @@
                 currAsidList: [],
                 // 表格数据统计
                 tableNumInfo:{
-                    resNum: 34,
-                    mediaNum: 45,
-                    adsNum: 67,
-                    finishNum: 5,
-                    progress: 0.83,
+                    orderName: '',
+                    resNum: 0,
+                    mediaNum: 0,
+                    adsNum: 0,
+                    finishNum: 0,
+                    progress: 0,
                 },
                 // 表格loading
                 loading: true,
@@ -261,8 +224,8 @@
                 updateLoading: false,
                 // 导出loading
                 downLoading: false,
-                // 分配人员loading
-                disTriLoading: false,
+                lineId: null,
+                publishDate: ''
             }
         },
         methods:{
@@ -270,7 +233,6 @@
                 return dateFormat.toDate(date, '/');
             },
             handleClick(){
-                console.log(this.currentOrder);
                 this.getTableData(this.currentOrder);
             },
             // 设置线路
@@ -287,11 +249,11 @@
                 let info = {
                     uid: sess.uID,
                     token: sess.token,
-                    taskId: sessionStorage.getItem('taskId'),
+                    currentDate: this.publishDate,
+                    lineId: this.lineId,
                 };
                 this.downLoading = true;
                 api.getApi_file(this.apiVar.publishPaintTask+"/taskDetailsReport", info).then(res =>{
-                    console.log(res.data);
                     let blob = new Blob([res.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
                     let time = timeFormat.toDateTime(new Date(), '').split(' ')
                     let timeString = time[0] + time[1].split(':').join('')
@@ -330,16 +292,6 @@
                     this.downLoading = false;
                 });
             },
-            // 分配人员
-            toDistribute(){
-                this.currEngineer = this.projectInfo.engineerArr.map(data=> {
-                    return data.value
-                });
-                if(!this.engineerArr.length){
-                    this.getEngineer();
-                }
-                this.isShowDistri = true;
-            },
             // 线路列表
             getLine(){
                 let sess = this.sessionData;
@@ -371,7 +323,7 @@
                 let info = {
                     uid: sess.uID,
                     token: sess.token,
-                    taskId: this.projectInfo.photoId
+                    // taskId: this.projectInfo.photoId
                 };
                 api.getApi(this.apiVar.publishPaintTask + "/listResource", info).then(res =>{
                     console.log(res.data);
@@ -462,51 +414,22 @@
                     console.log(err);
                 });
             },
-            // 确认分配工程人员
-            confirmDistribute(){
-                let sess = this.sessionData;
-                let info = {
-                    uid: sess.uID,
-                    token: sess.token,
-                    taskId: this.projectInfo.photoId,
-                    userIds: this.currEngineer.join(','),
-                };
-                this.disTriLoading = true;
-                api.postApi(this.apiVar.publishPaintTask+"/setEngineerUser", info).then(res =>{
-                    if(res.data.SysCode == 200200){
-                        let updateArr = this.engineerArr.filter(ele =>{
-                            return this.currEngineer.includes(ele.value)
-                        });
-                        this.projectInfo.engineerArr = updateArr;
-                        this.projectInfo.engineer = updateArr.map(data =>{
-                            return data.label;
-                        }).join('/');
-                        this.messageFun('success', res.data.MSG);
-                        this.isShowDistri = false;
-                    }else{
-                        this.messageFun('warning', res.data.MSG);
-                    }
-                    this.disTriLoading = false;
-                }).catch(err =>{
-                    this.disTriLoading = false;
-                    console.log(err);
-                });
-            },
             // 获取详情
             getData(){
                 let sess = this.sessionData;
                 let info = {
                     uid: sess.uID,
                     token: sess.token,
-                    publishId: sessionStorage.getItem('taskId'),
-                    // publishId: 23,
+                    lineId: this.lineId, 
+                    currentDate: this.publishDate
                 };
                 api.getApi(this.apiVar.publishPaintTask+"/detail", info).then(res =>{
                     console.log(res.data);
                     if(res.data.SysCode == 200200){
                         let resInfo = res.data.data;
                         this.projectInfo = this.setData(resInfo);
-                        this.tabOrderList = this.setTabData(resInfo.orderList);
+                        // orderList逗号相隔的字符串，id数组
+                        this.tabOrderList = resInfo.orderList.split(',').map(item=>{return {orderId: item}});
                         // 获取表格数据
                         this.currentOrder = this.tabOrderList[0].orderId.toString();
                         this.remainDay = this.countDay(this.projectInfo.photoTime);
@@ -527,66 +450,41 @@
             },
             // 设置数据格式
             setData(item){
-                let obj = {
-                    photoId: item.publishId,
+                return {
+                    // photoId: item.publishId,
                     photoTime: timeFormat.toDate(item.publishDate, '/'),
                     line: item.lineId,
                     lineName: item.lineName,
                     adsNum: item.publishPaintCount,
                     mediaNum: item.mediaCount,
                     resNum: item.resourceCount,
-                    engineerArr: [],
-                    engineer: "",
-                    progress: (item.publishProgress*100).toFixed(0),
+                    progress: item.publishProgress||0,
                     finishNum: item.publishCount,
                     orderNum: item.orderList.length,
-                };
-                obj.engineer = item.engineerMembers?item.engineerMembers.map(data =>{
-                    return data.userName;
-                }).join('/'): '';
-                obj.engineerArr = item.engineerMembers?item.engineerMembers.map(data =>{
-                    return {
-                        label: data.userName,
-                        value: data.userId,
-                    };
-                }): [];
-                return obj;
-            },
-            // 设置tab数据
-            setTabData(arr){
-                console.log(arr);
-                let result = [];
-                result = arr.map(item=>{
-                    let info = {
-                        orderId: item.orderId,
-                        orderName: item.orderName,
-                    };
-                    return info;
-                });
-                return result;
+                }
             },
             // 获取表格数据
             getTableData(orderId){
-                console.log('----orderid', orderId);
                 let sess = this.sessionData;
                 let info = {
                     uid: sess.uID,
                     token: sess.token,
-                    taskId: sessionStorage.getItem('taskId'),
-                    orderId: orderId
+                    apID: orderId,
+                    currentDate: this.publishDate,
+                    lineId: this.lineId
                 };
                 this.loading = true;
                 api.getApi(this.apiVar.publishPaintTask+"/getOrderDetail", info).then(res =>{
-                    console.log(res.data);
                     if(res.data.SysCode == 200200){
                         let resinfo = res.data.data;
                         this.currAsidList = resinfo.resourceList? this.setTableData(resinfo.resourceList):[];
                         this.tableNumInfo = {
+                            orderName: resinfo.orderName,
                             resNum: resinfo.resourceCount,
                             mediaNum: resinfo.mediaCount,
                             adsNum: resinfo.publishPaintCount,
                             finishNum: resinfo.publishCount,
-                            progress: (resinfo.publishProgress*100).toFixed(0),
+                            progress: resinfo.publishProgress||0,
                         };
                     }else{
                         this.messageFun('warning', res.data.MSG);
@@ -599,7 +497,6 @@
             },
             // 设置表格数据
             setTableData(arr){
-                console.log(arr);
                 let result = [];
                 result = arr.map(item=>{
                     return {
@@ -673,6 +570,8 @@
         },
         mounted(){
             this.sessionData = sessFun.getSess();
+            this.lineId = this.$route.query.lineId || null
+            this.publishDate = this.$route.query.publishDate || ''
             this.getEngineer();
             this.getData();
         },
@@ -781,7 +680,7 @@
         color:rgba(0,0,0,0.85);
         height: 34px;
         line-height: 34px;
-        margin: 0 32px 16px;
+        margin: 0 0 16px;
     }
     /deep/ .pro_detail_container .el-tabs__header{
         border-bottom: 1px solid #e6e7e9;

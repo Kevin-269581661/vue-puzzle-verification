@@ -24,12 +24,6 @@
                         </el-select>
                     </el-col>
                     <el-col>
-                        <span>工程人员:</span>
-                        <el-select v-model="searchInfo.engineer" placeholder="请选择" size="small">
-                            <el-option v-for="item of engineerArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                        </el-select>
-                    </el-col>
-                    <el-col>
                         <span>订单名称:</span>
                         <el-select v-model="searchInfo.order" size="small"
                             filterable
@@ -64,11 +58,6 @@
                         </el-table-column>
                         <el-table-column prop="resNum" label="小区数" min-width="8.9%" align="right">
                         </el-table-column>
-                        <el-table-column prop="engineer" label="工程人员" min-width="8.9%" show-overflow-tooltip>
-                            <template slot-scope="scope">
-                                <span>{{scope.row.engineer || '--'}}</span>
-                            </template>
-                        </el-table-column>
                         <el-table-column prop="progress" label="上画进度" min-width="8.9%" align="right">
                             <template slot-scope="scope">
                                 <span>{{scope.row.progress}}%</span>
@@ -82,8 +71,6 @@
                                     </span>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item @click.native.prevent="toPhotoDetail(scope.row)">上画清单
-                                        </el-dropdown-item>
-                                        <el-dropdown-item @click.native.prevent="toAssign(scope.row)">分配人员
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="toSizeDetail(scope.row)">素材明细
                                         </el-dropdown-item>
@@ -112,21 +99,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- 分配人员弹出框 -->
-        <el-dialog title="分配上画人员"
-            :visible.sync="isShowDistri"
-            custom-class="size_detail_dialog"
-            width="400px">
-            <el-select v-model="currEngineer" placeholder="请选择" size="small" multiple>
-                <el-option v-for="item of engineerArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
-            </el-select>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="isShowDistri = false" size="small">取 消</el-button>
-                <el-button type="primary" @click="confirmDistribute" size="small" :loading="disTriLoading">确 定</el-button>
-            </span>
-        </el-dialog>
-
         <!-- 素材明细弹出框 -->
         <el-dialog title="素材明细"
             :visible.sync="isShowSize"
@@ -184,12 +156,6 @@
                 paginationShow: true,
                 // 线路
                 lineArr: [],
-                // 工程人员
-                engineerArr: [],
-                isShowDistri: false,
-                currEngineer: [],
-                // 当前任务
-                currTaskId: '',
                 // 订单
                 orderArr: [],
                 // 素材明细
@@ -203,16 +169,13 @@
                 pageSize: 10,
                 pageSizes: [10, 20, 50],
                 currPage: 1,
-                totalNum: 0,
-                // 分配人员loading
-                disTriLoading: false,
+                totalNum: 0
             }
         },
         methods:{
             // 切换页码
             changePage(page) {
                 this.currPage = page;
-                console.log('page----', page);
                 this.searchFun();
             },
             // 每页条数切换
@@ -236,12 +199,10 @@
                 this.searchInfo.rangeDate = [result.startTime, result.endTime];
             },
             changeDate(){
-                console.log(this.searchInfo.rangeDate);
                 this.searchFun();
             },
             // 时间排序(请求后台接口进行排序)
             sortChange(column){
-                console.log('columm---', column);
                 if(column.order == "ascending"){
                     this.searchInfo.orderby = column.prop;
                     this.searchInfo.desc = 0;
@@ -260,7 +221,6 @@
                     token: sess.token,
                 };
                 api.getApi(this.apiVar.engineer+"/listLine", info).then(res =>{
-                    console.log(res.data);
                     if(res.data.SysCode == 200200){
                         let resinfo = res.data.data;
                         this.lineArr = resinfo ? resinfo.map(item =>{
@@ -271,33 +231,6 @@
                         }): [];
                     }else{
                         sessFun.messageFun('warning', res.data.MSG);
-                    }
-                }).catch(err =>{
-                    console.log(err);
-                });
-            },
-            // 工程人员列表
-            getEngineer(){
-                let sess = this.sessionData;
-                let info = {
-                    uid: sess.uID,
-                    token: sess.token,
-                    service: "GetEPByAsrID",
-                    data: {
-                        asrID: sess.asrID,
-                    }
-                };
-                api.postApi_new(this.apiVar.Media, info).then(res =>{
-                    console.log(res.data);
-                    if(res.data.SysCode == 200200){
-                        this.engineerArr = res.data.data.map(item =>{
-                            return {
-                                value: item.uID,
-                                label: item.realName
-                            }
-                        });
-                    }else{
-                        // sessFun.messageFun('warning', res.data.MSG);
                     }
                 }).catch(err =>{
                     console.log(err);
@@ -314,7 +247,6 @@
                     };
                     this.loadingOrder = true;
                     api.getApi(this.apiVar.publishPaintTask+"/orderList", info).then(res =>{
-                        console.log(res.data);
                         this.loadingOrder = false;
                         this.orderArr = res.data.data.map(item => {
                             return {
@@ -341,9 +273,7 @@
             // 滚动获取列表数据
             getData(params){
                 api.getApi(this.apiVar.publishPaintTask+'/list', params).then(res =>{
-                    console.log(res.data);
                     if(res.data.SysCode == 200200){
-                        console.log(res.data);
                         let dataInfo = res.data;
                         this.totalNum = dataInfo.total;
                         let dataArr = dataInfo.data;
@@ -359,7 +289,6 @@
             },
             // 数据处理
             funcData(dataArr){
-                console.log('dataArr---', dataArr);
                 let result = [];
                 for(let data of dataArr){
                     let tmpObj = '';
@@ -393,7 +322,7 @@
             setTableData(item){
                 let obj = {
                     photoId: item.publishId,
-                    publishDate: timeFormat.toDate(item.publishDate, '/'),
+                    publishDate: timeFormat.toDate(item.publishDate, '-'),
                     line: item.lineId,
                     lineName: item.lineName,
                     orderId: item.orderId,
@@ -402,19 +331,8 @@
                     photoNum: item.publishPaintCount,
                     mediaNum: item.mediaCount,
                     resNum: item.resourceCount,
-                    engineerArr: [],
-                    engineer: "",
-                    progress: (item.publishProgress*100).toFixed(0)
+                    progress: item.publishProgress || 0
                 };
-                obj.engineer = item.engineerMember.map(data =>{
-                    return data.userName;
-                }).join('/');
-                obj.engineerArr = item.engineerMember.map(data =>{
-                    return {
-                        label: data.userName,
-                        value: data.userId,
-                    };
-                });
                 return obj;
             },
             // 搜索
@@ -467,64 +385,17 @@
             },
             // 上画清单
             toPhotoDetail(item){
-                sessionStorage.setItem('taskId', item.photoId);
-                this.$router.push('./projectDetail');
-            },
-            // 分配人员
-            toAssign(item){
-                console.log(item);
-                this.currEngineer = item.engineerArr.map(data=> {
-                    return data.value
-                });
-                this.currTaskId = item.photoId;
-                this.isShowDistri = true;
+                this.$router.push(`./projectDetail?lineId=${item.line || ''}&publishDate=${item.publishDate}`);
             },
             // 素材明细
             toSizeDetail(item){
                 this.sizeList = item.size;
                 this.isShowSize = true;
-            },
-            // 确认分配工程人员
-            confirmDistribute(){
-                console.log(this.currEngineer);
-                let sess = this.sessionData;
-                let info = {
-                    uid: sess.uID,
-                    token: sess.token,
-                    taskId: this.currTaskId,
-                    userIds: this.currEngineer.join(','),
-                };
-                this.disTriLoading = true;
-                api.postApi(this.apiVar.publishPaintTask+"/setEngineerUser", info).then(res =>{
-                    if(res.data.SysCode == 200200){
-                        let updateArr = this.engineerArr.filter(ele=>{
-                            return this.currEngineer.includes(ele.value)
-                        });
-                        this.projectList = this.projectList.map(t =>{
-                            if(t.photoId == this.currTaskId){
-                                t.engineerArr = updateArr;
-                                t.engineer = updateArr.map(data =>{
-                                    return data.label;
-                                }).join('/');
-                            }
-                            return t;
-                        });
-                        sessFun.messageFun('success', res.data.MSG);
-                        this.isShowDistri = false;
-                    }else{
-                        sessFun.messageFun('warning', res.data.MSG);
-                    }
-                    this.disTriLoading = false;
-                }).catch(err =>{
-                    this.disTriLoading = false;
-                    console.log(err);
-                });
-            },
+            }
         },
         mounted(){
             this.changeDateType();
             this.sessionData = sessFun.getSess();
-            this.getEngineer();
             this.getLine();
             this.searchFun();
         },

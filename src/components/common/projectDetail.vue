@@ -323,6 +323,7 @@
                 let info = {
                     uid: sess.uID,
                     token: sess.token,
+                    currentDate: this.publishDate
                     // taskId: this.projectInfo.photoId
                 };
                 api.getApi(this.apiVar.publishPaintTask + "/listResource", info).then(res =>{

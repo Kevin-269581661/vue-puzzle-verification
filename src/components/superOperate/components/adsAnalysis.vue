@@ -123,12 +123,15 @@
                             </div>
                             <div class="data_tab">
                                 <span class="data_tab_title">上刊率查询范围：</span>
-                                <el-radio-group v-model="poiSearchTime" size="mini"
+                                <!-- <el-radio-group v-model="poiSearchTime" size="mini"
                                                 @change="RadioTime(poiSearchTime,'resRate')">
                                     <el-radio-button label="最近半年"></el-radio-button>
                                     <el-radio-button label="最近三个月"></el-radio-button>
-                                </el-radio-group>
-                                <div class="date_picker_box">
+                                </el-radio-group> -->
+                                <div class="date_picker_box data_tab_title">
+                                    <month-range :defaultDate="resSearchDate" :params="['res','resSearchDate']" @changRange="CreatDateChange"></month-range>
+                                </div>
+                                <!-- <div class="date_picker_box">
                                     <el-date-picker
                                         size="mini"
                                         v-model="resSearchDate"
@@ -141,9 +144,12 @@
                                         :clearable="false"
                                         @change="CreatDateChange('res','search')">
                                     </el-date-picker>
-                                </div>
+                                </div> -->
                                 <span class="data_tab_title">社区创建日期：</span>
-                                <div class="date_picker_box">
+                                <div class="date_picker_box data_tab_title">
+                                    <month-range :defaultDate="resCreatDate" :params="['res','resCreatDate']" @changRange="CreatDateChange"></month-range>
+                                </div>
+                                <!-- <div class="date_picker_box">
                                     <el-date-picker
                                         size="mini"
                                         v-model="resCreatDate"
@@ -155,7 +161,7 @@
                                         end-placeholder="结束日期"
                                         @change="CreatDateChange('res','create')">
                                     </el-date-picker>
-                                </div>
+                                </div> -->
                                 <span class="data_tab_title">上刊率：</span>
                                 <div class="upPercent-wrap">
                                     <div class="input-wrap">
@@ -250,12 +256,15 @@
                             <div class="select-wrap">
                                 <div class="data_tab">
                                     <span class="data_tab_title"> 上刊率查询范围：</span>
-                                    <el-radio-group v-model="comSearchTime" size="mini"
+                                    <!-- <el-radio-group v-model="comSearchTime" size="mini"
                                                     @change="RadioTime(comSearchTime,'adsRate')">
                                         <el-radio-button label="最近半年"></el-radio-button>
                                         <el-radio-button label="最近三个月"></el-radio-button>
-                                    </el-radio-group>
-                                    <div class="date_picker_box">
+                                    </el-radio-group> -->
+                                    <div class="date_picker_box data_tab_title">
+                                        <month-range :defaultDate="adsSearchDate" :params="['ads','adsSearchDate']" @changRange="CreatDateChange"></month-range>
+                                    </div>
+                                    <!-- <div class="date_picker_box">
                                         <el-date-picker
                                             size="mini"
                                             v-model="adsSearchDate"
@@ -268,9 +277,12 @@
                                             :clearable="false"
                                             @change="CreatDateChange('ads','search')">
                                         </el-date-picker>
-                                    </div>
+                                    </div> -->
                                     <span class="data_tab_title">点位创建日期：</span>
-                                    <div class="date_picker_box">
+                                    <div class="date_picker_box data_tab_title">
+                                        <month-range :defaultDate="adsCreatDate" :params="['ads','adsCreatDate']" @changRange="CreatDateChange"></month-range>
+                                    </div>
+                                    <!-- <div class="date_picker_box">
                                         <el-date-picker
                                             size="mini"
                                             v-model="adsCreatDate"
@@ -282,7 +294,7 @@
                                             end-placeholder="结束日期"
                                             @change="CreatDateChange('ads','create')">
                                         </el-date-picker>
-                                    </div>
+                                    </div> -->
                                     <span class="data_tab_title">上刊率：</span>
                                     <div class="upPercent-wrap">
                                         <div class="input-wrap">
@@ -398,10 +410,13 @@
     import timeFormat from '../../../commonFun/timeFormat';
     import noSearchResult from "../../../components/common/components/noSearchResult";
     import sessFun from '../../../commonFun/sessFun';
+    import moment from "moment";
+    import monthRange from '../../common/components/monthRange.vue';
     export default {
         name: "adsAnalysis",
         components:{
-            noSearchResult
+            noSearchResult,
+            monthRange
         },
         data(){
             return{
@@ -538,8 +553,12 @@
                 let endTime = timeFormat.returnMonthCount(0,'-')
                 this.pointDate = [starTime,endTime]               // 点位使用概况
                 this.pointDateDay = this.pointDate.concat()
+                starTime = moment(starTime, 'YYYY-MM').startOf("month").format('YYYY-MM-DD')
+                endTime = moment(endTime, 'YYYY-MM').endOf("month").format('YYYY-MM-DD')
                 this.resSearchDate = [starTime,endTime]          // 社区上刊率列表
                 this.adsSearchDate = [starTime,endTime]           // 点位上刊率列表
+                this.adsCreatDate = [starTime,endTime]
+                this.resCreatDate = [starTime,endTime]
             },
             // 统一调用接口
             getAdsAnalysisData(){
@@ -752,7 +771,7 @@
                 this.getAdsRateFun()
             },
             //
-            RadioTime(info,temp) {
+            /* RadioTime(info,temp) {
                 let starTime = '',endTime = timeFormat.returnMonthCount(0,'-')
                 if(info === '最近三个月') {
                     starTime = timeFormat.returnMonthCount(2,'-')
@@ -770,11 +789,18 @@
                     this.setPageNoAndTableDataAds()
                     this.getAdsRateFun()
                 }
-            },
+            }, */
             // 创建社区时间 - changes
-            CreatDateChange(val){
-                console.log('----------------', val)
-                if (val === 'res') {
+            CreatDateChange(params, dateRange){
+                console.log('-----1')
+                if(Array.isArray(params) && params.length === 2) {
+                    let [dateStart, dateEnd] = dateRange
+                    dateStart = moment(dateStart, 'YYYY-MM-DD').startOf("month").format('YYYY-MM-DD')
+                    dateEnd = moment(dateEnd, 'YYYY-MM').endOf("month").format('YYYY-MM-DD')
+                    this[params[1]] = [dateStart, dateEnd]
+                    params = params[0]
+                }
+                if (params === 'res') {
                     if (!this.resCreatDate) {
                         this.resCreatDate = []
                     }
@@ -782,7 +808,7 @@
                     this.pUpMax = ''
                     this.setPageNoAndTableDataRes()
                     this.getResRateFun()
-                } else if (val === 'ads') {
+                } else if (params === 'ads') {
                     if (!this.adsCreatDate) {
                         this.adsCreatDate = []
                     }

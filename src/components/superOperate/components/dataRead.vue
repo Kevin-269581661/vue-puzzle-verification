@@ -21,7 +21,8 @@
                             <i slot="reference" class="el-icon-question" style="color: #dfdfdf"></i>
                         </el-popover>
                         <div class="box_card_title_right right_date_select total_data_date">
-                            <el-date-picker
+                            <month-range :defaultDate="dateRange" @changRange="CreatDateChange"></month-range>
+                            <!-- <el-date-picker
                                 v-model="totalDataYear"
                                 type="year"
                                 size="small"
@@ -31,46 +32,76 @@
                                 :clearable="false"
                                 :picker-options="totalDataOptionsStar"
                                 @change="changeYear">
-                            </el-date-picker>
+                            </el-date-picker> -->
                         </div>
                     </div>
                 </div>
                 <div class="data_kind" :class="isAllCity ? 'data_kind_all_city' : ''">
                     <div class="data_box" :class="basicTotalType === '社区' ? 'box_active' : ''"
                          @click="totalActiveFun('社区')">
-                        <h4>社区</h4>
+                        <h4>社区总数</h4>
                         <p>{{basicTotalData.resourceCount}}</p>
                     </div>
                     <div class="data_box" :class="basicTotalType === '广告门' ? 'box_active' : ''"
                          @click="totalActiveFun('广告门')">
-                        <h4>媒体</h4>
+                        <h4>媒体总数</h4>
                         <p>{{basicTotalData.advertDoorCount}}</p>
-                    </div>
-                    <div class="data_box" :class="basicTotalType === '年上刊率' ? 'box_active' : ''"
-                         @click="totalActiveFun('年上刊率')">
-                        <h4>年上刊率</h4>
-                        <p>{{basicTotalData.publishRate}}%</p>
-                    </div>
-                    <div class="data_box" :class="basicTotalType === '订单' ? 'box_active' : ''"
-                         @click="totalActiveFun('订单')">
-                        <h4>订单</h4>
-                        <p>{{basicTotalData.orderCount}}</p>
-                    </div>
-                    <div class="data_box" :class="basicTotalType === '销售额' ? 'box_active' : ''"
-                         @click="totalActiveFun('销售额')">
-                        <h4>销售额</h4>
-                        <p>￥{{priceFormat(basicTotalData.sale)}}</p>
-                    </div>
-                    <div class="data_box" :class="basicTotalType === '客单价' ? 'box_active' : ''"
-                         @click="totalActiveFun('客单价')">
-                        <h4>客单价</h4>
-                        <p>￥{{priceFormat(basicTotalData.orderSale)}}</p>
                     </div>
                     <div class="data_box" :class="basicTotalType === '广告主' ? 'box_active' : ''"
                          @click="totalActiveFun('广告主')">
                         <h4>广告主</h4>
                         <p>{{basicTotalData.advertisementCount}}</p>
-                        <!--setTotalDataBar-->
+                    </div>
+                    <div class="data_box" :class="basicTotalType === '订单' ? 'box_active' : ''"
+                         @click="totalActiveFun('订单')">
+                        <h4>订单</h4>
+                        <countTo
+                            style="padding-right: 8px; font-size: 20px; color:rgba(44,49,60,1); font-weight: 500;"
+                            :startVal="0"
+                            :endVal="basicTotalData.orderCount || 0"
+                            :duration="500"
+                            :decimals='0'
+                        ></countTo>
+                        <!-- <p>{{basicTotalData.orderCount}}</p> -->
+                    </div>
+                    <div class="data_box" :class="basicTotalType === '销售额' ? 'box_active' : ''"
+                         @click="totalActiveFun('销售额')">
+                        <h4>销售额</h4>
+                        <countTo
+                            style="padding-right: 8px; font-size: 20px; color:rgba(44,49,60,1); font-weight: 500;"
+                            :startVal="0"
+                            :endVal="basicTotalData.sale || 0"
+                            :duration="500"
+                            :decimals='0'
+                            prefix="￥"
+                        ></countTo>
+                        <!-- <p>￥{{priceFormat(basicTotalData.sale)}}</p> -->
+                    </div>
+                    <div class="data_box" :class="basicTotalType === '客单价' ? 'box_active' : ''"
+                         @click="totalActiveFun('客单价')">
+                        <h4>客单价</h4>
+                        <countTo
+                            style="padding-right: 8px; font-size: 20px; color:rgba(44,49,60,1); font-weight: 500;"
+                            :startVal="0"
+                            :endVal="basicTotalData.orderSale || 0"
+                            :duration="500"
+                            :decimals='0'
+                            prefix="￥"
+                        ></countTo>
+                        <!-- <p>￥{{priceFormat(basicTotalData.orderSale)}}</p> -->
+                    </div>
+                    <div class="data_box" :class="basicTotalType === '年上刊率' ? 'box_active' : ''"
+                         @click="totalActiveFun('年上刊率')">
+                        <h4>年上刊率</h4>
+                        <countTo
+                            style="padding-right: 8px; font-size: 20px; color:rgba(44,49,60,1); font-weight: 500;"
+                            :startVal="0"
+                            :endVal="basicTotalData.publishRate || 0"
+                            :duration="500"
+                            :decimals='0'
+                            suffix="%"
+                        ></countTo>
+                        <!-- <p>{{basicTotalData.publishRate}}%</p> -->
                     </div>
                 </div>
                 <div class="charts_warp"
@@ -385,9 +416,16 @@
     import api from '../../../api/api';
     import commaFormat from '../../../commonFun/commaFormat';
     import timeFormat from '../../../commonFun/timeFormat';
-    import sessFun from '../../../commonFun/sessFun'
+    import sessFun from '../../../commonFun/sessFun';
+    import moment from "moment";
+    import countTo from "vue-count-to";
+    import monthRange from '../../common/components/monthRange.vue';
     export default {
         name: "dataRead",
+        components:{
+            countTo,
+            monthRange
+        },
         data(){
             return{
                 // directNameList:['北京亲邻众联','上海多邻网络','广州亲粤邻','深圳亲邻交互','成都亲邻','重庆亲邻','天津亲邻众联'],
@@ -417,8 +455,8 @@
                 basicTotalBarData:[],
                 // 数据总览 - 柱状图数据
                 basicTotalBarDataShow:[],
-                // 选择的年份
-                totalDataYear: '',
+                // 选择的月份区间
+                dateRange: [],
                 totalDataBarEcharts: '',
                 // 当天概况头部基础数据
                 basicToDayData:{
@@ -675,7 +713,7 @@
             // 统一调用接口
             getDataRead(){
                 // 数据总览
-                this.getTotalData();
+                // this.getTotalData();
                 // 当天概况
                 this.getToDayHeaderData();
                 this.getToDayPreceptData();
@@ -716,7 +754,7 @@
                 let endTime = timeFormat.returnMonthCount(0,'/');
                 this.adSaleMonth = endTime.substring(0,7);
                 this.toDay = endTime;
-                this.totalDataYear = endTime.substring(0,4);
+                this.dateRange = [new Date(), new Date()];
                 // 设置机会挖掘默认时间
                 let starTime = timeFormat.returnDayCount(-30,'/')
                 this.chanceFindDate = [starTime, endTime]
@@ -724,8 +762,8 @@
                 this.timeData.maxYear = timeFormat.getSpecifiedDateStr(this.toDay,-12)
             },
             /*  数据总量  */
-            changeYear(val){
-                console.log('选择的年份',val)
+            CreatDateChange(params, dateRange) {
+                this.dateRange = dateRange
                 this.getTotalData()
             },
             // 点击的数据类型
@@ -741,8 +779,8 @@
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    startDate: this.totalDataYear + '/01/01',
-                    endDate: this.totalDataYear + '/12/31',
+                    startDate: moment(this.dateRange[0], 'YYYY-MM').startOf("month").format('YYYY/MM/DD'),
+                    endDate: moment(this.dateRange[1], 'YYYY-MM').endOf("month").format('YYYY/MM/DD'),
                     asrIds: this.returnAsrID()
                 }
                 api.getApi(this.apiVar.report + '/api/v2/getOverview', params).then(res => {
@@ -752,13 +790,13 @@
                     } else if (res.data.SysCode === 200200) {
                         let dataObj = res.data.data
                         this.basicTotalData = {
-                                resourceCount: dataObj.resourceCount,
-                                advertDoorCount: dataObj.advertDoorCount,
-                                orderCount: dataObj.orderCount,
-                                sale: dataObj.sale,
-                                orderSale: dataObj.orderSale,
-                                advertisementCount: dataObj.advertisementCount,
-                                publishRate: dataObj.publishRate ?  Math.floor(dataObj.publishRate * 10000)/100 : 0,
+                            resourceCount: dataObj.resourceCount,
+                            advertDoorCount: dataObj.advertDoorCount,
+                            orderCount: dataObj.orderCount,
+                            sale: dataObj.sale,
+                            orderSale: dataObj.orderSale,
+                            advertisementCount: dataObj.advertisementCount,
+                            publishRate: dataObj.publishRate ?  Math.floor(dataObj.publishRate * 10000)/100 : 0,
                         }
                         this.basicTotalBarData = JSON.parse(JSON.stringify(dataObj.asrList))
                         console.log('basicTotalData',this.basicTotalData)
@@ -2233,7 +2271,7 @@
     }
 
     .total_data_date{
-        width: 120px;
+        width: 380px;
     }
 
     .ad_sale_date{

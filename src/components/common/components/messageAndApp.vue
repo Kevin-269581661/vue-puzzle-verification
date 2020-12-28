@@ -4,7 +4,7 @@
             <el-radio-button label="应用市场"></el-radio-button>
             <el-radio-button label="公告通知"></el-radio-button>
         </el-radio-group>
-        <el-carousel ref="carousel" :autoplay="false" :loop="true" arrow="never" indicator-position="none" class="carousel-box"  :height="height" @change='carouselChange'>
+        <el-carousel ref="carousel" :autoplay="true" :loop="true" arrow="never" indicator-position="none" class="carousel-box"  :height="height" @change='carouselChange'>
             <el-carousel-item class="flex-v">
                 <img class="index-banner" alt="" src="/static/images/appBanner.png" @click="goToPage({link: 'https://apps.qinlinad.com/OKR.html', name: 'OKR'})" />
                 <ul class="app-list">

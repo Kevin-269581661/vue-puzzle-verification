@@ -713,7 +713,7 @@
             // 统一调用接口
             getDataRead(){
                 // 数据总览
-                // this.getTotalData();
+                this.getTotalData();
                 // 当天概况
                 this.getToDayHeaderData();
                 this.getToDayPreceptData();

@@ -131,37 +131,10 @@
                                 <div class="date_picker_box data_tab_title">
                                     <month-range :defaultDate="resSearchDate" :params="['res','resSearchDate']" @changRange="CreatDateChange"></month-range>
                                 </div>
-                                <!-- <div class="date_picker_box">
-                                    <el-date-picker
-                                        size="mini"
-                                        v-model="resSearchDate"
-                                        type="daterange"
-                                        value-format="yyyy-MM-dd"
-                                        format="yyyy-MM-dd"
-                                        range-separator="至"
-                                        start-placeholder="开始日期"
-                                        end-placeholder="结束日期"
-                                        :clearable="false"
-                                        @change="CreatDateChange('res','search')">
-                                    </el-date-picker>
-                                </div> -->
                                 <span class="data_tab_title">社区创建日期：</span>
                                 <div class="date_picker_box data_tab_title">
                                     <month-range :defaultDate="resCreatDate" :params="['res','resCreatDate']" @changRange="CreatDateChange"></month-range>
                                 </div>
-                                <!-- <div class="date_picker_box">
-                                    <el-date-picker
-                                        size="mini"
-                                        v-model="resCreatDate"
-                                        type="daterange"
-                                        value-format="yyyy-MM-dd"
-                                        format="yyyy-MM-dd"
-                                        range-separator="至"
-                                        start-placeholder="开始日期"
-                                        end-placeholder="结束日期"
-                                        @change="CreatDateChange('res','create')">
-                                    </el-date-picker>
-                                </div> -->
                                 <span class="data_tab_title">上刊率：</span>
                                 <div class="upPercent-wrap">
                                     <div class="input-wrap">
@@ -264,37 +237,10 @@
                                     <div class="date_picker_box data_tab_title">
                                         <month-range :defaultDate="adsSearchDate" :params="['ads','adsSearchDate']" @changRange="CreatDateChange"></month-range>
                                     </div>
-                                    <!-- <div class="date_picker_box">
-                                        <el-date-picker
-                                            size="mini"
-                                            v-model="adsSearchDate"
-                                            type="daterange"
-                                            value-format="yyyy-MM-dd"
-                                            format="yyyy-MM-dd"
-                                            range-separator="至"
-                                            start-placeholder="开始日期"
-                                            end-placeholder="结束日期"
-                                            :clearable="false"
-                                            @change="CreatDateChange('ads','search')">
-                                        </el-date-picker>
-                                    </div> -->
                                     <span class="data_tab_title">点位创建日期：</span>
                                     <div class="date_picker_box data_tab_title">
                                         <month-range :defaultDate="adsCreatDate" :params="['ads','adsCreatDate']" @changRange="CreatDateChange"></month-range>
                                     </div>
-                                    <!-- <div class="date_picker_box">
-                                        <el-date-picker
-                                            size="mini"
-                                            v-model="adsCreatDate"
-                                            type="daterange"
-                                            value-format="yyyy-MM-dd"
-                                            format="yyyy-MM-dd"
-                                            range-separator="至"
-                                            start-placeholder="开始日期"
-                                            end-placeholder="结束日期"
-                                            @change="CreatDateChange('ads','create')">
-                                        </el-date-picker>
-                                    </div> -->
                                     <span class="data_tab_title">上刊率：</span>
                                     <div class="upPercent-wrap">
                                         <div class="input-wrap">
@@ -536,7 +482,6 @@
                     selectWrap.addEventListener('scroll', function () {
                         const scrollDistance = this.scrollHeight - this.scrollTop - this.clientHeight
                         if (scrollDistance <= 100) {
-                            console.log('1')
                             binding.value()
                         }
                     })
@@ -762,14 +707,14 @@
             },
             // 点位分析 - 功能方法
             // 城市切换过滤
-            filterRateDataByCity(){
+            /* filterRateDataByCity(){
                 this.setPageNoAndTableDataRes()
                 this.loadingRes = false
                 this.getResRateFun()
                 this.loadingMoreAds = false
                 this.setPageNoAndTableDataAds()
                 this.getAdsRateFun()
-            },
+            }, */
             //
             /* RadioTime(info,temp) {
                 let starTime = '',endTime = timeFormat.returnMonthCount(0,'-')
@@ -792,10 +737,9 @@
             }, */
             // 创建社区时间 - changes
             CreatDateChange(params, dateRange){
-                console.log('-----1')
                 if(Array.isArray(params) && params.length === 2) {
                     let [dateStart, dateEnd] = dateRange
-                    dateStart = moment(dateStart, 'YYYY-MM-DD').startOf("month").format('YYYY-MM-DD')
+                    dateStart = moment(dateStart, 'YYYY-MM').startOf("month").format('YYYY-MM-DD')
                     dateEnd = moment(dateEnd, 'YYYY-MM').endOf("month").format('YYYY-MM-DD')
                     this[params[1]] = [dateStart, dateEnd]
                     params = params[0]

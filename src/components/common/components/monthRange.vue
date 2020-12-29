@@ -3,24 +3,27 @@
     <el-date-picker
       ref="start"
       size="mini"
-      v-model="value1"
+      v-model="defaultDate[0]"
       type="month"
       value-format="yyyy-MM"
-      placeholder="开始月份">
+      placeholder="开始月份"
+      @change="setValue1">
     </el-date-picker>
     至
     <el-date-picker
       ref="end"
       size="mini"
-      v-model="value2"
+      v-model="defaultDate[1]"
       type="month"
       value-format="yyyy-MM"
-      placeholder="结束月份">
+      placeholder="结束月份"
+      @change="setValue2">
     </el-date-picker>
   </div>
 </template>
 
 <script>
+import moment from "moment"
 export default {
   name: "monthRange",
   props: {
@@ -38,7 +41,6 @@ export default {
     return {
       value1: '',
       value2: '',
-      timeout: null
     };
   },
   computed: {
@@ -47,11 +49,9 @@ export default {
     }
   },
   watch: {
-    defaultDate(newVal, oldVal) {
-      [this.value1, this.value2] = newVal
-    },
     dateRangeArr(newVal, oldVal) {
-      let [temp1, temp2] = newVal
+      // prop（defaultDate） 会触发 watch， v-model会多次触发watch所以使用@change
+      let [temp1, temp2] = this.defaultDate
       if(!temp1) {
         this.$refs.start.focus()
       } else if(!temp2) {
@@ -59,15 +59,18 @@ export default {
       } else if(Date.parse(temp1)>Date.parse(temp2)) {
         this.$message.warning('开始月份不能大于结束月份哟~')
       } else {
-        clearTimeout(this.timeout);
-        this.timeout = setTimeout(() => {
-          console.log('---2', newVal)
-          this.$emit('changRange', this.params, newVal)
-        }, 800)
+        // console.log('dateRange---', this.defaultDate)
+        this.$emit('changRange', this.params, this.defaultDate)
       }
     },
   },
   methods: {
+    setValue1(val) {
+      this.value1 = val
+    },
+    setValue2(val) {
+      this.value2 = val
+    }
   },
 };
 </script>

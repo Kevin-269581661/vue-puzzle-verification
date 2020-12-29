@@ -456,11 +456,11 @@
                     photoTime: timeFormat.toDate(item.publishDate, '/'),
                     line: item.lineId,
                     lineName: item.lineName,
-                    adsNum: item.publishPaintCount,
+                    adsNum: item.publishCount,
                     mediaNum: item.mediaCount,
                     resNum: item.resourceCount,
                     progress: item.publishProgress||0,
-                    finishNum: item.publishCount,
+                    finishNum: item.publishPaintCount,
                     orderNum: item.orderList.length,
                 }
             },
@@ -483,8 +483,8 @@
                             orderName: resinfo.orderName,
                             resNum: resinfo.resourceCount,
                             mediaNum: resinfo.mediaCount,
-                            adsNum: resinfo.publishPaintCount,
-                            finishNum: resinfo.publishCount,
+                            adsNum: resinfo.publishCount,
+                            finishNum: resinfo.publishPaintCount,
                             progress: resinfo.publishProgress||0,
                         };
                     }else{

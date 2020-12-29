@@ -9,7 +9,7 @@
       placeholder="开始月份"
       @change="setValue1">
     </el-date-picker>
-    至
+    &nbsp至&nbsp
     <el-date-picker
       ref="end"
       size="mini"

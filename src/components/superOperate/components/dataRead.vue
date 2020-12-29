@@ -59,7 +59,7 @@
                             style="padding-right: 8px; font-size: 20px; color:rgba(44,49,60,1); font-weight: 500;"
                             :startVal="0"
                             :endVal="basicTotalData.orderCount || 0"
-                            :duration="500"
+                            :duration="1000"
                             :decimals='0'
                         ></countTo>
                         <!-- <p>{{basicTotalData.orderCount}}</p> -->
@@ -90,9 +90,9 @@
                         ></countTo>
                         <!-- <p>￥{{priceFormat(basicTotalData.orderSale)}}</p> -->
                     </div>
-                    <div class="data_box" :class="basicTotalType === '年上刊率' ? 'box_active' : ''"
-                         @click="totalActiveFun('年上刊率')">
-                        <h4>年上刊率</h4>
+                    <div class="data_box" :class="basicTotalType === '上刊率' ? 'box_active' : ''"
+                         @click="totalActiveFun('上刊率')">
+                        <h4>上刊率</h4>
                         <countTo
                             style="padding-right: 8px; font-size: 20px; color:rgba(44,49,60,1); font-weight: 500;"
                             :startVal="0"
@@ -818,7 +818,7 @@
                         case '广告门':
                             arr.push(key.advertDoorCount)
                             break;
-                        case '年上刊率':
+                        case '上刊率':
                             arr.push(key.publishRate ? Math.floor(key.publishRate * 10000) / 100 : 0)
                             break;
                         case '订单':
@@ -864,7 +864,7 @@
                         borderWidth: 1,
                         formatter: (params)=> {
                             let val = 0
-                            if (this.basicTotalType === '年上刊率') {
+                            if (this.basicTotalType === '上刊率') {
                                 val = params[0].data + '%'
                             } else if (this.basicTotalType === '销售额' || this.basicTotalType === '客单价') {
                                 val = this.priceFormat(params[0].data)

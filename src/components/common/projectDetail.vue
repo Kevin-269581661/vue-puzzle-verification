@@ -461,7 +461,7 @@
                     resNum: item.resourceCount,
                     progress: item.publishProgress||0,
                     finishNum: item.publishPaintCount,
-                    orderNum: item.orderList.length,
+                    orderNum: item.orderList.split(',').length,
                 }
             },
             // 获取表格数据

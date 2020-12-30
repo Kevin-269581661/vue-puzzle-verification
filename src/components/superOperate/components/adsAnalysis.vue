@@ -612,7 +612,7 @@
                         area: key.rName,
                         resName: key.resName,
                         upPercent: (key.publicationRate* 100).toFixed(2),
-                        price: (key.publicationPrice || 0) / 100
+                        price: key.publicationPrice || 0
                     })
                 }
             },
@@ -664,7 +664,7 @@
                         area: key.rName,
                         resName: key.resName,
                         upPercent: (key.publicationRate * 100).toFixed(2),
-                        price: (key.publicationPrice||0)/100,
+                        price: key.publicationPrice||0,
                         createTime: timeFormat.toDate(key.mJoinTime,'/'),
                         adDoorName: key.mTitle,
                         adNo: key.asLab,

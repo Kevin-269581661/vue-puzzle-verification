@@ -198,7 +198,7 @@
                                         min-width="18%"
                                         align="right">
                                         <template slot-scope="scope">
-                                            <span>&yen;{{scope.row.price || '0'}}</span>
+                                            <span>&yen;{{priceFormat(scope.row.price)}}</span>
                                         </template>
                                     </el-table-column>
                                     <div slot="empty">
@@ -323,7 +323,7 @@
                                         min-width="10%"
                                         align="right">
                                         <template slot-scope="scope">
-                                            <span>&yen;{{scope.row.price || '--'}}</span>
+                                            <span>&yen;{{priceFormat(scope.row.price)}}</span>
                                         </template>
                                     </el-table-column>
                                     <div slot="empty">
@@ -612,7 +612,7 @@
                         area: key.rName,
                         resName: key.resName,
                         upPercent: (key.publicationRate* 100).toFixed(2),
-                        price: key.publicationPrice / 100
+                        price: (key.publicationPrice || 0) / 100
                     })
                 }
             },
@@ -664,7 +664,7 @@
                         area: key.rName,
                         resName: key.resName,
                         upPercent: (key.publicationRate * 100).toFixed(2),
-                        price: key.publicationPrice/100,
+                        price: (key.publicationPrice||0)/100,
                         createTime: timeFormat.toDate(key.mJoinTime,'/'),
                         adDoorName: key.mTitle,
                         adNo: key.asLab,

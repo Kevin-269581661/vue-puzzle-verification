@@ -3,6 +3,8 @@
     <el-date-picker
       ref="start"
       size="mini"
+      :clearable="clearable"
+      :editable="false"
       v-model="defaultDate[0]"
       type="month"
       value-format="yyyy-MM"
@@ -13,6 +15,8 @@
     <el-date-picker
       ref="end"
       size="mini"
+      :clearable="clearable"
+      :editable="false"
       v-model="defaultDate[1]"
       type="month"
       value-format="yyyy-MM"
@@ -23,7 +27,7 @@
 </template>
 
 <script>
-import moment from "moment"
+// import moment from "moment"
 export default {
   name: "monthRange",
   props: {
@@ -34,7 +38,11 @@ export default {
     defaultDate: {
       type: Array,
       required: true,
-      default: ()=>[new Date(), new Date()]
+      default: ()=>['', '']
+    },
+    clearable: {
+      type: Boolean,
+      default: ()=>true
     }
   },
   data() {
@@ -56,7 +64,8 @@ export default {
         this.$refs.start.focus()
       } else if(!temp2) {
         this.$refs.end.focus()
-      } else if(Date.parse(temp1)>Date.parse(temp2)) {
+      }
+      if(Date.parse(temp1)>Date.parse(temp2)) {
         this.$message.warning('开始月份不能大于结束月份哟~')
       } else {
         // console.log('dateRange---', this.defaultDate)

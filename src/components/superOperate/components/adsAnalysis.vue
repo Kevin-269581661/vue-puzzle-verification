@@ -123,13 +123,8 @@
                             </div>
                             <div class="data_tab">
                                 <span class="data_tab_title">上刊率查询范围：</span>
-                                <!-- <el-radio-group v-model="poiSearchTime" size="mini"
-                                                @change="RadioTime(poiSearchTime,'resRate')">
-                                    <el-radio-button label="最近半年"></el-radio-button>
-                                    <el-radio-button label="最近三个月"></el-radio-button>
-                                </el-radio-group> -->
                                 <div class="date_picker_box data_tab_title">
-                                    <month-range :defaultDate="resSearchDate" :params="['res','resSearchDate']" @changRange="CreatDateChange"></month-range>
+                                    <month-range :clearable="false" :defaultDate="resSearchDate" :params="['res','resSearchDate']" @changRange="CreatDateChange"></month-range>
                                 </div>
                                 <span class="data_tab_title">社区创建日期：</span>
                                 <div class="date_picker_box data_tab_title">
@@ -229,13 +224,8 @@
                             <div class="select-wrap">
                                 <div class="data_tab">
                                     <span class="data_tab_title"> 上刊率查询范围：</span>
-                                    <!-- <el-radio-group v-model="comSearchTime" size="mini"
-                                                    @change="RadioTime(comSearchTime,'adsRate')">
-                                        <el-radio-button label="最近半年"></el-radio-button>
-                                        <el-radio-button label="最近三个月"></el-radio-button>
-                                    </el-radio-group> -->
                                     <div class="date_picker_box data_tab_title">
-                                        <month-range :defaultDate="adsSearchDate" :params="['ads','adsSearchDate']" @changRange="CreatDateChange"></month-range>
+                                        <month-range :clearable="false" :defaultDate="adsSearchDate" :params="['ads','adsSearchDate']" @changRange="CreatDateChange"></month-range>
                                     </div>
                                     <span class="data_tab_title">点位创建日期：</span>
                                     <div class="date_picker_box data_tab_title">
@@ -404,8 +394,8 @@
                 loadingMoreAds: true, // 点位上刊率列表 - 滚动加载
                 // 点位上刊率
                 poiSearchTime: '最近半年',
-                resSearchDate: [],   // 社区上刊率列表 - 时间段
-                resCreatDate:[],    // 社区上刊率列表 - 社区创建时间
+                resSearchDate: ['', ''],   // 社区上刊率列表 - 时间段
+                resCreatDate:['', ''],    // 社区上刊率列表 - 社区创建时间
                 resPageSize: 50,    // 每页条数
                 resPageNum: 1,      // 当前页数
                 resTotalPage: 1,    // 总页数
@@ -502,8 +492,6 @@
                 endTime = moment(endTime, 'YYYY-MM').endOf("month").format('YYYY-MM-DD')
                 this.resSearchDate = [starTime,endTime]          // 社区上刊率列表
                 this.adsSearchDate = [starTime,endTime]           // 点位上刊率列表
-                this.adsCreatDate = [starTime,endTime]
-                this.resCreatDate = [starTime,endTime]
             },
             // 统一调用接口
             getAdsAnalysisData(){
@@ -580,7 +568,6 @@
             },
             // 社区社区列表 - 接口
             getResRateFun(){
-                console.log('resPageNum',this.resPageNum,this.pUpMin)
                 let params = {
                     uid:this.sessionData.uID,
                     token: this.sessionData.token,
@@ -607,7 +594,6 @@
                     } else {
                         let resData = res.data.data;
                         if (resData.list.length > 0) {
-                            console.log('res.data.list', resData.list)
                             this.resTotalPage = resData.totalPage
                             this.resPageNum++
                             this.setResTableData(resData.list)
@@ -629,11 +615,9 @@
                         price: key.publicationPrice / 100
                     })
                 }
-                console.log('resRateList',this.resRateList)
             },
             // 点位社区列表 - 接口
             getAdsRateFun(){
-                console.log('点位总页数',this.adsTotalPage,'当前页数',this.adsPageNum)
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
@@ -687,7 +671,6 @@
                     })
                     this.setAreaList(key.rName)
                 }
-                console.log('adsRateList',this.adsRateList,this.areaList)
             },
             // 设置下拉区域过滤选项
             setAreaList(val){
@@ -697,7 +680,6 @@
                         return true
                     }
                 })
-                // console.log('result',result)
                 if(!result){
                     this.areaList.push({
                         text: val,
@@ -705,42 +687,12 @@
                     })
                 }
             },
-            // 点位分析 - 功能方法
-            // 城市切换过滤
-            /* filterRateDataByCity(){
-                this.setPageNoAndTableDataRes()
-                this.loadingRes = false
-                this.getResRateFun()
-                this.loadingMoreAds = false
-                this.setPageNoAndTableDataAds()
-                this.getAdsRateFun()
-            }, */
-            //
-            /* RadioTime(info,temp) {
-                let starTime = '',endTime = timeFormat.returnMonthCount(0,'-')
-                if(info === '最近三个月') {
-                    starTime = timeFormat.returnMonthCount(2,'-')
-                } else if (info === '最近半年') {
-                    starTime = timeFormat.returnMonthCount(5,'-')
-                }
-                if(temp === 'resRate') {
-                    // 社区上刊率列表
-                    this.resSearchDate = [starTime,endTime]
-                    this.setPageNoAndTableDataRes()
-                    this.getResRateFun()
-                } else if(temp === 'adsRate'){
-                    // 点位上刊率列表
-                    this.adsSearchDate = [starTime,endTime]
-                    this.setPageNoAndTableDataAds()
-                    this.getAdsRateFun()
-                }
-            }, */
             // 创建社区时间 - changes
             CreatDateChange(params, dateRange){
                 if(Array.isArray(params) && params.length === 2) {
                     let [dateStart, dateEnd] = dateRange
-                    dateStart = moment(dateStart, 'YYYY-MM').startOf("month").format('YYYY-MM-DD')
-                    dateEnd = moment(dateEnd, 'YYYY-MM').endOf("month").format('YYYY-MM-DD')
+                    dateStart = dateStart?moment(dateStart, 'YYYY-MM').startOf("month").format('YYYY-MM-DD'):dateStart
+                    dateEnd = dateEnd?moment(dateEnd, 'YYYY-MM').endOf("month").format('YYYY-MM-DD'):dateEnd
                     this[params[1]] = [dateStart, dateEnd]
                     params = params[0]
                 }
@@ -817,7 +769,6 @@
                 }
             },
             handleClick(){
-                console.log('val',this.thirdActiveName)
                 if (this.thirdActiveName === 'first') {
                     this.resTableKey = this.resTableKey === 1 ? 2 : 1
                 } else if (this.thirdActiveName === 'second') {

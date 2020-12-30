@@ -21,18 +21,7 @@
                             <i slot="reference" class="el-icon-question" style="color: #dfdfdf"></i>
                         </el-popover>
                         <div class="box_card_title_right right_date_select total_data_date">
-                            <month-range :defaultDate="dateRange" @changRange="CreatDateChange"></month-range>
-                            <!-- <el-date-picker
-                                v-model="totalDataYear"
-                                type="year"
-                                size="small"
-                                value-format="yyyy"
-                                format="yyyy"
-                                placeholder="选择年"
-                                :clearable="false"
-                                :picker-options="totalDataOptionsStar"
-                                @change="changeYear">
-                            </el-date-picker> -->
+                            <month-range :clearable="false" :defaultDate="dateRange" @changRange="CreatDateChange"></month-range>
                         </div>
                     </div>
                 </div>

@@ -9,7 +9,11 @@ timeFormat.toDate = function (time, format = '-') {
 		// if (str == ".0") {
 		// 	time = time.toString().substring(0, time.length - 2);
 		// }
-		time = new Date(Date.parse(time.toString().replace(/[-\.]/g, "/")));
+		if(typeof time === 'number') {
+			time = new Date(time)
+		} else {
+			time = new Date(Date.parse(time.toString().replace(/[-\.]/g, "/")));
+		}
 		let year = time.getFullYear();
 		let month = time.getMonth() + 1;//js从0开始取
 		let date = time.getDate();

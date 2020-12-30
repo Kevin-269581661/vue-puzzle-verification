@@ -102,7 +102,7 @@
         },
         mounted() {
             // this.tabContentLoading.close()
-            this.toTime = timeFormat.returnMonthCount(0, '/');
+            this.toTime = timeFormat.toDate(new Date().getTime()-60*60*24*1000)
             this.getBasicData()
         },
         methods:{

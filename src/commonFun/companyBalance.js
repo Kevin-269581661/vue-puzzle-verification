@@ -1,9 +1,12 @@
-var balance = '1,000'
-try {
-  if(JSON.parse(sessionStorage.getItem('session_data')).asrID == 3) {
-    balance = '2,299.8'
+function getBalance() {
+  let balance = '1,000'
+  try {
+    if(JSON.parse(sessionStorage.getItem('session_data')).asrID == 3) {
+      balance = '2,299.8'
+    }
+  } catch (error) {
+    console.error('获取余额', error)
   }
-} catch (error) {
-  console.error('获取余额', error)
+  return balance
 }
-export default balance
+export default getBalance

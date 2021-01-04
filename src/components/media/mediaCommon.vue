@@ -97,7 +97,7 @@
 
 <script>
     import uTypeToText from "../../commonFun/uTypeToText.js";
-    import balance from "../../commonFun/companyBalance.js";
+    import getBalance from "../../commonFun/companyBalance.js";
     import api from "../../api/api"
     import messageNotice from '../common/components/messageNotice.vue';
     import questionTip from '../common/components/questionTip.vue';
@@ -110,7 +110,7 @@
         },
         data() {
             return {
-                balance,
+                balance: '0.00',
                 newDate: new Date().getFullYear(),
                 userName: "",
                 openWxBox: false,
@@ -128,7 +128,8 @@
         },
         mounted() {
             // 是否显示社区画像
-            this.getIsShowQinlin();
+            this.getIsShowQinlin()
+            this.balance = getBalance()
         },
         methods: {
             // 是否显示亲邻

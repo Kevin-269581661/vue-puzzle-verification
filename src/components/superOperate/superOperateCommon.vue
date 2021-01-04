@@ -50,7 +50,7 @@
                     <img class="user_avator" :src="avator" alt="">
                     {{userName}}
                 </template>
-                <span class="my-balance">余额：¥0.00</span>
+                <span class="my-balance">余额：¥{{balance}}</span>
                 <el-menu-item index="/superOperate/myInfo" class="index-menu-item">个人中心</el-menu-item>
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
                 <el-menu-item index="/login" class="index-menu-item">退出登陆</el-menu-item>
@@ -88,6 +88,7 @@
 
 <script>
     import uTypeToText from "../../commonFun/uTypeToText.js";
+    import balance from "../../commonFun/companyBalance.js";
     import api from "../../api/api"
     import questionTip from '../common/components/questionTip.vue';
 
@@ -98,6 +99,7 @@
         },
         data(){
             return{
+                balance,
                 newDate: new Date().getFullYear(),
                 userName: "",
                 openWxBox: false,

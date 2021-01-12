@@ -317,13 +317,13 @@
                                     </el-table-column>
                                     <el-table-column
                                         prop="picSize"
-                                        label="画面尺寸"
+                                        label="广告尺寸"
                                         min-width="114"
                                     >
                                     </el-table-column>
                                     <el-table-column
                                         prop="lightBoxSize"
-                                        label="灯箱尺寸"
+                                        label="可视画面"
                                         min-width="114"
                                     >
                                     </el-table-column>

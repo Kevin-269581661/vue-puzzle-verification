@@ -193,7 +193,7 @@
                             </div>
                         </div>
                         <div v-if="sessionData.asrID != '999'" class="bottom-box">
-                            贵司共浪费了价值  <span class="avtive"> ¥{{resStock.overduePrice || 0}} </span>  的资源，多于全国 <span class="avtive"> {{resStock.unsoldRank}}% </span> 的公司，太可惜了
+                            贵司共浪费了价值  <span class="avtive"> ¥{{resStock.overduePrice | moneyFormat('¥')}} </span>  的资源，多于全国 <span class="avtive"> {{resStock.unsoldRank}}% </span> 的公司，太可惜了
                         </div>
                     </template>
                 </index-custom-card>
@@ -209,7 +209,7 @@
                         </div>
                         <el-radio-group v-model="isBehind" size="small" class="achievement-radio-group" @change="getRankList">
                             <el-radio-button :label="false">领先</el-radio-button>
-                            <el-radio-button :label="true" :disabled="sessionData.asrID == '999'">落后</el-radio-button>
+                            <el-radio-button v-if="sessionData.ascType > 0" :label="true">落后</el-radio-button>
                         </el-radio-group>
                     </template>
                     <template slot="content">
@@ -217,7 +217,7 @@
                             <li class="item" v-for="(rankItem, index) in rankListArr" :key="index">
                                 <span :title="rankItem.realName" class="label">{{rankItem.realName}}</span>
                                 <el-popover
-                                    v-if="sessionData.asrID != '999'"
+                                    v-if="sessionData.ascType > 0"
                                     popper-class="index-custom-popper"
                                     class="progress"
                                     placement="top"
@@ -233,20 +233,20 @@
                                         <ul>
                                             <li class="pop-item">
                                                 <em>业绩目标：</em>
-                                                <span class="item-right">¥{{rankItem.targetPrice || 0}}</span>
+                                                <span class="item-right">{{rankItem.targetPrice | moneyFormat('¥')}}</span>
                                             </li>
                                             <li class="pop-item">
                                                 <em>销售金额：</em>
-                                                <span class="item-right">¥{{rankItem.totalPrice || 0}}</span>
+                                                <span class="item-right">{{rankItem.totalPrice | moneyFormat('¥')}}</span>
                                             </li>
                                             <li class="pop-item">
                                                 <em>完成进度：</em>
                                                 <span class="item-right">{{rankItem.finshProcess || 0}}%</span>
                                             </li>
                                         </ul>
-                                    </div><mini-progress :target="rankItem.targetProcess" :percentage="rankItem.finshProcess" :value="'¥'+rankItem.totalPrice" slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                    </div><mini-progress :target="rankItem.targetProcess" :percentage="rankItem.finshProcess" :value="rankItem.totalPrice | moneyFormat('¥')" slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
                                 </el-popover>
-                                <mini-progress v-else :target="rankItem.targetProcess" :percentage="rankItem.finshProcess" :value="'¥'+rankItem.totalPrice" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                <mini-progress v-else :percentage="rankItem.finshProcess" :value="rankItem.totalPrice | moneyFormat('¥')" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
                             </li>
                         </ul>
                     </template>
@@ -335,14 +335,14 @@
                                                     </li>
                                                     <li class="pop-item">
                                                         <em>合作金额：</em>
-                                                        <span>¥{{scope.row.price || 0}}</span>
+                                                        <span>{{scope.row.price | moneyFormat('¥')}}</span>
                                                     </li>
                                                 </ul>
                                                 <div class="pop-title">
                                                     <span class="bottom-btn" @click="unfollow(scope.row)">不再关注</span>
                                                 </div>
                                             </div>
-                                            <mini-progress slot="reference" :target="0" :percentage="scope.row.priceRate" :value="'¥'+scope.row.price" :height="'20px'" :color="clientColor"></mini-progress>
+                                            <mini-progress slot="reference" :target="0" :percentage="scope.row.priceRate" :value="scope.row.price | moneyFormat('¥')" :height="'20px'" :color="clientColor"></mini-progress>
                                         </el-popover>
                                     </template>
                                 </el-table-column>
@@ -1183,7 +1183,7 @@
                 api.getApi(this.apiVar.report + '/homepage/getSMAchievementReport', params).then(res=>{
                     if (res.data.SysCode === 200200) {
                         let temp = res.data.data;
-                        this.rankListArr = temp.userList
+                        this.rankListArr = temp.userList.filter(item=>item.totalPrice>0)
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }

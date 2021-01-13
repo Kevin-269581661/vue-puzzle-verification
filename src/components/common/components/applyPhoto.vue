@@ -467,7 +467,7 @@ export default {
 				</el-table>
 				<p class="priceInfo">
 					<i class="fa fa-info-circle"></i> 总计：
-					<span>￥</span>
+					<span>¥</span>
 					<span>{{priceFormat(this.totalCount)}}</span>
 				</p>
 			</div>

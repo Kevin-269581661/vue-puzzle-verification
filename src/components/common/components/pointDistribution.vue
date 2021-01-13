@@ -108,7 +108,6 @@ export default {
         .then((res) => {
           if (res.data.SysCode === 200200) {
             this.tableData = res.data.data;
-            // this.setMap();
           } else {
             sessFun.messageFun("warning", res.data.MSG);
           }

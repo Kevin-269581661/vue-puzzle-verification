@@ -2180,7 +2180,7 @@
                                 normal: {
                                     show: false,
                                     position: "center",
-                                    formatter: "{a}\n{b}: ￥{c}"
+                                    formatter: "{a}\n{b}: ¥{c}"
                                 },
                                 emphasis: {
                                     show: false,

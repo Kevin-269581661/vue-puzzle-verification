@@ -923,10 +923,10 @@
                             </div>
                             <div class="bill-title-right">
                                 <ul>
-                                    <li><p><em>现金结算：</em><span>￥{{priceFormat(cash)}}</span></p></li>
-                                    <li><p><em>资源置换：</em><span>￥{{priceFormat(zyzh)}}</span></p></li>
-                                    <li><p><em>其他费用：</em><span>￥{{priceFormat(other)}}</span></p></li>
-                                    <li><p><em style="top: 5px">总计：</em><span class="totalPrice">￥{{priceFormat(totalPrice)}}</span>
+                                    <li><p><em>现金结算：</em><span>¥{{priceFormat(cash)}}</span></p></li>
+                                    <li><p><em>资源置换：</em><span>¥{{priceFormat(zyzh)}}</span></p></li>
+                                    <li><p><em>其他费用：</em><span>¥{{priceFormat(other)}}</span></p></li>
+                                    <li><p><em style="top: 5px">总计：</em><span class="totalPrice">¥{{priceFormat(totalPrice)}}</span>
                                     </p>
                                     </li>
                                 </ul>
@@ -951,7 +951,7 @@
                                 <li><em>方案名称：</em>{{planForm.planName}}</li>
                                 <li><em>所属客户：</em>{{cName}}</li>
                                 <li><em>所属品牌：</em>{{cBand || '--'}}</li>
-                                <li class="money"><em>订单金额：</em>￥{{priceFormat(totalPrice)}}</li>
+                                <li class="money"><em>订单金额：</em>¥{{priceFormat(totalPrice)}}</li>
                                 <li style="overflow: hidden;text-overflow:ellipsis">
                                     <em>协同选点：</em><span id="shareUrl">{{shareADUrl}}</span>
                                     <el-button plain @click="copyUrl" class="urlBtn">复制</el-button>

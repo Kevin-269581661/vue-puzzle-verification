@@ -674,7 +674,7 @@
                 if (String === 'cityBattle') {
                     // 城市数据对比
                     let compareLen = this.isMonthLength(this.compareCityTime)
-                    if (compareLen > 5) {
+                    /* if (compareLen > 5) {
                         if (index === '0') {
                             starT = this.compareCityTime[0]
                             endT = timeFormat.getSpecifiedDateStr(this.compareCityTime[0], -5).substring(0, 7)
@@ -684,7 +684,7 @@
                         }
                         this.compareCityTime = [starT, endT]
                         sessFun.messageFun('warning','月份跨度不能大于六个月!')
-                    }
+                    } */
                     this.cityBattleTime = '其它'
                     this.forCityData(this.cityBattleTitle)
                 } else if (String === 'cityRate') {

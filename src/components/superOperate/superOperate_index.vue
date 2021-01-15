@@ -55,6 +55,11 @@
                             </ul>
                             <img class="quesition-icon" src="../../assets/images/question_icon.png" />
                         </el-tooltip>
+                        <div class="date-interval">
+                            <span :class="{'active': dateTypeFilter === 3}" @click="getSMResStockReport(3)">按月</span>
+                            <span :class="{'active': dateTypeFilter === 2}" @click="getSMResStockReport(2)">按季</span>
+                            <span :class="{'active': dateTypeFilter === 1}" @click="getSMResStockReport(1)">按年</span>
+                        </div>
                     </template>
                     <template slot="content">
                         <div class="stock-chart">
@@ -207,9 +212,9 @@
                             <span :class="{'active': dateInterval === 2}" @click="getRankList('dateInterval', 2)">本季</span>
                             <span :class="{'active': dateInterval === 3}" @click="getRankList('dateInterval', 3)">本月</span>
                         </div>
-                        <el-radio-group v-model="isBehind" size="small" class="achievement-radio-group" @change="getRankList">
+                        <el-radio-group v-if="sessionData.ascType > 0" v-model="isBehind" size="small" class="achievement-radio-group" @change="getRankList">
                             <el-radio-button :label="false">领先</el-radio-button>
-                            <el-radio-button v-if="sessionData.ascType > 0" :label="true">落后</el-radio-button>
+                            <el-radio-button :label="true">落后</el-radio-button>
                         </el-radio-group>
                     </template>
                     <template slot="content">
@@ -299,10 +304,10 @@
                                 style="border: 1px solid #e8e8e8;"
                             >
                                 <el-table-column
+                                    show-overflow-tooltip
                                     label="客户"
                                     width="230">
                                     <template slot-scope="scope">
-                                        <!-- <span @click="routePage(scope.row)" style="color: #1890FF; cursor: pointer;">{{scope.row.cName}}</span> -->
                                         <span>{{scope.row.cName}}</span>
                                     </template>
                                 </el-table-column>
@@ -844,6 +849,7 @@
                     data: []
                 },
                 dateInterval: 1,
+                dateTypeFilter: 1,
                 isBehind: false,
                 showSetTarget: false,
                 targetVaule: 0,
@@ -1100,8 +1106,14 @@
                 }).finally(_=>{
                     
                 })
-                // 资源库存数据
-                api.getApi(this.apiVar.report + '/homepage/getSMResStockReport',params).then(res=>{
+            },
+            // 资源库存数据
+            getSMResStockReport(dateType) {
+                this.dateTypeFilter = dateType
+                api.getApi(this.apiVar.report + '/homepage/getSMResStockReport', {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                }).then(res=>{
                     if (res.data.SysCode === 200200) {
                         let temp = res.data.data,
                             past = {
@@ -1178,7 +1190,7 @@
                     dateType: this.dateInterval
                 }
                 if (this.isBehind == false) {
-                    params.orderType = 1    // 倒序传1
+                    params.orderType = 1    // 领先，倒序传1
                 }
                 api.getApi(this.apiVar.report + '/homepage/getSMAchievementReport', params).then(res=>{
                     if (res.data.SysCode === 200200) {

@@ -55,6 +55,11 @@
                             </ul>
                             <img class="quesition-icon" src="../../assets/images/question_icon.png" />
                         </el-tooltip>
+                        <div class="date-interval">
+                            <span :class="{'active': dateTypeFilter === 3}" @click="getSMResStockReport(3)">按月</span>
+                            <span :class="{'active': dateTypeFilter === 2}" @click="getSMResStockReport(2)">按季</span>
+                            <span :class="{'active': dateTypeFilter === 1}" @click="getSMResStockReport(1)">按年</span>
+                        </div>
                     </template>
                     <template slot="content">
                         <div class="stock-chart">
@@ -193,7 +198,7 @@
                             </div>
                         </div>
                         <div v-if="sessionData.asrID != '999'" class="bottom-box">
-                            贵司共浪费了价值  <span class="avtive"> ¥{{resStock.overduePrice || 0}} </span>  的资源，多于全国 <span class="avtive"> {{resStock.unsoldRank}}% </span> 的公司，太可惜了
+                            贵司共浪费了价值  <span class="avtive"> ¥{{resStock.overduePrice | moneyFormat('¥')}} </span>  的资源，多于全国 <span class="avtive"> {{resStock.unsoldRank}}% </span> 的公司，太可惜了
                         </div>
                     </template>
                 </index-custom-card>
@@ -207,9 +212,9 @@
                             <span :class="{'active': dateInterval === 2}" @click="getRankList('dateInterval', 2)">本季</span>
                             <span :class="{'active': dateInterval === 3}" @click="getRankList('dateInterval', 3)">本月</span>
                         </div>
-                        <el-radio-group v-model="isBehind" size="small" class="achievement-radio-group" @change="getRankList">
+                        <el-radio-group v-if="sessionData.ascType > 0" v-model="isBehind" size="small" class="achievement-radio-group" @change="getRankList">
                             <el-radio-button :label="false">领先</el-radio-button>
-                            <el-radio-button :label="true" :disabled="sessionData.asrID == '999'">落后</el-radio-button>
+                            <el-radio-button :label="true">落后</el-radio-button>
                         </el-radio-group>
                     </template>
                     <template slot="content">
@@ -217,7 +222,7 @@
                             <li class="item" v-for="(rankItem, index) in rankListArr" :key="index">
                                 <span :title="rankItem.realName" class="label">{{rankItem.realName}}</span>
                                 <el-popover
-                                    v-if="sessionData.asrID != '999'"
+                                    v-if="sessionData.ascType > 0"
                                     popper-class="index-custom-popper"
                                     class="progress"
                                     placement="top"
@@ -233,20 +238,20 @@
                                         <ul>
                                             <li class="pop-item">
                                                 <em>业绩目标：</em>
-                                                <span class="item-right">¥{{rankItem.targetPrice || 0}}</span>
+                                                <span class="item-right">{{rankItem.targetPrice | moneyFormat('¥')}}</span>
                                             </li>
                                             <li class="pop-item">
                                                 <em>销售金额：</em>
-                                                <span class="item-right">¥{{rankItem.totalPrice || 0}}</span>
+                                                <span class="item-right">{{rankItem.totalPrice | moneyFormat('¥')}}</span>
                                             </li>
                                             <li class="pop-item">
                                                 <em>完成进度：</em>
                                                 <span class="item-right">{{rankItem.finshProcess || 0}}%</span>
                                             </li>
                                         </ul>
-                                    </div><mini-progress :target="rankItem.targetProcess" :percentage="rankItem.finshProcess" :value="'¥'+rankItem.totalPrice" slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                    </div><mini-progress :target="rankItem.targetProcess" :percentage="rankItem.finshProcess" :value="rankItem.totalPrice | moneyFormat('¥')" slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
                                 </el-popover>
-                                <mini-progress v-else :target="rankItem.targetProcess" :percentage="rankItem.finshProcess" :value="'¥'+rankItem.totalPrice" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                <mini-progress v-else :percentage="rankItem.finshProcess" :value="rankItem.totalPrice | moneyFormat('¥')" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
                             </li>
                         </ul>
                     </template>
@@ -299,10 +304,10 @@
                                 style="border: 1px solid #e8e8e8;"
                             >
                                 <el-table-column
+                                    show-overflow-tooltip
                                     label="客户"
                                     width="230">
                                     <template slot-scope="scope">
-                                        <!-- <span @click="routePage(scope.row)" style="color: #1890FF; cursor: pointer;">{{scope.row.cName}}</span> -->
                                         <span>{{scope.row.cName}}</span>
                                     </template>
                                 </el-table-column>
@@ -335,14 +340,14 @@
                                                     </li>
                                                     <li class="pop-item">
                                                         <em>合作金额：</em>
-                                                        <span>¥{{scope.row.price || 0}}</span>
+                                                        <span>{{scope.row.price | moneyFormat('¥')}}</span>
                                                     </li>
                                                 </ul>
                                                 <div class="pop-title">
                                                     <span class="bottom-btn" @click="unfollow(scope.row)">不再关注</span>
                                                 </div>
                                             </div>
-                                            <mini-progress slot="reference" :target="0" :percentage="scope.row.priceRate" :value="'¥'+scope.row.price" :height="'20px'" :color="clientColor"></mini-progress>
+                                            <mini-progress slot="reference" :target="0" :percentage="scope.row.priceRate" :value="scope.row.price | moneyFormat('¥')" :height="'20px'" :color="clientColor"></mini-progress>
                                         </el-popover>
                                     </template>
                                 </el-table-column>
@@ -844,6 +849,7 @@
                     data: []
                 },
                 dateInterval: 1,
+                dateTypeFilter: 1,
                 isBehind: false,
                 showSetTarget: false,
                 targetVaule: 0,
@@ -1100,8 +1106,14 @@
                 }).finally(_=>{
                     
                 })
-                // 资源库存数据
-                api.getApi(this.apiVar.report + '/homepage/getSMResStockReport',params).then(res=>{
+            },
+            // 资源库存数据
+            getSMResStockReport(dateType) {
+                this.dateTypeFilter = dateType
+                api.getApi(this.apiVar.report + '/homepage/getSMResStockReport', {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                }).then(res=>{
                     if (res.data.SysCode === 200200) {
                         let temp = res.data.data,
                             past = {
@@ -1178,12 +1190,12 @@
                     dateType: this.dateInterval
                 }
                 if (this.isBehind == false) {
-                    params.orderType = 1    // 倒序传1
+                    params.orderType = 1    // 领先，倒序传1
                 }
                 api.getApi(this.apiVar.report + '/homepage/getSMAchievementReport', params).then(res=>{
                     if (res.data.SysCode === 200200) {
                         let temp = res.data.data;
-                        this.rankListArr = temp.userList
+                        this.rankListArr = temp.userList.filter(item=>item.totalPrice>0)
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }

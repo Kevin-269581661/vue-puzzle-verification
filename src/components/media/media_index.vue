@@ -365,8 +365,8 @@ export default {
 			// 公司勋章
 			comimgInfo: [],
 			companyHonor: [],
-            // 应用中心
-            appCenter: '',
+			// 应用中心
+			appCenter: '',
 			isSlideDown: true,
 			
 			cardData1: {
@@ -476,38 +476,6 @@ export default {
 			this.userInfo.avator = sess.headPic ? sess.headPic : require('../../assets/images/index/niu.png')
 
 		},
-		/* getIsCom(){
-			let sessrid = this.sessionData.asrID;
-			let comarr = ['1','2','3','4','5','6','7'];
-			for(let data of comarr){
-				if(sessrid== data){
-					this.isCom = true;
-					break;
-				}
-			}
-			// 只有直营超管才可见公司荣誉
-			if(this.isCom){
-				let cards = [];
-				let result = [];
-				for(let data of comcards){
-					if(sessrid == data.value){
-						cards = data.cards;
-						break;
-					}
-				}
-				for(let item of cards){
-					let obj = {
-						label: item.label,
-						title: item.title,
-						flag: item.label.includes('2') ? true : false,
-						value: require('../../assets/images/index/'+item.value+'.png'),
-					};
-					obj.url = obj.value;
-					result.push(obj);
-				}
-				this.comimgInfo = result;
-			}
-		}, */
 		// 媒介贡献弹窗
 		getContributeBox(){
 			let info = {
@@ -930,19 +898,17 @@ export default {
 	},
 	mounted(){
 		this.getSession();
-		// this.getIsCom();
-		// this.getData();
 		this.getContributeBox();
 		this.getContribute();
 		let nowDate = timeFormat.toDate(new Date(), '/');
 		if(indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)){
 			this.isShowNum = true;
 		}
-		// this.setTime();
-        //用户中心
-        this.appCenter = appCenter
-        this.uploadEvent(1)
-		// this.getLinePer();
+		if(this.sessionData.mediaManageLevel == 1) {
+			this.linkArrNew.pop()
+		}
+		this.appCenter = appCenter
+		this.uploadEvent(1)
 		this.allReportApi()
 	},
 };

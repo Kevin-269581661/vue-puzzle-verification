@@ -108,7 +108,6 @@ export default {
         .then((res) => {
           if (res.data.SysCode === 200200) {
             this.tableData = res.data.data;
-            // this.setMap();
           } else {
             sessFun.messageFun("warning", res.data.MSG);
           }
@@ -204,6 +203,8 @@ export default {
       // layer2.setData(mapData)
       layer3.setData(mapData)
       layer4.setData(mapData)
+      let coordinates = mapData[0].geometry.coordinates
+      this.instanceMap.flyTo({lng: coordinates[0], lat: coordinates[1]}, 12)
     },
     // 放大或缩小地图
     setMapZoom(type) {

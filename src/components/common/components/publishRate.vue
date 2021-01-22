@@ -124,6 +124,34 @@ export default {
     this.instanceMap = null;
   },
   methods: {
+    /* 获取勋章称号
+    "topIncrResCnt":1, //社区新开发top
+    "topPlanCnt":1,    //订单量top
+    "topOnPubRate":1,   //城市上刊率top
+    "topNativeContract":1, //本地销售额top
+    "topNationwideContract":1 //全国销售额top */
+    getMedal() {
+      let params = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+      };
+      api
+        .getApi(
+          this.apiVar.report + "/homepage/getDistrictOnPubRateReport",
+          params
+        )
+        .then((res) => {
+          if (res.data.SysCode === 200200) {
+            // res.data.data || [];
+          } else {
+            sessFun.messageFun("warning", res.data.MSG);
+          }
+        })
+        .catch((err) => {
+          console.log("err", err);
+        })
+        .finally((_) => {});
+    },
     // 首页的地图上刊率 /report /homepage/getDistrictOnPubRateReport
     getDistrictOnPubRateReport() {
       let params = {
@@ -199,8 +227,10 @@ export default {
             lineHeight: size,
             background: `rgba(${colorR}, ${colorG}, ${colorB}, ${colorA})`,
             color: "#fff",
-            "box-shadow": "0px 0px 2px",
-            "box-sizing": "content-box",
+            // boxShadow: "0px 0px 2px",
+            boxShadow: '0 0 0 0.1em currentcolor inset, 0 0 1em currentcolor inset',
+            boxSizing: "content-box",
+            animation: "mymove 5s infinite"
             // cursor: "pointer",
           });
           this.instanceMap.addOverlay(label);
@@ -233,8 +263,36 @@ export default {
   },
 };
 </script>
+<style>
+/* @keyframes mymove
+{
+	from {width:30px; height: 30px;}
+	to {width:50px; height: 50px;}
+}
 
+@-webkit-keyframes mymove
+{
+	from {width:30px; height: 30px;}
+	to {width:50px; height: 50px;}
+} */
+
+@keyframes mymove {
+  from, to {
+    transform: translate(-50%, -48%);
+  }
+  25% {
+    transform: translate(-52%, -50%);
+  }
+  50% {
+    transform: translate(-50%, -52%);
+  }
+  75% {
+    transform: translate(-48%, -50%);
+  }
+}
+</style>
 <style scoped lang="scss">
+
 * {
   font-family: "Helvetica Neue", Helvetica, Arial, "PingFang ",
     "Hiragino Sans GB" "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei",

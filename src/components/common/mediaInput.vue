@@ -55,13 +55,20 @@
                                 <el-col :span="6" class="el_col_box">
                                     <el-form-item label="资源名称" prop="resname">
                                         <el-autocomplete
+                                            v-if="customPermission.resSearchPermission"
                                             v-model="recForm.resname"
                                             :fetch-suggestions="getResNameByFangJiaWang"
                                             placeholder=""
+                                            :trigger-on-focus="false"
                                             @select="changeResName"
                                             @blur="blurFun('resname')">
                                         </el-autocomplete>
-                                        <el-button size="small" type="primary" @click="getResBasicData" class="get_resName_btn"
+                                        <el-input
+                                            v-else
+                                            v-model="recForm.resname"
+                                            clearable>
+                                        </el-input>
+                                        <el-button v-if="customPermission.resSearchPermission" size="small" type="primary" @click="getResBasicData" class="get_resName_btn"
                                                    v-qadn-mta-h5="{id: PathHaveEdit ? 'a002_b006_c000_d000_bt028_ck05' : 'a002_b004_c000_d000_bt019_ck05'}">
                                             检索</el-button>
                                     </el-form-item>

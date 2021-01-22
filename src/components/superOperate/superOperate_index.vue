@@ -312,6 +312,14 @@
                                     </template>
                                 </el-table-column>
                                 <el-table-column
+                                    show-overflow-tooltip
+                                    label="品牌"
+                                    width="230">
+                                    <template slot-scope="scope">
+                                        <span>{{scope.row.bTitle||'--'}}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
                                     sortable
                                     prop="daydiffer"
                                     label="沉默天数"

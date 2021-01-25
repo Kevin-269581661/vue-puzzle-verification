@@ -56,49 +56,45 @@
                             <img class="quesition-icon" src="../../assets/images/question_icon.png" />
                         </el-tooltip>
                         <div class="date-interval">
-                            <span :class="{'active': dateTypeFilter === 3}" @click="getSMResStockReport(3)">按月</span>
+                            <span :class="{'active': dateTypeFilter === 1}" @click="getSMResStockReport(1)">按月</span>
                             <span :class="{'active': dateTypeFilter === 2}" @click="getSMResStockReport(2)">按季</span>
-                            <span :class="{'active': dateTypeFilter === 1}" @click="getSMResStockReport(1)">按年</span>
+                            <span :class="{'active': dateTypeFilter === 3}" @click="getSMResStockReport(3)">按年</span>
                         </div>
                     </template>
                     <template slot="content">
-                        <div class="stock-chart">
-                            <el-popover
-                                popper-class="index-custom-popper"
-                                class="progress"
-                                placement="top-start"
-                                :visible-arrow="false"
-                                width="200"
-                                trigger="hover">
-                                <div class="tip-box">
-                                    <div class="pop-title">
-                                        <em>{{(resStock.past.preStartDate||'')+'~'+(resStock.past.preEndDate||'')}}</em>
-                                    </div>
-                                    <ul>
-                                        <li class="pop-item">
-                                            <em>已售</em>
-                                            <span class="align-right">{{resStock.past.onPubStock}}面周</span>
-                                            <span class="tip-rate">{{resStock.past.onPubStockRate}}%</span>
-                                        </li>
-                                        <li class="pop-item">
-                                            <em>过期</em>
-                                            <span class="align-right">{{resStock.past.overdueStock}}面周</span>
-                                            <span class="tip-rate">{{resStock.past.overdueStockRate}}%</span>
-                                        </li>
-                                        <li class="pop-item">
-                                            <em>维修</em>
-                                            <span class="align-right">{{resStock.past.repairStock}}面周</span>
-                                            <span class="tip-rate">{{resStock.past.repairStockRate}}%</span>
-                                        </li>
-                                        <li class="pop-item">
-                                            <em>禁用</em>
-                                            <span class="align-right">{{resStock.past.banStock}}面周</span>
-                                            <span class="tip-rate">{{resStock.past.banStockRate}}%</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div slot="reference">
-                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" :width="600*resStock.currentMonthPercent" height="320" class="capsule-left">
+                        <ul class="unit-legend">
+                            <li>
+                                <span class="diamond blue-diamond"></span>已售
+                            </li>
+                            <li>
+                                <span class="diamond yellow-diamond"></span>维修禁用
+                            </li>
+                            <li>
+                                <span class="diamond white-diamond"></span>过期
+                            </li>
+                            <li v-if="dateTypeFilter === 1 && catMonthDetail" class="extra-comment">
+                                <span>2020年3月详情</span>
+                                <span class="month-btn" @click="catMonthDetail=false">返回</span>
+                            </li>
+                        </ul>
+                        <!--按月-月详情-->
+                        <div class="bar-group" v-if="dateTypeFilter === 1 && catMonthDetail">
+                            <waveBar v-for="(item, index) in resStock.dataList" :key="index" :barData="item" class="wave-bar-item" :refName="'wavebar'+index" :boxWidthUnitNum="3"></waveBar>
+                        </div>
+                        <!--按月-->
+                        <div class="bar-group" v-if="dateTypeFilter === 1 && !catMonthDetail">
+                            <waveBar v-for="(item, index) in resStock.dataList" :key="'monthWavebar'+index" :barData="item" @emitFun="catDetail" class="wave-bar-item" :refName="'monthWavebar'+index" :boxWidthUnitNum="1"></waveBar>
+                        </div>
+                        <!--按季-->
+                        <div class="bar-group" v-if="dateTypeFilter === 2">
+                            <waveBar v-for="(item, index) in resStock.dataList" :key="'quarterWavebar'+index" :barData="item" @emitFun="catDetail" class="wave-bar-item" :refName="'quarterWavebar'+index" :boxWidthUnitNum="3"></waveBar>
+                        </div>
+                        <!--按年-->
+                        <div class="bar-group" v-if="dateTypeFilter === 3">
+                            <waveBar v-for="(item, index) in resStock.dataList" :key="'yearWavebar'+index" :barData="item" @emitFun="catDetail" class="wave-bar-item" :refName="'yearWavebar'+index" :boxWidthUnitNum="6"></waveBar>
+                        </div>
+                                    
+                                    <!-- <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" :width="600*resStock.currentMonthPercent" height="320" class="capsule-left">
                                         <defs>
                                             <linearGradient id="blue1" x1="0%" y1="0%" x2="0%" y2="100%">
                                                 <stop offset="0%" style="stop-color:#6DB9FF;stop-opacity:1" />
@@ -134,11 +130,9 @@
                                             <text x="150" y="155" fill="#fff" >{{resStock.past.onPubStockRate||'0.00'}}%</text>
                                             <text x="150" y="175" fill="#fff" >已售</text>  
                                         </g>
-                                    </svg>
-                                </div>
-                            </el-popover>
+                                    </svg> -->
                             
-                            <el-popover
+                            <!-- <el-popover
                                 popper-class="index-custom-popper"
                                 class="progress"
                                 placement="right-start"
@@ -175,10 +169,6 @@
                                                 <path d="M 0 0 Q 87.5 23, 175 0 T 350 0 T 525 0 T 700 0 T 875 0 T 1050 0 T 1225 0 T 1400 0 V 320 H 0 V 0"></path>
                                                 <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-700" dur="1.5s" repeatCount="indefinite"></animateTransform>
                                             </g>
-                                            <!-- <g fill="#6DB9FF">
-                                                <path d="M 0 0 Q 87.5 23, 175 0 T 350 0 T 525 0 T 700 0 T 875 0 T 1050 0 T 1225 0 V 320 H 0 V 0" transform="translate(-38.232284367796474, 0)"></path>
-                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-340" dur="2s" repeatCount="indefinite"></animateTransform>
-                                            </g> -->
                                             <g fill="url(#blue2)">
                                                 <path d="M 0 0 Q 87.5 23, 175 0 T 350 0 T 525 0 T 700 0 T 875 0 T 1050 0 T 1225 0 T 1400 0 V 320 H 0 V 0"></path>
                                                 <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-350" dur="3s" repeatCount="indefinite"></animateTransform>
@@ -190,13 +180,12 @@
                                         <span>{{resStock.next.futureOnPubStockRate||'0.00'}}%</span>
                                     </div>
                                 </div>
-                            </el-popover>
-                        </div>
-                        <div class="coordinate-line">
+                            </el-popover> -->
+                        <!-- <div class="coordinate-line">
                             <div v-for="item in 12" class="sub-line">
                                 <span class="sub-text">{{item + '月'}}</span>
                             </div>
-                        </div>
+                        </div> -->
                         <div v-if="sessionData.asrID != '999'" class="bottom-box">
                             贵司共浪费了价值  <span class="avtive"> ¥{{resStock.overduePrice | moneyFormat('¥')}} </span>  的资源，多于全国 <span class="avtive"> {{resStock.unsoldRank}}% </span> 的公司，太可惜了
                         </div>
@@ -574,6 +563,7 @@
     import messageAndApp from '../common/components/messageAndApp.vue';
     import chartCard from '../common/components/chartCard.vue';
     import indexCustomCard from '../common/components/indexCustomCard.vue';
+    import waveBar from '../common/components/waveBar.vue';
     import miniProgress from '../common/components/miniProgress.vue';
     import liquidChart from '../common/components/liquidChart.vue';
     import nestPieChart from '../common/components/nestPieChart.vue';
@@ -597,6 +587,7 @@
             personalInfo,
             messageAndApp,
             chartCard,
+            waveBar,
             miniProgress,
             indexCustomCard,
             liquidChart,
@@ -858,6 +849,7 @@
                 },
                 dateInterval: 1,
                 dateTypeFilter: 1,
+                catMonthDetail: false,
                 isBehind: false,
                 showSetTarget: false,
                 targetVaule: 0,
@@ -876,7 +868,7 @@
                 // 媒体概况饼图数据
                 ringData: [],
                 // 资源库存数据
-                resStock: {past: {}, next: {}, currentMonthPercent: 0.5},
+                resStock: {unsoldLabRate: 0, rankRate: 0, dataList: []},
             }
         },
         beforeCreate() {
@@ -905,6 +897,8 @@
             document.body.addEventListener("resize", () => {
                this.realTimeChangeEcharteWidth()
             });
+            // 资源库存
+            this.getSMResStockReport(this.dateTypeFilter)
             //用户中心
             this.appCenter = appCenter
             this.uploadEvent(1)
@@ -934,6 +928,10 @@
             }
         },
         methods: {
+            // 查看月详情
+            catDetail() {
+              this.catMonthDetail = true  
+            },
             // 环图点击事件更改客户表格数据
             activeData(viewData, ev) {
                 // console.log('tempElement', ev.data.color)
@@ -1121,36 +1119,10 @@
                 api.getApi(this.apiVar.report + '/homepage/getSMResStockReport', {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
+                    dateType
                 }).then(res=>{
                     if (res.data.SysCode === 200200) {
-                        let temp = res.data.data,
-                            past = {
-                                preStartDate: temp.preStartDate,  //历史开始时间
-                                preEndDate: temp.preEndDate,	 //历史结束时间
-                                onPubStock: temp.onPubStock,     //历史已售库存面周数
-                                overdueStock: temp.overdueStock,		//过期资源面周数
-                                repairStock: temp.repairStock,		//历史维修的库存
-                                banStock: temp.banStock,			//历史禁止的库存
-                                onPubStockRate: temp.onPubStockRate || 0,	//历史已售库存的百分比
-                                overdueStockRate: temp.overdueStockRate || 0, //历史过期库存的百分比
-                                repairStockRate: temp.repairStockRate || 0,   //历史维修库存的百分比
-                                banStockRate: temp.banStockRate || 0, 	//历史禁止库存的百分比
-                            },
-                            next = {
-                                futureStartDate: temp.futureStartDate,	//未来开始时间
-                                futureEndDate: temp.futureEndDate,		//未来结束时间
-                                futureOnPubStock: temp.futureOnPubStock,  //未来已售库存面周数
-                                futureUnsoldStock: temp.futureUnsoldStock, //未来未售库存面周数
-                                futureOnPubStockRate: temp.futureOnPubStockRate||0, //未来已售库存百分比
-                                futureUnsoldStockRate: temp.futureUnsoldStockRate||0, //未来未售库存百分比
-                            };
-                        this.resStock = {
-                            past,
-                            next,
-                            overduePrice: temp.overduePrice,
-                            unsoldRank: temp.unsoldRank,
-                            currentMonthPercent: (new Date().getMonth()+1)/13
-                        }
+                        this.resStock = res.data.data
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }
@@ -2287,6 +2259,49 @@
 </style>
 <style scoped lang="scss">
 /** 新增*/
+    .month-btn {
+        color: #1890FF;
+        cursor: default;
+    }
+    .bar-group {
+        display: flex;
+        flex-flow: row nowrap;
+        height: calc(100% - 98px);
+        .wave-bar-item {
+            margin: 0 4px;
+        }
+    } 
+    .unit-legend {
+        display: flex;
+        justify-content:center;
+        flex-flow: row nowrap;
+        align-items: center;
+        margin: 24px 0;
+        font-size: 14px;
+        line-height: 20px;
+        color: rgba(0, 0, 0, 0.85);
+        .extra-comment {
+            margin: 0 40px 0 auto;
+        }
+    }
+    .diamond {
+        display: inline-block;
+        box-sizing: border-box;
+        width: 12px;
+        height: 12px;
+        margin: 0 4px 0 24px;
+        border-radius: 1px;
+    }
+    .blue-diamond {
+        background: #1890FF;
+    }
+    .yellow-diamond {
+        background: #FAAD12;
+    }
+    .white-diamond {
+        border: 1px solid #1890FF;
+        background: #fff;
+    }
     .next-text {
         position: absolute;
         left: 0;
@@ -2310,7 +2325,7 @@
     .capsule-right{box-sizing: border-box; border: 1px solid #E9E9E9; -moz-border-radius:0 160px 160px 0;-webkit-border-radius:0 160px 160px 0;border-radius:0 160px 160px 0;width:auto;height:320px;}
     
     .capsule-left {
-        box-sizing: border-box; border: 1px solid #E9E9E9; -moz-border-radius:160px 0 0 160px;-webkit-border-radius:160px 0 0 160px;border-radius:160px 0 0 160px;width:auto;height:320px;
+        box-sizing: border-box; border: 1px solid #E9E9E9; -moz-border-radius:160px 0 0 160px;-webkit-border-radius:160px 0 0 160px;border-radius:0 0 0 0;width:auto;height:320px;
     }
     .index-top-row {
         display: flex;

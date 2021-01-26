@@ -55,9 +55,9 @@
                             <img class="quesition-icon" src="../../assets/images/question_icon.png" />
                         </el-tooltip>
                         <div class="date-interval">
-                            <span :class="{'active': dateTypeFilter === 1}" @click="getSMResStockReport(1)">按月</span>
-                            <span :class="{'active': dateTypeFilter === 2}" @click="getSMResStockReport(2)">按季</span>
-                            <span :class="{'active': dateTypeFilter === 3}" @click="getSMResStockReport(3)">按年</span>
+                            <span :class="{'active': dateTypeFilter === 2}" @click="getSMResStockReport(2)">按月</span>
+                            <span :class="{'active': dateTypeFilter === 3}" @click="getSMResStockReport(3)">按季</span>
+                            <span :class="{'active': dateTypeFilter === 4}" @click="getSMResStockReport(4)">按年</span>
                         </div>
                     </template>
                     <template slot="content">
@@ -73,30 +73,25 @@
                             </li>
                             <li v-if="dateTypeFilter === 1 && catMonthDetail" class="extra-comment">
                                 <span>{{`${new Date().getFullYear()}年${catMonthDetail}详情`}}</span>
-                                <span class="month-btn" @click="catMonthDetail=''">返回</span>
+                                <span class="month-btn" @click="getSMResStockReport(2); catMonthDetail=''">返回</span>
                             </li>
                         </ul>
                         <!--按月-月详情-->
-                        <div class="bar-group" v-if="dateTypeFilter === 1 && catMonthDetail && resStock.dataList.length<6">
-                            <waveBar v-for="(item, index) in resStock.dataList" :key="index" :barData="item" :filter="4" class="wave-bar-item" :refName="'wavebar'+index" :boxWidthUnitNum="3"></waveBar>
+                        <div class="bar-group" v-if="dateTypeFilter === 1 && catMonthDetail && resStock.dataList.length<7">
+                            <waveBar v-for="(item, index) in resStock.dataList" :key="index" :barData="item" :filter="1" class="wave-bar-item" :refName="'wavebar'+index" :boxWidthUnitNum="3"></waveBar>
                         </div>
                         <!--按月-->
-                        <div class="bar-group" v-if="dateTypeFilter === 1 && !catMonthDetail">
-                            <waveBar v-for="(item, index) in resStock.dataList" :key="'monthWavebar'+index" :barData="item" @emitFun="catDetail" :filter="1" class="wave-bar-item" :refName="'monthWavebar'+index" :boxWidthUnitNum="1"></waveBar>
+                        <div class="bar-group" v-if="dateTypeFilter === 2 && !catMonthDetail">
+                            <waveBar v-for="(item, index) in resStock.dataList" :key="'monthWavebar'+index" :barData="item" @emitFun="catDetail" :filter="2" class="wave-bar-item" :refName="'monthWavebar'+index" :boxWidthUnitNum="1"></waveBar>
                         </div>
                         <!--按季-->
-                        <div class="bar-group" v-if="dateTypeFilter === 2">
-                            <waveBar v-for="(item, index) in resStock.dataList" :key="'quarterWavebar'+index" :barData="item" @emitFun="catDetail" :filter="2" class="wave-bar-item" :refName="'quarterWavebar'+index" :boxWidthUnitNum="3"></waveBar>
+                        <div class="bar-group" v-if="dateTypeFilter === 3">
+                            <waveBar v-for="(item, index) in resStock.dataList" :key="'quarterWavebar'+index" :barData="item" @emitFun="catDetail" :filter="3" class="wave-bar-item" :refName="'quarterWavebar'+index" :boxWidthUnitNum="3"></waveBar>
                         </div>
                         <!--按年-->
-                        <div class="bar-group" v-if="dateTypeFilter === 3">
-                            <waveBar v-for="(item, index) in resStock.dataList" :key="'yearWavebar'+index" :barData="item" @emitFun="catDetail" :filter="3" class="wave-bar-item" :refName="'yearWavebar'+index" :boxWidthUnitNum="index?12-new Date().getMonth()-1:new Date().getMonth()+1"></waveBar>
+                        <div class="bar-group" v-if="dateTypeFilter === 4">
+                            <waveBar v-for="(item, index) in resStock.dataList" :key="'yearWavebar'+index" :barData="item" @emitFun="catDetail" :filter="4" class="wave-bar-item" :refName="'yearWavebar'+index" :boxWidthUnitNum="index?12-new Date().getMonth()-1:new Date().getMonth()+1"></waveBar>
                         </div>
-                        <!-- <div class="coordinate-line">
-                            <div v-for="item in 12" class="sub-line">
-                                <span class="sub-text">{{item + '月'}}</span>
-                            </div>
-                        </div> -->
                         <div v-if="sessionData.asrID != '999'" class="bottom-box">
                             贵司未来三周还有  <span class="avtive"> {{resStock.unsoldLabRate}}% </span>  的资源尚未售出，多于全国 <span class="avtive"> {{resStock.rankRate}}% </span> 的公司，再努把力！
                         </div>
@@ -713,7 +708,7 @@
                     data: []
                 },
                 dateInterval: 1,
-                dateTypeFilter: 1,
+                dateTypeFilter: 2,
                 catMonthDetail: '',
                 isBehind: false,
                 showSetTarget: false,
@@ -796,7 +791,8 @@
             // 查看月详情
             catDetail(barData) {
                 // console.log('barData', barData)
-                this.catMonthDetail = barData.time||''  
+                this.catMonthDetail = barData.time||''
+                this.getSMResStockReport(1)
             },
             // 环图点击事件更改客户表格数据
             activeData(viewData, ev) {
@@ -978,17 +974,40 @@
                 }).finally(_=>{
                     
                 })
+                // 
+                !this.isPlatform&&this.getSMResStockRankReport()
+            },
+            // 资源库存排名
+            getSMResStockRankReport() {
+                api.getApi(this.apiVar.report + '/homepage/getSMResStockRankReport', {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token
+                }).then(res=>{
+                    if (res.data.SysCode === 200200) {
+                        this.resStock.unsoldLabRate = res.data.data.unsoldLabRate
+                        this.resStock.rankRate = res.data.data.rankRate
+                    } else {
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                }).catch(err=>{
+                    console.log('err', err)
+                }).finally(_=>{
+                })
             },
             // 资源库存数据
             getSMResStockReport(dateType) {
                 this.dateTypeFilter = dateType
-                api.getApi(this.apiVar.report + '/homepage/getSMResStockReport', {
+                let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                     dateType
-                }).then(res=>{
+                }
+                if(dateType===1) {
+                    params.monthValue = this.catMonthDetail.substring(0, 1)
+                }
+                api.getApi(this.apiVar.report + '/homepage/getSMResStockReport', params).then(res=>{
                     if (res.data.SysCode === 200200) {
-                        this.resStock = res.data.data
+                        this.resStock.dataList = res.data.data||[]
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }
@@ -1064,14 +1083,14 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                     }).then(() => {
-                        if(row.cID !=='' || row.cID !== undefined || row.cID !== null) {
+                        if(row.bID !=='' || row.bID !== undefined || row.bID !== null) {
                             let params = {
                                 uid: this.sessionData.uID,
                                 token: this.sessionData.token,
-                                cID: row.cID
+                                bID: row.bID
                             }
                             // console.log('设置销售目标参数',params)
-                            api.postApi(this.apiVar.report + '/homepage/addIgnoreCustomer', params).then(res=>{
+                            api.postApi(this.apiVar.report + '/homepage/addIgnoreBrand', params).then(res=>{
                                 if(res.data.SysCode === 200200 || res.data.MSG === "操作成功"){
                                     this.messageFun('success',res.data.MSG)
                                     this.getSMCustomerActiveReport()
@@ -1154,14 +1173,49 @@
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                 };
+                let tempCompanyHonor = {
+                    topIncrResCnt: {
+                        title: '社区新开发TOP',
+                        url: require('../../assets/images/index/communityMedal.png'),
+                        urlFalse:require('../../assets/images/index/communityDefault.png')
+                    },
+                    topNationwideContract: {
+                        title: '全国销售额TOP',
+                        url: require('../../assets/images/index/saleMedal.png'),
+                        urlFalse:require('../../assets/images/index/saleDefault.png')
+                    },
+                    topNativeContract: {
+                        title: '本地销售额TOP',
+                        url: require('../../assets/images/index/localSaleMedal.png'),
+                        urlFalse:require('../../assets/images/index/localSaleDefault.png')
+                    },
+                    topOnPubRate: {
+                        title: '城市上刊率TOP',
+                        url: require('../../assets/images/index/skMedal.png'),
+                        urlFalse:require('../../assets/images/index/skDefault.png')
+                    },
+                    topPlanCnt: {
+                        title: '成单订单量TOP',
+                        url: require('../../assets/images/index/orderMedal.png'),
+                        urlFalse:require('../../assets/images/index/orderDefault.png')
+                    }
+                }
                 api
                     .getApi(
-                    this.apiVar.report + "/homepage/getMedal",
+                    this.apiVar.report + "/homepage/getDirectlyRankReport",
                         params
                     )
                     .then((res) => {
                     if (res.data.SysCode === 200200) {
-                        // res.data.data || [];
+                        Object.keys(res.data.data).forEach(key=>{
+                            if(tempCompanyHonor[key]) {
+                                if(res.data.data[key] == 0) {
+                                    tempCompanyHonor[key].url = tempCompanyHonor[key].urlFalse
+                                }
+                                this.companyHonor.push(tempCompanyHonor[key])
+                                console.log('this.companyHonor', this.companyHonor)
+                            }
+                        })
                     } else {
                         sessFun.messageFun("warning", res.data.MSG);
                     }
@@ -1170,33 +1224,7 @@
                         console.log("err", err);
                     })
                     .finally((_) => {
-                        this.companyHonor = [
-                            {
-                                title: '本地销售额TOP',
-                                url: require('../../assets/images/index/localSaleMedal.png'),
-                                urlFalse:require('../../assets/images/index/localSaleDefault.png')
-                            },
-                            {
-                                title: '成单订单量TOP',
-                                url: require('../../assets/images/index/orderMedal.png'),
-                                urlFalse:require('../../assets/images/index/orderDefault.png')
-                            },
-                            {
-                                title: '全国销售额TOP',
-                                url: require('../../assets/images/index/saleMedal.png'),
-                                urlFalse:require('../../assets/images/index/saleDefault.png')
-                            },
-                            {
-                                title: '城市上刊率TOP',
-                                url: require('../../assets/images/index/skMedal.png'),
-                                urlFalse:require('../../assets/images/index/skDefault.png')
-                            },
-                            {
-                                title: '社区新开发TOP',
-                                url: require('../../assets/images/index/communityMedal.png'),
-                                urlFalse:require('../../assets/images/index/communityDefault.png')
-                            }
-                        ]
+                        
                     });
              },
             // 根据所属公司权限调用接口
@@ -2358,33 +2386,6 @@
         -webkit-border-radius:160px;
         border-radius:160px;
         overflow: hidden;
-    }
-    .coordinate-line {
-        width: 550px;
-        height: 1px;
-        position: relative;
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-around;
-        margin: 17px auto;
-        padding: 0 25px;
-        background: #E8E8E8;
-        .sub-line {
-            position: relative;
-            width: 1px;
-            height: 6px;
-            background: #E8E8E8;
-            .sub-text {
-                position: absolute;
-                display: block;
-                transform: translateX(-50%);
-                margin-top: 4px;
-                line-height: 22px;
-                font-size: 12px;
-                color: rgba(0, 0, 0, 0.45);
-                white-space: nowrap;
-            }
-        }
     }
     .tip-box {
         border-radius: 2px;

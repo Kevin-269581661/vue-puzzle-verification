@@ -2,23 +2,6 @@
     <div>
         <div class="ad_index_container">
             <ul class="ad_index_panel clearfix">
-                <!-- <li>
-                    <router-link :to="{path:'/operate/clientList'}" class="mask"></router-link>
-                    <div class="panel_top">
-                        <div class="panel_top_icon_wrap">
-                            <div class="panel_top_icon">
-
-                            </div>
-                        </div>
-                        <div class="panel_top_right">
-                            <h1>客户管理</h1>
-                            <span>查 看<img src="../../assets/images/rightArr.png" alt=""></span>
-                        </div>
-                    </div>
-                    <div class="panel_bottom">
-                       <p><router-link :to="{path:'admin/createClient'}">创建客户</router-link></p>
-                    </div>
-                </li> -->
                 <li>
                   <router-link :to="{path:'/operate/mediaList'}" class="mask"></router-link>
                     <div class="panel_top">
@@ -30,13 +13,10 @@
                             <h1>媒体管理</h1>
                             <span>查 看
                                 <i class="fa fa-angle-right fa-lg"></i>
-                                <!-- <img src="../../assets/images/rightArr.png" alt=""> -->
                             </span>
                         </div>
                     </div>
-                    <div class="panel_bottom">
-                        <!-- <p><router-link :to="{path:'operate/mediaInput'}">录入媒体</router-link></p> -->
-                    </div>
+                    <div class="panel_bottom"></div>
                 </li>
                 <li>
                   <router-link :to="{path:'/operate/planList'}" class="mask"></router-link>
@@ -49,7 +29,6 @@
                             <h1>方案管理</h1>
                             <span>查 看
                                 <i class="fa fa-angle-right fa-lg"></i>
-                                <!-- <img src="../../assets/images/rightArr.png" alt=""> -->
                             </span>
                         </div>
                     </div>
@@ -68,7 +47,6 @@
                             <h1>订单管理</h1>
                             <span>查 看
                                 <i class="fa fa-angle-right fa-lg"></i>
-                                <!-- <img src="../../assets/images/rightArr.png" alt=""> -->
                             </span>
                         </div>
                     </div>

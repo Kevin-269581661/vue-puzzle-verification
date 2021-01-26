@@ -131,13 +131,13 @@
 			</el-row>
 			
 			<el-tabs class="index-tab-group" style="height: 643px;border: 1px solid #e5e6e9;" v-model="activeTabsName">
-                <el-tab-pane label="点位分布" name="pointDistribution">
-                    <point-distribution mapContainer="mapContainer1" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointDistribution'"></point-distribution>
-                </el-tab-pane>
-                <el-tab-pane label="点位上刊率" name="pointPublication">
-                    <publish-rate mapContainer="mapContainer2" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointPublication'"></publish-rate>
-                </el-tab-pane>
-            </el-tabs>
+				<el-tab-pane label="点位分布" name="pointDistribution">
+					<point-distribution mapContainer="mapContainer1" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointDistribution'"></point-distribution>
+				</el-tab-pane>
+				<el-tab-pane label="点位上刊率" name="pointPublication">
+					<publish-rate mapContainer="mapContainer2" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointPublication'"></publish-rate>
+				</el-tab-pane>
+			</el-tabs>
 		</div>
 
 		<div class="dialog_box">
@@ -527,8 +527,6 @@ export default {
 					this.imginfo[2].rank = this.medalInfo.release;
 					this.imginfo[2].name = this.getName(3, this.medalInfo.release-2);
 					this.imginfo[2].title = this.imginfo[2].name?this.imginfo[2].name:'';
-
-					// console.log('this.imginfo', this.imginfo);
 					for(let data of this.imginfo){
 						if(data.title){
 							data.flag = true;
@@ -537,7 +535,6 @@ export default {
 						}
 					}
 					this.companyHonor = this.comimgInfo.concat(this.imginfo);
-					// console.log(this.companyHonor, 'companyHonor');
 				}else{
 					Message.warning(res.data.MSG);
 				}

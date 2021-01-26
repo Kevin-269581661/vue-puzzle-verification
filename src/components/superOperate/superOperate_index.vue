@@ -72,32 +72,32 @@
                                 <span class="diamond white-diamond"></span>过期
                             </li>
                             <li v-if="dateTypeFilter === 1 && catMonthDetail" class="extra-comment">
-                                <span>2020年3月详情</span>
-                                <span class="month-btn" @click="catMonthDetail=false">返回</span>
+                                <span>{{`${new Date().getFullYear()}年${catMonthDetail}详情`}}</span>
+                                <span class="month-btn" @click="catMonthDetail=''">返回</span>
                             </li>
                         </ul>
                         <!--按月-月详情-->
-                        <div class="bar-group" v-if="dateTypeFilter === 1 && catMonthDetail">
-                            <waveBar v-for="(item, index) in resStock.dataList" :key="index" :barData="item" class="wave-bar-item" :refName="'wavebar'+index" :boxWidthUnitNum="3"></waveBar>
+                        <div class="bar-group" v-if="dateTypeFilter === 1 && catMonthDetail && resStock.dataList.length<6">
+                            <waveBar v-for="(item, index) in resStock.dataList" :key="index" :barData="item" :filter="4" class="wave-bar-item" :refName="'wavebar'+index" :boxWidthUnitNum="3"></waveBar>
                         </div>
                         <!--按月-->
                         <div class="bar-group" v-if="dateTypeFilter === 1 && !catMonthDetail">
-                            <waveBar v-for="(item, index) in resStock.dataList" :key="'monthWavebar'+index" :barData="item" @emitFun="catDetail" class="wave-bar-item" :refName="'monthWavebar'+index" :boxWidthUnitNum="1"></waveBar>
+                            <waveBar v-for="(item, index) in resStock.dataList" :key="'monthWavebar'+index" :barData="item" @emitFun="catDetail" :filter="1" class="wave-bar-item" :refName="'monthWavebar'+index" :boxWidthUnitNum="1"></waveBar>
                         </div>
                         <!--按季-->
                         <div class="bar-group" v-if="dateTypeFilter === 2">
-                            <waveBar v-for="(item, index) in resStock.dataList" :key="'quarterWavebar'+index" :barData="item" @emitFun="catDetail" class="wave-bar-item" :refName="'quarterWavebar'+index" :boxWidthUnitNum="3"></waveBar>
+                            <waveBar v-for="(item, index) in resStock.dataList" :key="'quarterWavebar'+index" :barData="item" @emitFun="catDetail" :filter="2" class="wave-bar-item" :refName="'quarterWavebar'+index" :boxWidthUnitNum="3"></waveBar>
                         </div>
                         <!--按年-->
                         <div class="bar-group" v-if="dateTypeFilter === 3">
-                            <waveBar v-for="(item, index) in resStock.dataList" :key="'yearWavebar'+index" :barData="item" @emitFun="catDetail" class="wave-bar-item" :refName="'yearWavebar'+index" :boxWidthUnitNum="6"></waveBar>
+                            <waveBar v-for="(item, index) in resStock.dataList" :key="'yearWavebar'+index" :barData="item" @emitFun="catDetail" :filter="3" class="wave-bar-item" :refName="'yearWavebar'+index" :boxWidthUnitNum="index?12-new Date().getMonth()-1:new Date().getMonth()+1"></waveBar>
                         </div>
                         <!-- <div class="coordinate-line">
                             <div v-for="item in 12" class="sub-line">
                                 <span class="sub-text">{{item + '月'}}</span>
                             </div>
                         </div> -->
-                        <div v-if="sessionData.asrID == '999'" class="bottom-box">
+                        <div v-if="sessionData.asrID != '999'" class="bottom-box">
                             贵司未来三周还有  <span class="avtive"> {{resStock.unsoldLabRate}}% </span>  的资源尚未售出，多于全国 <span class="avtive"> {{resStock.rankRate}}% </span> 的公司，再努把力！
                         </div>
                     </template>
@@ -629,45 +629,6 @@
                     },
                     firstDayOfWeek: 6
                 },
-                // 各城市对应荣誉图片地址
-                honorImg:[
-                    {
-                        asrID: '6',
-                        title: '本地销售',
-                        url: require('../../assets/images/index/saler.png'),
-                        urlFalse:require('../../assets/images/index/sale-1.png')
-                    },
-                    {
-                        asrID: '6',
-                        title: '新增用户',
-                        url: require('../../assets/images/index/newUser.png'),
-                        urlFalse:require('../../assets/images/index/user-1.png')
-                    },
-                    {
-                        asrID: '4',
-                        title: '全国销售',
-                        url: require('../../assets/images/index/allSaler.png'),
-                        urlFalse:require('../../assets/images/index/allSale-1.png')
-                    },
-                    {
-                        asrID: '6',
-                        title: '财务管理',
-                        url: require('../../assets/images/index/money.png'),
-                        urlFalse:require('../../assets/images/index/money-1.png')
-                    },
-                    {
-                        asrID: '1',
-                        title: '社区发展',
-                        url: require('../../assets/images/index/comDev.png'),
-                        urlFalse:require('../../assets/images/index/comDev-1.png')
-                    },
-                    {
-                        asrID: '2',
-                        title: '飞跃进步',
-                        url: require('../../assets/images/index/progress.png'),
-                        urlFalse:require('../../assets/images/index/advance-1.png')
-                    }
-                ],
                 //登录用户所在公司的荣誉
                 companyHonor:[],
                 // 应用中心
@@ -753,7 +714,7 @@
                 },
                 dateInterval: 1,
                 dateTypeFilter: 1,
-                catMonthDetail: false,
+                catMonthDetail: '',
                 isBehind: false,
                 showSetTarget: false,
                 targetVaule: 0,
@@ -794,7 +755,7 @@
             // 获取session中的数据,并进行权限判断
             this.getsessionData()
             // 超级运营顶部内容详情
-            this.getHeaderData()
+            // this.getHeaderData()
             // 根据所属公司权限调用接口
             this.getDataByAsrID()
             // 实时监听body宽度变化
@@ -833,8 +794,9 @@
         },
         methods: {
             // 查看月详情
-            catDetail() {
-              this.catMonthDetail = true  
+            catDetail(barData) {
+                // console.log('barData', barData)
+                this.catMonthDetail = barData.time||''  
             },
             // 环图点击事件更改客户表格数据
             activeData(viewData, ev) {
@@ -1176,25 +1138,67 @@
                 this.userInfo.endTime = timeFormat.returnDayCount(-1,'-')
                 // 本季度荣誉
                 if(this.isRetailCompany) {
-                    for(let key of this.honorImg){
-                        if (key.asrID == this.sessionData.asrID) {
-                            this.companyHonor.push({
-                                asrID: key.asrID,
-                                url: key.url,
-                                title: key.title,
-                                flag: true
-                            })
-                        } else {
-                            this.companyHonor.push({
-                                asrID: key.asrID,
-                                url: key.urlFalse,
-                                title: key.title,
-                                flag: false
-                            })
-                        }
-                    }
+                    this.getMedal()
                 }
             },
+            getMedal() {
+                /*  
+                    获取勋章称号
+                    "topIncrResCnt":1, //社区新开发top
+                    "topPlanCnt":1,    //订单量top
+                    "topOnPubRate":1,   //城市上刊率top
+                    "topNativeContract":1, //本地销售额top
+                    "topNationwideContract":1 //全国销售额top 
+                */
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                };
+                api
+                    .getApi(
+                    this.apiVar.report + "/homepage/getMedal",
+                        params
+                    )
+                    .then((res) => {
+                    if (res.data.SysCode === 200200) {
+                        // res.data.data || [];
+                    } else {
+                        sessFun.messageFun("warning", res.data.MSG);
+                    }
+                    })
+                    .catch((err) => {
+                        console.log("err", err);
+                    })
+                    .finally((_) => {
+                        this.companyHonor = [
+                            {
+                                title: '本地销售额TOP',
+                                url: require('../../assets/images/index/localSaleMedal.png'),
+                                urlFalse:require('../../assets/images/index/localSaleDefault.png')
+                            },
+                            {
+                                title: '成单订单量TOP',
+                                url: require('../../assets/images/index/orderMedal.png'),
+                                urlFalse:require('../../assets/images/index/orderDefault.png')
+                            },
+                            {
+                                title: '全国销售额TOP',
+                                url: require('../../assets/images/index/saleMedal.png'),
+                                urlFalse:require('../../assets/images/index/saleDefault.png')
+                            },
+                            {
+                                title: '城市上刊率TOP',
+                                url: require('../../assets/images/index/skMedal.png'),
+                                urlFalse:require('../../assets/images/index/skDefault.png')
+                            },
+                            {
+                                title: '社区新开发TOP',
+                                url: require('../../assets/images/index/communityMedal.png'),
+                                urlFalse:require('../../assets/images/index/communityDefault.png')
+                            }
+                        ]
+                    });
+             },
             // 根据所属公司权限调用接口
             getDataByAsrID(){
                 if (this.isRetailCompany) {

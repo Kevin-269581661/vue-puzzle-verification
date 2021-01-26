@@ -12,24 +12,29 @@
       </div> -->
       <ul>
           <li class="pop-item">
-              <em>已售</em>
-              <span class="align-right">{{barData.onPubLabCnt}}面天</span>
-              <span class="tip-rate">{{barData.onPubRate}}%</span>
+            <em>已售</em>
+            <span class="align-right">{{barData.onPubLabCnt}}面天</span>
+            <span class="tip-rate">{{barData.onPubRate}}%</span>
           </li>
           <li class="pop-item">
-              <em>未售出</em>
-              <span class="align-right">{{barData.overdueLabCnt}}面天</span>
-              <span class="tip-rate">{{barData.overdueRate}}%</span>
+            <em>未售出</em>
+            <span class="align-right">{{barData.overdueLabCnt}}面天</span>
+            <span class="tip-rate">{{barData.overdueRate}}%</span>
           </li>
           <li class="pop-item">
-              <em>维修</em>
-              <span class="align-right">{{barData.repairLabCnt}}面天</span>
-              <span class="tip-rate">{{barData.repairRate}}%</span>
+            <em>维修</em>
+            <span class="align-right">{{barData.repairLabCnt}}面天</span>
+            <span class="tip-rate">{{barData.repairRate}}%</span>
           </li>
-          <li class="pop-item">
-              <em>禁用</em>
-              <span class="align-right">{{barData.banLabCnt}}面天</span>
-              <span class="tip-rate">{{barData.banRate}}%</span>
+          <li v-if="filter==3" class="pop-item">
+            <em>损耗资源</em>
+            <span class="align-right">{{barData.banLabCnt}}面天</span>
+            <span class="tip-rate">{{barData.banRate}}%</span>
+          </li>
+          <li v-else class="pop-item">
+            <em>禁用</em>
+            <span class="align-right">{{barData.banLabCnt}}面天</span>
+            <span class="tip-rate">{{barData.banRate}}%</span>
           </li>
       </ul>
   </div>
@@ -51,10 +56,12 @@
             <g fill="#FABF14">
               <path :d="wavePath1"></path>
               <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" :to="`-${boxWidth}`" dur="3s" repeatCount="indefinite"></animateTransform>
+              <animateTransform attributeName="transform" attributeType="XML" type="translate" :from="`0 ${boxHeight-waveHeight1}`" :to="`-${boxWidth} 0`" dur="1.5s" calcMode="linear"></animateTransform>
             </g>
             <g fill="#FAAD14">
               <path :d="wavePath1"></path>
               <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" :to="`-${boxWidth}`" dur="1.5s" repeatCount="indefinite"></animateTransform>
+              <animateTransform attributeName="transform" attributeType="XML" type="translate" :from="`0 ${boxHeight-waveHeight1}`" :to="`-${boxWidth} 0`" dur="1.5s" calcMode="linear"></animateTransform>
             </g>
             <text v-if="waveHeight2-waveHeight1 > 14" :x="boxWidth/2" :y="(waveHeight2+waveHeight1)/2" style='dominant-baseline:middle;text-anchor:middle;' fill="#fff" font-family="DIN-Medium" font-size="14">{{barData.banRepairRate||'0.00'}}%</text>
           </g>
@@ -63,10 +70,12 @@
             <g fill="#1890FF">
               <path :d="wavePath2"></path>
               <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" :to="`-${boxWidth}`" dur="3s" repeatCount="indefinite"></animateTransform>
+              <animateTransform attributeName="transform" attributeType="XML" type="translate" :from="`0 ${boxHeight-waveHeight2}`" :to="`-${boxWidth} 0`" dur="1.5s" calcMode="linear"></animateTransform>
             </g>
             <g fill="#6DB9FF" fill-opacity=".5">
               <path :d="wavePath2"></path>
               <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" :to="`-${boxWidth}`" dur="1.5s" repeatCount="indefinite"></animateTransform>
+              <animateTransform attributeName="transform" attributeType="XML" type="translate" :from="`0 ${boxHeight-waveHeight2}`" :to="`-${boxWidth} 0`" dur="1.5s" calcMode="linear"></animateTransform>
             </g>
             <text v-if="boxHeight-waveHeight2 > 14" :x="boxWidth/2" :y="(boxHeight+waveHeight2)/2" style='dominant-baseline:middle;text-anchor:middle;' fill="#fff" font-family="DIN-Medium" font-size="14">{{50||'0.00'}}%</text>
           </g>
@@ -93,6 +102,10 @@ export default {
     barData: {
       type: Object,
       required: true
+    },
+    filter: {
+      type: Number,
+      default: 1
     }
   },
   data() {
@@ -140,7 +153,8 @@ export default {
       this.wavePath2 = `M 0 ${this.waveHeight2}  Q ${this.waveWidthUnit} ${this.waveHeightUnit+this.waveHeight2}, ${this.waveWidthUnit*2} ${this.waveHeight2} T ${this.waveWidthUnit*2*2} ${this.waveHeight2} T ${this.waveWidthUnit*2*3} ${this.waveHeight2} T ${this.waveWidthUnit*2*4} ${this.waveHeight2} T ${this.waveWidthUnit*2*5} ${this.waveHeight2} T ${this.waveWidthUnit*2*6} ${this.waveHeight2} T ${this.waveWidthUnit*2*7} ${this.waveHeight2} T ${this.waveWidthUnit*2*8} ${this.waveHeight2} V ${this.boxHeight} H 0 V ${this.waveHeight2}`
     },
     catDetail() {
-      this.$emit('emitFun')
+      if(this.filter!==1) return
+      this.$emit('emitFun', this.barData)
     }
   }
 };

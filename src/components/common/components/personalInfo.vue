@@ -14,7 +14,6 @@
         <div v-if="honorImg.length>0" class="line-vertical"></div>
         <div class="item-two" v-if="honorImg.length>0">
             <img v-for="(item,index) of honorImg" :key="index" :src="item.url" :alt="item.title" :title="item.title">
-            <!-- <i>{{key.title}}</i> -->
         </div>
         <div class="overflow-img">●●●</div>
         <div v-if="linkArr.length>0" class="line-vertical"></div>

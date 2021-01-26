@@ -124,34 +124,6 @@ export default {
     this.instanceMap = null;
   },
   methods: {
-    /* 获取勋章称号
-    "topIncrResCnt":1, //社区新开发top
-    "topPlanCnt":1,    //订单量top
-    "topOnPubRate":1,   //城市上刊率top
-    "topNativeContract":1, //本地销售额top
-    "topNationwideContract":1 //全国销售额top */
-    getMedal() {
-      let params = {
-        uid: this.sessionData.uID,
-        token: this.sessionData.token,
-      };
-      api
-        .getApi(
-          this.apiVar.report + "/homepage/getDistrictOnPubRateReport",
-          params
-        )
-        .then((res) => {
-          if (res.data.SysCode === 200200) {
-            // res.data.data || [];
-          } else {
-            sessFun.messageFun("warning", res.data.MSG);
-          }
-        })
-        .catch((err) => {
-          console.log("err", err);
-        })
-        .finally((_) => {});
-    },
     // 首页的地图上刊率 /report /homepage/getDistrictOnPubRateReport
     getDistrictOnPubRateReport() {
       let params = {

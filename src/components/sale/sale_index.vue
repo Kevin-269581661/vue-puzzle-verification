@@ -177,7 +177,6 @@
 
 <script>
     import {Button, Message} from 'element-ui';
-    import homeTop from '../common/components/homeTop.vue';
     import homeLink from '../common/components/homeLink.vue';
     import {api} from '../../api/api';
     import timeFormat from '../../commonFun/timeFormat';
@@ -197,7 +196,6 @@
     export default {
         name: "sale_index",
         components: {
-            homeTop,
             homeLink,
             noSearchResult,
             elButton: Button,

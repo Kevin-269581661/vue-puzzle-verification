@@ -238,7 +238,6 @@
 <script>
 import { Button, Message } from 'element-ui';
 import timeFormat from '../../commonFun/timeFormat.js';
-// import homeTop from '../common/components/homeTop.vue';
 import homeLink from '../common/components/homeLink.vue';
 import { api } from '../../api/api';
 import sessFun from '../../commonFun/sessFun.js';
@@ -258,10 +257,8 @@ import publishRate from '../common/components/publishRate.vue';
 export default {
 	name: "media_index",
 	components:{
-		// homeTop,
 		homeLink,
 		noSearchResult,
-
 		personalInfo,
 		messageAndApp,
 		chartCard,
@@ -269,7 +266,7 @@ export default {
 		ringChart,
 		miniProgress,
 		pointDistribution,
-        publishRate
+    publishRate
 	},
 	data(){
 		return{

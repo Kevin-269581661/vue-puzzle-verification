@@ -1,7 +1,6 @@
 <template>
   <div>
     <div class="ad_index_container">
-        <!-- <home-top :user-info="userInfo" :data-arr="dataArr" :honor-img="companyHonor"></home-top> -->
         <div class="index-top-row">
             <div class="left-layout">
                 <personal-info :cityRank='cityRank' :user-info="userInfo" :honor-img="companyHonor" :linkArr="linkArrNew"></personal-info>
@@ -406,10 +405,7 @@
                                 <div id="first_box">
                                     <img src="../../assets/images/index/left-star.png" alt="" class="monthly_ranking_img_top_left">
                                     <img src="../../assets/images/index/right-star.png" alt="" class="monthly_ranking_img_top_right">
-                                    <img src="../../assets/images/index/left.png" alt="" class="monthly_ranking_img_left">
-                                    <!--showCityRankingImg-->
-                                    <!--<img src="../../assets/images/index/beijing.png" alt="" class="monthly_ranking_img_meiddle">-->
-                                    <img :src="showCityRankingImg[0].url" alt="" class="monthly_ranking_img_meiddle">
+                                    <img src="../../assets/images/index/left.png" alt="" class="monthly_ranking_img_left"><img :src="showCityRankingImg[0].url" alt="" class="monthly_ranking_img_meiddle">
                                     <img src="../../assets/images/index/right.png" alt="" class="monthly_ranking_img_right">
                                     <img src="../../assets/images/index/name.png" alt="" class="monthly_ranking_img_bottom">
                                     <span class="monthly_ranking_city_name city_name_left">{{showCityRankingImg[0].city}}</span>
@@ -469,8 +465,6 @@
 </template>
 
 <script>
-    // import homeTop from '../common/components/homeTop.vue';
-
     import personalInfo from '../common/components/personalInfo.vue';
     import messageAndApp from '../common/components/messageAndApp.vue';
     import chartCard from '../common/components/chartCard.vue';
@@ -493,9 +487,7 @@
     export default {
         name: "admin_index",
         components: {
-            // homeTop,
             homeLink,
-
             personalInfo,
             messageAndApp,
             chartCard,
@@ -519,7 +511,7 @@
                     greetings: '祝您开心每一天!',
                     avator: require('../../assets/images/index/headimg.png'),
                 },
-                dataArr: [
+                /* dataArr: [
                     {
                         name: '当月激活客户数',
                         data: 0
@@ -532,7 +524,7 @@
                         name: '当月成交金额',
                         data: '0'
                     },
-                ],
+                ], */
                 // 常用功能，按超管、媒介、销售分组
                 linkArrNew: [
                     {
@@ -1326,16 +1318,8 @@
                     }
                 })
             },
-            // 根据公司id返回城市名称及图片地址 rankingImg
-            // returnCityData(asrID) {
-            //     for(let key of this.rankingImg){
-            //         if(asrID == key.asrID){
-            //             return {city: key.city, url: key.url}
-            //         }
-            //     }
-            // },
             //超级运营顶部内容详情
-            getHeaderData(){
+            /* getHeaderData(){
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token
@@ -1351,7 +1335,7 @@
                         this.messageFun('warning','暂无数据')
                     }
                 })
-            },
+            }, */
             // 图表tabs切换
             tabHandleClick(tab, event){
                 this.activeTabsName = tab.name

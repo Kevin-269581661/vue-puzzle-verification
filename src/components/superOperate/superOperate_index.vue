@@ -35,22 +35,22 @@
                                     数据更新至昨日
                                 </li>
                                 <li style="line-height: 20px;">
-                                    历史库存：统计今年1月1日起至昨日的总点位面周数
+                                    历史库存：统计今年1月1日起至昨日的总点位面天数
                                 </li>
                                 <li style="line-height: 20px;">
-                                    未来库存：统计今日起至年底12月31日的总点位面周数
+                                    未来库存：统计今日起至年底12月31日的总点位面天数
                                 </li>
                                 <li style="line-height: 20px;">
-                                    已售资源：指统计周期内售卖出去的面*周数
+                                    已售资源：指统计周期内售卖出去的面*天数
                                 </li>
                                 <li style="line-height: 20px;">
-                                    过期资源：指统计周期内可投放却未售卖出去的面*周数
+                                    未售出资源：指统计周期内可投放却未售卖出去的面*天数
                                 </li>
                                 <li style="line-height: 20px;">
-                                    维修资源：指统计周期内处于维修状态而未售卖的面*周数
+                                    维修资源：指统计周期内处于维修状态而未售卖的面*天数
                                 </li>
                                 <li style="line-height: 20px;">
-                                    禁用资源：指统计周期内处于禁用状态而未售卖的面*周数
+                                    禁用资源：指统计周期内处于禁用状态而未售卖的面*天数
                                 </li>
                             </ul>
                             <img class="quesition-icon" src="../../assets/images/question_icon.png" />
@@ -93,101 +93,13 @@
                         <div class="bar-group" v-if="dateTypeFilter === 3">
                             <waveBar v-for="(item, index) in resStock.dataList" :key="'yearWavebar'+index" :barData="item" @emitFun="catDetail" class="wave-bar-item" :refName="'yearWavebar'+index" :boxWidthUnitNum="6"></waveBar>
                         </div>
-                                    
-                                    <!-- <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" :width="600*resStock.currentMonthPercent" height="320" class="capsule-left">
-                                        <defs>
-                                            <linearGradient id="blue1" x1="0%" y1="0%" x2="0%" y2="100%">
-                                                <stop offset="0%" style="stop-color:#6DB9FF;stop-opacity:1" />
-                                                <stop offset="100%" style="stop-color:#1890FF;stop-opacity:1" />
-                                            </linearGradient>
-                                        </defs>
-                                        <g :transform="'translate(0, ' + (100-(resStock.past.onPubStockRate||0)*1-(resStock.past.overdueStockRate||0)*1)*3.2 +')'">
-                                            <g fill="#FABF14" transform="translate(-175 0)">
-                                                <path :d="'M 0 0 Q 87.5 23, 175 0 T 350 0 T 525 0 T 700 0 T 875 0 T 1050 0 T 1225 0 T 1400 0 V ' + (resStock.past.overdueStockRate||100)*3.2 + ' H 0 V 0'" transform="translate(-38.232284367796474, 0)"></path>
-                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-700" dur="1.5s" repeatCount="indefinite"></animateTransform>
-                                            </g>
-                                            <g fill="#FAAD14">
-                                                <path :d="'M 0 0 Q 87.5 23, 175 0 T 350 0 T 525 0 T 700 0 T 875 0 T 1050 0 T 1225 0 T 1400 0 V ' + (resStock.past.overdueStockRate||100)*3.2 + ' H 0 V 0'" transform="translate(-38.232284367796474, 0)"></path>
-                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-350" dur="3s" repeatCount="indefinite"></animateTransform>
-                                            </g>
-                                            <text :x="300*resStock.currentMonthPercent+10" :y="(resStock.past.overdueStockRate||100)*1.6+10" fill="#fff" >{{resStock.past.overdueStockRate||'0.00'}}%</text>
-                                            <text :x="300*resStock.currentMonthPercent+10" :y="(resStock.past.overdueStockRate||100)*1.6+30" fill="#fff" >过期</text>
-                                        </g>
-                                        <g v-if="resStock.past.overdueStockRate*1 > 0" :transform="'translate(0, ' + (100-(resStock.past.onPubStockRate||0)*1)*3.2 +')'" fill="url(#blue1)">
-                                            <path d="M 0 0 H 600 V 320 H 0 V 0"></path>
-                                            <text :x="300*resStock.currentMonthPercent+10" :y="((100-resStock.past.onPubStockRate)||100)*1.6+10" fill="#fff" >{{resStock.past.onPubStockRate||'0.00'}}%</text>
-                                            <text :x="300*resStock.currentMonthPercent+10" :y="((100-resStock.past.onPubStockRate)||100)*1.6+30" fill="#fff" >已售</text>
-                                        </g>
-                                        <g v-else>
-                                            <g fill="#B2DAFF" transform="translate(-175 0)">
-                                                <path d="M 0 0 Q 87.5 23, 175 0 T 350 0 T 525 0 T 700 0 T 875 0 T 1050 0 T 1225 0 T 1400 0 V 320 H 0 V 0"></path>
-                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-700" dur="1.5s" repeatCount="indefinite"></animateTransform>
-                                            </g>
-                                            <g fill="url(#blue2)">
-                                                <path d="M 0 0 Q 87.5 23, 175 0 T 350 0 T 525 0 T 700 0 T 875 0 T 1050 0 T 1225 0 T 1400 0 V 320 H 0 V 0"></path>
-                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-350" dur="3s" repeatCount="indefinite"></animateTransform>
-                                            </g>
-                                            <text x="150" y="155" fill="#fff" >{{resStock.past.onPubStockRate||'0.00'}}%</text>
-                                            <text x="150" y="175" fill="#fff" >已售</text>  
-                                        </g>
-                                    </svg> -->
-                            
-                            <!-- <el-popover
-                                popper-class="index-custom-popper"
-                                class="progress"
-                                placement="right-start"
-                                :visible-arrow="false"
-                                width="200"
-                                trigger="hover">
-                                <div class="tip-box">
-                                    <div class="pop-title">
-                                        <em>{{resStock.next.futureStartDate+'-'+resStock.next.futureEndDate}}</em>
-                                    </div>
-                                    <ul>
-                                        <li class="pop-item">
-                                            <em>已售</em>
-                                            <span class="align-right">{{resStock.next.futureOnPubStock}}面周</span>
-                                            <span class="tip-rate">{{resStock.next.futureOnPubStockRate}}%</span>
-                                        </li>
-                                        <li class="pop-item">
-                                            <em>未售</em>
-                                            <span class="align-right">{{resStock.next.futureUnsoldStock}}面周</span>
-                                            <span class="tip-rate">{{resStock.next.futureUnsoldStockRate}}%</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div slot="reference" style="position: relative;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" :width="600*(1-resStock.currentMonthPercent*1)" height="320" class="capsule-right">
-                                        <defs>
-                                            <linearGradient id="blue2" x1="0%" y1="0%" x2="0%" y2="100%">
-                                                <stop offset="0%" style="stop-color:#6DB9FF;stop-opacity:1" />
-                                                <stop offset="100%" style="stop-color:#1890FF;stop-opacity:1" />
-                                            </linearGradient>
-                                        </defs>
-                                        <g :transform="'translate(0, ' + ((resStock.next.futureUnsoldStockRate||0)*1||100)*3.2 +')'">
-                                            <g fill="#B2DAFF" transform="translate(-175 0)">
-                                                <path d="M 0 0 Q 87.5 23, 175 0 T 350 0 T 525 0 T 700 0 T 875 0 T 1050 0 T 1225 0 T 1400 0 V 320 H 0 V 0"></path>
-                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-700" dur="1.5s" repeatCount="indefinite"></animateTransform>
-                                            </g>
-                                            <g fill="url(#blue2)">
-                                                <path d="M 0 0 Q 87.5 23, 175 0 T 350 0 T 525 0 T 700 0 T 875 0 T 1050 0 T 1225 0 T 1400 0 V 320 H 0 V 0"></path>
-                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-350" dur="3s" repeatCount="indefinite"></animateTransform>
-                                            </g>
-                                        </g>
-                                    </svg>
-                                    <div v-if="resStock.next.futureUnsoldStockRate*1<100" class="next-text">
-                                        <span>已售</span>
-                                        <span>{{resStock.next.futureOnPubStockRate||'0.00'}}%</span>
-                                    </div>
-                                </div>
-                            </el-popover> -->
                         <!-- <div class="coordinate-line">
                             <div v-for="item in 12" class="sub-line">
                                 <span class="sub-text">{{item + '月'}}</span>
                             </div>
                         </div> -->
-                        <div v-if="sessionData.asrID != '999'" class="bottom-box">
-                            贵司共浪费了价值  <span class="avtive"> ¥{{resStock.overduePrice | moneyFormat('¥')}} </span>  的资源，多于全国 <span class="avtive"> {{resStock.unsoldRank}}% </span> 的公司，太可惜了
+                        <div v-if="sessionData.asrID == '999'" class="bottom-box">
+                            贵司未来三周还有  <span class="avtive"> {{resStock.unsoldLabRate}}% </span>  的资源尚未售出，多于全国 <span class="avtive"> {{resStock.rankRate}}% </span> 的公司，再努把力！
                         </div>
                     </template>
                 </index-custom-card>
@@ -2266,7 +2178,8 @@
     .bar-group {
         display: flex;
         flex-flow: row nowrap;
-        height: calc(100% - 98px);
+        height: calc(100% - 185px);
+        padding: 0 40px;
         .wave-bar-item {
             margin: 0 4px;
         }

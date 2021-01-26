@@ -241,7 +241,6 @@ import timeFormat from '../../commonFun/timeFormat.js';
 // import homeTop from '../common/components/homeTop.vue';
 import homeLink from '../common/components/homeLink.vue';
 import { api } from '../../api/api';
-import comcards from '../../commonFun/json/comcard.json';
 import sessFun from '../../commonFun/sessFun.js';
 import indexIsDateFirst from '../../commonFun/indexIsDateFirst.js';
 import noSearchResult from "../../components/common/components/noSearchResult.vue";

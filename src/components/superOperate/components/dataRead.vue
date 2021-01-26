@@ -369,6 +369,12 @@
                                     :show-overflow-tooltip="true">
                                 </el-table-column>
                                 <el-table-column
+                                    prop="bTitle"
+                                    label="品牌"
+                                    min-width="125"
+                                    :show-overflow-tooltip="true">
+                                </el-table-column>
+                                <el-table-column
                                     prop="cooperation"
                                     label="合作情况"
                                     min-width="90">
@@ -2036,6 +2042,7 @@
                         status: key.cooperativeName,
                         time: key.createTime,
                         saler: key.userName,
+                        bTitle: key.bTitle||''
                     })
                 }
                 this.chanceFindTable = arr

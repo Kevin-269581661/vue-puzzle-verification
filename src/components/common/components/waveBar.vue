@@ -9,29 +9,29 @@
   <div class="tip-box">
       <!-- <div class="pop-title">
           <em>{{(resStock.past.preStartDate||'')+'~'+(resStock.past.preEndDate||'')}}</em>
-      </div>
+      </div> -->
       <ul>
           <li class="pop-item">
               <em>已售</em>
-              <span class="align-right">{{resStock.past.onPubStock}}面周</span>
-              <span class="tip-rate">{{resStock.past.onPubStockRate}}%</span>
+              <span class="align-right">{{barData.onPubLabCnt}}面天</span>
+              <span class="tip-rate">{{barData.onPubRate}}%</span>
           </li>
           <li class="pop-item">
-              <em>过期</em>
-              <span class="align-right">{{resStock.past.overdueStock}}面周</span>
-              <span class="tip-rate">{{resStock.past.overdueStockRate}}%</span>
+              <em>未售出</em>
+              <span class="align-right">{{barData.overdueLabCnt}}面天</span>
+              <span class="tip-rate">{{barData.overdueRate}}%</span>
           </li>
           <li class="pop-item">
               <em>维修</em>
-              <span class="align-right">{{resStock.past.repairStock}}面周</span>
-              <span class="tip-rate">{{resStock.past.repairStockRate}}%</span>
+              <span class="align-right">{{barData.repairLabCnt}}面天</span>
+              <span class="tip-rate">{{barData.repairRate}}%</span>
           </li>
           <li class="pop-item">
               <em>禁用</em>
-              <span class="align-right">{{resStock.past.banStock}}面周</span>
-              <span class="tip-rate">{{resStock.past.banStockRate}}%</span>
+              <span class="align-right">{{barData.banLabCnt}}面天</span>
+              <span class="tip-rate">{{barData.banRate}}%</span>
           </li>
-      </ul> -->
+      </ul>
   </div>
   <div slot="reference" style="width: 100%; height: 100%;">
     <svg @click="catDetail" class="chart-wave-bar" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" :viewBox="'0,0,'+boxWidth+','+boxHeight" preserveAspectRatio="xMinYMin meet">
@@ -52,11 +52,11 @@
               <path :d="wavePath1"></path>
               <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" :to="`-${boxWidth}`" dur="3s" repeatCount="indefinite"></animateTransform>
             </g>
-            <g fill="#FAAD14" transform="translate(-175 0)">
+            <g fill="#FAAD14">
               <path :d="wavePath1"></path>
               <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" :to="`-${boxWidth}`" dur="1.5s" repeatCount="indefinite"></animateTransform>
             </g>
-            <text :x="boxWidth/2" :y="15" style='dominant-baseline:middle;text-anchor:middle;' fill="#fff" font-family="DIN-Medium" font-size="14">{{50||'0.00'}}%</text>
+            <text v-if="waveHeight2-waveHeight1 > 14" :x="boxWidth/2" :y="(waveHeight2+waveHeight1)/2" style='dominant-baseline:middle;text-anchor:middle;' fill="#fff" font-family="DIN-Medium" font-size="14">{{barData.banRepairRate||'0.00'}}%</text>
           </g>
           <!--已售-->
           <g>
@@ -68,10 +68,8 @@
               <path :d="wavePath2"></path>
               <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" :to="`-${boxWidth}`" dur="1.5s" repeatCount="indefinite"></animateTransform>
             </g>
-            <text :x="boxWidth/2" :y="boxHeight/2" style='dominant-baseline:middle;text-anchor:middle;' fill="#fff" font-family="DIN-Medium" font-size="14">{{50||'0.00'}}%</text>
+            <text v-if="boxHeight-waveHeight2 > 14" :x="boxWidth/2" :y="(boxHeight+waveHeight2)/2" style='dominant-baseline:middle;text-anchor:middle;' fill="#fff" font-family="DIN-Medium" font-size="14">{{50||'0.00'}}%</text>
           </g>
-          <!-- <text :x="300*29+10" :y="(20||100)*1.6+10" fill="#fff" >{{50||'0.00'}}%</text> -->
-          <!-- <text :x="300*20+10" :y="(30||100)*1.6+30" fill="#fff" >过期</text> -->
       </g>
     </svg>
     <span v-if="barData.time" class="bar-bottom">{{barData.time}}</span>
@@ -106,7 +104,7 @@ export default {
       waveHeightUnit: 0,
       wavePath1: '',
       wavePath2: '',
-      waveHeight1: 0,   // 波浪距离顶部的高度
+      waveHeight1: 0,   // 黄色波浪距离顶部的高度
       waveHeight2: 20
     };
   },
@@ -115,24 +113,27 @@ export default {
   },
   mounted() {
     this.setShape()
+    window.addEventListener("resize", ()=>{
+      this.setShape()
+    })
   },
   watch: {
     barData(val) {
-      console.log('barData', this.barData)
       this.setShape()
-      /* window.addEventListener("resize", ()=>{
-        this.setShape()
-      }) */
     }
   },
   methods: {
     setShape() {
-      console.log(this.$refs[this.refName], $(this.$refs[this.refName].$el)[0].getBoundingClientRect())
-      let rectInfo = $(this.$refs[this.refName].$el)[0].getBoundingClientRect()
+      // console.log(this.$refs[this.refName], $(this.$refs[this.refName].$el)[0].getBoundingClientRect())
+      let rectInfo = this.$refs[this.refName]
+      if(!rectInfo) return
+      rectInfo = $(rectInfo.$el)[0].getBoundingClientRect()
       this.boxWidth = rectInfo.width-6
-      // this.boxWidth = this.boxWidth>0?this.boxWidth:0
+      this.boxWidth = this.boxWidth>0?this.boxWidth:0
       this.boxHeight = rectInfo.height-6
-      // this.boxHeight = this.boxHeight>0?this.boxHeight:0
+      this.boxHeight = this.boxHeight>0?this.boxHeight:0
+      this.waveHeight1 = this.boxHeight*(this.barData.overdueRate*1/100)
+      this.waveHeight2 = this.boxHeight*(this.barData.overdueRate*1+this.barData.banRepairRate*1)/100
       this.waveWidthUnit = this.boxWidth/2/this.waveNum
       this.waveHeightUnit = this.boxWidth*3/50
       this.wavePath1 = `M 0 ${this.waveHeight1}  Q ${this.waveWidthUnit} ${this.waveHeightUnit+this.waveHeight1}, ${this.waveWidthUnit*2} ${this.waveHeight1} T ${this.waveWidthUnit*2*2} ${this.waveHeight1} T ${this.waveWidthUnit*2*3} ${this.waveHeight1} T ${this.waveWidthUnit*2*4} ${this.waveHeight1} T ${this.waveWidthUnit*2*5} ${this.waveHeight1} T ${this.waveWidthUnit*2*6} ${this.waveHeight1} T ${this.waveWidthUnit*2*7} ${this.waveHeight1} T ${this.waveWidthUnit*2*8} ${this.waveHeight1} V ${this.boxHeight} H 0 V ${this.waveHeight1}`
@@ -150,6 +151,7 @@ export default {
   display: block;
   text-align: center;
   font-size: 14px;
+  color: rgba(0, 0, 0, 0.85);
 }
 .chart-wave-bar {
   width: 100%;
@@ -170,24 +172,8 @@ export default {
     display: flex;
     padding-bottom: 6px;
     border-bottom: 1px solid rgba(216, 216, 216, .65);
+    line-height: 20px;
     color: rgba(0, 0, 0, 0.85);
-  .target-btn {
-    margin: 0 0 2px auto;
-    color: rgba(24, 144, 255, 1);
-    cursor: pointer;
-    }
-    .bottom-btn {
-      width: 64px;
-      height: 24px;
-      line-height: 24px;
-      margin: 8px auto 2px auto;
-      border: 1px solid #1890FF;
-      border-radius: 2px;
-      text-align: center;
-      font-size: 12px;
-      color: rgba(24, 144, 255, 1);
-      cursor: pointer;
-    }
   }
   ul {
       padding-top: 3px;
@@ -202,42 +188,6 @@ export default {
     }
     .tip-rate {
       width: 45px;
-    }
-  }
-}
-.pop-box {
-  border-radius: 2px;
-  line-height: 16px;
-  font-size: 12px;
-  font-weight: 400;
-  font-family: PingFangSC-Regular, PingFang SC;
-  .pop-title {
-    display: flex;
-    color: rgba(0, 0, 0, 0.85);
-    .target-btn {
-      margin: 0 0 2px auto;
-      color: rgba(24, 144, 255, 1);
-      cursor: pointer;
-    }
-    .bottom-btn {
-      width: 64px;
-      height: 24px;
-      line-height: 24px;
-      margin: 8px auto 2px auto;
-      border: 1px solid #1890FF;
-      border-radius: 2px;
-      text-align: center;
-      font-size: 12px;
-      color: rgba(24, 144, 255, 1);
-      cursor: pointer;
-    }
-  }
-  .pop-item {
-    display: flex;
-    margin: 2px 0;
-    color: rgba(0, 0, 0, 0.65);
-    .item-right {
-      margin-left: 4px;
     }
   }
 }

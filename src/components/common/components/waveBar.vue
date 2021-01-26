@@ -2,7 +2,7 @@
 <el-popover
   :ref="refName"
   :style="{width: `${Math.floor(1/12*100*boxWidthUnitNum)}%`, height: '100%'}"
-  placement="top-start"
+  placement="right-start"
   :visible-arrow="false"
   width="200"
   trigger="hover">
@@ -122,7 +122,6 @@ export default {
     };
   },
   created() {
-    
   },
   mounted() {
     this.setShape()
@@ -130,10 +129,14 @@ export default {
       this.setShape()
     })
   },
-  watch: {
+  /* watch: {
     barData(val) {
+      console.log('----')
       this.setShape()
     }
+  }, */
+  updated() {
+    this.setShape()
   },
   methods: {
     setShape() {

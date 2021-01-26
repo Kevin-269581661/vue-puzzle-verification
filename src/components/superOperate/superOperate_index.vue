@@ -73,12 +73,12 @@
                             </li>
                             <li v-if="dateTypeFilter === 1 && catMonthDetail" class="extra-comment">
                                 <span>{{`${new Date().getFullYear()}年${catMonthDetail}详情`}}</span>
-                                <span class="month-btn" @click="getSMResStockReport(2); catMonthDetail=''">返回</span>
+                                <span class="month-btn" @click="getSMResStockReport(2)">返回</span>
                             </li>
                         </ul>
                         <!--按月-月详情-->
                         <div class="bar-group" v-if="dateTypeFilter === 1 && catMonthDetail && resStock.dataList.length<7">
-                            <waveBar v-for="(item, index) in resStock.dataList" :key="index" :barData="item" :filter="1" class="wave-bar-item" :refName="'wavebar'+index" :boxWidthUnitNum="3"></waveBar>
+                            <waveBar v-for="(item, index) in resStock.dataList" :key="index" :barData="item" :filter="1" class="wave-bar-item" :refName="'wavebar'+index" :boxWidthUnitNum="2"></waveBar>
                         </div>
                         <!--按月-->
                         <div class="bar-group" v-if="dateTypeFilter === 2 && !catMonthDetail">
@@ -1004,6 +1004,8 @@
                 }
                 if(dateType===1) {
                     params.monthValue = this.catMonthDetail.substring(0, 1)
+                } else {
+                    this.catMonthDetail = ''
                 }
                 api.getApi(this.apiVar.report + '/homepage/getSMResStockReport', params).then(res=>{
                     if (res.data.SysCode === 200200) {
@@ -1213,7 +1215,6 @@
                                     tempCompanyHonor[key].url = tempCompanyHonor[key].urlFalse
                                 }
                                 this.companyHonor.push(tempCompanyHonor[key])
-                                console.log('this.companyHonor', this.companyHonor)
                             }
                         })
                     } else {

@@ -7,9 +7,9 @@
   width="200"
   trigger="hover">
   <div class="tip-box">
-      <!-- <div class="pop-title">
-          <em>{{(resStock.past.preStartDate||'')+'~'+(resStock.past.preEndDate||'')}}</em>
-      </div> -->
+      <div class="pop-title">
+          <em>{{barData.time||''}}</em>
+      </div>
       <ul>
           <li class="pop-item">
             <em>已售</em>
@@ -26,7 +26,7 @@
             <span class="align-right">{{barData.repairLabCnt}}面天</span>
             <span class="tip-rate">{{barData.repairRate}}%</span>
           </li>
-          <li v-if="filter==3" class="pop-item">
+          <li v-if="filter==4" class="pop-item">
             <em>损耗资源</em>
             <span class="align-right">{{barData.banLabCnt}}面天</span>
             <span class="tip-rate">{{barData.banRate}}%</span>
@@ -105,7 +105,7 @@ export default {
     },
     filter: {
       type: Number,
-      default: 1
+      default: 2
     }
   },
   data() {
@@ -153,7 +153,7 @@ export default {
       this.wavePath2 = `M 0 ${this.waveHeight2}  Q ${this.waveWidthUnit} ${this.waveHeightUnit+this.waveHeight2}, ${this.waveWidthUnit*2} ${this.waveHeight2} T ${this.waveWidthUnit*2*2} ${this.waveHeight2} T ${this.waveWidthUnit*2*3} ${this.waveHeight2} T ${this.waveWidthUnit*2*4} ${this.waveHeight2} T ${this.waveWidthUnit*2*5} ${this.waveHeight2} T ${this.waveWidthUnit*2*6} ${this.waveHeight2} T ${this.waveWidthUnit*2*7} ${this.waveHeight2} T ${this.waveWidthUnit*2*8} ${this.waveHeight2} V ${this.boxHeight} H 0 V ${this.waveHeight2}`
     },
     catDetail() {
-      if(this.filter!==1) return
+      if(this.filter!==2) return
       this.$emit('emitFun', this.barData)
     }
   }
@@ -165,6 +165,9 @@ export default {
   display: block;
   text-align: center;
   font-size: 14px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
   color: rgba(0, 0, 0, 0.85);
 }
 .chart-wave-bar {

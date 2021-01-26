@@ -268,7 +268,7 @@
             :visible.sync="changeBill"
             width="30%">
             <div class="changeBill">
-                <h4>￥{{totalChange.total}}</h4>
+                <h4>¥{{totalChange.total}}</h4>
                 <p>现金结算</p>
                 <el-input v-model="totalChange.cash" placeholder="请输入内容" @change="checkCash"
                           :clearable="true"></el-input>

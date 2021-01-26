@@ -62,9 +62,8 @@
                             :endVal="basicTotalData.sale || 0"
                             :duration="500"
                             :decimals='0'
-                            prefix="￥"
+                            prefix="¥"
                         ></countTo>
-                        <!-- <p>￥{{priceFormat(basicTotalData.sale)}}</p> -->
                     </div>
                     <div class="data_box" :class="basicTotalType === '客单价' ? 'box_active' : ''"
                          @click="totalActiveFun('客单价')">
@@ -75,9 +74,8 @@
                             :endVal="basicTotalData.orderSale || 0"
                             :duration="500"
                             :decimals='0'
-                            prefix="￥"
+                            prefix="¥"
                         ></countTo>
-                        <!-- <p>￥{{priceFormat(basicTotalData.orderSale)}}</p> -->
                     </div>
                     <div class="data_box" :class="basicTotalType === '上刊率' ? 'box_active' : ''"
                          @click="totalActiveFun('上刊率')">
@@ -367,6 +365,12 @@
                                 <el-table-column
                                     prop="name"
                                     label="客户名称"
+                                    min-width="125"
+                                    :show-overflow-tooltip="true">
+                                </el-table-column>
+                                <el-table-column
+                                    prop="bTitle"
+                                    label="品牌"
                                     min-width="125"
                                     :show-overflow-tooltip="true">
                                 </el-table-column>
@@ -2038,6 +2042,7 @@
                         status: key.cooperativeName,
                         time: key.createTime,
                         saler: key.userName,
+                        bTitle: key.bTitle||''
                     })
                 }
                 this.chanceFindTable = arr

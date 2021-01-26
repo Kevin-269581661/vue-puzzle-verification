@@ -199,8 +199,10 @@ export default {
             lineHeight: size,
             background: `rgba(${colorR}, ${colorG}, ${colorB}, ${colorA})`,
             color: "#fff",
-            "box-shadow": "0px 0px 2px",
-            "box-sizing": "content-box",
+            // boxShadow: "0px 0px 2px",
+            boxShadow: '0 0 0 0.1em currentcolor inset, 0 0 1em currentcolor inset',
+            boxSizing: "content-box",
+            animation: "mymove 5s infinite"
             // cursor: "pointer",
           });
           this.instanceMap.addOverlay(label);
@@ -233,8 +235,36 @@ export default {
   },
 };
 </script>
+<style>
+/* @keyframes mymove
+{
+	from {width:30px; height: 30px;}
+	to {width:50px; height: 50px;}
+}
 
+@-webkit-keyframes mymove
+{
+	from {width:30px; height: 30px;}
+	to {width:50px; height: 50px;}
+} */
+
+@keyframes mymove {
+  from, to {
+    transform: translate(-50%, -48%);
+  }
+  25% {
+    transform: translate(-52%, -50%);
+  }
+  50% {
+    transform: translate(-50%, -52%);
+  }
+  75% {
+    transform: translate(-48%, -50%);
+  }
+}
+</style>
 <style scoped lang="scss">
+
 * {
   font-family: "Helvetica Neue", Helvetica, Arial, "PingFang ",
     "Hiragino Sans GB" "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei",

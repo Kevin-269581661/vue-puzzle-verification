@@ -34,7 +34,7 @@
 </template>
 <script>
 import $ from "jquery";
-import { initMap, snowStyle, whiteStyle } from "@/commonFun/mapCommon.js";
+import { initMap, whiteStyle, cityCenter } from "@/commonFun/mapCommon.js";
 import api from "../../../api/api";
 import sessFun from "../../../commonFun/sessFun.js";
 export default {
@@ -108,7 +108,6 @@ export default {
         .then((res) => {
           if (res.data.SysCode === 200200) {
             this.tableData = res.data.data;
-            // this.setMap();
           } else {
             sessFun.messageFun("warning", res.data.MSG);
           }
@@ -120,7 +119,9 @@ export default {
     },
     setMap() {
       let mapData = []
+      let flyToCoordinates = ''
       if(this.tableData.length>0) {
+        flyToCoordinates = cityCenter.getCenterByCityName(this.tableData[0].rName)
         this.tableData.forEach(item=>{
           if(Array.isArray(item.latLngList)) {
             item.latLngList.forEach(point=>{
@@ -204,6 +205,11 @@ export default {
       // layer2.setData(mapData)
       layer3.setData(mapData)
       layer4.setData(mapData)
+      if(!flyToCoordinates) {
+        flyToCoordinates = mapData[0].geometry.coordinates
+        flyToCoordinates = {lng: flyToCoordinates[0], lat: flyToCoordinates[1]}
+      }
+      this.instanceMap.flyTo(flyToCoordinates, 12)
     },
     // 放大或缩小地图
     setMapZoom(type) {

@@ -127,7 +127,7 @@ export default {
           range: [ 0, 1 ]
         }
       ],
-      stackColor: ['name', ['rgba(24, 144, 255, 0.65)', 'rgba(24, 144, 255, 1)']],
+      stackColor: ['name', ['#69B7FF', '#1890FF']],
       height: 107,
       oldTotal: 0,
     };

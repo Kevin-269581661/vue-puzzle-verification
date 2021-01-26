@@ -1,7 +1,6 @@
 <template>
   <div>
     <div class="ad_index_container">
-        <!-- <home-top :user-info="userInfo" :data-arr="dataArr" :honor-img="companyHonor"></home-top> -->
         <div class="index-top-row">
             <div class="left-layout">
                 <personal-info :cityRank='cityRank' :user-info="userInfo" :honor-img="companyHonor" :linkArr="linkArrNew"></personal-info>
@@ -35,165 +34,71 @@
                                     数据更新至昨日
                                 </li>
                                 <li style="line-height: 20px;">
-                                    历史库存：统计今年1月1日起至昨日的总点位面周数
+                                    历史库存：统计今年1月1日起至昨日的总点位面天数
                                 </li>
                                 <li style="line-height: 20px;">
-                                    未来库存：统计今日起至年底12月31日的总点位面周数
+                                    未来库存：统计今日起至年底12月31日的总点位面天数
                                 </li>
                                 <li style="line-height: 20px;">
-                                    已售资源：指统计周期内售卖出去的面*周数
+                                    已售资源：指统计周期内售卖出去的面*天数
                                 </li>
                                 <li style="line-height: 20px;">
-                                    过期资源：指统计周期内可投放却未售卖出去的面*周数
+                                    未售出资源：指统计周期内可投放却未售卖出去的面*天数
                                 </li>
                                 <li style="line-height: 20px;">
-                                    维修资源：指统计周期内处于维修状态而未售卖的面*周数
+                                    维修资源：指统计周期内处于维修状态而未售卖的面*天数
                                 </li>
                                 <li style="line-height: 20px;">
-                                    禁用资源：指统计周期内处于禁用状态而未售卖的面*周数
+                                    禁用资源：指统计周期内处于禁用状态而未售卖的面*天数
                                 </li>
                             </ul>
                             <img class="quesition-icon" src="../../assets/images/question_icon.png" />
                         </el-tooltip>
+                        <div class="date-interval">
+                            <span :class="{'active': dateTypeFilter === 1}" @click="getSMResStockReport(1)">按月</span>
+                            <span :class="{'active': dateTypeFilter === 2}" @click="getSMResStockReport(2)">按季</span>
+                            <span :class="{'active': dateTypeFilter === 3}" @click="getSMResStockReport(3)">按年</span>
+                        </div>
                     </template>
                     <template slot="content">
-                        <div class="stock-chart">
-                            <el-popover
-                                popper-class="index-custom-popper"
-                                class="progress"
-                                placement="top-start"
-                                :visible-arrow="false"
-                                width="200"
-                                trigger="hover">
-                                <div class="tip-box">
-                                    <div class="pop-title">
-                                        <em>{{(resStock.past.preStartDate||'')+'~'+(resStock.past.preEndDate||'')}}</em>
-                                    </div>
-                                    <ul>
-                                        <li class="pop-item">
-                                            <em>已售</em>
-                                            <span class="align-right">{{resStock.past.onPubStock}}面周</span>
-                                            <span class="tip-rate">{{resStock.past.onPubStockRate}}%</span>
-                                        </li>
-                                        <li class="pop-item">
-                                            <em>过期</em>
-                                            <span class="align-right">{{resStock.past.overdueStock}}面周</span>
-                                            <span class="tip-rate">{{resStock.past.overdueStockRate}}%</span>
-                                        </li>
-                                        <li class="pop-item">
-                                            <em>维修</em>
-                                            <span class="align-right">{{resStock.past.repairStock}}面周</span>
-                                            <span class="tip-rate">{{resStock.past.repairStockRate}}%</span>
-                                        </li>
-                                        <li class="pop-item">
-                                            <em>禁用</em>
-                                            <span class="align-right">{{resStock.past.banStock}}面周</span>
-                                            <span class="tip-rate">{{resStock.past.banStockRate}}%</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div slot="reference">
-                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" :width="600*resStock.currentMonthPercent" height="320" class="capsule-left">
-                                        <defs>
-                                            <linearGradient id="blue1" x1="0%" y1="0%" x2="0%" y2="100%">
-                                                <stop offset="0%" style="stop-color:#6DB9FF;stop-opacity:1" />
-                                                <stop offset="100%" style="stop-color:#1890FF;stop-opacity:1" />
-                                            </linearGradient>
-                                        </defs>
-                                        <g :transform="'translate(0, ' + (100-(resStock.past.onPubStockRate||0)*1-(resStock.past.overdueStockRate||0)*1)*3.2 +')'">
-                                            <g fill="#FABF14" transform="translate(-175 0)">
-                                                <path :d="'M 0 0 Q 87.5 23, 175 0 T 350 0 T 525 0 T 700 0 T 875 0 T 1050 0 T 1225 0 T 1400 0 V ' + (resStock.past.overdueStockRate||100)*3.2 + ' H 0 V 0'" transform="translate(-38.232284367796474, 0)"></path>
-                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-700" dur="1.5s" repeatCount="indefinite"></animateTransform>
-                                            </g>
-                                            <g fill="#FAAD14">
-                                                <path :d="'M 0 0 Q 87.5 23, 175 0 T 350 0 T 525 0 T 700 0 T 875 0 T 1050 0 T 1225 0 T 1400 0 V ' + (resStock.past.overdueStockRate||100)*3.2 + ' H 0 V 0'" transform="translate(-38.232284367796474, 0)"></path>
-                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-350" dur="3s" repeatCount="indefinite"></animateTransform>
-                                            </g>
-                                            <text :x="300*resStock.currentMonthPercent+10" :y="(resStock.past.overdueStockRate||100)*1.6+10" fill="#fff" >{{resStock.past.overdueStockRate||'0.00'}}%</text>
-                                            <text :x="300*resStock.currentMonthPercent+10" :y="(resStock.past.overdueStockRate||100)*1.6+30" fill="#fff" >过期</text>
-                                        </g>
-                                        <g v-if="resStock.past.overdueStockRate*1 > 0" :transform="'translate(0, ' + (100-(resStock.past.onPubStockRate||0)*1)*3.2 +')'" fill="url(#blue1)">
-                                            <path d="M 0 0 H 600 V 320 H 0 V 0"></path>
-                                            <text :x="300*resStock.currentMonthPercent+10" :y="((100-resStock.past.onPubStockRate)||100)*1.6+10" fill="#fff" >{{resStock.past.onPubStockRate||'0.00'}}%</text>
-                                            <text :x="300*resStock.currentMonthPercent+10" :y="((100-resStock.past.onPubStockRate)||100)*1.6+30" fill="#fff" >已售</text>
-                                        </g>
-                                        <g v-else>
-                                            <g fill="#B2DAFF" transform="translate(-175 0)">
-                                                <path d="M 0 0 Q 87.5 23, 175 0 T 350 0 T 525 0 T 700 0 T 875 0 T 1050 0 T 1225 0 T 1400 0 V 320 H 0 V 0"></path>
-                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-700" dur="1.5s" repeatCount="indefinite"></animateTransform>
-                                            </g>
-                                            <g fill="url(#blue2)">
-                                                <path d="M 0 0 Q 87.5 23, 175 0 T 350 0 T 525 0 T 700 0 T 875 0 T 1050 0 T 1225 0 T 1400 0 V 320 H 0 V 0"></path>
-                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-350" dur="3s" repeatCount="indefinite"></animateTransform>
-                                            </g>
-                                            <text x="150" y="155" fill="#fff" >{{resStock.past.onPubStockRate||'0.00'}}%</text>
-                                            <text x="150" y="175" fill="#fff" >已售</text>  
-                                        </g>
-                                    </svg>
-                                </div>
-                            </el-popover>
-                            
-                            <el-popover
-                                popper-class="index-custom-popper"
-                                class="progress"
-                                placement="right-start"
-                                :visible-arrow="false"
-                                width="200"
-                                trigger="hover">
-                                <div class="tip-box">
-                                    <div class="pop-title">
-                                        <em>{{resStock.next.futureStartDate+'-'+resStock.next.futureEndDate}}</em>
-                                    </div>
-                                    <ul>
-                                        <li class="pop-item">
-                                            <em>已售</em>
-                                            <span class="align-right">{{resStock.next.futureOnPubStock}}面周</span>
-                                            <span class="tip-rate">{{resStock.next.futureOnPubStockRate}}%</span>
-                                        </li>
-                                        <li class="pop-item">
-                                            <em>未售</em>
-                                            <span class="align-right">{{resStock.next.futureUnsoldStock}}面周</span>
-                                            <span class="tip-rate">{{resStock.next.futureUnsoldStockRate}}%</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div slot="reference" style="position: relative;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" :width="600*(1-resStock.currentMonthPercent*1)" height="320" class="capsule-right">
-                                        <defs>
-                                            <linearGradient id="blue2" x1="0%" y1="0%" x2="0%" y2="100%">
-                                                <stop offset="0%" style="stop-color:#6DB9FF;stop-opacity:1" />
-                                                <stop offset="100%" style="stop-color:#1890FF;stop-opacity:1" />
-                                            </linearGradient>
-                                        </defs>
-                                        <g :transform="'translate(0, ' + ((resStock.next.futureUnsoldStockRate||0)*1||100)*3.2 +')'">
-                                            <g fill="#B2DAFF" transform="translate(-175 0)">
-                                                <path d="M 0 0 Q 87.5 23, 175 0 T 350 0 T 525 0 T 700 0 T 875 0 T 1050 0 T 1225 0 T 1400 0 V 320 H 0 V 0"></path>
-                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-700" dur="1.5s" repeatCount="indefinite"></animateTransform>
-                                            </g>
-                                            <!-- <g fill="#6DB9FF">
-                                                <path d="M 0 0 Q 87.5 23, 175 0 T 350 0 T 525 0 T 700 0 T 875 0 T 1050 0 T 1225 0 V 320 H 0 V 0" transform="translate(-38.232284367796474, 0)"></path>
-                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-340" dur="2s" repeatCount="indefinite"></animateTransform>
-                                            </g> -->
-                                            <g fill="url(#blue2)">
-                                                <path d="M 0 0 Q 87.5 23, 175 0 T 350 0 T 525 0 T 700 0 T 875 0 T 1050 0 T 1225 0 T 1400 0 V 320 H 0 V 0"></path>
-                                                <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" to="-350" dur="3s" repeatCount="indefinite"></animateTransform>
-                                            </g>
-                                        </g>
-                                    </svg>
-                                    <div v-if="resStock.next.futureUnsoldStockRate*1<100" class="next-text">
-                                        <span>已售</span>
-                                        <span>{{resStock.next.futureOnPubStockRate||'0.00'}}%</span>
-                                    </div>
-                                </div>
-                            </el-popover>
+                        <ul class="unit-legend">
+                            <li>
+                                <span class="diamond blue-diamond"></span>已售
+                            </li>
+                            <li>
+                                <span class="diamond yellow-diamond"></span>维修禁用
+                            </li>
+                            <li>
+                                <span class="diamond white-diamond"></span>过期
+                            </li>
+                            <li v-if="dateTypeFilter === 1 && catMonthDetail" class="extra-comment">
+                                <span>{{`${new Date().getFullYear()}年${catMonthDetail}详情`}}</span>
+                                <span class="month-btn" @click="catMonthDetail=''">返回</span>
+                            </li>
+                        </ul>
+                        <!--按月-月详情-->
+                        <div class="bar-group" v-if="dateTypeFilter === 1 && catMonthDetail && resStock.dataList.length<6">
+                            <waveBar v-for="(item, index) in resStock.dataList" :key="index" :barData="item" :filter="4" class="wave-bar-item" :refName="'wavebar'+index" :boxWidthUnitNum="3"></waveBar>
                         </div>
-                        <div class="coordinate-line">
+                        <!--按月-->
+                        <div class="bar-group" v-if="dateTypeFilter === 1 && !catMonthDetail">
+                            <waveBar v-for="(item, index) in resStock.dataList" :key="'monthWavebar'+index" :barData="item" @emitFun="catDetail" :filter="1" class="wave-bar-item" :refName="'monthWavebar'+index" :boxWidthUnitNum="1"></waveBar>
+                        </div>
+                        <!--按季-->
+                        <div class="bar-group" v-if="dateTypeFilter === 2">
+                            <waveBar v-for="(item, index) in resStock.dataList" :key="'quarterWavebar'+index" :barData="item" @emitFun="catDetail" :filter="2" class="wave-bar-item" :refName="'quarterWavebar'+index" :boxWidthUnitNum="3"></waveBar>
+                        </div>
+                        <!--按年-->
+                        <div class="bar-group" v-if="dateTypeFilter === 3">
+                            <waveBar v-for="(item, index) in resStock.dataList" :key="'yearWavebar'+index" :barData="item" @emitFun="catDetail" :filter="3" class="wave-bar-item" :refName="'yearWavebar'+index" :boxWidthUnitNum="index?12-new Date().getMonth()-1:new Date().getMonth()+1"></waveBar>
+                        </div>
+                        <!-- <div class="coordinate-line">
                             <div v-for="item in 12" class="sub-line">
                                 <span class="sub-text">{{item + '月'}}</span>
                             </div>
-                        </div>
+                        </div> -->
                         <div v-if="sessionData.asrID != '999'" class="bottom-box">
-                            贵司共浪费了价值  <span class="avtive"> ¥{{resStock.overduePrice || 0}} </span>  的资源，多于全国 <span class="avtive"> {{resStock.unsoldRank}}% </span> 的公司，太可惜了
+                            贵司未来三周还有  <span class="avtive"> {{resStock.unsoldLabRate}}% </span>  的资源尚未售出，多于全国 <span class="avtive"> {{resStock.rankRate}}% </span> 的公司，再努把力！
                         </div>
                     </template>
                 </index-custom-card>
@@ -207,9 +112,9 @@
                             <span :class="{'active': dateInterval === 2}" @click="getRankList('dateInterval', 2)">本季</span>
                             <span :class="{'active': dateInterval === 3}" @click="getRankList('dateInterval', 3)">本月</span>
                         </div>
-                        <el-radio-group v-model="isBehind" size="small" class="achievement-radio-group" @change="getRankList">
+                        <el-radio-group v-if="sessionData.ascType > 0" v-model="isBehind" size="small" class="achievement-radio-group" @change="getRankList">
                             <el-radio-button :label="false">领先</el-radio-button>
-                            <el-radio-button :label="true" :disabled="sessionData.asrID == '999'">落后</el-radio-button>
+                            <el-radio-button :label="true">落后</el-radio-button>
                         </el-radio-group>
                     </template>
                     <template slot="content">
@@ -217,7 +122,7 @@
                             <li class="item" v-for="(rankItem, index) in rankListArr" :key="index">
                                 <span :title="rankItem.realName" class="label">{{rankItem.realName}}</span>
                                 <el-popover
-                                    v-if="sessionData.asrID != '999'"
+                                    v-if="sessionData.ascType > 0"
                                     popper-class="index-custom-popper"
                                     class="progress"
                                     placement="top"
@@ -233,20 +138,20 @@
                                         <ul>
                                             <li class="pop-item">
                                                 <em>业绩目标：</em>
-                                                <span class="item-right">¥{{rankItem.targetPrice || 0}}</span>
+                                                <span class="item-right">{{rankItem.targetPrice | moneyFormat('¥')}}</span>
                                             </li>
                                             <li class="pop-item">
                                                 <em>销售金额：</em>
-                                                <span class="item-right">¥{{rankItem.totalPrice || 0}}</span>
+                                                <span class="item-right">{{rankItem.totalPrice | moneyFormat('¥')}}</span>
                                             </li>
                                             <li class="pop-item">
                                                 <em>完成进度：</em>
                                                 <span class="item-right">{{rankItem.finshProcess || 0}}%</span>
                                             </li>
                                         </ul>
-                                    </div><mini-progress :target="rankItem.targetProcess" :percentage="rankItem.finshProcess" :value="'¥'+rankItem.totalPrice" slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                    </div><mini-progress :target="rankItem.targetProcess" :percentage="rankItem.finshProcess" :value="rankItem.totalPrice | moneyFormat('¥')" slot="reference" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
                                 </el-popover>
-                                <mini-progress v-else :target="rankItem.targetProcess" :percentage="rankItem.finshProcess" :value="'¥'+rankItem.totalPrice" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                <mini-progress v-else :percentage="rankItem.finshProcess" :value="rankItem.totalPrice | moneyFormat('¥')" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
                             </li>
                         </ul>
                     </template>
@@ -299,11 +204,19 @@
                                 style="border: 1px solid #e8e8e8;"
                             >
                                 <el-table-column
+                                    show-overflow-tooltip
                                     label="客户"
                                     width="230">
                                     <template slot-scope="scope">
-                                        <!-- <span @click="routePage(scope.row)" style="color: #1890FF; cursor: pointer;">{{scope.row.cName}}</span> -->
                                         <span>{{scope.row.cName}}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                    show-overflow-tooltip
+                                    label="品牌"
+                                    width="230">
+                                    <template slot-scope="scope">
+                                        <span>{{scope.row.bTitle||'--'}}</span>
                                     </template>
                                 </el-table-column>
                                 <el-table-column
@@ -335,14 +248,14 @@
                                                     </li>
                                                     <li class="pop-item">
                                                         <em>合作金额：</em>
-                                                        <span>¥{{scope.row.price || 0}}</span>
+                                                        <span>{{scope.row.price | moneyFormat('¥')}}</span>
                                                     </li>
                                                 </ul>
                                                 <div class="pop-title">
                                                     <span class="bottom-btn" @click="unfollow(scope.row)">不再关注</span>
                                                 </div>
                                             </div>
-                                            <mini-progress slot="reference" :target="0" :percentage="scope.row.priceRate" :value="'¥'+scope.row.price" :height="'20px'" :color="clientColor"></mini-progress>
+                                            <mini-progress slot="reference" :target="0" :percentage="scope.row.priceRate" :value="scope.row.price | moneyFormat('¥')" :height="'20px'" :color="clientColor"></mini-progress>
                                         </el-popover>
                                     </template>
                                 </el-table-column>
@@ -492,10 +405,7 @@
                                 <div id="first_box">
                                     <img src="../../assets/images/index/left-star.png" alt="" class="monthly_ranking_img_top_left">
                                     <img src="../../assets/images/index/right-star.png" alt="" class="monthly_ranking_img_top_right">
-                                    <img src="../../assets/images/index/left.png" alt="" class="monthly_ranking_img_left">
-                                    <!--showCityRankingImg-->
-                                    <!--<img src="../../assets/images/index/beijing.png" alt="" class="monthly_ranking_img_meiddle">-->
-                                    <img :src="showCityRankingImg[0].url" alt="" class="monthly_ranking_img_meiddle">
+                                    <img src="../../assets/images/index/left.png" alt="" class="monthly_ranking_img_left"><img :src="showCityRankingImg[0].url" alt="" class="monthly_ranking_img_meiddle">
                                     <img src="../../assets/images/index/right.png" alt="" class="monthly_ranking_img_right">
                                     <img src="../../assets/images/index/name.png" alt="" class="monthly_ranking_img_bottom">
                                     <span class="monthly_ranking_city_name city_name_left">{{showCityRankingImg[0].city}}</span>
@@ -555,12 +465,11 @@
 </template>
 
 <script>
-    // import homeTop from '../common/components/homeTop.vue';
-
     import personalInfo from '../common/components/personalInfo.vue';
     import messageAndApp from '../common/components/messageAndApp.vue';
     import chartCard from '../common/components/chartCard.vue';
     import indexCustomCard from '../common/components/indexCustomCard.vue';
+    import waveBar from '../common/components/waveBar.vue';
     import miniProgress from '../common/components/miniProgress.vue';
     import liquidChart from '../common/components/liquidChart.vue';
     import nestPieChart from '../common/components/nestPieChart.vue';
@@ -578,12 +487,11 @@
     export default {
         name: "admin_index",
         components: {
-            // homeTop,
             homeLink,
-
             personalInfo,
             messageAndApp,
             chartCard,
+            waveBar,
             miniProgress,
             indexCustomCard,
             liquidChart,
@@ -603,7 +511,7 @@
                     greetings: '祝您开心每一天!',
                     avator: require('../../assets/images/index/headimg.png'),
                 },
-                dataArr: [
+                /* dataArr: [
                     {
                         name: '当月激活客户数',
                         data: 0
@@ -616,7 +524,7 @@
                         name: '当月成交金额',
                         data: '0'
                     },
-                ],
+                ], */
                 // 常用功能，按超管、媒介、销售分组
                 linkArrNew: [
                     {
@@ -721,45 +629,6 @@
                     },
                     firstDayOfWeek: 6
                 },
-                // 各城市对应荣誉图片地址
-                honorImg:[
-                    {
-                        asrID: '6',
-                        title: '本地销售',
-                        url: require('../../assets/images/index/saler.png'),
-                        urlFalse:require('../../assets/images/index/sale-1.png')
-                    },
-                    {
-                        asrID: '6',
-                        title: '新增用户',
-                        url: require('../../assets/images/index/newUser.png'),
-                        urlFalse:require('../../assets/images/index/user-1.png')
-                    },
-                    {
-                        asrID: '4',
-                        title: '全国销售',
-                        url: require('../../assets/images/index/allSaler.png'),
-                        urlFalse:require('../../assets/images/index/allSale-1.png')
-                    },
-                    {
-                        asrID: '6',
-                        title: '财务管理',
-                        url: require('../../assets/images/index/money.png'),
-                        urlFalse:require('../../assets/images/index/money-1.png')
-                    },
-                    {
-                        asrID: '1',
-                        title: '社区发展',
-                        url: require('../../assets/images/index/comDev.png'),
-                        urlFalse:require('../../assets/images/index/comDev-1.png')
-                    },
-                    {
-                        asrID: '2',
-                        title: '飞跃进步',
-                        url: require('../../assets/images/index/progress.png'),
-                        urlFalse:require('../../assets/images/index/advance-1.png')
-                    }
-                ],
                 //登录用户所在公司的荣誉
                 companyHonor:[],
                 // 应用中心
@@ -844,6 +713,8 @@
                     data: []
                 },
                 dateInterval: 1,
+                dateTypeFilter: 1,
+                catMonthDetail: '',
                 isBehind: false,
                 showSetTarget: false,
                 targetVaule: 0,
@@ -862,7 +733,7 @@
                 // 媒体概况饼图数据
                 ringData: [],
                 // 资源库存数据
-                resStock: {past: {}, next: {}, currentMonthPercent: 0.5},
+                resStock: {unsoldLabRate: 0, rankRate: 0, dataList: []},
             }
         },
         beforeCreate() {
@@ -884,13 +755,15 @@
             // 获取session中的数据,并进行权限判断
             this.getsessionData()
             // 超级运营顶部内容详情
-            this.getHeaderData()
+            // this.getHeaderData()
             // 根据所属公司权限调用接口
             this.getDataByAsrID()
             // 实时监听body宽度变化
             document.body.addEventListener("resize", () => {
                this.realTimeChangeEcharteWidth()
             });
+            // 资源库存
+            this.getSMResStockReport(this.dateTypeFilter)
             //用户中心
             this.appCenter = appCenter
             this.uploadEvent(1)
@@ -920,6 +793,11 @@
             }
         },
         methods: {
+            // 查看月详情
+            catDetail(barData) {
+                // console.log('barData', barData)
+                this.catMonthDetail = barData.time||''  
+            },
             // 环图点击事件更改客户表格数据
             activeData(viewData, ev) {
                 // console.log('tempElement', ev.data.color)
@@ -1100,37 +978,17 @@
                 }).finally(_=>{
                     
                 })
-                // 资源库存数据
-                api.getApi(this.apiVar.report + '/homepage/getSMResStockReport',params).then(res=>{
+            },
+            // 资源库存数据
+            getSMResStockReport(dateType) {
+                this.dateTypeFilter = dateType
+                api.getApi(this.apiVar.report + '/homepage/getSMResStockReport', {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                    dateType
+                }).then(res=>{
                     if (res.data.SysCode === 200200) {
-                        let temp = res.data.data,
-                            past = {
-                                preStartDate: temp.preStartDate,  //历史开始时间
-                                preEndDate: temp.preEndDate,	 //历史结束时间
-                                onPubStock: temp.onPubStock,     //历史已售库存面周数
-                                overdueStock: temp.overdueStock,		//过期资源面周数
-                                repairStock: temp.repairStock,		//历史维修的库存
-                                banStock: temp.banStock,			//历史禁止的库存
-                                onPubStockRate: temp.onPubStockRate || 0,	//历史已售库存的百分比
-                                overdueStockRate: temp.overdueStockRate || 0, //历史过期库存的百分比
-                                repairStockRate: temp.repairStockRate || 0,   //历史维修库存的百分比
-                                banStockRate: temp.banStockRate || 0, 	//历史禁止库存的百分比
-                            },
-                            next = {
-                                futureStartDate: temp.futureStartDate,	//未来开始时间
-                                futureEndDate: temp.futureEndDate,		//未来结束时间
-                                futureOnPubStock: temp.futureOnPubStock,  //未来已售库存面周数
-                                futureUnsoldStock: temp.futureUnsoldStock, //未来未售库存面周数
-                                futureOnPubStockRate: temp.futureOnPubStockRate||0, //未来已售库存百分比
-                                futureUnsoldStockRate: temp.futureUnsoldStockRate||0, //未来未售库存百分比
-                            };
-                        this.resStock = {
-                            past,
-                            next,
-                            overduePrice: temp.overduePrice,
-                            unsoldRank: temp.unsoldRank,
-                            currentMonthPercent: (new Date().getMonth()+1)/13
-                        }
+                        this.resStock = res.data.data
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }
@@ -1178,12 +1036,12 @@
                     dateType: this.dateInterval
                 }
                 if (this.isBehind == false) {
-                    params.orderType = 1    // 倒序传1
+                    params.orderType = 1    // 领先，倒序传1
                 }
                 api.getApi(this.apiVar.report + '/homepage/getSMAchievementReport', params).then(res=>{
                     if (res.data.SysCode === 200200) {
                         let temp = res.data.data;
-                        this.rankListArr = temp.userList
+                        this.rankListArr = temp.userList.filter(item=>item.totalPrice>0)
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }
@@ -1280,25 +1138,67 @@
                 this.userInfo.endTime = timeFormat.returnDayCount(-1,'-')
                 // 本季度荣誉
                 if(this.isRetailCompany) {
-                    for(let key of this.honorImg){
-                        if (key.asrID == this.sessionData.asrID) {
-                            this.companyHonor.push({
-                                asrID: key.asrID,
-                                url: key.url,
-                                title: key.title,
-                                flag: true
-                            })
-                        } else {
-                            this.companyHonor.push({
-                                asrID: key.asrID,
-                                url: key.urlFalse,
-                                title: key.title,
-                                flag: false
-                            })
-                        }
-                    }
+                    this.getMedal()
                 }
             },
+            getMedal() {
+                /*  
+                    获取勋章称号
+                    "topIncrResCnt":1, //社区新开发top
+                    "topPlanCnt":1,    //订单量top
+                    "topOnPubRate":1,   //城市上刊率top
+                    "topNativeContract":1, //本地销售额top
+                    "topNationwideContract":1 //全国销售额top 
+                */
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                };
+                api
+                    .getApi(
+                    this.apiVar.report + "/homepage/getMedal",
+                        params
+                    )
+                    .then((res) => {
+                    if (res.data.SysCode === 200200) {
+                        // res.data.data || [];
+                    } else {
+                        sessFun.messageFun("warning", res.data.MSG);
+                    }
+                    })
+                    .catch((err) => {
+                        console.log("err", err);
+                    })
+                    .finally((_) => {
+                        this.companyHonor = [
+                            {
+                                title: '本地销售额TOP',
+                                url: require('../../assets/images/index/localSaleMedal.png'),
+                                urlFalse:require('../../assets/images/index/localSaleDefault.png')
+                            },
+                            {
+                                title: '成单订单量TOP',
+                                url: require('../../assets/images/index/orderMedal.png'),
+                                urlFalse:require('../../assets/images/index/orderDefault.png')
+                            },
+                            {
+                                title: '全国销售额TOP',
+                                url: require('../../assets/images/index/saleMedal.png'),
+                                urlFalse:require('../../assets/images/index/saleDefault.png')
+                            },
+                            {
+                                title: '城市上刊率TOP',
+                                url: require('../../assets/images/index/skMedal.png'),
+                                urlFalse:require('../../assets/images/index/skDefault.png')
+                            },
+                            {
+                                title: '社区新开发TOP',
+                                url: require('../../assets/images/index/communityMedal.png'),
+                                urlFalse:require('../../assets/images/index/communityDefault.png')
+                            }
+                        ]
+                    });
+             },
             // 根据所属公司权限调用接口
             getDataByAsrID(){
                 if (this.isRetailCompany) {
@@ -1422,16 +1322,8 @@
                     }
                 })
             },
-            // 根据公司id返回城市名称及图片地址 rankingImg
-            // returnCityData(asrID) {
-            //     for(let key of this.rankingImg){
-            //         if(asrID == key.asrID){
-            //             return {city: key.city, url: key.url}
-            //         }
-            //     }
-            // },
             //超级运营顶部内容详情
-            getHeaderData(){
+            /* getHeaderData(){
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token
@@ -1447,7 +1339,7 @@
                         this.messageFun('warning','暂无数据')
                     }
                 })
-            },
+            }, */
             // 图表tabs切换
             tabHandleClick(tab, event){
                 this.activeTabsName = tab.name
@@ -2267,6 +2159,50 @@
 </style>
 <style scoped lang="scss">
 /** 新增*/
+    .month-btn {
+        color: #1890FF;
+        cursor: default;
+    }
+    .bar-group {
+        display: flex;
+        flex-flow: row nowrap;
+        height: calc(100% - 185px);
+        padding: 0 40px;
+        .wave-bar-item {
+            margin: 0 4px;
+        }
+    } 
+    .unit-legend {
+        display: flex;
+        justify-content:center;
+        flex-flow: row nowrap;
+        align-items: center;
+        margin: 24px 0;
+        font-size: 14px;
+        line-height: 20px;
+        color: rgba(0, 0, 0, 0.85);
+        .extra-comment {
+            margin: 0 40px 0 auto;
+        }
+    }
+    .diamond {
+        display: inline-block;
+        box-sizing: border-box;
+        width: 12px;
+        height: 12px;
+        margin: 0 4px 0 24px;
+        border-radius: 1px;
+    }
+    .blue-diamond {
+        background: #1890FF;
+    }
+    .yellow-diamond {
+        background: #FAAD12;
+    }
+    .white-diamond {
+        border: 1px solid #1890FF;
+        background: #fff;
+    }
     .next-text {
         position: absolute;
         left: 0;
@@ -2290,7 +2226,7 @@
     .capsule-right{box-sizing: border-box; border: 1px solid #E9E9E9; -moz-border-radius:0 160px 160px 0;-webkit-border-radius:0 160px 160px 0;border-radius:0 160px 160px 0;width:auto;height:320px;}
     
     .capsule-left {
-        box-sizing: border-box; border: 1px solid #E9E9E9; -moz-border-radius:160px 0 0 160px;-webkit-border-radius:160px 0 0 160px;border-radius:160px 0 0 160px;width:auto;height:320px;
+        box-sizing: border-box; border: 1px solid #E9E9E9; -moz-border-radius:160px 0 0 160px;-webkit-border-radius:160px 0 0 160px;border-radius:0 0 0 0;width:auto;height:320px;
     }
     .index-top-row {
         display: flex;

@@ -1455,7 +1455,7 @@
                     }
                     monthList.push(key.month)
                 }
-                let showTime = this.CountOfTotalDataShow.timeData
+                let showTime = this.CountOfIncreDataShow.dateCompare
                 let tempDate = []
                 for (let i = 0; i < showTime.length; i++) {
                     tempDate.push(this.changeTime(showTime[i]) + '对比' + this.changeTime(monthList[i]))
@@ -1466,8 +1466,6 @@
                 let endT = this.changeTime(this.addkeyCompareDate[0]) + '-' + this.changeTime(this.addkeyCompareDate[1])
                 let timeArr = [starT,endT]
                 this.CountOfIncreDataShow.TitleDate = timeArr
-                console.log('月份对比数据TitleDate',this.CountOfIncreDataShow.TitleDate)
-                console.log('月份对比数据timeArr',timeArr)
                 this.keyDataBar()
             },
             // 判断社区、媒体、点位

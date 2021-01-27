@@ -13,27 +13,17 @@
       <ul>
           <li class="pop-item">
             <em>已售</em>
-            <span class="align-right">{{barData.onPubLabCnt}}面天</span>
+            <span class="align-right">{{barData.onPubLabCnt}}面周</span>
             <span class="tip-rate">{{barData.onPubRate}}%</span>
           </li>
           <li class="pop-item">
             <em>未售出</em>
-            <span class="align-right">{{barData.overdueLabCnt}}面天</span>
+            <span class="align-right">{{barData.overdueLabCnt}}面周</span>
             <span class="tip-rate">{{barData.overdueRate}}%</span>
           </li>
           <li class="pop-item">
-            <em>维修</em>
-            <span class="align-right">{{barData.repairLabCnt}}面天</span>
-            <span class="tip-rate">{{barData.repairRate}}%</span>
-          </li>
-          <li v-if="filter==4" class="pop-item">
             <em>损耗资源</em>
-            <span class="align-right">{{barData.banLabCnt}}面天</span>
-            <span class="tip-rate">{{barData.banRate}}%</span>
-          </li>
-          <li v-else class="pop-item">
-            <em>禁用</em>
-            <span class="align-right">{{barData.banLabCnt}}面天</span>
+            <span class="align-right">{{barData.banLabCnt}}面周</span>
             <span class="tip-rate">{{barData.banRate}}%</span>
           </li>
       </ul>
@@ -129,12 +119,6 @@ export default {
       this.setShape()
     })
   },
-  /* watch: {
-    barData(val) {
-      console.log('----')
-      this.setShape()
-    }
-  }, */
   updated() {
     this.setShape()
   },

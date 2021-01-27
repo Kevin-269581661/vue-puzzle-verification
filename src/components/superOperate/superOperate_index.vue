@@ -66,10 +66,10 @@
                                 <span class="diamond blue-diamond"></span>已售
                             </li>
                             <li>
-                                <span class="diamond yellow-diamond"></span>维修禁用
+                                <span class="diamond yellow-diamond"></span>损耗
                             </li>
                             <li>
-                                <span class="diamond white-diamond"></span>过期
+                                <span class="diamond white-diamond"></span>未售出
                             </li>
                             <li v-if="dateTypeFilter === 1 && catMonthDetail" class="extra-comment">
                                 <span>{{`${new Date().getFullYear()}年${catMonthDetail}详情`}}</span>
@@ -77,19 +77,19 @@
                             </li>
                         </ul>
                         <!--按月-月详情-->
-                        <div class="bar-group" v-if="dateTypeFilter === 1 && catMonthDetail && resStock.dataList.length<7">
+                        <div v-loading="!resStock.dataList.length" class="bar-group" v-if="dateTypeFilter === 1 && catMonthDetail && resStock.dataList.length<7">
                             <waveBar v-for="(item, index) in resStock.dataList" :key="index" :barData="item" :filter="1" class="wave-bar-item" :refName="'wavebar'+index" :boxWidthUnitNum="2"></waveBar>
                         </div>
                         <!--按月-->
-                        <div class="bar-group" v-if="dateTypeFilter === 2 && !catMonthDetail">
+                        <div v-loading="!resStock.dataList.length" class="bar-group" v-if="dateTypeFilter === 2 && !catMonthDetail">
                             <waveBar v-for="(item, index) in resStock.dataList" :key="'monthWavebar'+index" :barData="item" @emitFun="catDetail" :filter="2" class="wave-bar-item" :refName="'monthWavebar'+index" :boxWidthUnitNum="1"></waveBar>
                         </div>
                         <!--按季-->
-                        <div class="bar-group" v-if="dateTypeFilter === 3">
+                        <div v-loading="!resStock.dataList.length" class="bar-group" v-if="dateTypeFilter === 3">
                             <waveBar v-for="(item, index) in resStock.dataList" :key="'quarterWavebar'+index" :barData="item" @emitFun="catDetail" :filter="3" class="wave-bar-item" :refName="'quarterWavebar'+index" :boxWidthUnitNum="3"></waveBar>
                         </div>
                         <!--按年-->
-                        <div class="bar-group" v-if="dateTypeFilter === 4">
+                        <div v-loading="!resStock.dataList.length" class="bar-group" v-if="dateTypeFilter === 4">
                             <waveBar v-for="(item, index) in resStock.dataList" :key="'yearWavebar'+index" :barData="item" @emitFun="catDetail" :filter="4" class="wave-bar-item" :refName="'yearWavebar'+index" :boxWidthUnitNum="index?12-new Date().getMonth()-1:new Date().getMonth()+1"></waveBar>
                         </div>
                         <div v-if="sessionData.asrID != '999'" class="bottom-box">
@@ -1003,10 +1003,11 @@
                     dateType
                 }
                 if(dateType===1) {
-                    params.monthValue = this.catMonthDetail.substring(0, 1)
+                    params.monthValue = this.catMonthDetail.slice(0,-1)
                 } else {
                     this.catMonthDetail = ''
                 }
+                this.resStock.dataList = []
                 api.getApi(this.apiVar.report + '/homepage/getSMResStockReport', params).then(res=>{
                     if (res.data.SysCode === 200200) {
                         this.resStock.dataList = res.data.data||[]

@@ -23,8 +23,8 @@
           </li>
           <li class="pop-item">
             <em>损耗资源</em>
-            <span class="align-right">{{barData.banLabCnt}}面周</span>
-            <span class="tip-rate">{{barData.banRate}}%</span>
+            <span class="align-right">{{barData.banLabCnt*1+barData.repairLabCnt}}面周</span>
+            <span class="tip-rate">{{barData.banRepairRate}}%</span>
           </li>
       </ul>
   </div>

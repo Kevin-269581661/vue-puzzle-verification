@@ -211,6 +211,7 @@ export default {
   .row {
     @extend %flex-row-center;
     .row-left {
+      flex-shrink: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       word-break: break-all;

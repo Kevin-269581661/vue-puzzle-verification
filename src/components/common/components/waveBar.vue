@@ -1,7 +1,7 @@
 <template>
 <el-popover
   :ref="refName"
-  :style="{width: `${Math.floor(1/12*100*boxWidthUnitNum)}%`, height: '100%'}"
+  :style="{width: `${Math.floor(1/12*100*boxWidthUnitNum)}%`, height: `${max?barData.totalLabCnt/max*100:'100'}%`}"
   placement="right-start"
   :visible-arrow="false"
   width="200"
@@ -92,6 +92,9 @@ export default {
     barData: {
       type: Object,
       required: true
+    },
+    max: {
+      type: Number
     },
     filter: {
       type: Number,

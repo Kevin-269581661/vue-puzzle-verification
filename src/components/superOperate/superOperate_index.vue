@@ -78,15 +78,15 @@
                         </ul>
                         <!--按月-月详情-->
                         <div v-loading="!resStock.dataList.length" class="bar-group" v-if="dateTypeFilter === 1 && catMonthDetail && resStock.dataList.length<7">
-                            <waveBar v-for="(item, index) in resStock.dataList" :key="index" :barData="item" :filter="1" class="wave-bar-item" :refName="'wavebar'+index" :boxWidthUnitNum="2"></waveBar>
+                            <waveBar v-for="(item, index) in resStock.dataList" :key="index" :barData="item" :max="resStock.max" :filter="1" class="wave-bar-item" :refName="'wavebar'+index" :boxWidthUnitNum="2"></waveBar>
                         </div>
                         <!--按月-->
                         <div v-loading="!resStock.dataList.length" class="bar-group" v-if="dateTypeFilter === 2 && !catMonthDetail">
-                            <waveBar v-for="(item, index) in resStock.dataList" :key="'monthWavebar'+index" :barData="item" @emitFun="catDetail" :filter="2" class="wave-bar-item" :refName="'monthWavebar'+index" :boxWidthUnitNum="1"></waveBar>
+                            <waveBar v-for="(item, index) in resStock.dataList" :key="'monthWavebar'+index" :barData="item" :max="resStock.max" @emitFun="catDetail" :filter="2" class="wave-bar-item" :refName="'monthWavebar'+index" :boxWidthUnitNum="1"></waveBar>
                         </div>
                         <!--按季-->
                         <div v-loading="!resStock.dataList.length" class="bar-group" v-if="dateTypeFilter === 3">
-                            <waveBar v-for="(item, index) in resStock.dataList" :key="'quarterWavebar'+index" :barData="item" @emitFun="catDetail" :filter="3" class="wave-bar-item" :refName="'quarterWavebar'+index" :boxWidthUnitNum="3"></waveBar>
+                            <waveBar v-for="(item, index) in resStock.dataList" :key="'quarterWavebar'+index" :barData="item" :max="resStock.max" @emitFun="catDetail" :filter="3" class="wave-bar-item" :refName="'quarterWavebar'+index" :boxWidthUnitNum="3"></waveBar>
                         </div>
                         <!--按年-->
                         <div v-loading="!resStock.dataList.length" class="bar-group" v-if="dateTypeFilter === 4">
@@ -728,7 +728,7 @@
                 // 媒体概况饼图数据
                 ringData: [],
                 // 资源库存数据
-                resStock: {unsoldLabRate: 0, rankRate: 0, dataList: []},
+                resStock: {unsoldLabRate: 0, rankRate: 0, dataList: [], max: 0},
             }
         },
         beforeCreate() {
@@ -1011,6 +1011,13 @@
                 api.getApi(this.apiVar.report + '/homepage/getSMResStockReport', params).then(res=>{
                     if (res.data.SysCode === 200200) {
                         this.resStock.dataList = res.data.data||[]
+                        this.resStock.max = this.resStock.dataList.reduce((per,cur)=>{
+                            if(per < cur.totalLabCnt) {
+                                return cur.totalLabCnt
+                            } else {
+                                return per
+                            }
+                        }, 0)
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }
@@ -2195,6 +2202,7 @@
     }
     .bar-group {
         display: flex;
+        align-items: flex-end;
         flex-flow: row nowrap;
         height: calc(100% - 185px);
         padding: 0 40px;

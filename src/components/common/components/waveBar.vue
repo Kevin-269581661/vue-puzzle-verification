@@ -13,17 +13,17 @@
       <ul>
           <li class="pop-item">
             <em>已售</em>
-            <span class="align-right">{{barData.onPubLabCnt}}面周</span>
+            <span class="align-right">{{barData.onPubLabCnt | moneyFormat('', 0)}}面周</span>
             <span class="tip-rate">{{barData.onPubRate}}%</span>
           </li>
           <li class="pop-item">
             <em>未售出</em>
-            <span class="align-right">{{barData.overdueLabCnt}}面周</span>
+            <span class="align-right">{{barData.overdueLabCnt | moneyFormat('', 0)}}面周</span>
             <span class="tip-rate">{{barData.overdueRate}}%</span>
           </li>
           <li class="pop-item">
             <em>损耗资源</em>
-            <span class="align-right">{{barData.banLabCnt*1+barData.repairLabCnt}}面周</span>
+            <span class="align-right">{{(barData.banLabCnt*1+barData.repairLabCnt) | moneyFormat('', 0)}}面周</span>
             <span class="tip-rate">{{barData.banRepairRate}}%</span>
           </li>
       </ul>

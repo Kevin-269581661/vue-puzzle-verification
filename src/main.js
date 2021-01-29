@@ -36,10 +36,7 @@ Vue.prototype.apiVar = apiVar;
 Vue.filter('uTypeToText', function (uType) {
 	return { 'SA': '系统管理员','SM': '超级管理员', 'OP': '运营', 'MD': '媒介','BD': '销售','AD': '广告主', 'EP': '工程人员'}[uType]
 })
-Vue.filter('moneyFormat', function (value, prefix='', decimal=2) {
-  if (!value) {
-    return prefix+'0.00'
-	}
+Vue.filter('moneyFormat', function (value=0, prefix='', decimal=2) {
 	try {
 		return prefix+value.toFixed(decimal).toString().replace(/(\d)(?=(?:(\d{3})+$)|(\d{3})+\.\d*$)/g, '$1,') // 将整数部分逢三一断
 	} catch (error) {

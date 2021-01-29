@@ -2463,6 +2463,10 @@
         display: none;
     }
 
+    /deep/ .el-upload-list__item.is-1 {
+        display: none;
+    }
+
     /deep/ .disabled .el-upload--picture-card {
         display: none;
     }

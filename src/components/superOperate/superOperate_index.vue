@@ -3,7 +3,14 @@
     <div class="ad_index_container">
         <div class="index-top-row">
             <div class="left-layout">
-                <personal-info :cityRank='cityRank' :user-info="userInfo" :honor-img="companyHonor" :linkArr="linkArrNew"></personal-info>
+                <personal-info :cityRank='cityRank' :user-info="userInfo" :honor-img="companyHonor" :linkArr="linkArrNew" :imgSize="[72, 72]">
+                    <template slot-scope="{showImgNum}">
+                        <el-tooltip v-for="(item,index) of companyHonor" :key="index" effect="dark" placement="top">
+                            <span v-if="item.title" slot="content">{{item.title}}</span>
+                            <img v-show="index < showImgNum" style="width: 72px; height: 72px;" :src="item.url" :alt="item.title" :title="item.title">
+                        </el-tooltip>
+                    </template>
+                </personal-info>
                 <div class="card-group">
                     <el-row :gutter="24" style="margin-bottom: 24px;">
                         <el-col :span="8"><chart-card :cardData="cardData1"></chart-card></el-col>
@@ -1185,28 +1192,28 @@
                 };
                 let tempCompanyHonor = {
                     topIncrResCnt: {
-                        title: '社区新开发TOP',
-                        url: require('../../assets/images/index/communityMedal.png'),
+                        title: '上月社区新开发TOP',
+                        url: require('../../assets/images/index/communityMedal.gif'),
                         urlFalse:require('../../assets/images/index/communityDefault.png')
                     },
                     topNationwideContract: {
-                        title: '全国销售额TOP',
-                        url: require('../../assets/images/index/saleMedal.png'),
+                        title: '上月全国销售额TOP',
+                        url: require('../../assets/images/index/saleMedal.gif'),
                         urlFalse:require('../../assets/images/index/saleDefault.png')
                     },
                     topNativeContract: {
-                        title: '本地销售额TOP',
-                        url: require('../../assets/images/index/localSaleMedal.png'),
+                        title: '上月本地销售额TOP',
+                        url: require('../../assets/images/index/localSaleMedal.gif'),
                         urlFalse:require('../../assets/images/index/localSaleDefault.png')
                     },
                     topOnPubRate: {
-                        title: '城市上刊率TOP',
-                        url: require('../../assets/images/index/skMedal.png'),
+                        title: '上月城市上刊率TOP',
+                        url: require('../../assets/images/index/skMedal.gif'),
                         urlFalse:require('../../assets/images/index/skDefault.png')
                     },
                     topPlanCnt: {
-                        title: '成单订单量TOP',
-                        url: require('../../assets/images/index/orderMedal.png'),
+                        title: '上月成单订单量TOP',
+                        url: require('../../assets/images/index/orderMedal.gif'),
                         urlFalse:require('../../assets/images/index/orderDefault.png')
                     }
                 }
@@ -1217,14 +1224,20 @@
                     )
                     .then((res) => {
                     if (res.data.SysCode === 200200) {
+                        let highlightArr = [],
+                            darkArr = [];
                         Object.keys(res.data.data).forEach(key=>{
                             if(tempCompanyHonor[key]) {
                                 if(res.data.data[key] == 0) {
                                     tempCompanyHonor[key].url = tempCompanyHonor[key].urlFalse
+                                    tempCompanyHonor[key].title = tempCompanyHonor[key].title+'(未获得)'
+                                    darkArr.push(tempCompanyHonor[key])
+                                } else {
+                                    highlightArr.push(tempCompanyHonor[key])
                                 }
-                                this.companyHonor.push(tempCompanyHonor[key])
                             }
                         })
+                        this.companyHonor = highlightArr.concat(darkArr)
                     } else {
                         sessFun.messageFun("warning", res.data.MSG);
                     }
@@ -2229,7 +2242,7 @@
         width: 12px;
         height: 12px;
         margin: 0 4px 0 24px;
-        border-radius: 1px;
+        border-radius: 2px;
     }
     .blue-diamond {
         background: #1890FF;
@@ -2309,11 +2322,8 @@
         align-items: center;
         justify-content: space-between;
         margin-bottom: 24px;
-        & > div {
-            // flex: 1;
-        }
         .date-interval {
-            margin: 0 24px 0 auto;
+            margin: 0 0 0 auto;
             font-size: 14px;
             font-weight: 400;
             color: rgba(0, 0, 0, 0.45);

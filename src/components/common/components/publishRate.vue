@@ -68,7 +68,7 @@
 </template>
 <script>
 import $ from "jquery";
-import { initMap, snowStyle, whiteStyle } from "@/commonFun/mapCommon.js";
+import { initMap, whiteStyle} from "@/commonFun/mapCommon.js";
 import api from "../../../api/api";
 import sessFun from "../../../commonFun/sessFun.js";
 export default {

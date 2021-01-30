@@ -55,7 +55,6 @@
                                 <el-col :span="6" class="el_col_box">
                                     <el-form-item label="资源名称" prop="resname">
                                         <el-autocomplete
-                                            v-if="customPermission.resSearchPermission"
                                             v-model="recForm.resname"
                                             :fetch-suggestions="getResNameByFangJiaWang"
                                             placeholder=""
@@ -63,12 +62,7 @@
                                             @select="changeResName"
                                             @blur="blurFun('resname')">
                                         </el-autocomplete>
-                                        <el-input
-                                            v-else
-                                            v-model="recForm.resname"
-                                            clearable>
-                                        </el-input>
-                                        <el-button v-if="customPermission.resSearchPermission" size="small" type="primary" @click="getResBasicData" class="get_resName_btn"
+                                        <el-button size="small" type="primary" @click="getResBasicData" class="get_resName_btn"
                                                    v-qadn-mta-h5="{id: PathHaveEdit ? 'a002_b006_c000_d000_bt028_ck05' : 'a002_b004_c000_d000_bt019_ck05'}">
                                             检索</el-button>
                                     </el-form-item>
@@ -1335,7 +1329,8 @@
                 rowData: {},
                 changeBeforMediaState: '',
                 customPermission: {},  //巡点权限
-                queryTimeout: null
+                queryTimeout: null,
+                fangJiaWangPrivateCity: []// 房价网权限城市
             };
         },
         computed: {
@@ -1355,6 +1350,9 @@
                 }, 500);
             }
         },
+        created() {
+            this.getFangJiaWangCity()
+        },
         mounted: function () {
             this.customPermission = this.sessionData.customPermission;
             this.resUpdata = []
@@ -1363,6 +1361,22 @@
             this.getADLimit()   // 获取广告限制列表
         },
         methods: {
+            getFangJiaWangCity() {
+                let params = {
+                    "uid": this.sessionData.uID,
+                    "token": this.sessionData.token,
+                    "service": "GetResSearchCity",
+                    "data": {"asrID": this.sessionData.asrID}
+                }
+                api.postApi_new(this.apiVar.Media, params).then(res => {
+                    if (res.data.SysCode == 200200) {
+                        console.log('房价网权限城市', res)
+                        this.fangJiaWangPrivateCity = res.data.data || []
+                    } else {
+                        Message.warning(res.data.MSG);
+                    }
+                })
+            },
             handleClickMedia(tab, event){
                 console.log(tab, event)
             },
@@ -1405,6 +1419,12 @@
             },
             // 远程获取房价网的小区名称
             getResNameByFangJiaWang(queryString, callback){
+                let flag = this.fangJiaWangPrivateCity.some(item=>{
+                    return item.cityId == this.recForm.city[this.recForm.city.length-1]
+                })
+                if(!flag) {
+                    return
+                }
                 if(queryString){
                     if(this.resAddres.city){
                         let params = {
@@ -1454,6 +1474,13 @@
             },
             // 根据所选的资源名称拉取房价网数据
             getResBasicData() {
+                let flag = this.fangJiaWangPrivateCity.some(item=>{
+                    return item.cityId == this.recForm.city[this.recForm.city.length-1]
+                })
+                if(!flag) {
+                    sessFun.messageFun('warning',`没有权限访问对应的资源(您未开通城市${this.resAddres.city}的权限)`)
+                    return
+                }
                 if (this.recForm.resname !== '' && this.resAddres.area !== '' && this.resAddres.city !== '') {
                     let params = {
                         // uid: this.sessionData.uID,

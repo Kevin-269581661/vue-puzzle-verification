@@ -3,7 +3,11 @@
 		<div class="ad_index_container">
 			<div class="index-top-row">
 				<div class="left-layout">
-					<personal-info :user-info="userInfo" :honor-img="companyHonor" :linkArr="linkArrNew"></personal-info>
+					<personal-info :user-info="userInfo" :honor-img="companyHonor" :imgSize="[51, 62]" :linkArr="linkArrNew">
+							<template slot-scope="{showImgNum}">
+								<img v-show="index < showImgNum" v-for="(item,index) of companyHonor" :key="index" style="width: 51px; height: 62px;" :src="item.url" :alt="item.title" :title="item.title">
+							</template>
+					</personal-info>
 					<div class="card-group">
 						<el-row :gutter="24" style="margin-bottom: 24px;">
 							<el-col :span="8"><chart-card :cardData="cardData1"></chart-card></el-col>

@@ -13,12 +13,12 @@
         </div>
         <div v-if="honorImg.length>0" class="line-vertical"></div>
         <div class="item-two" v-if="honorImg.length>0">
-            <img v-for="(item,index) of honorImg" :key="index" :src="item.url" :alt="item.title" :title="item.title">
+            <slot :showImgNum="showImgNum"></slot>
         </div>
-        <div class="overflow-img">●●●</div>
-        <div v-if="linkArr.length>0" class="line-vertical"></div>
+        <div v-show="showImgNum < honorImg.length && showImgNum > 0" class="overflow-img">●●●</div>
+        <div v-if="linkArr.length>0 && showImgNum > 0" class="line-vertical"></div>
         <div class="item-three">
-                <home-link class="cell-group" :link="linkArr"></home-link>
+            <home-link class="cell-group" :link="linkArr"></home-link>
         </div>
     </div>
 </template>
@@ -47,15 +47,36 @@
             cityRank: {
                 type: [String, Number],
                 default: ''
+            },
+            imgSize: {
+                type: Array,
             }
         },
         data() {
             return {
+                showImgNum: 0
+            }
+        },
+        watch: {
+            honorImg(val) {
+                // 数据更改并渲染时触发
+                this.$nextTick(()=>{
+                    this.honorImg.length && !this.showImgNum && this.setEllipsis()
+                })
             }
         },
         methods: {
+            setEllipsis() {
+                let imgGroupWidth = $('.item-two')[0]
+                if(!imgGroupWidth || !this.imgSize) return
+                imgGroupWidth = imgGroupWidth.getBoundingClientRect().width
+                this.showImgNum = Math.floor(imgGroupWidth / (this.imgSize[0]+10))
+            }
         },
         mounted() {
+            window.addEventListener("resize", ()=>{
+                this.setEllipsis()
+            })
         }
     }
 </script>
@@ -129,13 +150,16 @@ li {
     }
     .item-two {
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start;
+        flex-grow: 1;
         margin: 0 27px 0 -5px;
         overflow: hidden;
-        img {
-            margin: 0 5px;
+        .img-default-size {
             width: 51px;
             max-height: 62px;
+        }
+        img {
+            margin: 0 5px;
         }
     }
     .item-three {
@@ -157,20 +181,19 @@ li {
         background: rgba(241, 241, 241, 1);
     }
     .overflow-img {
-        display: none;
         width: 51px;
         margin: auto 27px auto 0;
         text-align: center;
         color: rgba(0, 0, 0, 0.2);
 
     }
-    @media screen and (max-width: 1420px) {
+    /* @media screen and (max-width: 1420px) {
         .overflow-img {
             display: block;
         }
         .item-two {
             width: 183px;
         }
-    }
+    } */
 }
 </style>

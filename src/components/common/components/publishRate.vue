@@ -121,7 +121,7 @@ export default {
   },
   beforeDestroy() {
     console.log('destroy-publishRate');
-    this.instanceMap = null;
+    this.instanceMap.destroy();
   },
   methods: {
     // 首页的地图上刊率 /report /homepage/getDistrictOnPubRateReport
@@ -157,6 +157,19 @@ export default {
           center: [105.348145, 28.165926],
           zoom: 6,
           style: whiteStyle,
+        });
+        let _this = this
+        this.instanceMap.addEventListener("zoomstart", function(type, target){
+          _this.instanceMap.hideOverlayContainer()
+        });
+        this.instanceMap.addEventListener("zoomend", function(type, target){
+          _this.instanceMap.showOverlayContainer()
+        });
+        this.instanceMap.addEventListener("dragstart", function(type, target){
+          _this.instanceMap.hideOverlayContainer()
+        });
+        this.instanceMap.addEventListener("dragend", function(type, target){
+          _this.instanceMap.showOverlayContainer()
         });
       }
       if(!this.tableData) return;

@@ -91,7 +91,7 @@ export default {
   },
   beforeDestroy() {
     console.log('destroy-pointDistribution');
-    this.instanceMap = null;
+    this.instanceMap.destroy();
   },
   methods: {
     // 首页的地图点位投放 /report /homepage/getPointDistributionReport

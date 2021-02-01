@@ -2746,14 +2746,14 @@
                 if (kind === 'start') {
                     return time + '-01'
                 } else {
-                    if (this.nowMonth == time) {
-                        return timeFormat.returnMonthCount(0, '-')
-                    } else {
+                    // if (this.nowMonth == time) {
+                    //     return timeFormat.returnMonthCount(0, '-')
+                    // } else {
                         // let dateList = time.split('-')
                         let dayNum = new Date(Number(dateList[0]), Number(dateList[1]), 0);
                         console.log('判断是否为当前月份并返回', dayNum.getDate());
                         return time + '-' + dayNum.getDate()
-                    }
+                    // }
                 }
             },
             // 数据大到小排序

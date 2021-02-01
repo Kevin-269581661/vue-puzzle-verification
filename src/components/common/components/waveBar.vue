@@ -50,12 +50,12 @@
           <g>
             <g fill="#FABF14">
               <path :d="wavePath1"></path>
-              <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" :to="`-${boxWidth}`" dur="3s" repeatCount="indefinite"></animateTransform>
+              <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" :to="`-${8*waveWidthUnit}`" dur="3s" repeatCount="indefinite"></animateTransform>
               <animateTransform attributeName="transform" attributeType="XML" type="translate" :from="`0 ${boxHeight-waveHeight1}`" :to="`-${boxWidth} 0`" dur="1.5s" calcMode="linear"></animateTransform>
             </g>
             <g fill="#FAAD14">
               <path :d="wavePath1"></path>
-              <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" :to="`-${boxWidth}`" dur="1.5s" repeatCount="indefinite"></animateTransform>
+              <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" :to="`-${8*waveWidthUnit}`" dur="1.5s" repeatCount="indefinite"></animateTransform>
               <animateTransform attributeName="transform" attributeType="XML" type="translate" :from="`0 ${boxHeight-waveHeight1}`" :to="`-${boxWidth} 0`" dur="1.5s" calcMode="linear"></animateTransform>
             </g>
             <text v-if="waveHeight2-waveHeight1 > 14" :x="boxWidth/2" :y="(waveHeight2+waveHeight1)/2" style='dominant-baseline:middle;text-anchor:middle;' fill="#fff" font-family="DIN-Medium" font-size="14">{{barData.banRepairRate||'0.00'}}%</text>
@@ -64,12 +64,12 @@
           <g>
             <g fill="#1890FF">
               <path :d="wavePath2"></path>
-              <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" :to="`-${boxWidth}`" dur="3s" repeatCount="indefinite"></animateTransform>
+              <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" :to="`-${8*waveWidthUnit}`" dur="3s" repeatCount="indefinite"></animateTransform>
               <animateTransform attributeName="transform" attributeType="XML" type="translate" :from="`0 ${boxHeight-waveHeight2}`" :to="`-${boxWidth} 0`" dur="1.5s" calcMode="linear"></animateTransform>
             </g>
             <g fill="#6DB9FF" fill-opacity=".5">
               <path :d="wavePath2"></path>
-              <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" :to="`-${boxWidth}`" dur="1.5s" repeatCount="indefinite"></animateTransform>
+              <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" :to="`-${8*waveWidthUnit}`" dur="1.5s" repeatCount="indefinite"></animateTransform>
               <animateTransform attributeName="transform" attributeType="XML" type="translate" :from="`0 ${boxHeight-waveHeight2}`" :to="`-${boxWidth} 0`" dur="1.5s" calcMode="linear"></animateTransform>
             </g>
             <text v-if="boxHeight-waveHeight2 > 14" :x="boxWidth/2" :y="(boxHeight+waveHeight2)/2" style='dominant-baseline:middle;text-anchor:middle;' fill="#fff" font-family="DIN-Medium" font-size="14">{{barData.onPubRate||'0.00'}}%</text>
@@ -142,6 +142,7 @@ export default {
       this.boxHeight = this.boxHeight>0?this.boxHeight:0
       this.waveHeight1 = this.boxHeight*(this.barData.overdueRate*1/100)
       this.waveHeight2 = this.boxHeight*(this.barData.overdueRate*1+this.barData.banRepairRate*1)/100
+      // 正弦的x/4
       this.waveWidthUnit = this.boxWidth/2/this.waveNum
       this.waveHeightUnit = this.boxWidth*3/50
       this.wavePath1 = `M 0 ${this.waveHeight1}  Q ${this.waveWidthUnit} ${this.waveHeightUnit+this.waveHeight1}, ${this.waveWidthUnit*2} ${this.waveHeight1} T ${this.waveWidthUnit*2*2} ${this.waveHeight1} T ${this.waveWidthUnit*2*3} ${this.waveHeight1} T ${this.waveWidthUnit*2*4} ${this.waveHeight1} T ${this.waveWidthUnit*2*5} ${this.waveHeight1} T ${this.waveWidthUnit*2*6} ${this.waveHeight1} T ${this.waveWidthUnit*2*7} ${this.waveHeight1} T ${this.waveWidthUnit*2*8} ${this.waveHeight1} V ${this.boxHeight} H 0 V ${this.waveHeight1}`

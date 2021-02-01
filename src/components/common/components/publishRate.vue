@@ -244,13 +244,13 @@ export default {
     transform: scale(1);  /*开始为原始大小*/
   }
   25%{
-    transform: scale(1.1); /*放大1.1倍*/
+    transform: scale(1.2); /*放大1.2倍*/
   }
   50%{
     transform: scale(1);
   }
   75%{
-    transform: scale(1.2);
+    transform: scale(1.1);
   }
 }
 </style>
@@ -279,6 +279,8 @@ li {
   align-items: flex-start;
 }
 .map-container {
+  position: absolute;
+  width: 100%;
   height: 100%;
 }
 .map-wrap {

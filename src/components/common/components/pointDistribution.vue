@@ -171,14 +171,14 @@ export default {
       });
       view.addLayer(layer1);
 
-      let layer2 = new mapvgl.PointLayer({
+      /* let layer2 = new mapvgl.PointLayer({
         blend: "lighter",
         shape: "circle",
         color: "rgba(24, 144, 255, 0.6)", // 点图层2颜色
         // data: mapData,
         size: 5,
       });
-      view.addLayer(layer2);
+      view.addLayer(layer2); */
 
       let layer3 = new mapvgl.PointLayer({
         blend: "lighter",
@@ -261,6 +261,8 @@ li {
   align-items: flex-start;
 }
 .map-container {
+  position: absolute;
+  width: 100%;
   height: 100%;
 }
 .map-wrap {

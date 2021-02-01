@@ -7,7 +7,7 @@
                     <template slot-scope="{showImgNum}">
                         <el-tooltip v-for="(item,index) of companyHonor" :key="index" effect="dark" placement="top">
                             <span v-if="item.title" slot="content">{{item.title}}</span>
-                            <img v-show="index < showImgNum" style="width: 72px; height: 72px;" :src="item.url" :alt="item.title" :title="item.title">
+                            <img v-show="index < showImgNum" style="width: 72px; height: 72px; margin-top: -4px;" :src="item.url" :alt="item.title">
                         </el-tooltip>
                     </template>
                 </personal-info>
@@ -2335,6 +2335,7 @@
             }
         }
         .achievement-radio-group {
+            margin-left: 16px;
             /deep/ .el-radio-button__inner {
                 width: 88px;
                 font-size: 14px;

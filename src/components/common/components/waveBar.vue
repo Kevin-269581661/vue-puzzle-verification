@@ -72,7 +72,7 @@
               <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0" :to="`-${boxWidth}`" dur="1.5s" repeatCount="indefinite"></animateTransform>
               <animateTransform attributeName="transform" attributeType="XML" type="translate" :from="`0 ${boxHeight-waveHeight2}`" :to="`-${boxWidth} 0`" dur="1.5s" calcMode="linear"></animateTransform>
             </g>
-            <text v-if="boxHeight-waveHeight2 > 14" :x="boxWidth/2" :y="(boxHeight+waveHeight2)/2" style='dominant-baseline:middle;text-anchor:middle;' fill="#fff" font-family="DIN-Medium" font-size="14">{{50||'0.00'}}%</text>
+            <text v-if="boxHeight-waveHeight2 > 14" :x="boxWidth/2" :y="(boxHeight+waveHeight2)/2" style='dominant-baseline:middle;text-anchor:middle;' fill="#fff" font-family="DIN-Medium" font-size="14">{{barData.onPubRate||'0.00'}}%</text>
           </g>
       </g>
     </svg>
@@ -200,6 +200,7 @@ export default {
     }
     .tip-rate {
       width: 45px;
+      text-align: right;
     }
   }
 }

@@ -778,6 +778,7 @@ export default {
                     let AbInfo = {
                         uid: this.sessionData.uID,
                         token: this.sessionData.token,
+                        asrID: this.sessionData.asrID,
                         bt: key.brandName,
                         cid: cID,
                         instdustryId: key.industryList[1],

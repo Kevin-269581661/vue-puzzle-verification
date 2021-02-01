@@ -41,22 +41,19 @@
                                     数据更新至昨日
                                 </li>
                                 <li style="line-height: 20px;">
-                                    历史库存：统计今年1月1日起至昨日的总点位面天数
+                                    已售资源：指统计周期内售卖出去的面*周数
                                 </li>
                                 <li style="line-height: 20px;">
-                                    未来库存：统计今日起至年底12月31日的总点位面天数
+                                    未售出资源：指统计周期内可投放却未售卖出去的面*周数
                                 </li>
                                 <li style="line-height: 20px;">
-                                    已售资源：指统计周期内售卖出去的面*天数
+                                    维修资源：指统计周期内处于维修状态而未售卖的面*周数
                                 </li>
                                 <li style="line-height: 20px;">
-                                    未售出资源：指统计周期内可投放却未售卖出去的面*天数
+                                    禁用资源：指统计周期内处于禁用状态而未售卖的面*周数
                                 </li>
                                 <li style="line-height: 20px;">
-                                    维修资源：指统计周期内处于维修状态而未售卖的面*天数
-                                </li>
-                                <li style="line-height: 20px;">
-                                    禁用资源：指统计周期内处于禁用状态而未售卖的面*天数
+                                    损耗资源：根据当前待维修+禁用状态的媒体数去预估未来的耗损资源量
                                 </li>
                             </ul>
                             <img class="quesition-icon" src="../../assets/images/question_icon.png" />

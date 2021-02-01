@@ -22,9 +22,14 @@
             <span class="tip-rate">{{barData.overdueRate}}%</span>
           </li>
           <li class="pop-item">
-            <em>损耗资源</em>
-            <span class="align-right">{{(barData.banLabCnt*1+barData.repairLabCnt) | moneyFormat('', 0)}}面周</span>
-            <span class="tip-rate">{{barData.banRepairRate}}%</span>
+            <em>禁用</em>
+            <span class="align-right">{{barData.banLabCnt | moneyFormat('', 0)}}面周</span>
+            <span class="tip-rate">{{barData.banLabRate}}%</span>
+          </li>
+          <li class="pop-item">
+            <em>维修</em>
+            <span class="align-right">{{barData.repairLabCnt | moneyFormat('', 0)}}面周</span>
+            <span class="tip-rate">{{barData.repairRate}}%</span>
           </li>
       </ul>
   </div>

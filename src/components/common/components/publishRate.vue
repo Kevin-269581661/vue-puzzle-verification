@@ -68,7 +68,7 @@
 </template>
 <script>
 import $ from "jquery";
-import { initMap, whiteStyle} from "@/commonFun/mapCommon.js";
+import { initMap, whiteStyle, cityCenter } from "@/commonFun/mapCommon.js";
 import api from "../../../api/api";
 import sessFun from "../../../commonFun/sessFun.js";
 export default {
@@ -158,16 +158,17 @@ export default {
           zoom: 6,
           style: whiteStyle,
         });
-        this.instanceMap.addEventListener("zoomend", (e) => {
-          let level = e.target.getZoom();
-          // this.sliderValue1 = this.getSliderValue(level);
-        });
       }
       if(!this.tableData) return;
-      // this.instanceMap.setCenter(
-      //   new BMapGL.Point(105.348145, 28.165926)
-      // );
       this.instanceMap.clearOverlays();
+      let flyToCoordinates = ''
+      if(this.tableData.length>0) {
+        flyToCoordinates = cityCenter.getCenterByCityName(this.tableData[0].cityName)
+      }
+      if(this.tableData.length>0 && this.tableData[0].latlng && !flyToCoordinates) {
+        flyToCoordinates = this.tableData[0].latlng.split(';')
+        flyToCoordinates = {lng: flyToCoordinates[0], lat: flyToCoordinates[1]}
+      }
       this.tableData.forEach((item) => {
         if (item.latlng) {
           let label = new BMapGL.Label(item.onPubRate + "%", {
@@ -200,12 +201,13 @@ export default {
             background: `rgba(${colorR}, ${colorG}, ${colorB}, ${colorA})`,
             color: "#fff",
             // boxShadow: "0px 0px 2px",
-            boxShadow: '0 0 0 0.1em currentcolor inset, 0 0 1em currentcolor inset',
+            boxShadow: '0 0 0.1em currentcolor inset, 0 0 .8em currentcolor inset',
             boxSizing: "content-box",
-            animation: "mymove 5s infinite"
+            animation: `myscale 3s ease-in-out ${Math.random() * 100}s infinite`
             // cursor: "pointer",
           });
-          this.instanceMap.addOverlay(label);
+          this.instanceMap.addOverlay(label)
+          this.instanceMap.flyTo(flyToCoordinates, 10)
         }
       });
     },
@@ -236,30 +238,19 @@ export default {
 };
 </script>
 <style>
-/* @keyframes mymove
+@keyframes myscale
 {
-	from {width:30px; height: 30px;}
-	to {width:50px; height: 50px;}
-}
-
-@-webkit-keyframes mymove
-{
-	from {width:30px; height: 30px;}
-	to {width:50px; height: 50px;}
-} */
-
-@keyframes mymove {
-  from, to {
-    transform: translate(-50%, -48%);
+	0%{
+    transform: scale(1);  /*开始为原始大小*/
   }
-  25% {
-    transform: translate(-52%, -50%);
+  25%{
+    transform: scale(1.1); /*放大1.1倍*/
   }
-  50% {
-    transform: translate(-50%, -52%);
+  50%{
+    transform: scale(1);
   }
-  75% {
-    transform: translate(-48%, -50%);
+  75%{
+    transform: scale(1.2);
   }
 }
 </style>

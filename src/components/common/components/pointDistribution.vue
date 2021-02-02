@@ -91,7 +91,7 @@ export default {
   },
   beforeDestroy() {
     console.log('destroy-pointDistribution');
-    this.instanceMap.destroy();
+    this.instanceMap&&this.instanceMap.destroy();
   },
   methods: {
     // 首页的地图点位投放 /report /homepage/getPointDistributionReport
@@ -108,6 +108,7 @@ export default {
         .then((res) => {
           if (res.data.SysCode === 200200) {
             this.tableData = res.data.data;
+            this.setMap()
           } else {
             sessFun.messageFun("warning", res.data.MSG);
           }

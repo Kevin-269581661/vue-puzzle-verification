@@ -121,7 +121,7 @@ export default {
   },
   beforeDestroy() {
     console.log('destroy-publishRate');
-    this.instanceMap.destroy();
+    this.instanceMap&&this.instanceMap.destroy();
   },
   methods: {
     // 首页的地图上刊率 /report /homepage/getDistrictOnPubRateReport

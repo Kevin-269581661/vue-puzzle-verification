@@ -216,7 +216,7 @@ export default {
             // boxShadow: "0px 0px 2px",
             boxShadow: '0 0 0.1em currentcolor inset, 0 0 .8em currentcolor inset',
             boxSizing: "content-box",
-            animation: `myscale 3s ease-in-out ${Math.random() * 100}s infinite`
+            animation: `myscale 3s ease-in-out 2s infinite`
             // cursor: "pointer",
           });
           this.instanceMap.addOverlay(label)
@@ -256,14 +256,8 @@ export default {
 	0%{
     transform: scale(1);  /*开始为原始大小*/
   }
-  25%{
-    transform: scale(1.2); /*放大1.2倍*/
-  }
   50%{
-    transform: scale(1);
-  }
-  75%{
-    transform: scale(1.1);
+    transform: scale(1.2);
   }
 }
 </style>

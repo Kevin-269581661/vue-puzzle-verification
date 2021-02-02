@@ -2216,7 +2216,7 @@
         align-items: flex-end;
         flex-flow: row nowrap;
         height: calc(100% - 185px);
-        padding: 0 40px;
+        padding: 0 20px;
         .wave-bar-item {
             margin: 0 4px;
         }
@@ -2231,7 +2231,7 @@
         line-height: 20px;
         color: rgba(0, 0, 0, 0.85);
         .extra-comment {
-            margin: 0 40px 0 auto;
+            margin: 0 24px 0 auto;
         }
     }
     .diamond {

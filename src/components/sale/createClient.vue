@@ -143,7 +143,7 @@
                                                             size="small"
                                                             type="info"
                                                             :key="index"
-                                                            closable
+                                                            :closable="false"
                                                             :disable-transitions="false"
                                                             @click.native="tagsClick(index)"
                                                             @close="tagsClose(index)">

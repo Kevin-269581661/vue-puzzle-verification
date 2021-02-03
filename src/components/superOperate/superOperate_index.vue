@@ -65,7 +65,7 @@
                         </div>
                     </template>
                     <template slot="content">
-                        <ul class="unit-legend">
+                        <ul v-if="Array.isArray(resStock.dataList) && resStock.dataList.length > 0" class="unit-legend">
                             <li>
                                 <span class="diamond blue-diamond"></span>已售
                             </li>
@@ -81,22 +81,22 @@
                             </li>
                         </ul>
                         <!--按月-月详情-->
-                        <div v-loading="!resStock.dataList.length" class="bar-group" v-if="dateTypeFilter === 1 && catMonthDetail && resStock.dataList.length<7">
+                        <div v-loading="!resStock.dataList" class="bar-group" v-if="dateTypeFilter === 1 && catMonthDetail && resStock.dataList && resStock.dataList.length<7">
                             <waveBar v-for="(item, index) in resStock.dataList" :key="index" :barData="item" :max="resStock.max" :filter="1" class="wave-bar-item" :refName="'wavebar'+index" :boxWidthUnitNum="2"></waveBar>
                         </div>
                         <!--按月-->
-                        <div v-loading="!resStock.dataList.length" class="bar-group" v-if="dateTypeFilter === 2 && !catMonthDetail">
+                        <div v-loading="!resStock.dataList" class="bar-group" v-if="dateTypeFilter === 2 && !catMonthDetail">
                             <waveBar v-for="(item, index) in resStock.dataList" :key="'monthWavebar'+index" :barData="item" :max="resStock.max" @emitFun="catDetail" :filter="2" class="wave-bar-item" :refName="'monthWavebar'+index" :boxWidthUnitNum="1"></waveBar>
                         </div>
                         <!--按季-->
-                        <div v-loading="!resStock.dataList.length" class="bar-group" v-if="dateTypeFilter === 3">
+                        <div v-loading="!resStock.dataList" class="bar-group" v-if="dateTypeFilter === 3">
                             <waveBar v-for="(item, index) in resStock.dataList" :key="'quarterWavebar'+index" :barData="item" :max="resStock.max" @emitFun="catDetail" :filter="3" class="wave-bar-item" :refName="'quarterWavebar'+index" :boxWidthUnitNum="3"></waveBar>
                         </div>
                         <!--按年-->
-                        <div v-loading="!resStock.dataList.length" class="bar-group" v-if="dateTypeFilter === 4">
+                        <div v-loading="!resStock.dataList" class="bar-group" v-if="dateTypeFilter === 4">
                             <waveBar v-for="(item, index) in resStock.dataList" :key="'yearWavebar'+index" :barData="item" @emitFun="catDetail" :filter="4" class="wave-bar-item" :refName="'yearWavebar'+index" :boxWidthUnitNum="index?12-new Date().getMonth()-1:new Date().getMonth()+1"></waveBar>
                         </div>
-                        <div v-if="sessionData.asrID != '999'" class="bottom-box">
+                        <div v-if="sessionData.asrID != '999' && Array.isArray(resStock.dataList) && resStock.dataList.length > 0" class="bottom-box">
                             贵司未来三周还有  <span class="avtive"> {{resStock.unsoldLabRate}}% </span>  的资源尚未售出，多于全国 <span class="avtive"> {{resStock.rankRate}}% </span> 的公司，再努把力！
                         </div>
                     </template>
@@ -1011,7 +1011,7 @@
                 } else {
                     this.catMonthDetail = ''
                 }
-                this.resStock.dataList = []
+                this.resStock.dataList = null
                 api.getApi(this.apiVar.report + '/homepage/getSMResStockReport', params).then(res=>{
                     if (res.data.SysCode === 200200) {
                         this.resStock.dataList = res.data.data||[]

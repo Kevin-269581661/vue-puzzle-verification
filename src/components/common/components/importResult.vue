@@ -243,12 +243,12 @@ export default {
         initData(){
             this.shopList = [];
             // let copyData = JSON.parse(JSON.stringify(this.importData));
+            this.isAll = false;
             let copyData = Object.assign({}, this.importData);
             this.successList = copyData.successList?this.setTableData(copyData.successList):[];
             this.errorList = copyData.errorList?this.checkPointFun(copyData.errorList):[];
             this.successRes = copyData.successSize;
             this.errorRes = copyData.errorSize;
-            this.isAll = false;
             // console.log(this.importData, 'this.importData-----');
         },
         // 勾选表格数据格式

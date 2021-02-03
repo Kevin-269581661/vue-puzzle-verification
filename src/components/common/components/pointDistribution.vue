@@ -34,7 +34,7 @@
 </template>
 <script>
 import $ from "jquery";
-import { initMap, snowStyle, whiteStyle } from "@/commonFun/mapCommon.js";
+import { initMap, whiteStyle, cityCenter } from "@/commonFun/mapCommon.js";
 import api from "../../../api/api";
 import sessFun from "../../../commonFun/sessFun.js";
 export default {
@@ -91,7 +91,7 @@ export default {
   },
   beforeDestroy() {
     console.log('destroy-pointDistribution');
-    this.instanceMap = null;
+    this.instanceMap&&this.instanceMap.destroy();
   },
   methods: {
     // 首页的地图点位投放 /report /homepage/getPointDistributionReport
@@ -108,7 +108,7 @@ export default {
         .then((res) => {
           if (res.data.SysCode === 200200) {
             this.tableData = res.data.data;
-            // this.setMap();
+            this.setMap()
           } else {
             sessFun.messageFun("warning", res.data.MSG);
           }
@@ -120,7 +120,9 @@ export default {
     },
     setMap() {
       let mapData = []
+      let flyToCoordinates = ''
       if(this.tableData.length>0) {
+        flyToCoordinates = cityCenter.getCenterByCityName(this.tableData[0].rName)
         this.tableData.forEach(item=>{
           if(Array.isArray(item.latLngList)) {
             item.latLngList.forEach(point=>{
@@ -170,14 +172,14 @@ export default {
       });
       view.addLayer(layer1);
 
-      let layer2 = new mapvgl.PointLayer({
+      /* let layer2 = new mapvgl.PointLayer({
         blend: "lighter",
         shape: "circle",
         color: "rgba(24, 144, 255, 0.6)", // 点图层2颜色
         // data: mapData,
         size: 5,
       });
-      view.addLayer(layer2);
+      view.addLayer(layer2); */
 
       let layer3 = new mapvgl.PointLayer({
         blend: "lighter",
@@ -204,6 +206,11 @@ export default {
       // layer2.setData(mapData)
       layer3.setData(mapData)
       layer4.setData(mapData)
+      if(!flyToCoordinates) {
+        flyToCoordinates = mapData[0].geometry.coordinates
+        flyToCoordinates = {lng: flyToCoordinates[0], lat: flyToCoordinates[1]}
+      }
+      this.instanceMap.flyTo(flyToCoordinates, 12)
     },
     // 放大或缩小地图
     setMapZoom(type) {
@@ -255,6 +262,8 @@ li {
   align-items: flex-start;
 }
 .map-container {
+  position: absolute;
+  width: 100%;
   height: 100%;
 }
 .map-wrap {

@@ -26,7 +26,7 @@
                         <template slot="content">
                             <gauge-chart container="gaugeChart" :gaugeData="gaugeData"></gauge-chart>
                             <div class="bottom-box">
-                                您本年业绩目标为 <span class="avtive"> ¥{{gaugeData.targetPrice || 0}} </span> 完成了<span class="avtive"> {{gaugeData.finshProcess}}% </span>业绩排名第<span class="avtive"> {{gaugeData.rank}} </span>，请继续努力
+                                您本年业绩目标为 <span class="avtive"> {{gaugeData.targetPrice | moneyFormat('¥')}} </span> 完成了<span class="avtive"> {{gaugeData.finshProcess}}% </span>业绩排名第<span class="avtive"> {{gaugeData.rank}} </span>，请继续努力
                             </div>
                         </template>
                     </index-custom-card>
@@ -48,6 +48,14 @@
                                     width="150">
                                 </el-table-column>
                                 <el-table-column
+                                    show-overflow-tooltip
+                                    label="品牌"
+                                    width="150">
+                                    <template slot-scope="scope">
+                                        <span>{{scope.row.bTitle||'--'}}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
                                     sortable
                                     prop="dayDiff"
                                     label="沉默天数"
@@ -61,7 +69,7 @@
                                     width="auto"
                                 >
                                     <template slot-scope="scope">
-                                        <mini-progress style="cursor: unset;" slot="reference" :target="0" :percentage="scope.row.rate*1" :value="'¥'+scope.row.totalAdPrice" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
+                                        <mini-progress style="cursor: unset;" slot="reference" :target="0" :percentage="scope.row.rate*1" :value="scope.row.totalAdPrice | moneyFormat('¥')" :height="'20px'" :color="'rgba(24, 144, 255, 1)'"></mini-progress>
                                     </template>
                                 </el-table-column>
                             </el-table>
@@ -169,12 +177,10 @@
 
 <script>
     import {Button, Message} from 'element-ui';
-    import homeTop from '../common/components/homeTop.vue';
     import homeLink from '../common/components/homeLink.vue';
     import {api} from '../../api/api';
     import timeFormat from '../../commonFun/timeFormat';
     import sessFun from '../../commonFun/sessFun.js';
-    import comcards from '../../commonFun/json/comcard.json';
     import appCenter from '../../commonFun/json/appCenter.json';
     import indexIsDateFirst from '../../commonFun/indexIsDateFirst.js';
     import noSearchResult from "../../components/common/components/noSearchResult.vue";
@@ -190,7 +196,6 @@
     export default {
         name: "sale_index",
         components: {
-            homeTop,
             homeLink,
             noSearchResult,
             elButton: Button,
@@ -336,39 +341,7 @@
                 this.userInfo.userName = this.sessionData.realName;
                 this.userInfo.role = this.sessionData.uType;
                 this.userInfo.avator = this.sessionData.headPic ? this.sessionData.headPic : require('../../assets/images/index/niu.png')
-            console.log('this.userInfo', this.userInfo)
             },
-            /* getIsCom() {
-                let sessrid = this.sessionData.asrID;
-                let comarr = ['1', '2', '3', '4', '5', '6', '7'];
-                for (let data of comarr) {
-                    if (sessrid == data) {
-                        this.isCom = true;
-                        break;
-                    }
-                }
-                if (this.isCom) {
-                    let cards = [];
-                    let result = [];
-                    for (let data of comcards) {
-                        if (sessrid == data.value) {
-                            cards = data.cards;
-                            break;
-                        }
-                    }
-                    for (let item of cards) {
-                        let obj = {
-                            label: item.label,
-                            title: item.title,
-                            flag: item.label.includes('2') ? true : false,
-                            value: require('../../assets/images/index/' + item.value + '.png'),
-                        };
-                        obj.url = obj.value;
-                        result.push(obj);
-                    }
-                    this.companyHonor = result;
-                }
-            }, */
             resizeRank(price) {
                 let rankLength = document.getElementsByClassName('timeline')[0].offsetWidth;
                 let maxPrice = this.priceList[this.priceList.length - 1];
@@ -384,7 +357,6 @@
                     token: this.sessionData.token
                 };
                 api.getApi(this.apiVar.report + '/GetMonthRankOfBD', info).then(res => {
-                    // console.log(res.data);
                     if (res.data.SysCode == 200200) {
                         let resinfo = res.data.data;
                         let result = [];
@@ -396,7 +368,6 @@
                             };
                             result.push(obj);
                         }
-                        // console.log('result----', result);
                         if (result.length == 3) {
                             this.rankInfo = result;
                         } else if (result.length == 1) {

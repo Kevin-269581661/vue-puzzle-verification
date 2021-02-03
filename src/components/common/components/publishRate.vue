@@ -68,7 +68,7 @@
 </template>
 <script>
 import $ from "jquery";
-import { initMap, snowStyle, whiteStyle } from "@/commonFun/mapCommon.js";
+import { initMap, whiteStyle, cityCenter } from "@/commonFun/mapCommon.js";
 import api from "../../../api/api";
 import sessFun from "../../../commonFun/sessFun.js";
 export default {
@@ -121,7 +121,7 @@ export default {
   },
   beforeDestroy() {
     console.log('destroy-publishRate');
-    this.instanceMap = null;
+    this.instanceMap&&this.instanceMap.destroy();
   },
   methods: {
     // 首页的地图上刊率 /report /homepage/getDistrictOnPubRateReport
@@ -158,16 +158,30 @@ export default {
           zoom: 6,
           style: whiteStyle,
         });
-        this.instanceMap.addEventListener("zoomend", (e) => {
-          let level = e.target.getZoom();
-          // this.sliderValue1 = this.getSliderValue(level);
+        let _this = this
+        this.instanceMap.addEventListener("zoomstart", function(type, target){
+          _this.instanceMap.hideOverlayContainer()
+        });
+        this.instanceMap.addEventListener("zoomend", function(type, target){
+          _this.instanceMap.showOverlayContainer()
+        });
+        this.instanceMap.addEventListener("dragstart", function(type, target){
+          _this.instanceMap.hideOverlayContainer()
+        });
+        this.instanceMap.addEventListener("dragend", function(type, target){
+          _this.instanceMap.showOverlayContainer()
         });
       }
       if(!this.tableData) return;
-      // this.instanceMap.setCenter(
-      //   new BMapGL.Point(105.348145, 28.165926)
-      // );
       this.instanceMap.clearOverlays();
+      let flyToCoordinates = ''
+      if(this.tableData.length>0) {
+        flyToCoordinates = cityCenter.getCenterByCityName(this.tableData[0].cityName)
+      }
+      if(this.tableData.length>0 && this.tableData[0].latlng && !flyToCoordinates) {
+        flyToCoordinates = this.tableData[0].latlng.split(';')
+        flyToCoordinates = {lng: flyToCoordinates[0], lat: flyToCoordinates[1]}
+      }
       this.tableData.forEach((item) => {
         if (item.latlng) {
           let label = new BMapGL.Label(item.onPubRate + "%", {
@@ -199,11 +213,14 @@ export default {
             lineHeight: size,
             background: `rgba(${colorR}, ${colorG}, ${colorB}, ${colorA})`,
             color: "#fff",
-            "box-shadow": "0px 0px 2px",
-            "box-sizing": "content-box",
+            // boxShadow: "0px 0px 2px",
+            boxShadow: '0 0 0.1em currentcolor inset, 0 0 .8em currentcolor inset',
+            boxSizing: "content-box",
+            animation: `myscale 3s ease-in-out 2s infinite`
             // cursor: "pointer",
           });
-          this.instanceMap.addOverlay(label);
+          this.instanceMap.addOverlay(label)
+          this.instanceMap.flyTo(flyToCoordinates, 10)
         }
       });
     },
@@ -233,8 +250,19 @@ export default {
   },
 };
 </script>
-
+<style>
+@keyframes myscale
+{
+	0%{
+    transform: scale(1);  /*开始为原始大小*/
+  }
+  50%{
+    transform: scale(1.2);
+  }
+}
+</style>
 <style scoped lang="scss">
+
 * {
   font-family: "Helvetica Neue", Helvetica, Arial, "PingFang ",
     "Hiragino Sans GB" "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei",
@@ -258,6 +286,8 @@ li {
   align-items: flex-start;
 }
 .map-container {
+  position: absolute;
+  width: 100%;
   height: 100%;
 }
 .map-wrap {

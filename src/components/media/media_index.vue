@@ -3,7 +3,11 @@
 		<div class="ad_index_container">
 			<div class="index-top-row">
 				<div class="left-layout">
-					<personal-info :user-info="userInfo" :honor-img="companyHonor" :linkArr="linkArrNew"></personal-info>
+					<personal-info :user-info="userInfo" :honor-img="companyHonor" :imgSize="[51, 62]" :linkArr="linkArrNew">
+							<template slot-scope="{showImgNum}">
+								<img v-show="index < showImgNum" v-for="(item,index) of companyHonor" :key="index" style="width: 51px; height: 62px;" :src="item.url" :alt="item.title" :title="item.title">
+							</template>
+					</personal-info>
 					<div class="card-group">
 						<el-row :gutter="24" style="margin-bottom: 24px;">
 							<el-col :span="8"><chart-card :cardData="cardData1"></chart-card></el-col>
@@ -131,13 +135,13 @@
 			</el-row>
 			
 			<el-tabs class="index-tab-group" style="height: 643px;border: 1px solid #e5e6e9;" v-model="activeTabsName">
-                <el-tab-pane label="点位分布" name="pointDistribution">
-                    <point-distribution mapContainer="mapContainer1" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointDistribution'"></point-distribution>
-                </el-tab-pane>
-                <el-tab-pane label="点位上刊率" name="pointPublication">
-                    <publish-rate mapContainer="mapContainer2" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointPublication'"></publish-rate>
-                </el-tab-pane>
-            </el-tabs>
+				<el-tab-pane label="点位分布" name="pointDistribution">
+					<point-distribution mapContainer="mapContainer1" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointDistribution'"></point-distribution>
+				</el-tab-pane>
+				<el-tab-pane label="点位上刊率" name="pointPublication">
+					<publish-rate mapContainer="mapContainer2" :hasMpvgl="hasMpvgl" :actived="activeTabsName === 'pointPublication'"></publish-rate>
+				</el-tab-pane>
+			</el-tabs>
 		</div>
 
 		<div class="dialog_box">
@@ -238,10 +242,8 @@
 <script>
 import { Button, Message } from 'element-ui';
 import timeFormat from '../../commonFun/timeFormat.js';
-// import homeTop from '../common/components/homeTop.vue';
 import homeLink from '../common/components/homeLink.vue';
 import { api } from '../../api/api';
-import comcards from '../../commonFun/json/comcard.json';
 import sessFun from '../../commonFun/sessFun.js';
 import indexIsDateFirst from '../../commonFun/indexIsDateFirst.js';
 import noSearchResult from "../../components/common/components/noSearchResult.vue";
@@ -259,10 +261,8 @@ import publishRate from '../common/components/publishRate.vue';
 export default {
 	name: "media_index",
 	components:{
-		// homeTop,
 		homeLink,
 		noSearchResult,
-
 		personalInfo,
 		messageAndApp,
 		chartCard,
@@ -270,7 +270,7 @@ export default {
 		ringChart,
 		miniProgress,
 		pointDistribution,
-        publishRate
+    publishRate
 	},
 	data(){
 		return{
@@ -365,8 +365,8 @@ export default {
 			// 公司勋章
 			comimgInfo: [],
 			companyHonor: [],
-            // 应用中心
-            appCenter: '',
+			// 应用中心
+			appCenter: '',
 			isSlideDown: true,
 			
 			cardData1: {
@@ -476,38 +476,6 @@ export default {
 			this.userInfo.avator = sess.headPic ? sess.headPic : require('../../assets/images/index/niu.png')
 
 		},
-		/* getIsCom(){
-			let sessrid = this.sessionData.asrID;
-			let comarr = ['1','2','3','4','5','6','7'];
-			for(let data of comarr){
-				if(sessrid== data){
-					this.isCom = true;
-					break;
-				}
-			}
-			// 只有直营超管才可见公司荣誉
-			if(this.isCom){
-				let cards = [];
-				let result = [];
-				for(let data of comcards){
-					if(sessrid == data.value){
-						cards = data.cards;
-						break;
-					}
-				}
-				for(let item of cards){
-					let obj = {
-						label: item.label,
-						title: item.title,
-						flag: item.label.includes('2') ? true : false,
-						value: require('../../assets/images/index/'+item.value+'.png'),
-					};
-					obj.url = obj.value;
-					result.push(obj);
-				}
-				this.comimgInfo = result;
-			}
-		}, */
 		// 媒介贡献弹窗
 		getContributeBox(){
 			let info = {
@@ -563,8 +531,6 @@ export default {
 					this.imginfo[2].rank = this.medalInfo.release;
 					this.imginfo[2].name = this.getName(3, this.medalInfo.release-2);
 					this.imginfo[2].title = this.imginfo[2].name?this.imginfo[2].name:'';
-
-					// console.log('this.imginfo', this.imginfo);
 					for(let data of this.imginfo){
 						if(data.title){
 							data.flag = true;
@@ -573,7 +539,6 @@ export default {
 						}
 					}
 					this.companyHonor = this.comimgInfo.concat(this.imginfo);
-					// console.log(this.companyHonor, 'companyHonor');
 				}else{
 					Message.warning(res.data.MSG);
 				}
@@ -930,19 +895,17 @@ export default {
 	},
 	mounted(){
 		this.getSession();
-		// this.getIsCom();
-		// this.getData();
 		this.getContributeBox();
 		this.getContribute();
 		let nowDate = timeFormat.toDate(new Date(), '/');
 		if(indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)){
 			this.isShowNum = true;
 		}
-		// this.setTime();
-        //用户中心
-        this.appCenter = appCenter
-        this.uploadEvent(1)
-		// this.getLinePer();
+		if(this.sessionData.mediaManageLevel == 1) {
+			this.linkArrNew.pop()
+		}
+		this.appCenter = appCenter
+		this.uploadEvent(1)
 		this.allReportApi()
 	},
 };

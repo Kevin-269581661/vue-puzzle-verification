@@ -62,9 +62,8 @@
                             :endVal="basicTotalData.sale || 0"
                             :duration="500"
                             :decimals='0'
-                            prefix="￥"
+                            prefix="¥"
                         ></countTo>
-                        <!-- <p>￥{{priceFormat(basicTotalData.sale)}}</p> -->
                     </div>
                     <div class="data_box" :class="basicTotalType === '客单价' ? 'box_active' : ''"
                          @click="totalActiveFun('客单价')">
@@ -75,9 +74,8 @@
                             :endVal="basicTotalData.orderSale || 0"
                             :duration="500"
                             :decimals='0'
-                            prefix="￥"
+                            prefix="¥"
                         ></countTo>
-                        <!-- <p>￥{{priceFormat(basicTotalData.orderSale)}}</p> -->
                     </div>
                     <div class="data_box" :class="basicTotalType === '上刊率' ? 'box_active' : ''"
                          @click="totalActiveFun('上刊率')">
@@ -326,7 +324,7 @@
             </el-card>
         </div>
         <!--机会挖掘-->
-        <div class="data_read_box">
+        <!-- <div class="data_read_box">
             <el-card  class="box-card" shadow="never">
                 <div slot="header" class="clearfix">
                     <span class="box_card_title">机会挖掘</span>
@@ -371,6 +369,12 @@
                                     :show-overflow-tooltip="true">
                                 </el-table-column>
                                 <el-table-column
+                                    prop="bTitle"
+                                    label="品牌"
+                                    min-width="125"
+                                    :show-overflow-tooltip="true">
+                                </el-table-column>
+                                <el-table-column
                                     prop="cooperation"
                                     label="合作情况"
                                     min-width="90">
@@ -397,7 +401,7 @@
                     </el-col>
                 </el-row>
             </el-card>
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -564,13 +568,13 @@
                 adInventoryDate: {starDate: '', endDate: '', weekNum: 0},
                 adInventoryType: '1',
                 // 机会挖掘
-                chanceFindPieLoading: true,
+                // chanceFindPieLoading: true,
                 // 用户总数
-                chanceFindUserNum: 0,
-                chanceFindDate: [],
+                // chanceFindUserNum: 0,
+                // chanceFindDate: [],
                 // 机会挖掘 - 饼状图
-                chanceFindPieEcharts: '',
-                chanceFindPieData: {
+                // chanceFindPieEcharts: '',
+                /* chanceFindPieData: {
                     title: ['初购客户', '复购客户', '未合作','沉默客户'],
                     data: [
                         {value: 0, name: '生成方案'},
@@ -578,10 +582,10 @@
                         {value: 0, name: '未合作'},
                         {value: 0, name: '沉默客户'}
                     ]
-                },
+                }, */
                 // 机会挖掘表格
-                chanceFindTable:[],
-                chanceFindTableLoading: true,
+                // chanceFindTable:[],
+                // chanceFindTableLoading: true,
                 // 饼状图的lengt的itemStyle富文本
                 itemStyle: {
                     rich:{
@@ -715,8 +719,8 @@
                 // 广告库存 - 右侧
                 this.getAdInventoryData();
                 // 机会挖掘
-                this.getChanceFindEcharts();
-                this.getChanceFindTable();
+                // this.getChanceFindEcharts();
+                // this.getChanceFindTable();
                 this.oldSelectCity = this.selectCity
                 this.adSaleActiveWeek = '0'
                 this.isGetData = true
@@ -1961,12 +1965,12 @@
                 this.adInventoryLoading = false
             },
             /*  机会挖掘  */
-            changeFindDate(){
+            /* changeFindDate(){
                 this.getChanceFindEcharts()
                 this.getChanceFindTable()
-            },
+            }, */
             // 左侧图表接口
-            getChanceFindEcharts(){
+            /* getChanceFindEcharts(){
                 this.chanceFindPieLoading = true
                 let params = {
                     uid: this.sessionData.uID,
@@ -2003,9 +2007,9 @@
                         sessFun.messageFun('warning', res.data.MSG)
                     }
                 })
-            },
+            }, */
             // 表格接口 getCustomerCooperative
-            getChanceFindTable(){
+            /* getChanceFindTable(){
                 this.chanceFindTableLoading = true
                 let params = {
                     uid: this.sessionData.uID,
@@ -2028,7 +2032,7 @@
                     }
                     this.chanceFindTableLoading = false
                 })
-            },
+            }, */
             setChanceFindTabelData(dataList) {
                 let arr = []
                 for (let key of dataList) {
@@ -2038,6 +2042,7 @@
                         status: key.cooperativeName,
                         time: key.createTime,
                         saler: key.userName,
+                        bTitle: key.bTitle||''
                     })
                 }
                 this.chanceFindTable = arr
@@ -2554,7 +2559,7 @@
         background:rgba(0,0,0,0);
     }
 
-    .chance_find_table /deep/ .el-table__body-wrapper,.chance_find_table /deep/ .el-table__empty-block{
+    /* .chance_find_table /deep/ .el-table__body-wrapper,.chance_find_table /deep/ .el-table__empty-block{
         height: 218px;
         min-height: 218px;
         overflow-y: auto;
@@ -2565,13 +2570,13 @@
         width: 6px;
         height: 6px;
         background: #fafafa;
-    }
+    } */
 
-    .chance_find_table /deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
+    /* .chance_find_table /deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb { */
         /*滚动条里面小方块*/
-        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        /* -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
         background: #c1c1c1;
         border-radius: 4px;
-    }
+    } */
 
 </style>

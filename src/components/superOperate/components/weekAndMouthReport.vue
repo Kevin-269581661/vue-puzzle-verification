@@ -74,6 +74,12 @@
                             :show-overflow-tooltip="true">
                         </el-table-column>
                         <el-table-column
+                            prop="bTitle"
+                            label="品牌"
+                            min-width="100"
+                            :show-overflow-tooltip="true">
+                        </el-table-column>
+                        <el-table-column
                             prop="content"
                             label="上刊内容"
                             min-width="95">
@@ -476,6 +482,7 @@
                 for(let key of dataArr){
                     arr.push({
                         clienter: key.customName,
+                        bTitle: key.bTitle||'',
                         content: key.orderName,
                         saler: key.userName,
                         issueNum: key.adsCount,

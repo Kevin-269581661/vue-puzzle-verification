@@ -949,32 +949,32 @@
                         if (temp === 'all') {
                             console.log('总量趋势')
                             let compareLen = this.isMonthLength(this.allkeyDataDate)
-                            if (compareLen > 5) {
+                            if (compareLen > 35) {
                                 if (index === '0') {
                                     starT = this.allkeyDataDate[0]
-                                    endT = timeFormat.getSpecifiedDateStr(this.allkeyDataDate[0], -5).substring(0, 7)
+                                    endT = timeFormat.getSpecifiedDateStr(this.allkeyDataDate[0], -35).substring(0, 7)
                                 } else if (index === '1') {
-                                    starT = timeFormat.getSpecifiedDateStr(this.allkeyDataDate[1], 5).substring(0, 7)
+                                    starT = timeFormat.getSpecifiedDateStr(this.allkeyDataDate[1], 35).substring(0, 7)
                                     endT = this.allkeyDataDate[1]
                                 }
                                 this.allkeyDataDate = [starT, endT]
-                                sessFun.messageFun('warning', '月份跨度不能大于六个月!')
+                                sessFun.messageFun('warning', '月份跨度不能大于三年!')
                             }
                             this.allkeyDataTime = '其它'
                             this.keydataRadio(this.allkeydatakind, temp)
                         } else if (temp === 'add') {
                             console.log('增量趋势')
                             let compareLen = this.isMonthLength(this.addkeyDataDate)
-                            if (compareLen > 5) {
+                            if (compareLen > 35) {
                                 if (index === '0') {
                                     starT = this.addkeyDataDate[0]
-                                    endT = timeFormat.getSpecifiedDateStr(this.addkeyDataDate[0], -5).substring(0, 7)
+                                    endT = timeFormat.getSpecifiedDateStr(this.addkeyDataDate[0], -35).substring(0, 7)
                                 } else if (index === '1') {
-                                    starT = timeFormat.getSpecifiedDateStr(this.addkeyDataDate[1], 5).substring(0, 7)
+                                    starT = timeFormat.getSpecifiedDateStr(this.addkeyDataDate[1], 35).substring(0, 7)
                                     endT = this.addkeyDataDate[1]
                                 }
                                 this.addkeyDataDate = [starT, endT]
-                                sessFun.messageFun('warning', '月份跨度不能大于六个月!')
+                                sessFun.messageFun('warning', '月份跨度不能大于三年!')
                             }
                             this.addkeyDataTime = '其它'
                             this.keydataRadio(this.addkeyDataKind, temp)
@@ -1455,7 +1455,7 @@
                     }
                     monthList.push(key.month)
                 }
-                let showTime = this.CountOfTotalDataShow.timeData
+                let showTime = this.CountOfIncreDataShow.dateCompare
                 let tempDate = []
                 for (let i = 0; i < showTime.length; i++) {
                     tempDate.push(this.changeTime(showTime[i]) + '对比' + this.changeTime(monthList[i]))
@@ -1466,8 +1466,6 @@
                 let endT = this.changeTime(this.addkeyCompareDate[0]) + '-' + this.changeTime(this.addkeyCompareDate[1])
                 let timeArr = [starT,endT]
                 this.CountOfIncreDataShow.TitleDate = timeArr
-                console.log('月份对比数据TitleDate',this.CountOfIncreDataShow.TitleDate)
-                console.log('月份对比数据timeArr',timeArr)
                 this.keyDataBar()
             },
             // 判断社区、媒体、点位
@@ -1847,16 +1845,16 @@
                     let starT = ''
                     let endT = ''
                     let compareLen = this.isMonthLength(this.TOrderDate)
-                    if (compareLen > 5) {
+                    if (compareLen > 35) {
                         if(index === '0'){
                             starT =  this.TOrderDate[0]
-                            endT = timeFormat.getSpecifiedDateStr(this.TOrderDate[0],-5).substring(0,7)
+                            endT = timeFormat.getSpecifiedDateStr(this.TOrderDate[0],-35).substring(0,7)
                         }else if(index === '1'){
-                            starT = timeFormat.getSpecifiedDateStr(this.TOrderDate[1],5).substring(0,7)
+                            starT = timeFormat.getSpecifiedDateStr(this.TOrderDate[1],35).substring(0,7)
                             endT = this.TOrderDate[1]
                         }
                         this.TOrderDate = [starT,endT]
-                        sessFun.messageFun('warning', '月份跨度不能大于六个月!')
+                        sessFun.messageFun('warning', '月份跨度不能大于三年!')
                     }
                     this.TOrderTime = '其它'
                     // console.log('行业订单总量趋势 - 选择月份',this.card5Industry)
@@ -2180,7 +2178,7 @@
                                 normal: {
                                     show: false,
                                     position: "center",
-                                    formatter: "{a}\n{b}: ￥{c}"
+                                    formatter: "{a}\n{b}: ¥{c}"
                                 },
                                 emphasis: {
                                     show: false,
@@ -2748,14 +2746,14 @@
                 if (kind === 'start') {
                     return time + '-01'
                 } else {
-                    if (this.nowMonth == time) {
-                        return timeFormat.returnMonthCount(0, '-')
-                    } else {
+                    // if (this.nowMonth == time) {
+                    //     return timeFormat.returnMonthCount(0, '-')
+                    // } else {
                         // let dateList = time.split('-')
                         let dayNum = new Date(Number(dateList[0]), Number(dateList[1]), 0);
                         console.log('判断是否为当前月份并返回', dayNum.getDate());
                         return time + '-' + dayNum.getDate()
-                    }
+                    // }
                 }
             },
             // 数据大到小排序

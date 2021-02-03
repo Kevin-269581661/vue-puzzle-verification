@@ -167,7 +167,7 @@
                                    :file-list="item.photoList"
                                    :before-upload="beforeAvatarUpload"
                                    :before-remove="beforeImgRemove"
-                                   :on-preview="handlePictureCardPreview"
+                                   :on-preview="previewImg"
                                    :on-remove="handleRemove"
                                    :on-exceed="handleExceed" multiple>
                             <i class="el-icon-plus"></i>
@@ -2742,6 +2742,9 @@
     }
 
     /deep/ .imgpain_box .el-upload-list__item.is-success {
+        display: block;
+    }
+    /deep/ .imgpain_box .el-upload-list__item.is-1 {
         display: block;
     }
 

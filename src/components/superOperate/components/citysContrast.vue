@@ -674,38 +674,38 @@
                 if (String === 'cityBattle') {
                     // 城市数据对比
                     let compareLen = this.isMonthLength(this.compareCityTime)
-                    if (compareLen > 5) {
+                    if (compareLen > 35) {
                         if (index === '0') {
                             starT = this.compareCityTime[0]
-                            endT = timeFormat.getSpecifiedDateStr(this.compareCityTime[0], -5).substring(0, 7)
+                            endT = timeFormat.getSpecifiedDateStr(this.compareCityTime[0], -35).substring(0, 7)
                         } else if (index === '1') {
-                            starT = timeFormat.getSpecifiedDateStr(this.compareCityTime[1], 5).substring(0, 7)
+                            starT = timeFormat.getSpecifiedDateStr(this.compareCityTime[1], 35).substring(0, 7)
                             endT = this.compareCityTime[1]
                         }
                         this.compareCityTime = [starT, endT]
-                        sessFun.messageFun('warning','月份跨度不能大于六个月!')
+                        sessFun.messageFun('warning','月份跨度不能大于三年!')
                     }
                     this.cityBattleTime = '其它'
                     this.forCityData(this.cityBattleTitle)
                 } else if (String === 'cityRate') {
                     // 城市对比上刊率
                     let compareLen = this.isMonthLength(this.cityRateCompareDate)
-                    if (compareLen > 5) {
+                    /* if (compareLen > 5) {
                         starT = this.cityRateCompareDate[0]
                         endT = timeFormat.getSpecifiedDateStr(this.cityRateCompareDate[0], -5)
                         this.cityRateCompareDate = [starT, endT]
                         sessFun.messageFun('warning','时间跨度不能大于六个月!')
-                    }
+                    } */
                     this.cityRateCompareTime = '其它'
                     this.getCompareCityRate()
                 } else if (String === 'cityKey') {
                     // 城市关键数据对比
                     let compareLen = this.isMonthLength(this.cityKeyDataDate)
-                    if (compareLen > 5) {
+                    if (compareLen > 35) {
                         starT = this.cityKeyDataDate[0]
-                        endT = timeFormat.getSpecifiedDateStr(this.cityKeyDataDate[0], -5)
+                        endT = timeFormat.getSpecifiedDateStr(this.cityKeyDataDate[0], -35)
                         this.cityKeyDataDate = [starT, endT]
-                        sessFun.messageFun('warning','时间跨度不能大于六个月!')
+                        sessFun.messageFun('warning','时间跨度不能大于三年!')
                     }
                     this.cityKeyDataTime = '其它'
                     this.forCityKeyData()

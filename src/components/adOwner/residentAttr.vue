@@ -452,24 +452,6 @@ export default {
                 };
             }
 
-            // let arr = dataALL;
-            // let ininInfo = [];
-            // for(let data of arr){
-            //     let initData = JSON.parse(data.tPPT);
-            //     let init = initData['1'].concat(initData['2']).concat(initData['3']).concat(initData['5']);
-            //     ininInfo.push(init);
-
-            // }
-            // let allData = this.manaGeDataInit(ininInfo);
-            // this.progress = ((allData[0].value)*100).toFixed(2);
-            // this.year.dataValue = [allData[2].value, allData[3].value, allData[4].value, allData[5].value, allData[6].value, allData[7].value, allData[8].value]
-            // this.eduction = [allData[9], allData[10], allData[11]];
-            // this.expense = [allData[12], allData[13], allData[14]];
-            // this.setTrend();
-            // this.professTrend();
-            // this.educationTrend();
-            // this.expenseTrend();
-
 
             api.getApi(this.apiVar.QZhike+'/GetTPPT', info).then(res =>{
                 console.log(res.data);

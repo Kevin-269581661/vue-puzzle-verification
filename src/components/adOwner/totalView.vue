@@ -33,22 +33,6 @@
                         <span>{{item.val}}</span>
                         <p>{{index === 4? item.Count:priceFormat(item.Count)}}</p>
                     </li>
-                    <!--<li>-->
-                    <!--<span>楼盘价格(￥)</span>-->
-                    <!--<p>54,000</p>-->
-                    <!--</li>-->
-                    <!--<li>-->
-                    <!--<span>户数</span>-->
-                    <!--<p>400</p>-->
-                    <!--</li>-->
-                    <!--<li>-->
-                    <!--<span>出入口数</span>-->
-                    <!--<p>4</p>-->
-                    <!--</li>-->
-                    <!--<li>-->
-                    <!--<span>入住年份</span>-->
-                    <!--<p>2004</p>-->
-                    <!--</li>-->
                 </ul>
             </div>
             <div class="right-charts">

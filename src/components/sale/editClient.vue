@@ -111,7 +111,7 @@
                                                     size="small"
                                                     type="info"
                                                     :key="index"
-                                                    closable
+                                                    :closable="false"
                                                     :disable-transitions="false"
                                                     @click.native="tagsClick(index)"
                                                     @close="tagsClose(index)">
@@ -609,6 +609,7 @@ export default {
                     let AbInfo = {
                         uid: this.sessionData.uID,
                         token: this.sessionData.token,
+                        asrID: this.sessionData.asrID,
                         bt: key.brandName,
                         cid: cID,
                         instdustryId: key.industryList[1],

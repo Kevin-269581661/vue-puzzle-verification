@@ -127,7 +127,7 @@ export default {
           range: [ 0, 1 ]
         }
       ],
-      stackColor: ['name', ['rgba(24, 144, 255, 0.65)', 'rgba(24, 144, 255, 1)']],
+      stackColor: ['name', ['#69B7FF', '#1890FF']],
       height: 107,
       oldTotal: 0,
     };
@@ -211,6 +211,7 @@ export default {
   .row {
     @extend %flex-row-center;
     .row-left {
+      flex-shrink: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       word-break: break-all;

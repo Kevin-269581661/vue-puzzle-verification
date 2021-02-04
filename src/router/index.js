@@ -106,6 +106,9 @@ const engineerCommon = () => import('../components/engineer/engineerCommon.vue')
 //亲邻科技上刊报告
 const Report = () => import('../components/h5/Report.vue')
 
+// 年终报告H5
+const YearStat = () => import('../components/h5/YearStat.vue')
+
 Vue.use(Router);
 
 export default new Router({
@@ -118,14 +121,15 @@ export default new Router({
         {path: '/shareADList', name: 'shareADList', component: shareADList},
         {path: '/emptyPoint', name: 'emptyPoint', component: emptyPoint},
         // 亲邻地图
-        {path: '/ADResourceMap/chooseRes',name:'qinLinMap',component: qinLinMap, meta:{title: '亲邻科技，智慧选点'}},
+        {path: '/ADResourceMap/chooseRes', component: qinLinMap, meta:{title: '亲邻科技，智慧选点'}},
         // 地图分享
-        {path: '/ADResourcesMap/shareRes',name:'qinLinMap',component: qinLinMap, meta:{title: '亲邻科技，智慧分享'}},
+        {path: '/ADResourcesMap/shareRes', component: qinLinMap, meta:{title: '亲邻科技，智慧分享'}},
         //资源对比可视化
         {path: '/resContrastMap',name:'resContrastMap',component: resContrastMap, meta:{title: '亲邻科技，智慧地图'}},
         //消息列表
         //上下刊报告h5页面
         {path: '/Report', name: 'Report', component: Report},
+        {path: '/YearStat', name: 'YearStat', component: YearStat},
         //admin
         {
             path: '/',
@@ -234,7 +238,7 @@ export default new Router({
                 {path: '/media/projectList', component: projectList},
                 {path: '/media/projectDetail', component: projectDetail},
                 {path: '/media/paintedCount', component: paintedCount},
-                {path: '/media/messageList', name: 'messageList', component: messageList},
+                {path: '/media/messageList', component: messageList},
                 {path: '/media/communityPortrait',component: communityPortrait},
                 {path: '/media/communityRank',component: communityRank},
                 {path: '/media/portraitDetail',component: portraitDetail},
@@ -270,7 +274,7 @@ export default new Router({
                 {path: '/sale/communityPortrait',component: communityPortrait},
                 {path: '/sale/communityRank',component: communityRank},
                 {path: '/sale/portraitDetail',component: portraitDetail},
-                {path: '/sale/messageList', name: 'messageList', component: messageList},
+                {path: '/sale/messageList', component: messageList},
                 {path: '/sale/adsDialPlate', component: adsDialPlate},
             ]
         },
@@ -313,7 +317,7 @@ export default new Router({
                 {path: '/f_engineer/orderList', name:'orderList', component: orderList },
                 {path: '/f_engineer/myInfo', component: myInfo},
                 {path: '/f_engineer/orderDetail', component: orderDetail},
-                {path: '/f_engineer/messageList', name: 'messageList', component: messageList},
+                {path: '/f_engineer/messageList', component: messageList},
                 {path: '/f_engineer/questionAndAnswer', component: questionAndAnswer},
                 {path: '/f_engineer/maintainList', component: maintainList},
             ]

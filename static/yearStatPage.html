@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1 user-scalable=0" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui">
+  <meta name="screen-orientation" content="portrait">
+  <meta name="x5-orientation" content="portrait">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="full-screen" content="yes">
+  <meta name="x5-fullscreen" content="true">
+  <meta content="yes" name="apple-touch-fullscreen" />
+  <meta content="maximum-dpr=2" name="flexible" />
+  <title>亲邻科技</title>
+  <link rel="stylesheet/less" type="text/css" href="/static/styles.less" />
+  <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.5.3/less.min.js"></script>
+  <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+<script>
+  (function (doc, win, width) {
+    var docEl = doc.documentElement;
+    var head = doc.getElementsByTagName("head")[0];
+    var hFirst = head.firstChild || head.firstElementChild;
+    var cssEl = doc.createElement("style");
+    //手机横屏，竖屏可在此处设置
+    var resizeEvt = "orientationchange" in win ? "orientationchange" : "resize";
+    var recalc = function () {
+      var x;
+      var n = win.devicePixelRatio || 1;
+      if (n >= 4) {
+        x = 4;
+      } else if (n >= 3) {
+        x = 3;
+      } else if (n >= 2.75) {
+        x = 2.75;
+      } else if (n >= 2.5) {
+        x = 2.5;
+      } else if (n >= 2) {
+        x = 2;
+      } else {
+        x = 1;
+      }
+      var clientWidth = docEl.clientWidth;
+      if (!clientWidth) return;
+      var pxPerRem = 100 * (clientWidth / width);
+      cssEl.innerHTML = "html{ font-size:" + pxPerRem + "px!important; }";
+      docEl.setAttribute("data-dpr", x);
+      head.appendChild(cssEl);
+    };
+    recalc();
+    if (!doc.addEventListener) return;
+    win.addEventListener(resizeEvt, recalc, false);
+    doc.addEventListener("DOMContentLoaded", recalc, false);
+  })(document, window, 750);
+</script>
+
+<body>
+  <!--页面主体部分-->
+  <div class="main">
+    <i class="page-title">2020年度用户报告</i>
+    <h6>守望相助，未来可期</h6>
+    <div>
+      <span class="content-text">2020年是无比艰难的一年</span>
+      <span class="content-text">2020年是无比艰难的一年</span>
+      <span class="content-text">2020年是无比艰难的一年</span>
+    </div>
+    <div class="bottom-btn">查阅我的年度总结</div>
+    <!-- 四边 -->
+    <!-- <div class="box aaa" viewpx="all"></div>  -->
+    <!-- 左边 -->
+    <!-- <div class="box" viewpx="left"></div>  -->
+    <!-- 左边,上边 -->
+    <!-- <div class="box" viewpx="left top"></div>  -->
+    <!-- 左边,上边,右边 -->
+    <!-- <div class="box" viewpx="left top right"></div>  -->
+  </div>
+
+  <script src=""></script>
+</body>
+
+</html>

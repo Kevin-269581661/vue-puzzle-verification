@@ -1,6 +1,7 @@
 FROM nginx:stable
 
 ADD ./dist /usr/share/nginx/html
+ADD ./aA6VkBus4m.txt /usr/share/nginx/html/aA6VkBus4m.txt
 ADD ./importTemplate /usr/share/nginx/html/importTemplate
 
 ADD ./external /usr/share/nginx/html

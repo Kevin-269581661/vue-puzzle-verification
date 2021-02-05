@@ -144,7 +144,7 @@
 			</el-tabs>
 		</div>
 
-		<div class="dialog_box">
+		<!-- <div class="dialog_box">
 			<el-dialog
 				title=""
 				:visible.sync="isShowMedal"
@@ -154,7 +154,6 @@
 						<img :src="currentImgInfo.url" alt="">
 					</div>
 					<div class="con">
-						<!-- <p style="font-size:28px;line-height:20px;font-weight:bold;">{{currentImgInfo.name}}</p> -->
 						<p style="height:24px;line-height:24px;margin-top: 10px;">
 							<span>{{currentImgInfo.name}}达 {{currentImgInfo.num}} {{currentImgInfo.unit}}</span>
 						</p>
@@ -180,11 +179,14 @@
 					</div>
 				</div>
 			</el-dialog>
+		</div> -->
+		<!-- 年终总结弹框 -->
+		<div v-show="showYearStat == 'visible'" class="rank_box">
+			<div id="qrcode" ref="qrcode" class="img_box"></div>
 		</div>
-
 		<!-- 媒介工作量 -->
-		<div v-if="isShowNum" style="z-index:2;background: #000000;opacity: 0.3;width:100%;height:100%;position:absolute;top:0;left:0;"> </div>
-		<div v-if="isShowNum" class="rank_box">
+		<div v-if="showYearStat=='disvisible' && isShowNum" style="z-index:2;background: #000000;opacity: 0.3;width:100%;height:100%;position:absolute;top:0;left:0;"> </div>
+		<div v-if="showYearStat=='disvisible' && isShowNum" class="rank_box">
 			<ul class="ul_box">
 				<li>
 					<div class="img_box">
@@ -258,6 +260,8 @@ import miniProgress from '../common/components/miniProgress.vue';
 import pointDistribution from '../common/components/pointDistribution.vue';
 import publishRate from '../common/components/publishRate.vue';
 
+import QRCode from 'qrcodejs2'
+var visible = null
 export default {
 	name: "media_index",
 	components:{
@@ -270,7 +274,8 @@ export default {
 		ringChart,
 		miniProgress,
 		pointDistribution,
-    publishRate
+		publishRate,
+		QRCode
 	},
 	data(){
 		return{
@@ -278,9 +283,10 @@ export default {
 			activeTabsName: 'pointDistribution',
 
 			isAllMedia: false,
+			showYearStat: 'waiting',
 			isShowNum: false,
 			// 勋章弹出框
-			isShowMedal: false,
+			// isShowMedal: false,
 			linkArrNew: [
 				{
 					imgurl: require('../../assets/images/importPoint.png'),
@@ -346,7 +352,7 @@ export default {
 				},
 			],
 			// 弹出框信息
-			currentImgInfo:{
+			/* currentImgInfo:{
 				url: '',
 				name: '',
 				num: '',
@@ -355,7 +361,7 @@ export default {
 				img2: '',
 				img3: '',
 				img4: '',
-			},
+			}, */
 			// 弹窗贡献值
 			contribute:{
 				adPlanCount: 0,
@@ -580,8 +586,7 @@ export default {
 			}
 			return rank;
 		},
-		showImg(index, value){
-			// this.isShowMedal = true;
+		/* showImg(index, value){
 			let curr = this.imginfo[index];
 			if(curr.rank == 1){
 				this.isShowMedal = false;
@@ -606,7 +611,7 @@ export default {
 				img4: require('../../assets/images/index/'+str+'-4.png'),
 				img5: require('../../assets/images/index/'+str+'-5.png'),
 			};
-		},
+		}, */
         // 应用中心跳转
         goToPage(item) {
             if (item) {
@@ -891,11 +896,40 @@ export default {
 				console.log('err', err)
 			}).finally(_=>{
 			})
-		}
+		},
+		// 获取媒介年终总结
+		getYearStat() {
+			if(!visible) return
+			setTimeout(()=>{
+				console.log('showYearStat')
+				this.showYearStat = 'visible'
+			}, 1000)
+		},
+		//生成二维码
+		qrcodeScan () {
+			let qrcode = new QRCode('qrcode', {  
+				width: 200,  // 二维码宽度 
+				height: 200, // 二维码高度
+				text: 'http://192.168.1.113:8085/yearStatPage/'
+			})  
+		},
 	},
+	beforeRouteEnter (to, from, next) {
+    // 在渲染该组件的对应路由被 confirm 前调用
+    // 不！能！获取组件实例 `this`
+		// 因为当守卫执行前，组件实例还没被创建
+		console.log('to, from, next', to, from)
+		if(from.path!=='/login') {
+			console.log('visible')
+			visible = true
+		}
+		next()
+  },
 	mounted(){
+		this.qrcodeScan()
 		this.getSession();
 		this.getContributeBox();
+		this.getYearStat()
 		this.getContribute();
 		let nowDate = timeFormat.toDate(new Date(), '/');
 		if(indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)){

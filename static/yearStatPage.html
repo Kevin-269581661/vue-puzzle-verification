@@ -17,8 +17,10 @@
   <meta content="maximum-dpr=2" name="flexible" />
   <title>亲邻科技</title>
   <link rel="stylesheet/less" type="text/css" href="/static/styles.less" />
+  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
   <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.5.3/less.min.js"></script>
   <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"> </script>
 </head>
 <script>
   (function (doc, win, width) {
@@ -60,27 +62,67 @@
 
 <body>
   <!--页面主体部分-->
-  <div class="main">
-    <i class="page-title">2020年度用户报告</i>
-    <h6>守望相助，未来可期</h6>
-    <div>
-      <span class="content-text">2020年是无比艰难的一年</span>
-      <span class="content-text">2020年是无比艰难的一年</span>
-      <span class="content-text">2020年是无比艰难的一年</span>
+  <div class="swiper-container">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide">
+        <div class="page page1">
+          <i class="page-title">2020年度用户报告1</i>
+          <h6>守望相助，未来可期</h6>
+          <div>
+            <span class="content-text">2020年是无比艰难的一年</span>
+            <span class="content-text">2020年是无比艰难的一年</span>
+            <span class="content-text">2020年是无比艰难的一年</span>
+          </div>
+          <div class="bottom-btn">》》</div>
+        </div>
+      </div>
+
+      <div class="swiper-slide">
+        <div class="page page2">
+          <i class="page-title">2020年度用户报告2</i>
+          <h6>迎光而来，星夜启程</h6>
+          <div>
+            <span class="content-text">2020年是无比艰难的一年</span>
+            <span class="content-text">2020年是无比艰难的一年</span>
+            <span class="content-text">2020年是无比艰难的一年</span>
+          </div>
+          <div class="bottom-btn">》》</div>
+        </div>
+      </div>
+      <div class="swiper-slide">
+        <div class="page page3">
+          <i class="page-title">2020年度用户报告3</i>
+          <h6>感谢有你，再次起航</h6>
+          <div>
+            <span class="content-text">2020年是无比艰难的一年</span>
+            <span class="content-text">2020年是无比艰难的一年</span>
+            <span class="content-text">2020年是无比艰难的一年</span>
+          </div>
+          <div class="bottom-btn">》》</div>
+        </div>
+      </div>
     </div>
-    <div class="bottom-btn">查阅我的年度总结</div>
-    <!-- 四边 -->
-    <!-- <div class="box aaa" viewpx="all"></div>  -->
-    <!-- 左边 -->
-    <!-- <div class="box" viewpx="left"></div>  -->
-    <!-- 左边,上边 -->
-    <!-- <div class="box" viewpx="left top"></div>  -->
-    <!-- 左边,上边,右边 -->
-    <!-- <div class="box" viewpx="left top right"></div>  -->
+    <div class="swiper-scrollbar"></div>
   </div>
 
   <script>
     $(function () {
+      var mySwiper = new Swiper('.swiper-container', {
+        direction: 'vertical', // 垂直切换选项
+        loop: true, // 循环模式选项
+
+        // 如果需要分页器
+        pagination: {
+          el: '.swiper-pagination',
+        },
+
+        // 如果需要滚动条
+        scrollbar: {
+          el: '.swiper-scrollbar',
+        },
+      })
+
+
       var params = {
 
       }

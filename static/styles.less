@@ -88,12 +88,14 @@ body::-webkit-scrollbar {
   border-right: 1px solid #e5e5e5;
 }
 body {
-  background: #000;
-  color: #fff;
+  // background: #000;
+  color: rgba(0,0,0,.5);
+}
+.page {
+  // height: 100vh;
 }
 .page-title {
   font-size: 14px;
-  color: #fff;
 }
 .content-text {
   display: block;
@@ -103,7 +105,9 @@ body {
 }
 .bottom-btn {
   .px2px(font-size, 30);
-  .px2rem (width, 375);
+  .px2rem (width, 40);
+  transform: rotate(90deg);
+  margin: 0 auto 0;
 }
 /*影藏滚动条*/
 /*750px设计稿,假设元素 .box 宽750px,高500px*/
@@ -119,8 +123,4 @@ body {
   /*这里可改变 1px 边框颜色或其他样式*/
   border-radius: 50%;
   /*改变圆角需要配合下面一起改*/
-}
-
-.aaa {
-  border-radius: 50%;
 }

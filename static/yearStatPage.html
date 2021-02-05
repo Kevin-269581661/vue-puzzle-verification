@@ -79,7 +79,28 @@
     <!-- <div class="box" viewpx="left top right"></div>  -->
   </div>
 
-  <script src=""></script>
+  <script>
+    $(function () {
+      var params = {
+
+      }
+      $.ajax({
+        type: 'GET',
+        contentType: "application/json;charset=UTF-8",
+        url: "https://test-qadn.qinlindmp.com/system/message/unreadCount",
+        data: JSON.stringify({
+          uid: 8886
+        }),
+        success: function (result) {
+          console.log(result);
+        },
+        error: function (e) {
+          console.log(e.status);
+          console.log(e.responseText);
+        }
+      })
+    })
+  </script>
 </body>
 
 </html>

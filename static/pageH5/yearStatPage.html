@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1 user-scalable=0" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui">
+  <meta name="screen-orientation" content="portrait">
+  <meta name="x5-orientation" content="portrait">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="full-screen" content="yes">
+  <meta name="x5-fullscreen" content="true">
+  <meta content="yes" name="apple-touch-fullscreen" />
+  <meta content="maximum-dpr=2" name="flexible" />
+  <title>亲邻科技</title>
+  <link rel="shortcut icon" href="/static/images/fav.ico" type="image/x-icon" />
+  <link rel="stylesheet/less" type="text/css" href="/static/pageH5/styles.less" />
+  <link rel="stylesheet" href="/static/pageH5/swiper-bundle.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.5.3/less.min.js"></script>
+  <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="/static/pageH5/swiper-bundle.min.js"> </script>
+</head>
+<script>
+  (function (doc, win, width) {
+    var docEl = doc.documentElement;
+    var head = doc.getElementsByTagName("head")[0];
+    var hFirst = head.firstChild || head.firstElementChild;
+    var cssEl = doc.createElement("style");
+    //手机横屏，竖屏可在此处设置
+    var resizeEvt = "orientationchange" in win ? "orientationchange" : "resize";
+    var recalc = function () {
+      var x;
+      var n = win.devicePixelRatio || 1;
+      if (n >= 4) {
+        x = 4;
+      } else if (n >= 3) {
+        x = 3;
+      } else if (n >= 2.75) {
+        x = 2.75;
+      } else if (n >= 2.5) {
+        x = 2.5;
+      } else if (n >= 2) {
+        x = 2;
+      } else {
+        x = 1;
+      }
+      var clientWidth = docEl.clientWidth;
+      if (!clientWidth) return;
+      var pxPerRem = 100 * (clientWidth / width);
+      cssEl.innerHTML = "html{ font-size:" + pxPerRem + "px!important; }";
+      docEl.setAttribute("data-dpr", x);
+      head.appendChild(cssEl);
+    };
+    recalc();
+    if (!doc.addEventListener) return;
+    win.addEventListener(resizeEvt, recalc, false);
+    doc.addEventListener("DOMContentLoaded", recalc, false);
+  })(document, window, 750);
+</script>
+
+<body>
+  <!--页面主体部分-->
+  <audio id="musicPlay" src="/static/pageH5/5c48f6a2ddf40.mp3" autoplay loop></audio>
+  <img class="music-img open" src="/static/pageH5/music.png" alt="" onclick="switchMusic(this, 'open')">
+  <img class="music-img close" src="/static/pageH5/musicClose.png" alt="" onclick="switchMusic(this, 'colse')">
+  <div class="swiper-container" ontouchend="startPlay(this)">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide">
+        <div class="bg-img" style="background-image: url(/static/pageH5/bgYearStat1.png);">
+          <div class="bottom-btn">
+            <img onclick="nextPage()" class="swipe-down-img" src="/static/pageH5/swipeDown.png" alt="">
+            <img class="swipe-down-txt" src="/static/pageH5/swipeDownTxt.png" alt="">
+          </div>
+        </div>
+      </div>
+      <div class="swiper-slide">
+        <div class="bg-img" style="background-image: url(/static/pageH5/bgYearStat2.png);">
+          <img class="thanks-img" src="/static/pageH5/thanks.png" alt="">
+          <div class="bottom-btn">
+            <img onclick="nextPage()" class="swipe-down-img" src="/static/pageH5/swipeDown.png" alt="">
+          </div>
+        </div>
+      </div>
+      <div class="swiper-slide">
+        <div class="bg-img" style="background-image: url(/static/pageH5/bgYearStat3.png);">
+          <img class="thumbs-up-img" src="/static/pageH5/thumbs-up.png" alt="">
+          <div class="bottom-btn">
+            <img onclick="nextPage()" class="swipe-down-img" src="/static/pageH5/swipeDown.png" alt="">
+          </div>
+        </div>
+      </div>
+      <div class="swiper-slide">
+        <div class="bg-img" style="background-image: url(/static/pageH5/bgYearStat4.png);">
+          <img class="together-img" src="/static/pageH5/together.png" alt="">
+          <div class="bottom-btn2" onclick="returnTop()">
+            再看一次
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="swiper-scrollbar"></div> -->
+  </div>
+
+  <script>
+    var mySwiper = null
+    function returnTop() {
+      if(mySwiper) {
+        mySwiper.slideTo(0, 1000, false); // 回跳到第一个
+      }
+    }
+    function nextPage() {
+      if(mySwiper) {
+        mySwiper.slideNext();
+      }
+    }
+    function switchMusic(el, status) {
+      console.log(el, status)
+      $(el).hide()
+      if(status == 'open') {
+        $('.music-img.close').show()
+        $('#musicPlay')[0].pause()
+      } else {
+        $('.music-img.open').show()
+        $('#musicPlay')[0].play()
+      }
+    }
+    function startPlay(el) {
+      if($('.music-img.close').is(":visible")) {
+        $('.music-img.close').hide()
+        $('.music-img.open').show()
+        $('#musicPlay')[0].play()
+        el.removeEventListener('touchend', startPlay, false);
+        el.ontouchend=null
+      }
+    }
+    $(function () {
+      $('.music-img.close').show()
+      $('.music-img.open').hide()
+      setTimeout(() => {
+        var audioPlay = $('#musicPlay')[0]
+        audioPlay.pause()
+        audioPlay.load()
+      }, 100);
+      mySwiper = new Swiper('.swiper-container', {
+        on: {
+        init: function(swiper){
+          //Swiper初始化了
+        }, 
+      },
+        direction: 'vertical', // 垂直切换选项
+        autoHeight: true, //高度随内容变化
+        // effect: 'coverflow',
+        effect: 'fade',
+        fadeEffect: {
+          crossFade: true,
+        },
+        initialSlide: 0,
+        slidesPerView: 1,
+        centeredSlides: false,
+        coverflowEffect: {
+          slideShadows : false
+        },
+        // freeModeSticky: true,
+        // watchOverflow: true,
+        // parallax : true,
+        // loop: true, // 循环模式选项
+        // touchRatio : 0.5,  //滑动距离只有触摸距离的一半，变得难以滑动
+        // autoplay: true,
+
+        // 如果需要分页器
+        /* pagination: {
+          el: '.swiper-pagination',
+        }, */
+
+        // 如果需要滚动条
+        /* scrollbar: {
+          el: '.swiper-scrollbar',
+        }, */
+      })
+
+
+      var params = {
+
+      }
+      /* $.ajax({
+        type: 'GET',
+        contentType: "application/json;charset=UTF-8",
+        url: "https://test-qadn.qinlindmp.com/system/message/unreadCount",
+        data: JSON.stringify({
+          uid: 8886
+        }),
+        success: function (result) {
+          console.log(result);
+        },
+        error: function (e) {
+          console.log(e.status);
+          console.log(e.responseText);
+        }
+      }) */
+    })
+  </script>
+</body>
+
+</html>

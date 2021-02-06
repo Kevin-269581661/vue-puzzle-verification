@@ -910,7 +910,8 @@ export default {
 			let qrcode = new QRCode('qrcode', {  
 				width: 200,  // 二维码宽度 
 				height: 200, // 二维码高度
-				text: 'http://192.168.1.113:8085/yearStatPage/'
+				text: 'http://192.168.1.113:8085/yearStatPage/',
+				// src: '../../assets/images/bi.png'
 			})  
 		},
 	},

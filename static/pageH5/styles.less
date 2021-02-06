@@ -1,0 +1,250 @@
+.px2rem(@name, @px) { 
+  @{name}: @px / 100 * 1rem; 
+}
+.px2px(@name, @px) { 
+  @{name}: round(@px / 2) * 1px; 
+  [data-dpr="2"] & { 
+    @{name}: @px * 1px;
+  } 
+  // for mx3 
+  [data-dpr="2.5"] & { 
+    @{name}: round(@px * 2.5 / 2) * 1px; 
+  } 
+  // for 小米note 
+  [data-dpr="2.75"] & { 
+    @{name}: round(@px * 2.75 / 2) * 1px; 
+  } 
+  [data-dpr="3"] & { 
+    @{name}: round(@px / 2 * 3) * 1px 
+  } 
+  // for 三星note4 
+  [data-dpr="4"] & { 
+    @{name}: @px * 2px; 
+  } 
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  overflow-y: auto;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/*通过伪元素缩放处理 1px 像素问题*/
+[viewpx] {
+  position: relative;
+  padding: 1px;
+}
+
+[viewpx] * {
+  position: relative;
+}
+
+[viewpx]:before {
+  box-sizing: border-box;
+  content: " ";
+  position: absolute;
+  top: -100%;
+  right: 0;
+  width: 200%;
+  height: 200%;
+  color: #e5e5e5;
+  -webkit-transform-origin: 100% 100%;
+  transform-origin: 100% 100%;
+  -webkit-transform: scale(0.5);
+  transform: scale(0.5);
+}
+
+[viewpx="all"]:before {
+  border: 1px solid #e5e5e5;
+}
+
+[viewpx~="top"]:before {
+  border-top: 1px solid #e5e5e5;
+}
+
+[viewpx~="bottom"]:before {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+[viewpx~="left"]:before {
+  border-left: 1px solid #e5e5e5;
+}
+
+[viewpx~="right"]:before {
+  border-right: 1px solid #e5e5e5;
+}
+body {
+  // background: #000;
+  color: rgba(0,0,0,.5);
+}
+.music-img {
+  position: absolute;
+  .px2rem (top, 20);
+  .px2rem (right, 20);
+  z-index: 1000;
+  .px2rem (width, 61);
+  .px2rem (height, 61);
+}
+.page {
+  // height: 100vh;
+}
+.page-title {
+  font-size: 14px;
+}
+.bg-img {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  .px2rem (padding-left, 53);
+  background-position: top;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+.thanks-img {
+  .px2rem (height, 69);
+}
+.thumbs-up-img {
+  .px2rem (height, 69);
+}
+.together-img {
+  .px2rem (height, 69);
+}
+.bottom-btn {
+  position: absolute;
+  .px2rem (bottom, 67);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-between;
+  left: 50%;
+  right: 50%;
+  transform: translateX(-50%);
+}
+.bottom-btn2 {
+  position: absolute;
+  .px2rem (bottom, 50);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-between;
+  left: 50%;
+  right: 50%;
+  transform: translateX(-50%);
+  .px2rem (width, 636);
+  .px2rem (height, 88);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
+  .px2rem (border-radius, 16);
+  border: 1px solid #FFFFFF;
+  .px2rem (font-size, 32);
+  font-family: PingFangSC-Regular, PingFang SC;
+  font-weight: 400;
+  color: #FFFFFF;
+  .px2rem (line-height, 88);
+}
+.swipe-down-img {
+  .px2rem (width, 86);
+  animation: next 3s linear infinite;
+  // width: 216px;
+  // height: 292px;
+}
+.swipe-down-txt {
+  .px2rem (width, 128);
+  margin-top: 12px;
+}
+.content-text {
+  display: block;
+  line-height: 36px;
+  font-size: 20px;
+  white-space: nowrap;
+}
+/*影藏滚动条*/
+/*750px设计稿,假设元素 .box 宽750px,高500px*/
+.box {
+  width: 7.5rem;
+  height: 2rem;
+  .px2px(font-size, 14)
+  /* border:1px solid red;    这里1px相当于分辨率的2px或3px */
+}
+
+.music-img.open {
+  animation:turn 3s linear infinite;
+}
+@keyframes turn{
+  0%{-webkit-transform:rotate(0deg);}
+  100%{-webkit-transform:rotate(360deg);}
+}
+@-webkit-keyframes turn{
+  0%{-webkit-transform:rotate(0deg);}
+  100%{-webkit-transform:rotate(360deg);}
+}
+@-moz-keyframes turn{
+  0%{-webkit-transform:rotate(0deg);}
+  100%{-webkit-transform:rotate(360deg);}
+}
+@-o-keyframes turn{
+  0%{-webkit-transform:rotate(0deg);}
+  100%{-webkit-transform:rotate(360deg);}
+}
+
+@keyframes next{
+  0% {
+    transform :translateY(-40px);
+  }
+  50% {
+    transform :translateY(10px);
+  }
+  100% {
+    transform :translateY(-40px);
+  }
+}
+
+@-moz-keyframes next{
+  0% {
+    transform :translateY(-40px);
+  }
+  50% {
+    transform :translateY(10px);
+  }
+  100% {
+    transform :translateY(-40px);
+  }
+}
+
+@-webkit-keyframes next{
+  0% {
+    transform :translateY(-40px);
+  }
+  50% {
+    transform :translateY(10px);
+  }
+  100% {
+    transform :translateY(-40px);
+  }
+}
+
+@-o-keyframes next{
+  0% {
+    transform :translateY(-40px);
+  }
+  50% {
+    transform :translateY(10px);
+  }
+  100% {
+    transform :translateY(-40px);
+  }
+}

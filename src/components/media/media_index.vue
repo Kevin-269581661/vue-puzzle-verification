@@ -181,8 +181,12 @@
 			</el-dialog>
 		</div> -->
 		<!-- 年终总结弹框 -->
-		<div v-show="showYearStat == 'visible'" class="rank_box">
-			<div id="qrcode" ref="qrcode" class="img_box"></div>
+		<div v-show="showYearStat == 'visible'" class="year-stat-box">
+			<div class="review-bg">
+				<img class="bg-img" src="../../assets/images/index/reviewBg.png" alt="">
+				<div id="qrcode" ref="qrcode" class="qrcode-box"></div>
+			</div>
+			<img class="close-icon" src="../../assets/images/index/review_close.png" @click="showYearStat='close'" alt="">
 		</div>
 		<!-- 媒介工作量 -->
 		<div v-if="showYearStat=='disvisible' && isShowNum" style="z-index:2;background: #000000;opacity: 0.3;width:100%;height:100%;position:absolute;top:0;left:0;"> </div>
@@ -897,37 +901,62 @@ export default {
 			}).finally(_=>{
 			})
 		},
-		// 获取媒介年终总结
+		/* 获取媒介年终总结,登录后判断，年终报告功能是否在线。
+		waiting:接口获取中或获取失败
+		visible:功能在线，且有用户数据
+		none: 功能在线，该用户无数据
+		disvisible:功能下线
+		close: 已手动关闭弹窗 */
 		getYearStat() {
 			if(!visible) return
-			setTimeout(()=>{
-				console.log('showYearStat')
-				this.showYearStat = 'visible'
-			}, 1000)
+			api.getApi('/qadn-activity/yearReport/getUserYearReportSwitch', {
+				uid: this.sessionData.uID
+			}).then(res=>{
+				if (res.data.SysCode === 200200) {
+					let result = res.data.data
+					if(result.status == 1 && result.mdKey) {
+						// 功能在线
+						this.showYearStat = 'visible'
+						// 生成二维码
+						this.qrcodeGenerate(result.mdKey)
+					} else if(result.status == 1 && !result.mdKey) {
+						// 功能在线，但该用户没有数据
+						this.showYearStat = 'none'
+					} else if(result.status == 0) {
+						// 功能下线
+						this.showYearStat = 'disvisible'
+					}
+				} else {
+					this.showYearStat = 'waiting'
+					this.messageFun('warning', res.data.MSG)
+				}
+			}).catch(err=>{
+				this.showYearStat = 'waiting'
+				console.log('err', err)
+			}).finally(_=>{
+			})
 		},
 		//生成二维码
-		qrcodeScan () {
+		qrcodeGenerate (yearStatMdKey) {
 			let qrcode = new QRCode('qrcode', {  
-				width: 200,  // 二维码宽度 
-				height: 200, // 二维码高度
-				text: 'http://192.168.1.113:8085/yearStatPage/',
+				width: 112,  // 二维码宽度 
+				height: 112, // 二维码高度
+				text: `${this.apiVar.qadnUrl}/yearStatPage?yearStatMdKey=${yearStatMdKey}`,
 				// src: '../../assets/images/bi.png'
-			})  
+			})
 		},
 	},
 	beforeRouteEnter (to, from, next) {
-    // 在渲染该组件的对应路由被 confirm 前调用
-    // 不！能！获取组件实例 `this`
-		// 因为当守卫执行前，组件实例还没被创建
-		console.log('to, from, next', to, from)
-		if(from.path!=='/login') {
-			console.log('visible')
+    /* 在渲染该组件的对应路由被 confirm 前调用
+    不！能！获取组件实例 `this`
+		因为当守卫执行前，组件实例还没被创建
+		从登录页面过来后才可以弹出 */
+		if(from.path=='/login') {
 			visible = true
 		}
 		next()
   },
 	mounted(){
-		this.qrcodeScan()
 		this.getSession();
 		this.getContributeBox();
 		this.getYearStat()
@@ -989,23 +1018,23 @@ export default {
         .left-layout {
             display: flex;
             flex: 1;
-			width: 75%;
+						width: 75%;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
             margin-right: 24px;
             .card-group {
-                position: relative;
-                height: 428px;
-                width: 100%;
-                margin-top: 24px;
+							position: relative;
+							height: 428px;
+							width: 100%;
+							margin-top: 24px;
             }
         }
         .right-board {
-            width: calc(25% - 24px);
-            height: 582px;
-            background: rgba(255, 255, 255, 1);
-            border: 1px solid #E6E7E9;
+					width: calc(25% - 24px);
+					height: 582px;
+					background: rgba(255, 255, 255, 1);
+					border: 1px solid #E6E7E9;
         }
     }
     .index-row {
@@ -1171,11 +1200,46 @@ export default {
 
 .rank_box{
 	z-index: 1000;
-    position: fixed;
+  position: fixed;
 	left: 50%;
-    top: 35%;
-    transform: translate(-50%, -35%);
+	top: 35%;
+  transform: translate(-50%, -35%);
 	text-align: center;
+}
+.year-stat-box {
+	z-index: 1000;
+  position: fixed;
+	left: 50%;
+	top: 35%;
+  transform: translate(-50%, -35%);
+	text-align: center;
+	.review-bg {
+		width:707.25px;
+		height:240px;
+		position :relative;
+		.bg-img {
+			position :absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		}
+	}
+	.qrcode-box {
+		position :absolute;
+		top: 40px;
+		right: 85px;
+		z-index :999;
+		transform :rotate(-8deg);
+		background :#ffffff;
+		padding :4px;
+	}
+	.close-icon {
+		width :40px;
+		height :40px;
+		margin-top :34px;
+		cursor :pointer;
+	}
 }
 .ul_box{
 	display: flex;

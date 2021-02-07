@@ -62,7 +62,6 @@
 </script>
 
 <body>
-  <!--页面主体部分-->
   <audio id="musicPlay" src="/static/pageH5/5c48f6a2ddf40.mp3" autoplay loop></audio>
   <img class="music-img open" src="/static/pageH5/music.png" alt="" onclick="switchMusic(this, 'open')">
   <img class="music-img close" src="/static/pageH5/musicClose.png" alt="" onclick="switchMusic(this, 'colse')">
@@ -115,19 +114,18 @@
   <script>
     var mySwiper = null
     function returnTop() {
-      if(mySwiper) {
+      if (mySwiper) {
         mySwiper.slideTo(0, 1000, false); // 回跳到第一个
       }
     }
     function nextPage() {
-      if(mySwiper) {
+      if (mySwiper) {
         mySwiper.slideNext();
       }
     }
     function switchMusic(el, status) {
-      console.log(el, status)
       $(el).hide()
-      if(status == 'open') {
+      if (status == 'open') {
         $('.music-img.close').show()
         $('#musicPlay')[0].pause()
       } else {
@@ -136,19 +134,50 @@
       }
     }
     function startPlay(el) {
-      if($('.music-img.close').is(":visible")) {
+      if ($('.music-img.close').is(":visible")) {
         $('.music-img.close').hide()
         $('.music-img.open').show()
         $('#musicPlay')[0].play()
         el.removeEventListener('touchend', startPlay, false);
-        el.ontouchend=null
+        el.ontouchend = null
       }
     }
+    function formatTime(time) {
+      let result = ['', ''];
+      if (time) {
+        let str = time.toString().substring(time.length - 2);
+        if (str == ".0") {
+          time = time.toString().substring(0, time.length - 2);
+        }
+        time = new Date(Date.parse(time.toString().replace(/[-\.]/g, "/")));
+        let year = time.getFullYear();
+        let month = time.getMonth() + 1;//js从0开始取
+        let date = time.getDate();
+        let hour = time.getHours();
+        let minutes = time.getMinutes();
+
+        if (month < 10) {
+          month = "0" + month;
+        }
+        if (date < 10) {
+          date = "0" + date;
+        }
+        if (hour < 10) {
+          hour = "0" + hour;
+        }
+        if (minutes < 10) {
+          minutes = "0" + minutes;
+        }
+        result = [year + '年' + month + '月' + date + "日", hour + "时" + minutes + "分"];
+      }
+      return result;
+    };
     function getUrlParams(name) {
       var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
       var r = window.location.search.substr(1).match(reg);  //匹配目标参数
       if (r != null) return unescape(r[2]); return null; //返回参数值
     }
+
     $(function () {
       $('.music-img.close').show()
       $('.music-img.open').hide()
@@ -159,10 +188,10 @@
       }, 100);
       mySwiper = new Swiper('.swiper-container', {
         on: {
-        init: function(swiper){
-          //Swiper初始化了
-        }, 
-      },
+          init: function (swiper) {
+            //Swiper初始化了
+          },
+        },
         direction: 'vertical', // 垂直切换选项
         autoHeight: true, //高度随内容变化
         // effect: 'coverflow',
@@ -174,7 +203,7 @@
         slidesPerView: 1,
         centeredSlides: false,
         coverflowEffect: {
-          slideShadows : false
+          slideShadows: false
         },
         /* freeModeSticky: true,
         watchOverflow: true,
@@ -199,7 +228,7 @@
       grayURL: "https://beta-qadn.qinlindmp.com/"
       prodURL: "https://www.qinlinad.com/" */
       var yearStatMdKey = getUrlParams('yearStatMdKey')
-      if(!yearStatMdKey) {
+      if (!yearStatMdKey) {
         alert("链接获取失败~");
         return
       }
@@ -209,11 +238,12 @@
         url: "https://test-qadn.qinlindmp.com/qadn-activity/yearReport/getUserYearReport?mdKey=" + yearStatMdKey,
         success: function (result) {
           console.log(result);
-          if(result.SysCode == 200200) {
+          if (result.SysCode == 200200) {
             var data = result.data,
               htmlStr1 = '',
               htmlStr2 = '';
-            if(data.uType == 'MD') {
+            data.offWorkTime = formatTime(data.offWorkTime);
+            if (data.uType == 'MD') {
               htmlStr1 = `<span class="active">${data.realName}</span>，你好
                 <span class="active">${data.registerTime}</span>
                 是QADN与你结缘的第一天 
@@ -231,12 +261,10 @@
                 <span class="active">${data.mdOrderCnt}</span>  个广告正因有你的发布
                 才走向了千家万户
 
-                <span class="active">${data.offWorkTime}</span>  凌晨的 <span class="active">${data.offWorkTime}</span>
+                <span class="active">${data.offWorkTime[0]}</span>  凌晨的 <span class="active">${data.offWorkTime[1]}</span>
                 你还在坚持工作
-                我看见你的千锤百炼，等待你的
-                是QADN与你结缘的第一天 
-                我们共同走过了个日日夜夜`;
-            }else if(data.uType == 'EP') {
+                我看见你的千锤百炼，等待你的惊鸿一现`;
+            } else if (data.uType == 'EP') {
               htmlStr1 = `<span class="active">${data.realName}</span>，你好
                 <span class="active">${data.registerTime}</span>
                 是亲邻与你结缘的第一天
@@ -259,7 +287,7 @@
                 那一天，你上刊 <span class="active">${data.epMaxLabCnt}</span>  个点
                 辛苦了
 
-                <span class="active">${data.offWorkTime}</span>  凌晨的 <span class="active">${data.offWorkTime}</span>
+                <span class="active">${data.offWorkTime[0]}</span>  凌晨的 <span class="active">${data.offWorkTime[1]}</span>
                 我看到你还在坚持
                 星光不问赶路人，时光不负有心人`;
             }

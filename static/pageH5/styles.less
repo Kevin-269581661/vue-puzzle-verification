@@ -59,13 +59,13 @@ body::-webkit-scrollbar {
 
 [viewpx]:before {
   box-sizing: border-box;
-  content: " ";
+  content: "";
   position: absolute;
   top: -100%;
   right: 0;
   width: 200%;
   height: 200%;
-  color: #e5e5e5;
+  color: #fff;
   -webkit-transform-origin: 100% 100%;
   transform-origin: 100% 100%;
   -webkit-transform: scale(0.5);
@@ -73,26 +73,10 @@ body::-webkit-scrollbar {
 }
 
 [viewpx="all"]:before {
-  border: 1px solid #e5e5e5;
-}
-
-[viewpx~="top"]:before {
-  border-top: 1px solid #e5e5e5;
-}
-
-[viewpx~="bottom"]:before {
-  border-bottom: 1px solid #e5e5e5;
-}
-
-[viewpx~="left"]:before {
-  border-left: 1px solid #e5e5e5;
-}
-
-[viewpx~="right"]:before {
-  border-right: 1px solid #e5e5e5;
+  .px2rem (border-radius, 32);
+  border: 1px solid #fff;
 }
 body {
-  // background: #000;
   color: rgba(0,0,0,.5);
 }
 .music-img {
@@ -102,12 +86,6 @@ body {
   z-index: 1000;
   .px2rem (width, 61);
   .px2rem (height, 61);
-}
-.page {
-  // height: 100vh;
-}
-.page-title {
-  font-size: 14px;
 }
 .coustom-page {
   position: relative;
@@ -181,7 +159,6 @@ body {
   .px2rem (height, 88);
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
   .px2rem (border-radius, 16);
-  border: 1px solid #FFFFFF;
   .px2rem (font-size, 32);
   font-family: PingFangSC-Regular, PingFang SC;
   font-weight: 400;
@@ -191,8 +168,6 @@ body {
 .swipe-down-img {
   .px2rem (width, 86);
   animation: next 3s linear infinite;
-  // width: 216px;
-  // height: 292px;
 }
 .swipe-down-txt {
   .px2rem (width, 128);
@@ -204,15 +179,6 @@ body {
   font-size: 20px;
   white-space: nowrap;
 }
-/*影藏滚动条*/
-/*750px设计稿,假设元素 .box 宽750px,高500px*/
-.box {
-  width: 7.5rem;
-  height: 2rem;
-  .px2px(font-size, 14)
-  /* border:1px solid red;    这里1px相当于分辨率的2px或3px */
-}
-
 .music-img.open {
   animation:turn 3s linear infinite;
 }

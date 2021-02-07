@@ -181,12 +181,14 @@
 			</el-dialog>
 		</div> -->
 		<!-- 年终总结弹框 -->
-		<div v-show="showYearStat == 'visible'" class="year-stat-box">
-			<div class="review-bg">
-				<img class="bg-img" src="../../assets/images/index/reviewBg.png" alt="">
-				<div id="qrcode" ref="qrcode" class="qrcode-box"></div>
+		<div v-show="showYearStat == 'visible'" class="year-stat-container">
+			<div class="year-stat-box">
+				<div class="year-stat-main">
+					<img class="bg-img" src="../../assets/images/index/reviewBg.png" alt="">
+					<div id="qrcode" ref="qrcode" class="qrcode-box"></div>
+				</div>
+				<img class="close-icon" src="../../assets/images/index/review_close.png" @click="showYearStat='close'" alt="">
 			</div>
-			<img class="close-icon" src="../../assets/images/index/review_close.png" @click="showYearStat='close'" alt="">
 		</div>
 		<!-- 媒介工作量 -->
 		<div v-if="showYearStat=='disvisible' && isShowNum" style="z-index:2;background: #000000;opacity: 0.3;width:100%;height:100%;position:absolute;top:0;left:0;"> </div>
@@ -1206,14 +1208,23 @@ export default {
   transform: translate(-50%, -35%);
 	text-align: center;
 }
+.year-stat-container {
+	width: 100%;
+	height: 100vh;
+	background: rgba(0, 0, 0, 0.5);
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 9999;
+}
 .year-stat-box {
 	z-index: 1000;
-  position: fixed;
+  position: absolute;
 	left: 50%;
 	top: 35%;
   transform: translate(-50%, -35%);
 	text-align: center;
-	.review-bg {
+	.year-stat-main {
 		width:707.25px;
 		height:240px;
 		position :relative;

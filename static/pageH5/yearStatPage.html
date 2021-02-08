@@ -287,10 +287,11 @@
         }
       })
       // 获取微信公众号config
+      console.log('-0-0', location.href.split('#')[0])
       var nonceStr, signature, timestamp, appId, shareUrl;
       $.ajax({
         //后台获取参数接口
-        url: "https://uat-ashtonapi.qinlinkeji.com/platform/v1/system/getWxConfig?url=https://test-qadn.qinlindmp.com/",
+        url: "https://uat-ashtonapi.qinlinkeji.com/platform/v1/system/getWxConfig?url=" + location.href.split('#')[0],
         /* beforeSend: function (xhr) {
           xhr.setRequestHeader("Token", getCookie("token"));
         }, */

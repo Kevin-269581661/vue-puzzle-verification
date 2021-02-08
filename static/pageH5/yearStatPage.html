@@ -61,11 +61,11 @@
   })(document, window, 750);
 </script>
 
-<body>
-  <audio id="musicPlay" src="/static/pageH5/5c48f6a2ddf40.mp3" autoplay loop></audio>
+<body ontouchend="startPlay(this)">
+  <audio id="musicPlay" src="/static/pageH5/5c48f6a2ddf40.mp3" loop></audio>
   <img class="music-img open" src="/static/pageH5/music.png" alt="" onclick="switchMusic(this, 'open')">
   <img class="music-img close" src="/static/pageH5/musicClose.png" alt="" onclick="switchMusic(this, 'colse')">
-  <div class="swiper-container" ontouchend="startPlay(this)">
+  <div class="swiper-container">
     <div class="swiper-wrapper">
       <div class="swiper-slide">
         <div class="coustom-page" style="background-image: url(/static/pageH5/bgYearStat1.png);">
@@ -134,7 +134,7 @@
       }
     }
     function startPlay(el) {
-      if ($('.music-img.close').is(":visible")) {
+      if ($('.music-img.close').is(":visible") && $('#musicPlay')[0]) {
         $('.music-img.close').hide()
         $('.music-img.open').show()
         $('#musicPlay')[0].play()
@@ -169,6 +169,8 @@
           timeRange = '';
         } else if(hour < 18) {
           timeRange = '下午的';
+        } else if(hour < 22) {
+          timeRange = '晚上的'
         } else if(hour < 24) {
           timeRange = '深夜的'
         }
@@ -205,6 +207,8 @@
         direction: 'vertical', // 垂直切换选项
         autoHeight: true, //高度随内容变化
         slidesPerView: 'auto',
+        observer: true,
+        observeParents: true,
       })
 
       /* 
@@ -229,7 +233,7 @@
             data.offWorkTime = formatTime(data.offWorkTime);
             if (data.uType == 'MD') {
               htmlStr1 = `<span class="active">${data.realName}</span>，你好
-                <span class="active">${data.registerTime}</span>
+                <span class="active">${formatTime(data.registerTime)[0]}</span>
                 是QADN与你结缘的第一天 
                 我们共同走过了 <span class="active">${data.registerDayCnt}</span> 个日日夜夜
 

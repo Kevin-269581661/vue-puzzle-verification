@@ -3,6 +3,7 @@ FROM nginx:stable
 ADD ./dist /usr/share/nginx/html
 ADD ./aA6VkBus4m.txt /usr/share/nginx/html/aA6VkBus4m.txt
 ADD ./MP_verify_t83eKdVSAFfUg6t4.txt /usr/share/nginx/html/MP_verify_t83eKdVSAFfUg6t4.txt
+ADD ./MP_verify_ddJ6YJCjWWtLEzft.txt /usr/share/nginx/html/MP_verify_ddJ6YJCjWWtLEzft.txt
 ADD ./importTemplate /usr/share/nginx/html/importTemplate
 
 ADD ./external /usr/share/nginx/html

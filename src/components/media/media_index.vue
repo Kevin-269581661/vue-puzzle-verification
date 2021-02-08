@@ -495,7 +495,6 @@ export default {
 				token: this.sessionData.token,
 			};
 			api.getApi(this.apiVar.report + '/GetSummaryOfLastMonthOfMD', info).then(res =>{
-				// console.log(res);
 				if(res.data.SysCode == 200200){
 					let resinfo = res.data.data;
 					this.contribute = {
@@ -517,7 +516,6 @@ export default {
 				token: this.sessionData.token,
 			};
 			api.getApi(this.apiVar.report + '/GetTotalPerformanceOfMD', info).then(res =>{
-				// console.log(res);
 				if(res.data.SysCode == 200200){
 					let resinfo = res.data.data;
 					this.medalInfo = {

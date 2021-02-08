@@ -21,10 +21,10 @@
   <link rel="stylesheet" href="/static/pageH5/swiper-bundle.min.css">
   <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.5.3/less.min.js"></script>
   <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
-  <script src="/static/pageH5/swiper-bundle.min.js"> </script>
+  <script src="/static/pageH5/swiper-bundle.min.js"></script>
   <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
-  <script src="//cdn.bootcss.com/eruda/1.4.2/eruda.min.js"></script>
-  <script>eruda.init();</script>
+  <!-- <script src="//cdn.bootcss.com/eruda/1.4.2/eruda.min.js"></script>
+  <script>eruda.init();</script> -->
 </head>
 <script>
   (function (doc, win, width) {
@@ -204,11 +204,6 @@
         observer: true,
         observeParents: true,
       })
-
-      /* 
-      testURL: "https://test-qadn.qinlindmp.com/"
-      grayURL: "https://beta-qadn.qinlindmp.com/"
-      prodURL: "https://www.qinlinad.com/" */
       var yearStatMdKey = getUrlParams('yearStatMdKey')
       if (!yearStatMdKey) {
         alert("链接获取失败~");
@@ -218,8 +213,8 @@
         type: 'GET',
         contentType: "application/json;charset=UTF-8",
         url: "https://test-qadn.qinlindmp.com/qadn-activity/yearReport/getUserYearReport?mdKey=" + yearStatMdKey,
+        // url: "https://www.qinlinad.com/qadn-activity/yearReport/getUserYearReport?mdKey=" + yearStatMdKey,
         success: function (result) {
-          console.log(result);
           if (result.SysCode == 200200) {
             var data = result.data,
               htmlStr1 = '',
@@ -287,24 +282,19 @@
         }
       })
       // 获取微信公众号config
-      console.log('-0-0', location.href.split('#')[0])
       var nonceStr, signature, timestamp, appId, shareUrl;
       $.ajax({
         //后台获取参数接口
         url: "https://uat-ashtonapi.qinlinkeji.com/platform/v1/system/getWxConfig?url=" + location.href.split('#')[0],
-        /* beforeSend: function (xhr) {
-          xhr.setRequestHeader("Token", getCookie("token"));
-        }, */
         type: 'GET',
         success: function (data) {
           //得到参数
-          let res = data.data
-          console.log(res)
-          var appId = res.appId;
-          var nonceStr = res.nonceStr;
-          var signature = res.signature;
-          var timestamp = res.timestamp;
-          var shareUrl = res.url;
+          let res = data.data,
+            appId = res.appId,
+            nonceStr = res.nonceStr,
+            signature = res.signature,
+            timestamp = res.timestamp,
+            shareUrl = res.url;
           //通过微信config接口注入配置
           wx.config({
             debug: true, // 默认为false  为true的时候是调试模式，会打印出日志
@@ -321,8 +311,8 @@
           window.share_config = {
             'share': {
               'imgUrl': 'https://deploy-1256017579.cos.ap-guangzhou.myqcloud.com/icon/wxicon/wxConfigImg.png', // 这里是需要展示的图标
-              'desc': '超值礼遇。', // 这是分享展示的摘要
-              'title': '合伙人现正招募中', // 这是分享展示卡片的标题
+              'desc': '为你，千千万万遍', // 这是分享展示的摘要
+              'title': '与最美社区工作者的时光故事...', // 这是分享展示卡片的标题
               'link': shareUrl, // 这里是分享的网址
               'success': function (rr) {
                 console.log('成功' + JSON.stringify(rr))
@@ -336,11 +326,7 @@
             wx.onMenuShareAppMessage(share_config.share);
             wx.onMenuShareTimeline(share_config.share);
           });
-
-        },
-        /* error: function (err) {
-
-        }, */
+        }
       })
     })
 

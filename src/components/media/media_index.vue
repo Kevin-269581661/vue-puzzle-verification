@@ -144,7 +144,7 @@
 			</el-tabs>
 		</div>
 
-		<div class="dialog_box">
+		<!-- <div class="dialog_box">
 			<el-dialog
 				title=""
 				:visible.sync="isShowMedal"
@@ -154,7 +154,6 @@
 						<img :src="currentImgInfo.url" alt="">
 					</div>
 					<div class="con">
-						<!-- <p style="font-size:28px;line-height:20px;font-weight:bold;">{{currentImgInfo.name}}</p> -->
 						<p style="height:24px;line-height:24px;margin-top: 10px;">
 							<span>{{currentImgInfo.name}}达 {{currentImgInfo.num}} {{currentImgInfo.unit}}</span>
 						</p>
@@ -180,11 +179,20 @@
 					</div>
 				</div>
 			</el-dialog>
+		</div> -->
+		<!-- 年终总结弹框 -->
+		<div v-show="showYearStat == 'visible'" class="year-stat-container">
+			<div class="year-stat-box">
+				<div class="year-stat-main">
+					<img class="bg-img" src="../../assets/images/index/reviewBg.png" alt="">
+					<div id="qrcode" ref="qrcode" class="qrcode-box"></div>
+				</div>
+				<img class="close-icon" src="../../assets/images/index/review_close.png" @click="showYearStat='close'" alt="">
+			</div>
 		</div>
-
 		<!-- 媒介工作量 -->
-		<div v-if="isShowNum" style="z-index:2;background: #000000;opacity: 0.3;width:100%;height:100%;position:absolute;top:0;left:0;"> </div>
-		<div v-if="isShowNum" class="rank_box">
+		<div v-if="showYearStat=='disvisible' && isShowNum" style="z-index:2;background: #000000;opacity: 0.3;width:100%;height:100%;position:absolute;top:0;left:0;"> </div>
+		<div v-if="showYearStat=='disvisible' && isShowNum" class="rank_box">
 			<ul class="ul_box">
 				<li>
 					<div class="img_box">
@@ -258,6 +266,8 @@ import miniProgress from '../common/components/miniProgress.vue';
 import pointDistribution from '../common/components/pointDistribution.vue';
 import publishRate from '../common/components/publishRate.vue';
 
+import QRCode from 'qrcodejs2'
+var visible = null
 export default {
 	name: "media_index",
 	components:{
@@ -270,7 +280,8 @@ export default {
 		ringChart,
 		miniProgress,
 		pointDistribution,
-    publishRate
+		publishRate,
+		QRCode
 	},
 	data(){
 		return{
@@ -278,9 +289,10 @@ export default {
 			activeTabsName: 'pointDistribution',
 
 			isAllMedia: false,
+			showYearStat: 'waiting',
 			isShowNum: false,
 			// 勋章弹出框
-			isShowMedal: false,
+			// isShowMedal: false,
 			linkArrNew: [
 				{
 					imgurl: require('../../assets/images/importPoint.png'),
@@ -346,7 +358,7 @@ export default {
 				},
 			],
 			// 弹出框信息
-			currentImgInfo:{
+			/* currentImgInfo:{
 				url: '',
 				name: '',
 				num: '',
@@ -355,7 +367,7 @@ export default {
 				img2: '',
 				img3: '',
 				img4: '',
-			},
+			}, */
 			// 弹窗贡献值
 			contribute:{
 				adPlanCount: 0,
@@ -483,7 +495,6 @@ export default {
 				token: this.sessionData.token,
 			};
 			api.getApi(this.apiVar.report + '/GetSummaryOfLastMonthOfMD', info).then(res =>{
-				// console.log(res);
 				if(res.data.SysCode == 200200){
 					let resinfo = res.data.data;
 					this.contribute = {
@@ -505,7 +516,6 @@ export default {
 				token: this.sessionData.token,
 			};
 			api.getApi(this.apiVar.report + '/GetTotalPerformanceOfMD', info).then(res =>{
-				// console.log(res);
 				if(res.data.SysCode == 200200){
 					let resinfo = res.data.data;
 					this.medalInfo = {
@@ -580,8 +590,7 @@ export default {
 			}
 			return rank;
 		},
-		showImg(index, value){
-			// this.isShowMedal = true;
+		/* showImg(index, value){
 			let curr = this.imginfo[index];
 			if(curr.rank == 1){
 				this.isShowMedal = false;
@@ -606,7 +615,7 @@ export default {
 				img4: require('../../assets/images/index/'+str+'-4.png'),
 				img5: require('../../assets/images/index/'+str+'-5.png'),
 			};
-		},
+		}, */
         // 应用中心跳转
         goToPage(item) {
             if (item) {
@@ -891,11 +900,66 @@ export default {
 				console.log('err', err)
 			}).finally(_=>{
 			})
-		}
+		},
+		/* 获取媒介年终总结,登录后判断，年终报告功能是否在线。
+		waiting:接口获取中或获取失败
+		visible:功能在线，且有用户数据
+		none: 功能在线，该用户无数据
+		disvisible:功能下线
+		close: 已手动关闭弹窗 */
+		getYearStat() {
+			if(!visible) return
+			api.getApi('/qadn-activity/yearReport/getUserYearReportSwitch', {
+				uid: this.sessionData.uID
+			}).then(res=>{
+				if (res.data.SysCode === 200200) {
+					let result = res.data.data
+					if(result.status == 1 && result.mdKey) {
+						// 功能在线
+						this.showYearStat = 'visible'
+						// 生成二维码
+						this.qrcodeGenerate(result.mdKey)
+					} else if(result.status == 1 && !result.mdKey) {
+						// 功能在线，但该用户没有数据
+						this.showYearStat = 'none'
+					} else if(result.status == 0) {
+						// 功能下线
+						this.showYearStat = 'disvisible'
+					}
+				} else {
+					this.showYearStat = 'waiting'
+					this.messageFun('warning', res.data.MSG)
+				}
+			}).catch(err=>{
+				this.showYearStat = 'waiting'
+				console.log('err', err)
+			}).finally(_=>{
+			})
+		},
+		//生成二维码
+		qrcodeGenerate (yearStatMdKey) {
+			let qrcode = new QRCode('qrcode', {  
+				width: 112,  // 二维码宽度 
+				height: 112, // 二维码高度
+				text: `${this.apiVar.qadnUrl}/yearStatPage?yearStatMdKey=${yearStatMdKey}`,
+				// src: '../../assets/images/bi.png'
+			})
+		},
 	},
+	beforeRouteEnter (to, from, next) {
+    /* 在渲染该组件的对应路由被 confirm 前调用
+    不！能！获取组件实例 `this`
+		因为当守卫执行前，组件实例还没被创建
+		从登录页面过来后才可以弹出 */
+		if(from.path=='/login') {
+			visible = true
+		}
+		next()
+  },
 	mounted(){
 		this.getSession();
 		this.getContributeBox();
+		this.getYearStat()
 		this.getContribute();
 		let nowDate = timeFormat.toDate(new Date(), '/');
 		if(indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)){
@@ -954,23 +1018,23 @@ export default {
         .left-layout {
             display: flex;
             flex: 1;
-			width: 75%;
+						width: 75%;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
             margin-right: 24px;
             .card-group {
-                position: relative;
-                height: 428px;
-                width: 100%;
-                margin-top: 24px;
+							position: relative;
+							height: 428px;
+							width: 100%;
+							margin-top: 24px;
             }
         }
         .right-board {
-            width: calc(25% - 24px);
-            height: 582px;
-            background: rgba(255, 255, 255, 1);
-            border: 1px solid #E6E7E9;
+					width: calc(25% - 24px);
+					height: 582px;
+					background: rgba(255, 255, 255, 1);
+					border: 1px solid #E6E7E9;
         }
     }
     .index-row {
@@ -1136,11 +1200,55 @@ export default {
 
 .rank_box{
 	z-index: 1000;
-    position: fixed;
+  position: fixed;
 	left: 50%;
-    top: 35%;
-    transform: translate(-50%, -35%);
+	top: 35%;
+  transform: translate(-50%, -35%);
 	text-align: center;
+}
+.year-stat-container {
+	width: 100%;
+	height: 100vh;
+	background: rgba(0, 0, 0, 0.5);
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 9999;
+}
+.year-stat-box {
+	z-index: 1000;
+  position: absolute;
+	left: 50%;
+	top: 35%;
+  transform: translate(-50%, -35%);
+	text-align: center;
+	.year-stat-main {
+		width:707.25px;
+		height:240px;
+		position :relative;
+		.bg-img {
+			position :absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		}
+	}
+	.qrcode-box {
+		position :absolute;
+		top: 40px;
+		right: 85px;
+		z-index :999;
+		transform :rotate(-8deg);
+		background :#ffffff;
+		padding :4px;
+	}
+	.close-icon {
+		width :40px;
+		height :40px;
+		margin-top :34px;
+		cursor :pointer;
+	}
 }
 .ul_box{
 	display: flex;

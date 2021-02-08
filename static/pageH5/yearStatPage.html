@@ -212,8 +212,8 @@
       $.ajax({
         type: 'GET',
         contentType: "application/json;charset=UTF-8",
-        url: "https://test-qadn.qinlindmp.com/qadn-activity/yearReport/getUserYearReport?mdKey=" + yearStatMdKey,
-        // url: "https://www.qinlinad.com/qadn-activity/yearReport/getUserYearReport?mdKey=" + yearStatMdKey,
+        // url: "https://test-qadn.qinlindmp.com/qadn-activity/yearReport/getUserYearReport?mdKey=" + yearStatMdKey,
+        url: "https://www.qinlinad.com/qadn-activity/yearReport/getUserYearReport?mdKey=" + yearStatMdKey,
         success: function (result) {
           if (result.SysCode == 200200) {
             var data = result.data,
@@ -285,7 +285,8 @@
       var nonceStr, signature, timestamp, appId, shareUrl;
       $.ajax({
         //后台获取参数接口
-        url: "https://uat-ashtonapi.qinlinkeji.com/platform/v1/system/getWxConfig?url=" + location.href.split('#')[0],
+        // url: "https://uat-ashtonapi.qinlinkeji.com/platform/v1/system/getWxConfig?url=" + location.href.split('#')[0],
+        url: "https://ashtonapi.qinlinkeji.com/platform/v1/system/getWxConfig?url=" + location.href.split('#')[0],
         type: 'GET',
         success: function (data) {
           //得到参数

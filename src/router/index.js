@@ -106,9 +106,6 @@ const engineerCommon = () => import('../components/engineer/engineerCommon.vue')
 //亲邻科技上刊报告
 const Report = () => import('../components/h5/Report.vue')
 
-// 年终报告H5
-const YearStat = () => import('../components/h5/YearStat.vue')
-
 Vue.use(Router);
 
 export default new Router({
@@ -129,7 +126,6 @@ export default new Router({
         //消息列表
         //上下刊报告h5页面
         {path: '/Report', name: 'Report', component: Report},
-        {path: '/YearStat', name: 'YearStat', component: YearStat},
         //admin
         {
             path: '/',

@@ -245,7 +245,7 @@
                 我看见你的千锤百炼，等待你的惊鸿一现`;
             } else if (data.uType == 'EP') {
               htmlStr1 = `<span class="active">${data.realName}</span>，你好
-                <span class="active">${data.registerTime}</span>
+                <span class="active">${formatTime(data.registerTime)[0]}</span>
                 是亲邻与你结缘的第一天
                 我们共同走过了 <span class="active">${data.registerDayCnt}</span> 个日日夜夜
 
@@ -266,7 +266,7 @@
                 那一天，你上刊 <span class="active">${data.epMaxLabCnt}</span>  个点
                 辛苦了
 
-                <span class="active">${data.offWorkTime[0]}</span>  凌晨的 <span class="active">${data.offWorkTime[1]}</span>
+                <span class="active">${data.offWorkTime[0]}</span>  ${data.offWorkTime[2]} <span class="active">${data.offWorkTime[1]}</span>
                 我看到你还在坚持
                 星光不问赶路人，时光不负有心人`;
             } else {
@@ -297,7 +297,7 @@
             shareUrl = res.url;
           //通过微信config接口注入配置
           wx.config({
-            debug: true, // 默认为false  为true的时候是调试模式，会打印出日志
+            debug: false, // 默认为false  为true的时候是调试模式，会打印出日志
             appId: appId,
             timestamp: timestamp,
             nonceStr: nonceStr,
@@ -311,8 +311,8 @@
           window.share_config = {
             'share': {
               'imgUrl': 'https://deploy-1256017579.cos.ap-guangzhou.myqcloud.com/icon/wxicon/wxConfigImg.png', // 这里是需要展示的图标
-              'desc': '为你，千千万万遍', // 这是分享展示的摘要
-              'title': '与最美社区工作者的时光故事...', // 这是分享展示卡片的标题
+              'desc': '与最美社区工作者的时光故事...', // 这是分享展示的摘要
+              'title': '为你，千千万万遍', // 这是分享展示卡片的标题
               'link': shareUrl, // 这里是分享的网址
               'success': function (rr) {
                 console.log('成功' + JSON.stringify(rr))

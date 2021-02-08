@@ -155,6 +155,7 @@
         let date = time.getDate();
         let hour = time.getHours();
         let minutes = time.getMinutes();
+        let timeRange = '';
 
         if (month < 10) {
           month = "0" + month;
@@ -162,13 +163,22 @@
         if (date < 10) {
           date = "0" + date;
         }
+        if(hour < 6) {
+          timeRange = '凌晨的';
+        } else if(hour < 12) {
+          timeRange = '';
+        } else if(hour < 18) {
+          timeRange = '下午的';
+        } else if(hour < 24) {
+          timeRange = '深夜的'
+        }
         if (hour < 10) {
           hour = "0" + hour;
         }
         if (minutes < 10) {
           minutes = "0" + minutes;
         }
-        result = [year + '年' + month + '月' + date + "日", hour + "时" + minutes + "分"];
+        result = [year + '年' + month + '月' + date + "日", hour + "时" + minutes + "分", timeRange];
       }
       return result;
     };
@@ -189,38 +199,12 @@
       mySwiper = new Swiper('.swiper-container', {
         on: {
           init: function (swiper) {
-            //Swiper初始化了
+            
           },
         },
         direction: 'vertical', // 垂直切换选项
         autoHeight: true, //高度随内容变化
-        // effect: 'coverflow',
-        effect: 'fade',
-        fadeEffect: {
-          crossFade: true,
-        },
-        initialSlide: 0,
-        slidesPerView: 1,
-        centeredSlides: false,
-        coverflowEffect: {
-          slideShadows: false
-        },
-        /* freeModeSticky: true,
-        watchOverflow: true,
-        parallax : true,
-        loop: true, // 循环模式选项
-        touchRatio : 0.5,  //滑动距离只有触摸距离的一半，变得难以滑动
-        autoplay: true, */
-
-        // 如果需要分页器
-        /* pagination: {
-          el: '.swiper-pagination',
-        }, */
-
-        // 如果需要滚动条
-        /* scrollbar: {
-          el: '.swiper-scrollbar',
-        }, */
+        slidesPerView: 'auto',
       })
 
       /* 
@@ -250,7 +234,7 @@
                 我们共同走过了 <span class="active">${data.registerDayCnt}</span> 个日日夜夜
 
                 过去的一年里，
-                深圳亲邻交互科技有限公司
+                ${data.asName||''}
                 增加了 <span class="active">${data.mediaIncrCnt}</span>  个新媒体
                 让客户有了更多展现品牌的机会`;
               htmlStr2 = `这一年
@@ -261,7 +245,7 @@
                 <span class="active">${data.mdOrderCnt}</span>  个广告正因有你的发布
                 才走向了千家万户
 
-                <span class="active">${data.offWorkTime[0]}</span>  凌晨的 <span class="active">${data.offWorkTime[1]}</span>
+                <span class="active">${data.offWorkTime[0]}</span>  ${data.offWorkTime[2]} <span class="active">${data.offWorkTime[1]}</span>
                 你还在坚持工作
                 我看见你的千锤百炼，等待你的惊鸿一现`;
             } else if (data.uType == 'EP') {
@@ -290,6 +274,8 @@
                 <span class="active">${data.offWorkTime[0]}</span>  凌晨的 <span class="active">${data.offWorkTime[1]}</span>
                 我看到你还在坚持
                 星光不问赶路人，时光不负有心人`;
+            } else {
+              alert("权限错误~");
             }
             $('.page1-text').html(htmlStr1);
             $('.page2-text').html(htmlStr2);

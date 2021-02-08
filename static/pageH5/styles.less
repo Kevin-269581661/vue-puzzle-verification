@@ -1,3 +1,7 @@
+@font-face {
+  font-family: regular;
+  src: url('/static/pageH5/regular.ttf');
+}
 .px2rem(@name, @px) { 
   @{name}: @px / 100 * 1rem; 
 }
@@ -22,31 +26,6 @@
     @{name}: @px * 2px; 
   } 
 }
-@font-face {
-	font-family: regular;
-	src: url('/static/pageH5/regular.ttf');
-}
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html,
-body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-body {
-  overflow-y: auto;
-}
-
-body::-webkit-scrollbar {
-  display: none;
-}
-
 /*通过伪元素缩放处理 1px 像素问题*/
 [viewpx] {
   position: relative;
@@ -76,6 +55,28 @@ body::-webkit-scrollbar {
   .px2rem (border-radius, 32);
   border: 1px solid #fff;
 }
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  overflow-y: auto;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
 body {
   color: rgba(0,0,0,.5);
 }
@@ -173,11 +174,17 @@ body {
   .px2rem (width, 128);
   margin-top: 12px;
 }
-.content-text {
-  display: block;
-  line-height: 36px;
-  font-size: 20px;
-  white-space: nowrap;
+.swiper-slide.swiper-slide-active .page-content {
+  animation: fadeIn 2s 0s 1;
+}
+.swiper-slide.swiper-slide-active .thanks-img {
+  animation: fadeIn 2s 0s 1;
+}
+.swiper-slide.swiper-slide-active .thumbs-up-img {
+  animation: fadeIn 2s 0s 1;
+}
+.swiper-slide.swiper-slide-active .together-img {
+  animation: fadeIn 2s linear 0s 1;
 }
 .music-img.open {
   animation:turn 3s linear infinite;
@@ -201,48 +208,65 @@ body {
 
 @keyframes next{
   0% {
-    transform :translateY(-40px);
+    transform: rotate(180deg) translateY(-40px);
   }
   50% {
-    transform :translateY(10px);
+    transform: rotate(180deg) translateY(10px);
   }
   100% {
-    transform :translateY(-40px);
+    transform: rotate(180deg) translateY(-40px);
   }
 }
 
 @-moz-keyframes next{
   0% {
-    transform :translateY(-40px);
+    transform: rotate(180deg) translateY(-40px);
   }
   50% {
-    transform :translateY(10px);
+    transform: rotate(180deg) translateY(10px);
   }
   100% {
-    transform :translateY(-40px);
+    transform: rotate(180deg) translateY(-40px);
   }
 }
 
 @-webkit-keyframes next{
   0% {
-    transform :translateY(-40px);
+    transform: rotate(180deg) translateY(-40px);
   }
   50% {
-    transform :translateY(10px);
+    transform: rotate(180deg) translateY(10px);
   }
   100% {
-    transform :translateY(-40px);
+    transform: rotate(180deg) translateY(-40px);
   }
 }
 
 @-o-keyframes next{
   0% {
-    transform :translateY(-40px);
+    transform: rotate(180deg) translateY(-40px);
   }
   50% {
-    transform :translateY(10px);
+    transform: rotate(180deg) translateY(10px);
   }
   100% {
-    transform :translateY(-40px);
+    transform: rotate(180deg) translateY(-40px);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@-webkit-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }

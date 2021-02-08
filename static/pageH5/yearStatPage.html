@@ -136,7 +136,7 @@
         $('#musicPlay')[0].play()
       }
     }
-    function startPlay(el) {
+    function startPlay() {
       if ($('.music-img.close').is(":visible") && $('#musicPlay')[0]) {
         $('.music-img.close').hide()
         $('.music-img.open').show()
@@ -193,7 +193,7 @@
 
     $(function () {
       document.body.addEventListener("touchstart", () => {
-        startPlay
+        startPlay()
       }, { once: true });
       $('.music-img.close').show()
       $('.music-img.open').hide()
@@ -238,8 +238,10 @@
               htmlStr2 = `这一年
                 你协助销售伙伴们创建了 <span class="active">${data.mdFanganCnt}</span> 个方案
                 为他们打下了牢固的江山
+
                 你预锁了 <span class="active">${data.lockFanganCnt}</span> 次点位
                 让客户的订单能顺利执行
+
                 <span class="active">${data.mdOrderCnt}</span>  个广告正因有你的发布
                 才走向了千家万户
 
@@ -288,7 +290,7 @@
       var nonceStr, signature, timestamp, appId, shareUrl;
       $.ajax({
         //后台获取参数接口
-        url: "https://uat-ashtonapi.qinlinkeji.com/platform/v1/system/getWxConfig?url=https://test-qadn.qinlindmp.com",
+        url: "https://uat-ashtonapi.qinlinkeji.com/platform/v1/system/getWxConfig?url=https://test-qadn.qinlindmp.com/",
         /* beforeSend: function (xhr) {
           xhr.setRequestHeader("Token", getCookie("token"));
         }, */
@@ -310,11 +312,8 @@
             nonceStr: nonceStr,
             signature: signature,
             jsApiList: [
-              'checkJsApi',
               'onMenuShareTimeline',
-              'onMenuShareAppMessage',
-              'onMenuShareQQ',
-              'onMenuShareWeibo'
+              'onMenuShareAppMessage'
             ]
           });
           //配置自定义分享内容
@@ -333,7 +332,8 @@
             }
           };
           wx.ready(function () {
-            wx.updateAppMessageShareData(share_config.share);
+            wx.onMenuShareAppMessage(share_config.share);
+            wx.onMenuShareTimeline(share_config.share);
           });
 
         },

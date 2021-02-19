@@ -13,17 +13,17 @@
                         <div class="search-nav">
                             <div class="search-wrap">
                                 <div style="margin-right: 0" v-show="isOccupied">
-                                    <el-select v-model="activeSelect" placeholder="请选择" class="type-select">
+                                    <el-select v-model="activeSelect" placeholder="请选择" class="type-select" size="small">
                                         <el-option label="方案排斥" value="1"></el-option>
                                     </el-select>
-                                    <el-select v-model="activeAdPlan" placeholder="请选择排斥方案" class="reject_select"
+                                    <el-select v-model="activeAdPlan" placeholder="请选择排斥方案" class="reject_select" size="small"
                                                @change="selectRejectPlan" filterable :clearable="true">
                                         <el-option v-for="item in rejectAdPlan" :key="item.value" :label="item.label"
                                                    :value="item.value"></el-option>
                                     </el-select>
                                 </div>
                                 <div>
-                                    <el-input placeholder="请输入要搜索的内容" v-model="searchInput" class="input-with-select" @change="initData">
+                                    <el-input placeholder="请输入要搜索的内容" v-model="searchInput" class="input-with-select" @change="initData" size="small">
                                         <el-select v-model="selectValue" slot="prepend" class="type-select" @change="initData">
                                             <el-option v-for="item in typeSelect" :key="item.value" :label="item.value"
                                                        :value="item.value"></el-option>
@@ -92,12 +92,12 @@
                             </dl>
                             <dl style="border: none">
                                 <dt>城市区域：</dt>
-                                <dd v-for="(item, index) in city" :index="index"
+                                <dd v-for="(item, index) in city" :key="index"
                                     :class=" index == activeIndex ? 'active' : ''"
                                     @click="activeCity(item,index)">{{item.rName}}
                                 </dd>
                             </dl>
-                            <dl class="city-proper" v-for="(list, index) of area" :index="index"
+                            <dl class="city-proper" v-for="(list, index) of area" :key="index"
                                 v-show=" index == activeIndex">
                                 <dd v-for="item of list" :class="item.rName == areaName ? 'active' : ''"
                                     @click="activeArea(item)">{{item.rName}}
@@ -107,13 +107,15 @@
                                 <dt>其它条件：</dt>
                                 <dd class="other-dd">
                                     <el-select v-model="mState" placeholder="媒体状态" class="otherSelect" :class="mState !== '' ? 'otherSelectActive' :'' "
-                                               @change="mStateChange">
+                                        size="small"
+                                        @change="mStateChange">
                                         <el-option label="正常" value="1"></el-option>
                                         <el-option label="待安装" value="2"></el-option>
                                     </el-select>
                                     <el-select v-model="limitList" placeholder="广告限制" class="otherSelect adLimitSelect"
-                                               :class="limitList.length !== 0 ? 'otherSelectActive' :'' " multiple collapse-tags
-                                               @change="activeADLimit">
+                                        size="small"
+                                        :class="limitList.length !== 0 ? 'otherSelectActive' :'' " multiple collapse-tags
+                                        @change="activeADLimit">
                                         <el-option
                                             v-for="item in ADLimit"
                                             :key="item.value"
@@ -122,15 +124,17 @@
                                         </el-option>
                                     </el-select>
                                     <el-select v-model="buildValue" :placeholder="recType == '1' ? '楼盘类型' : '写字楼类型'"
-                                               :class="buildValue !== '' ? 'otherSelectActive' :'' "
-                                               class="otherSelect" @change="tableHeaderFilter_cType">
+                                        size="small"
+                                        :class="buildValue !== '' ? 'otherSelectActive' :'' "
+                                        class="otherSelect" @change="tableHeaderFilter_cType">
                                         <el-option v-for="item in buildType" :key="item.buildValue"
                                                    :label="item.buildValue"
                                                    :value="item.buildValue">
                                         </el-option>
                                     </el-select>
                                     <el-select v-model="activeGrade" placeholder="媒体等级" class="otherSelect"
-                                               @change="gradeChange" :class=" activeGrade !== '' ? 'otherSelectActive' :''">
+                                        size="small"
+                                        @change="gradeChange" :class=" activeGrade !== '' ? 'otherSelectActive' :''">
                                         <el-option label="A级" value="A"></el-option>
                                         <el-option label="B级" value="B"></el-option>
                                         <el-option label="C级" value="C"></el-option>
@@ -267,7 +271,7 @@
                         <!--提示-->
                         <div class="tip">
                             <i class="el-icon-info"></i>
-                            <p>共 <span>{{adsCount}}</span>个点位，已选点位 <span>{{nowPointNum>0?nowPointNum:0}}</span>个</p>
+                            <p>共 <span>{{adsCount}}</span> 个点位，已选点位 <span>{{nowPointNum>0?nowPointNum:0}}</span> 个</p>
                         </div>
                         <!--表格-->
                         <div class="table_wrap adsTable">
@@ -6001,6 +6005,7 @@
     }
     .input-wrap .input-wrap-Btn{
         width: 44px;
+        min-width: 72px;
         height: 22px;
         margin-top: 6px;
         padding: 0;
@@ -6050,6 +6055,14 @@
 
     /deep/ .el-checkbox + .el-checkbox {
         margin-left: 4px;
+    }
+
+    .adsTable /deep/ .el-checkbox + span {
+        margin-left: 4px;
+    }
+
+    /deep/ .el-table-column-checkbox .el-checkbox {
+        margin-right: 0;
     }
 
     /deep/ .el-table__expanded-cell[class*=cell] {

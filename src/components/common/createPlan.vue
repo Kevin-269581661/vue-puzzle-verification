@@ -5816,7 +5816,7 @@
     }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
     /deep/ .el-table__fixed, /deep/ .el-table__fixed-right {
         height: 584px !important;
     }
@@ -5847,6 +5847,10 @@
     .adsTable {
         position: relative;
         margin-top: 5px;
+        .adDoor {
+            display: flex;
+            justify-content: space-between;
+        }
     }
 
     .myCheckbox {
@@ -6375,10 +6379,6 @@
         color: #666666;
         line-height: 14px;
         font-weight: bold;
-    }
-
-    /deep/ .el-checkbox + .el-checkbox {
-        margin-left: 4px;
     }
 
     /deep/ .el-table-column-checkbox .el-checkbox {

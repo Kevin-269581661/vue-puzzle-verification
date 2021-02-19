@@ -185,7 +185,7 @@ export default {
       this.tableData.forEach((item) => {
         if (item.latlng) {
           let label = new BMapGL.Label(item.onPubRate + "%", {
-            offset: new BMapGL.Size(22, 2),
+            // offset: new BMapGL.Size(22, 2),
             position: new BMapGL.Point(
               item.latlng.split(";")[0],
               item.latlng.split(";")[1]
@@ -198,12 +198,14 @@ export default {
             colorA = 0.8 + ((0.2 * item.onPubRate) / 100).toFixed(2) * 1;
           let size =
             item.onPubRate > 85
-              ? '55px'
+              ? '55'
               : item.onPubRate < 55
-              ? '40px'
+              ? '40'
               : item.onPubRate < 30
-              ? '45px'
-              : '50px';
+              ? '45'
+              : '50';
+          label.setOffset(new BMapGL.Size(-size/2, -size/2));
+          size = size + 'px';
           label.setStyle({
             width: size,
             height: size,

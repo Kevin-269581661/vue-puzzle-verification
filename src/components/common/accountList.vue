@@ -33,8 +33,8 @@
                 </div>
                 <div class="table_wrap">
                     <el-table border :data="currAccount" style="width: 100%"  @sort-change="sortChange" v-loading="loading"
-                              element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading"
-                              :default-sort="{prop: 'joinTime', order: 'descending'}">
+                            element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading"
+                            :default-sort="{prop: 'joinTime', order: 'descending'}">
                         <el-table-column label="账号" min-width="11.8%">
                             <template slot-scope="scope">
                                 <a href="javascript:void(0);" @click="ToEdit(scope.row)">{{scope.row.sName}}</a>

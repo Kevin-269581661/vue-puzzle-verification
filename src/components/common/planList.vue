@@ -102,25 +102,28 @@
                                          prop="cityArea"
                                          min-width="25.8%">
                             <template slot-scope="scope">
-                                <div v-if="isAll" v-for="(item, index) of scope.row.cityArea" :key="index"
-                                     class="city_p">
-                                    <el-tooltip class="item" effect="dark"
-                                                :content="item.asName+' '+item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'"
-                                                placement="top">
-                                        <div>
-                                            <span v-if="item.isshow">{{item.asName}}</span>
-                                            <p>
-                                                {{item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'}}</p>
-                                        </div>
-                                    </el-tooltip>
-                                    <el-tooltip class="item" effect="dark" :content="'距离解锁还剩'+item.RemainDay+'天'"
-                                                placement="top">
-                                             <span v-show="item.RemainDay" class="lock-icon">
-                                             <!--预锁:剩<b :style="item.RemainDay<=3?'color:red;':''">{{item.RemainDay}}</b>天-->
-                                             <b :class="item.RemainDay<=3?'red':'blue'">{{item.RemainDay}}</b>
-                                             </span>
-                                    </el-tooltip>
-                                </div>
+                                <template v-if="isAll">
+                                    <div v-for="(item, index) of scope.row.cityArea" :key="index"
+                                        class="city_p">
+                                        <el-tooltip class="item" effect="dark"
+                                                    :content="item.asName+' '+item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'"
+                                                    placement="top">
+                                            <div>
+                                                <span v-if="item.isshow">{{item.asName}}</span>
+                                                <p>
+                                                    {{item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'}}</p>
+                                            </div>
+                                        </el-tooltip>
+                                        <el-tooltip class="item" effect="dark" :content="'距离解锁还剩'+item.RemainDay+'天'"
+                                                    placement="top">
+                                                <span v-show="item.RemainDay" class="lock-icon">
+                                                <!--预锁:剩<b :style="item.RemainDay<=3?'color:red;':''">{{item.RemainDay}}</b>天-->
+                                                <b :class="item.RemainDay<=3?'red':'blue'">{{item.RemainDay}}</b>
+                                                </span>
+                                        </el-tooltip>
+                                    </div>
+                                </template>
+                                
                                 <div v-else v-for="item of scope.row.cityArea" :key="item.rid+'-'+item.asrID"
                                      class="city_p">
                                     <el-tooltip class="item" effect="dark"
@@ -587,7 +590,6 @@
             // 滚动加载获取数据(无搜索数据)
             getData(params) {
                 api.getApi(this.apiVar.Advertisement + '/GetProposal', params).then(res => {
-                    console.log(res.data);
                     if (!res.data.SysCode) {
                         let dataInfo = res.data;
                         this.totalNum = dataInfo.total;
@@ -643,7 +645,6 @@
                     token: this.sessionData.token,
                 };
                 api.getApi(this.apiVar.Advertisement + '/GetAPDCityNames', info).then(res => {
-                    console.log(res.data);
                     let arr = res.data;
                     let result = [];
                     if (!arr.SysCode) {

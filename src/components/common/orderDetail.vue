@@ -260,18 +260,20 @@
                 </div>
                 <!--添加点位对话框-->
                 <el-dialog title="添加点位"
-                           :visible.sync="dialogAddPoint"
-                           width="82%"
-                           top="6vh"
-                           :close-on-press-escape="false"
-                           :show-close="false">
+                    :visible.sync="dialogAddPoint"
+                    width="82%"
+                    top="6vh"
+                    :close-on-press-escape="false"
+                    :show-close="false">
                     <add-ads :IsAddAds="IsAddPoint" @ievent="ievent"></add-ads>
                     <span slot="footer" class="dialog-footer">
                         <el-button plain @click="cancelAddPoint" v-qadn-mta-h5="{id: 'a006_b011_c012_d009_bt154_ck08'}">取 消</el-button>
                         <el-button type="primary" @click="confirmAddPoint"
-                                   v-qadn-mta-h5="{id: 'a006_b011_c012_d009_bt153_ck08'}">确 定</el-button>
+                            v-qadn-mta-h5="{id: 'a006_b011_c012_d009_bt153_ck08'}">确 定</el-button>
                     </span>
                 </el-dialog>
+                <!--excel导入点位对话框-->
+                <import-point-by-excel :dialogImportPoint="dialogImportPoint" @resetDialogImportPoint="resetDialogImportPoint"></import-point-by-excel>
 
                 <!-- 图片查看显示 -->
                 <el-dialog :visible.sync="dialogVisible" class="imgPreview" top="10vh">
@@ -294,7 +296,7 @@
 
                 <!--换点对话框-->
                 <el-dialog title="更换点位" :visible.sync="dialogChangePoint" :close-on-press-escape="false"
-                           :show-close="false" :before-close="closeDialogChangePoint" :close-on-click-modal="false">
+                        :before-close="closeDialogChangePoint">
                     <div>
                         <el-row class="search-row" style="margin: 0">
                             <el-col>
@@ -307,13 +309,19 @@
                                 </el-button>
                                 <el-button plain @click="reset('change')" style="position: relative;top: 2px">重置
                                 </el-button>
-                                <div style="float: right">
-                                    <el-button type="primary" @click="stopPoint('stop')"
-                                               v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt151_ck05'}">终止点位
+                                <div style="float: right; display: flex;">
+                                    <el-button plain @click="stopPoint('stop')"
+                                        v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt151_ck05'}">终止点位
                                     </el-button>
-                                    <el-button type="primary" @click="showAddPointDialog"
+                                    <el-select size="mini" value="新增点位" placeholder="新增点位" class="add-point-select">
+                                        <el-option label="手动添加" value="1"
+                                            v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt150_ck04'}"
+                                            @click.native="showAddPointDialog"></el-option>
+                                        <el-option label="导入点位" value="2" @click.native="excelAddPointDialog"></el-option>
+                                    </el-select>
+                                    <!-- <el-button type="primary" @click="showAddPointDialog"
                                                v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt150_ck04'}">新增点位
-                                    </el-button>
+                                    </el-button> -->
                                 </div>
                             </el-col>
                         </el-row>
@@ -430,6 +438,7 @@
                             </el-table>
                             <!--<p style="font-size: 12px;color: #666666;margin-top: 10px">提示：带*号的为新增点位</p>-->
                             <div class="table-bottom-tip">
+
                                 <div style="display: flex" v-if="isHandleChange">
                                     <p><span style="background-color: #1890ff" class="color-line"></span>新增点位</p>
                                     <p><span style="background-color: #FF763B" class="color-line"></span>终止点位</p>
@@ -663,6 +672,7 @@
     import material from "./components/materialInfo.vue";
     import detail from "./components/detailInfo.vue";
     import addAds from "./components/addAds"
+    import importPointByExcel from "./components/importPointByExcel"
     import noSearchResult from "./components/noSearchResult.vue";
     import changePic from "./components/changePic.vue";
     import changeOrderPrice from "./components/changeOrderPrice.vue";
@@ -674,6 +684,7 @@
             material,
             detail,
             addAds,
+            importPointByExcel,
             changePic,
             noSearchResult,
             changeOrderPrice
@@ -761,8 +772,10 @@
                     }
                 },
 
-                //添加点位
+                // 手动添加点位
                 dialogAddPoint: false,
+                // 导入点位
+                dialogImportPoint: false,
                 IsAddPoint: true,
                 addAdsArr: [],
                 dateInput: "",
@@ -1868,13 +1881,15 @@
             },
             //显示添加点位的模态框
             showAddPointDialog() {
-                let pdidArr = this.pdidList
-                console.log('pdidarr---', pdidArr);
                 this.dialogAddPoint = true
                 this.IsAddPoint = !this.IsAddPoint
-                // if(this.IsAddPoint){
-                //     this.IsAddPoint = false
-                // }
+            },
+            // excel 导入点位弹框
+            excelAddPointDialog() {
+                this.dialogImportPoint = true
+            },
+            resetDialogImportPoint() {
+                this.dialogImportPoint = false
             },
             //获取子组件选择的点位数据
             ievent(...data) {
@@ -1889,9 +1904,6 @@
                     spinner: 'el-icon-loading',
                     background: 'rgba(0, 0, 0, 0.7)'
                 });
-                console.log('pdidarr---', this.addAdsArr);
-                console.log('shopingArr', this.pdidList)
-                let userData = this.sessionData;
                 let arr = []
                 for (let key of this.addAdsArr) {
                     for (let pKey of this.pdidList) {
@@ -2096,7 +2108,7 @@
     ;
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
     .ellipsis-td {
         width: 132px;
         overflow: hidden;
@@ -2370,7 +2382,22 @@
     /* 搜索 */
     .search-row {
         margin: 0 32px 0;
+        .add-point-select {
+            width: 100px;
+            margin-left: 8px;
+            :hover, :focus {
+                color: #409EFF;
+                border-color: #409EFF;
+                /deep/ .el-icon-arrow-up {
+                    color: #409EFF;
+                }
+            }
+            /deep/ .el-input__inner {
+                padding-left: 8px;
+            }
+        }
     }
+
 
     /*日期控件*/
     /deep/ .el-range-separator {
@@ -2514,7 +2541,7 @@
         border: 1px solid #bae7ff;
         border-radius: 4px;
         margin: 16px 0;
-        padding: 5px;
+        padding: 9.5px;
     }
 
     .table-top-tip /deep/ .el-icon-info {

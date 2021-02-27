@@ -39,6 +39,7 @@
                                         value-format="yyyy/MM/dd"
                                         format="yyyy/MM/dd"
                                         class="date-select input-with-select"
+                                        :picker-options="pickerOptions"
                                     >
                                     </el-date-picker>
                                 </div>
@@ -1046,7 +1047,9 @@
                                         end-placeholder="结束日期"
                                         value-format="yyyy/MM/dd"
                                         format="yyyy/MM/dd"
-                                        class="date-select-scheduled">
+                                        class="date-select-scheduled"
+                                        :picker-options="pickerOptions"
+                                    >
                                     </el-date-picker>
                                 </div>
                             </el-col>
@@ -1294,6 +1297,11 @@
                 mState: '',                //媒体状态
                 activeGrade: '',           // 媒体等级
                 active: 1,                  //步骤
+                pickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() <= Date.now();
+                    }
+                },
                 dateInput: [],            // 时间输入框
                 beforeDate: [],           // 时间输入框的前一次时间
                 //setp1创建方案表单

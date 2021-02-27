@@ -274,7 +274,8 @@
                 </el-dialog>
                 <!--excel导入点位对话框-->
                 <import-point-by-excel :dialogImportPoint="dialogImportPoint" @resetDialogImportPoint="resetDialogImportPoint"></import-point-by-excel>
-
+                <!-- 更改排期对话框 -->
+                <changePointPlayDateRange :changeRangeDialog="changeRangeDialog" :changeList="changePointInfo.stopPointlist" @resetDialogChangeRange="resetDialogChangeRange"></changePointPlayDateRange>
                 <!-- 图片查看显示 -->
                 <el-dialog :visible.sync="dialogVisible" class="imgPreview" top="10vh">
                     <img :src="dialogImageUrl" alt=""/>
@@ -310,6 +311,7 @@
                                 <el-button plain @click="reset('change')" style="position: relative;top: 2px">重置
                                 </el-button>
                                 <div style="float: right; display: flex;">
+                                    <el-button plain @click="changePointPlayDateRange">更改排期</el-button>
                                     <el-button plain @click="stopPoint('stop')"
                                         v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt151_ck05'}">终止点位
                                     </el-button>
@@ -335,55 +337,46 @@
                         </div>
                         <div>
                             <el-table border :data="changePointArr" style="width: 100%"
-                                      :default-sort="{prop: 'recName', order: 'descending'}"
-                                      v-loading="changePointloading"
-                                      ref="multipleTable"
-                                      @select="handleSelect" @select-all="handleSelectAll"
-                                      element-loading-text="玩命加载中.."
-                                      element-loading-spinner="el-icon-loading">
+                                    :default-sort="{prop: 'recName', order: 'descending'}"
+                                    v-loading="changePointloading"
+                                    ref="multipleTable"
+                                    @select="handleSelect" @select-all="handleSelectAll"
+                                    element-loading-text="玩命加载中.."
+                                    element-loading-spinner="el-icon-loading">
                                 <el-table-column
                                     type="selection"
                                     aria-disabled="true"
                                     :selectable='selectInit'
                                     width="45">
                                 </el-table-column>
-                                <!--<el-table-column width="45px" >-->
-                                <!--<template slot-scope="scope">-->
-                                <!--<div class="roadGate">-->
-                                <!--<el-checkbox v-model="scope.row.checkBox" label=""-->
-                                <!--@change="handleSelectionChange(scope.row)">-->
-                                <!--</el-checkbox>&lt;!&ndash;v-model="scope.row.checkBox.ABC"&ndash;&gt;-->
-                                <!--</div>-->
-                                <!--</template>-->
-                                <!--</el-table-column>-->
                                 <el-table-column type="expand">
                                     <template slot-scope="props">
                                         <el-form label-position="left" inline class="demo-table-expand">
-                                            <el-form-item label="商圈：">
-                                                <span>{{ props.row.tradingArea}}</span>
+                                            <el-form-item label="商圈:">
+                                                <span>{{ props.row.tradingArea }}</span>
                                             </el-form-item>
-                                            <el-form-item label="楼栋数量：">
+                                            <el-form-item label="楼栋数量:">
                                                 <span>{{ props.row.fNum }}</span>
                                             </el-form-item>
-                                            <el-form-item label="资产编号：">
+                                            <el-form-item label="资产编号:">
                                                 <span>{{ props.row.assetTag }}</span>
                                             </el-form-item>
-                                            <el-form-item label="入住年份：">
+                                            <el-form-item label="入住年份:">
                                                 <span>{{ props.row.chDay }}</span>
                                             </el-form-item>
-                                            <el-form-item label="广告限制：">
+                                            <el-form-item label="广告限制:">
                                                 <span>{{ props.row.notPush || '--'}}</span>
                                             </el-form-item>
                                         </el-form>
                                         <el-form label-position="left" inline class="demo-table-expand">
-                                            <el-form-item v-if="sessionData.mediaManageLevel == 1 || sessionData.saleManageLevel == 2" label="归属公司：">
+                                            <el-form-item v-if="sessionData.mediaManageLevel == 1 || sessionData.saleManageLevel == 2" label="归属公司:">
                                                 <span class="ellipsis-td">{{ props.row.asName||'' }}</span>
                                             </el-form-item>
                                             <template v-if="customPermission.patrolPermission">
-                                                <el-form-item label="巡点问题：">
+                                                <el-form-item label="巡点问题:">
                                                     <span class="ellipsis-td">{{ props.row.remark || '--' }}</span>
                                                 </el-form-item>
-                                                <el-form-item label="通行情况：">
+                                                <el-form-item label="通行情况:">
                                                     <span class="ellipsis-td">{{ props.row.trafficState || '--' }}</span>
                                                 </el-form-item>
                                             </template>
@@ -394,9 +387,9 @@
                                     <template slot-scope="scope">
                                         <div style="float:left;position: absolute;left: 0;top: 0" v-if="isHandleChange">
                                             <div v-if="scope.row.isCurrNew&&scope.row.lState!=2" slot="reference"
-                                                 class="color-line"></div>
+                                                class="color-line"></div>
                                             <div v-if="scope.row.lState==2" slot="reference" class="color-line"
-                                                 style="background-color: #FF763B"></div>
+                                                style="background-color: #FF763B"></div>
                                         </div>
                                         <span>{{scope.row.resName||'--'}}</span>
                                     </template>
@@ -406,10 +399,10 @@
                                 <el-table-column prop="asLab" label="投放面" min-width="5.8%">
                                 </el-table-column>
                                 <el-table-column prop="city" label="城市" min-width="6%" :filters="filterCityData"
-                                                 :filter-method="filterCity">
+                                    :filter-method="filterCity">
                                 </el-table-column>
                                 <el-table-column prop="rName" label="区域" min-width="7.4%" :filters="filtersArea"
-                                                 :filter-method="filterRName">
+                                    :filter-method="filterRName">
                                 </el-table-column>
                                 <el-table-column prop="cType" label="楼盘类型" min-width="6.5%">
                                     <template slot-scope="scope">
@@ -427,7 +420,7 @@
                                     </template>
                                 </el-table-column>
                                 <el-table-column prop="timeRange" label="排期" min-width="14.2%" :filters="filtersData"
-                                                 :filter-method="filterTimeRange" show-overflow-tooltip>
+                                    :filter-method="filterTimeRange" show-overflow-tooltip>
                                     <template slot-scope="scope">
                                         <span>{{scope.row.timeRange}}</span>
                                     </template>
@@ -673,6 +666,7 @@
     import detail from "./components/detailInfo.vue";
     import addAds from "./components/addAds"
     import importPointByExcel from "./components/importPointByExcel"
+    import changePointPlayDateRange from "./components/changePointPlayDateRange"
     import noSearchResult from "./components/noSearchResult.vue";
     import changePic from "./components/changePic.vue";
     import changeOrderPrice from "./components/changeOrderPrice.vue";
@@ -685,6 +679,7 @@
             detail,
             addAds,
             importPointByExcel,
+            changePointPlayDateRange,
             changePic,
             noSearchResult,
             changeOrderPrice
@@ -776,6 +771,8 @@
                 dialogAddPoint: false,
                 // 导入点位
                 dialogImportPoint: false,
+                // 更换点位排期
+                changeRangeDialog: false,
                 IsAddPoint: true,
                 addAdsArr: [],
                 dateInput: "",
@@ -1033,6 +1030,14 @@
                         // Message.info("已取消操作");
                     });
                 // this.dialogChangePoint = false
+            },
+            // 更改排期操作
+            changePointPlayDateRange() {
+                if (this.changePointInfo.stopPointlist.length > 0) {
+                    this.changeRangeDialog = true
+                } else {
+                    Message.warning('请先勾选需要更改排期的点位')
+                }
             },
             //终止点位操作
             stopPoint() {
@@ -1607,7 +1612,6 @@
             },
             // 价格加上逗号
             priceFormat(price) {
-                // console.log('price', price);
                 return commaFormat.init(price);
             },
             priceToFormat(price) {
@@ -1620,21 +1624,10 @@
                 result = result + dateFormat.toDate(date, "");
                 result = result + rid.toString().substring(0, 4);
                 result = result + "00" + Math.round(Math.random() * 10);
-                // console.log(result);
                 return result;
             },
-            // 当搜索框为空的时候进行重置显示
-            // init() {
-            //     if (!this.keyword) {
-            //         this.changePointArr = this.setpointArr;
-            //     }
-            // },
             // 搜索
             search(type) {
-                // 账号，姓名
-                // console.log(this.selectRecName);
-                console.log(this.keyword, this.changeKeyword, type);
-                // let keyword = this.keyword;
                 if (type == 'change') {
                     //更换点位
                     let t = [...this.setpointArr];
@@ -1651,7 +1644,6 @@
                     this.setpointArr = arr
                     console.log(this.setpointArr);
                     this.changePointPageFn()
-                    // this.getSetPoint(type)
                 } else {
                     this.getSetPoint('type')
                 }
@@ -1661,7 +1653,6 @@
                 if (type == 'change') {
                     this.changeKeyword = ''
                     this.setpointArr = this.tempSetPointArr
-                    // this.getSetPoint(type)
                     this.changePointPageFn()
                 } else {
                     this.keyword = ''
@@ -1890,6 +1881,9 @@
             },
             resetDialogImportPoint() {
                 this.dialogImportPoint = false
+            },
+            resetDialogChangeRange() {
+                this.changeRangeDialog = false
             },
             //获取子组件选择的点位数据
             ievent(...data) {
@@ -2378,7 +2372,22 @@
         top: -2px;
         left: -3px;
     }
-
+    
+    /* 更换点位 */
+    .flex-center {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    /deep/ .el-table-column--selection {
+        @extend .flex-center;
+        .cell {
+            @extend .flex-center;
+        }
+    }
+    /deep/ .el-table__expand-column .cell {
+        @extend .flex-center;
+    }
     /* 搜索 */
     .search-row {
         margin: 0 32px 0;

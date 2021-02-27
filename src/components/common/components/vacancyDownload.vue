@@ -47,6 +47,7 @@
                     end-placeholder="结束日期"
                     value-format="yyyy/MM/dd"
                     format="yyyy/MM/dd"
+                    :picker-options="pickerOptions"
                 >
                 </el-date-picker>
             </el-col>
@@ -81,6 +82,11 @@ export default {
             },
             // 城市列表
             cityList: [],
+            pickerOptions: {
+                disabledDate(time) {
+                    return time.getTime() <= Date.now();
+                }          
+            }
         }
     },
     methods:{

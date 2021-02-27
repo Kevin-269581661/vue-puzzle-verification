@@ -155,6 +155,7 @@
                                         format="yyyy/MM/dd"
                                         class="date-select input-with-select"
                                         size="small"
+                                        :picker-options="pickerOptions"
                                     >
                                     </el-date-picker>
                                 </div>
@@ -1467,6 +1468,11 @@
                 planSelect: '',
                 mState: '',                // 媒体状态
                 activeGrade: '',           // 媒体等级
+                pickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() <= Date.now();
+                    }
+                },
                 dateInput: [],            // 时间输入框
                 beforeDate: [],           // 时间输入框的前一次时间
                 //setp1创建方案表单

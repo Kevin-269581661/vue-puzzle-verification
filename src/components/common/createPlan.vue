@@ -4485,7 +4485,8 @@
                         mediaName: key.mTitle || '',
                         mVehicle: key.mVehicle,
                         buildNum: key.fNum,
-                        schedules: this.dateInput[0] + '-' + this.dateInput[1],
+                        // schedules: this.dateInput[0] + '-' + this.dateInput[1],
+                        schedules: key.startDate + '-' + key.endDate,
                         remark: key.remark || '--',          // 巡点定制（亲粤邻）
                         trafficState: key.trafficState || '--',  // 巡点定制（亲粤邻）
                         tradingArea: key.tradingArea,

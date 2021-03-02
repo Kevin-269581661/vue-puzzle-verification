@@ -79,15 +79,17 @@
                         </el-table-column>
                         <el-table-column label="投放城市(点位面数，排期)" prop="cityArea" min-width="25.8%" show-overflow-tooltip>
                             <template slot-scope="scope">
-                                <div v-if="isAll" v-for="(item, index) of scope.row.companyList" :key="index"
-                                     class="city_p">
-                                    {{item.asName}}
-                                    <p v-for="city of item.cityList" :key="city.city">
-                                        {{city.city+'('+city.num+'面,'+formatTime(city.pdStart)+'至'+formatTime(city.pdEnd)+')'}}
-                                    </p>
-                                </div>
-                                <div v-if="!isAll" v-for="item of scope.row.companyList" :key="item.rid+'-'+item.asrID"
-                                     class="city_p">
+                                <template v-if="isAll">
+                                    <div v-for="(item, index) of scope.row.companyList" :key="index"
+                                        class="city_p">
+                                        {{item.asName}}
+                                        <p v-for="city of item.cityList" :key="city.city">
+                                            {{city.city+'('+city.num+'面,'+formatTime(city.pdStart)+'至'+formatTime(city.pdEnd)+')'}}
+                                        </p>
+                                    </div>
+                                </template>
+                                <div v-else v-for="item of scope.row.companyList" :key="item.rid+'-'+item.asrID"
+                                    class="city_p">
                                     <p v-for="city of item.cityList" :key="city.city">
                                         {{city.city+'('+city.num+'面,'+formatTime(city.pdStart)+'至'+formatTime(city.pdEnd)+')'}}
                                     </p>

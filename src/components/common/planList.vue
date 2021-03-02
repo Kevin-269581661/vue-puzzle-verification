@@ -102,43 +102,47 @@
                                          prop="cityArea"
                                          min-width="25.8%">
                             <template slot-scope="scope">
-                                <div v-if="isAll" v-for="(item, index) of scope.row.cityArea" :key="index"
-                                     class="city_p">
-                                    <el-tooltip class="item" effect="dark"
-                                                :content="item.asName+' '+item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'"
-                                                placement="top">
-                                        <div>
-                                            <span v-if="item.isshow">{{item.asName}}</span>
+                                <template v-if="isAll">
+                                    <div v-for="(item, index) of scope.row.cityArea" :key="index"
+                                        class="city_p">
+                                        <el-tooltip class="item" effect="dark"
+                                                    :content="item.asName+' '+item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'"
+                                                    placement="top">
+                                            <div>
+                                                <span v-if="item.isshow">{{item.asName}}</span>
+                                                <p>
+                                                    {{item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'}}</p>
+                                            </div>
+                                        </el-tooltip>
+                                        <el-tooltip class="item" effect="dark" :content="'距离解锁还剩'+item.RemainDay+'天'"
+                                                    placement="top">
+                                                <span v-show="item.RemainDay" class="lock-icon">
+                                                <!--预锁:剩<b :style="item.RemainDay<=3?'color:red;':''">{{item.RemainDay}}</b>天-->
+                                                <b :class="item.RemainDay<=3?'red':'blue'">{{item.RemainDay}}</b>
+                                                </span>
+                                        </el-tooltip>
+                                    </div>
+                                </template>
+                                <template v-else>
+                                    <div v-for="item of scope.row.cityArea" :key="item.rid+'-'+item.asrID"
+                                        class="city_p">
+                                        <el-tooltip class="item" effect="dark"
+                                                    :content="item.asName+' '+item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'"
+                                                    placement="top">
                                             <p>
                                                 {{item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'}}</p>
-                                        </div>
-                                    </el-tooltip>
-                                    <el-tooltip class="item" effect="dark" :content="'距离解锁还剩'+item.RemainDay+'天'"
-                                                placement="top">
-                                             <span v-show="item.RemainDay" class="lock-icon">
-                                             <!--预锁:剩<b :style="item.RemainDay<=3?'color:red;':''">{{item.RemainDay}}</b>天-->
-                                             <b :class="item.RemainDay<=3?'red':'blue'">{{item.RemainDay}}</b>
-                                             </span>
-                                    </el-tooltip>
-                                </div>
-                                <div v-else v-for="item of scope.row.cityArea" :key="item.rid+'-'+item.asrID"
-                                     class="city_p">
-                                    <el-tooltip class="item" effect="dark"
-                                                :content="item.asName+' '+item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'"
-                                                placement="top">
-                                        <p>
-                                            {{item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'}}</p>
-                                    </el-tooltip>
-                                    <el-tooltip class="item" effect="dark" :content="'距离解锁还剩'+item.RemainDay+'天'"
-                                                placement="top">
-                                         <span v-show="item.RemainDay" class="lock-icon">
-                                        <!--预锁:剩<b :style="item.RemainDay<=3?'color:red;':''">{{item.RemainDay}}</b>天-->
-                                          <b :class="item.RemainDay<=3?'red':'blue'">{{item.RemainDay}}</b>
-                                         </span>
-                                    </el-tooltip>
-                                    <!--<i v-if="item.RemainDay>=0" class="fa fa-lock fa-lg" style="color:#999;"></i>-->
-                                    <!--<i v-else></i>-->
-                                </div>
+                                        </el-tooltip>
+                                        <el-tooltip class="item" effect="dark" :content="'距离解锁还剩'+item.RemainDay+'天'"
+                                                    placement="top">
+                                            <span v-show="item.RemainDay" class="lock-icon">
+                                            <!--预锁:剩<b :style="item.RemainDay<=3?'color:red;':''">{{item.RemainDay}}</b>天-->
+                                            <b :class="item.RemainDay<=3?'red':'blue'">{{item.RemainDay}}</b>
+                                            </span>
+                                        </el-tooltip>
+                                        <!--<i v-if="item.RemainDay>=0" class="fa fa-lock fa-lg" style="color:#999;"></i>-->
+                                        <!--<i v-else></i>-->
+                                    </div>
+                                </template>
                             </template>
                         </el-table-column>
                         <el-table-column prop="apcTime" label="创建日期" width="100px" sortable="custom"
@@ -205,12 +209,16 @@
         <!-- 预锁公司 -->
         <el-dialog :title="isLock?'请选择预锁公司':'请选择解锁公司'" :visible.sync="dialogVisible" width="35%" center>
             <el-checkbox-group v-model="cityChoose">
-                <el-checkbox v-if="isLock" :label="item.asrID" v-for="item of cityList" :key="item.rid" border
-                             :disabled="item.RemainDay>=0" size="mini">{{item.asName}}
-                </el-checkbox>
-                <el-checkbox v-if="!isLock" :label="item.asrID" v-for="item of cityList" :key="item.rid" border
-                             :disabled="item.RemainDay==undefined || item.RemainDay==null" size="mini">{{item.asName}}
-                </el-checkbox>
+                <template v-if="isLock">
+                    <el-checkbox :label="item.asrID" v-for="item of cityList" :key="item.rid" border
+                                :disabled="item.RemainDay>=0" size="mini">{{item.asName}}
+                    </el-checkbox>
+                </template>
+                <template v-else>
+                    <el-checkbox :label="item.asrID" v-for="item of cityList" :key="item.rid" border
+                                :disabled="item.RemainDay==undefined || item.RemainDay==null" size="mini">{{item.asName}}
+                    </el-checkbox>
+                </template>
             </el-checkbox-group>
             <span slot="footer" class="dialog-footer">
                 <el-button plain @click="cancelLock">取 消</el-button>

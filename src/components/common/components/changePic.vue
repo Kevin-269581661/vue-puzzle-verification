@@ -22,14 +22,14 @@
                 </div>
                 <div>
                     <span>资源名称：</span>
-                    <el-select placeholder="请选择资源名称" filterable v-model="publishSearchInfo.allhouse" @change="searchImg()">
+                    <el-select placeholder="请选择资源名称" filterable v-model="publishSearchInfo.allhouse">
                         <el-option v-for="(item, index) of publishSearchInfo.allResource" :key="index" :label="item.resName"
                                    :value="item.value"></el-option>
                     </el-select>
                 </div>
                <div>
                    <span>监播状态：</span>
-                   <el-select placeholder="请选择监播状态" v-model="publishSearchInfo.allPic" @change="searchImg()">
+                   <el-select placeholder="请选择监播状态" v-model="publishSearchInfo.allPic">
                        <el-option label="全部" value="1"></el-option>
                        <el-option label="已上传" value="2"></el-option>
                        <el-option label="未上传" value="3"></el-option>
@@ -37,13 +37,21 @@
                </div>
                 <div>
                     <span>投放状态：</span>
-                    <el-select placeholder="请选择投放状态" v-model="publishSearchInfo.lState" @change="searchImg()">
+                    <el-select placeholder="请选择投放状态" v-model="publishSearchInfo.lState">
                         <el-option label="全部" value="0"></el-option>
                         <el-option label="正常投放" value="1"></el-option>
                         <el-option label="终止投放" value="2"></el-option>
                     </el-select>
                 </div>
-                <el-button type="plain" @click="resetSearch('sxk')">重置</el-button>
+                <div>
+                    <span>投放排期：</span>
+                    <el-select placeholder="请选择投放排期" v-model="publishSearchInfo.dateRange">
+                        <el-option label="全部" value="0"></el-option>
+                        <el-option v-for="(dateRangeItem, rangeIndex) in imageArr" :label="dateRangeItem.timeRange" :value="dateRangeItem.timeRange" :key="rangeIndex"></el-option>
+                    </el-select>
+                </div>
+                <el-button type="primary" @click="searchImg()">搜 索</el-button>
+                <el-button type="plain" @click="resetSearch('sxk')">重 置</el-button>
                 <!--<div class="progress">-->
                     <!--<el-progress :percentage="publishNumInfo.percent" :text-inside="true"></el-progress>-->
                     <!--<span>{{ publishNumInfo.currNum }} / {{ publishNumInfo.totalNum }}</span>-->
@@ -79,7 +87,7 @@
                 <div class="up-loader-header">
                     <div>
                         <span>媒体类型:</span>
-                        <el-select v-model="searchInfo.mediaType" placeholder="请选择媒体类型" @change="search()" size="small">
+                        <el-select v-model="searchInfo.mediaType" placeholder="请选择媒体类型" size="small">
                             <el-option v-for="item of searchInfo.mediaTypeArr" :key="item.value" :label="item.label"
                                        :value="item.value"></el-option>
                         </el-select>
@@ -91,7 +99,7 @@
                     </div>
                     <div>
                         <span>资源名称:</span>
-                        <el-select v-model="searchInfo.resName" placeholder="请选择资源名称" @change="search()" size="small"
+                        <el-select v-model="searchInfo.resName" placeholder="请选择资源名称" size="small"
                                    filterable>
                             <el-option v-for="item of searchInfo.resArr" :key="item.value" :label="item.label"
                                        :value="item.value"></el-option>
@@ -99,12 +107,13 @@
                     </div>
                     <div>
                         <span>监播状态:</span>
-                        <el-select v-model="searchInfo.status" placeholder="请选择监播状态" @change="search()" size="small">
+                        <el-select v-model="searchInfo.status" placeholder="请选择监播状态" size="small">
                             <el-option v-for="item of searchInfo.statusArr" :key="item.value" :label="item.label"
                                        :value="item.value"></el-option>
                         </el-select>
                     </div>
-                    <el-button type="plain" @click="resetSearch('hh')">重置</el-button>
+                    <el-button type="primary" @click="search()">搜 索</el-button>
+                    <el-button type="plain" @click="resetSearch('hh')">重 置</el-button>
                 </div>
             </div>
         </template>
@@ -492,6 +501,8 @@
                     citys: [],
                     // 资源列表
                     allResource: [],
+                    // 投放排期
+                    dateRange: '0'
                 },
 
                 // 上传图片
@@ -821,7 +832,7 @@
                     let areaId = citySelect[1];
                     this.getResArr(cityId, areaId);
                 }
-                this.searchImg();
+                // this.searchImg();
             },
             // 上下刊搜索图片
             searchImg() {
@@ -855,7 +866,7 @@
             searchFormat(type) {
                 let {uID, token} = this.sessionData;
                 let {currPage, pageSize} = this.pageInfo;
-                let {mediaType, citySelect, allhouse, allPic,lState} = this.publishSearchInfo;
+                let {mediaType, citySelect, allhouse, allPic, lState, dateRange} = this.publishSearchInfo;
                 let info = {
                     uid: uID,
                     token: token,
@@ -864,6 +875,7 @@
                     pageNum: currPage,
                     pageSize: pageSize,
                     mVehicle: mediaType,
+                    dateRange: dateRange
                 };
 
                 if (allPic == '2') {
@@ -901,6 +913,8 @@
                         allPic: '1',
                         //投放状态
                         lState: '0',
+                        // 投放排期
+                        dateRange: '0'
                     };
 
                 }else{
@@ -1097,7 +1111,7 @@
                     let areaId = city[1];
                     this.getResArr(cityId, areaId);
                 }
-                this.search();
+                // this.search();
             },
             // 搜索
             search() {
@@ -2273,6 +2287,9 @@
 </script>
 
 <style scoped>
+    /deep/ .el-input__icon {
+        line-height: unset;
+    }
     /* 上下刊 */
     .radio_style {
         vertical-align: top;
@@ -2283,7 +2300,7 @@
         position: relative;
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-end;
     }
     .up-loader-header>div>span{
         color:rgba(0,0,0,0.85);
@@ -2540,11 +2557,13 @@
         float: left;
         position: relative;
         overflow: hidden;
+        border-radius: 4px;
     }
 
     .upload_img_item {
         width: 100%;
         height: 100%;
+        border-top-right-radius: 6px;
     }
 
     .icon_success {

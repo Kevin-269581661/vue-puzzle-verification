@@ -3,7 +3,7 @@ function getBalance() {
   try {
     switch (JSON.parse(sessionStorage.getItem('session_data')).asrID) {
       case 3:
-        balance = '2,299.8';
+        balance = '3,599.6';
         break;
       case 12:
         balance = '0.00';

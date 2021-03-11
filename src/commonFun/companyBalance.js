@@ -2,10 +2,10 @@ function getBalance() {
   let balance = '1,000'
   try {
     switch (JSON.parse(sessionStorage.getItem('session_data')).asrID) {
-      case 3:
+      case '3':
         balance = '3,599.6';
         break;
-      case 12:
+      case '12':
         balance = '0.00';
         break;
       default:

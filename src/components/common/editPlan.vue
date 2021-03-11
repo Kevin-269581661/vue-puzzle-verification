@@ -440,6 +440,15 @@
                                     </template>
                                 </el-table-column>
                                 <el-table-column
+                                    label="通电情况"
+                                    align="right"
+                                    min-width="110"
+                                    v-if="customPermission.patrolPermission==2">
+                                    <template slot-scope="scope">
+                                        {{ scope.row.electrifyState || '--' }}
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
                                     label="资产编号"
                                     min-width="160"
                                     prop="assetTag"
@@ -665,6 +674,9 @@
                                                         </el-form-item>
                                                         <el-form-item label="通行情况：">
                                                             <span class="shopList_adLimit">{{ props.row.trafficState || '--' }}</span>
+                                                        </el-form-item>
+                                                        <el-form-item label="通电情况：" v-if="customPermission.patrolPermission==2">
+                                                            <span class="shopList_adLimit">{{ props.row.electrifyState || '--' }}</span>
                                                         </el-form-item>
                                                     </el-form>
                                                 </template>
@@ -2064,12 +2076,21 @@
                         timeRange: '',
                     };
                     if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
-                            obj.asName = data.asName
+                        obj.asName = data.asName
                     }
-                    // 无巡点权限(亲粤邻之外的公司)
-                    if(this.customPermission && this.customPermission.patrolPermission) {
-                        obj.remark = data.remark
-                        obj.trafficState = data.trafficState
+                    // 巡点权限
+                    if(this.customPermission) {
+                        switch (this.customPermission.patrolPermission) {
+                            case 1:
+                                obj.remark = data.remark
+                                obj.trafficState = data.trafficState
+                                break;
+                            case 2:
+                                obj.remark = data.remark
+                                obj.trafficState = data.trafficState
+                                obj.electrifyState = data.electrifyState;
+                                break;
+                        }
                     }
                     for(let date of dateArr){
                         if(data.schedules == date.sheetName){
@@ -2286,7 +2307,8 @@
                         checkBox: {A: false, B: false,ABC:false},
                         box: {A: false, B: false},
                         remark: key.remark,
-                        trafficState: key.trafficState
+                        trafficState: key.trafficState,
+                        electrifyState: key.electrifyState
                     }
                     if (key.mVehicle === '道闸') {
                         adObj.adPrice = key.asPrice / 100
@@ -2599,7 +2621,8 @@
                                 houseNum: key.hNum,
                                 buildPrice: key.hPrice/100,
                                 mediaName: key.mTitle || '',
-                                trafficState: key.trafficState ? key.trafficState : '',
+                                trafficState: key.trafficState||'',
+                                electrifyState: key.electrifyState||'',
                                 remark: key.remark ? key.remark : '',
                                 buildNum: key.fNum,
                                 schedules: this.dateInput[0] + '-' + this.dateInput[1],
@@ -4085,6 +4108,7 @@
                     asName: info.asName,
                     remark: info.remark,
                     trafficState: info.trafficState || '',
+                    electrifyState: info.electrifyState || '',
                 }
                 return selectInfo
             },
@@ -4543,6 +4567,7 @@
                         schedules: this.dateInput[0] + '-' + this.dateInput[1],
                         remark: key.remark || "",
                         trafficState: key.trafficState || "",
+                        electrifyState: key.electrifyState || "",
                         tradingArea: key.tradingArea,
                         assetTag: key.assetTag,
                         liveYear: key.chDay,
@@ -5218,6 +5243,7 @@
                                     mediaName: data.mTitle || '',
                                     remark: data.remark || '',
                                     trafficState: data.trafficState || '',
+                                    electrifyState: data.electrifyState || '',
                                     mVehicle: data.mVehicle,
                                     buildNum: data.fNum,
                                     schedules: data.schedules,

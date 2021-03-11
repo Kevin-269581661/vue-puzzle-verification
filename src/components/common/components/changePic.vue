@@ -46,8 +46,16 @@
                 <div>
                     <span>投放排期：</span>
                     <el-select placeholder="请选择投放排期" v-model="publishSearchInfo.dateRange">
-                        <el-option label="全部" value="0"></el-option>
-                        <el-option v-for="(dateRangeItem, rangeIndex) in imageArr" :label="dateRangeItem.timeRange" :value="dateRangeItem.timeRange" :key="rangeIndex"></el-option>
+                        <el-option label="全部" value="全部"></el-option>
+                        <el-option v-for="(dateRangeItem, rangeIndex) in scheduleList" :label="dateRangeItem.text" :value="dateRangeItem.value" :key="rangeIndex"></el-option>
+                    </el-select>
+                </div>
+                <div>
+                    <span>拍照状态：</span>
+                    <el-select placeholder="请选择拍照状态" v-model="publishSearchInfo.prStatus">
+                        <el-option label="全部" value="全部"></el-option>
+                        <el-option label="已拍照" value="1"></el-option>
+                        <el-option label="未拍照" value="0"></el-option>
                     </el-select>
                 </div>
                 <el-button type="primary" @click="searchImg()">搜 索</el-button>
@@ -112,6 +120,14 @@
                                        :value="item.value"></el-option>
                         </el-select>
                     </div>
+                    <div>
+                    <span>拍照状态：</span>
+                    <el-select placeholder="请选择拍照状态" v-model="searchInfo.prStatus">
+                        <el-option label="全部" value="全部"></el-option>
+                        <el-option label="已拍照" value="1"></el-option>
+                        <el-option label="未拍照" value="0"></el-option>
+                    </el-select>
+                </div>
                     <el-button type="primary" @click="search()">搜 索</el-button>
                     <el-button type="plain" @click="resetSearch('hh')">重 置</el-button>
                 </div>
@@ -127,9 +143,15 @@
                                     :content='item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab'
                                     placement="bottom"
                                     v-if='(item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab).length>23'>
-                            <span>{{wordlimit(item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab, 23)}}</span>
+                            <span class="line-first">
+                                {{wordlimit(item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab, 23)}}
+                            <span v-if="item.prStatus" class="photo-record-sign">已拍照</span>
+                            </span>
                         </el-tooltip>
-                        <span v-else>{{item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab}}</span>
+                        <span v-else class="line-first">
+                            {{item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab}}
+                            <span v-if="item.prStatus" class="photo-record-sign">已拍照</span>
+                        </span>
                         <p class="car_header">
                             <el-tooltip class="item" effect="dark" :content="item.assetTag" placement="bottom"
                                         v-if="item.assetTag&&item.assetTag.length>10">
@@ -472,6 +494,10 @@
                 type: Object,
                 // default: {},
             },
+            scheduleList: {
+                type: Array,
+                default: ()=>[]
+            },
             fromType: {
                 type: Boolean,
             },
@@ -502,7 +528,8 @@
                     // 资源列表
                     allResource: [],
                     // 投放排期
-                    dateRange: '0'
+                    dateRange: '全部',
+                    prStatus: '全部'
                 },
 
                 // 上传图片
@@ -542,6 +569,7 @@
                     city: ['全部'],
                     resName: "全部",
                     status: "全部",
+                    prStatus: "全部",
                     // 搜索列表数据
                     // 媒体类型
                     mediaTypeArr: [
@@ -692,6 +720,7 @@
             this.getCitys();
             // 获取资源列表
             this.getResArr();
+            console.log('scheduleList', this.scheduleList)
         },
         watch: {
             fromType(newVal, oldVal) {
@@ -866,7 +895,7 @@
             searchFormat(type) {
                 let {uID, token} = this.sessionData;
                 let {currPage, pageSize} = this.pageInfo;
-                let {mediaType, citySelect, allhouse, allPic, lState, dateRange} = this.publishSearchInfo;
+                let {mediaType, citySelect, allhouse, allPic, lState, dateRange, prStatus} = this.publishSearchInfo;
                 let info = {
                     uid: uID,
                     token: token,
@@ -875,7 +904,8 @@
                     pageNum: currPage,
                     pageSize: pageSize,
                     mVehicle: mediaType,
-                    dateRange: dateRange
+                    time: dateRange=='全部'?'':dateRange,
+                    prStatus: prStatus=='全部'?'':prStatus
                 };
 
                 if (allPic == '2') {
@@ -914,7 +944,7 @@
                         //投放状态
                         lState: '0',
                         // 投放排期
-                        dateRange: '0'
+                        dateRange: '全部'
                     };
 
                 }else{
@@ -924,6 +954,7 @@
                         city: ['全部'],
                         resName: "全部",
                         status: "全部",
+                        prStatus: "全部"
                     }
                 }
                 this.getImgArr();
@@ -1128,11 +1159,12 @@
             // 搜索换画列表条件
             searchPointFormat() {
                 console.log(this.painList, this.activePainIndex, 'point--active--');
-                let {mediaType, city, resName, status} = this.searchInfo;
+                let {mediaType, city, resName, status, prStatus} = this.searchInfo;
                 let {currPage, pageSize} = this.pageInfo;
                 let info = {
                     apId: sessionStorage.getItem('order_apid'),
                     replaceRecordId: this.painList.length ? this.painList[this.activePainIndex].id : '',
+                    prStatus: prStatus=='全部'?'':prStatus,
                     pageNum: currPage,
                     pageSize: pageSize,
                     // ...(mediaType && {mType: mediaType == 1 ? 0 : 1}),
@@ -2286,7 +2318,7 @@
     ;
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
     /deep/ .el-input__icon {
         line-height: unset;
     }
@@ -2299,8 +2331,15 @@
     .up-loader-header {
         position: relative;
         display: flex;
-        justify-content: space-between;
+        flex-flow: row wrap;
         align-items: flex-end;
+        & > div {
+            margin-bottom: 12px;
+            margin-right: 32px;
+        }
+        & > button {
+            margin-bottom: 12px;
+        }
     }
     .up-loader-header>div>span{
         color:rgba(0,0,0,0.85);
@@ -2492,6 +2531,18 @@
         font-size: 14px;
         color: #666666;
         background: rgba(247, 247, 247, 1);
+        .line-first {
+            display: flex;
+            .photo-record-sign {
+                margin-left: auto;
+                padding: 2px 6px;
+                line-height: 16px;
+                font-size: 12px;
+                border-radius: 2px;
+                color: #1890FF;
+                background: rgba(24, 144, 255, 0.1);
+            }
+        }
     }
 
     .detail_top p {

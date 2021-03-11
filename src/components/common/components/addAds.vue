@@ -1552,6 +1552,9 @@
 </script>
 
 <style scoped>
+    .otherSelect /deep/ .el-input__icon {
+        line-height: unset;
+    }
     /deep/ .el-table__fixed,/deep/ .el-table__fixed-right{
         height: 535px !important;
     }
@@ -1757,7 +1760,9 @@
         line-height: 14px;
         font-weight: bold;
     }
-
+    .adDoor .el-checkbox {
+        margin-right: 0;
+    }
     /deep/ .el-checkbox + .el-checkbox {
         margin-left: 4px;
     }
@@ -1850,24 +1855,9 @@
         border-top-left-radius: 0px;
         border-bottom-left-radius: 0px;
     }
-    /*   /deep/ .plan-select .el-input__suffix{
-           right: 12px;
-       }*/
     /deep/ .type-select .el-input__suffix{
         right: 3px;
     }
-    /deep/ .el-date-editor .el-range__icon {
-        position: relative;
-        top: -2px;
-        left: -3px;
-    }
-
-    /* /deep/ .search-wrap > span {
-        float: left;
-        margin-left: 2px;
-    } */
-
-
     /*日期控件*/
     .block {
         display: inline-block;
@@ -1878,7 +1868,7 @@
 
     /deep/ .el-date-editor .el-range__icon {
         position: relative;
-        top: -3px;
+        top: 1px;
         margin-right: 2px;
     }
 

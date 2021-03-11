@@ -3402,7 +3402,8 @@
                             mapCenter: centerArr.join(';'),
                             asNames: data.asNames,
                             allRemark: data.allRemark,
-                            allTrafficState: data.allTrafficState
+                            allTrafficState: data.allTrafficState,
+                            allElectrifyState: data.allElectrifyState||''
                         };
                         if(this.systemSource === 0) {
                             obj.city = this.routeQuery.city
@@ -3426,9 +3427,15 @@
                                 tHeader.push('归属公司')
                                 filterVal.push('asNames');
                             }
-                            if(this.sessionData.customPermission.patrolPermission) {
-                                tHeader.push('巡点问题', '通行情况');
-                                filterVal.push('allRemark', 'allTrafficState')
+                            switch (this.sessionData.customPermission.patrolPermission) {
+                                case 1:
+                                    tHeader.push('巡点问题', '通行情况');
+                                    filterVal.push('allRemark', 'allTrafficState')
+                                    break;
+                                case 2:
+                                    tHeader.push('巡点问题', '通行情况', '通电情况');
+                                    filterVal.push('allRemark', 'allTrafficState', 'allElectrifyState')
+                                    break;
                             }
                         }
                         const list = resultArr;

@@ -147,6 +147,18 @@
                             </template>
                         </el-table-column>
                         <el-table-column
+                            prop="electrifyState"
+                            label="通电情况"
+                            min-width="170"
+                            class="tar"
+                            :show-overflow-tooltip="true"
+                            v-if="customPermission.patrolPermission==2"
+                        >
+                            <template slot-scope="scope">
+                                <span>{{scope.row.electrifyState||'--'}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
                             prop="issueRecord"
                             label="问题记录"
                             min-width="170"
@@ -405,6 +417,7 @@
                     assetTag: '资产编号',
                     issueRecord: '问题记录',
                     trafficState: '通行情况',
+                    electrifyState: '通电情况',
                     feedback:'处理记录'
                 }],
                 //所在区域
@@ -794,7 +807,8 @@
                     mediaName: item.mTitle,
                     cityName: item.cityName,
                     area: item.districtName,
-                    trafficState: item.trafficState ? item.trafficState : '--',
+                    trafficState: item.trafficState || '--',
+                    electrifyState: item.electrifyState || '--',
                     issueRecord: item.remark ? item.remark : '--',
                     feedback: item.feedback ? item.feedback : '--',
                     updateTime: item.updateTime ? item.updateTime : '---',

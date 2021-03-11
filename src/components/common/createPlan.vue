@@ -587,6 +587,15 @@
                                     </template>
                                 </el-table-column>
                                 <el-table-column
+                                    v-if="customPermission.patrolPermission==2"
+                                    label="通电情况"
+                                    align="right"
+                                    min-width="110">
+                                    <template slot-scope="scope">
+                                        {{ scope.row.electrifyState || '--' }}
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
                                     label="资产编号"
                                     min-width="160"
                                     prop="assetTag"
@@ -809,6 +818,11 @@
                                                     <el-form-item label="通行情况：">
                                                         <div class="shopList_adLimit">
                                                             <span>{{ props.row.trafficState }}</span>
+                                                        </div>
+                                                    </el-form-item>
+                                                    <el-form-item label="通电情况：" v-if="customPermission.patrolPermission==2">
+                                                        <div class="shopList_adLimit">
+                                                            <span>{{ props.row.electrifyState }}</span>
                                                         </div>
                                                     </el-form-item>
                                                 </el-form>
@@ -2030,9 +2044,18 @@
                             obj.asNames = item.asNames
                         }
                         // 巡点定制
-                        if(customPermission && customPermission.patrolPermission) {
-                            obj.allRemark = item.allRemark
-                            obj.allTrafficState = item.allTrafficState
+                        if(customPermission) {
+                            switch (customPermission.patrolPermission) {
+                                case 1:
+                                    obj.allRemark = item.allRemark;
+                                    obj.allTrafficState = item.allTrafficState;
+                                    break;
+                                case 2:
+                                    obj.allRemark = item.allRemark;
+                                    obj.allTrafficState = item.allTrafficState;
+                                    obj.allElectrifyState = item.allElectrifyState;
+                                    break;
+                            }
                         }
                         obj[this.emptyRange[0] + '-' + this.emptyRange[1]] = item.DateInfo.adsNum || 0
                         resObj.showList.push(obj);
@@ -2183,9 +2206,18 @@
                                 obj.asNames = item.asNames
                             }
                             let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
-                            if(customPermission && customPermission.patrolPermission) {
-                                obj.allRemark = item.allRemark;
-                                obj.allTrafficState = item.allTrafficState;
+                            if(customPermission) {
+                                switch (customPermission.patrolPermission) {
+                                    case 1:
+                                        obj.allRemark = item.allRemark;
+                                        obj.allTrafficState = item.allTrafficState;
+                                        break;
+                                    case 2:
+                                        obj.allRemark = item.allRemark;
+                                        obj.allTrafficState = item.allTrafficState;
+                                        obj.allElectrifyState = item.allElectrifyState;
+                                        break;
+                                }
                             }
                             let showData = item.DateInfo.sort(this.sortDate);
                             for (let date of showData) {
@@ -2722,10 +2754,19 @@
                     if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
                         obj.asName = data.asName
                     }
-                    // 巡点权限(亲粤邻)
-                    if(this.customPermission && this.customPermission.patrolPermission) {
-                        obj.remark = data.remark
-                        obj.trafficState = data.trafficState
+                    // 巡点权限(1：亲粤邻 2：北京)
+                    if(this.customPermission) {
+                        switch (this.customPermission.patrolPermission) {
+                            case 1:
+                                obj.remark = data.remark
+                                obj.trafficState = data.trafficState
+                                break;
+                            case 2:
+                                obj.remark = data.remark
+                                obj.trafficState = data.trafficState
+                                obj.allElectrifyState = data.allElectrifyState;
+                                break;
+                        }
                     }
                     for (let date of dateArr) {
                         if (data.schedules == date.sheetName) {
@@ -3261,8 +3302,9 @@
                         peopleFlow: key.peopleFlow,
                         buildNum: key.fNum,
                         schedules: this.dateInput[0] + '-' + this.dateInput[1],
-                        remark: key.remark || '--',            // 巡点定制（亲粤邻）
-                        trafficState: key.trafficState || '--',    // 巡点定制（亲粤邻）
+                        remark: key.remark || '--',            // 巡点定制
+                        trafficState: key.trafficState || '--',    // 巡点定制
+                        electrifyState: key.electrifyState || '--',    // 巡点定制
                         tradingArea: key.tradingArea || '',
                         assetTag: key.assetTag || '',
                         liveYear: key.chDay,
@@ -3644,8 +3686,9 @@
                                 houseNum: key.hNum,
                                 buildPrice: key.hPrice / 100,
                                 mediaName: key.mTitle,
-                                remark: key.remark || '--',          // 巡点定制（亲粤邻）
-                                trafficState: key.trafficState || '--',  // 巡点定制（亲粤邻）
+                                remark: key.remark || '--',          // 巡点定制
+                                trafficState: key.trafficState || '--',  // 巡点定制
+                                electrifyState: key.electrifyState || '--',  // 巡点定制
                                 buildNum: key.fNum,
                                 schedules: this.dateInput[0] + '-' + this.dateInput[1],
                                 tradingArea: key.tradingArea,
@@ -4501,8 +4544,9 @@
                         mVehicle: key.mVehicle,
                         buildNum: key.fNum,
                         schedules: this.dateInput[0] + '-' + this.dateInput[1],
-                        remark: key.remark || '--',          // 巡点定制（亲粤邻）
-                        trafficState: key.trafficState || '--',  // 巡点定制（亲粤邻）
+                        remark: key.remark || '--',          // 巡点定制
+                        trafficState: key.trafficState || '--',  // 巡点定制
+                        electrifyState: key.electrifyState || '--',  // 巡点定制
                         tradingArea: key.tradingArea,
                         assetTag: key.assetTag,
                         liveYear: key.chDay,
@@ -5213,8 +5257,9 @@
                     mediaRemark: info.mediaRemark,
                     buildNum: info.buildNum,
                     schedules: info.schedules,
-                    remark: info.remark || '--',            // 巡点定制（亲粤邻）
-                    trafficState: info.trafficState || '--',    // 定制巡点（亲粤邻）
+                    remark: info.remark || '--',            // 巡点定制
+                    trafficState: info.trafficState || '--',    // 定制巡点
+                    electrifyState: info.electrifyState || '--',    // 定制巡点
                     tradingArea: info.tradingArea,
                     assetTag: info.assetTag,
                     liveYear: info.liveYear,

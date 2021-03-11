@@ -249,9 +249,18 @@ export default {
                     }
                     let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
                     // (定制巡点)
-                    if(customPermission && customPermission.patrolPermission) {
-                        obj.allRemark = item.allRemark
-                        obj.allTrafficState = item.allTrafficState
+                    if(customPermission) {
+                        switch (customPermission.patrolPermission) {
+                            case 1:
+                                obj.allRemark = item.allRemark
+                                obj.allTrafficState = item.allTrafficState
+                                break;
+                            case 2:
+                                obj.allRemark = item.allRemark
+                                obj.allTrafficState = item.allTrafficState
+                                obj.allElectrifyState = item.allElectrifyState
+                                break;
+                        }
                     }
                     obj[this.downLoadInfo.daterange[0]+'-'+this.downLoadInfo.daterange[1]] = item.DateInfo.adsNum || 0
                     resObj.showList.push(obj);
@@ -392,9 +401,18 @@ export default {
                             obj.asNames = item.asNames
                         }
                         let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
-                        if(customPermission && customPermission.patrolPermission) {
-                            obj.allRemark = item.allRemark;
-                            obj.allTrafficState = item.allTrafficState;
+                        if(customPermission) {
+                            switch (customPermission.patrolPermission) {
+                                case 1:
+                                    obj.allRemark = item.allRemark;
+                                    obj.allTrafficState = item.allTrafficState;
+                                    break;
+                                case 2:
+                                    obj.allRemark = item.allRemark;
+                                    obj.allTrafficState = item.allTrafficState;
+                                    obj.allElectrifyState = item.allElectrifyState
+                                    break;
+                            }
                         }
                         let showData = item.DateInfo.sort(this.sortDate);
                         // console.log('showData',showData)
@@ -515,9 +533,18 @@ export default {
                             obj.asName = item.asName
                         }
                         let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
-                        if(customPermission && customPermission.patrolPermission) {
-                            obj.remark = item.remark || ''
-                            obj.trafficState = item.trafficState || ''
+                        if(customPermission) {
+                            switch (customPermission.patrolPermission) {
+                                case 1:
+                                    obj.remark = item.remark || ''
+                                    obj.trafficState = item.trafficState || ''
+                                    break;
+                                case 2:
+                                    obj.remark = item.remark || ''
+                                    obj.trafficState = item.trafficState || ''
+                                    obj.electrifyState = item.electrifyState || ''
+                                    break;
+                            }
                         }
                         resObj.showList.push(obj);
                     }

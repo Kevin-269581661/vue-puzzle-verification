@@ -19,7 +19,8 @@
       <el-date-picker
         v-model="dateValue"
         type="date"
-        placeholder="选择日期"
+        placeholder="请选择投放结束日期"
+        value-format="yyyy-MM-dd"
         :picker-options="pickerOptions"
       >
       </el-date-picker>
@@ -50,19 +51,19 @@
         </el-table-column>
         <el-table-column prop="district" label="区县" min-width="6%">
         </el-table-column>
-        <el-table-column prop="mediaName" label="媒体名称" min-width="6%">
+        <el-table-column prop="mTitle" label="媒体名称" min-width="6%">
         </el-table-column>
-        <el-table-column prop="district" label="投放面" min-width="6%">
+        <el-table-column prop="asLab" label="投放面" min-width="3%">
         </el-table-column>
-        <el-table-column prop="district" label="资产编号" min-width="6%">
+        <el-table-column prop="assetTag" label="资产编号" min-width="6%">
         </el-table-column>
-        <el-table-column prop="district" label="排期" min-width="6%">
+        <el-table-column prop="date" label="排期" min-width="6%">
         </el-table-column>
         <el-table-column
-          prop="recommendReason"
+          prop="failReason"
           label="失败原因"
           show-overflow-tooltip
-          min-width="6%"
+          min-width="10%"
         >
         </el-table-column>
       </el-table>
@@ -80,6 +81,7 @@
       >
       </el-pagination> -->
       <span slot="footer">
+        <el-button plain @click="export2Excel" :disabled="isDown">下载表格</el-button>
         <el-button plain @click="dialogErrorPoint = false">关闭</el-button>
       </span>
     </el-dialog>
@@ -124,6 +126,8 @@ export default {
           return time.getTime() <= Date.now();
         },
       },
+      isDown: false,
+      uploadLoading: false
     };
   },
   computed: {},
@@ -140,14 +144,7 @@ export default {
     // 取消
     cancel() {
       this.dialogShow = false;
-    },
-    // 导入模版下载
-    dowmLoadFun(event) {
-      // 阻止冒泡事件
-      event.stopPropagation();
-    },
-    importUploadFile(file, fileList) {
-      this.importFileData = [file];
+      this.uploadLoading = false;
     },
     /* handleSizeChange(val) {
       this.recommendationPageSize = val;
@@ -155,10 +152,6 @@ export default {
     handleCurrentChange(val) {
       this.recommendationCurrentPage = val;
     }, */
-    importFileRemove(file, fileList) {
-      console.log(file, fileList);
-      this.importFileData = fileList;
-    },
     beforeCommit() {
       this.dialogShow = false;
       this.$confirm(
@@ -177,103 +170,94 @@ export default {
         .catch(() => {});
     },
     commit() {
-      const h = this.$createElement;
-      this.$msgbox({
-        title: "",
-        message: h("p", null, [
-          h(
-            "span",
-            {
-              style:
-                "color: rgba(0, 0, 0, 0.85); font-size: 16px; font-weight: 600;",
-            },
-            "成功更改 "
-          ),
-          h(
-            "span",
-            { style: "color: #1890FF; font-size: 16px; font-weight: 600;" },
-            "30"
-          ),
-          h(
-            "span",
-            {
-              style:
-                "color: rgba(0, 0, 0, 0.85); font-size: 16px; font-weight: 600;",
-            },
-            "  个点位的排期"
-          ),
-        ]),
-        type: "success",
-        showClose: false,
-        confirmButtonText: "好 的",
-      }).then((action) => {
-        this.dialogErrorPoint = true;
-      });
-      /* const h = this.$createElement;
-      this.$msgbox({
-        title: "",
-        message: h("p", null, [
-          h("span", null, "成功导入 "),
-          h("span", { style: "color: #1890FF" }, "30"),
-          h("span", null, " 个点位,"),
-          h("span", null, " 问题点位 "),
-          h("span", { style: "color: #FA8C16" }, "30"),
-          h("span", null, " 个"),
-        ]),
-        type: "warning",
-        showClose: false,
-        showCancelButton: true,
-        distinguishCancelAndClose: true,
-        confirmButtonText: "好 的",
-        cancelButtonText: "失败点位",
-        beforeClose: (action, instance, done) => {
-          if (action === "confirm") {
-            instance.confirmButtonLoading = true;
-            instance.confirmButtonText = "执行中...";
-            setTimeout(() => {
-              done();
-              setTimeout(() => {
-                instance.confirmButtonLoading = false;
-              }, 300);
-            }, 3000);
-          } else {
-            done();
-          }
-        },
-      })
-        .then((action) => {
-          this.$message({
-            type: "info",
-            message: "action: " + action,
-          });
-        })
-        .catch((action) => {
-          if (action === "cancel") {
-            this.$message({
-              type: "info",
-              message: "查看失败点位",
-            });
-          }
-        }); */
-      return;
-
-      if (
-        Array.isArray(this.importFileData) &&
-        this.importFileData.length == 0
-      ) {
-        this.$message.warning("请先上传excel文件哦~");
-        return;
-      }
-      let formData = new FormData();
-      formData.append("file", this.importFileData[0].raw);
-      // 上传文件
+      let info = {
+        apID : sessionStorage.getItem("order_apid"),
+        lIDs: this.changeList.map(item=>item.lID).join(','),
+        mark: new Date().getTime(),
+        endDate: this.dateValue,
+      };
       this.uploadLoading = true;
       api
-        .postUpload_file(this.importAction + "?apID=404", formData)
+        .postApi(this.apiVar.Advertisement + "/ChangeAdLaunch", info)
         .then((res) => {
           if (res.data.SysCode == 200200) {
-            this.recommendationInnerModal = false;
-            this.showRecommendation();
+            let resData = res.data.data;
+            if(resData.sucessNum>0) {
+              // 刷新换点表格
+              this.refreshChangePointList()
+            }
+            if(resData.errorNum>0) {
+              const h = this.$createElement;
+              this.$msgbox({
+                title: "",
+                message: h("p", null, [
+                  h("span", null, "成功更改 "),
+                  h("span", { style: "color: #1890FF" }, resData.sucessNum||0),
+                  h("span", null, " 个点位的排期, "),
+                  h("span", { style: "color: #FA8C16" }, resData.errorNum||0),
+                  h("span", null, " 个"),
+                  h("span", null, "失败")
+                ]),
+                type: "warning",
+                showClose: false,
+                showCancelButton: true,
+                distinguishCancelAndClose: true,
+                confirmButtonText: "好 的",
+                cancelButtonText: "失败点位",
+                beforeClose: (action, instance, done) => {
+                  if(action === "confirm") {
+                    done();
+                  } else {
+                    instance.cancelButtonLoading = true;
+                    instance.cancelButtonText = "执行中...";
+                    setTimeout(() => {
+                      instance.cancelButtonLoading = false;
+                      done();
+                    }, 300);
+                  }
+                },
+              })
+                .then((action) => {
+                })
+                .catch((action) => {
+                  if (action === "cancel") {
+                    this.errorPointList = resData.errorList || []
+                    this.dialogErrorPoint = true
+                  }
+                });
+            } else if(resData.sucessNum>0) {
+              const h = this.$createElement;
+              this.$msgbox({
+                title: "",
+                message: h("p", null, [
+                  h(
+                    "span",
+                    {
+                      style:
+                        "color: rgba(0, 0, 0, 0.85); font-size: 16px; font-weight: 600;",
+                    },
+                    "成功更改 "
+                  ),
+                  h(
+                    "span",
+                    { style: "color: #1890FF; font-size: 16px; font-weight: 600;" },
+                    resData.sucessNum||0
+                  ),
+                  h(
+                    "span",
+                    {
+                      style:
+                        "color: rgba(0, 0, 0, 0.85); font-size: 16px; font-weight: 600;",
+                    },
+                    "  个点位的排期"
+                  ),
+                ]),
+                type: "success",
+                showClose: false,
+                confirmButtonText: "好 的",
+              }).then((action) => {
+              })
+            }
           } else {
             this.$message.warning(res.data.MSG);
           }
@@ -285,39 +269,14 @@ export default {
           this.uploadLoading = false;
         });
     },
+    // 刷新更换点位表格
+    refreshChangePointList() {
+      this.$emit('refreshCurrentTable')
+    },
     // 导出失败excel
-    export2Excel(name) {
+    export2Excel() {
       this.isDown = true;
       let resultArr = [];
-      /* for (let data of this.setpointArr) {
-        let obj = {
-          resName: data.resName,
-          city: data.city,
-          rName: data.rName,
-          mVehicle: data.mVehicle,
-          mTitle: data.mTitle,
-          asLab: data.asLab,
-          timeRange: data.timeRange,
-          finishTimeRange: data.finishTimeRange,
-          assetTag: data.assetTag,
-          tradingArea: data.tradingArea,
-          cType: data.cType,
-          hPrice: data.hPrice / 100,
-          hNum: data.hNum == "0" ? "#" : data.hNum,
-          fNum: data.fNum == "0" ? "#" : data.fNum,
-          chDay: data.chDay,
-          adSize: data.mVehicle == "广告门" ? data.adSize : data.picSize,
-          adViewSize:
-            data.mVehicle == "广告门" ? data.adViewSize : data.lightBoxSize,
-          notPush: data.notPush,
-          mRemark: data.mRemark,
-          resAddress: data.resAddress,
-          remark: data.remark,
-          trafficState: data.trafficState,
-          asName: data.asName,
-        };
-        resultArr.push(obj);
-      } */
       require.ensure([], () => {
         const {
           export_json_to_excel,
@@ -335,25 +294,23 @@ export default {
         const filterVal = [
           "resName",
           "city",
-          "tradingArea",
-          "rName",
+          "district",
+          "mTitle",
           "asLab",
-          "timeRange",
-          "reason",
+          "assetTag",
+          "date",
+          "failReason"
         ];
 
         const list = resultArr;
         const data = this.formatJson(filterVal, list);
-        export_json_to_excel(tHeader, data, name);
+        export_json_to_excel(tHeader, data, '排期更改失败点位');
         this.isDown = false;
       });
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map((v) => filterVal.map((j) => v[j]));
     },
-    /* getSessionData() {
-      this.sessionData = JSON.parse(sessionStorage.getItem("session_data"));
-    }, */
   },
 };
 </script>

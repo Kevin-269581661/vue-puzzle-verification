@@ -123,31 +123,18 @@
                                                 <el-form-item label="通行情况：">
                                                     <span class="ellipsis-td">{{ props.row.trafficState || '--' }}</span>
                                                 </el-form-item>
+                                                <el-form-item label="通电情况：">
+                                                    <span class="ellipsis-td">{{ props.row.electrifyState || '--' }}</span>
+                                                </el-form-item>
                                             </el-form>
                                         </template>
                                     </el-table-column>
                                     <el-table-column label="资源名称" min-width="16.1%" class-name="resName-wrap">
                                         <template slot-scope="scope">
                                             <div style="float:left;position: absolute;left: 0;top: 0">
-                                                <!--<el-popover v-show="scope.row.isNew"-->
-                                                <!--placement="top-start"-->
-                                                <!--title="新增时间"-->
-                                                <!--width="200"-->
-                                                <!--trigger="hover"-->
-                                                <!--:content="formatToTime(scope.row.lSetTime)">-->
-                                                <!--<span slot="reference" style="font-size: 18px;color: red">*</span>-->
                                                 <div v-if="scope.row.isNew" slot="reference" class="color-line"></div>
-                                                <!--</el-popover>-->
-                                                <!--<el-popover v-show="scope.row.lState==2"-->
-                                                <!--placement="top-start"-->
-                                                <!--title="终止时间"-->
-                                                <!--width="200"-->
-                                                <!--trigger="hover"-->
-                                                <!--:content="formatToTime(scope.row.lSetTime)">-->
-                                                <!--<span slot="reference" style="font-size: 18px;color: red">*</span>-->
-                                                <div v-if="scope.row.lState==2" slot="reference" class="color-line"
-                                                     style="background-color: #FF763B"></div>
-                                                <!--</el-popover>-->
+                                                <div v-if="scope.row.lState==2" slot="reference" class="color-line" style="background-color: #FF763B"></div>
+                                                <div v-if="scope.row.lState==2" slot="reference" class="color-line" style="background-color: #26D8BB"></div>
                                             </div>
                                             <span>{{scope.row.resName||'--'}}</span>
                                         </template>
@@ -209,6 +196,7 @@
                                     <div style="display: flex">
                                         <p><span style="background-color: #1890ff" class="color-line"></span>新增点位</p>
                                         <p><span style="background-color: #FF763B" class="color-line"></span>终止点位</p>
+                                        <p><span style="background-color: #26D8BB" class="color-line"></span>更改排期</p>
                                     </div>
                                     <div class="ad_pagination" v-if="total">
                                         <el-pagination
@@ -240,12 +228,12 @@
                     </el-tab-pane>
                     <el-tab-pane label="上刊报告" name="forth" :disabled="usableBtn||role =='OP'">
                         <div class="changepic_box" v-if="planPanel=='forth'">
-                            <change-pic :type="1" :order-detail="orderDetail"></change-pic>
+                            <change-pic :type="1" :order-detail="orderDetail" :scheduleList="scheduleList"></change-pic>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane label="下刊报告" name="fifth" :disabled="usableBtn||role =='OP'">
                         <div class="changepic_box" v-if="planPanel=='fifth'">
-                            <change-pic :type="2" :order-detail="orderDetail"></change-pic>
+                            <change-pic :type="2" :order-detail="orderDetail" :scheduleList="scheduleList"></change-pic>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane label="换画报告" name="sixth" v-if="showPain">
@@ -273,9 +261,9 @@
                     </span>
                 </el-dialog>
                 <!--excel导入点位对话框-->
-                <import-point-by-excel :dialogImportPoint="dialogImportPoint" @resetDialogImportPoint="resetDialogImportPoint"></import-point-by-excel>
+                <import-point-by-excel :dialogImportPoint="dialogImportPoint" @resetDialogImportPoint="resetDialogImportPoint" @refreshCurrentTable="refreshCurrentTable"></import-point-by-excel>
                 <!-- 更改排期对话框 -->
-                <changePointPlayDateRange :changeRangeDialog="changeRangeDialog" :changeList="changePointInfo.stopPointlist" @resetDialogChangeRange="resetDialogChangeRange"></changePointPlayDateRange>
+                <changePointPlayDateRange :changeRangeDialog="changeRangeDialog" :changeList="changePointInfo.stopPointlist" @resetDialogChangeRange="resetDialogChangeRange" @refreshCurrentTable="refreshCurrentTable"></changePointPlayDateRange>
                 <!-- 图片查看显示 -->
                 <el-dialog :visible.sync="dialogVisible" class="imgPreview" top="10vh">
                     <img :src="dialogImageUrl" alt=""/>
@@ -378,6 +366,9 @@
                                                 </el-form-item>
                                                 <el-form-item label="通行情况:">
                                                     <span class="ellipsis-td">{{ props.row.trafficState || '--' }}</span>
+                                                </el-form-item>
+                                                <el-form-item label="通电情况:">
+                                                    <span class="ellipsis-td">{{ props.row.electrifyState || '--' }}</span>
                                                 </el-form-item>
                                             </template>
                                         </el-form>
@@ -581,13 +572,13 @@
                                             label="变更类型"
                                             min-width="6%">
                                             <template slot-scope="scope">
-                                                {{scope.row.type==1?'新增点位':'终止点位'}}
+                                                {{item.opType==3?'更改排期':scope.row.type==1?'新增点位':'终止点位'}}
                                             </template>
                                         </el-table-column>
                                         <el-table-column
                                             prop="resName"
                                             label="资源名称"
-                                            min-width="15%">
+                                            min-width="10%">
                                         </el-table-column>
                                         <el-table-column
                                             prop="mTitle"
@@ -607,6 +598,16 @@
                                         <el-table-column
                                             prop="district"
                                             label="区域"
+                                            min-width="6%">
+                                        </el-table-column>
+                                        <el-table-column
+                                            prop="preLaunch"
+                                            label="原排期"
+                                            min-width="6%">
+                                        </el-table-column>
+                                        <el-table-column
+                                            prop="newLaunch"
+                                            label="新排期"
                                             min-width="6%">
                                         </el-table-column>
                                     </el-table>
@@ -1163,6 +1164,7 @@
                         resAddress: data.resAddress,
                         remark: data.remark,
                         trafficState: data.trafficState,
+                        electrifyState: data.electrifyState,
                     };
                     resultArr.push(obj);
                 }
@@ -1175,9 +1177,15 @@
                         tHeader.push('归属公司');
                         filterVal.push('asName')
                     }
-                    if(this.customPermission.patrolPermission) {
-                        tHeader.push('巡点问题', '通行情况');
-                        filterVal.push('remark', 'trafficState')
+                    switch (this.customPermission.patrolPermission) {
+                        case 1:
+                            tHeader.push('巡点问题', '通行情况');
+                            filterVal.push('remark', 'trafficState')
+                            break;
+                        case 2:
+                            tHeader.push('巡点问题', '通行情况', '通电情况');
+                            filterVal.push('remark', 'trafficState', 'electrifyState')
+                            break;
                     }
                     const list = resultArr;
                     const data = this.formatJson(filterVal, list);
@@ -1881,6 +1889,9 @@
             },
             resetDialogImportPoint() {
                 this.dialogImportPoint = false
+            },
+            refreshCurrentTable() {
+                this.changePoint()
             },
             resetDialogChangeRange() {
                 this.changeRangeDialog = false

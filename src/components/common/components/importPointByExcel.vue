@@ -51,7 +51,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button plain @click="cancelImport">取 消</el-button>
-        <el-button type="primary" @click="commitFile">提 交</el-button>
+        <el-button type="primary" :loading="uploadLoading" @click="commitFile">提 交</el-button>
       </span>
     </el-dialog>
     <!-- 问题点位表格 -->
@@ -76,19 +76,19 @@
         </el-table-column>
         <el-table-column prop="district" label="区县" min-width="6%">
         </el-table-column>
-        <el-table-column prop="mediaName" label="媒体名称" min-width="6%">
+        <el-table-column prop="mTitle" label="媒体名称" min-width="6%">
         </el-table-column>
-        <el-table-column prop="district" label="投放面" min-width="6%">
+        <el-table-column prop="asLab" label="投放面" min-width="3%">
         </el-table-column>
-        <el-table-column prop="district" label="资产编号" min-width="6%">
+        <el-table-column prop="assetTag" label="资产编号" min-width="6%">
         </el-table-column>
-        <el-table-column prop="district" label="排期" min-width="6%">
+        <el-table-column prop="date" label="排期" min-width="6%">
         </el-table-column>
         <el-table-column
-          prop="recommendReason"
+          prop="failReason"
           label="失败原因"
           show-overflow-tooltip
-          min-width="6%"
+          min-width="10%"
         >
         </el-table-column>
       </el-table>
@@ -106,7 +106,7 @@
       >
       </el-pagination> -->
       <span slot="footer">
-        <el-button plain @click="cancelImport">下载表格</el-button>
+        <el-button plain @click="export2Excel" :disabled="isDown">下载表格</el-button>
         <el-button plain @click="dialogErrorPoint = false">关闭</el-button>
       </span>
     </el-dialog>
@@ -117,7 +117,6 @@
 // 时间格式化
 import timeFormat from "../../../commonFun/timeFormat.js";
 import { api } from "../../../api/api.js";
-// excel导出
 // import sheetExcel from "../../../commonFun/sheetExcel.js";
 
 export default {
@@ -139,8 +138,11 @@ export default {
       successList: [],
       // 失败小区数据
       errorList: [],
-      importAction: "/advertisement/RecommendReasonImport",
+      importAction: "/advertisement/UpdateOrderAdsWithExcel",
       importFileData: [],
+      // 失败点位下载按钮状态
+      isDown: false,
+      uploadLoading: false
     };
   },
   computed: {},
@@ -158,10 +160,10 @@ export default {
     // 取消导入
     cancelImport() {
       this.dialogImport = false;
+      this.uploadLoading = false;
     },
-    // 导入模版下载
+    // 导入模版下载, 阻止冒泡事件
     dowmLoadFun(event) {
-      // 阻止冒泡事件
       event.stopPropagation();
     },
     importUploadFile(file, fileList) {
@@ -178,86 +180,6 @@ export default {
       this.importFileData = fileList;
     },
     commitFile() {
-      const h = this.$createElement;
-      this.$msgbox({
-        title: "",
-        message: h("p", null, [
-          h(
-            "span",
-            {
-              style:
-                "color: rgba(0, 0, 0, 0.85); font-size: 16px; font-weight: 600;",
-            },
-            "成功导入 "
-          ),
-          h(
-            "span",
-            { style: "color: #1890FF; font-size: 16px; font-weight: 600;" },
-            "30"
-          ),
-          h(
-            "span",
-            {
-              style:
-                "color: rgba(0, 0, 0, 0.85); font-size: 16px; font-weight: 600;",
-            },
-            " 个点位"
-          ),
-        ]),
-        type: "success",
-        showClose: false,
-        confirmButtonText: "好 的",
-      }).then((action) => {
-        this.dialogErrorPoint = true;
-      });
-      /* const h = this.$createElement;
-      this.$msgbox({
-        title: "",
-        message: h("p", null, [
-          h("span", null, "成功导入 "),
-          h("span", { style: "color: #1890FF" }, "30"),
-          h("span", null, " 个点位,"),
-          h("span", null, " 问题点位 "),
-          h("span", { style: "color: #FA8C16" }, "30"),
-          h("span", null, " 个"),
-        ]),
-        type: "warning",
-        showClose: false,
-        showCancelButton: true,
-        distinguishCancelAndClose: true,
-        confirmButtonText: "好 的",
-        cancelButtonText: "失败点位",
-        beforeClose: (action, instance, done) => {
-          if (action === "confirm") {
-            instance.confirmButtonLoading = true;
-            instance.confirmButtonText = "执行中...";
-            setTimeout(() => {
-              done();
-              setTimeout(() => {
-                instance.confirmButtonLoading = false;
-              }, 300);
-            }, 3000);
-          } else {
-            done();
-          }
-        },
-      })
-        .then((action) => {
-          this.$message({
-            type: "info",
-            message: "action: " + action,
-          });
-        })
-        .catch((action) => {
-          if (action === "cancel") {
-            this.$message({
-              type: "info",
-              message: "查看失败点位",
-            });
-          }
-        }); */
-      return;
-
       if (
         Array.isArray(this.importFileData) &&
         this.importFileData.length == 0
@@ -270,11 +192,86 @@ export default {
       // 上传文件
       this.uploadLoading = true;
       api
-        .postUpload_file(this.importAction + "?apID=404", formData)
+        .postUpload_file(this.importAction + '?apID=' + sessionStorage.getItem("order_apid") + '&mark=' + new Date().getTime(), formData)
         .then((res) => {
           if (res.data.SysCode == 200200) {
-            this.recommendationInnerModal = false;
-            this.showRecommendation();
+            let resData = res.data.data;
+            if(resData.sucessNum>0) {
+              // 刷新换点表格
+              this.refreshChangePointList()
+            }
+            if(resData.errorNum>0) {
+              const h = this.$createElement;
+              this.$msgbox({
+                title: "",
+                message: h("p", null, [
+                  h("span", null, "成功导入 "),
+                  h("span", { style: "color: #1890FF" }, resData.sucessNum||0),
+                  h("span", null, " 个点位,"),
+                  h("span", null, " 问题点位 "),
+                  h("span", { style: "color: #FA8C16" }, resData.errorNum||0),
+                  h("span", null, " 个"),
+                ]),
+                type: "warning",
+                showClose: false,
+                showCancelButton: true,
+                distinguishCancelAndClose: true,
+                confirmButtonText: "好 的",
+                cancelButtonText: "失败点位",
+                beforeClose: (action, instance, done) => {
+                  if(action === "confirm") {
+                    done();
+                  } else {
+                    instance.cancelButtonLoading = true;
+                    instance.cancelButtonText = "执行中...";
+                    setTimeout(() => {
+                      instance.cancelButtonLoading = false;
+                      done();
+                    }, 300);
+                  }
+                },
+              })
+                .then((action) => {
+                })
+                .catch((action) => {
+                  if (action === "cancel") {
+                    this.errorPointList = resData.errorList || []
+                    this.dialogErrorPoint = true
+                  }
+                });
+            } else if(resData.sucessNum>0) {
+              const h = this.$createElement;
+              this.$msgbox({
+                title: "",
+                message: h("p", null, [
+                  h(
+                    "span",
+                    {
+                      style:
+                        "color: rgba(0, 0, 0, 0.85); font-size: 16px; font-weight: 600;",
+                    },
+                    "成功导入 "
+                  ),
+                  h(
+                    "span",
+                    { style: "color: #1890FF; font-size: 16px; font-weight: 600;" },
+                    resData.sucessNum||0
+                  ),
+                  h(
+                    "span",
+                    {
+                      style:
+                        "color: rgba(0, 0, 0, 0.85); font-size: 16px; font-weight: 600;",
+                    },
+                    " 个点位"
+                  ),
+                ]),
+                type: "success",
+                showClose: false,
+                confirmButtonText: "好 的",
+              }).then((action) => {
+              });
+            }
           } else {
             this.$message.warning(res.data.MSG);
           }
@@ -286,39 +283,13 @@ export default {
           this.uploadLoading = false;
         });
     },
+    // 刷新更换点位表格
+    refreshChangePointList() {
+      this.$emit('refreshCurrentTable')
+    },
     // 导出失败excel
-    export2Excel(name) {
+    export2Excel() {
       this.isDown = true;
-      let resultArr = [];
-      /* for (let data of this.setpointArr) {
-        let obj = {
-          resName: data.resName,
-          city: data.city,
-          rName: data.rName,
-          mVehicle: data.mVehicle,
-          mTitle: data.mTitle,
-          asLab: data.asLab,
-          timeRange: data.timeRange,
-          finishTimeRange: data.finishTimeRange,
-          assetTag: data.assetTag,
-          tradingArea: data.tradingArea,
-          cType: data.cType,
-          hPrice: data.hPrice / 100,
-          hNum: data.hNum == "0" ? "#" : data.hNum,
-          fNum: data.fNum == "0" ? "#" : data.fNum,
-          chDay: data.chDay,
-          adSize: data.mVehicle == "广告门" ? data.adSize : data.picSize,
-          adViewSize:
-            data.mVehicle == "广告门" ? data.adViewSize : data.lightBoxSize,
-          notPush: data.notPush,
-          mRemark: data.mRemark,
-          resAddress: data.resAddress,
-          remark: data.remark,
-          trafficState: data.trafficState,
-          asName: data.asName,
-        };
-        resultArr.push(obj);
-      } */
       require.ensure([], () => {
         const {
           export_json_to_excel,
@@ -336,25 +307,23 @@ export default {
         const filterVal = [
           "resName",
           "city",
-          "tradingArea",
-          "rName",
+          "district",
+          "mTitle",
           "asLab",
-          "timeRange",
-          "reason"
+          "assetTag",
+          "date",
+          "failReason"
         ];
         
-        const list = resultArr;
+        const list = this.errorPointList;
         const data = this.formatJson(filterVal, list);
-        export_json_to_excel(tHeader, data, name);
+        export_json_to_excel(tHeader, data, '导入失败点位');
         this.isDown = false;
       });
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map((v) => filterVal.map((j) => v[j]));
-    },
-    /* getSessionData() {
-      this.sessionData = JSON.parse(sessionStorage.getItem("session_data"));
-    }, */
+    }
   },
 };
 </script>

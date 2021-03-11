@@ -132,9 +132,9 @@
                                     <el-table-column label="资源名称" min-width="16.1%" class-name="resName-wrap">
                                         <template slot-scope="scope">
                                             <div style="float:left;position: absolute;left: 0;top: 0">
-                                                <div v-if="scope.row.isNew" slot="reference" class="color-line"></div>
+                                                <div v-if="scope.row.isNew==1" slot="reference" class="color-line"></div>
                                                 <div v-if="scope.row.lState==2" slot="reference" class="color-line" style="background-color: #FF763B"></div>
-                                                <div v-if="scope.row.lState==2" slot="reference" class="color-line" style="background-color: #26D8BB"></div>
+                                                <div v-if="scope.row.isNew==2" slot="reference" class="color-line" style="background-color: #26D8BB"></div>
                                             </div>
                                             <span>{{scope.row.resName||'--'}}</span>
                                         </template>
@@ -572,7 +572,7 @@
                                             label="变更类型"
                                             min-width="6%">
                                             <template slot-scope="scope">
-                                                {{item.opType==3?'更改排期':scope.row.type==1?'新增点位':'终止点位'}}
+                                                {{scope.row.type==2?'更改排期':scope.row.type==1?'新增点位':scope.row.type==0?'终止点位':''}}
                                             </template>
                                         </el-table-column>
                                         <el-table-column

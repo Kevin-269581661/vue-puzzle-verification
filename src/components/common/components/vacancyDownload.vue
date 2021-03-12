@@ -448,6 +448,12 @@ export default {
         // 自定义日期按照点位来导
         getDaterangeAds(info){
             this.postDownLoadNum(1);
+            let loadingPoint = this.$loading({
+                lock: true,
+                text: '玩命加载中...',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
             api.postApi(this.apiVar.Advertisement+'/ExportSpareAds', info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 300200){
@@ -482,7 +488,9 @@ export default {
                 }else{
                     this.messageFun('warning', res.data.MSG)
                 }
+                loadingPoint.close();
             }).catch(err =>{
+                loadingPoint.close();
                 console.log(err);
             });
         },

@@ -143,15 +143,24 @@
                                     :content='item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab'
                                     placement="bottom"
                                     v-if='(item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab).length>23'>
-                            <span class="line-first">
+                            <span>
                                 {{wordlimit(item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab, 23)}}
-                            <span v-if="item.prStatus" class="photo-record-sign">已拍照</span>
                             </span>
                         </el-tooltip>
-                        <span v-else class="line-first">
+                        <span v-else>
                             {{item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab}}
-                            <span v-if="item.prStatus" class="photo-record-sign">已拍照</span>
                         </span>
+                        <el-tooltip v-if="item.prStatus" class="item" effect="dark">
+                            <ul slot="content">
+                                <li style="line-height: 20px;">
+                                    拍照人：{{item.prRealName||''}}
+                                </li>
+                                <li style="line-height: 20px;">
+                                    拍照时间：{{item.prCreateTime||''}}
+                                </li>
+                            </ul>
+                            <span class="photo-record-sign">已拍照</span>
+                        </el-tooltip>
                         <p class="car_header">
                             <el-tooltip class="item" effect="dark" :content="item.assetTag" placement="bottom"
                                         v-if="item.assetTag&&item.assetTag.length>10">
@@ -944,7 +953,8 @@
                         //投放状态
                         lState: '0',
                         // 投放排期
-                        dateRange: '全部'
+                        dateRange: '全部',
+                        prStatus: "全部"
                     };
 
                 }else{
@@ -2531,17 +2541,15 @@
         font-size: 14px;
         color: #666666;
         background: rgba(247, 247, 247, 1);
-        .line-first {
-            display: flex;
-            .photo-record-sign {
-                margin-left: auto;
-                padding: 2px 6px;
-                line-height: 16px;
-                font-size: 12px;
-                border-radius: 2px;
-                color: #1890FF;
-                background: rgba(24, 144, 255, 0.1);
-            }
+        .photo-record-sign {
+            float: right;
+            margin-left: auto;
+            padding: 2px 6px;
+            line-height: 16px;
+            font-size: 12px;
+            border-radius: 2px;
+            color: #1890FF;
+            background: rgba(24, 144, 255, 0.1);
         }
     }
 

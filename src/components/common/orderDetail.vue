@@ -601,11 +601,13 @@
                                             min-width="6%">
                                         </el-table-column>
                                         <el-table-column
+                                            show-overflow-tooltip
                                             prop="preLaunch"
                                             label="原排期"
                                             min-width="6%">
                                         </el-table-column>
                                         <el-table-column
+                                            show-overflow-tooltip
                                             prop="newLaunch"
                                             label="新排期"
                                             min-width="6%">

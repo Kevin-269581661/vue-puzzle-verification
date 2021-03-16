@@ -44,6 +44,7 @@
           :auto-upload="false"
           :limit="1"
           :multiple="false"
+          :fileList="fileList"
         >
           <img src="../../../assets/images/export.png" alt="" />
           <div class="el-upload__text">点击或将文件拖拽到这里上传</div>
@@ -129,6 +130,7 @@ export default {
   },
   data() {
     return {
+      fileList: [],
       dialogImport: false,
       dialogErrorPoint: false,
       errorPointList: [],
@@ -151,6 +153,9 @@ export default {
     dialogImportPoint(val) {
       val && (this.dialogImport = true) && this.resetDialogImportPoint();
     },
+    dialogImport(val) {
+      !val && (this.fileList = [])
+    }
   },
   methods: {
     // 重置dialogImportPoint
@@ -167,6 +172,7 @@ export default {
       event.stopPropagation();
     },
     importUploadFile(file, fileList) {
+      this.fileList = fileList
       this.importFileData = [file];
     },
     /* handleSizeChange(val) {

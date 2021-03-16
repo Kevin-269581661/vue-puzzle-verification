@@ -102,6 +102,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    handleTime: {
+      type: [Number,String],
+      required: true
+    },
     changeList: {
       type: Array,
       default: () => [],
@@ -173,7 +177,7 @@ export default {
       let info = {
         apID : sessionStorage.getItem("order_apid"),
         lIDs: this.changeList.map(item=>item.lID).join(','),
-        mark: new Date().getTime(),
+        mark: this.handleTime,
         endDate: this.dateValue,
       };
       this.uploadLoading = true;
@@ -276,7 +280,6 @@ export default {
     // 导出失败excel
     export2Excel() {
       this.isDown = true;
-      let resultArr = [];
       require.ensure([], () => {
         const {
           export_json_to_excel,
@@ -302,7 +305,7 @@ export default {
           "failReason"
         ];
 
-        const list = resultArr;
+        const list = this.errorPointList;
         const data = this.formatJson(filterVal, list);
         export_json_to_excel(tHeader, data, '排期更改失败点位');
         this.isDown = false;

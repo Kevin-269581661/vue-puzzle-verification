@@ -252,7 +252,7 @@
                     width="82%"
                     top="6vh"
                     :close-on-press-escape="false"
-                    :show-close="false">
+                    :show-close="true">
                     <add-ads :IsAddAds="IsAddPoint" @ievent="ievent"></add-ads>
                     <span slot="footer" class="dialog-footer">
                         <el-button plain @click="cancelAddPoint" v-qadn-mta-h5="{id: 'a006_b011_c012_d009_bt154_ck08'}">取 消</el-button>
@@ -263,7 +263,7 @@
                 <!--excel导入点位对话框-->
                 <import-point-by-excel :dialogImportPoint="dialogImportPoint" @resetDialogImportPoint="resetDialogImportPoint" @refreshCurrentTable="refreshCurrentTable"></import-point-by-excel>
                 <!-- 更改排期对话框 -->
-                <changePointPlayDateRange :changeRangeDialog="changeRangeDialog" :changeList="changePointInfo.stopPointlist" @resetDialogChangeRange="resetDialogChangeRange" @refreshCurrentTable="refreshCurrentTable"></changePointPlayDateRange>
+                <changePointPlayDateRange :changeRangeDialog="changeRangeDialog" :changeList="changePointInfo.stopPointlist" :handleTime="handleTime" @resetDialogChangeRange="resetDialogChangeRange" @refreshCurrentTable="refreshCurrentTable"></changePointPlayDateRange>
                 <!-- 图片查看显示 -->
                 <el-dialog :visible.sync="dialogVisible" class="imgPreview" top="10vh">
                     <img :src="dialogImageUrl" alt=""/>
@@ -377,10 +377,12 @@
                                 <el-table-column label="资源名称" min-width="16.1%" class-name="resName-wrap">
                                     <template slot-scope="scope">
                                         <div style="float:left;position: absolute;left: 0;top: 0" v-if="isHandleChange">
-                                            <div v-if="scope.row.isCurrNew&&scope.row.lState!=2" slot="reference"
-                                                class="color-line"></div>
                                             <div v-if="scope.row.lState==2" slot="reference" class="color-line"
                                                 style="background-color: #FF763B"></div>
+                                            <div v-else-if="scope.row.isCurrNew" slot="reference"
+                                                class="color-line"></div>
+                                            <div v-else-if="scope.row.isNew==2" slot="reference" class="color-line"
+                                                style="background-color: #26D8BB"></div>
                                         </div>
                                         <span>{{scope.row.resName||'--'}}</span>
                                     </template>
@@ -426,6 +428,7 @@
                                 <div style="display: flex" v-if="isHandleChange">
                                     <p><span style="background-color: #1890ff" class="color-line"></span>新增点位</p>
                                     <p><span style="background-color: #FF763B" class="color-line"></span>终止点位</p>
+                                    <p><span style="background-color: #26D8BB" class="color-line"></span>更改排期</p>
                                 </div>
                                 <div class="ad_pagination" v-if="pointTotal">
                                     <el-pagination
@@ -600,17 +603,24 @@
                                             label="区域"
                                             min-width="6%">
                                         </el-table-column>
+                                        <!-- 2:更改排期 1：新增 0：终止 -->
                                         <el-table-column
                                             show-overflow-tooltip
                                             prop="preLaunch"
                                             label="原排期"
                                             min-width="6%">
+                                            <template slot-scope="scope">
+                                                {{scope.row.type==2?scope.row.preLaunch:scope.row.type==1?'--':scope.row.type==0?`${scope.row.lStar}~${scope.row.lEnd}`:''}}
+                                            </template>
                                         </el-table-column>
                                         <el-table-column
                                             show-overflow-tooltip
                                             prop="newLaunch"
                                             label="新排期"
                                             min-width="6%">
+                                            <template slot-scope="scope">
+                                                {{scope.row.type==2?scope.row.newLaunch:scope.row.type==1?`${scope.row.lStar}~${scope.row.lEnd}`:scope.row.type==0?`${scope.row.lStar}~${(item.updateTime||'').split(' ')[0]}`:''}}
+                                            </template>
                                         </el-table-column>
                                     </el-table>
                                     <div class="price-wrap">
@@ -1893,7 +1903,12 @@
                 this.dialogImportPoint = false
             },
             refreshCurrentTable() {
-                this.changePoint()
+                this.currPointloading = true;
+                this.getSetPoint()
+                // this.changePointInfo.stopPointlist = []
+                this.changePointInfo.addPointlist = []
+                // this.selectioUpdate()
+                this.isHandleChange = true
             },
             resetDialogChangeRange() {
                 this.changeRangeDialog = false

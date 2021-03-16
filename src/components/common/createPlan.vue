@@ -1127,6 +1127,7 @@
                     value-format="yyyy/MM/dd"
                     format="yyyy/MM/dd"
                     class="date-select input-with-select"
+                    :picker-options="pickerOptions"
                 >
                 </el-date-picker>
             </p>
@@ -1378,7 +1379,11 @@
                 }
             }
             return {
-
+                pickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() <= Date.now();
+                    }     
+                },
                 // 导空点是否展示半年json下载(全国媒介或全国销售有权限下载)
                 isShowHalfYear: false,
                 // doUpload: 'https://beta.qinlinad.com/Advertisement/AnalysisExcelAdBaseInfo',

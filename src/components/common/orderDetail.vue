@@ -373,7 +373,7 @@
                                         <div style="float:left;position: absolute;left: 0;top: 0" v-if="isHandleChange">
                                             <div v-if="scope.row.lState==2" slot="reference" class="color-line"
                                                 style="background-color: #FF763B"></div>
-                                            <div v-else-if="scope.row.isCurrNew" slot="reference"
+                                            <div v-if="scope.row.isNew==1" slot="reference"
                                                 class="color-line"></div>
                                             <div v-if="scope.row.isNew==2" slot="reference" class="color-line"
                                                 style="background-color: #26D8BB"></div>
@@ -877,8 +877,8 @@
                 this.changePoint();
             } else {
                 this.getSetPoint();
-                this.getScheduleList()
             }
+            this.getScheduleList();
             // 根据角色判断是否有修改合同编号的权限
             this.getRole();
             // 获取订单详情的上面公司的信息
@@ -1899,7 +1899,8 @@
             refreshCurrentTable() {
                 this.currPointloading = true;
                 this.getSetPoint('change')
-                // this.changePointInfo.stopPointlist = []
+                this.getScheduleList()
+                this.changePointInfo.stopPointlist = []
                 this.changePointInfo.addPointlist = []
                 // this.selectioUpdate()
                 this.isHandleChange = true
@@ -1984,18 +1985,19 @@
                             }
                             this.dialogAddPoint = false
                             this.IsAddPoint = true
-                            this.isHandleChange = true
                             this.changePointInfo.addPointNum = this.changePointInfo.addPointlist.length
-                            // this.getSetPoint('change')
+                            this.refreshCurrentTable()
+                            // this.isHandleChange = true
+                            // // this.getSetPoint('change')
 
-                            for (let data of this.changePointInfo.addPointlist) {
-                                for (let item of  this.setpointArr) {
-                                    if (data.asID == item.asID && data.timeRange == item.timeRange) {
-                                        item.isCurrNew = 1
-                                    }
-                                }
-                            }
-                            this.changePointPageFn()
+                            // for (let data of this.changePointInfo.addPointlist) {
+                            //     for (let item of  this.setpointArr) {
+                            //         if (data.asID == item.asID && data.timeRange == item.timeRange) {
+                            //             item.isCurrNew = 1
+                            //         }
+                            //     }
+                            // }
+                            // this.changePointPageFn()
 
                         }
                     }

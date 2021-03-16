@@ -61,12 +61,6 @@
                                     <span style="font-size: 14px;color: rgba(0,0,0,0.85)">资源名称：</span>
                                     <el-input placeholder="请输入资源名称进行搜索" v-model="keyword" class="input-with-select"
                                               style="width: 260px"></el-input>
-                                    <!--<el-input placeholder="请输入内容" v-model="keyword" class="input-with-select"
-                                              @change="init()">
-                                        <el-select v-model="selectRecName" slot="prepend" placeholder="请选择">
-                                            <el-option label="资源名称" value="1"></el-option>
-                                        </el-select>
-                                    </el-input>-->
                                     <el-button type="primary" icon="el-icon-search" @click="search('current')"
                                                v-qadn-mta-h5="{id: showHandel ? 'a006_b011_c012_d000_bt149_ck01' : 'a006_b011_c006_d000_bt121_ck01'}"
                                                style="position: relative;top: 2px;margin-left: 3px">
@@ -2443,7 +2437,6 @@
     }
 
     /deep/ .search-row .el-input__inner {
-        width: 260px;
         height: 32px;
         line-height: 32px;
     }

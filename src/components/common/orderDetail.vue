@@ -1835,13 +1835,14 @@
                         .then(res => {
                             console.log(res.data);
                             if (!res.data.SysCode) {
-                                let resdata = res.data;
+                                /* let resdata = res.data;
                                 this.$set(this.nowRow, "lState", resdata.lState);
                                 this.$set(this.nowRow, "lSetTime", resdata.lSetTime);
                                 let time = this.formatTime(resdata.lStar) + "-" + this.formatTime(resdata.lSetTime);
                                 this.$set(this.nowRow, 'finishTimeRange', time);
-                                this.isFinish = false;
+                                this.isFinish = false; */
                                 Message.success("终止成功");
+                                this.refreshCurrentTable()
                             } else {
                                 Message.warning(res.data.MSG);
                             }

@@ -279,7 +279,7 @@
 
                 <!--换点对话框-->
                 <el-dialog title="更换点位" :visible.sync="dialogChangePoint" :close-on-press-escape="false"
-                        :before-close="closeDialogChangePoint">
+                    :show-close="false" :close-on-click-modal="false" :before-close="closeDialogChangePoint">
                     <div>
                         <el-row class="search-row" style="margin: 0">
                             <el-col>
@@ -375,7 +375,7 @@
                                                 style="background-color: #FF763B"></div>
                                             <div v-else-if="scope.row.isCurrNew" slot="reference"
                                                 class="color-line"></div>
-                                            <div v-else-if="scope.row.isNew==2" slot="reference" class="color-line"
+                                            <div v-if="scope.row.isNew==2" slot="reference" class="color-line"
                                                 style="background-color: #26D8BB"></div>
                                         </div>
                                         <span>{{scope.row.resName||'--'}}</span>
@@ -1898,7 +1898,7 @@
             },
             refreshCurrentTable() {
                 this.currPointloading = true;
-                this.getSetPoint()
+                this.getSetPoint('change')
                 // this.changePointInfo.stopPointlist = []
                 this.changePointInfo.addPointlist = []
                 // this.selectioUpdate()

@@ -13,7 +13,7 @@
                             <el-option v-for="item in typeSelect" :key="item.value" :label="item.value" :value="item.value"></el-option>
                         </el-select>
                     </el-input>
-                    <el-date-picker v-model="dateInput" type="daterange" start-placeholder="开始日期"  value-format="yyyy/MM/dd" format="yyyy/MM/dd" style="width: 260px;margin-left: 16px" size="small" end-placeholder="结束日期" >
+                    <el-date-picker v-model="dateInput" :picker-options="pickerOptions" type="daterange" start-placeholder="开始日期"  value-format="yyyy/MM/dd" format="yyyy/MM/dd" style="width: 260px;margin-left: 16px" size="small" end-placeholder="结束日期" >
                     </el-date-picker>
                     <el-button style="margin-left: 16px" type="primary" icon="el-icon-search" @click="searchFun" size="small" v-qadn-mta-h5="{id: 'a006_b011_c012_d009_bt152_ck01'}">搜索</el-button>
                 </div>
@@ -548,6 +548,11 @@
                 currPageAsLength: 0,//当前页面可选的点位总数
                 currPageSelect: 0,//当前页面已选择的点位数
                 adsCount:0,//总可选点位
+                pickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() <= Date.now()
+                    }
+                },
             }
         },
         props: {
@@ -1552,6 +1557,9 @@
 </script>
 
 <style scoped>
+    .otherSelect /deep/ .el-input__icon {
+        line-height: unset;
+    }
     /deep/ .el-table__fixed,/deep/ .el-table__fixed-right{
         height: 535px !important;
     }
@@ -1757,7 +1765,9 @@
         line-height: 14px;
         font-weight: bold;
     }
-
+    .adDoor .el-checkbox {
+        margin-right: 0;
+    }
     /deep/ .el-checkbox + .el-checkbox {
         margin-left: 4px;
     }
@@ -1850,24 +1860,9 @@
         border-top-left-radius: 0px;
         border-bottom-left-radius: 0px;
     }
-    /*   /deep/ .plan-select .el-input__suffix{
-           right: 12px;
-       }*/
     /deep/ .type-select .el-input__suffix{
         right: 3px;
     }
-    /deep/ .el-date-editor .el-range__icon {
-        position: relative;
-        top: -2px;
-        left: -3px;
-    }
-
-    /* /deep/ .search-wrap > span {
-        float: left;
-        margin-left: 2px;
-    } */
-
-
     /*日期控件*/
     .block {
         display: inline-block;
@@ -1878,7 +1873,7 @@
 
     /deep/ .el-date-editor .el-range__icon {
         position: relative;
-        top: -3px;
+        top: 1px;
         margin-right: 2px;
     }
 

@@ -20,7 +20,9 @@
                         end-placeholder="结束日期"
                         value-format="yyyy/MM/dd"
                         format="yyyy/MM/dd"
-                        class="date-select input-with-select">
+                        class="date-select input-with-select"
+                        :picker-options="pickerOptions"
+                    >
                     </el-date-picker>
                 </li>
                 <li>
@@ -94,6 +96,11 @@
                 ],
                 mapCity: '',        // 选择城市的rid
                 mapCityName:'',     // 选择城市名称
+                pickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() <= Date.now();
+                    },
+                },
                 dateInput: '',      // 选择的时间区间
                 citySelectLoading: true,   // 城市下拉选项loading
                 // 确认销售地图选点是否已提交

@@ -121,6 +121,8 @@
                     </el-table-column>
                     <el-table-column prop="trafficState" label="通行情况" min-width="130">
                     </el-table-column>
+                    <el-table-column v-if="customPermission.patrolPermission==2" prop="electrifyState" label="通电情况" min-width="130">
+                    </el-table-column>
                 </template>
                 <!-- <el-table-column prop="failReason" label="失败原因" show-overflow-tooltip>
                 </el-table-column> -->
@@ -297,6 +299,7 @@ export default {
                     checkBox: {A: false, B: false, ABC:false},
                     box: {A: false, B: false},          // 被占用，置灰 mVehicle
                     trafficState: key.trafficState || '',
+                    electrifyState: key.electrifyState || '',
                     feedback: key.feedback || ''
                 }
                 // A/B面

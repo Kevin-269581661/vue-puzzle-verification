@@ -22,14 +22,14 @@
                 </div>
                 <div>
                     <span>资源名称：</span>
-                    <el-select placeholder="请选择资源名称" filterable v-model="publishSearchInfo.allhouse" @change="searchImg()">
+                    <el-select placeholder="请选择资源名称" filterable v-model="publishSearchInfo.allhouse">
                         <el-option v-for="(item, index) of publishSearchInfo.allResource" :key="index" :label="item.resName"
                                    :value="item.value"></el-option>
                     </el-select>
                 </div>
                <div>
                    <span>监播状态：</span>
-                   <el-select placeholder="请选择监播状态" v-model="publishSearchInfo.allPic" @change="searchImg()">
+                   <el-select placeholder="请选择监播状态" v-model="publishSearchInfo.allPic">
                        <el-option label="全部" value="1"></el-option>
                        <el-option label="已上传" value="2"></el-option>
                        <el-option label="未上传" value="3"></el-option>
@@ -37,13 +37,29 @@
                </div>
                 <div>
                     <span>投放状态：</span>
-                    <el-select placeholder="请选择投放状态" v-model="publishSearchInfo.lState" @change="searchImg()">
+                    <el-select placeholder="请选择投放状态" v-model="publishSearchInfo.lState">
                         <el-option label="全部" value="0"></el-option>
                         <el-option label="正常投放" value="1"></el-option>
                         <el-option label="终止投放" value="2"></el-option>
                     </el-select>
                 </div>
-                <el-button type="plain" @click="resetSearch('sxk')">重置</el-button>
+                <div>
+                    <span>投放排期：</span>
+                    <el-select placeholder="请选择投放排期" v-model="publishSearchInfo.dateRange">
+                        <el-option label="全部" value="全部"></el-option>
+                        <el-option v-for="(dateRangeItem, rangeIndex) in scheduleList" :label="dateRangeItem.text" :value="dateRangeItem.value" :key="rangeIndex"></el-option>
+                    </el-select>
+                </div>
+                <div>
+                    <span>拍照状态：</span>
+                    <el-select placeholder="请选择拍照状态" v-model="publishSearchInfo.prStatus">
+                        <el-option label="全部" value="全部"></el-option>
+                        <el-option label="已拍照" value="1"></el-option>
+                        <el-option label="未拍照" value="0"></el-option>
+                    </el-select>
+                </div>
+                <el-button type="primary" @click="searchImg()">搜 索</el-button>
+                <el-button type="plain" @click="resetSearch('sxk')">重 置</el-button>
                 <!--<div class="progress">-->
                     <!--<el-progress :percentage="publishNumInfo.percent" :text-inside="true"></el-progress>-->
                     <!--<span>{{ publishNumInfo.currNum }} / {{ publishNumInfo.totalNum }}</span>-->
@@ -79,7 +95,7 @@
                 <div class="up-loader-header">
                     <div>
                         <span>媒体类型:</span>
-                        <el-select v-model="searchInfo.mediaType" placeholder="请选择媒体类型" @change="search()" size="small">
+                        <el-select v-model="searchInfo.mediaType" placeholder="请选择媒体类型" size="small">
                             <el-option v-for="item of searchInfo.mediaTypeArr" :key="item.value" :label="item.label"
                                        :value="item.value"></el-option>
                         </el-select>
@@ -91,7 +107,7 @@
                     </div>
                     <div>
                         <span>资源名称:</span>
-                        <el-select v-model="searchInfo.resName" placeholder="请选择资源名称" @change="search()" size="small"
+                        <el-select v-model="searchInfo.resName" placeholder="请选择资源名称" size="small"
                                    filterable>
                             <el-option v-for="item of searchInfo.resArr" :key="item.value" :label="item.label"
                                        :value="item.value"></el-option>
@@ -99,12 +115,21 @@
                     </div>
                     <div>
                         <span>监播状态:</span>
-                        <el-select v-model="searchInfo.status" placeholder="请选择监播状态" @change="search()" size="small">
+                        <el-select v-model="searchInfo.status" placeholder="请选择监播状态" size="small">
                             <el-option v-for="item of searchInfo.statusArr" :key="item.value" :label="item.label"
                                        :value="item.value"></el-option>
                         </el-select>
                     </div>
-                    <el-button type="plain" @click="resetSearch('hh')">重置</el-button>
+                    <div>
+                    <span>拍照状态：</span>
+                    <el-select placeholder="请选择拍照状态" v-model="searchInfo.prStatus">
+                        <el-option label="全部" value="全部"></el-option>
+                        <el-option label="已拍照" value="1"></el-option>
+                        <el-option label="未拍照" value="0"></el-option>
+                    </el-select>
+                </div>
+                    <el-button type="primary" @click="search()">搜 索</el-button>
+                    <el-button type="plain" @click="resetSearch('hh')">重 置</el-button>
                 </div>
             </div>
         </template>
@@ -118,9 +143,24 @@
                                     :content='item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab'
                                     placement="bottom"
                                     v-if='(item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab).length>23'>
-                            <span>{{wordlimit(item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab, 23)}}</span>
+                            <span>
+                                {{wordlimit(item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab, 23)}}
+                            </span>
                         </el-tooltip>
-                        <span v-else>{{item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab}}</span>
+                        <span v-else>
+                            {{item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab}}
+                        </span>
+                        <el-tooltip v-if="item.prStatus" class="item" effect="dark">
+                            <ul slot="content">
+                                <li style="line-height: 20px;">
+                                    拍照人：{{item.prRealName||''}}
+                                </li>
+                                <li style="line-height: 20px;">
+                                    拍照时间：{{item.prCreateTime||''}}
+                                </li>
+                            </ul>
+                            <span class="photo-record-sign">已拍照</span>
+                        </el-tooltip>
                         <p class="car_header">
                             <el-tooltip class="item" effect="dark" :content="item.assetTag" placement="bottom"
                                         v-if="item.assetTag&&item.assetTag.length>10">
@@ -463,6 +503,10 @@
                 type: Object,
                 // default: {},
             },
+            scheduleList: {
+                type: Array,
+                default: ()=>[]
+            },
             fromType: {
                 type: Boolean,
             },
@@ -492,6 +536,9 @@
                     citys: [],
                     // 资源列表
                     allResource: [],
+                    // 投放排期
+                    dateRange: '全部',
+                    prStatus: '全部'
                 },
 
                 // 上传图片
@@ -531,6 +578,7 @@
                     city: ['全部'],
                     resName: "全部",
                     status: "全部",
+                    prStatus: "全部",
                     // 搜索列表数据
                     // 媒体类型
                     mediaTypeArr: [
@@ -681,6 +729,7 @@
             this.getCitys();
             // 获取资源列表
             this.getResArr();
+            console.log('scheduleList', this.scheduleList)
         },
         watch: {
             fromType(newVal, oldVal) {
@@ -821,7 +870,7 @@
                     let areaId = citySelect[1];
                     this.getResArr(cityId, areaId);
                 }
-                this.searchImg();
+                // this.searchImg();
             },
             // 上下刊搜索图片
             searchImg() {
@@ -855,7 +904,7 @@
             searchFormat(type) {
                 let {uID, token} = this.sessionData;
                 let {currPage, pageSize} = this.pageInfo;
-                let {mediaType, citySelect, allhouse, allPic,lState} = this.publishSearchInfo;
+                let {mediaType, citySelect, allhouse, allPic, lState, dateRange, prStatus} = this.publishSearchInfo;
                 let info = {
                     uid: uID,
                     token: token,
@@ -864,6 +913,8 @@
                     pageNum: currPage,
                     pageSize: pageSize,
                     mVehicle: mediaType,
+                    time: dateRange=='全部'?'':dateRange,
+                    prStatus: prStatus=='全部'?'':prStatus
                 };
 
                 if (allPic == '2') {
@@ -901,6 +952,9 @@
                         allPic: '1',
                         //投放状态
                         lState: '0',
+                        // 投放排期
+                        dateRange: '全部',
+                        prStatus: "全部"
                     };
 
                 }else{
@@ -910,6 +964,7 @@
                         city: ['全部'],
                         resName: "全部",
                         status: "全部",
+                        prStatus: "全部"
                     }
                 }
                 this.getImgArr();
@@ -1097,7 +1152,7 @@
                     let areaId = city[1];
                     this.getResArr(cityId, areaId);
                 }
-                this.search();
+                // this.search();
             },
             // 搜索
             search() {
@@ -1114,11 +1169,12 @@
             // 搜索换画列表条件
             searchPointFormat() {
                 console.log(this.painList, this.activePainIndex, 'point--active--');
-                let {mediaType, city, resName, status} = this.searchInfo;
+                let {mediaType, city, resName, status, prStatus} = this.searchInfo;
                 let {currPage, pageSize} = this.pageInfo;
                 let info = {
                     apId: sessionStorage.getItem('order_apid'),
                     replaceRecordId: this.painList.length ? this.painList[this.activePainIndex].id : '',
+                    prStatus: prStatus=='全部'?'':prStatus,
                     pageNum: currPage,
                     pageSize: pageSize,
                     // ...(mediaType && {mType: mediaType == 1 ? 0 : 1}),
@@ -2272,7 +2328,10 @@
     ;
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+    /deep/ .el-input__icon {
+        line-height: unset;
+    }
     /* 上下刊 */
     .radio_style {
         vertical-align: top;
@@ -2282,8 +2341,15 @@
     .up-loader-header {
         position: relative;
         display: flex;
-        justify-content: space-between;
-        align-items: center;
+        flex-flow: row wrap;
+        align-items: flex-end;
+        & > div {
+            margin-bottom: 12px;
+            margin-right: 32px;
+        }
+        & > button {
+            margin-bottom: 12px;
+        }
     }
     .up-loader-header>div>span{
         color:rgba(0,0,0,0.85);
@@ -2475,6 +2541,16 @@
         font-size: 14px;
         color: #666666;
         background: rgba(247, 247, 247, 1);
+        .photo-record-sign {
+            float: right;
+            margin-left: auto;
+            padding: 2px 6px;
+            line-height: 16px;
+            font-size: 12px;
+            border-radius: 2px;
+            color: #1890FF;
+            background: rgba(24, 144, 255, 0.1);
+        }
     }
 
     .detail_top p {
@@ -2540,11 +2616,13 @@
         float: left;
         position: relative;
         overflow: hidden;
+        border-radius: 4px;
     }
 
     .upload_img_item {
         width: 100%;
         height: 100%;
+        border-top-right-radius: 6px;
     }
 
     .icon_success {

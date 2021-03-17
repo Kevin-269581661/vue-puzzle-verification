@@ -121,19 +121,23 @@
                         <div class="search-nav">
                             <div class="search-wrap">
                                 <div style="margin-right: 0" v-show="isOccupied">
-                                    <el-select v-model="activeSelect" placeholder="请选择" class="type-select">
+                                    <el-select v-model="activeSelect" placeholder="请选择" class="type-select" size="small">
                                         <el-option label="方案排斥" value="1"></el-option>
                                     </el-select>
                                     <el-select v-model="activeAdPlan" placeholder="请选择排斥方案" class="reject_select"
-                                               @change="selectRejectPlan" filterable :clearable="true">
+                                               @change="selectRejectPlan" filterable :clearable="true" size="small">
                                         <el-option v-for="item in rejectAdPlan" :key="item.value" :label="item.label"
                                                    v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt053_ck01'}"
                                                    :value="item.value"></el-option>
                                     </el-select>
                                 </div>
                                 <div>
-                                    <el-input placeholder="请输入要搜索的内容" v-model="searchInput" class="input-with-select"
-                                              @change="initData">
+                                    <el-input 
+                                        placeholder="请输入要搜索的内容" 
+                                        v-model="searchInput" 
+                                        class="input-with-select"
+                                        size="small"
+                                        @change="initData">
                                         <el-select v-model="selectValue" slot="prepend" class="type-select"
                                                    @change="initData">
                                             <el-option v-for="item in typeSelect" :key="item.value" :label="item.value"
@@ -150,14 +154,16 @@
                                         value-format="yyyy/MM/dd"
                                         format="yyyy/MM/dd"
                                         class="date-select input-with-select"
+                                        size="small"
+                                        :picker-options="pickerOptions"
                                     >
                                     </el-date-picker>
                                 </div>
                                 <div>
                                     <el-button type="primary" style="background: #1890FF" icon="el-icon-search"
-                                               class="searchBtn" @click="searchFun"
-                                               :disabled="searchBtnAbled"
-                                               v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt049_ck01'}">搜索
+                                        class="searchBtn" @click="searchFun"
+                                        :disabled="searchBtnAbled"
+                                        v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt049_ck01'}">搜索
                                     </el-button>
                                 </div>
                                 <div class="shopcar" @click="dialogVisible()">
@@ -214,12 +220,12 @@
                             </dl>
                             <dl style="border: none">
                                 <dt>城市区域：</dt>
-                                <dd v-for="(item, index) in city" :index="index"
+                                <dd v-for="(item, index) in city" :key="index"
                                     :class=" index == activeIndex ? 'active' : ''"
                                     @click="activeCity(item,index)">{{item.rName}}
                                 </dd>
                             </dl>
-                            <dl class="city-proper" v-for="(list, index) of area" :index="index"
+                            <dl class="city-proper" v-for="(list, index) of area" :key="index"
                                 v-show=" index == activeIndex">
                                 <dd v-for="item of list" :class="item.rName == areaName ? 'active' : ''"
                                     @click="activeArea(item)">{{item.rName}}
@@ -229,15 +235,17 @@
                                 <dt>其它条件：</dt>
                                 <dd class="other-dd">
                                     <el-select v-model="mState" placeholder="媒体状态" class="otherSelect"
-                                               :class="mState !== '' ? 'otherSelectActive' :'' "
-                                               @change="mStateChange">
+                                        :class="mState !== '' ? 'otherSelectActive' :'' "
+                                        size="small"
+                                        @change="mStateChange">
                                         <el-option label="正常" value="1"></el-option>
                                         <el-option label="待安装" value="2"></el-option>
                                     </el-select>
                                     <el-select v-model="limitList" placeholder="广告限制" class="otherSelect adLimitSelect"
-                                               :class="limitList.length !== 0 ? 'otherSelectActive' :'' " multiple
-                                               collapse-tags
-                                               @change="activeADLimit"> <!--visible-change-->
+                                        :class="limitList.length !== 0 ? 'otherSelectActive' :'' " multiple
+                                        collapse-tags
+                                        size="small"
+                                        @change="activeADLimit">
                                         <el-option
                                             v-for="item in ADLimit"
                                             :key="item.value"
@@ -246,16 +254,18 @@
                                         </el-option>
                                     </el-select>
                                     <el-select v-model="buildValue" :placeholder="recType == '1' ? '楼盘类型' : '写字楼类型'"
-                                               :class="buildValue !== '' ? 'otherSelectActive' :'' "
-                                               class="otherSelect" @change="tableHeaderFilter_cType">
+                                        :class="buildValue !== '' ? 'otherSelectActive' :'' "
+                                        size="small"
+                                        class="otherSelect" @change="tableHeaderFilter_cType">
                                         <el-option v-for="item in buildType" :key="item.buildValue"
                                                    :label="item.buildValue"
                                                    :value="item.buildValue">
                                         </el-option>
                                     </el-select>
                                     <el-select v-model="activeGrade" placeholder="媒体等级" class="otherSelect"
-                                               @change="gradeChange"
-                                               :class=" activeGrade !== '' ? 'otherSelectActive' :''">
+                                        @change="gradeChange"
+                                        size="small"
+                                        :class=" activeGrade !== '' ? 'otherSelectActive' :''">
                                         <el-option label="A级" value="A"></el-option>
                                         <el-option label="B级" value="B"></el-option>
                                         <el-option label="C级" value="C"></el-option>
@@ -400,7 +410,7 @@
                         <!--提示-->
                         <div class="tip">
                             <i class="el-icon-info"></i>
-                            <p>共 <span>{{adsCount}}</span>个点位，已选点位 <span>{{nowPointNum>0?nowPointNum:0}}</span>个</p>
+                            <p>共 <span>{{adsCount}}</span> 个点位，已选点位 <span>{{nowPointNum>0?nowPointNum:0}}</span> 个</p>
                         </div>
                         <!--表格-->
                         <div class="table_wrap adsTable">
@@ -574,6 +584,15 @@
                                     min-width="110">
                                     <template slot-scope="scope">
                                         {{ scope.row.trafficState || '--' }}
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                    v-if="customPermission.patrolPermission==2"
+                                    label="通电情况"
+                                    align="right"
+                                    min-width="110">
+                                    <template slot-scope="scope">
+                                        {{ scope.row.electrifyState || '--' }}
                                     </template>
                                 </el-table-column>
                                 <el-table-column
@@ -799,6 +818,11 @@
                                                     <el-form-item label="通行情况：">
                                                         <div class="shopList_adLimit">
                                                             <span>{{ props.row.trafficState }}</span>
+                                                        </div>
+                                                    </el-form-item>
+                                                    <el-form-item label="通电情况：" v-if="customPermission.patrolPermission==2">
+                                                        <div class="shopList_adLimit">
+                                                            <span>{{ props.row.electrifyState }}</span>
                                                         </div>
                                                     </el-form-item>
                                                 </el-form>
@@ -1103,6 +1127,7 @@
                     value-format="yyyy/MM/dd"
                     format="yyyy/MM/dd"
                     class="date-select input-with-select"
+                    :picker-options="pickerOptions"
                 >
                 </el-date-picker>
             </p>
@@ -1354,7 +1379,11 @@
                 }
             }
             return {
-
+                pickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() <= Date.now();
+                    }     
+                },
                 // 导空点是否展示半年json下载(全国媒介或全国销售有权限下载)
                 isShowHalfYear: false,
                 // doUpload: 'https://beta.qinlinad.com/Advertisement/AnalysisExcelAdBaseInfo',
@@ -1458,6 +1487,11 @@
                 planSelect: '',
                 mState: '',                // 媒体状态
                 activeGrade: '',           // 媒体等级
+                pickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() <= Date.now();
+                    }
+                },
                 dateInput: [],            // 时间输入框
                 beforeDate: [],           // 时间输入框的前一次时间
                 //setp1创建方案表单
@@ -1957,8 +1991,16 @@
                             if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
                                 head.push('归属公司')
                             }
-                            if(customPermission && customPermission.patrolPermission) {
+                            /* if(customPermission && customPermission.patrolPermission) {
                                 head.push('巡点问题', '通行情况');
+                            } */
+                            switch (customPermission.patrolPermission) {
+                                case 1:
+                                    head.push('巡点问题', '通行情况');
+                                    break;
+                                case 2:
+                                    head.push('巡点问题', '通行情况', '通电情况');
+                                    break;
                             }
                             let allHead = head.concat([info.startTime + '-' + info.endTime]);
                             let filename = returnobj.city.join('-') + '-' + info.startTime + '~' + info.endTime + '空位表';
@@ -2015,9 +2057,18 @@
                             obj.asNames = item.asNames
                         }
                         // 巡点定制
-                        if(customPermission && customPermission.patrolPermission) {
-                            obj.allRemark = item.allRemark
-                            obj.allTrafficState = item.allTrafficState
+                        if(customPermission) {
+                            switch (customPermission.patrolPermission) {
+                                case 1:
+                                    obj.allRemark = item.allRemark;
+                                    obj.allTrafficState = item.allTrafficState;
+                                    break;
+                                case 2:
+                                    obj.allRemark = item.allRemark;
+                                    obj.allTrafficState = item.allTrafficState;
+                                    obj.allElectrifyState = item.allElectrifyState;
+                                    break;
+                            }
                         }
                         obj[this.emptyRange[0] + '-' + this.emptyRange[1]] = item.DateInfo.adsNum || 0
                         resObj.showList.push(obj);
@@ -2111,8 +2162,16 @@
                             if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
                                 head.push('归属公司')
                             }
-                            if(customPermission && customPermission.patrolPermission) {
+                            /* if(customPermission && customPermission.patrolPermission) {
                                 head.push('巡点问题', '通行情况');
+                            } */
+                            switch (customPermission.patrolPermission) {
+                                case 1:
+                                    head.push('巡点问题', '通行情况');
+                                    break;
+                                case 2:
+                                    head.push('巡点问题', '通行情况', '通电情况');
+                                    break;
                             }
                             let allHead = head.concat(date);
                             let filename = returnobj.filename + '-' + date[0].substring(0, 10) + '~' + date[date.length - 1].substring(11) + '空位表';
@@ -2168,9 +2227,18 @@
                                 obj.asNames = item.asNames
                             }
                             let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
-                            if(customPermission && customPermission.patrolPermission) {
-                                obj.allRemark = item.allRemark;
-                                obj.allTrafficState = item.allTrafficState;
+                            if(customPermission) {
+                                switch (customPermission.patrolPermission) {
+                                    case 1:
+                                        obj.allRemark = item.allRemark;
+                                        obj.allTrafficState = item.allTrafficState;
+                                        break;
+                                    case 2:
+                                        obj.allRemark = item.allRemark;
+                                        obj.allTrafficState = item.allTrafficState;
+                                        obj.allElectrifyState = item.allElectrifyState;
+                                        break;
+                                }
                             }
                             let showData = item.DateInfo.sort(this.sortDate);
                             for (let date of showData) {
@@ -2667,8 +2735,16 @@
                 if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
                     allHead.push('归属公司')
                 }
-                if(this.customPermission.patrolPermission) {
+                /* if(this.customPermission.patrolPermission) {
                     allHead.push('巡点问题', '通行情况');
+                } */
+                switch (this.customPermission.patrolPermission) {
+                    case 1:
+                        allHead.push('巡点问题', '通行情况');
+                        break;
+                    case 2:
+                        allHead.push('巡点问题', '通行情况', '通电情况');
+                        break;
                 }
                 sheetExcel.toDownload(allHead, arr, this.planForm.planName + '点位表', head);
             },
@@ -2707,10 +2783,19 @@
                     if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
                         obj.asName = data.asName
                     }
-                    // 巡点权限(亲粤邻)
-                    if(this.customPermission && this.customPermission.patrolPermission) {
-                        obj.remark = data.remark
-                        obj.trafficState = data.trafficState
+                    // 巡点权限(1：亲粤邻 2：北京)
+                    if(this.customPermission) {
+                        switch (this.customPermission.patrolPermission) {
+                            case 1:
+                                obj.remark = data.remark
+                                obj.trafficState = data.trafficState
+                                break;
+                            case 2:
+                                obj.remark = data.remark
+                                obj.trafficState = data.trafficState
+                                obj.allElectrifyState = data.allElectrifyState;
+                                break;
+                        }
                     }
                     for (let date of dateArr) {
                         if (data.schedules == date.sheetName) {
@@ -3246,8 +3331,9 @@
                         peopleFlow: key.peopleFlow,
                         buildNum: key.fNum,
                         schedules: this.dateInput[0] + '-' + this.dateInput[1],
-                        remark: key.remark || '--',            // 巡点定制（亲粤邻）
-                        trafficState: key.trafficState || '--',    // 巡点定制（亲粤邻）
+                        remark: key.remark || '--',            // 巡点定制
+                        trafficState: key.trafficState || '--',    // 巡点定制
+                        electrifyState: key.electrifyState || '--',    // 巡点定制
                         tradingArea: key.tradingArea || '',
                         assetTag: key.assetTag || '',
                         liveYear: key.chDay,
@@ -3629,8 +3715,9 @@
                                 houseNum: key.hNum,
                                 buildPrice: key.hPrice / 100,
                                 mediaName: key.mTitle,
-                                remark: key.remark || '--',          // 巡点定制（亲粤邻）
-                                trafficState: key.trafficState || '--',  // 巡点定制（亲粤邻）
+                                remark: key.remark || '--',          // 巡点定制
+                                trafficState: key.trafficState || '--',  // 巡点定制
+                                electrifyState: key.electrifyState || '--',  // 巡点定制
                                 buildNum: key.fNum,
                                 schedules: this.dateInput[0] + '-' + this.dateInput[1],
                                 tradingArea: key.tradingArea,
@@ -4485,10 +4572,10 @@
                         mediaName: key.mTitle || '',
                         mVehicle: key.mVehicle,
                         buildNum: key.fNum,
-                        // schedules: this.dateInput[0] + '-' + this.dateInput[1],
-                        schedules: key.startDate + '-' + key.endDate,
-                        remark: key.remark || '--',          // 巡点定制（亲粤邻）
-                        trafficState: key.trafficState || '--',  // 巡点定制（亲粤邻）
+                        schedules: this.dateInput[0] + '-' + this.dateInput[1],
+                        remark: key.remark || '--',          // 巡点定制
+                        trafficState: key.trafficState || '--',  // 巡点定制
+                        electrifyState: key.electrifyState || '--',  // 巡点定制
                         tradingArea: key.tradingArea,
                         assetTag: key.assetTag,
                         liveYear: key.chDay,
@@ -5199,8 +5286,9 @@
                     mediaRemark: info.mediaRemark,
                     buildNum: info.buildNum,
                     schedules: info.schedules,
-                    remark: info.remark || '--',            // 巡点定制（亲粤邻）
-                    trafficState: info.trafficState || '--',    // 定制巡点（亲粤邻）
+                    remark: info.remark || '--',            // 巡点定制
+                    trafficState: info.trafficState || '--',    // 定制巡点
+                    electrifyState: info.electrifyState || '--',    // 定制巡点
                     tradingArea: info.tradingArea,
                     assetTag: info.assetTag,
                     liveYear: info.liveYear,
@@ -5808,7 +5896,7 @@
     }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
     /deep/ .el-table__fixed, /deep/ .el-table__fixed-right {
         height: 584px !important;
     }
@@ -5839,6 +5927,10 @@
     .adsTable {
         position: relative;
         margin-top: 5px;
+        .adDoor {
+            display: flex;
+            justify-content: space-between;
+        }
     }
 
     .myCheckbox {
@@ -6115,7 +6207,8 @@
 
     /deep/ .el-date-editor .el-range__icon {
         position: relative;
-        top: -3px;
+        line-height: 26px;
+        /* top: -3px; */
         margin-right: 2px;
     }
 
@@ -6316,6 +6409,7 @@
 
     .input-wrap .input-wrap-Btn {
         width: 44px;
+        min-width: 72px;
         height: 22px;
         margin-top: 6px;
         padding: 0;
@@ -6365,10 +6459,6 @@
         color: #666666;
         line-height: 14px;
         font-weight: bold;
-    }
-
-    /deep/ .el-checkbox + .el-checkbox {
-        margin-left: 4px;
     }
 
     /deep/ .el-table-column-checkbox .el-checkbox {
@@ -6632,7 +6722,7 @@
     }
 
     .createPlan .type-select /deep/ .el-input__suffix {
-        right: 9px;
+        right: 4px;
     }
 
     /deep/ .el-input-number.is-controls-right .el-input-number__decrease [class*=el-icon],

@@ -47,6 +47,7 @@
                     end-placeholder="结束日期"
                     value-format="yyyy/MM/dd"
                     format="yyyy/MM/dd"
+                    :picker-options="pickerOptions"
                 >
                 </el-date-picker>
             </el-col>
@@ -81,6 +82,11 @@ export default {
             },
             // 城市列表
             cityList: [],
+            pickerOptions: {
+                disabledDate(time) {
+                    return time.getTime() <= Date.now();
+                }          
+            }
         }
     },
     methods:{
@@ -185,8 +191,16 @@ export default {
                             head.push('归属公司')
                         }
                         let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
-                        if(customPermission && customPermission.patrolPermission) {
+                        /* if(customPermission && customPermission.patrolPermission) {
                             head.push('巡点问题', '通行情况');
+                        } */
+                        switch (customPermission.patrolPermission) {
+                            case 1:
+                                head.push('巡点问题', '通行情况');
+                                break;
+                            case 2:
+                                head.push('巡点问题', '通行情况', '通电情况');
+                                break;
                         }
                         let allHead = head.concat([info.startTime+'-'+info.endTime]);
                         let filename = returnobj.city.join('-')+'-'+ info.startTime+'~'+info.endTime+'空位表';
@@ -243,9 +257,18 @@ export default {
                     }
                     let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
                     // (定制巡点)
-                    if(customPermission && customPermission.patrolPermission) {
-                        obj.allRemark = item.allRemark
-                        obj.allTrafficState = item.allTrafficState
+                    if(customPermission) {
+                        switch (customPermission.patrolPermission) {
+                            case 1:
+                                obj.allRemark = item.allRemark
+                                obj.allTrafficState = item.allTrafficState
+                                break;
+                            case 2:
+                                obj.allRemark = item.allRemark
+                                obj.allTrafficState = item.allTrafficState
+                                obj.allElectrifyState = item.allElectrifyState
+                                break;
+                        }
                     }
                     obj[this.downLoadInfo.daterange[0]+'-'+this.downLoadInfo.daterange[1]] = item.DateInfo.adsNum || 0
                     resObj.showList.push(obj);
@@ -328,8 +351,16 @@ export default {
                         if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
                             head.push('归属公司')
                         }
-                        if(customPermission && customPermission.patrolPermission) {
+                        /* if(customPermission && customPermission.patrolPermission) {
                             head.push('巡点问题', '通行情况');
+                        } */
+                        switch (customPermission.patrolPermission) {
+                            case 1:
+                                head.push('巡点问题', '通行情况');
+                                break;
+                            case 2:
+                                head.push('巡点问题', '通行情况', '通电情况');
+                                break;
                         }
                         let allHead = head.concat(date);
                         let filename = returnobj.filename+'-'+ date[0].substring(0, 10)+'~'+date[date.length-1].substring(11)+'空位表';
@@ -386,9 +417,18 @@ export default {
                             obj.asNames = item.asNames
                         }
                         let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
-                        if(customPermission && customPermission.patrolPermission) {
-                            obj.allRemark = item.allRemark;
-                            obj.allTrafficState = item.allTrafficState;
+                        if(customPermission) {
+                            switch (customPermission.patrolPermission) {
+                                case 1:
+                                    obj.allRemark = item.allRemark;
+                                    obj.allTrafficState = item.allTrafficState;
+                                    break;
+                                case 2:
+                                    obj.allRemark = item.allRemark;
+                                    obj.allTrafficState = item.allTrafficState;
+                                    obj.allElectrifyState = item.allElectrifyState
+                                    break;
+                            }
                         }
                         let showData = item.DateInfo.sort(this.sortDate);
                         // console.log('showData',showData)
@@ -424,6 +464,12 @@ export default {
         // 自定义日期按照点位来导
         getDaterangeAds(info){
             this.postDownLoadNum(1);
+            let loadingPoint = this.$loading({
+                lock: true,
+                text: '玩命加载中...',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
             api.postApi(this.apiVar.Advertisement+'/ExportSpareAds', info).then(res =>{
                 console.log(res.data);
                 if(res.data.SysCode == 300200){
@@ -444,8 +490,16 @@ export default {
                                 head.push('归属公司')
                             }
                             let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
-                            if(customPermission && customPermission.patrolPermission) {
+                            /* if(customPermission && customPermission.patrolPermission) {
                                 head.push('巡点问题', '通行情况');
+                            } */
+                            switch (customPermission.patrolPermission) {
+                                case 1:
+                                    head.push('巡点问题', '通行情况');
+                                    break;
+                                case 2:
+                                    head.push('巡点问题', '通行情况', '通电情况');
+                                    break;
                             }
                             let filename = returnobj.city.join('-')+'-'+ date +'空位表';
                             sheetExcel.toDownload(head, returnobj.arr, filename);
@@ -458,7 +512,9 @@ export default {
                 }else{
                     this.messageFun('warning', res.data.MSG)
                 }
+                loadingPoint.close();
             }).catch(err =>{
+                loadingPoint.close();
                 console.log(err);
             });
         },
@@ -509,9 +565,18 @@ export default {
                             obj.asName = item.asName
                         }
                         let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
-                        if(customPermission && customPermission.patrolPermission) {
-                            obj.remark = item.remark || ''
-                            obj.trafficState = item.trafficState || ''
+                        if(customPermission) {
+                            switch (customPermission.patrolPermission) {
+                                case 1:
+                                    obj.remark = item.remark || ''
+                                    obj.trafficState = item.trafficState || ''
+                                    break;
+                                case 2:
+                                    obj.remark = item.remark || ''
+                                    obj.trafficState = item.trafficState || ''
+                                    obj.electrifyState = item.electrifyState || ''
+                                    break;
+                            }
                         }
                         resObj.showList.push(obj);
                     }

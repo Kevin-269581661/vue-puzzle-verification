@@ -68,6 +68,9 @@
                                                 <el-form-item label="通行情况：">
                                                     <span class="ellipsis-td">{{ props.row.trafficState }}</span>
                                                 </el-form-item>
+                                                <el-form-item label="通电情况：" v-if="customPermission.patrolPermission==2">
+                                                    <span class="ellipsis-td">{{ props.row.electrifyState }}</span>
+                                                </el-form-item>
                                             </el-form>
                                         </template>
                                     </el-table-column>
@@ -273,7 +276,8 @@ export default {
                     mRemark: data.mRemark,
                     resAddress: data.resAddress,
                     remark: data.remark,
-                    trafficState: data.trafficState,
+                    trafficState: data.trafficState||'',
+                    electrifyState: data.electrifyState||'',
                     asName: data.asName
                 };
                 resultArr.push(obj);
@@ -286,9 +290,15 @@ export default {
                     tHeader.push('归属公司')
                     filterVal.push('asName');
                 }
-                if(this.customPermission.patrolPermission) {
-                    tHeader.push('巡点问题', '通行情况');
-                    filterVal.push('remark', 'trafficState');
+                switch (this.customPermission.patrolPermission) {
+                    case 1:
+                        tHeader.push('巡点问题', '通行情况');
+                        filterVal.push('remark', 'trafficState');
+                        break;
+                    case 2:
+                        tHeader.push('巡点问题', '通行情况', '通电情况');
+                        filterVal.push('remark', 'trafficState', 'electrifyState');
+                        break;
                 }
                 const list = resultArr;
                 const data = this.formatJson(filterVal, list);

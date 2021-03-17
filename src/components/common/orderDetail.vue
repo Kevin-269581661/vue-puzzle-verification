@@ -37,10 +37,18 @@
                             </el-button>
                             <!--<el-button type="primary" :disabled="usableBtn"-->
                             <!--v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0" @click="changePoint" v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}">换点</el-button>-->
-                            <el-button type="primary"
+                            <!-- <el-button type="primary"
                                        v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0"
-                                       @click="changePoint" v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}">换点
-                            </el-button>
+                                       @click="changeHandleType" v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}">换点
+                            </el-button> -->
+                            <el-select v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0"
+                                size="small" value="换点" placeholder="换点" class="change-point-select">
+                                <el-option label="更改排期" value="1"
+                                    v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}"
+                                    @click.native="changeHandleType(1)"></el-option>
+                                <el-option label="终止点位" value="2" @click.native="changeHandleType(2)"></el-option>
+                                <el-option label="新增点位" value="3" @click.native="changeHandleType(3)"></el-option>
+                            </el-select>
                         </div>
                     </div>
                     <div>
@@ -52,21 +60,11 @@
                 <el-tabs v-model="planPanel" @tab-click="handleClick()">
                     <el-tab-pane label="选点排期" name="first">
                         <div class="first-wrap box-wrap">
-                            <!--    <h4 v-if="showTitle" style="margin-bottom:16px;">
-                                    更换点位
-                                   <span>单位:面&nbsp;&nbsp; 首次投放:{{nowPointNum}}&nbsp;&nbsp; 中止投放:{{stopPointNum}} &nbsp;&nbsp;&nbsp; 新增面数:{{addNewPointNum}} &nbsp;&nbsp;&nbsp; 累计投放:{{setpointArr.length}} </span>
-                                </h4>-->
                             <el-row class="search-row">
                                 <el-col>
                                     <span style="font-size: 14px;color: rgba(0,0,0,0.85)">资源名称：</span>
                                     <el-input placeholder="请输入资源名称进行搜索" v-model="keyword" class="input-with-select"
                                               style="width: 260px"></el-input>
-                                    <!--<el-input placeholder="请输入内容" v-model="keyword" class="input-with-select"
-                                              @change="init()">
-                                        <el-select v-model="selectRecName" slot="prepend" placeholder="请选择">
-                                            <el-option label="资源名称" value="1"></el-option>
-                                        </el-select>
-                                    </el-input>-->
                                     <el-button type="primary" icon="el-icon-search" @click="search('current')"
                                                v-qadn-mta-h5="{id: showHandel ? 'a006_b011_c012_d000_bt149_ck01' : 'a006_b011_c006_d000_bt121_ck01'}"
                                                style="position: relative;top: 2px;margin-left: 3px">
@@ -123,31 +121,18 @@
                                                 <el-form-item label="通行情况：">
                                                     <span class="ellipsis-td">{{ props.row.trafficState || '--' }}</span>
                                                 </el-form-item>
+                                                <el-form-item label="通电情况：">
+                                                    <span class="ellipsis-td">{{ props.row.electrifyState || '--' }}</span>
+                                                </el-form-item>
                                             </el-form>
                                         </template>
                                     </el-table-column>
                                     <el-table-column label="资源名称" min-width="16.1%" class-name="resName-wrap">
                                         <template slot-scope="scope">
                                             <div style="float:left;position: absolute;left: 0;top: 0">
-                                                <!--<el-popover v-show="scope.row.isNew"-->
-                                                <!--placement="top-start"-->
-                                                <!--title="新增时间"-->
-                                                <!--width="200"-->
-                                                <!--trigger="hover"-->
-                                                <!--:content="formatToTime(scope.row.lSetTime)">-->
-                                                <!--<span slot="reference" style="font-size: 18px;color: red">*</span>-->
-                                                <div v-if="scope.row.isNew" slot="reference" class="color-line"></div>
-                                                <!--</el-popover>-->
-                                                <!--<el-popover v-show="scope.row.lState==2"-->
-                                                <!--placement="top-start"-->
-                                                <!--title="终止时间"-->
-                                                <!--width="200"-->
-                                                <!--trigger="hover"-->
-                                                <!--:content="formatToTime(scope.row.lSetTime)">-->
-                                                <!--<span slot="reference" style="font-size: 18px;color: red">*</span>-->
-                                                <div v-if="scope.row.lState==2" slot="reference" class="color-line"
-                                                     style="background-color: #FF763B"></div>
-                                                <!--</el-popover>-->
+                                                <div v-if="scope.row.lState==2" slot="reference" class="color-line" style="background-color: #FF763B"></div>
+                                                <div v-if="scope.row.isNew==1" slot="reference" class="color-line"></div>
+                                                <div v-if="scope.row.isChange==1" slot="reference" class="color-line" style="background-color: #26D8BB"></div>
                                             </div>
                                             <span>{{scope.row.resName||'--'}}</span>
                                         </template>
@@ -209,6 +194,7 @@
                                     <div style="display: flex">
                                         <p><span style="background-color: #1890ff" class="color-line"></span>新增点位</p>
                                         <p><span style="background-color: #FF763B" class="color-line"></span>终止点位</p>
+                                        <p><span style="background-color: #26D8BB" class="color-line"></span>更改排期</p>
                                     </div>
                                     <div class="ad_pagination" v-if="total">
                                         <el-pagination
@@ -240,12 +226,12 @@
                     </el-tab-pane>
                     <el-tab-pane label="上刊报告" name="forth" :disabled="usableBtn||role =='OP'">
                         <div class="changepic_box" v-if="planPanel=='forth'">
-                            <change-pic :type="1" :order-detail="orderDetail"></change-pic>
+                            <change-pic :type="1" :order-detail="orderDetail" :scheduleList="scheduleList"></change-pic>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane label="下刊报告" name="fifth" :disabled="usableBtn||role =='OP'">
                         <div class="changepic_box" v-if="planPanel=='fifth'">
-                            <change-pic :type="2" :order-detail="orderDetail"></change-pic>
+                            <change-pic :type="2" :order-detail="orderDetail" :scheduleList="scheduleList"></change-pic>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane label="换画报告" name="sixth" v-if="showPain">
@@ -260,26 +246,29 @@
                 </div>
                 <!--添加点位对话框-->
                 <el-dialog title="添加点位"
-                           :visible.sync="dialogAddPoint"
-                           width="82%"
-                           top="6vh"
-                           :close-on-press-escape="false"
-                           :show-close="false">
+                    :visible.sync="dialogAddPoint"
+                    width="82%"
+                    top="6vh"
+                    :close-on-press-escape="false"
+                    :show-close="true">
                     <add-ads :IsAddAds="IsAddPoint" @ievent="ievent"></add-ads>
                     <span slot="footer" class="dialog-footer">
                         <el-button plain @click="cancelAddPoint" v-qadn-mta-h5="{id: 'a006_b011_c012_d009_bt154_ck08'}">取 消</el-button>
                         <el-button type="primary" @click="confirmAddPoint"
-                                   v-qadn-mta-h5="{id: 'a006_b011_c012_d009_bt153_ck08'}">确 定</el-button>
+                            v-qadn-mta-h5="{id: 'a006_b011_c012_d009_bt153_ck08'}">确 定</el-button>
                     </span>
                 </el-dialog>
-
+                <!--excel导入点位对话框-->
+                <import-point-by-excel :dialogImportPoint="dialogImportPoint" :handleTime="handleTime" @resetDialogImportPoint="resetDialogImportPoint" @refreshCurrentTable="refreshCurrentTable"></import-point-by-excel>
+                <!-- 更改排期对话框 -->
+                <changePointPlayDateRange :changeRangeDialog="changeRangeDialog" :changeList="changePointInfo.stopPointlist" :handleTime="handleTime" @resetDialogChangeRange="resetDialogChangeRange" @refreshCurrentTable="refreshCurrentTable"></changePointPlayDateRange>
                 <!-- 图片查看显示 -->
                 <el-dialog :visible.sync="dialogVisible" class="imgPreview" top="10vh">
                     <img :src="dialogImageUrl" alt=""/>
                 </el-dialog>
 
                 <!-- 终止点位弹出框 -->
-                <el-dialog
+                <!-- <el-dialog
                     title="终止点位"
                     :visible.sync="isFinish">
                     <span>请选择终止时间：</span>
@@ -290,11 +279,11 @@
                         <el-button plain @click="isFinish = false">取消</el-button>
                         <el-button type="primary" @click="conFirmStopAds">确 定</el-button>
                     </span>
-                </el-dialog>
+                </el-dialog> -->
 
                 <!--换点对话框-->
                 <el-dialog title="更换点位" :visible.sync="dialogChangePoint" :close-on-press-escape="false"
-                           :show-close="false" :before-close="closeDialogChangePoint" :close-on-click-modal="false">
+                    :show-close="false" :close-on-click-modal="false" :before-close="closeDialogChangePoint">
                     <div>
                         <el-row class="search-row" style="margin: 0">
                             <el-col>
@@ -307,13 +296,20 @@
                                 </el-button>
                                 <el-button plain @click="reset('change')" style="position: relative;top: 2px">重置
                                 </el-button>
-                                <div style="float: right">
-                                    <el-button type="primary" @click="stopPoint('stop')"
-                                               v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt151_ck05'}">终止点位
+                                <div style="float: right; display: flex;">
+                                    <el-button v-if="handleType===1" plain @click="changePointPlayDateRange">更改排期</el-button>
+                                    <el-button v-else-if="handleType===2" plain @click="stopPoint('stop')"
+                                        v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt151_ck05'}">终止点位
                                     </el-button>
-                                    <el-button type="primary" @click="showAddPointDialog"
+                                    <el-select v-else-if="handleType===3" size="mini" value="新增点位" placeholder="新增点位" class="add-point-select">
+                                        <el-option label="手动添加" value="1"
+                                            v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt150_ck04'}"
+                                            @click.native="showAddPointDialog"></el-option>
+                                        <el-option label="导入点位" value="2" @click.native="excelAddPointDialog"></el-option>
+                                    </el-select>
+                                    <!-- <el-button type="primary" @click="showAddPointDialog"
                                                v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt150_ck04'}">新增点位
-                                    </el-button>
+                                    </el-button> -->
                                 </div>
                             </el-col>
                         </el-row>
@@ -321,62 +317,58 @@
                             <i class="el-icon-info" style="color: #1890FF;"></i>
                             <h4>
                                 <span>当前点位共<em>{{pointTotal}}</em>个，</span>
-                                <span>终止点位<em>{{ changePointInfo.stopPointNum }}</em>个，</span>
-                                <span>新增点位<em>{{changePointInfo.addPointNum}}</em>个</span>
+                                <span v-if="handleType==1">更改排期点位<em>{{ changePointInfo.lIDArr.length }}</em>个</span>
+                                <span v-if="handleType==2">终止点位<em>{{ changePointInfo.stopPointNum }}</em>个</span>
+                                <span v-if="handleType==3">新增点位<em>{{changePointInfo.addPointNum}}</em>个</span>
                             </h4>
                         </div>
                         <div>
                             <el-table border :data="changePointArr" style="width: 100%"
-                                      :default-sort="{prop: 'recName', order: 'descending'}"
-                                      v-loading="changePointloading"
-                                      ref="multipleTable"
-                                      @select="handleSelect" @select-all="handleSelectAll"
-                                      element-loading-text="玩命加载中.."
-                                      element-loading-spinner="el-icon-loading">
+                                    :default-sort="{prop: 'recName', order: 'descending'}"
+                                    v-loading="changePointloading"
+                                    ref="multipleTable"
+                                    @select="handleSelect" @select-all="handleSelectAll"
+                                    element-loading-text="玩命加载中.."
+                                    element-loading-spinner="el-icon-loading">
                                 <el-table-column
+                                    v-if="handleType!==3"
                                     type="selection"
                                     aria-disabled="true"
                                     :selectable='selectInit'
                                     width="45">
                                 </el-table-column>
-                                <!--<el-table-column width="45px" >-->
-                                <!--<template slot-scope="scope">-->
-                                <!--<div class="roadGate">-->
-                                <!--<el-checkbox v-model="scope.row.checkBox" label=""-->
-                                <!--@change="handleSelectionChange(scope.row)">-->
-                                <!--</el-checkbox>&lt;!&ndash;v-model="scope.row.checkBox.ABC"&ndash;&gt;-->
-                                <!--</div>-->
-                                <!--</template>-->
-                                <!--</el-table-column>-->
                                 <el-table-column type="expand">
                                     <template slot-scope="props">
                                         <el-form label-position="left" inline class="demo-table-expand">
-                                            <el-form-item label="商圈：">
-                                                <span>{{ props.row.tradingArea}}</span>
+                                            <el-form-item label="商圈:">
+                                                <span>{{ props.row.tradingArea }}</span>
                                             </el-form-item>
-                                            <el-form-item label="楼栋数量：">
+                                            <el-form-item label="楼栋数量:">
                                                 <span>{{ props.row.fNum }}</span>
                                             </el-form-item>
-                                            <el-form-item label="资产编号：">
+                                            <el-form-item label="资产编号:">
                                                 <span>{{ props.row.assetTag }}</span>
                                             </el-form-item>
-                                            <el-form-item label="入住年份：">
+                                            <el-form-item label="入住年份:">
                                                 <span>{{ props.row.chDay }}</span>
                                             </el-form-item>
-                                            <el-form-item label="广告限制：">
+                                            <el-form-item label="广告限制:">
                                                 <span>{{ props.row.notPush || '--'}}</span>
                                             </el-form-item>
                                         </el-form>
                                         <el-form label-position="left" inline class="demo-table-expand">
-                                            <el-form-item v-if="sessionData.mediaManageLevel == 1 || sessionData.saleManageLevel == 2" label="归属公司：">
+                                            <el-form-item v-if="sessionData.mediaManageLevel == 1 || sessionData.saleManageLevel == 2" label="归属公司:">
                                                 <span class="ellipsis-td">{{ props.row.asName||'' }}</span>
                                             </el-form-item>
                                             <template v-if="customPermission.patrolPermission">
-                                                <el-form-item label="巡点问题：">
+                                                <el-form-item label="巡点问题:">
                                                     <span class="ellipsis-td">{{ props.row.remark || '--' }}</span>
                                                 </el-form-item>
-                                                <el-form-item label="通行情况：">
+                                                <el-form-item label="通行情况:">
                                                     <span class="ellipsis-td">{{ props.row.trafficState || '--' }}</span>
+                                                </el-form-item>
+                                                <el-form-item label="通电情况:">
+                                                    <span class="ellipsis-td">{{ props.row.electrifyState || '--' }}</span>
                                                 </el-form-item>
                                             </template>
                                         </el-form>
@@ -385,10 +377,12 @@
                                 <el-table-column label="资源名称" min-width="16.1%" class-name="resName-wrap">
                                     <template slot-scope="scope">
                                         <div style="float:left;position: absolute;left: 0;top: 0" v-if="isHandleChange">
-                                            <div v-if="scope.row.isCurrNew&&scope.row.lState!=2" slot="reference"
-                                                 class="color-line"></div>
-                                            <div v-if="scope.row.lState==2" slot="reference" class="color-line"
-                                                 style="background-color: #FF763B"></div>
+                                            <div v-if="scope.row.beEnd==1" slot="reference" class="color-line"
+                                                style="background-color: #FF763B"></div>
+                                            <div v-else-if="scope.row.isCurrNew==1" slot="reference"
+                                                class="color-line"></div>
+                                            <div v-else-if="scope.row.changePeriod==1" slot="reference" class="color-line"
+                                                style="background-color: #26D8BB"></div>
                                         </div>
                                         <span>{{scope.row.resName||'--'}}</span>
                                     </template>
@@ -398,10 +392,10 @@
                                 <el-table-column prop="asLab" label="投放面" min-width="5.8%">
                                 </el-table-column>
                                 <el-table-column prop="city" label="城市" min-width="6%" :filters="filterCityData"
-                                                 :filter-method="filterCity">
+                                    :filter-method="filterCity">
                                 </el-table-column>
                                 <el-table-column prop="rName" label="区域" min-width="7.4%" :filters="filtersArea"
-                                                 :filter-method="filterRName">
+                                    :filter-method="filterRName">
                                 </el-table-column>
                                 <el-table-column prop="cType" label="楼盘类型" min-width="6.5%">
                                     <template slot-scope="scope">
@@ -419,7 +413,7 @@
                                     </template>
                                 </el-table-column>
                                 <el-table-column prop="timeRange" label="排期" min-width="14.2%" :filters="filtersData"
-                                                 :filter-method="filterTimeRange" show-overflow-tooltip>
+                                    :filter-method="filterTimeRange" show-overflow-tooltip>
                                     <template slot-scope="scope">
                                         <span>{{scope.row.timeRange}}</span>
                                     </template>
@@ -430,9 +424,11 @@
                             </el-table>
                             <!--<p style="font-size: 12px;color: #666666;margin-top: 10px">提示：带*号的为新增点位</p>-->
                             <div class="table-bottom-tip">
+
                                 <div style="display: flex" v-if="isHandleChange">
                                     <p><span style="background-color: #1890ff" class="color-line"></span>新增点位</p>
                                     <p><span style="background-color: #FF763B" class="color-line"></span>终止点位</p>
+                                    <p><span style="background-color: #26D8BB" class="color-line"></span>更改排期</p>
                                 </div>
                                 <div class="ad_pagination" v-if="pointTotal">
                                     <el-pagination
@@ -453,7 +449,6 @@
                     <div slot="footer" class="dialog-footer">
                         <el-button v-if="isHandleChange" plain @click="doneChangePoint">完 成</el-button>
                         <el-button v-else plain @click="closeDialogChangePoint">取 消</el-button>
-
                     </div>
                 </el-dialog>
                 <!-- 推荐理由弹框 -->
@@ -579,13 +574,13 @@
                                             label="变更类型"
                                             min-width="6%">
                                             <template slot-scope="scope">
-                                                {{scope.row.type==1?'新增点位':'终止点位'}}
+                                                {{scope.row.type==2?'更改排期':scope.row.type==1?'新增点位':scope.row.type==0?'终止点位':''}}
                                             </template>
                                         </el-table-column>
                                         <el-table-column
                                             prop="resName"
                                             label="资源名称"
-                                            min-width="15%">
+                                            min-width="10%">
                                         </el-table-column>
                                         <el-table-column
                                             prop="mTitle"
@@ -606,6 +601,25 @@
                                             prop="district"
                                             label="区域"
                                             min-width="6%">
+                                        </el-table-column>
+                                        <!-- 2:更改排期 1：新增 0：终止 -->
+                                        <el-table-column
+                                            show-overflow-tooltip
+                                            prop="preLaunch"
+                                            label="原排期"
+                                            min-width="6%">
+                                            <template slot-scope="scope">
+                                                {{scope.row.type==2?scope.row.preLaunch:scope.row.type==1?'--':scope.row.type==0?`${scope.row.lStar}~${scope.row.lEnd}`:''}}
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column
+                                            show-overflow-tooltip
+                                            prop="newLaunch"
+                                            label="新排期"
+                                            min-width="6%">
+                                            <template slot-scope="scope">
+                                                {{scope.row.type==2?scope.row.newLaunch:scope.row.type==1?`${scope.row.lStar}~${scope.row.lEnd}`:scope.row.type==0?`${scope.row.lStar}~${(item.updateTime||'').split(' ')[0]}`:''}}
+                                            </template>
                                         </el-table-column>
                                     </el-table>
                                     <div class="price-wrap">
@@ -663,6 +677,8 @@
     import material from "./components/materialInfo.vue";
     import detail from "./components/detailInfo.vue";
     import addAds from "./components/addAds"
+    import importPointByExcel from "./components/importPointByExcel"
+    import changePointPlayDateRange from "./components/changePointPlayDateRange"
     import noSearchResult from "./components/noSearchResult.vue";
     import changePic from "./components/changePic.vue";
     import changeOrderPrice from "./components/changeOrderPrice.vue";
@@ -674,6 +690,8 @@
             material,
             detail,
             addAds,
+            importPointByExcel,
+            changePointPlayDateRange,
             changePic,
             noSearchResult,
             changeOrderPrice
@@ -761,8 +779,12 @@
                     }
                 },
 
-                //添加点位
+                // 手动添加点位
                 dialogAddPoint: false,
+                // 导入点位
+                dialogImportPoint: false,
+                // 更换点位排期
+                changeRangeDialog: false,
                 IsAddPoint: true,
                 addAdsArr: [],
                 dateInput: "",
@@ -792,11 +814,13 @@
                 changeKeyword: '',
                 //更换点位对话框数据
                 changePointInfo: {
+                    lIDArr: [],
                     allPoint: 0,
                     stopPointlist: [],
                     stopPointNum: 0,
                     addPointlist: [],
                     addPointNum: 0,
+                    changeAdsCount: 0
                 },
 
                 //更换点位取消终止按钮
@@ -852,16 +876,17 @@
                 // 推荐理由分页时页面条目数量
                 recommendationPageSize: 10,
                 recommendationCurrentPage: 1,
-                recommendationTotalNum: 0
+                recommendationTotalNum: 0,
+                handleType: 1
             };
         },
         created() {
             if (this.isChangePoint()) {
-                this.changePoint();
+                this.changeHandleType(this.handleType);
             } else {
                 this.getSetPoint();
-                this.getScheduleList()
             }
+            this.getScheduleList();
             // 根据角色判断是否有修改合同编号的权限
             this.getRole();
             // 获取订单详情的上面公司的信息
@@ -891,11 +916,13 @@
                 this.keyword = ''
                 this.changeKeyword = ''
                 this.changePointInfo = {
+                    lIDArr: [],
                     allPoint: 0,
                     stopPointlist: [],
                     stopPointNum: 0,
                     addPointlist: [],
                     addPointNum: 0,
+                    changeAdsCount: 0
                 }
             },
             //获取订单金额详情
@@ -1021,6 +1048,14 @@
                     });
                 // this.dialogChangePoint = false
             },
+            // 更改排期操作
+            changePointPlayDateRange() {
+                if (this.changePointInfo.stopPointlist.length > 0) {
+                    this.changeRangeDialog = true
+                } else {
+                    Message.warning('请先勾选需要更改排期的点位')
+                }
+            },
             //终止点位操作
             stopPoint() {
                 if (this.changePointInfo.stopPointlist.length > 0) {
@@ -1049,32 +1084,30 @@
                             orderNewAdsInfos: orderNewAdsInfos ? orderNewAdsInfos : [],
                             orderStoppedAdsInfos: orderStoppedAdsInfos ? orderStoppedAdsInfos : []
                         }
-                        console.log(this.orderDetail);
-                        // console.log('更换点位数据', info);
+                        // console.log(this.orderDetail);
                         api.postApi_json(this.apiVar.Advertisement + '/UpdateOrder', JSON.stringify(info)).then(res => {
                             console.log(res.data)
                             if (res.data.SysCode == 200200) {
                                 // this.dialogChangePoint = false
                                 Message.success(res.data.MSG)
-                                this.changePointInfo.stopPointNum = this.changePointInfo.stopPointlist.length
+                                this.changePointInfo.lIDArr = this.changePointInfo.lIDArr.concat(this.changePointInfo.stopPointlist)
+                                this.changePointInfo.stopPointNum = this.changePointInfo.lIDArr.length
                                 for (let data of this.changePointInfo.stopPointlist) {
                                     for (let item of this.setpointArr) {
                                         if (data.asID == item.asID && data.timeRange == item.timeRange) {
-                                            item.lState = 2
+                                            item.beEnd = 1
                                         }
                                     }
                                 }
-                                this.changePointPageFn()
-                                // this.getSetPoint('change')
                                 this.changePointInfo.stopPointlist = []
-                                this.changePointInfo.addPointlist = []
                                 this.isHandleChange = true
+                                this.changePointPageFn()
+                                // this.refreshCurrentTable()
                             } else {
                                 Message.warning(res.data.MSG)
                                 this.dialogChangePoint = false
                             }
                         })
-                        // this.dialogChangePoint = false
                     })
                         .catch(() => {
                             Message.info("已取消操作");
@@ -1145,6 +1178,7 @@
                         resAddress: data.resAddress,
                         remark: data.remark,
                         trafficState: data.trafficState,
+                        electrifyState: data.electrifyState,
                     };
                     resultArr.push(obj);
                 }
@@ -1157,9 +1191,15 @@
                         tHeader.push('归属公司');
                         filterVal.push('asName')
                     }
-                    if(this.customPermission.patrolPermission) {
-                        tHeader.push('巡点问题', '通行情况');
-                        filterVal.push('remark', 'trafficState')
+                    switch (this.customPermission.patrolPermission) {
+                        case 1:
+                            tHeader.push('巡点问题', '通行情况');
+                            filterVal.push('remark', 'trafficState')
+                            break;
+                        case 2:
+                            tHeader.push('巡点问题', '通行情况', '通电情况');
+                            filterVal.push('remark', 'trafficState', 'electrifyState')
+                            break;
                     }
                     const list = resultArr;
                     const data = this.formatJson(filterVal, list);
@@ -1314,11 +1354,6 @@
                             // 选点排期
                             // this.copyAsidArr = JSON.parse(JSON.stringify(result));
                             this.exportArr = result;
-                            // // 城市筛选过滤
-                            // this.filterCityData = filterFormat(result, "city");
-                            // console.log('城市filter', this.filterCityData)
-                            // this.filtersArea = filterFormat(result, "rName");
-                            // this.filtersData = filterFormat(result, "timeRange");
 
                             // 广告门物料信息
                             let mInfo = initData.gateMaterialInfo;
@@ -1385,9 +1420,8 @@
                     });
             },
             //获取选点排期
-            getSetPoint(type) {
+            getSetPoint(type, lIDs) {
                 let loginData = this.sessionData;
-
                 let apid = sessionStorage.getItem("order_apid");
                 let info = {
                     uid: loginData.uID,
@@ -1409,13 +1443,15 @@
                 }
                 api.getApi(this.apiVar.Advertisement + "/GetAdLaunchList", info)
                     .then(res => {
-                        console.log(res.data);
                         if (res.data.SysCode == 200200) {
                             let initData = res.data.data;
                             let result = initData.list;
                             this.total = initData.total
                             this.pointTotal = initData.total
                             this.changePointInfo.allPoint = initData.total
+                            // this.changePointInfo.stopPointNum = initData.stoppedAdsCount
+                            // this.changePointInfo.addPointNum = initData.newAdsCount
+                            // this.changePointInfo.changeAdsCount = initData.changeAdsCount
                             // this.addNewAdsNum = res.data.isNewCount
                             for (let data of result) {
                                 let time = this.formatTime(data.lStar) + "-" + this.formatTime(data.lEnd);
@@ -1428,24 +1464,39 @@
                             }
                             // 选点排期
                             this.copyAsidArr = JSON.parse(JSON.stringify(result));
-
-                            if (type && type == 'change') {
-                                this.setpointArr = result;
-                                this.tempSetPointArr = result
-                                this.changePointArr = result;
-                                //本次是否有新增
-                                for (let data of this.changePointInfo.addPointlist) {
-                                    for (let item of  this.setpointArr) {
-                                        if (data.asID == item.asID && data.timeRange == item.timeRange) {
-                                            item.isCurrNew = 1
+                            if (type && (type == 'change')) {
+                                this.setpointArr = result
+                                if(lIDs && lIDs.length>0) {
+                                    // 更改排期点位
+                                    this.changePointInfo.lIDArr = lIDs.concat(this.changePointInfo.lIDArr)
+                                    this.setpointArr.forEach(item => {
+                                        if (this.changePointInfo.lIDArr.includes(item.lID) && item.isChange==1) {
+                                            item.changePeriod = 1
+                                        }
+                                    });
+                                } else if(lIDs && lIDs.length==0) {
+                                    // 导入点位时lIDs为空数组
+                                    let lastArr = this.tempSetPointArr.map(item=>item.lID)
+                                    let tempAddArr =  this.setpointArr.filter(item=>{
+                                        return !lastArr.includes(item.lID) && item.isNew==1
+                                    })
+                                    this.changePointInfo.addPointlist.push(...tempAddArr)
+                                }
+                                if(this.changePointInfo.addPointlist.length>0) {
+                                    this.changePointInfo.addPointNum = this.changePointInfo.addPointlist.length
+                                    // 新增点位或导入点位
+                                    for (let data of this.changePointInfo.addPointlist) {
+                                        for (let item of  this.setpointArr) {
+                                            if (item.isNew==1 && data.asID == item.asID && data.timeRange == item.timeRange) {
+                                                item.isCurrNew = 1
+                                            }
                                         }
                                     }
                                 }
+                                this.tempSetPointArr = result
                                 this.changePointPageFn()
-
-                                // this.changePointPageFn()
-
                             } else {
+                                // 选点排期表格
                                 this.currentPointArr = result;
                             }
 
@@ -1482,7 +1533,6 @@
                         if (!this.isHaveFun(this.changePointInfo.stopPointlist, data)) {
                             this.changePointInfo.stopPointlist.push(data);
                         }
-
                     }
                 } else {
                     // 取消选中
@@ -1493,7 +1543,6 @@
                             }
                             return true;
                         });
-
                     }
                 }
                 console.log(this.changePointInfo.stopPointlist, 'one--shoplist');
@@ -1524,7 +1573,7 @@
             },
             //以终止的不可勾选
             selectInit(item) {
-                if (item.lState == 2) {
+                if (item.beEnd == 1) {
                     return false  //不可勾选
                 } else {
                     return true  //可勾选
@@ -1594,7 +1643,6 @@
             },
             // 价格加上逗号
             priceFormat(price) {
-                // console.log('price', price);
                 return commaFormat.init(price);
             },
             priceToFormat(price) {
@@ -1607,21 +1655,10 @@
                 result = result + dateFormat.toDate(date, "");
                 result = result + rid.toString().substring(0, 4);
                 result = result + "00" + Math.round(Math.random() * 10);
-                // console.log(result);
                 return result;
             },
-            // 当搜索框为空的时候进行重置显示
-            // init() {
-            //     if (!this.keyword) {
-            //         this.changePointArr = this.setpointArr;
-            //     }
-            // },
             // 搜索
             search(type) {
-                // 账号，姓名
-                // console.log(this.selectRecName);
-                console.log(this.keyword, this.changeKeyword, type);
-                // let keyword = this.keyword;
                 if (type == 'change') {
                     //更换点位
                     let t = [...this.setpointArr];
@@ -1638,7 +1675,6 @@
                     this.setpointArr = arr
                     console.log(this.setpointArr);
                     this.changePointPageFn()
-                    // this.getSetPoint(type)
                 } else {
                     this.getSetPoint('type')
                 }
@@ -1648,7 +1684,6 @@
                 if (type == 'change') {
                     this.changeKeyword = ''
                     this.setpointArr = this.tempSetPointArr
-                    // this.getSetPoint(type)
                     this.changePointPageFn()
                 } else {
                     this.keyword = ''
@@ -1794,7 +1829,7 @@
                 this.changeCID = false;
             },
             // 终止点位
-            conFirmStopAds() {
+            /* conFirmStopAds() {
                 let info = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
@@ -1837,27 +1872,22 @@
                         this.isFinish = false;
                     });
 
-            },
+            }, */
 
             //恢复/取消终止操作
-            restoreState(row) {
-                for (let data of this.setpointArr) {
-                    if (data.lID == row.lID) {
-                        this.$set(row, "lState", 1);
-                        this.changePointInfo.stopPointlist.splice(data, 1)
-                    }
-                }
+            // restoreState(row) {
+            //     for (let data of this.setpointArr) {
+            //         if (data.lID == row.lID) {
+            //             this.$set(row, "lState", 1);
+            //             this.changePointInfo.stopPointlist.splice(data, 1)
+            //         }
+            //     }
 
-            },
+            // },
             //点击换点
-            changePoint() {
-                // Message.warning("该功能尚未完善");
+            changeHandleType(handleType) {
+                this.handleType = handleType
                 sessionStorage.setItem('change_point', 'yes');
-                // this.usableBtn = true;
-                // $(window).scrollTop(288);
-                // this.showTitle = true;
-                // this.showBtn = false;
-                // this.showHandel = true;
                 this.initListData()
                 this.handleTime = new Date().getTime()
                 this.dialogChangePoint = true
@@ -1868,13 +1898,32 @@
             },
             //显示添加点位的模态框
             showAddPointDialog() {
-                let pdidArr = this.pdidList
-                console.log('pdidarr---', pdidArr);
                 this.dialogAddPoint = true
                 this.IsAddPoint = !this.IsAddPoint
-                // if(this.IsAddPoint){
-                //     this.IsAddPoint = false
-                // }
+            },
+            // excel 导入点位弹框
+            excelAddPointDialog() {
+                this.dialogImportPoint = true
+            },
+            resetDialogImportPoint() {
+                this.dialogImportPoint = false
+            },
+            refreshCurrentTable(lIDs) {
+                this.currPointloading = true;
+                if(lIDs) {
+                    // 更改排期
+                    this.getSetPoint('change', lIDs)
+                    this.getScheduleList()
+                    this.changePointInfo.stopPointlist = []
+                } else {
+                    // 新增点位
+                    this.getSetPoint('change')
+                }
+                // this.selectioUpdate()
+                this.isHandleChange = true
+            },
+            resetDialogChangeRange() {
+                this.changeRangeDialog = false
             },
             //获取子组件选择的点位数据
             ievent(...data) {
@@ -1889,9 +1938,6 @@
                     spinner: 'el-icon-loading',
                     background: 'rgba(0, 0, 0, 0.7)'
                 });
-                console.log('pdidarr---', this.addAdsArr);
-                console.log('shopingArr', this.pdidList)
-                let userData = this.sessionData;
                 let arr = []
                 for (let key of this.addAdsArr) {
                     for (let pKey of this.pdidList) {
@@ -1952,23 +1998,12 @@
                             Message.success("添加点位成功")
                             for (let data of arr) {
                                 this.changePointInfo.addPointlist.push(data)
-                                this.setpointArr.unshift(data)
+                                // this.setpointArr.unshift(data)
                             }
                             this.dialogAddPoint = false
                             this.IsAddPoint = true
-                            this.isHandleChange = true
                             this.changePointInfo.addPointNum = this.changePointInfo.addPointlist.length
-                            // this.getSetPoint('change')
-
-                            for (let data of this.changePointInfo.addPointlist) {
-                                for (let item of  this.setpointArr) {
-                                    if (data.asID == item.asID && data.timeRange == item.timeRange) {
-                                        item.isCurrNew = 1
-                                    }
-                                }
-                            }
-                            this.changePointPageFn()
-
+                            this.refreshCurrentTable()
                         }
                     }
                 })
@@ -2096,7 +2131,7 @@
     ;
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
     .ellipsis-td {
         width: 132px;
         overflow: hidden;
@@ -2246,6 +2281,7 @@
 
     .plan-title .handleBtn {
         position: absolute;
+        display: flex;
         right: 28px;
         top: 30px;
     }
@@ -2366,11 +2402,56 @@
         top: -2px;
         left: -3px;
     }
-
+    
+    /* 更换点位 */
+    .flex-center {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    /deep/ .el-table-column--selection {
+        @extend .flex-center;
+        .cell {
+            @extend .flex-center;
+        }
+    }
+    /deep/ .el-table__expand-column .cell {
+        @extend .flex-center;
+    }
     /* 搜索 */
     .search-row {
         margin: 0 32px 0;
+        
     }
+    .change-point-select {
+        width: 100px;
+        margin-left: 8px;
+        :hover, :focus {
+            color: #409EFF;
+            border-color: #409EFF;
+            /deep/ .el-icon-arrow-up {
+                color: #409EFF;
+            }
+        }
+        /deep/ .el-input__inner {
+            text-align: center;
+        }
+    }
+    .add-point-select {
+        width: 100px;
+        margin-left: 8px;
+        :hover, :focus {
+            color: #409EFF;
+            border-color: #409EFF;
+            /deep/ .el-icon-arrow-up {
+                color: #409EFF;
+            }
+        }
+        /deep/ .el-input__inner {
+            padding-left: 8px;
+        }
+    }
+
 
     /*日期控件*/
     /deep/ .el-range-separator {
@@ -2379,7 +2460,6 @@
     }
 
     /deep/ .search-row .el-input__inner {
-        width: 260px;
         height: 32px;
         line-height: 32px;
     }
@@ -2514,7 +2594,7 @@
         border: 1px solid #bae7ff;
         border-radius: 4px;
         margin: 16px 0;
-        padding: 5px;
+        padding: 9.5px;
     }
 
     .table-top-tip /deep/ .el-icon-info {

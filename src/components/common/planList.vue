@@ -595,7 +595,6 @@
             // 滚动加载获取数据(无搜索数据)
             getData(params) {
                 api.getApi(this.apiVar.Advertisement + '/GetProposal', params).then(res => {
-                    console.log(res.data);
                     if (!res.data.SysCode) {
                         let dataInfo = res.data;
                         this.totalNum = dataInfo.total;
@@ -651,7 +650,6 @@
                     token: this.sessionData.token,
                 };
                 api.getApi(this.apiVar.Advertisement + '/GetAPDCityNames', info).then(res => {
-                    console.log(res.data);
                     let arr = res.data;
                     let result = [];
                     if (!arr.SysCode) {

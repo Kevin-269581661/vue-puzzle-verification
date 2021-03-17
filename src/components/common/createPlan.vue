@@ -1991,8 +1991,16 @@
                             if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
                                 head.push('归属公司')
                             }
-                            if(customPermission && customPermission.patrolPermission) {
+                            /* if(customPermission && customPermission.patrolPermission) {
                                 head.push('巡点问题', '通行情况');
+                            } */
+                            switch (customPermission.patrolPermission) {
+                                case 1:
+                                    head.push('巡点问题', '通行情况');
+                                    break;
+                                case 2:
+                                    head.push('巡点问题', '通行情况', '通电情况');
+                                    break;
                             }
                             let allHead = head.concat([info.startTime + '-' + info.endTime]);
                             let filename = returnobj.city.join('-') + '-' + info.startTime + '~' + info.endTime + '空位表';
@@ -2154,8 +2162,16 @@
                             if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
                                 head.push('归属公司')
                             }
-                            if(customPermission && customPermission.patrolPermission) {
+                            /* if(customPermission && customPermission.patrolPermission) {
                                 head.push('巡点问题', '通行情况');
+                            } */
+                            switch (customPermission.patrolPermission) {
+                                case 1:
+                                    head.push('巡点问题', '通行情况');
+                                    break;
+                                case 2:
+                                    head.push('巡点问题', '通行情况', '通电情况');
+                                    break;
                             }
                             let allHead = head.concat(date);
                             let filename = returnobj.filename + '-' + date[0].substring(0, 10) + '~' + date[date.length - 1].substring(11) + '空位表';
@@ -2719,8 +2735,16 @@
                 if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
                     allHead.push('归属公司')
                 }
-                if(this.customPermission.patrolPermission) {
+                /* if(this.customPermission.patrolPermission) {
                     allHead.push('巡点问题', '通行情况');
+                } */
+                switch (this.customPermission.patrolPermission) {
+                    case 1:
+                        allHead.push('巡点问题', '通行情况');
+                        break;
+                    case 2:
+                        allHead.push('巡点问题', '通行情况', '通电情况');
+                        break;
                 }
                 sheetExcel.toDownload(allHead, arr, this.planForm.planName + '点位表', head);
             },

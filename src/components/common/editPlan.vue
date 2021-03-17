@@ -2033,8 +2033,16 @@
                 if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
                     allHead.push('归属公司')
                 }
-                if(this.customPermission.patrolPermission) {
+                /* if(this.customPermission.patrolPermission) {
                     allHead.push('巡点问题', '通行情况');
+                } */
+                switch (this.customPermission.patrolPermission) {
+                    case 1:
+                        allHead.push('巡点问题', '通行情况');
+                        break;
+                    case 2:
+                        allHead.push('巡点问题', '通行情况', '通电情况');
+                        break;
                 }
                 if(this.shareADUrl){
                     let head = ['在线协同选点链接(可地图查看社区)  '+this.shareADUrl, '', '', '', '', '', '', '', '', '', '', '', ''];

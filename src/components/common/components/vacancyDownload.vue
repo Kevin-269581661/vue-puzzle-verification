@@ -191,8 +191,16 @@ export default {
                             head.push('归属公司')
                         }
                         let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
-                        if(customPermission && customPermission.patrolPermission) {
+                        /* if(customPermission && customPermission.patrolPermission) {
                             head.push('巡点问题', '通行情况');
+                        } */
+                        switch (customPermission.patrolPermission) {
+                            case 1:
+                                head.push('巡点问题', '通行情况');
+                                break;
+                            case 2:
+                                head.push('巡点问题', '通行情况', '通电情况');
+                                break;
                         }
                         let allHead = head.concat([info.startTime+'-'+info.endTime]);
                         let filename = returnobj.city.join('-')+'-'+ info.startTime+'~'+info.endTime+'空位表';
@@ -343,8 +351,16 @@ export default {
                         if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
                             head.push('归属公司')
                         }
-                        if(customPermission && customPermission.patrolPermission) {
+                        /* if(customPermission && customPermission.patrolPermission) {
                             head.push('巡点问题', '通行情况');
+                        } */
+                        switch (customPermission.patrolPermission) {
+                            case 1:
+                                head.push('巡点问题', '通行情况');
+                                break;
+                            case 2:
+                                head.push('巡点问题', '通行情况', '通电情况');
+                                break;
                         }
                         let allHead = head.concat(date);
                         let filename = returnobj.filename+'-'+ date[0].substring(0, 10)+'~'+date[date.length-1].substring(11)+'空位表';
@@ -474,8 +490,16 @@ export default {
                                 head.push('归属公司')
                             }
                             let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
-                            if(customPermission && customPermission.patrolPermission) {
+                            /* if(customPermission && customPermission.patrolPermission) {
                                 head.push('巡点问题', '通行情况');
+                            } */
+                            switch (customPermission.patrolPermission) {
+                                case 1:
+                                    head.push('巡点问题', '通行情况');
+                                    break;
+                                case 2:
+                                    head.push('巡点问题', '通行情况', '通电情况');
+                                    break;
                             }
                             let filename = returnobj.city.join('-')+'-'+ date +'空位表';
                             sheetExcel.toDownload(head, returnobj.arr, filename);

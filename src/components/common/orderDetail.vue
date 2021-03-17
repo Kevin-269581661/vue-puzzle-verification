@@ -37,10 +37,18 @@
                             </el-button>
                             <!--<el-button type="primary" :disabled="usableBtn"-->
                             <!--v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0" @click="changePoint" v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}">换点</el-button>-->
-                            <el-button type="primary"
+                            <!-- <el-button type="primary"
                                        v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0"
-                                       @click="changePoint" v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}">换点
-                            </el-button>
+                                       @click="changeHandleType" v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}">换点
+                            </el-button> -->
+                            <el-select v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0"
+                                size="small" value="换点" placeholder="换点" class="add-point-select">
+                                <el-option label="更改排期" value="1"
+                                    v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}"
+                                    @click.native="changeHandleType(1)"></el-option>
+                                <el-option label="终止点位" value="2" @click.native="changeHandleType(2)"></el-option>
+                                <el-option label="新增点位" value="3" @click.native="changeHandleType(3)"></el-option>
+                            </el-select>
                         </div>
                     </div>
                     <div>
@@ -52,10 +60,6 @@
                 <el-tabs v-model="planPanel" @tab-click="handleClick()">
                     <el-tab-pane label="选点排期" name="first">
                         <div class="first-wrap box-wrap">
-                            <!--    <h4 v-if="showTitle" style="margin-bottom:16px;">
-                                    更换点位
-                                   <span>单位:面&nbsp;&nbsp; 首次投放:{{nowPointNum}}&nbsp;&nbsp; 中止投放:{{stopPointNum}} &nbsp;&nbsp;&nbsp; 新增面数:{{addNewPointNum}} &nbsp;&nbsp;&nbsp; 累计投放:{{setpointArr.length}} </span>
-                                </h4>-->
                             <el-row class="search-row">
                                 <el-col>
                                     <span style="font-size: 14px;color: rgba(0,0,0,0.85)">资源名称：</span>
@@ -128,7 +132,7 @@
                                             <div style="float:left;position: absolute;left: 0;top: 0">
                                                 <div v-if="scope.row.lState==2" slot="reference" class="color-line" style="background-color: #FF763B"></div>
                                                 <div v-if="scope.row.isNew==1" slot="reference" class="color-line"></div>
-                                                <div v-if="scope.row.isNew==2" slot="reference" class="color-line" style="background-color: #26D8BB"></div>
+                                                <div v-if="scope.row.isChange==1" slot="reference" class="color-line" style="background-color: #26D8BB"></div>
                                             </div>
                                             <span>{{scope.row.resName||'--'}}</span>
                                         </template>
@@ -264,7 +268,7 @@
                 </el-dialog>
 
                 <!-- 终止点位弹出框 -->
-                <el-dialog
+                <!-- <el-dialog
                     title="终止点位"
                     :visible.sync="isFinish">
                     <span>请选择终止时间：</span>
@@ -275,7 +279,7 @@
                         <el-button plain @click="isFinish = false">取消</el-button>
                         <el-button type="primary" @click="conFirmStopAds">确 定</el-button>
                     </span>
-                </el-dialog>
+                </el-dialog> -->
 
                 <!--换点对话框-->
                 <el-dialog title="更换点位" :visible.sync="dialogChangePoint" :close-on-press-escape="false"
@@ -293,11 +297,11 @@
                                 <el-button plain @click="reset('change')" style="position: relative;top: 2px">重置
                                 </el-button>
                                 <div style="float: right; display: flex;">
-                                    <el-button plain @click="changePointPlayDateRange">更改排期</el-button>
-                                    <el-button plain @click="stopPoint('stop')"
+                                    <el-button v-if="handleType===1" plain @click="changePointPlayDateRange">更改排期</el-button>
+                                    <el-button v-else-if="handleType===2" plain @click="stopPoint('stop')"
                                         v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt151_ck05'}">终止点位
                                     </el-button>
-                                    <el-select size="mini" value="新增点位" placeholder="新增点位" class="add-point-select">
+                                    <el-select v-else-if="handleType===3" size="mini" value="新增点位" placeholder="新增点位" class="add-point-select">
                                         <el-option label="手动添加" value="1"
                                             v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt150_ck04'}"
                                             @click.native="showAddPointDialog"></el-option>
@@ -326,6 +330,7 @@
                                     element-loading-text="玩命加载中.."
                                     element-loading-spinner="el-icon-loading">
                                 <el-table-column
+                                    v-if="handleType!==3"
                                     type="selection"
                                     aria-disabled="true"
                                     :selectable='selectInit'
@@ -371,11 +376,11 @@
                                 <el-table-column label="资源名称" min-width="16.1%" class-name="resName-wrap">
                                     <template slot-scope="scope">
                                         <div style="float:left;position: absolute;left: 0;top: 0" v-if="isHandleChange">
-                                            <div v-if="scope.row.lState==2" slot="reference" class="color-line"
+                                            <div v-if="scope.row.beEnd==1" slot="reference" class="color-line"
                                                 style="background-color: #FF763B"></div>
-                                            <div v-else-if="scope.row.isNew==1" slot="reference"
+                                            <div v-if="scope.row.isCurrNew==1" slot="reference"
                                                 class="color-line"></div>
-                                            <div v-else-if="scope.row.isNew==2" slot="reference" class="color-line"
+                                            <div v-if="scope.row.changePeriod==1" slot="reference" class="color-line"
                                                 style="background-color: #26D8BB"></div>
                                         </div>
                                         <span>{{scope.row.resName||'--'}}</span>
@@ -443,7 +448,6 @@
                     <div slot="footer" class="dialog-footer">
                         <el-button v-if="isHandleChange" plain @click="doneChangePoint">完 成</el-button>
                         <el-button v-else plain @click="closeDialogChangePoint">取 消</el-button>
-
                     </div>
                 </el-dialog>
                 <!-- 推荐理由弹框 -->
@@ -809,11 +813,13 @@
                 changeKeyword: '',
                 //更换点位对话框数据
                 changePointInfo: {
+                    lIDArr: [],
                     allPoint: 0,
                     stopPointlist: [],
                     stopPointNum: 0,
                     addPointlist: [],
                     addPointNum: 0,
+                    changeAdsCount: 0
                 },
 
                 //更换点位取消终止按钮
@@ -869,12 +875,13 @@
                 // 推荐理由分页时页面条目数量
                 recommendationPageSize: 10,
                 recommendationCurrentPage: 1,
-                recommendationTotalNum: 0
+                recommendationTotalNum: 0,
+                handleType: 1
             };
         },
         created() {
             if (this.isChangePoint()) {
-                this.changePoint();
+                this.changeHandleType(this.handleType);
             } else {
                 this.getSetPoint();
             }
@@ -908,11 +915,13 @@
                 this.keyword = ''
                 this.changeKeyword = ''
                 this.changePointInfo = {
+                    lIDArr: [],
                     allPoint: 0,
                     stopPointlist: [],
                     stopPointNum: 0,
                     addPointlist: [],
                     addPointNum: 0,
+                    changeAdsCount: 0
                 }
             },
             //获取订单金额详情
@@ -1074,8 +1083,7 @@
                             orderNewAdsInfos: orderNewAdsInfos ? orderNewAdsInfos : [],
                             orderStoppedAdsInfos: orderStoppedAdsInfos ? orderStoppedAdsInfos : []
                         }
-                        console.log(this.orderDetail);
-                        // console.log('更换点位数据', info);
+                        // console.log(this.orderDetail);
                         api.postApi_json(this.apiVar.Advertisement + '/UpdateOrder', JSON.stringify(info)).then(res => {
                             console.log(res.data)
                             if (res.data.SysCode == 200200) {
@@ -1085,21 +1093,19 @@
                                 for (let data of this.changePointInfo.stopPointlist) {
                                     for (let item of this.setpointArr) {
                                         if (data.asID == item.asID && data.timeRange == item.timeRange) {
-                                            item.lState = 2
+                                            item.beEnd = 1
                                         }
                                     }
                                 }
-                                this.changePointPageFn()
-                                // this.getSetPoint('change')
                                 this.changePointInfo.stopPointlist = []
-                                this.changePointInfo.addPointlist = []
                                 this.isHandleChange = true
+                                this.changePointPageFn()
+                                // this.refreshCurrentTable()
                             } else {
                                 Message.warning(res.data.MSG)
                                 this.dialogChangePoint = false
                             }
                         })
-                        // this.dialogChangePoint = false
                     })
                         .catch(() => {
                             Message.info("已取消操作");
@@ -1346,11 +1352,6 @@
                             // 选点排期
                             // this.copyAsidArr = JSON.parse(JSON.stringify(result));
                             this.exportArr = result;
-                            // // 城市筛选过滤
-                            // this.filterCityData = filterFormat(result, "city");
-                            // console.log('城市filter', this.filterCityData)
-                            // this.filtersArea = filterFormat(result, "rName");
-                            // this.filtersData = filterFormat(result, "timeRange");
 
                             // 广告门物料信息
                             let mInfo = initData.gateMaterialInfo;
@@ -1417,9 +1418,8 @@
                     });
             },
             //获取选点排期
-            getSetPoint(type) {
+            getSetPoint(type, lIDs) {
                 let loginData = this.sessionData;
-
                 let apid = sessionStorage.getItem("order_apid");
                 let info = {
                     uid: loginData.uID,
@@ -1441,13 +1441,15 @@
                 }
                 api.getApi(this.apiVar.Advertisement + "/GetAdLaunchList", info)
                     .then(res => {
-                        console.log(res.data);
                         if (res.data.SysCode == 200200) {
                             let initData = res.data.data;
                             let result = initData.list;
                             this.total = initData.total
                             this.pointTotal = initData.total
                             this.changePointInfo.allPoint = initData.total
+                            this.changePointInfo.stopPointNum = initData.stoppedAdsCount
+                            this.changePointInfo.addPointNum = initData.newAdsCount
+                            this.changePointInfo.changeAdsCount = initData.changeAdsCount
                             // this.addNewAdsNum = res.data.isNewCount
                             for (let data of result) {
                                 let time = this.formatTime(data.lStar) + "-" + this.formatTime(data.lEnd);
@@ -1460,24 +1462,31 @@
                             }
                             // 选点排期
                             this.copyAsidArr = JSON.parse(JSON.stringify(result));
-
-                            if (type && type == 'change') {
-                                this.setpointArr = result;
+                            if (type && (type == 'change')) {
+                                this.setpointArr = result
                                 this.tempSetPointArr = result
-                                this.changePointArr = result;
-                                //本次是否有新增
-                                for (let data of this.changePointInfo.addPointlist) {
-                                    for (let item of  this.setpointArr) {
-                                        if (data.asID == item.asID && data.timeRange == item.timeRange) {
-                                            item.isCurrNew = 1
+                                if(this.changePointInfo.addPointlist.length>0) {
+                                    // 新增点位或导入点位
+                                    for (let data of this.changePointInfo.addPointlist) {
+                                        for (let item of  this.setpointArr) {
+                                            if (item.isNew==1 && data.asID == item.asID && data.timeRange == item.timeRange) {
+                                                item.isCurrNew = 1
+                                            }
                                         }
                                     }
                                 }
+                                if(lIDs && lIDs.length>0) {
+                                    // 更改排期点位
+                                    lIDs = lIDs.concat(this.changePointInfo.lIDArr)
+                                    this.setpointArr.forEach(item => {
+                                        if (lIDs.includes(item.lID) && item.isChange==1) {
+                                            item.changePeriod = 1
+                                        }
+                                    });
+                                }
                                 this.changePointPageFn()
-
-                                // this.changePointPageFn()
-
                             } else {
+                                // 选点排期表格
                                 this.currentPointArr = result;
                             }
 
@@ -1514,7 +1523,6 @@
                         if (!this.isHaveFun(this.changePointInfo.stopPointlist, data)) {
                             this.changePointInfo.stopPointlist.push(data);
                         }
-
                     }
                 } else {
                     // 取消选中
@@ -1525,7 +1533,6 @@
                             }
                             return true;
                         });
-
                     }
                 }
                 console.log(this.changePointInfo.stopPointlist, 'one--shoplist');
@@ -1812,7 +1819,7 @@
                 this.changeCID = false;
             },
             // 终止点位
-            conFirmStopAds() {
+            /* conFirmStopAds() {
                 let info = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
@@ -1835,14 +1842,13 @@
                         .then(res => {
                             console.log(res.data);
                             if (!res.data.SysCode) {
-                                /* let resdata = res.data;
+                                let resdata = res.data;
                                 this.$set(this.nowRow, "lState", resdata.lState);
                                 this.$set(this.nowRow, "lSetTime", resdata.lSetTime);
                                 let time = this.formatTime(resdata.lStar) + "-" + this.formatTime(resdata.lSetTime);
                                 this.$set(this.nowRow, 'finishTimeRange', time);
-                                this.isFinish = false; */
+                                this.isFinish = false;
                                 Message.success("终止成功");
-                                this.refreshCurrentTable()
                             } else {
                                 Message.warning(res.data.MSG);
                             }
@@ -1856,27 +1862,22 @@
                         this.isFinish = false;
                     });
 
-            },
+            }, */
 
             //恢复/取消终止操作
-            restoreState(row) {
-                for (let data of this.setpointArr) {
-                    if (data.lID == row.lID) {
-                        this.$set(row, "lState", 1);
-                        this.changePointInfo.stopPointlist.splice(data, 1)
-                    }
-                }
+            // restoreState(row) {
+            //     for (let data of this.setpointArr) {
+            //         if (data.lID == row.lID) {
+            //             this.$set(row, "lState", 1);
+            //             this.changePointInfo.stopPointlist.splice(data, 1)
+            //         }
+            //     }
 
-            },
+            // },
             //点击换点
-            changePoint() {
-                // Message.warning("该功能尚未完善");
+            changeHandleType(handleType) {
+                this.handleType = handleType
                 sessionStorage.setItem('change_point', 'yes');
-                // this.usableBtn = true;
-                // $(window).scrollTop(288);
-                // this.showTitle = true;
-                // this.showBtn = false;
-                // this.showHandel = true;
                 this.initListData()
                 this.handleTime = new Date().getTime()
                 this.dialogChangePoint = true
@@ -1897,12 +1898,17 @@
             resetDialogImportPoint() {
                 this.dialogImportPoint = false
             },
-            refreshCurrentTable() {
+            refreshCurrentTable(lIDs) {
                 this.currPointloading = true;
-                this.getSetPoint('change')
-                this.getScheduleList()
-                this.changePointInfo.stopPointlist = []
-                this.changePointInfo.addPointlist = []
+                if(lIDs) {
+                    // 更改排期
+                    this.getSetPoint('change', lIDs)
+                    this.getScheduleList()
+                    this.changePointInfo.stopPointlist = []
+                } else {
+                    // 新增点位
+                    this.getSetPoint('change')
+                }
                 // this.selectioUpdate()
                 this.isHandleChange = true
             },
@@ -1982,24 +1988,12 @@
                             Message.success("添加点位成功")
                             for (let data of arr) {
                                 this.changePointInfo.addPointlist.push(data)
-                                this.setpointArr.unshift(data)
+                                // this.setpointArr.unshift(data)
                             }
                             this.dialogAddPoint = false
                             this.IsAddPoint = true
                             this.changePointInfo.addPointNum = this.changePointInfo.addPointlist.length
                             this.refreshCurrentTable()
-                            // this.isHandleChange = true
-                            // // this.getSetPoint('change')
-
-                            // for (let data of this.changePointInfo.addPointlist) {
-                            //     for (let item of  this.setpointArr) {
-                            //         if (data.asID == item.asID && data.timeRange == item.timeRange) {
-                            //             item.isCurrNew = 1
-                            //         }
-                            //     }
-                            // }
-                            // this.changePointPageFn()
-
                         }
                     }
                 })
@@ -2277,6 +2271,7 @@
 
     .plan-title .handleBtn {
         position: absolute;
+        display: flex;
         right: 28px;
         top: 30px;
     }
@@ -2416,19 +2411,20 @@
     /* 搜索 */
     .search-row {
         margin: 0 32px 0;
-        .add-point-select {
-            width: 100px;
-            margin-left: 8px;
-            :hover, :focus {
+        
+    }
+    .add-point-select {
+        width: 100px;
+        margin-left: 8px;
+        :hover, :focus {
+            color: #409EFF;
+            border-color: #409EFF;
+            /deep/ .el-icon-arrow-up {
                 color: #409EFF;
-                border-color: #409EFF;
-                /deep/ .el-icon-arrow-up {
-                    color: #409EFF;
-                }
             }
-            /deep/ .el-input__inner {
-                padding-left: 8px;
-            }
+        }
+        /deep/ .el-input__inner {
+            padding-left: 8px;
         }
     }
 

@@ -166,6 +166,7 @@ export default {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
+          closeOnClickModal: false
         }
       )
         .then(() => {
@@ -174,9 +175,10 @@ export default {
         .catch(() => {});
     },
     commit() {
+      let lIDs = this.changeList.map(item=>item.lID)
       let info = {
         apID : sessionStorage.getItem("order_apid"),
-        lIDs: this.changeList.map(item=>item.lID).join(','),
+        lIDs: lIDs.join(','),
         mark: this.handleTime,
         endDate: this.dateValue,
       };
@@ -188,7 +190,7 @@ export default {
             let resData = res.data.data;
             if(resData.sucessNum>0) {
               // 刷新换点表格
-              this.refreshChangePointList()
+              this.refreshChangePointList(lIDs)
             }
             if(resData.errorNum>0) {
               const h = this.$createElement;
@@ -203,6 +205,7 @@ export default {
                   h("span", null, "失败")
                 ]),
                 type: "warning",
+                closeOnClickModal: false,
                 showClose: false,
                 showCancelButton: true,
                 distinguishCancelAndClose: true,
@@ -257,6 +260,7 @@ export default {
                   ),
                 ]),
                 type: "success",
+                closeOnClickModal: false,
                 showClose: false,
                 confirmButtonText: "好 的",
               }).then((action) => {
@@ -274,8 +278,8 @@ export default {
         });
     },
     // 刷新更换点位表格
-    refreshChangePointList() {
-      this.$emit('refreshCurrentTable')
+    refreshChangePointList(lIDs) {
+      this.$emit('refreshCurrentTable', lIDs)
     },
     // 导出失败excel
     export2Excel() {

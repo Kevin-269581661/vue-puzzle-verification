@@ -127,6 +127,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    handleTime: {
+      type: [Number,String],
+      required: true
+    },
   },
   data() {
     return {
@@ -198,7 +202,7 @@ export default {
       // 上传文件
       this.uploadLoading = true;
       api
-        .postUpload_file(this.importAction + '?apID=' + sessionStorage.getItem("order_apid") + '&mark=' + new Date().getTime(), formData)
+        .postUpload_file(this.importAction + '?apID=' + sessionStorage.getItem("order_apid") + '&mark=' + this.handleTime, formData)
         .then((res) => {
           if (res.data.SysCode == 200200) {
             let resData = res.data.data;
@@ -291,7 +295,7 @@ export default {
     },
     // 刷新更换点位表格
     refreshChangePointList() {
-      this.$emit('refreshCurrentTable')
+      this.$emit('refreshCurrentTable', [])
     },
     // 导出失败excel
     export2Excel() {

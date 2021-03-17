@@ -42,7 +42,7 @@
                                        @click="changeHandleType" v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}">换点
                             </el-button> -->
                             <el-select v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0"
-                                size="small" value="换点" placeholder="换点" class="add-point-select">
+                                size="small" value="换点" placeholder="换点" class="change-point-select">
                                 <el-option label="更改排期" value="1"
                                     v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}"
                                     @click.native="changeHandleType(1)"></el-option>
@@ -259,7 +259,7 @@
                     </span>
                 </el-dialog>
                 <!--excel导入点位对话框-->
-                <import-point-by-excel :dialogImportPoint="dialogImportPoint" @resetDialogImportPoint="resetDialogImportPoint" @refreshCurrentTable="refreshCurrentTable"></import-point-by-excel>
+                <import-point-by-excel :dialogImportPoint="dialogImportPoint" :handleTime="handleTime" @resetDialogImportPoint="resetDialogImportPoint" @refreshCurrentTable="refreshCurrentTable"></import-point-by-excel>
                 <!-- 更改排期对话框 -->
                 <changePointPlayDateRange :changeRangeDialog="changeRangeDialog" :changeList="changePointInfo.stopPointlist" :handleTime="handleTime" @resetDialogChangeRange="resetDialogChangeRange" @refreshCurrentTable="refreshCurrentTable"></changePointPlayDateRange>
                 <!-- 图片查看显示 -->
@@ -378,9 +378,9 @@
                                         <div style="float:left;position: absolute;left: 0;top: 0" v-if="isHandleChange">
                                             <div v-if="scope.row.beEnd==1" slot="reference" class="color-line"
                                                 style="background-color: #FF763B"></div>
-                                            <div v-if="scope.row.isCurrNew==1" slot="reference"
+                                            <div v-else-if="scope.row.isCurrNew==1" slot="reference"
                                                 class="color-line"></div>
-                                            <div v-if="scope.row.changePeriod==1" slot="reference" class="color-line"
+                                            <div v-else-if="scope.row.changePeriod==1" slot="reference" class="color-line"
                                                 style="background-color: #26D8BB"></div>
                                         </div>
                                         <span>{{scope.row.resName||'--'}}</span>
@@ -1089,7 +1089,8 @@
                             if (res.data.SysCode == 200200) {
                                 // this.dialogChangePoint = false
                                 Message.success(res.data.MSG)
-                                this.changePointInfo.stopPointNum = this.changePointInfo.stopPointlist.length
+                                this.changePointInfo.lIDArr = this.changePointInfo.lIDArr.concat(this.changePointInfo.stopPointlist)
+                                this.changePointInfo.stopPointNum = this.changePointInfo.lIDArr.length
                                 for (let data of this.changePointInfo.stopPointlist) {
                                     for (let item of this.setpointArr) {
                                         if (data.asID == item.asID && data.timeRange == item.timeRange) {
@@ -1447,9 +1448,9 @@
                             this.total = initData.total
                             this.pointTotal = initData.total
                             this.changePointInfo.allPoint = initData.total
-                            this.changePointInfo.stopPointNum = initData.stoppedAdsCount
-                            this.changePointInfo.addPointNum = initData.newAdsCount
-                            this.changePointInfo.changeAdsCount = initData.changeAdsCount
+                            // this.changePointInfo.stopPointNum = initData.stoppedAdsCount
+                            // this.changePointInfo.addPointNum = initData.newAdsCount
+                            // this.changePointInfo.changeAdsCount = initData.changeAdsCount
                             // this.addNewAdsNum = res.data.isNewCount
                             for (let data of result) {
                                 let time = this.formatTime(data.lStar) + "-" + this.formatTime(data.lEnd);
@@ -1464,8 +1465,24 @@
                             this.copyAsidArr = JSON.parse(JSON.stringify(result));
                             if (type && (type == 'change')) {
                                 this.setpointArr = result
-                                this.tempSetPointArr = result
+                                if(lIDs && lIDs.length>0) {
+                                    // 更改排期点位
+                                    lIDs = lIDs.concat(this.changePointInfo.lIDArr)
+                                    this.setpointArr.forEach(item => {
+                                        if (lIDs.includes(item.lID) && item.isChange==1) {
+                                            item.changePeriod = 1
+                                        }
+                                    });
+                                } else if(lIDs && lIDs.length==0) {
+                                    // 导入点位时lIDs为空数组
+                                    let lastArr = this.tempSetPointArr.map(item=>item.lID)
+                                    let tempAddArr =  this.setpointArr.filter(item=>{
+                                        return !lastArr.includes(item.lID) && item.isNew==1
+                                    })
+                                    this.changePointInfo.addPointlist.push(...tempAddArr)
+                                }
                                 if(this.changePointInfo.addPointlist.length>0) {
+                                    this.changePointInfo.addPointNum = this.changePointInfo.addPointlist.length
                                     // 新增点位或导入点位
                                     for (let data of this.changePointInfo.addPointlist) {
                                         for (let item of  this.setpointArr) {
@@ -1475,15 +1492,7 @@
                                         }
                                     }
                                 }
-                                if(lIDs && lIDs.length>0) {
-                                    // 更改排期点位
-                                    lIDs = lIDs.concat(this.changePointInfo.lIDArr)
-                                    this.setpointArr.forEach(item => {
-                                        if (lIDs.includes(item.lID) && item.isChange==1) {
-                                            item.changePeriod = 1
-                                        }
-                                    });
-                                }
+                                this.tempSetPointArr = result
                                 this.changePointPageFn()
                             } else {
                                 // 选点排期表格
@@ -1563,7 +1572,7 @@
             },
             //以终止的不可勾选
             selectInit(item) {
-                if (item.lState == 2) {
+                if (item.beEnd == 1) {
                     return false  //不可勾选
                 } else {
                     return true  //可勾选
@@ -2412,6 +2421,20 @@
     .search-row {
         margin: 0 32px 0;
         
+    }
+    .change-point-select {
+        width: 100px;
+        margin-left: 8px;
+        :hover, :focus {
+            color: #409EFF;
+            border-color: #409EFF;
+            /deep/ .el-icon-arrow-up {
+                color: #409EFF;
+            }
+        }
+        /deep/ .el-input__inner {
+            text-align: center;
+        }
     }
     .add-point-select {
         width: 100px;

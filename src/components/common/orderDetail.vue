@@ -317,8 +317,9 @@
                             <i class="el-icon-info" style="color: #1890FF;"></i>
                             <h4>
                                 <span>当前点位共<em>{{pointTotal}}</em>个，</span>
-                                <span>终止点位<em>{{ changePointInfo.stopPointNum }}</em>个，</span>
-                                <span>新增点位<em>{{changePointInfo.addPointNum}}</em>个</span>
+                                <span v-if="handleType==1">更改排期点位<em>{{ changePointInfo.lIDArr.length }}</em>个</span>
+                                <span v-if="handleType==2">终止点位<em>{{ changePointInfo.stopPointNum }}</em>个</span>
+                                <span v-if="handleType==3">新增点位<em>{{changePointInfo.addPointNum}}</em>个</span>
                             </h4>
                         </div>
                         <div>
@@ -1467,9 +1468,9 @@
                                 this.setpointArr = result
                                 if(lIDs && lIDs.length>0) {
                                     // 更改排期点位
-                                    lIDs = lIDs.concat(this.changePointInfo.lIDArr)
+                                    this.changePointInfo.lIDArr = lIDs.concat(this.changePointInfo.lIDArr)
                                     this.setpointArr.forEach(item => {
-                                        if (lIDs.includes(item.lID) && item.isChange==1) {
+                                        if (this.changePointInfo.lIDArr.includes(item.lID) && item.isChange==1) {
                                             item.changePeriod = 1
                                         }
                                     });

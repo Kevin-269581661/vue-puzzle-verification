@@ -616,6 +616,13 @@ export default {
 </script>
 
 <style scoped>
+.el-checkbox {
+    margin-right: 5px;
+    vertical-align: middle;
+}
+.el-checkbox__label {
+    padding-left: 4px;
+}
 /* 头部导入成功个数以及失败个数 */
 .car-title {
     background: #E6F7FF;

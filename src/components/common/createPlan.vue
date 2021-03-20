@@ -207,7 +207,7 @@
           <div>
             <div class="search-nav">
               <div class="search-wrap">
-                <div style="margin-right: 0" v-show="isOccupied">
+                <!-- <div style="margin-right: 0" v-show="isOccupied">
                   <el-select
                     v-model="activeSelect"
                     placeholder="请选择"
@@ -233,7 +233,7 @@
                       :value="item.value"
                     ></el-option>
                   </el-select>
-                </div>
+                </div> -->
                 <div>
                   <el-input
                     placeholder="请输入要搜索的内容"
@@ -303,25 +303,28 @@
                     v-qadn-mta-h5="{ id: 'a004_b008_c000_d000_bt050_ck03' }"
                     >地图
                   </el-button>
-                  <el-dropdown>
-                    <el-button type="success" class="importXle">
-                      导入<i class="el-icon-arrow-down el-icon--right"></i>
-                    </el-button>
-                    <el-dropdown-menu slot="dropdown">
+                  <el-button
+                    type="success"
+                    class="importXle"
+                    @click.native.prevent="importFanan('res')"
+                    v-qadn-mta-h5="{ id: 'a004_b008_c000_d000_bt051_ck04' }"
+                  >
+                    导入小区
+                  </el-button>
+                  <!-- <el-dropdown-menu slot="dropdown">
                       <el-dropdown-item
                         @click.native.prevent="importFanan('res')"
                         v-qadn-mta-h5="{ id: 'a004_b008_c000_d000_bt051_ck04' }"
                       >
                         导入小区
-                      </el-dropdown-item>
-                      <el-dropdown-item
+                      </el-dropdown-item> -->
+                  <!-- <el-dropdown-item
                         @click.native.prevent="importFanan('ads')"
                         v-qadn-mta-h5="{ id: 'a004_b008_c000_d000_bt052_ck04' }"
                       >
                         导入点位
-                      </el-dropdown-item>
-                    </el-dropdown-menu>
-                  </el-dropdown>
+                      </el-dropdown-item> -->
+                  <!-- </el-dropdown-menu> -->
                   <el-button
                     type="primary"
                     @click="importFanan('copy')"
@@ -1896,9 +1899,8 @@
     </el-dialog>
     <!-- 导入表格组件 -->
     <import-village-by-excel
-      :dialogImportPoint="dialogImportPoint"
-      @resetDialogImportPoint="resetDialogImportPoint"
-      @refreshCurrentTable="refreshCurrentTable"
+      :isDialogImport="isDialogImport"
+      @closeDialogImport="isDialogImport = false"
     ></import-village-by-excel>
   </div>
 </template>
@@ -2043,7 +2045,7 @@ export default {
       }
     };
     return {
-      dialogImportPoint: false,
+      isDialogImport: false,
       handleTime: "", //上传时间
       isSelectPoint: false, //是否展示点位选择弹窗
       pickerOptions: {
@@ -2484,13 +2486,8 @@ export default {
     //导入表格选点
     automaticSelectPoint() {
       this.isSelectPoint = false;
-      this.dialogImportPoint = true;
+      this.isDialogImport = true;
     },
-    resetDialogImportPoint() {
-      this.dialogImportPoint = false;
-    },
-    refreshCurrentTable(lIDs) {},
-
     handleSizeChange(val) {
       this.cartPageSize = val;
     },
@@ -3149,7 +3146,8 @@ export default {
         this.isCopy = true;
         return;
       }
-      this.isImport = true;
+      //   this.isImport = true;
+      this.isDialogImport = true;
       this.fileData = [];
       this.importInfoData = {};
     },
@@ -4626,22 +4624,23 @@ export default {
           asrIDs: this.planForm.pointOfAsrIDs,
         })
       );
-      let url = "";
-      if (window.location.hostname == "localhost") {
-        url =
-          window.location.host +
-          "/ADResourceMap/chooseRes?city=" +
-          this.mapParams.city +
-          "&flag=" +
-          true;
-      } else {
-        url =
-          this.apiVar.qadnUrl +
-          "/ADResourceMap/chooseRes?city=" +
-          this.mapParams.city +
-          "&flag=" +
-          true;
-      }
+      let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?flag=true&city=${this.mapParams.city}`;
+      // let url = "";
+      // if (window.location.hostname == "localhost") {
+      //   url =
+      //     window.location.host +
+      //     "/ADResourceMap/chooseRes?city=" +
+      //     this.mapParams.city +
+      //     "&flag=" +
+      //     true;
+      // } else {
+      //   url =
+      //     this.apiVar.qadnUrl +
+      //     "/ADResourceMap/chooseRes?city=" +
+      //     this.mapParams.city +
+      //     "&flag=" +
+      //     true;
+      // }
       window.open(url);
       this.mapBtn = false;
       this.dialogVisible();

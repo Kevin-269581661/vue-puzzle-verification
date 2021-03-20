@@ -2,7 +2,7 @@
   <div>
     <el-dialog
       title="导入小区"
-      :visible.sync="dialogImport"
+      :visible.sync="isDialogImport"
       width="448px"
       top="23vh"
       :close-on-press-escape="false"
@@ -10,6 +10,7 @@
       :center="false"
       :lock-scroll="false"
       custom-class="import-dialog"
+      :close-on-click-modal="false"
     >
       <div class="first-step">
         <span class="step-title">第一步：下载模板并按要求完善表格</span>
@@ -46,7 +47,7 @@
           :auto-upload="false"
           :limit="1"
           :multiple="false"
-          :fileList="fileList"
+          :file-list="importFileData"
         >
           <img src="../../../assets/images/export.png" alt="" />
           <div class="el-upload__text">点击或将文件拖拽到这里上传</div>
@@ -59,9 +60,76 @@
         >
       </span>
     </el-dialog>
-    <!-- 问题点位表格 -->
+    <!-- 导入结果页面 -->
     <el-dialog
-      title="问题点位"
+      title="导入结果"
+      :visible.sync="dialogResult"
+      top="23vh"
+      :close-on-press-escape="false"
+      :close-on-click-modal="false"
+      :center="false"
+      custom-class="error-point-dialog"
+    >
+      <div class="table-top-tip">
+        <h4 class="container">
+          <div>
+            <i class="el-icon-info" style="color: #1890ff"></i>
+            <span><em>100</em>个导入成功，</span>
+            <span><em class="orange">10</em>个导入失败个</span>
+          </div>
+          <div>
+            <span><em @click="openUnsuccessful">查看失败小区</em></span>
+          </div>
+        </h4>
+      </div>
+      <!-- 表格部分 -->
+      <el-table
+        :data="errorPointList"
+        border
+        max-height="500"
+        style="width: 100%"
+      >
+        <el-table-column prop="index" label="序号" min-width="6%">
+        </el-table-column>
+        <el-table-column prop="resName" label="资源" min-width="6%">
+        </el-table-column>
+        <el-table-column prop="city" label="城市" min-width="6%">
+        </el-table-column>
+        <el-table-column prop="district" label="区域" min-width="6%">
+        </el-table-column>
+        <el-table-column prop="date" label="排期" min-width="6%">
+        </el-table-column>
+        <el-table-column prop="date" label="媒体数量（门）" min-width="6%">
+        </el-table-column
+        ><el-table-column prop="date" label="计划投放数量" min-width="6%">
+        </el-table-column>
+      </el-table>
+      <!-- 分页 -->
+      <el-pagination
+        @size-change="handleErrorSizeChange"
+        @current-change="handleErrorCurrentChange"
+        current-page="1"
+        :page-sizes="[10, 20, 30, 40]"
+        :page-size="10"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="400"
+        style="text-align: right"
+      >
+      </el-pagination>
+      <span slot="footer">
+        <el-button
+          type="primary"
+          size="medium "
+          @click="export2Excel"
+          :disabled="isDown"
+          style="padding: 0 4px"
+          >确定并且添加到购物车</el-button
+        >
+      </span>
+    </el-dialog>
+    <!-- 失败小区 -->
+    <el-dialog
+      title="导入失败的小区"
       :visible.sync="dialogErrorPoint"
       top="23vh"
       :close-on-press-escape="false"
@@ -75,19 +143,17 @@
         max-height="500"
         style="width: 100%"
       >
-        <el-table-column prop="resName" label="资源名称" min-width="6%">
+        <el-table-column prop="index" label="序号" min-width="6%">
         </el-table-column>
-        <el-table-column prop="city" label="城市" min-width="6%">
+        <el-table-column prop="city" label="资源" min-width="6%">
         </el-table-column>
-        <el-table-column prop="district" label="区县" min-width="6%">
+        <el-table-column prop="district" label="城市" min-width="6%">
         </el-table-column>
-        <el-table-column prop="mTitle" label="媒体名称" min-width="6%">
-        </el-table-column>
-        <el-table-column prop="asLab" label="投放面" min-width="3%">
-        </el-table-column>
-        <el-table-column prop="assetTag" label="资产编号" min-width="6%">
+        <el-table-column prop="mTitle" label="区域" min-width="6%">
         </el-table-column>
         <el-table-column prop="date" label="排期" min-width="6%">
+        </el-table-column>
+        <el-table-column prop="asLab" label="计划投放数量（面）" min-width="6%">
         </el-table-column>
         <el-table-column
           prop="failReason"
@@ -97,24 +163,22 @@
         >
         </el-table-column>
       </el-table>
-      <!-- <el-pagination
-        background
+      <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="recommendationCurrentPage"
-        :page-sizes="[10, 20, 50, 100]"
-        :page-size="recommendationPageSize"
-        :pager-count="5"
+        current-page="1"
+        :page-sizes="[10, 20, 30, 40]"
+        :page-size="10"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="recommendationTotalNum"
-        style="text-align: right; margin-top: 16px"
+        :total="400"
+        style="text-align: right"
       >
-      </el-pagination> -->
+      </el-pagination>
       <span slot="footer">
-        <el-button plain @click="export2Excel" :disabled="isDown"
-          >下载表格</el-button
-        >
         <el-button plain @click="dialogErrorPoint = false">关闭</el-button>
+        <el-button plain @click="export2Excel" :disabled="isDown"
+          >导出</el-button
+        >
       </span>
     </el-dialog>
   </div>
@@ -127,9 +191,9 @@ import { api } from "../../../api/api.js";
 // import sheetExcel from "../../../commonFun/sheetExcel.js";
 
 export default {
-  name: "importPointByExcel",
+  name: "importVillageByExcel",
   props: {
-    dialogImportPoint: {
+    isDialogImport: {
       type: Boolean,
       default: false,
     },
@@ -137,8 +201,10 @@ export default {
   data() {
     return {
       fileList: [],
-      dialogImport: false,
+      //失败小区弹窗
       dialogErrorPoint: false,
+      //导入结果弹窗
+      dialogResult: false,
       errorPointList: [],
       // 登录信息
       sessionData: {},
@@ -156,44 +222,31 @@ export default {
   },
   computed: {},
   created() {},
-  watch: {
-    dialogImportPoint(val) {
-      val && (this.dialogImport = true) && this.resetDialogImportPoint();
-    },
-    dialogImport(val) {
-      !val && (this.fileList = []);
-    },
-  },
+  watch: {},
   methods: {
-    // 重置dialogImportPoint
-    resetDialogImportPoint() {
-      this.$emit("resetDialogImportPoint");
-    },
+    //清除组件保留的数据
     // 取消导入
     cancelImport() {
-      this.dialogImport = false;
+      this.isDialogImport = false;
       this.uploadLoading = false;
+      this.$emit("closeDialogImport");
+      this.importFileRemove();
     },
     // 导入模版下载, 阻止冒泡事件
     dowmLoadFun(event) {
       event.stopPropagation();
     },
     importUploadFile(file, fileList) {
-      this.fileList = fileList;
-      this.importFileData = [file];
-    },
-    /* handleSizeChange(val) {
-      this.recommendationPageSize = val;
-    },
-    handleCurrentChange(val) {
-      this.recommendationCurrentPage = val;
-    }, */
-    importFileRemove(file, fileList) {
-      console.log(file, fileList);
       this.importFileData = fileList;
     },
+    importFileRemove(file, fileList) {
+      this.importFileData = [];
+    },
     commitFile() {
-      debugger;
+      this.$emit("closeDialogImport");
+      this.importFileRemove();
+      this.dialogResult = true;
+      return;
       if (
         Array.isArray(this.importFileData) &&
         this.importFileData.length == 0
@@ -310,10 +363,6 @@ export default {
           this.uploadLoading = false;
         });
     },
-    // 刷新更换点位表格
-    refreshChangePointList() {
-      this.$emit("refreshCurrentTable", []);
-    },
     // 导出失败excel
     export2Excel() {
       this.isDown = true;
@@ -351,6 +400,22 @@ export default {
     formatJson(filterVal, jsonData) {
       return jsonData.map((v) => filterVal.map((j) => v[j]));
     },
+    //查看失败小区
+    openUnsuccessful() {
+      this.dialogErrorPoint = true;
+    },
+    handleSizeChange(val) {
+      //   this.recommendationPageSize = val;
+    },
+    handleCurrentChange(val) {
+      //   this.recommendationCurrentPage = val;
+    },
+    handleErrorSizeChange(val) {
+      //   this.recommendationPageSize = val;
+    },
+    handleErrorCurrentChange(val) {
+      //   this.recommendationCurrentPage = val;
+    },
   },
 };
 </script>
@@ -364,7 +429,7 @@ export default {
 }
 /deep/ .import-dialog .el-dialog__footer {
   display: block;
-  text-align: right;
+  text-align: center;
 }
 
 /deep/ .error-point-dialog {
@@ -425,5 +490,40 @@ export default {
   margin: 0 20px 0 auto;
   cursor: pointer;
   color: rgba(102, 102, 102, 1);
+}
+
+.table-top-tip {
+  background: #e6f7ff;
+  border: 1px solid #bae7ff;
+  border-radius: 4px;
+  margin: 16px 0;
+  padding: 9.5px;
+}
+
+.table-top-tip /deep/ .el-icon-info {
+  margin-right: 4px;
+}
+
+.table-top-tip .container {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.table-top-tip em {
+  font-size: 14px;
+  font-weight: normal;
+  margin: 0 6px;
+  cursor: pointer;
+  color: #1890ff;
+}
+.table-top-tip .orange {
+  color: #f87126;
+}
+/deep/ .el-input__inner {
+  width: 100%;
+}
+/deep/ .el-dialog__footer {
+  text-align: center;
 }
 </style>

@@ -4070,39 +4070,11 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.isSelectPoint = true;
-          console.log("表单验证this.throwCity", this.throwCity);
-          //代码移动到手动选点manualSelectPoint后执行
-          // // 初始化
-          // this.initStep2Data()
-          // this.active++
-          // // 设置城市及对应的区域
-          // this.getAreaFun()
-          // this.getAdsParamsData = {
-          //     prID: this.city[0].rid,
-          //     rid: '440100',
-          //     act: 1,
-          //     // dateTimeBegin: this.dateInput[0],
-          //     // dateTimeEnd: this.dateInput[1],
-          //     resType: this.recType,
-          //     mVehicle: this.mediaType,
-          //     pageNo: this.pageNo,
-          //     pageSize: this.pageSize,//
-          // }
-          // this.getAdList()            // 获取选点列表
-          // this.getRejectPlanList()    // 获取排斥方案列表
-          // this.getIndustryBycID()     // 根据所选公司获取公司所属行业
-          // // 地图选点前置跳转而来，则直接显示购物车及其地图选择的点位
-          // if (this.indexData !== '') {
-          //     this.mapParams = {
-          //         rid: this.indexData.rid,
-          //         city: this.indexData.city,
-          //         ls: this.indexData.dateInput[0],
-          //         le: this.indexData.dateInput[1]
-          //     }
-          //     this.mapBtn = false
-          //     // this.getMapADList()
-          // }
+          //如果是BD弹窗选点方式，不是的话直接走之前的业务流程
+          if (this.isBD) return (this.isSelectPoint = true);
+          this.manualSelectPoint();
+          // console.log("表单验证this.throwCity", this.throwCity);
+          // //代码移动到手动选点manualSelectPoint后执行
         } else {
           console.log("error submit!!");
           return false;
